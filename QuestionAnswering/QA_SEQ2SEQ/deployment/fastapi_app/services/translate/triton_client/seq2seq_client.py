@@ -1,10 +1,18 @@
+from abc import abstractmethod
+
 import numpy as np
 import tritonclient.http as httpclient
 
 from .constants import TRITON_ENDPOINT
 
 
-class Seq2SeqClient:
+class ISeq2SeqClient:
+    @abstractmethod
+    def forward(self, text: str) -> str:
+        pass
+
+
+class Seq2SeqClient(ISeq2SeqClient):
     def __init__(self):
         self.client = httpclient.InferenceServerClient(url=TRITON_ENDPOINT)
 
@@ -24,7 +32,10 @@ class Seq2SeqClient:
                 model_name="seq2seq", inputs=input_tensors
             )
         except ConnectionRefusedError:
-            raise ConnectionRefusedError("Unable to connect to triton server at the endpoint: " + str(self.client._parsed_url))
+            raise ConnectionRefusedError(
+                "Unable to connect to triton server at the endpoint: "
+                + str(self.client._parsed_url)
+            )
 
         # Output
         return pred_response.as_numpy("OUTPUT").astype(str)[0]

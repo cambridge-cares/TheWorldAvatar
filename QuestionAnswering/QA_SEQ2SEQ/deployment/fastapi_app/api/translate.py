@@ -1,3 +1,4 @@
+from functools import lru_cache
 import logging
 import os
 import time
@@ -6,10 +7,18 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
+from services.translate.triton_client.feature_extraction_client import (
+    FeatureExtractionClient,
+    IFeatureExtractionClient,
+)
+from services.translate.triton_client.seq2seq_client import (
+    ISeq2SeqClient,
+    Seq2SeqClient,
+)
 from services.preprocess import IPreprocessor
 from services.preprocess.identity import IdentityPreprocessor
 from services.preprocess.chemistry import ChemistryPreprocessor
-from services.translate import ITranslator, Translator
+from services.translate import Translator, Translator
 
 
 class TranslateRequest(BaseModel):
@@ -34,8 +43,22 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-def get_translator() -> ITranslator:
-    return Translator()
+def get_seq2seq_client():
+    return Seq2SeqClient()
+
+
+def get_feature_extraction_client():
+    return FeatureExtractionClient()
+
+
+@lru_cache()
+def get_translator(
+    seq2seq_client: Annotated[ISeq2SeqClient, Depends(get_seq2seq_client)],
+    feature_extraction_client: Annotated[
+        IFeatureExtractionClient, Depends(get_feature_extraction_client)
+    ],
+):
+    return Translator(seq2seq_client, feature_extraction_client)
 
 
 def get_preprocessor() -> IPreprocessor:
@@ -48,7 +71,7 @@ def get_preprocessor() -> IPreprocessor:
 @router.post("")
 def translate(
     req: TranslateRequest,
-    translator: Annotated[ITranslator, Depends(get_translator)],
+    translator: Annotated[Translator, Depends(get_translator)],
     preprocessor: Annotated[IPreprocessor, Depends(get_preprocessor)],
 ):
     logger.info(

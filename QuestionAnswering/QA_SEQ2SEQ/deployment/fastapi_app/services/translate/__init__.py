@@ -1,8 +1,8 @@
-from abc import abstractmethod
 from dataclasses import dataclass
 import logging
 import os
 from typing import Dict, Optional
+
 
 from .data_processing.constants import T5_PREFIX_DOMAINCLS, T5_PREFIX_NL2SPARQL
 from .data_processing.nl import preprocess_nl
@@ -13,7 +13,8 @@ from .data_processing.ontobuiltenv.postprocess import OBEPostProcessor
 from .data_processing.postprocess import PostProcessor
 from .data_processing.sparql import postprocess_sparql
 from .sparql import SparqlQuery
-from .triton_client.seq2seq_client import Seq2SeqClient
+from .triton_client.seq2seq_client import ISeq2SeqClient
+from .triton_client.feature_extraction_client import IFeatureExtractionClient
 
 
 @dataclass
@@ -32,18 +33,16 @@ class TranslateResult:
 logger = logging.getLogger(__name__)
 
 
-class ITranslator:
-    @abstractmethod
-    def nl2sparql(self, question: str) -> TranslateResult:
-        pass
-
-
-class Translator(ITranslator):
-    def __init__(self):
+class Translator:
+    def __init__(
+        self,
+        seq2seq_client: ISeq2SeqClient,
+        feature_extraction_client: IFeatureExtractionClient,
+    ):
         self.domain = os.getenv("QA_DOMAIN")
-        self.model = Seq2SeqClient()
+        self.model = seq2seq_client
         self.domain2postprocessor: Dict[str, PostProcessor] = dict(
-            ontospecies=OSPostProcessor(),
+            ontospecies=OSPostProcessor(feature_extraction_client),
             ontokin=OKPostProcessor(),
             ontocompchem=OCCPostProcessor(),
             kingslynn=OBEPostProcessor(),

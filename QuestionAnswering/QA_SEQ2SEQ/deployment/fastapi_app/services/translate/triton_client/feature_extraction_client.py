@@ -1,11 +1,19 @@
+from abc import abstractmethod
 from typing import List
+
 import numpy as np
 import tritonclient.http as httpclient
 
 from .constants import TRITON_ENDPOINT
 
 
-class FeatureExtractionClient:
+class IFeatureExtractionClient:
+    @abstractmethod
+    def forward(self, texts: List[str]) -> np.ndarray:
+        pass
+
+
+class FeatureExtractionClient(IFeatureExtractionClient):
     def __init__(self):
         self.client = httpclient.InferenceServerClient(url=TRITON_ENDPOINT)
 

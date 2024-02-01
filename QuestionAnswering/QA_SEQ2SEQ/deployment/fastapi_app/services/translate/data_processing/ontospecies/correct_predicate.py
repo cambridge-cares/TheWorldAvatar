@@ -1,7 +1,7 @@
 import numpy as np
 
 from services.translate.triton_client.feature_extraction_client import (
-    FeatureExtractionClient,
+    IFeatureExtractionClient,
 )
 from .constants import (
     ABSTRACT_IDENTIFIER_KEY,
@@ -59,10 +59,10 @@ class OSPredicateCorrector:
         + ["os:has{key}/rdfs:label".format(key=x) for x in USE_CHEMCLASS_KEYS]
     )
 
-    def __init__(self):
-        self.model = FeatureExtractionClient()
+    def __init__(self, feature_extraction_client: IFeatureExtractionClient):
+        self.model = feature_extraction_client
         self._embed_matrix = None
-    
+
     @property
     def embed_matrix(self):
         if self._embed_matrix is None:

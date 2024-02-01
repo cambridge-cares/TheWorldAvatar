@@ -1,9 +1,15 @@
-from fastapi.testclient import TestClient
+from typing import List
 
-from api.translate import get_translator
+from fastapi.testclient import TestClient
+import numpy as np
+
 from api.sparql import get_kg_executor
+from api.translate import get_feature_extraction_client, get_seq2seq_client
+from services.translate.triton_client.feature_extraction_client import (
+    IFeatureExtractionClient,
+)
+from services.translate.triton_client.seq2seq_client import ISeq2SeqClient
 from services.kg_execute import IKgExecutor
-from services.translate import ITranslator, TranslateResult, TranslateResultSparql
 from main import app
 
 
@@ -12,21 +18,28 @@ client = TestClient(app)
 
 def test_translate():
     # arrange
-    def mock_translator() -> ITranslator:
-        class MockTranslator(ITranslator):
-            def nl2sparql(self, question: str):
-                return TranslateResult(
-                    domain="chemistry",
-                    sparql=TranslateResultSparql(
-                        raw="RawSparql",
-                        decoded="DecodedSparql",
-                        verbose="VerboseSparql",
-                    ),
-                )
+    def mock_seq2seq() -> ISeq2SeqClient:
+        class Mock(ISeq2SeqClient):
+            def forward(self, text: str):
+                if text.startswith("translate to SPARQL: "):
+                    return "SELECT var_s WHERE &lcub; var_s var_p var_o . &rcub;"
+                elif text.startswith("classify query domain: "):
+                    return "ontokin"
+                else:
+                    return "garbage"
 
-        return MockTranslator()
+        return Mock()
 
-    app.dependency_overrides[get_translator] = mock_translator
+    app.dependency_overrides[get_seq2seq_client] = mock_seq2seq
+
+    def mock_feature_extraction() -> IFeatureExtractionClient:
+        class Mock(IFeatureExtractionClient):
+            def forward(self, texts: List[str]):
+                return np.random.random((len(texts), 4))
+
+        return Mock()
+
+    app.dependency_overrides[get_feature_extraction_client] = mock_feature_extraction
 
     # act
     res = client.post("/translate", json={"question": "What is the charge of benzene?"})
@@ -36,8 +49,11 @@ def test_translate():
     expected_json = {
         "question": "What is the charge of benzene?",
         "preprocessed_question": "What is the charge of benzene?",
-        "domain": "chemistry",
-        "sparql": {"predicted": "DecodedSparql", "postprocessed": "VerboseSparql"},
+        "domain": "ontokin",
+        "sparql": {
+            "predicted": "SELECT ?s WHERE { ?s ?p ?o . }",
+            "postprocessed": "SELECT DISTINCT ?s WHERE {\n  ?s ?p ?o .\n}",
+        },
     }
     actual_json = res.json()
     assert isinstance(actual_json, dict)

@@ -1,3 +1,6 @@
+from services.translate.triton_client.feature_extraction_client import (
+    IFeatureExtractionClient,
+)
 from services.translate.sparql import SparqlQuery
 from services.translate.sparql.graph_pattern import TriplePattern, ValuesClause
 from services.translate.sparql.where_clause import WhereClause
@@ -6,8 +9,8 @@ from .correct_span import OSSpanCorrector
 
 
 class OSSparqlPredictionCorrector:
-    def __init__(self):
-        self.predicate_corrector = OSPredicateCorrector()
+    def __init__(self, feature_extraction_client: IFeatureExtractionClient):
+        self.predicate_corrector = OSPredicateCorrector(feature_extraction_client)
         self.span_corrector = OSSpanCorrector()
 
     def correct_values_clause(self, values_clause: ValuesClause, nlq: str):
