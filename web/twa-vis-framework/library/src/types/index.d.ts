@@ -6,7 +6,6 @@ declare global {
     var Cesium;
     var turf;
     var JsonView;
-    var Keycloak;
     interface Window {
         terrain: string;
         selectFeatures: Object;
