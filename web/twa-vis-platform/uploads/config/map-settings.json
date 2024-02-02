@@ -1,0 +1,108 @@
+{
+    "type": "mapbox",
+    "camera": {
+        "default": "Cambridge",
+        "positions": [
+            {
+                "name": "Cambridge",
+                "center": [0.11926, 52.20472],
+                "zoom": 14,
+                "bearing": 0,
+                "pitch": 45
+            },
+            {
+                "name": "London",
+                "center": [-0.12794, 51.50774],
+                "zoom": 18,
+                "bearing": 0,
+                "pitch": 45
+            },
+            {
+                "name": "Paris",
+                "center": [2.29448, 48.85826],
+                "zoom": 16,
+                "bearing": 0,
+                "pitch": 45
+            },
+            {
+                "name": "New York",
+                "center": [-73.98568, 40.74845],
+                "zoom": 16,
+                "bearing": 0,
+                "pitch": 45
+            },
+            {
+                "name": "Tokyo",
+                "center": [139.74544, 35.65858],
+                "zoom": 16,
+                "bearing": 0,
+                "pitch": 45
+            }
+        ]
+    },
+    "imagery": {
+        "default": "Auto",
+        "options": [
+            {
+                "name": "Light",
+                "url": "mapbox://styles/mapbox/light-v11?optimize=true"
+            },
+            {
+                "name": "Dark",
+                "url": "mapbox://styles/mapbox/dark-v11?optimize=true"
+            },
+            {
+                "name": "Outdoors",
+                "url": "mapbox://styles/mapbox/outdoors-v12?optimize=true"
+            },
+            {
+                "name": "Satellite",
+                "url": "mapbox://styles/mapbox/satellite-streets-v12?optimize=true"
+            },
+            {
+                "name": "3D (Day)",
+                "url": "mapbox://styles/mapbox/standard",
+                "time": "dawn"
+            },
+            {
+                "name": "3D (Night)",
+                "url": "mapbox://styles/mapbox/standard",
+                "time": "dusk"
+            }
+        ]
+    },
+    "icons": {
+        "empty": "/uploads/images/icons/empty.png",
+        "catherine": "/uploads/images/icons/catherine.png",
+        "christs": "/uploads/images/icons/christs.png",
+        "churchill": "/uploads/images/icons/churchill.png",
+        "clare-hall": "/uploads/images/icons/clare-hall.png",
+        "clare": "/uploads/images/icons/clare.png",
+        "corpus-christi": "/uploads/images/icons/corpus-christi.png",
+        "darwin": "/uploads/images/icons/darwin.png",
+        "downing": "/uploads/images/icons/downing.png",
+        "edmunds": "/uploads/images/icons/edmunds.png",
+        "emmanuel": "/uploads/images/icons/emmanuel.png",
+        "fitzwilliam": "/uploads/images/icons/fitzwilliam.png",
+        "girton": "/uploads/images/icons/girton.png",
+        "gonville": "/uploads/images/icons/gonville.png",
+        "homerton": "/uploads/images/icons/homerton.png",
+        "hughes": "/uploads/images/icons/hughes.png",
+        "jesus": "/uploads/images/icons/jesus.png",
+        "kings": "/uploads/images/icons/kings.png",
+        "lucy": "/uploads/images/icons/lucy.png",
+        "magdalene": "/uploads/images/icons/magdalene.png",
+        "murray": "/uploads/images/icons/murray.png",
+        "newnham": "/uploads/images/icons/newnham.png",
+        "pembroke": "/uploads/images/icons/pembroke.png",
+        "peterhouse": "/uploads/images/icons/peterhouse.png",
+        "queens": "/uploads/images/icons/queens.png",
+        "robinson": "/uploads/images/icons/robinson.png",
+        "selwyn": "/uploads/images/icons/selwyn.png",
+        "st-johns": "/uploads/images/icons/st-johns.png",
+        "sussex": "/uploads/images/icons/sussex.png",
+        "trinity-hall": "/uploads/images/icons/trinity-hall.png",
+        "trinity": "/uploads/images/icons/trinity.png",
+        "wolfson": "/uploads/images/icons/wolfson.png"
+    }
+}

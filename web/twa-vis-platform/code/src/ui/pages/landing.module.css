@@ -1,0 +1,135 @@
+.container {
+    width: 100%;
+    height: 100%;
+    padding: 40px;
+
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+@media only screen and (max-height: 1090px) {
+    .introOuter {
+        flex: 7.5 !important;
+    }
+    .thumbnailContainer {
+        flex: 2.5 !important;
+    }
+    .introInner h2 {
+        font-size: 14pt !important;
+    }
+    .introInner p {
+        font-size: 11pt !important;
+    }
+}
+
+.introOuter {
+    flex: 60%;
+    min-width: 500px;
+    margin-right: 50px;
+
+    border-width: 0px 3px 0px 0px;
+    border-style: solid;
+    border-color: var(--border-primary);
+
+    container-name: hello;
+}
+
+.introMiddle {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+    margin-right: 50px;
+
+    color: var(--text-color-primary) !important;
+    border: 1px solid var(--border-primary) !important;
+    background-color: var(--background-primary) !important;
+
+    border-radius: 20px;
+    padding: 20px;
+}
+
+@media all and (max-width: 1200px) {
+    .introInner h2 {
+        font-size: 12pt !important;
+    }
+    .introInner p {
+        font-size: 11pt !important;
+    }
+    .buttonDescription {
+        font-size: 11pt !important;
+    }
+}
+
+.introInner {
+    background-color: transparent !important;
+    margin-bottom: 10px;
+}
+
+.introLower {
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+}
+
+.thumbnailContainer {
+    flex: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}  
+
+.button {
+    width: 50%;
+    max-height: 100%;
+
+    margin: 20px;
+    padding: 5px;
+
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: flex-start;
+
+    justify-content: center;
+    cursor: pointer;
+
+    color: var(--text-color-primary) !important;
+    background-color: var(--background-secondary) !important;
+    border-radius: 20px !important;
+}
+.button:hover {
+    background-color: var(--background-tertiary) !important;
+    outline: 1px solid var(--border-secondary) !important;
+}
+
+.buttonIcon {
+    flex-grow: 1;
+    max-height: 100%;
+
+    overflow: hidden;
+    width: 100%;
+}
+.button img {
+    height: 100%;
+    filter: drop-shadow(4px 4px 2px rgb(0 0 0 / 0.25));
+}
+.buttonTitle {
+    flex-grow: 0;
+    width: 50%;
+    margin: auto;
+    margin-bottom: 5px;
+
+    border: 1px solid var(--border-secondary);
+    border-width: 0px 0px 1px 0px;
+    text-align: center;
+}
+.buttonDescription {
+    flex-grow: 0;
+    width: 100%;
+    font-size: 12pt;
+    text-align: center;
+    margin-bottom: 4px;
+}
