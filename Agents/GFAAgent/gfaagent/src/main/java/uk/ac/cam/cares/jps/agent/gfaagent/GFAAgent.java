@@ -23,6 +23,7 @@ public class GFAAgent extends JPSAgent{
     private String dbUrl;
     private String dbUser;
     private String dbPassword;
+    private String kgurl;
     public String floorsCsv;
 
     public void init() {
@@ -30,6 +31,7 @@ public class GFAAgent extends JPSAgent{
         this.dbUrl = endpointConfig.getDbUrl(dbName);
         this.dbUser = endpointConfig.getDbUser();
         this.dbPassword = endpointConfig.getDbPassword();
+        this.kgurl = endpointConfig.getKGUrl();
     }
 
     public void readConfig() {

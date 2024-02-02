@@ -38,7 +38,7 @@ public class EndpointConfig {
         return this.dbPassword;
     }
 
-    public String getKGUrl(String dbName) {
+    public String getKGUrl() {
         return this.kgurl;
     }
 
