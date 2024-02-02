@@ -25,7 +25,7 @@
             "geoServerSettings": {
                 "virtualTable": 
                 {   "name": "gps_line_extended",
-                    "sql": "WITH OrderedPoints AS (SELECT ST_MakePoint(\"LONGITUDE\", \"LATITUDE\") AS geom, \"SPEED\", \"DISTANCE\", \"UTC DATE\", \"UTC TIME\" FROM gps_line ORDER BY \"UTC DATE\", \"UTC TIME\") SELECT ST_MakeLine(geom) OVER (ORDER BY \"UTC DATE\", \"UTC TIME\") AS geom, AVG(\"SPEED\") OVER () AS avg_speed, SUM(\"DISTANCE\") OVER () AS total_distance FROM OrderedPoints",
+                    "sql": "WITH OrderedPoints AS (SELECT ST_MakePoint(\"LONGITUDE\", \"LATITUDE\") AS geom FROM gps_line ORDER BY \"UTC DATE\", \"UTC TIME\") SELECT ST_MakeLine(geom) AS geom FROM OrderedPoints",
                     "escapeSql": false,
                     "geometry": {
                         "name": "geom",
