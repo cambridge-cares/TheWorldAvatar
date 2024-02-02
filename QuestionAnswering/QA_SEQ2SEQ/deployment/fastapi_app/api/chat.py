@@ -25,12 +25,14 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+@lru_cache
 def get_openai_client():
-    OPENAI_ENDPOINT = os.getenv("OPENAI_ENDPOINT", "http://localhost:8001/v1")
+    OPENAI_ENDPOINT = os.getenv("OPENAI_ENDPOINT")
     logger.info("Connecting to chatbot at endpoint: " + OPENAI_ENDPOINT)
     return OpenAI(base_url=OPENAI_ENDPOINT, api_key=os.getenv("OPENAI_API_KEY"))
 
 
+@lru_cache
 def get_tokens_counter():
     with resources.as_file(
         resources.files("resources.common").joinpath("tokenizer.model")
@@ -43,12 +45,16 @@ def get_tokens_counter():
     return get_tokens_num
 
 
-@lru_cache
 def get_chatbot_client(
     openai_client: Annotated[OpenAI, Depends(get_openai_client)],
     tokens_counter: Annotated[Callable[[str], int], Depends(get_tokens_counter)],
 ):
-    return ChatbotClient(openai_client, tokens_counter)
+    return ChatbotClient(
+        openai_client=openai_client,
+        model=os.getenv("OPENAI_MODEL"),
+        input_limit=int(os.getenv("OPENAI_INPUT_LIMIT")),
+        tokens_counter=tokens_counter,
+    )
 
 
 @router.post("")

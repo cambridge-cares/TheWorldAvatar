@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 from importlib import resources
 from typing import Callable, Dict
 
@@ -38,19 +37,26 @@ class ChatbotClient:
     PROMPT_TEMPLATE: Dict[str, str] = json.loads(
         resources.files("resources.common").joinpath("prompt_template.json").read_text()
     )
-    TOKENS_LIMIT = int(os.getenv("OPENAI_TOKENS_LIMIT", 500))
 
-    def __init__(self, openai_client: OpenAI, tokens_counter: Callable[[str], int]):
+    def __init__(
+        self,
+        openai_client: OpenAI,
+        model: str,
+        input_limit: int,
+        tokens_counter: Callable[[str], int],
+    ):
         self.openai_client = openai_client
+        self.model = model
+        self.input_limit = input_limit - tokens_counter(self.PROMPT_TEMPLATE["system"])
         self.count_tokens = tokens_counter
 
     def request_stream(self, question: str, data: str) -> Stream[ChatCompletionChunk]:
         content = self.PROMPT_TEMPLATE["user"].format(question=question, data=data)
 
-        if self.count_tokens(content) > self.TOKENS_LIMIT:
+        if self.count_tokens(content) > self.input_limit:
             logger.info(
                 "The supplied data exceeds the token limit of {num} tokens. The data will be truncated.".format(
-                    num=self.TOKENS_LIMIT
+                    num=self.input_limit
                 )
             )
             content = self.PROMPT_TEMPLATE["user"].format(question=question, data=data)
@@ -58,12 +64,12 @@ class ChatbotClient:
                 low=0,
                 high=len(content),
                 fn=lambda idx: self.count_tokens(content[:idx]),
-                target=self.TOKENS_LIMIT,
+                target=self.input_limit,
             )
             content = content[:truncate_idx]
 
         return self.openai_client.chat.completions.create(
-            model=os.getenv("CHATBOT_MODEL"),
+            model=self.model,
             messages=[
                 {
                     "role": "system",
