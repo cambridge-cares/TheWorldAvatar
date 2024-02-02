@@ -8,6 +8,7 @@ import numpy as np
 import os
 import glob
 import logging
+import copy
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -82,12 +83,15 @@ class SubunitBuilder:
 
         return lfr_atoms
 
-    def substitute_atom_properties_2(self, lfr_atoms, x_atom_uuid_to_remove, reference_atom_data, x_outer_uuid, target_atom_uuid_1, target_atom_uuid_2, neighboor_atoms, core_json_path, ref_atom_uuid):
+    def substitute_atom_properties_2(self, lfr_json_file_path, x_atom_uuid_to_remove, reference_atom_data, x_outer_uuid, target_atom_uuid_1, target_atom_uuid_2, neighboor_atoms, core_json_path, ref_atom_uuid):
+        
+        lfr_atoms = self.read_json_file(lfr_json_file_path)
+        
         # 1. Shift all atoms to maintain relative positions
         neighboor__atom_uuid_1 = neighboor_atoms[0]
         neighboor__atom_uuid_2 = neighboor_atoms[1]
         core_atoms = self.read_json_file(core_json_path)
-     
+        
         old_coordinates = np.array([
             lfr_atoms[x_atom_uuid_to_remove]['coordinate_x'],
             lfr_atoms[x_atom_uuid_to_remove]['coordinate_y'],
@@ -122,48 +126,12 @@ class SubunitBuilder:
                 rotated_coords = rotation_matrix.dot(atom_coords - new_coordinates) + new_coordinates
                 atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z'] = rotated_coords
         
-        #################
-        mid_point_coords = (np.array([
-            lfr_atoms[target_atom_uuid_1]['coordinate_x'],
-            lfr_atoms[target_atom_uuid_1]['coordinate_y'],
-            lfr_atoms[target_atom_uuid_1]['coordinate_z']]) + np.array([
-            lfr_atoms[target_atom_uuid_2]['coordinate_x'],
-            lfr_atoms[target_atom_uuid_2]['coordinate_y'],
-            lfr_atoms[target_atom_uuid_2]['coordinate_z']])) / 2
-
-        # Define the triangles
-        tri_1_coord_1 = np.array([core_atoms[neighboor__atom_uuid_1]['coordinate_x'], core_atoms[neighboor__atom_uuid_1]['coordinate_y'], core_atoms[neighboor__atom_uuid_1]['coordinate_z']])
-        tri_1_coord_2 = np.array([core_atoms[neighboor__atom_uuid_2]['coordinate_x'], core_atoms[neighboor__atom_uuid_2]['coordinate_y'], core_atoms[neighboor__atom_uuid_2]['coordinate_z']])
-        tri_1_coord_3 = np.array([reference_atom_data['coordinate_x'], reference_atom_data['coordinate_y'], reference_atom_data['coordinate_z']])
-
-        tri_2_coord_1 = np.array([lfr_atoms[target_atom_uuid_1]['coordinate_x'], lfr_atoms[target_atom_uuid_1]['coordinate_y'], lfr_atoms[target_atom_uuid_1]['coordinate_z']])
-        tri_2_coord_2 = np.array([lfr_atoms[target_atom_uuid_2]['coordinate_x'], lfr_atoms[target_atom_uuid_2]['coordinate_y'], lfr_atoms[target_atom_uuid_2]['coordinate_z']])
-        tri_2_coord_3 = tri_1_coord_3  # Same as reference_atom_data
-
-        # Calculate normals of both triangles
-        normal_tri_1 = self.find_normal(tri_1_coord_1, tri_1_coord_2, tri_1_coord_3)
-        normal_tri_2 = self.find_normal(tri_2_coord_1, tri_2_coord_2, tri_2_coord_3)
-
-        # Find rotation axis and angle
-        axis = np.cross(normal_tri_2, normal_tri_1)
-        axis = axis / np.linalg.norm(axis)
-        angle = np.arccos(np.dot(normal_tri_2, normal_tri_1))
-
-        # Create and apply rotation matrix
-        rotation_mat = self.rotation_matrix(axis, angle)
-        for uuid, atom_data in lfr_atoms.items():
-            if uuid not in [x_atom_uuid_to_remove, target_atom_uuid_1, target_atom_uuid_2]:  # Exclude these atoms
-                atom_coords = np.array([atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']])
-                rotated_coords = rotation_mat.dot(atom_coords - mid_point_coords) + mid_point_coords
-                atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z'] = rotated_coords
-
-        ##########################
-
+        
         # 4. Substitute the properties of the target atom with those of the reference atom
         for key, value in reference_atom_data.items():
             if key not in ['atom', 'uuid', 'bond']:
                 lfr_atoms[x_atom_uuid_to_remove][key] = value
-        
+
         # 5. Save/update the bonds
         if 'bond' in reference_atom_data:
             if 'bond' not in lfr_atoms[x_atom_uuid_to_remove]:
@@ -229,22 +197,46 @@ class SubunitBuilder:
         for atom_data in lfr_atoms.values():
             if 'bond' in atom_data:
                 atom_data['bond'] = [bond for bond in atom_data['bond'] if bond['to_atom'] != x_atom_uuid_to_remove]
-  
-        self.write_json_file(core_json_path, core_atoms)
         
-        return lfr_atoms
+        lfr_atoms_copy = copy.deepcopy(lfr_atoms)
+        print('------------------BEFORE-ROTATION-----------------')
+        print(lfr_atoms_copy)
+        print('------------------BEFORE-ROTATION-----------------')
+        target_atom_1 = lfr_atoms_copy[target_atom_uuid_1]
+        target_atom_2 = lfr_atoms_copy[target_atom_uuid_2]
+        neighboor_atom_1 = core_atoms[neighboor__atom_uuid_1]
+        neighboor_atom_2 = core_atoms[neighboor__atom_uuid_2]
+        x_outer_atom = lfr_atoms_copy[x_outer_uuid]
 
-    def find_normal(self, p1, p2, p3):
-        """Find the normal of the plane defined by points p1, p2, and p3."""
-        v1 = p2 - p1
-        v2 = p3 - p1
-        normal = np.cross(v1, v2)
-        return normal / np.linalg.norm(normal)
-
-    def rotation_matrix(self, axis, theta):
-        """Create a rotation matrix to rotate theta radians around axis."""
-        K = np.array([[0, -axis[2], axis[1]], [axis[2], 0, -axis[0]], [-axis[1], axis[0], 0]])
-        return np.eye(3) + np.sin(theta) * K + (1 - np.cos(theta)) * K.dot(K)
+        midpoint = ((target_atom_1['coordinate_x'] + target_atom_2['coordinate_x']) / 2,
+                    (target_atom_1['coordinate_y'] + target_atom_2['coordinate_y']) / 2,
+                    (target_atom_1['coordinate_z'] + target_atom_2['coordinate_z']) / 2)
+        points = []
+        points = self.cone_function(target_atom_1, midpoint, x_outer_atom)
+        
+        angle_of_rotation = None
+        closest_point, angle_of_rotation = self.find_closest_point_and_angle(points, neighboor_atom_1, target_atom_1, target_atom_2, neighboor_atom_2, midpoint)
+        #print(closest_point)
+        print(angle_of_rotation)
+        rotated_atoms = self.rotate_atoms_2(lfr_atoms_copy, midpoint, x_outer_atom, angle_of_rotation)
+        #print(rotated_atoms)
+        
+        for atom_uuid, updated_atom_info in rotated_atoms.items():
+            # Check if this atom exists in the original dictionary
+            if atom_uuid in lfr_atoms_copy:
+                # Update only the coordinate values for this atom
+                lfr_atoms_copy[atom_uuid]['coordinate_x'] = updated_atom_info.get('coordinate_x', lfr_atoms[atom_uuid]['coordinate_x'])
+                lfr_atoms_copy[atom_uuid]['coordinate_y'] = updated_atom_info.get('coordinate_y', lfr_atoms[atom_uuid]['coordinate_y'])
+                lfr_atoms_copy[atom_uuid]['coordinate_z'] = updated_atom_info.get('coordinate_z', lfr_atoms[atom_uuid]['coordinate_z'])
+            else:
+                # If the atom does not exist in the original dictionary, add it (optional, based on your needs)
+                lfr_atoms_copy[atom_uuid] = updated_atom_info
+        
+        self.write_json_file(core_json_path, core_atoms)
+        self.write_json_file(lfr_json_file_path, lfr_atoms_copy)
+        print('------------------AFTER-ROTATION-----------------')
+        print(lfr_atoms_copy)
+        print('------------------AFTER-ROTATION-----------------')
 
     def find_bs_and_update(self, json_file_path, ref_atom_uuid, ref_atom_data, bs_type, core_json_path):
         target_atoms_scenario_1 = {
@@ -301,25 +293,23 @@ class SubunitBuilder:
         # Return the modified atoms data
         return lfr_atoms
   
-    def process_scenario_2(self, json_file_path, ref_atom_uuid, ref_atom_data, target_atoms, core_json_path):
+    def process_scenario_2(self, lfr_json_file_path, ref_atom_uuid, ref_atom_data, target_atoms, core_json_path):
         for target_atom_pair in target_atoms:
             try:
                 target_atom_1, target_atom_2 = target_atom_pair
                 #print("Processing with target atoms:", target_atom_1, target_atom_2)
 
                 neighboor_atoms = self.find_neigboors(core_json_path, ref_atom_uuid)
-                lfr_atoms = self.read_json_file(json_file_path)
-
+                lfr_atoms_from_file = self.read_json_file(lfr_json_file_path)
+                
                 # Find target atoms
-                x_atom_uuid_to_remove, target_atom_uuid_1, target_atom_uuid_2, x_outer_uuid = self.find_target_atoms(lfr_atoms, target_atom_1, target_atom_2)
-                #print('TARGET ATOM UUID1:', target_atom_uuid_1)
-                #print('TARGET ATOM UUID2:', target_atom_uuid_2)
+                x_atom_uuid_to_remove, target_atom_uuid_1, target_atom_uuid_2, x_outer_uuid = self.find_target_atoms(lfr_atoms_from_file, target_atom_1, target_atom_2)
 
                 # Process if all required atoms are found
                 if x_atom_uuid_to_remove is not None and target_atom_uuid_1 is not None and target_atom_uuid_2 is not None:
-                    self.process_atoms_2(lfr_atoms, target_atom_uuid_1, target_atom_uuid_2, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove, neighboor_atoms, core_json_path)
-                    self.write_json_file(json_file_path, lfr_atoms)
-                    logging.info(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
+                    self.substitute_atom_properties_2(lfr_json_file_path, x_atom_uuid_to_remove, ref_atom_data, x_outer_uuid, target_atom_uuid_1, target_atom_uuid_2, neighboor_atoms, core_json_path, ref_atom_uuid)
+                    #self.process_atoms_2(lfr_json_file_path, target_atom_uuid_1, target_atom_uuid_2, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove, neighboor_atoms, core_json_path)
+                    logging.info(f"Updated {lfr_json_file_path} with reference atom {ref_atom_uuid}")
                     break  # Exit loop if processing is successful
                 else:
                     logging.warning("Required atoms not found for current pair, trying next pair if available.")
@@ -328,12 +318,224 @@ class SubunitBuilder:
                 logging.error(f"An error occurred with pair {target_atom_1}, {target_atom_2}: {e}")
                 # Continue to the next pair
           
-    def process_atoms_2(self, lfr_atoms, target_atom_uuid_1, target_atom_uuid_2, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove, neighboor_atoms, core_json_path):
+ 
+    def rotate_atoms_2(self, lfr_atoms_new, midpoint, x_outer_atom, angle_of_rotation_degrees):
+        if angle_of_rotation_degrees is None:
+        # Handle the None case appropriately, e.g., return the atoms unmodified or raise a more specific error
+            raise ValueError("angle_of_rotation_degrees cannot be None")
+        
+        midpoint_pos = np.array(midpoint)
+        x_outer_pos = np.array([x_outer_atom['coordinate_x'], x_outer_atom['coordinate_y'], x_outer_atom['coordinate_z']])
 
-        lfr_atoms = self.substitute_atom_properties_2(lfr_atoms, x_atom_uuid_to_remove, ref_atom_data, x_outer_uuid, target_atom_uuid_1, target_atom_uuid_2, neighboor_atoms, core_json_path, ref_atom_uuid)
+        # Calculate the virtual axis (unit vector) for rotation
+        rotation_axis = x_outer_pos - midpoint_pos
+        rotation_axis /= np.linalg.norm(rotation_axis)
+
+        # Convert angle from degrees to radians
+        angle = np.deg2rad(angle_of_rotation_degrees)
+
+        # Define the rotation matrix around the axis (Rodrigues' rotation formula)
+        def rotation_matrix(axis, theta):
+            axis = axis / np.sqrt(np.dot(axis, axis))
+            a = np.cos(theta / 2.0)
+            b, c, d = -axis * np.sin(theta / 2.0)
+            aa, bb, cc, dd = a * a, b * b, c * c, d * d
+            bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
+            return np.array([[aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
+                            [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
+                            [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc]])
+
+        # Rotate all atoms in lfr_atoms_new
+        rotated_atoms = {}
+        for atom_uuid, atom_data in lfr_atoms_new.items():
+            atom_pos = np.array([atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']])
+            # Shift atom position relative to midpoint for rotation
+            atom_pos -= midpoint_pos
+            # Apply rotation
+            atom_pos_rotated = np.dot(rotation_matrix(rotation_axis, angle), atom_pos)
+            # Shift back after rotation
+            atom_pos_rotated += midpoint_pos
+            # Update atom data with new coordinates
+            rotated_atoms[atom_uuid] = {'coordinate_x': atom_pos_rotated[0], 'coordinate_y': atom_pos_rotated[1], 'coordinate_z': atom_pos_rotated[2]}
+
+        return rotated_atoms
+
+
+
+    def find_closest_point_and_angle(self, points, neighbor_atom_1, target_atom_1, target_atom_2, neighbor_atom_2, midpoint):
+
+        # Convert atoms' coordinates to numpy arrays
+        neighbor_atom_1_pos = np.array([neighbor_atom_1['coordinate_x'], neighbor_atom_1['coordinate_y'], neighbor_atom_1['coordinate_z']])
+        target_atom_1_pos = np.array([target_atom_1['coordinate_x'], target_atom_1['coordinate_y'], target_atom_1['coordinate_z']])
+        target_atom_2_pos = np.array([target_atom_2['coordinate_x'], target_atom_2['coordinate_y'], target_atom_2['coordinate_z']])
+        neighbor_atom_2_pos = np.array([neighbor_atom_2['coordinate_x'], neighbor_atom_2['coordinate_y'], neighbor_atom_2['coordinate_z']])
+        midpoint = np.array(midpoint)
+        #midpoint_pos = np.array([midpoint['coordinate_x'], midpoint['coordinate_y'], midpoint['coordinate_z']])
         
-        return lfr_atoms  
+        closest_point = None
+        min_dihedral_diff = np.inf
+        angle_of_rotation_degrees = None
         
+        point_prime = None
+        
+        for point in points:
+            point_prime = 2 * midpoint - point
+
+            # Calculate vectors
+            v1 = point - point_prime
+            v2 = neighbor_atom_1_pos - point
+            v3 = neighbor_atom_2_pos - neighbor_atom_1_pos
+            
+            # Calculate dihedral angle
+            dihedral_angle = self.calculate_dihedral_angle(v1, v2, v3)
+            dihedral_angle_long = self.calculate_dihedral_angle(v1, v2, v3)
+            
+           
+            # Calculate the difference from zero (target dihedral angle)
+            dihedral_diff = np.abs(np.degrees(dihedral_angle_long))
+
+            if dihedral_diff < min_dihedral_diff:
+                min_dihedral_diff = dihedral_diff
+                closest_point = point
+        
+        print (min_dihedral_diff)    
+        if closest_point is not None:
+            
+            vec_a = midpoint - target_atom_1_pos
+            vec_b = closest_point - midpoint
+
+            cos_theta = np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))
+            angle_of_rotation_radians = np.arccos(np.clip(cos_theta, -1.0, 1.0))  # Clipping for numerical stability
+            angle_of_rotation_degrees = np.degrees(angle_of_rotation_radians)
+        else:
+            angle_of_rotation_degrees = 0  # or appropriate fallback
+        
+        print(angle_of_rotation_degrees)    
+        return closest_point, angle_of_rotation_degrees
+
+
+    def calculate_dihedral_angle(self, v1, v2, v3):
+        n1 = np.cross(v1, v2)
+        n2 = np.cross(v2, v3)
+        n1n2_cross = np.cross(n1, n2)
+        angle = np.arctan2(np.linalg.norm(v2) * np.dot(v2, n1n2_cross) / np.linalg.norm(v2), np.dot(n1, n2))
+        return angle
+    
+    def calculate_dihedral_angle_long(self, v1, v2, v3):
+        # Normal of plane formed by v1, v2
+        n1 = np.cross(v1, v2)
+        n1 /= np.linalg.norm(n1)
+        
+        # Normal of plane formed by v2, v3
+        n2 = np.cross(v2, v3)
+        n2 /= np.linalg.norm(n2)
+        
+        # Unit vector orthogonal to v2
+        u = v2 / np.linalg.norm(v2)
+        
+        # Angle between n1 and n2
+        x = np.dot(n1, n2)
+        y = np.dot(np.cross(n1, n2), u)
+        
+        return np.arctan2(y, x)
+    
+    def cone_function(self, target_atom_1, midpoint, x_outer_atom):
+        # Convert dictionary values to numpy arrays for easier calculations
+        target_atom_1_pos = np.array([target_atom_1['coordinate_x'], target_atom_1['coordinate_y'], target_atom_1['coordinate_z']])
+        midpoint_pos = np.array(midpoint)
+        x_outer_pos = np.array([x_outer_atom['coordinate_x'], x_outer_atom['coordinate_y'], x_outer_atom['coordinate_z']])
+        # Calculate the radius of the cone's base
+        radius = np.linalg.norm(target_atom_1_pos - midpoint_pos)
+
+        # Calculate the normal vector of the cone's base
+        cone_axis = midpoint_pos - x_outer_pos
+        cone_axis_normalized = cone_axis / np.linalg.norm(cone_axis)
+        
+        # Initialize the first point on the circle
+        first_point = target_atom_1_pos - midpoint_pos
+        first_point_normalized = first_point / np.linalg.norm(first_point)
+        
+        # Calculate points around the base of the cone
+        degrees = 5
+        angle_rad = np.deg2rad(degrees)
+        points = []
+        for i in range(0, 360, degrees):
+            # Calculate rotation matrix around the cone axis
+            cos_angle = np.cos(angle_rad * i)
+            sin_angle = np.sin(angle_rad * i)
+            rotation_matrix = np.array([
+                [cos_angle + cone_axis_normalized[0]**2 * (1 - cos_angle), cone_axis_normalized[0] * cone_axis_normalized[1] * (1 - cos_angle) - cone_axis_normalized[2] * sin_angle, cone_axis_normalized[0] * cone_axis_normalized[2] * (1 - cos_angle) + cone_axis_normalized[1] * sin_angle],
+                [cone_axis_normalized[1] * cone_axis_normalized[0] * (1 - cos_angle) + cone_axis_normalized[2] * sin_angle, cos_angle + cone_axis_normalized[1]**2 * (1 - cos_angle), cone_axis_normalized[1] * cone_axis_normalized[2] * (1 - cos_angle) - cone_axis_normalized[0] * sin_angle],
+                [cone_axis_normalized[2] * cone_axis_normalized[0] * (1 - cos_angle) - cone_axis_normalized[1] * sin_angle, cone_axis_normalized[2] * cone_axis_normalized[1] * (1 - cos_angle) + cone_axis_normalized[0] * sin_angle, cos_angle + cone_axis_normalized[2]**2 * (1 - cos_angle)]
+            ])
+            
+            # Rotate the point
+            new_point = np.dot(rotation_matrix, first_point_normalized) * radius + midpoint_pos
+            points.append(new_point)
+        
+        # Return the set of XYZ coordinates
+        return points
+
+    def rotate_point_around_point(self, point, center, angle, axis='z'):
+        # Move point to origin
+        p = np.array(point) - np.array(center)
+        # Rotation matrix around the Z-axis
+        if axis == 'z':
+            R = np.array([[np.cos(angle), -np.sin(angle), 0],
+                        [np.sin(angle),  np.cos(angle), 0],
+                        [0,              0,             1]])
+        elif axis == 'y':
+            R = np.array([[np.cos(angle), 0, np.sin(angle)],
+                        [0,             1, 0            ],
+                        [-np.sin(angle),0, np.cos(angle)]])
+        elif axis == 'x':
+            R = np.array([[1, 0,              0             ],
+                        [0, np.cos(angle), -np.sin(angle)],
+                        [0, np.sin(angle),  np.cos(angle)]])
+        else:
+            raise ValueError("Invalid rotation axis")
+        # Rotate and move back
+        return np.dot(R, p) + np.array(center)
+
+    def distance(self, point1, point2):
+        
+        return np.sqrt(np.sum((np.array(point1) - np.array(point2))**2))
+
+    def minimize_distance_by_rotation(self, lfr_atoms, target_atom_1_uuid, neighboor_atom_1_uuid, midpoint, x_outer_uuid, core_atoms, neighboor_atom_uuid_1, neighboor_atom_uuid_2):
+        
+        target_atom_1 = lfr_atoms[target_atom_1_uuid]
+        x_outer = lfr_atoms[x_outer_uuid]
+        original_distance_to_midpoint = self.distance(target_atom_1['coordinate_x'], midpoint)
+        original_distance_to_x_outer = self.distance(target_atom_1['coordinate_x'], x_outer['coordinate_x'])   
+        neighboor_atom_1 = core_atoms[neighboor_atom_1_uuid]
+        
+        target_atom_1_pos = np.array([target_atom_1['coordinate_x'], target_atom_1['coordinate_y'], target_atom_1['coordinate_z']])
+        neighboor_atom_1_pos = np.array([neighboor_atom_1['coordinate_x'], neighboor_atom_1['coordinate_y'], neighboor_atom_1['coordinate_z']])
+        original_distance = np.linalg.norm(target_atom_1_pos - neighboor_atom_1_pos)
+                
+        best_distance = np.inf  # Initialize with infinity to ensure any first distance is smaller
+        best_position = start_position  # Initialize with the start position
+        best_angle = 0
+        for angle in np.linspace(0, 2 * np.pi, 360, endpoint=False):  # Rotate in 1 degree increments
+            rotated_position = self.rotate_point_around_point(start_position, midpoint, angle, axis='z')  # Ensure correct axis
+            current_distance = np.linalg.norm(rotated_position - neighboor_atom_1_pos)
+            if current_distance < best_distance:
+                best_distance = current_distance
+                best_position = rotated_position
+                best_angle = angle
+            
+        # Update target_atom_1 position
+        lfr_atoms[target_atom_1_uuid]['coordinate_x'], lfr_atoms[target_atom_1_uuid]['coordinate_y'], lfr_atoms[target_atom_1_uuid]['coordinate_z'] = best_position
+        
+        # Rotate other atoms except x_outer_uuid
+        for uuid, atom in lfr_atoms.items():
+            if uuid != target_atom_1_uuid and uuid != x_outer_uuid:
+                atom_position = (atom['coordinate_x'], atom['coordinate_y'], atom['coordinate_z'])
+                rotated_position = self.rotate_point_around_point(atom_position, midpoint, best_angle)
+                lfr_atoms[uuid]['coordinate_x'], lfr_atoms[uuid]['coordinate_y'], lfr_atoms[uuid]['coordinate_z'] = rotated_position
+        return lfr_atoms
+
+    
     
     def find_neigboors(self, core_json_path, ref_atom_uuid):
         neigboor_atoms = []

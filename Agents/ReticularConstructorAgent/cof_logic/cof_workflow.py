@@ -15,6 +15,7 @@ from cof_logic.cof_dftb import skf_files
 from cof_logic.subunit_builder.subunit_operations import SubunitOperations
 
 class COFProcessor:
+    
     def __init__(self, script_location=None):
         """
         Initializes the COFProcessor class.
