@@ -210,7 +210,7 @@ class COFProcessor:
         
         #'cpt-[(6-planar)x1(2-linear)x3(L:2-linear)x6]n',
         #'ceq-[(6-prism)x1(3-planar)x2(L:2-linear)x6]n',
-                  
+  
         lfr_set_0 = ['LFR-16', 'LFR-17', 'LFR-19'] # branching linkages, reactions with one precursor
         lfr_set_1 = ['LFR-20','LFR-21'] #symmetrical linear linages 
         lfr_set_2 = ['LFR-6','LFR-12','LFR-13','LFR-18'] # single bond

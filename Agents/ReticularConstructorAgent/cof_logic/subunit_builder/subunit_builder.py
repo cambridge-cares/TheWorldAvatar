@@ -199,9 +199,9 @@ class SubunitBuilder:
                 atom_data['bond'] = [bond for bond in atom_data['bond'] if bond['to_atom'] != x_atom_uuid_to_remove]
         
         lfr_atoms_copy = copy.deepcopy(lfr_atoms)
-        print('------------------BEFORE-ROTATION-----------------')
-        print(lfr_atoms_copy)
-        print('------------------BEFORE-ROTATION-----------------')
+        #print('------------------BEFORE-ROTATION-----------------')
+        #print(lfr_atoms_copy)
+        #print('------------------BEFORE-ROTATION-----------------')
         target_atom_1 = lfr_atoms_copy[target_atom_uuid_1]
         target_atom_2 = lfr_atoms_copy[target_atom_uuid_2]
         neighboor_atom_1 = core_atoms[neighboor__atom_uuid_1]
@@ -216,8 +216,6 @@ class SubunitBuilder:
         
         angle_of_rotation = None
         closest_point, angle_of_rotation = self.find_closest_point_and_angle(points, neighboor_atom_1, target_atom_1, target_atom_2, neighboor_atom_2, midpoint)
-        #print(closest_point)
-        print(angle_of_rotation)
         rotated_atoms = self.rotate_atoms_2(lfr_atoms_copy, midpoint, x_outer_atom, angle_of_rotation)
         #print(rotated_atoms)
         
@@ -234,9 +232,9 @@ class SubunitBuilder:
         
         self.write_json_file(core_json_path, core_atoms)
         self.write_json_file(lfr_json_file_path, lfr_atoms_copy)
-        print('------------------AFTER-ROTATION-----------------')
-        print(lfr_atoms_copy)
-        print('------------------AFTER-ROTATION-----------------')
+        #print('------------------AFTER-ROTATION-----------------')
+        #print(lfr_atoms_copy)
+        #print('------------------AFTER-ROTATION-----------------')
 
     def find_bs_and_update(self, json_file_path, ref_atom_uuid, ref_atom_data, bs_type, core_json_path):
         target_atoms_scenario_1 = {
@@ -318,7 +316,6 @@ class SubunitBuilder:
                 logging.error(f"An error occurred with pair {target_atom_1}, {target_atom_2}: {e}")
                 # Continue to the next pair
           
- 
     def rotate_atoms_2(self, lfr_atoms_new, midpoint, x_outer_atom, angle_of_rotation_degrees):
         if angle_of_rotation_degrees is None:
         # Handle the None case appropriately, e.g., return the atoms unmodified or raise a more specific error
@@ -335,6 +332,7 @@ class SubunitBuilder:
         angle = np.deg2rad(angle_of_rotation_degrees)
 
         # Define the rotation matrix around the axis (Rodrigues' rotation formula)
+        
         def rotation_matrix(axis, theta):
             axis = axis / np.sqrt(np.dot(axis, axis))
             a = np.cos(theta / 2.0)
@@ -360,8 +358,6 @@ class SubunitBuilder:
 
         return rotated_atoms
 
-
-
     def find_closest_point_and_angle(self, points, neighbor_atom_1, target_atom_1, target_atom_2, neighbor_atom_2, midpoint):
 
         # Convert atoms' coordinates to numpy arrays
@@ -371,50 +367,88 @@ class SubunitBuilder:
         neighbor_atom_2_pos = np.array([neighbor_atom_2['coordinate_x'], neighbor_atom_2['coordinate_y'], neighbor_atom_2['coordinate_z']])
         midpoint = np.array(midpoint)
         #midpoint_pos = np.array([midpoint['coordinate_x'], midpoint['coordinate_y'], midpoint['coordinate_z']])
+        midpoint_2 = (neighbor_atom_1_pos + neighbor_atom_2_pos) / 2
         
         closest_point = None
         min_dihedral_diff = np.inf
         angle_of_rotation_degrees = None
         
         point_prime = None
+
+        # Calculate vectors
+        v1a = midpoint - target_atom_1_pos
+        v2a = midpoint_2 - midpoint
+        v3a = neighbor_atom_1_pos - midpoint_2
         
+        dihedral_angle_longa = self.calculate_dihedral_angle(v1a, v2a, v3a)
+        dihedral_angle_long_def = np.abs(np.degrees(dihedral_angle_longa))
+        #print(dihedral_angle_long_def)  
+              
         for point in points:
-            point_prime = 2 * midpoint - point
+            #point_prime = 2 * midpoint - point
 
             # Calculate vectors
-            v1 = point - point_prime
-            v2 = neighbor_atom_1_pos - point
-            v3 = neighbor_atom_2_pos - neighbor_atom_1_pos
+            v1 = midpoint - point
+            v2 = midpoint_2 - midpoint
+            v3 = neighbor_atom_1_pos - midpoint_2
             
             # Calculate dihedral angle
             dihedral_angle = self.calculate_dihedral_angle(v1, v2, v3)
             dihedral_angle_long = self.calculate_dihedral_angle(v1, v2, v3)
-            
+            #print(dihedral_angle_long)
            
             # Calculate the difference from zero (target dihedral angle)
             dihedral_diff = np.abs(np.degrees(dihedral_angle_long))
-
+            #print(dihedral_diff)
+            
             if dihedral_diff < min_dihedral_diff:
                 min_dihedral_diff = dihedral_diff
                 closest_point = point
         
-        print (min_dihedral_diff)    
+        #print(min_dihedral_diff)    
         if closest_point is not None:
             
             vec_a = midpoint - target_atom_1_pos
             vec_b = closest_point - midpoint
-
-            cos_theta = np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))
-            angle_of_rotation_radians = np.arccos(np.clip(cos_theta, -1.0, 1.0))  # Clipping for numerical stability
+            
+            normal_vector = np.cross(vec_a, vec_b)
+            y = np.linalg.norm(np.cross(vec_a, vec_b))
+            x = np.dot(vec_a, vec_b)
+            angle_of_rotation_radians = np.arctan2(y, x)
             angle_of_rotation_degrees = np.degrees(angle_of_rotation_radians)
+            direction_vector = midpoint - np.array([0, 0, 0])
+            sign_indicator = np.dot(normal_vector, direction_vector)
+            if sign_indicator < 0:
+                angle_of_rotation_degrees = -angle_of_rotation_degrees
+            #cos_theta = np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))
+            #angle_of_rotation_radians = np.arccos(np.clip(cos_theta, -1.0, 1.0))  # Clipping for numerical stability
+            #angle_of_rotation_degrees = np.degrees(angle_of_rotation_radians)
+        
+        
         else:
             angle_of_rotation_degrees = 0  # or appropriate fallback
         
-        print(angle_of_rotation_degrees)    
+        #print(angle_of_rotation_degrees)    
         return closest_point, angle_of_rotation_degrees
 
-
     def calculate_dihedral_angle(self, v1, v2, v3):
+        n1 = np.cross(v1, v2)
+        n2 = np.cross(v2, v3)
+        n1n2_cross = np.cross(n1, n2)
+        
+        # Ensure the norm of v2 is not zero to avoid division by zero
+        v2_norm = np.linalg.norm(v2)
+        if v2_norm == 0:
+            # Return None or an appropriate value indicating an undefined angle
+            return None
+        
+        # Calculate the angle
+        # Adjusted calculation to prevent division by zero if v2_norm is zero
+        angle = np.arctan2(np.dot(v2, n1n2_cross) / v2_norm, np.dot(n1, n2))
+        
+        return angle
+
+    def calculate_dihedral_angleX(self, v1, v2, v3):
         n1 = np.cross(v1, v2)
         n2 = np.cross(v2, v3)
         n1n2_cross = np.cross(n1, n2)
@@ -422,18 +456,28 @@ class SubunitBuilder:
         return angle
     
     def calculate_dihedral_angle_long(self, v1, v2, v3):
-        # Normal of plane formed by v1, v2
+        # Calculate normals
         n1 = np.cross(v1, v2)
-        n1 /= np.linalg.norm(n1)
-        
-        # Normal of plane formed by v2, v3
         n2 = np.cross(v2, v3)
-        n2 /= np.linalg.norm(n2)
         
-        # Unit vector orthogonal to v2
-        u = v2 / np.linalg.norm(v2)
+        # Check for zero magnitude to avoid division by zero
+        n1_norm = np.linalg.norm(n1)
+        n2_norm = np.linalg.norm(n2)
+        v2_norm = np.linalg.norm(v2)
+
+        if n1_norm == 0 or n2_norm == 0 or v2_norm == 0:
+            # Handle the case where the angle cannot be defined due to zero-length vectors
+            # Return a default value or raise an error
+            return None  # or raise an Exception, or return a specific value indicating the error
+
+        # Normalize the normals
+        n1 /= n1_norm
+        n2 /= n2_norm
         
-        # Angle between n1 and n2
+        # Normalize vector v2 to get the unit vector
+        u = v2 / v2_norm
+        
+        # Calculate the angle between n1 and n2
         x = np.dot(n1, n2)
         y = np.dot(np.cross(n1, n2), u)
         
@@ -499,43 +543,7 @@ class SubunitBuilder:
 
     def distance(self, point1, point2):
         
-        return np.sqrt(np.sum((np.array(point1) - np.array(point2))**2))
-
-    def minimize_distance_by_rotation(self, lfr_atoms, target_atom_1_uuid, neighboor_atom_1_uuid, midpoint, x_outer_uuid, core_atoms, neighboor_atom_uuid_1, neighboor_atom_uuid_2):
-        
-        target_atom_1 = lfr_atoms[target_atom_1_uuid]
-        x_outer = lfr_atoms[x_outer_uuid]
-        original_distance_to_midpoint = self.distance(target_atom_1['coordinate_x'], midpoint)
-        original_distance_to_x_outer = self.distance(target_atom_1['coordinate_x'], x_outer['coordinate_x'])   
-        neighboor_atom_1 = core_atoms[neighboor_atom_1_uuid]
-        
-        target_atom_1_pos = np.array([target_atom_1['coordinate_x'], target_atom_1['coordinate_y'], target_atom_1['coordinate_z']])
-        neighboor_atom_1_pos = np.array([neighboor_atom_1['coordinate_x'], neighboor_atom_1['coordinate_y'], neighboor_atom_1['coordinate_z']])
-        original_distance = np.linalg.norm(target_atom_1_pos - neighboor_atom_1_pos)
-                
-        best_distance = np.inf  # Initialize with infinity to ensure any first distance is smaller
-        best_position = start_position  # Initialize with the start position
-        best_angle = 0
-        for angle in np.linspace(0, 2 * np.pi, 360, endpoint=False):  # Rotate in 1 degree increments
-            rotated_position = self.rotate_point_around_point(start_position, midpoint, angle, axis='z')  # Ensure correct axis
-            current_distance = np.linalg.norm(rotated_position - neighboor_atom_1_pos)
-            if current_distance < best_distance:
-                best_distance = current_distance
-                best_position = rotated_position
-                best_angle = angle
-            
-        # Update target_atom_1 position
-        lfr_atoms[target_atom_1_uuid]['coordinate_x'], lfr_atoms[target_atom_1_uuid]['coordinate_y'], lfr_atoms[target_atom_1_uuid]['coordinate_z'] = best_position
-        
-        # Rotate other atoms except x_outer_uuid
-        for uuid, atom in lfr_atoms.items():
-            if uuid != target_atom_1_uuid and uuid != x_outer_uuid:
-                atom_position = (atom['coordinate_x'], atom['coordinate_y'], atom['coordinate_z'])
-                rotated_position = self.rotate_point_around_point(atom_position, midpoint, best_angle)
-                lfr_atoms[uuid]['coordinate_x'], lfr_atoms[uuid]['coordinate_y'], lfr_atoms[uuid]['coordinate_z'] = rotated_position
-        return lfr_atoms
-
-    
+        return np.sqrt(np.sum((np.array(point1) - np.array(point2))**2))  
     
     def find_neigboors(self, core_json_path, ref_atom_uuid):
         neigboor_atoms = []

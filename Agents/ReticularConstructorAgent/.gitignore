@@ -42,6 +42,7 @@ __pycache__/
 # Ignore Data directory
 autografs/*
 Data/*
+Sets/*
 Generated_COFs/*
 Outdated_Algorithms/*
 myenv/*
