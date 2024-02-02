@@ -21,14 +21,14 @@ import uk.ac.cam.cares.jps.network.route.VertexNetworkSource;
 
 public class ToiletInfoNetworkSource {
 
-    private static final Logger LOGGER = Logger.getLogger(VertexNetworkSource.class);
+    private static final Logger LOGGER = Logger.getLogger(ToiletInfoNetworkSource.class);
     Connection connection;
 
     // geoserver setting
     String geoServerPath = "geoserver/pirmasens/wfs";
 
     String service = "WFS";
-    String version = "2.0.0";
+    String version = "1.0.0";
     String request = "GetFeature";
     String typeName = "pirmaasens:points_toilet_id";
     String outputFormat = "application/json";
@@ -36,6 +36,7 @@ public class ToiletInfoNetworkSource {
     // feature info agent setting
     String fiaPath = "feature-info-agent/get";
     String toiletIriPrefix = "https://www.theworldavatar.com/kg/ontocitytoilets/poi_";
+    String kgEndpoint = "http://pirmasens-blazegraph:8080/blazegraph/namespace/pirmasens/sparql";
 
     @Inject
     public ToiletInfoNetworkSource(Connection connection) {
@@ -112,6 +113,7 @@ public class ToiletInfoNetworkSource {
         String iri = toiletIriPrefix + toiletId;
         String requestUri = NetworkConfiguration.constructUrlBuilder(fiaPath)
                 .addQueryParameter("iri", iri)
+                .addQueryParameter("endpoint", kgEndpoint)
                 .build().toString();
         LOGGER.info(requestUri);
         return requestUri;

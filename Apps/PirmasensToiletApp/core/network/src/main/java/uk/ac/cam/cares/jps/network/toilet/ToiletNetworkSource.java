@@ -33,7 +33,7 @@ public class ToiletNetworkSource {
     String service = "WFS";
     String version = "2.0.0";
     String request = "GetFeature";
-    String typeName = "pirmaasens:points";
+    String typeName = "pirmasens:points_toilets";
     String outputFormat = "application/json";
 
     // TODO: Generalize amenity filter to work with Building, School, ...

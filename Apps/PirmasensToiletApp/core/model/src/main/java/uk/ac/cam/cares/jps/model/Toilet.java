@@ -12,6 +12,7 @@ public class Toilet {
     String fee;
     String wheelchair;
     String name;
+    String address;
     Price price;
     String openTime;
     String endTime;
@@ -100,5 +101,13 @@ public class Toilet {
 
     public String getEndTime() {
         return endTime;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
