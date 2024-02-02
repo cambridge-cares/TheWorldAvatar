@@ -208,9 +208,9 @@ public class CarparkAgent extends JPSAgent {
         }
 
         LOGGER.info("Setting up the API connector...");
-        APIConnector connector;
+        CarparkAPIConnector connector;
         try {
-            connector = new APIConnector(System.getenv(args[2]));
+            connector = new CarparkAPIConnector(System.getenv(args[2]));
         } catch (IOException e) {
             LOGGER.error(CONNECTOR_ERROR_MSG, e);
             throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
@@ -247,7 +247,7 @@ public class CarparkAgent extends JPSAgent {
         LOGGER.info("Setting up the sparql handler...");
         SparqlHandler sparqlHandler;
         try {
-            sparqlHandler = new SparqlHandler(mappings, kbClient);
+            sparqlHandler = new SparqlHandler(mappings, kbClient, System.getenv(args[0]));
         } catch (Exception e) {
             LOGGER.error("Could not build the QueryBuilder ", e);
             throw new JPSRuntimeException("Could not successfully initialise the QueryBuilder Object", e);
