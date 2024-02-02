@@ -43,8 +43,10 @@ class BuildingIdentificationAgentTest {
         request.put("dbPassword", System.getenv("dbPassword"));
 
         request.put("requestUrl", "/postgis");
-        request.put("table", "public.landplot");
-        request.put("column", "lod1Geometry");
+        request.put("table", "public.carpark");
+        // Uncomment the next two lines for landplots
+        // request.put("column", "lod1Geometry");
+        // request.put("oneToMany", "true");
 
         JSONObject result = new BuildingIdentificationAgentDebug().processRequestParameters(request);
 

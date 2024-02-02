@@ -10,6 +10,10 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
@@ -30,9 +34,10 @@ public class BuildingIdentificationAgent extends JPSAgent {
     public static final String KEY_SCHEMA = "schema";
     public static final String KEY_IRI_PREFIX = "iriPrefix";
     public static final String KEY_ONE_MANY = "oneToMany";
+    public static final String KEY_NEW_TABLE = "newTable";
     private static final String EPSG = "EPSG:";
 
-    private static final Logger LOGGER = LogManager.getLogger(BuildingIdentificationAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(BuildingIdentificationAgentDebug.class);
 
     private static final String COLUMN_NAME = "building_iri";
 
@@ -83,8 +88,12 @@ public class BuildingIdentificationAgent extends JPSAgent {
             // with
             // each user-specified geometry
             boolean oneToMany = false;
-            if (requestParams.has(KEY_ONE_MANY))
+            String newTable = "matched_buildings";
+            if (requestParams.has(KEY_ONE_MANY)) {
                 oneToMany = Boolean.parseBoolean(requestParams.getString(KEY_ONE_MANY));
+                if (requestParams.has(KEY_NEW_TABLE))
+                    newTable = requestParams.getString(KEY_NEW_TABLE);
+            }
 
             // Reset all variables
             // List of coordinates for which the nearest building needs to be identified
@@ -120,7 +129,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 } else {
                     Map<Integer, List<String>> buildings = linkMultipleBuildings(tableName, columnName, dbSrid);
                     numberBuildingsIdentified = buildings.values().stream().mapToInt(p -> p.size()).sum();
-                    updateMultipleBuildings(tableName, buildings);
+                    updateMultipleBuildings(tableName, newTable, buildings);
 
                     JSONArray responseArray = new JSONArray();
 
@@ -201,6 +210,22 @@ public class BuildingIdentificationAgent extends JPSAgent {
      * @param dbSrid: SRID used to store buildings data in citydb schema
      * 
      * @return None
+     * 
+     *         For this function to work efficiently for large numbers of points,
+     *         one must create a spatial index on envelope and
+     *         ST_Boundary(envelope)
+     *         as follows:
+     * 
+     *         create index "envelope_boundary" on citydb.cityobject
+     *         using gist(envelope, public.ST_BOUNDARY(envelope)) ;
+     * 
+     *         Also, the <-> operator should be used to find nearest neighbours.
+     *         Using ST_DISTANCE causes POSTGIS to execute a sequential scan
+     *         on the envelope column of cityobject, which can increase the running
+     *         time by a few orders of magnitude. See
+     *         https://www.crunchydata.com/blog/a-deep-dive-into-postgis-nearest-neighbor-search
+     * 
+     * 
      */
 
     private List<String> linkBuildingsArray(int dbSrid, double maxDistance, List<List<Double>> locations) {
@@ -212,11 +237,21 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
             String sqlTemplate = "select cityobject_genericattrib.strval as iri, "
                     +
-                    "public.ST_DISTANCE(public.ST_Point(%f, %f, %d), envelope) AS dist from citydb.cityobject, citydb.cityobject_genericattrib "
+                    "public.ST_Point(%f, %f, %d) <-> envelope AS dist," +
+
+                    "public.ST_Point(%f, %f, %d) <-> public.ST_Boundary(envelope) AS distBoundary " +
+
+                    " from citydb.cityobject, citydb.cityobject_genericattrib "
                     +
-                    "WHERE \"citydb\".\"cityobject_genericattrib\".\"strval\" IS NOT NULL AND cityobject.objectclass_id = 26 AND cityobject.id = cityobject_genericattrib.cityobject_id "
+                    "WHERE \"cityobject_genericattrib\".\"strval\" IS NOT NULL " +
+
+                    " AND \"cityobject_genericattrib\".\"attrname\" != 'TYPE' " +
+
+                    " AND cityobject.objectclass_id = 26 " +
+
+                    " AND cityobject.id = cityobject_genericattrib.cityobject_id "
                     +
-                    " order by dist " +
+                    " order by dist, distBoundary " +
                     " limit 1;";
 
             for (int i = 0; i < locations.size(); i++) {
@@ -227,16 +262,14 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 ResultSet result = stmt.executeQuery(sqlString);
 
                 while (result.next()) {
-                    // The variable buildingIri actually contains just a UUID instead of the full
-                    // IRI.
-                    String buildingIri = result.getString("iri");
-                    buildings.add(buildingIri);
+                    String buildingId = result.getString("iri");
+                    buildings.add(buildingId);
 
                     Double dist = result.getDouble("dist");
 
                     if (dist > maxDistance)
-                        LOGGER.warn("Nearest footprint for coordinate at index {} is {} meters away",
-                                i, dist);
+                        LOGGER.warn(" The building with UUID {} has been matched to a point {} meters away",
+                                buildingId, dist);
                 }
 
             }
@@ -261,25 +294,68 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     "(SELECT ogc_fid, public.ST_TRANSFORM(\"%s\", %d) AS geometry FROM %s) r1 " +
                     "LEFT JOIN LATERAL ( " +
                     " SELECT cityobject_genericattrib.strval AS iri, " +
-                    " public.ST_DISTANCE(r1.geometry, citydb.cityobject.envelope) AS dist "
-                    +
+                    " r1.geometry <-> cityobject.envelope AS dist, " +
+                    " r1.geometry <-> ST_Boundary(cityobject.envelope) AS distBoundary " +
                     " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
-                    " where citydb.cityobject_genericattrib.strval IS NOT NULL AND  citydb.cityobject.objectclass_id = 26 AND cityobject.id = cityobject_genericattrib.cityobject_id"
-                    +
-                    " ORDER BY dist " +
+                    " where cityobject_genericattrib.strval IS NOT NULL " +
+                    " AND cityobject_genericattrib.attrname != 'TYPE' " +
+                    " AND cityobject.objectclass_id = 26 " +
+                    " AND cityobject.id = cityobject_genericattrib.cityobject_id" +
+                    " ORDER BY dist, distBoundary " +
                     " LIMIT 1 " +
                     " ) r2 ON true;", columnName, srid, tableName);
             ResultSet result = stmt.executeQuery(sqlString);
 
             while (result.next()) {
                 int ogcFid = result.getInt("ogc_fid");
-                String buildingIri = result.getString("iri");
-                buildings.put(ogcFid, buildingIri);
+                String buildingId = result.getString("iri");
+                buildings.put(ogcFid, buildingId);
                 Double dist = result.getDouble("dist");
 
                 if (dist > maxDistance)
-                    LOGGER.warn(" The building with IRI {} has been matched to a point {} meters away",
-                            buildingIri, dist);
+                    LOGGER.warn(" The building with UUID {} has been matched to a point {} meters away",
+                            buildingId, dist);
+
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return buildings;
+
+    }
+
+    private Map<Integer, String> linkBuildingsTableNonPoint(double maxDistance, String tableName, String columnName,
+            Integer srid) {
+
+        Map<Integer, String> buildings = new HashMap<>();
+
+        try (Connection conn = rdbStoreClient.getConnection();
+                Statement stmt = conn.createStatement();) {
+
+            String sqlString = String.format("SELECT ogc_fid, iri, dist FROM " +
+                    "(SELECT ogc_fid, public.ST_TRANSFORM(\"%s\", %d) AS geometry FROM %s) r1 " +
+                    "LEFT JOIN ( " +
+                    " SELECT cityobject_genericattrib.strval AS iri, " +
+                    " envelope AS footprint " +
+                    " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
+                    " WHERE cityobject_genericattrib.attrname != 'TYPE' " +
+                    " AND cityobject.objectclass_id = 26 " +
+                    " AND cityobject.id = cityobject_genericattrib.cityobject_id" +
+                    " ) r2 ON public.ST_Within(r1.geometry, r2.footprint) " +
+                    " WHERE r2.iri IS NOT NULL; ", columnName, srid, tableName);
+            ResultSet result = stmt.executeQuery(sqlString);
+
+            while (result.next()) {
+                int ogcFid = result.getInt("ogc_fid");
+                String buildingId = result.getString("iri");
+                buildings.put(ogcFid, buildingId);
+                Double dist = result.getDouble("dist");
+
+                if (dist > maxDistance)
+                    LOGGER.warn(" The building with UUID {} has been matched to a point {} meters away",
+                            buildingId, dist);
 
             }
 
@@ -303,12 +379,12 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     "(SELECT ogc_fid, public.ST_TRANSFORM(\"%s\", %d) AS geometry FROM %s) r1 " +
                     "LEFT JOIN ( " +
                     " SELECT cityobject_genericattrib.strval AS iri, " +
-                    " cityobject.envelope AS footprint "
-                    +
+                    " envelope AS footprint " +
                     " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
-                    " where cityobject.objectclass_id = 26 AND cityobject.id = cityobject_genericattrib.cityobject_id"
-                    +
-                    " ) r2 ON public.ST_Intersects(r2.footprint, r1.geometry) " +
+                    " WHERE cityobject.objectclass_id = 26 " +
+                    " AND cityobject.id = cityobject_genericattrib.cityobject_id" +
+                    " AND cityobject_genericattrib.attrname != 'TYPE' " +
+                    " ) r2 ON public.ST_Within(r2.footprint, r1.geometry) " +
                     " WHERE r2.iri IS NOT NULL; ", columnName, srid, tableName);
             ResultSet result = stmt.executeQuery(sqlString);
 
@@ -317,8 +393,11 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 String buildingIri = result.getString("iri");
                 if (buildings.containsKey(ogcFid)) {
                     buildings.get(ogcFid).add(buildingIri);
-                } else
-                    buildings.put(ogcFid, Arrays.asList(buildingIri));
+                } else {
+                    List<String> iriList = new ArrayList<>(Arrays.asList(buildingIri));
+                    buildings.put(ogcFid, iriList);
+                }
+
             }
 
         } catch (SQLException e) {
@@ -365,19 +444,19 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
     }
 
-    public void updateMultipleBuildings(String userTable, Map<Integer, List<String>> buildings) {
+    public void updateMultipleBuildings(String userTable, String tableName, Map<Integer, List<String>> buildings) {
 
-        String tableName = "matched_buildings";
+        userTable = userTable.replace(".", "_");
 
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
 
-            String sqlString = String.format(" DROP TABLE IF EXISTS %s ", tableName);
+            String sqlString = String.format(" DROP TABLE IF EXISTS %s ;", tableName);
             stmt.executeUpdate(sqlString);
 
             sqlString = String.format("CREATE TABLE %s (" +
                     " \"%s_ogc_fid\" bigint NOT NULL, " +
-                    " \"%s\" )", tableName, userTable, COLUMN_NAME);
+                    " \"%s\" character varying (10000) ) ;", tableName, userTable, COLUMN_NAME);
 
             stmt.executeUpdate(sqlString);
 
