@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+import java.io.IOException;
 import java.util.*;
 
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -23,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
@@ -35,12 +37,14 @@ public class SparqlHandler {
      */
     private static final String OntoCarpark_NS = "https://www.theworldavatar.com/kg/ontocarpark/";
     private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
+    private static final String ONTOBIM_NS = "https://www.theworldavatar.com/kg/ontobim/";
 
     /**
      * Prefixes
      */
     private static final Prefix PREFIX_ONTOCARPARK = SparqlBuilder.prefix("ontocarpark", iri(OntoCarpark_NS));
     private static final Prefix PREFIX_RDFS = SparqlBuilder.prefix("rdfs", iri(RDFS_NS));
+    private static final Prefix PREFIX_ONTOBIM = SparqlBuilder.prefix("ontobim", iri(ONTOBIM_NS));
 
     /**
      * Relationships
@@ -52,6 +56,7 @@ public class SparqlHandler {
     private static final Iri hasWeekdayRates = PREFIX_ONTOCARPARK.iri("hasWeekdayRates");
     private static final Iri hasSaturdayRates = PREFIX_ONTOCARPARK.iri("hasSaturdayRates");
     private static final Iri hasSundayAndPHRates = PREFIX_ONTOCARPARK.iri("hasSundayAndPHRates");
+    private static final Iri hasFacility = PREFIX_ONTOBIM.iri("hasFacility");
     private static final Iri label = PREFIX_RDFS.iri("label");
 
     /**
@@ -63,14 +68,18 @@ public class SparqlHandler {
     private static final Iri Motorcycles = PREFIX_ONTOCARPARK.iri("Motorcycles");
     private static final Iri HeavyVehicles = PREFIX_ONTOCARPARK.iri("HeavyVehicles");
     
-    String carparkLabel;
-    String agency;
+    private String carparkLabel;
+    private String agency;
+    private String agentProperties;
+
+    BuildingMatchingClient buildingMatchingClient;
 
     private final List<JSONKeyToIRIMapper> mappings;
 
-    public SparqlHandler(List<JSONKeyToIRIMapper> mappings, RemoteStoreClient kbClient) {
+    public SparqlHandler(List<JSONKeyToIRIMapper> mappings, RemoteStoreClient kbClient, String agentProperties) {
         this.kbClient = kbClient;
         this.mappings = mappings;
+        this.agentProperties = agentProperties;
     }
 
     /**
@@ -107,12 +116,14 @@ public class SparqlHandler {
                             if (check == false) {
                                 agency = currentObject.getString("Agency");
                                 carparkLabel = currentObject.getString("Development");
-                                    
+                                String location = currentObject.getString("Location");
+                                String latitude = location.split(" ")[0];
+                                String longitude = location.split(" ")[1];
                                 //Instantiate lot type IRI and link to data IRI
                                 String lotTypeIri = instantiateLotTypeAndAttributesIfNotExist(iri, lotType);
 
                                 //Instantiate carpark IRI and it's attributes
-                                carparkIRI = instantiateCarparkAndAttributesIfnotExist(carparkID, carparkLabel, lotTypeIri, agency);
+                                carparkIRI = instantiateCarparkAndAttributesIfnotExist(carparkID, carparkLabel, lotTypeIri, agency, latitude, longitude);
 
                                 //FuzzyMatching for the carpark rates
                                 Map<String, String> map = new HashMap<>();
@@ -262,7 +273,7 @@ public class SparqlHandler {
      * @param agency agency in charged of the carpark
      * @return carpark IRI
      */
-    private String instantiateCarparkAndAttributesIfnotExist(String carparkID, String carparkLabel, String lotTypeIRI, String agency) {
+    private String instantiateCarparkAndAttributesIfnotExist(String carparkID, String carparkLabel, String lotTypeIRI, String agency, String latitude, String longitude) {
         //check whether a carpark instance has already been created for a particular carpark ID
         Variable carpark = SparqlBuilder.var("carpark");
         SelectQuery selectQuery = Queries.SELECT();
@@ -296,6 +307,9 @@ public class SparqlHandler {
 
             //Instantiate carpark Agency via ontocarpark:hasAgency
             instantiateCarparkAgency(carparkIRI, agency);
+
+            //link carpark to nearest identified building
+            linkBuildingToCarpark(latitude, longitude, carparkIRI);
 
         } catch (Exception e) {
             throw new JPSRuntimeException(e);
@@ -429,6 +443,7 @@ public class SparqlHandler {
         selectQuery.prefix(PREFIX_ONTOCARPARK).select(weekdayRate).where(triplePattern);
         String queriedWeekdayRate;
         InsertDataQuery insertQuery;
+        DeleteDataQuery deleteQuery;
         JSONArray queryResult = kbClient.executeQuery(selectQuery.getQueryString());
         if (queryResult.isEmpty()) {
             //INSERT DATA { <carparkIRI> ontocarpark:hasWeekdayRates "Weekday rates" }
@@ -442,6 +457,11 @@ public class SparqlHandler {
             queriedWeekdayRate = queryResult.getJSONObject(0).getString("weekdayRate");
             //If not equal, update the weekday rates in the triple store
             if (queriedWeekdayRate != map.get("Weekday rates")) {
+                //DELETE DATA { <carparkIRI> ontocarpark:hasWeekdayRates "weekdayRate"}
+                triplePattern = iri(carparkIRI).has(hasWeekdayRates, queriedWeekdayRate);
+                deleteQuery = Queries.DELETE_DATA(triplePattern);
+                deleteQuery.prefix(PREFIX_ONTOCARPARK);
+                kbClient.executeUpdate(deleteQuery.getQueryString());
                 //INSERT DATA { <carparkIRI> ontocarpark:hasWeekdayRates "Weekday rates" }
                 triplePattern = iri(carparkIRI).has(hasWeekdayRates, map.get("Weekday rates"));
                 insertQuery = new InsertDataQuery();
@@ -469,6 +489,11 @@ public class SparqlHandler {
             queriedSaturdayRate = queryResult.getJSONObject(0).getString("saturdayRate");
             //If not equal, update the saturday rates in the triple store
             if (queriedSaturdayRate != map.get("Saturday rates")) {
+                //DELETE DATA { <carparkIRI> ontocarpark:hasSaturdayRates "saturdayRate" }
+                triplePattern = iri(carparkIRI).has(hasSaturdayRates, queriedSaturdayRate);
+                deleteQuery = Queries.DELETE_DATA(triplePattern);
+                deleteQuery.prefix(PREFIX_ONTOCARPARK);
+                kbClient.executeUpdate(deleteQuery.getQueryString());
                 //INSERT DATA { <carparkIRI> ontocarpark:hasSaturdayRates "Saturday rates" }
                 triplePattern = iri(carparkIRI).has(hasSaturdayRates, map.get("Saturday rates"));
                 insertQuery = new InsertDataQuery();
@@ -496,6 +521,11 @@ public class SparqlHandler {
             queriedSundayAndPHRate = queryResult.getJSONObject(0).getString("sundayAndPHRate");
             //If not equal, update the sunday and PH rates in the triple store
             if (queriedSundayAndPHRate != map.get("Sunday and PH rates")) {
+                //DELETE DATA { <carparkIRI> ontocarpark:hasSundayAndPHRates "sundayAndPHRate" }
+                triplePattern = iri(carparkIRI).has(hasSundayAndPHRates, queriedSundayAndPHRate);
+                deleteQuery = Queries.DELETE_DATA(triplePattern);
+                deleteQuery.prefix(PREFIX_ONTOCARPARK);
+                kbClient.executeUpdate(deleteQuery.getQueryString());
                 //INSERT DATA { <carparkIRI> ontocarpark:hasSundayAndPHRates "Sunday and PH rates" }
                 triplePattern = iri(carparkIRI).has(hasSundayAndPHRates, map.get("Sunday and PH rates"));
                 insertQuery = new InsertDataQuery();
@@ -504,6 +534,16 @@ public class SparqlHandler {
                 kbClient.executeUpdate(insertQuery.getQueryString());
             }
         }
+    }
+
+    private void linkBuildingToCarpark(String latitude, String longitude, String carparkIRI) throws IOException {
+        buildingMatchingClient = new BuildingMatchingClient(latitude, longitude, agentProperties);
+        String buildingIRI = buildingMatchingClient.matchCarparkToBuilding();
+        TriplePattern triplePattern = iri(buildingIRI).has(hasFacility, iri(carparkIRI));
+        InsertDataQuery insertQuery = new InsertDataQuery();
+        insertQuery = Queries.INSERT_DATA(triplePattern);
+        insertQuery.prefix(PREFIX_ONTOBIM);
+        kbClient.executeUpdate(insertQuery.getQueryString());
     }
 
     /**
