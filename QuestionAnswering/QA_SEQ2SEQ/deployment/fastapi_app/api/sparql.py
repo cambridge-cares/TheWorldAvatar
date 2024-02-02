@@ -30,7 +30,7 @@ router = APIRouter()
 def get_domain2endpoint():
     return {
         key[len("KG_ENDPOINT_") :].lower(): value
-        for key, value in os.environ
+        for key, value in os.environ.items()
         if key.startswith("KG_ENDPOINT_")
     }
 
