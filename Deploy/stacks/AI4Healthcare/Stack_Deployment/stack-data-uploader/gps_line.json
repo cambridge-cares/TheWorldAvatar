@@ -1,0 +1,40 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "gps_line",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "gps_line",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "geom",
+                    "SEPARATOR": "COMMA"
+                },
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "LONGITUDE",
+                    "Y_POSSIBLE_NAMES": "LATITUDE"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": 
+                {   "name": "gps_line_extended",
+                    "sql": "WITH OrderedPoints AS (SELECT ST_MakePoint(\"LONGITUDE\", \"LATITUDE\") AS geom, \"SPEED\", \"DISTANCE\", \"UTC DATE\", \"UTC TIME\" FROM gps_line ORDER BY \"UTC DATE\", \"UTC TIME\") SELECT ST_MakeLine(geom) OVER (ORDER BY \"UTC DATE\", \"UTC TIME\") AS geom, AVG(\"SPEED\") OVER () AS avg_speed, SUM(\"DISTANCE\") OVER () AS total_distance FROM OrderedPoints",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "LineString",
+                        "srid": 4326
+                    }
+                }
+
+            }
+        }
+    ]
+}
