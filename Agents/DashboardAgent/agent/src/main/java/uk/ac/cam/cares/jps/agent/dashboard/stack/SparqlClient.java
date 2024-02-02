@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlAction;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlQuery;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
-import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.datamodel.Organisation;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Organisation;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import org.w3c.dom.Document;
 

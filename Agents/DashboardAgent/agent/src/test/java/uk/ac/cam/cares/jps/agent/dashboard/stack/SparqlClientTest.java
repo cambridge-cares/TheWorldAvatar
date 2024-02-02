@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.IntegrationTestUtils;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
-import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.datamodel.OrganisationTest;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.OrganisationTest;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlQueryTest;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
