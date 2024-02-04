@@ -11,17 +11,14 @@ import java.util.*;
 //Accessagent needs to be running with proper JSON Routing
 public class StaticInstantiation {
     public static void instantiationMethod(HashMap IRI) {
-
-
         String BASEURI = "https://www.theworldavatar.com/kg/sensorloggerapp/";
         String DEVICEID=IRI.get("deviceID").toString();
-
-
+        
        /**
         * For stack
         */
        // Create context to work in, and also clear any old existing data
-       ModelContext context = new ModelContext("http://sensorlogger-access-agent:8080/sensorlogger");
+       ModelContext context = new ModelContext("http://<STACK-NAME>-access-agent:8080/sensorlogger");
 
         /**
          * Creating instances and randomUUID.
