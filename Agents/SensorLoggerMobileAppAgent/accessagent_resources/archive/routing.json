@@ -1,8 +1,0 @@
-[
-
-	{
-		"label": "test",
-		"queryEndpoint": "http://test-blazegraph:8080/blazegraph/namespace/kb/sparql",
-		"updateEndpoint": "http://test-blazegraph:8080/blazegraph/namespace/kb/sparql"
-	}
-]

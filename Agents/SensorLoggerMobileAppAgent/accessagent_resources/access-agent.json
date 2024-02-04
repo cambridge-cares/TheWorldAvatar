@@ -6,8 +6,8 @@
                 "Image": "ghcr.io/cambridge-cares/access-agent:1.7.0",
                 "Env": [
                     "LOG4J_FORMAT_MSG_NO_LOOKUPS=true",
-                    "STOREROUTER_ENDPOINT=http://sensorlogger-blazegraph:8080/blazegraph/namespace/storerouter/sparql",
-                    "RDB_STOREROUTER_ENDPOINT=http://sensorlogger-blazegraph:8080/blazegraph/namespace/storerouterrdb/sparql"
+                    "STOREROUTER_ENDPOINT=http://<STACK-NAME>-blazegraph:8080/blazegraph/namespace/storerouter/sparql",
+                    "RDB_STOREROUTER_ENDPOINT=http://<STACK-NAME>-blazegraph:8080/blazegraph/namespace/storerouterrdb/sparql"
                 ],
                 "Configs": [
                     {
