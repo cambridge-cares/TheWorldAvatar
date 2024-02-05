@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">01 February 2024</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">05 February 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlanningRegulation is an ontology developed to describe the regulations imposed for urban planning purposes.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -135,8 +135,7 @@
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This relationship serves as a link to signify the direct relevance and applicability of a land use regulation to that specific land use type.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This relationship serves as a link to signify the direct relevance and applicability of the planning regulation to that specific urban entity.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This relationship serves as a link to signify the direct relevance and applicability of the planning regulation to that specific urban entity.  In the case of land use regulations, they are applicable only for land use types.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulation/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">applies to</rdfs:label>
     </owl:ObjectProperty>
@@ -474,6 +473,12 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/LandUseRegulation">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulation/PlanningRegulation"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulation/appliesTo"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land use regulation is a form of specialised planning regulations that provide guidelines to any urban entities based on their land use type. For instance, a Commercial development control plan will apply to zones with commercial zone type. These regulations are designed to address specific land use or development needs associated with their zone uses. Note that these regulations might only provide a range of guidelines for specific restrictions, but individual plots may differ from these guidelines. For instance, Commercial Land Use Type might have a maximum floor-to-floor height of 5m in the type regulation, but specific plots might have a lower maximum number.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulation/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land Use Regulation</rdfs:label>
@@ -497,6 +502,19 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/PlanningRegulation">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulation/appliesTo"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning regulations are a set of rules and guidelines established by competent authorities at the local, regional, or national level to control and manage the development and use of land and properties within a specific geographic area.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulation/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning Regulation</rdfs:label>
