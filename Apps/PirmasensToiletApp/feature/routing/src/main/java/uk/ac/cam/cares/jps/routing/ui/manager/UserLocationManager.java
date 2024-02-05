@@ -1,11 +1,9 @@
 package uk.ac.cam.cares.jps.routing.ui.manager;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
 
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -16,10 +14,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.mapbox.geojson.Point;
-import com.mapbox.maps.MapView;
-import com.mapbox.maps.plugin.Plugin;
-import com.mapbox.maps.plugin.locationcomponent.LocationComponentPlugin;
-import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener;
 
 import org.apache.log4j.Logger;
 
@@ -33,24 +27,15 @@ public class UserLocationManager {
 
     private Logger LOGGER = Logger.getLogger(UserLocationManager.class);
 
-    public UserLocationManager(MapView mapView, Fragment fragment) {
+    public UserLocationManager(Fragment fragment) {
         this.context = fragment.requireContext();
 
-        requestLocationPermission();
-
-        LocationComponentPlugin locationComponent = mapView.getPlugin(Plugin.MAPBOX_LOCATION_COMPONENT_PLUGIN_ID);
-        locationComponent.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
-        locationComponent.setEnabled(true);
+        initUserLocationManager();
 
         locationViewModel = new ViewModelProvider(fragment).get(LocationViewModel.class);
     }
 
-    private OnIndicatorPositionChangedListener onIndicatorPositionChangedListener = positionPoint -> {
-//        mapView.getMapboxMap().setCamera(new CameraOptions.Builder().center(positionPoint).build());
-        locationViewModel.setCurrentLocation(Point.fromLngLat(positionPoint.longitude(), positionPoint.latitude()));
-    };
-
-    private void requestLocationPermission() {
+    private void initUserLocationManager() {
         locationRequest = new LocationRequest.Builder(1000)
                 .setMinUpdateIntervalMillis(1000)
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
@@ -59,7 +44,6 @@ public class UserLocationManager {
     }
 
     public void requestLastLocation() {
-        checkPermission();
 
         fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
@@ -73,7 +57,6 @@ public class UserLocationManager {
     }
 
     public void startLocationUpdates() {
-        checkPermission();
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
@@ -95,13 +78,4 @@ public class UserLocationManager {
             }
         }
     };
-
-    private void checkPermission() {
-        if (ActivityCompat.checkSelfPermission(context,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(context,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestLocationPermission();
-        }
-    }
 }

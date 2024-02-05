@@ -2,10 +2,11 @@
 <resources>
 
     <string name="map">Map</string>
-    <string name="fail_to_get_location_permission">Fail to Get Permission</string>
-    <string name="retry">Do you want to grant location permission?</string>
+    <string name="location_permission_not_granted">Location Permission Not Granted</string>
+    <string name="please_allow_location_permission">Please allow precise location in \'Setting\' for the routing function. </string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="ok">OK</string>
     <string name="report">Report</string>
     <string name="direction">Direction</string>
     <string name="open_hours">Open Hours</string>
