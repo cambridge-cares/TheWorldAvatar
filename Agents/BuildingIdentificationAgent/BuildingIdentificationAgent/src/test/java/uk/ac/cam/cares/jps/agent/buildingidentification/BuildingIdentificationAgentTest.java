@@ -27,7 +27,7 @@ class BuildingIdentificationAgentTest {
         request.put("coordinates", coordinates);
         request.put("requestUrl", "/location");
 
-        JSONObject result = new BuildingIdentificationAgentDebug().processRequestParameters(request);
+        JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
 
         assertTrue(result.getInt("number_matched") > 0);
 
@@ -48,7 +48,7 @@ class BuildingIdentificationAgentTest {
         // request.put("column", "lod1Geometry");
         // request.put("oneToMany", "true");
 
-        JSONObject result = new BuildingIdentificationAgentDebug().processRequestParameters(request);
+        JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
 
         assertTrue(result.getInt("number_matched") > 0);
 

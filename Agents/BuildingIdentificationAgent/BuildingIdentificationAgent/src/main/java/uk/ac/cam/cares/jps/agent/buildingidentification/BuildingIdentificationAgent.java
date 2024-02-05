@@ -11,9 +11,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
@@ -36,8 +33,9 @@ public class BuildingIdentificationAgent extends JPSAgent {
     public static final String KEY_ONE_MANY = "oneToMany";
     public static final String KEY_NEW_TABLE = "newTable";
     private static final String EPSG = "EPSG:";
+    public static final String POINT_TYPE = "ST_Point";
 
-    private static final Logger LOGGER = LogManager.getLogger(BuildingIdentificationAgentDebug.class);
+    private static final Logger LOGGER = LogManager.getLogger(BuildingIdentificationAgent.class);
 
     private static final String COLUMN_NAME = "building_iri";
 
@@ -52,12 +50,18 @@ public class BuildingIdentificationAgent extends JPSAgent {
             String dbUrl = null;
             String dbUser = null;
             String dbPassword = null;
-            String dbName = "postgres";
 
-            EndpointConfig endpointConfig = new EndpointConfig();
-            dbUrl = endpointConfig.getDbUrl(dbName);
-            dbUser = endpointConfig.getDbUser();
-            dbPassword = endpointConfig.getDbPassword();
+            if (requestParams.has(dbUrl)) {
+                dbUrl = requestParams.getString(dbUrl);
+                dbUser = requestParams.getString(dbUser);
+                dbPassword = requestParams.getString(dbPassword);
+            } else {
+                String dbName = "postgres";
+                EndpointConfig endpointConfig = new EndpointConfig();
+                dbUrl = endpointConfig.getDbUrl(dbName);
+                dbUser = endpointConfig.getDbUser();
+                dbPassword = endpointConfig.getDbPassword();
+            }
 
             rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
             int dbSrid = getDbSrid();
@@ -121,8 +125,14 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 numberBuildingsIdentified = buildings.size();
             } else if (requestParams.getString(KEY_REQ_URL).contains(ROUTE_POSTGIS)) {
                 String tableName = requestParams.getString(KEY_TABLE);
+
                 if (!oneToMany) {
-                    Map<Integer, String> buildings = linkBuildingsTable(maxDistance, tableName, columnName, dbSrid);
+                    String geomType = getGeometryType(tableName, columnName);
+                    Map<Integer, String> buildings;
+                    if (geomType.equals(POINT_TYPE))
+                        buildings = linkBuildingsTable(maxDistance, tableName, columnName, dbSrid);
+                    else
+                        buildings = linkBuildingsTableNonPoint(maxDistance, tableName, columnName, dbSrid);
                     numberBuildingsIdentified = buildings.size();
                     updateBuildings(buildings, tableName);
                     responseObject.put(COLUMN_NAME, new JSONArray(buildings.values()));
@@ -201,6 +211,27 @@ public class BuildingIdentificationAgent extends JPSAgent {
             LOGGER.error(e.getMessage());
         }
         return dbSrid;
+    }
+
+    private String getGeometryType(String tableName, String columnName) {
+
+        String geomType = POINT_TYPE;
+
+        try (Connection conn = rdbStoreClient.getConnection();
+                Statement stmt = conn.createStatement();) {
+            String sqlString = String.format("SELECT ST_GEOMETRYTYPE(%s) as geom_type from %s limit 1;", columnName,
+                    tableName);
+            ResultSet result = stmt.executeQuery(sqlString);
+            if (result.next()) {
+                geomType = result.getString("geom_type");
+            } else {
+                LOGGER.warn("Could not retrieve type of user-specified geometries.");
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return geomType;
     }
 
     /**
@@ -354,7 +385,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 Double dist = result.getDouble("dist");
 
                 if (dist > maxDistance)
-                    LOGGER.warn(" The building with UUID {} has been matched to a point {} meters away",
+                    LOGGER.warn(" The building with UUID {} has been matched to a geometry {} meters away",
                             buildingId, dist);
 
             }
