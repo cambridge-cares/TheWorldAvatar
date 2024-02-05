@@ -57,23 +57,27 @@ public class ToiletBottomSheet {
             ((ImageView) bottomSheetView.findViewById(R.id.has_males_icon))
                     .setColorFilter(toilet.getHasMale() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.male_toilet) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
             ((ImageView) bottomSheetView.findViewById(R.id.wheelchair_icon))
-                    .setColorFilter(!toilet.getWheelchair().isEmpty() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.dark_grey) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
+                    .setColorFilter(!toilet.getWheelchair().isEmpty() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.teal_700) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
 
             if (toilet.getAddress() != null && !toilet.getAddress().trim().replaceAll(",", "").isEmpty()) {
+                bottomSheetView.findViewById(R.id.address_container).setVisibility(View.VISIBLE);
                 ((TextView) bottomSheetView.findViewById(R.id.detailed_address_tv)).setText(toilet.getAddress());
             } else {
                 bottomSheetView.findViewById(R.id.address_container).setVisibility(View.GONE);
             }
 
             if (!toilet.getOpenTime().isEmpty() || !toilet.getEndTime().isEmpty()) {
+                bottomSheetView.findViewById(R.id.open_hour_container).setVisibility(View.VISIBLE);
                 ((TextView) bottomSheetView.findViewById(R.id.open_hour_tv)).setText(String.format("%s - %s", toilet.getOpenTime(), toilet.getEndTime()));
             } else {
                 bottomSheetView.findViewById(R.id.open_hour_container).setVisibility(View.GONE);
             }
 
             if (toilet.getPrice() != null) {
+                bottomSheetView.findViewById(R.id.price_container).setVisibility(View.VISIBLE);
                 ((TextView) bottomSheetView.findViewById(R.id.price)).setText(toilet.getPrice().toString());
             } else if (!toilet.getFee().isEmpty()) {
+                bottomSheetView.findViewById(R.id.price_container).setVisibility(View.VISIBLE);
                 ((TextView) bottomSheetView.findViewById(R.id.price)).setText(toilet.getFee());
             } else {
                 bottomSheetView.findViewById(R.id.price_container).setVisibility(View.GONE);
@@ -110,7 +114,7 @@ public class ToiletBottomSheet {
             }
 
             // todo: route retrieved when click the marker, show route when click on the button
-            ((Button) bottomSheetView.findViewById(R.id.direction_bt)).setOnClickListener(view1 -> routingViewModel.getRouteData(locationViewModel.getCurrentLocationValue().longitude(),
+            bottomSheetView.findViewById(R.id.direction_bt).setOnClickListener(view1 -> routingViewModel.getRouteData(locationViewModel.getCurrentLocationValue().longitude(),
                     locationViewModel.getCurrentLocationValue().latitude(),
                     toilet.getLocation().longitude(),
                     toilet.getLocation().latitude()));
