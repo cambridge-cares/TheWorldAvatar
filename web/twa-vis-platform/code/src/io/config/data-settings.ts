@@ -2,7 +2,7 @@
  * Server side code to read and cache data.json file.
  */
 
-import fs from "fs";
+import fs from 'fs/promises'; // Use the promise-based version of fs
 import path from "path";
 import { JsonObject } from "../../types/json";
 
@@ -17,41 +17,43 @@ export default class DataSettingsStore {
     private static readonly DEFAULT_FILE = "../uploads/config/data.json";
 
     // Cached settings
-    private static RAW_JSON: JsonObject;
+    private static RAW_JSON: JsonObject | null = null;
 
     /**
-    * Reads the settings file.
-    * 
-    * @param file optional config file path (relative to root).
-    * 
-    * @throws {IllegalArgumentError} if configuration file is invalid.
-    */
-    public static readFile(file?: string) {
-        if(DataSettingsStore.RAW_JSON == null) {
-            const configFile = path.join(process.cwd(), file ?? this.DEFAULT_FILE);
-            const contents = JSON.parse(fs.readFileSync(configFile, "utf8"));
-            DataSettingsStore.RAW_JSON = contents;
-
-            console.info("Data settings have been read and cached.");
+     * Asynchronously reads the settings file.
+     * 
+     * @param file Optional config file path (relative to root).
+     * @throws When the configuration file is invalid or not found.
+     */
+    public static async readFile(file?: string): Promise<void> {
+        if (DataSettingsStore.RAW_JSON === null) {
+            try {
+                const configFile = path.join(process.cwd(), file ?? this.DEFAULT_FILE);
+                const contents = await fs.readFile(configFile, "utf8");
+                DataSettingsStore.RAW_JSON = JSON.parse(contents);
+                console.info("Data settings have been read and cached.");
+            } catch (error) {
+                console.error("Failed to read or parse the data settings file.", error);
+                throw new Error("Failed to read or parse the data settings file.");
+            }
         }
     }
 
     /**
-     * Returns the data settings.
+     * Returns the data settings, ensuring they are read and cached first.
      * 
      * @returns JSON settings object.
      */
-    public static getSettings() {
-        DataSettingsStore.readFile();
-        return DataSettingsStore.RAW_JSON;
-    }   
+    public static async getSettings(): Promise<JsonObject> {
+        await DataSettingsStore.readFile();
+        return DataSettingsStore.RAW_JSON!;
+    }
 
     /**
-     * Invalidate the cached data settings, forcing them to be re-read
-     * upon the next request.
+     * Invalidate the cached data settings, forcing them to be re-read upon the next request.
      */
-    public static invalidate() {
-        console.log("Invalidating cached data settings, will be re-read upon next request.");
+    public static invalidate(): void {
+        console.log("Invalidating cached data settings. They will be re-read upon next request.");
         DataSettingsStore.RAW_JSON = null;
     }
 

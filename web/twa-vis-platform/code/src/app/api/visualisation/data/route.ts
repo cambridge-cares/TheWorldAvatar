@@ -15,7 +15,22 @@ export async function GET(request: NextRequest) {
         DataSettingsStore.invalidate();
     }
 
-    // See if a sub-node key is present
-    const result = DataSettingsStore.getSettings();
-    return Response.json(result);
+    try {
+        // Since getSettings is asynchronous, use await to get the result
+        const result = await DataSettingsStore.getSettings();
+        return new Response(JSON.stringify(result), {
+            status: 200, // HTTP status code
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+    } catch (error) {
+        // Handle possible errors, such as file not found or JSON parse errors
+        return new Response(JSON.stringify({ error: "Failed to load data settings." }), {
+            status: 500, // Internal Server Error
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+    }
 }
