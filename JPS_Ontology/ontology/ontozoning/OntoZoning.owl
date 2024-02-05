@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontozoning/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">01 February 2024</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">05 February 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoZoning is an ontology developed to represent relationships between zones, their land use types and land uses.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -1791,7 +1791,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUseType">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The land use type is a legally-binding description of the permittable �uses� and �developments� that are or may not be allowed to be constructed within a specific zone or area delineated. Land use types are defined by a competent authority and are usually tailored to specific contexts.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The land use type is a legally-binding description of the permittable uses and developments that are or may not be allowed to be constructed within a specific zone or area delineated. Land use types are defined by a competent authority and are usually tailored to specific contexts.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land Use Type</rdfs:label>
     </owl:Class>
