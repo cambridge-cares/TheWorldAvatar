@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.mapbox.bindgen.Expected;
 import com.mapbox.bindgen.None;
 import com.mapbox.bindgen.Value;
-import com.mapbox.geojson.Point;
 import com.mapbox.maps.LayerPosition;
 import com.mapbox.maps.MapView;
 
@@ -16,7 +15,7 @@ import org.json.JSONObject;
 
 import java.util.Objects;
 
-import uk.ac.cam.cares.jps.routing.viewmodel.LocationViewModel;
+import uk.ac.cam.cares.jps.model.Route;
 import uk.ac.cam.cares.jps.routing.viewmodel.RoutingViewModel;
 
 public class RouteManager {
@@ -26,15 +25,22 @@ public class RouteManager {
     public RouteManager(MapView mapView, Fragment fragment) {
 
         routingViewModel = new ViewModelProvider(fragment).get(RoutingViewModel.class);
-        routingViewModel.getRouteGeoJsonData().observe(fragment, route -> mapView.getMapboxMap().getStyle(style -> {
+        routingViewModel.showRoute.observe(fragment, showRoute -> mapView.getMapboxMap().getStyle(style -> {
             Expected<String, None> removeLayerSuccess = style.removeStyleLayer("route_layer");
             Expected<String, None> removeSourceSuccess = style.removeStyleSource("route");
             LOGGER.debug("Route: layer and source removed result " + (removeSourceSuccess.isError() && removeLayerSuccess.isError() ? removeSourceSuccess.getError() + "\n" + removeLayerSuccess.getError() : "success"));
 
-            String data = route.getGeojsonString();
-            if (data.isEmpty()) {
+            if (!showRoute) {
                 return;
             }
+
+            Route route = routingViewModel.routeGeoJsonData.getValue();
+            if (route == null || route.getGeojsonString().isEmpty()) {
+                LOGGER.info("should show route, but route is null or data is empty");
+                return;
+            }
+
+            String data = route.getGeojsonString();
             JSONObject sourceJson = new JSONObject();
             try {
                 sourceJson.put("type", "geojson");

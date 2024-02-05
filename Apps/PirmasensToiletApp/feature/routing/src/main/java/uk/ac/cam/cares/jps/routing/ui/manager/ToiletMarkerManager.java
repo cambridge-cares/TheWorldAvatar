@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import uk.ac.cam.cares.jps.model.Route;
 import uk.ac.cam.cares.jps.model.Toilet;
 import uk.ac.cam.cares.jps.routing.R;
+import uk.ac.cam.cares.jps.routing.RoutingFragment;
 import uk.ac.cam.cares.jps.routing.viewmodel.LocationViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.RoutingViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.ToiletViewModel;
@@ -67,12 +68,16 @@ public class ToiletMarkerManager {
             toiletViewModel.getToilet(pointAnnotation.getPoint().longitude(), pointAnnotation.getPoint().latitude());
             toiletBottomSheet.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
+            if (locationViewModel.getCurrentLocationValue() == null) {
+                LOGGER.info("Location permission not granted for distance and estimated time");
+                return false;
+            }
             routingViewModel.getRouteData(locationViewModel.getCurrentLocationValue().longitude(),
                     locationViewModel.getCurrentLocationValue().latitude(),
                     pointAnnotation.getPoint().longitude(), pointAnnotation.getPoint().latitude());
 
             // clear current route
-            routingViewModel.routeGeoJsonData.setValue(new Route("", 0));
+            routingViewModel.showRoute.setValue(false);
             return true;
         });
     }

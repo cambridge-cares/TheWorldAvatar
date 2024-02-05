@@ -72,8 +72,8 @@ public class ToiletInfoNetworkSource {
                         toilet.setOpenTime(toiletInfoJson.optString("opens on"));
                         toilet.setEndTime(toiletInfoJson.optString("closes on"));
 
-                        toilet.setHasFemale(toiletInfoJson.optString("is for female").contains("yes"));
-                        toilet.setHasMale(toiletInfoJson.optString("is for male").contains("yes"));
+                        toilet.setHasFemale(toiletInfoJson.optString("is for female").contains("true"));
+                        toilet.setHasMale(toiletInfoJson.optString("is for male").contains("true"));
 
                         toilet.addOtherInfo("access", toiletInfoJson.optString("access"));
                         toilet.addOtherInfo("operator", toiletInfoJson.optString("has operator"));

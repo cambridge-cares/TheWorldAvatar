@@ -114,7 +114,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="time estimation"
+                android:text="-"
                 app:layout_constraintEnd_toStartOf="@id/dot_divider2"
                 android:gravity="center"
                 app:layout_constraintTop_toTopOf="parent"
@@ -136,7 +136,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="200 m"
+                android:text="-"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

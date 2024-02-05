@@ -18,15 +18,19 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import org.apache.log4j.Logger;
+
 import java.util.Map;
 
 import uk.ac.cam.cares.jps.routing.R;
+import uk.ac.cam.cares.jps.routing.RoutingFragment;
+import uk.ac.cam.cares.jps.routing.ui.manager.ToiletMarkerManager;
 import uk.ac.cam.cares.jps.routing.viewmodel.LocationViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.RoutingViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.ToiletViewModel;
 
 public class ToiletBottomSheet {
-
+    private Logger LOGGER = Logger.getLogger(ToiletBottomSheet.class);
     private final ToiletViewModel toiletViewModel;
     private final RoutingViewModel routingViewModel;
     private final LocationViewModel locationViewModel;
@@ -114,10 +118,15 @@ public class ToiletBottomSheet {
             }
 
             // todo: route retrieved when click the marker, show route when click on the button
-            bottomSheetView.findViewById(R.id.direction_bt).setOnClickListener(view1 -> routingViewModel.getRouteData(locationViewModel.getCurrentLocationValue().longitude(),
-                    locationViewModel.getCurrentLocationValue().latitude(),
-                    toilet.getLocation().longitude(),
-                    toilet.getLocation().latitude()));
+            bottomSheetView.findViewById(R.id.direction_bt).setOnClickListener(view1 -> {
+                if (locationViewModel.getCurrentLocationValue() == null) {
+                    LOGGER.info("Location permission not granted, launch permission intent");
+                    ((RoutingFragment) hostFragment).showLocationPermissionDeniedDialog();
+                    return;
+                }
+
+                routingViewModel.showRoute.postValue(true);
+            });
         });
 
         routingViewModel.routeGeoJsonData.observe(hostFragment, route -> {

@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.mapbox.geojson.Point;
 
+import javax.annotation.Nullable;
+
 
 public class LocationViewModel extends ViewModel {
     private MutableLiveData<Point> currentLocation = new MutableLiveData<>();
@@ -17,6 +19,7 @@ public class LocationViewModel extends ViewModel {
         currentLocation.setValue(point);
     }
 
+    @Nullable
     public Point getCurrentLocationValue() {
         return currentLocation.getValue();
     }

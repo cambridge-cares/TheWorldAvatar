@@ -16,6 +16,7 @@ import uk.ac.cam.cares.jps.model.Route;
 public class RoutingViewModel extends ViewModel {
     private static final Logger LOGGER = Logger.getLogger(RoutingViewModel.class);
     public MutableLiveData<Route> routeGeoJsonData = new MutableLiveData<>();
+    public MutableLiveData<Boolean> showRoute = new MutableLiveData<>(false);
 
     RepositoryCallback<Route> routeGeoJsonUrlCallback = new RepositoryCallback<Route>() {
         @Override
@@ -42,9 +43,5 @@ public class RoutingViewModel extends ViewModel {
 
     public void getRouteData(double lng, double lat, boolean isStart) {
         routeRepository.getRouteGeoJsonUrl(lng, lat, isStart, routeGeoJsonUrlCallback);
-    }
-
-    public MutableLiveData<Route> getRouteGeoJsonData() {
-        return routeGeoJsonData;
     }
 }
