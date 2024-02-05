@@ -4,6 +4,13 @@
       "TaskTemplate": {
         "ContainerSpec": {
           "Image": "sensorloggermobileappagent:1.0.0",
+          "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "../../../../../../Agents/SensorLoggerMobileAppAgent/sensorloggermobileappagent/src/main/resources",
+                "Target": "/resources"
+            }
+          ],
           "Env": [
             "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
           ],  

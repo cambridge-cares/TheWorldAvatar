@@ -1,45 +1,52 @@
 {
-    "ServiceSpec": {
-      "Name": "sensorloggermobileappagent",
-      "TaskTemplate": {
-        "ContainerSpec": {
-          "Image": "ghcr.io/cambridge-cares/sensorloggermobileappagent:1.0.0",
-          "Configs": [
-            {
-              "ConfigName": "blazegraph"
-            },
-            {
-              "ConfigName": "postgis"
-            },
-            {
-              "ConfigName": "geoserver"
-            }
-          ],
-          "Secrets": [
-            {
-              "SecretName": "postgis_password"
-            },
-            {
-              "SecretName": "geoserver_password"
-            }
-          ]
-        }
-      },
-      "EndpointSpec": {
-        "Ports": [
+  "ServiceSpec": {
+    "Name": "sensorloggermobileappagent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ghcr.io/cambridge-cares/sensorloggermobileappagent:1.1.0", 
+        "Mounts": [
           {
-            "Name": "web",
-            "Protocol": "tcp",
-            "TargetPort": "5005",
-            "PublishedPort": "5005"
+              "Type": "bind",
+              "Source": "../../../../../../Agents/SensorLoggerMobileAppAgent/sensorloggermobileappagent/src/main/resources",
+              "Target": "/resources"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+            "ConfigName": "postgis"
+          },
+          {
+            "ConfigName": "geoserver"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
           }
         ]
       }
     },
-    "endpoints": {
-      "isochroneagent": {
-        "url": "http://localhost:8080/sensorloggermobileappagent/",
-        "externalPath": "/sensorloggermobileappagent/"
-      }
+    "EndpointSpec": {
+      "Ports": [
+        {
+          "Name": "web",
+          "Protocol": "tcp",
+          "TargetPort": "5005",
+          "PublishedPort": "5005"
+        }
+      ]
+    }
+  },
+  "endpoints": {
+    "isochroneagent": {
+      "url": "http://localhost:8080/sensorloggermobileappagent/",
+      "externalPath": "/sensorloggermobileappagent/"
     }
   }
+}
