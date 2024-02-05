@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontoelecpowerequipment/"
+     xml:base="https://www.theworldavatar.com/kg/ontoelecpowerequipment/"
+     xmlns:ontoelecpowerequipment="https://www.theworldavatar.com/kg/ontoelecpowerequipment/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 August 2023</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoElecPowerEquipment is an ontology for power electronic devices.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://saref.etsi.org/core/Device -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Device"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/ACPowerQualityAnalyzer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/ACPowerQualityAnalyzer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerQualityAnalyzer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that monitors the parameters of a AC power transmission line</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC power quality analyzer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/CurrentBooster -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/CurrentBooster">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerAmplifier"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that increase the current on a power transmission line</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current booster</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/CurrentTransformer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/CurrentTransformer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoelecpowerequipment/Transformer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A transformer that manipulates the current in a circuit</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current transformer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/DCPowerQualityAnalyzer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/DCPowerQualityAnalyzer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerQualityAnalyzer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that monitors the parameters of a DC power transmission line</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DC power quality analyzer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/Microsynchrophasor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/Microsynchrophasor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerQualityAnalyzer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that provides a real-time measurement of electrical quantities from across the power system. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Microsynchrophasor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerAmplifier -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerAmplifier">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerModifier"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that increases the magnitude of power delivered through a transmission line</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PowerAmplifier</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerBackUp -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerBackUp">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerSource"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A power source that supplies electricity when the main power source is down</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power back up</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerModifier -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerModifier">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An object that manipulates certain variable of the power transmitted</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power modifier</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerQualityAnalyzer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerQualityAnalyzer">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An object that analyses the properties of the power transmitted</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power analyser</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerSource -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerSource">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An object designed and manufactured to perform one or more functions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power source</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerSupplyUnit -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerSupplyUnit">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerSource"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A power source that supplies electricity from power socket in a regulated manner</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/SolarCellSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/SolarCellSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerSource"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A power source that generates electricity through photoelectric effect.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar cell system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoelecpowerequipment/Transformer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoelecpowerequipment/Transformer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoelecpowerequipment/PowerModifier"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that increase/decrease current or voltage using the principles of electromagnetism.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoelecpowerequipment/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transformer</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+
