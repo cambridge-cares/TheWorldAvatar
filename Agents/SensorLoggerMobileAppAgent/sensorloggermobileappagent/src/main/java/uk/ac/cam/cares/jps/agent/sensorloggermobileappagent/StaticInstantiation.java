@@ -5,20 +5,24 @@ import lombok.Setter;
 import uk.ac.cam.cares.ogm.models.FieldAnnotation;
 import uk.ac.cam.cares.ogm.models.Model;
 import uk.ac.cam.cares.ogm.models.ModelContext;
+import com.cmclinnovations.stack.clients.core.StackClient;
 
 import java.util.*;
 
 //Accessagent needs to be running with proper JSON Routing
 public class StaticInstantiation {
+
+    private static String stackName;
     public static void instantiationMethod(HashMap IRI) {
         String BASEURI = "https://www.theworldavatar.com/kg/sensorloggerapp/";
         String DEVICEID=IRI.get("deviceID").toString();
+        stackName = StackClient.getStackName();
         
        /**
         * For stack
         */
        // Create context to work in, and also clear any old existing data
-       ModelContext context = new ModelContext("http://<STACK-NAME>-access-agent:8080/sensorlogger");
+       ModelContext context = new ModelContext("http://"+stackName+"-access-agent:8080/sensorlogger");
 
         /**
          * Creating instances and randomUUID.
