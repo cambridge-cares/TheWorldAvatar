@@ -54,12 +54,12 @@ def post_elexon(url):
 
 def run_price_query(YYYY, MM, DD, PP):
     #Query All
-    makeurl = 'https://api.bmreports.com/BMRS/B1770/v1?APIKey=iwx6raw9m7nqq0f&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&Period='+PP+'&ServiceType=xml'
+    makeurl = 'https://api.bmreports.com/BMRS/B1770/v1?APIKey=<PROVIDE_BMRS_API_KEY>&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&Period='+PP+'&ServiceType=xml'
     return post_elexon(url=makeurl,)
     
     #Specific
     #WHILW #48WSTN1000WHILWQ
-    #post_elexon(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=iwx6raw9m7nqq0f&SettlementDate=2021-01-01&Period=1&NGCBMUnitID=WHILW&ServiceType=xml',) #HEYM2
+    #post_elexon(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=<PROVIDE_BMRS_API_KEY>&SettlementDate=2021-01-01&Period=1&NGCBMUnitID=WHILW&ServiceType=xml',) #HEYM2
 
 
 def get_price(YYYY, MM, DD, PP):
@@ -87,7 +87,7 @@ def query_bidOffers(YYYY, MM, DD, PP):
     #Keep in mind, however, that there's a but and sell side to keep track of (think the buy side might use something like offerPrice and offerVolume, rather than bidPrice and bidVolume), so you'd need to consider this change too.
     #Currently the bidding is not used here, but rather, as this is for curtailment, sell side volumes are considered.
     #This process is also specifically used for renewables. 
-    queryoutput = post_elexon(url='https://api.bmreports.com/BMRS/DETSYSPRICES/v1?APIKey=iwx6raw9m7nqq0f&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&SettlementPeriod='+PP+'&ServiceType=xml',) #All
+    queryoutput = post_elexon(url='https://api.bmreports.com/BMRS/DETSYSPRICES/v1?APIKey=<PROVIDE_BMRS_API_KEY>&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&SettlementPeriod='+PP+'&ServiceType=xml',) #All
     queryoutput = queryoutput.replace("'\n b'","")
     queryoutput = queryoutput.replace("</","<")
     queryoutput = queryoutput.replace("<bidPrice>","<id>")
