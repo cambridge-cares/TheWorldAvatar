@@ -1081,7 +1081,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ConductivitySensor">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures the conductivity of a material.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures the ability of a material to conduct an electrical current.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Conductivity sensor</rdfs:label>
     </owl:Class>
