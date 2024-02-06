@@ -4,7 +4,7 @@ This document is a README for:
  > Mapping-Match-JA-#.py
 
 Three csv files are required. These are not version controlled, but can be found at: 
-> \Dropbox (Cambridge CARES)\CoMo shared\ja685\BMRS\Script-BMRS-API
+> dropbox\CoMo shared\ja685\Modelling-Resources\BMRS\Script-BMRS-API
 Their names are: 
 > Input-Template.csv
 > generatortripple.csv
