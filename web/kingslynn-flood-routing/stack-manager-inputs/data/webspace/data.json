@@ -3,7 +3,7 @@
     "groups": [
         {
             "name": "Flood",
-            "stack": "http://localhost:3838",
+            "stack": "https://theworldavatar.io/demos/flood-routing",
             "sources": [
                 {
                     "id": "flood_active_10cm",
@@ -12,7 +12,7 @@
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "tiles": [
-                        "http://localhost:3838/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_10cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "https://theworldavatar.io/demos/flood-routing/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_10cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
@@ -22,7 +22,7 @@
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "tiles": [
-                        "http://localhost:3838/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_30cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "https://theworldavatar.io/demos/flood-routing/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_30cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
@@ -32,14 +32,14 @@
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "tiles": [
-                        "http://localhost:3838/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_90cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "https://theworldavatar.io/demos/flood-routing/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_90cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "flood_raster",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                        "https://theworldavatar.io/demos/flood-routing/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
                     ]
                 }
             ],
@@ -102,22 +102,23 @@
         },
         {
             "name": "Isochrone from Hospital",
-            "stack": "http://localhost:3838",
+            "stack": "https://theworldavatar.io/demos/flood-routing",
             "sources": [
                 {
                     "id": "car",  
                     "type": "geojson",
                     "cluster": false,
+                    "order": 2,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Drive%27"
+                    "data": "https://theworldavatar.io/demos/flood-routing/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Drive%27"
                 }
 
             ],
             "groups": [
                 {
                     "name": "Flooded",
-                    "stack": "http://localhost:3838",
+                    "stack": "https://theworldavatar.io/demos/flood-routing",
                     "layers": [
                         {
                             "id": "2 minutes_Flooded",
@@ -137,8 +138,8 @@
                                     ["==", ["get", "minute"], null], "#000000", [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "minute"]],
-                                    0, "#FF9800",
-                                    30, "#FFEB3B"
+                                    0, "#18677A",
+                                    30, "#A8E37B"
                                 ]],             
                                 "fill-outline-color": "#000000",
                                 "fill-opacity": 0.20
@@ -162,8 +163,8 @@
                                     ["==", ["get", "minute"], null], "#000000", [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "minute"]],
-                                    0, "#FF9800",
-                                    30, "#FFEB3B"
+                                    0, "#18677A",
+                                    30, "#A8E37B"
                                 ]],             
                                 "fill-outline-color": "#000000",
                                 "fill-opacity": 0.20
@@ -187,8 +188,8 @@
                                     ["==", ["get", "minute"], null], "#000000", [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "minute"]],
-                                    0, "#FF9800",
-                                    30, "#FFEB3B"
+                                    0, "#18677A",
+                                    30, "#A8E37B"
                                 ]],             
                                 "fill-outline-color": "#000000",
                                 "fill-opacity": 0.20
@@ -212,8 +213,8 @@
                                     ["==", ["get", "minute"], null], "#000000", [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "minute"]],
-                                    0, "#FF9800",
-                                    30, "#FFEB3B"
+                                    0, "#18677A",
+                                    30, "#A8E37B"
                                 ]],             
                                 "fill-outline-color": "#000000",
                                 "fill-opacity": 0.20
@@ -237,8 +238,8 @@
                                     ["==", ["get", "minute"], null], "#000000", [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "minute"]],
-                                    0, "#FF9800",
-                                    30, "#FFEB3B"
+                                    0, "#18677A",
+                                    30, "#A8E37B"
                                 ]],             
                                 "fill-outline-color": "#000000",
                                 "fill-opacity": 0.20
@@ -248,7 +249,7 @@
                 },
                 {
                     "name": "Normal - Unflooded",
-                    "stack": "http://localhost:3838",
+                    "stack": "https://theworldavatar.io/demos/flood-routing",
                     "layers": [
                         {
                             "id": "2 minutes Car_Normal",
@@ -268,8 +269,8 @@
                                     ["==", ["get", "minute"], null], "#000000", [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "minute"]],
-                                    0, "#FF9800",
-                                    30, "#FFEB3B"
+                                    0, "#157B3E",
+                                    30, "#125364"
                                 ]],             
                                 "fill-outline-color": "#000000",
                                 "fill-opacity": 0.20
@@ -293,8 +294,8 @@
                                     ["==", ["get", "minute"], null], "#000000", [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "minute"]],
-                                    0, "#FF9800",
-                                    30, "#FFEB3B"
+                                    0, "#157B3E",
+                                    30, "#125364"
                                 ]],             
                                 "fill-outline-color": "#000000",
                                 "fill-opacity": 0.20
@@ -318,8 +319,8 @@
                                     ["==", ["get", "minute"], null], "#000000", [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "minute"]],
-                                    0, "#FF9800",
-                                    30, "#FFEB3B"
+                                    0, "#157B3E",
+                                    30, "#125364"
                                 ]],             
                                 "fill-outline-color": "#000000",
                                 "fill-opacity": 0.20
@@ -343,8 +344,8 @@
                                     ["==", ["get", "minute"], null], "#000000", [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "minute"]],
-                                    0, "#FF9800",
-                                    30, "#FFEB3B"
+                                    0, "#157B3E",
+                                    30, "#125364"
                                 ]],             
                                 "fill-outline-color": "#000000",
                                 "fill-opacity": 0.20
@@ -368,8 +369,8 @@
                                     ["==", ["get", "minute"], null], "#000000", [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "minute"]],
-                                    0, "#FF9800",
-                                    30, "#FFEB3B"
+                                    0, "#157B3E",
+                                    30, "#125364"
                                 ]],             
                                 "fill-outline-color": "#000000",
                                 "fill-opacity": 0.20
@@ -381,7 +382,7 @@
         },
         {
             "name": "Population Unreachable in 8 Minutes",
-            "stack": "http://localhost:3838",
+            "stack": "https://theworldavatar.io/demos/flood-routing",
             "sources": [
                 {
                     "id": "Unreachable",
@@ -389,7 +390,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aunreachable&outputFormat=application%2Fjson&CQL_FILTER=minute=%278%27"
+                    "data": "https://theworldavatar.io/demos/flood-routing/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aunreachable&outputFormat=application%2Fjson&CQL_FILTER=minute=%278%27"
                 }
             ],
             "layers": [
@@ -413,7 +414,7 @@
         },
         {
             "name": "Multiple Asset Sites",
-            "stack": "http://localhost:3838",
+            "stack": "https://theworldavatar.io/demos/flood-routing",
             "sources": [
                 {
                     "id": "tspNodes",
@@ -421,7 +422,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Apoi_tsp_nearest_node&outputFormat=application%2Fjson"
+                    "data": "https://theworldavatar.io/demos/flood-routing/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Apoi_tsp_nearest_node&outputFormat=application%2Fjson"
                 }
             ],
             "layers": [
@@ -444,13 +445,21 @@
                             12,
                             0.5
                         ],
-                        "icon-anchor": "bottom"
+                        "text-field": [
+                            "get",
+                            "seq"
+                        ],
+                        "text-size": 20,
+                        "text-anchor": "top"
+                    },
+                    "paint": {
+                        "text-color": "#000000"
                     }
                 }
             ]
         },        {
             "name": "Transport Network Criticality Analysis",
-            "stack": "http://localhost:3838",
+            "stack": "https://theworldavatar.io/demos/flood-routing",
             "sources": [
                 {
                     "id": "trip_centrality",
@@ -458,7 +467,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atripcentrality_drive_flooded_30cm&outputFormat=application%2Fjson"
+                    "data": "https://theworldavatar.io/demos/flood-routing/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atripcentrality_drive_flooded_30cm&outputFormat=application%2Fjson"
                 }
             ],
             "layers": [
@@ -796,7 +805,7 @@
         },
         {
             "name": "Roads",
-            "stack": "http://localhost:3838",
+            "stack": "https://theworldavatar.io/demos/flood-routing",
             "sources": [
                 {
                     "id": "road",
@@ -804,7 +813,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Arouting_ways&outputFormat=application%2Fjson"
+                    "data": "https://theworldavatar.io/demos/flood-routing/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Arouting_ways&outputFormat=application%2Fjson"
                 }
             ],
             "layers": [
