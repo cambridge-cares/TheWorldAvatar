@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">05 February 2024</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 February 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -1112,18 +1112,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/CurrentSensor -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/CurrentSensor">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures the current flowing through an electrical circuit.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current sensor</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontodevice/DefaultValvePosition -->
 
 
@@ -1215,6 +1203,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A small UAV controled from a range usually using  a remote controller.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Drone</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/ElectricalCurrentSensor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ElectricalCurrentSensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures the electrical current flowing through an electrical circuit.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electrical current sensor</rdfs:label>
     </owl:Class>
     
 
