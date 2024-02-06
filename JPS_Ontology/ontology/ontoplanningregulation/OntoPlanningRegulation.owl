@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">05 February 2024</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 February 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlanningRegulation is an ontology developed to describe the regulations imposed for urban planning purposes.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -124,13 +124,19 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/appliesTo">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulation/LandUseRegulation"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulation/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/LandUseRegulation"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/PlanningRegulation"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
                 </owl:unionOf>
             </owl:Class>
