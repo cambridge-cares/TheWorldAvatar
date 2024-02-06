@@ -517,7 +517,7 @@ public class DockerService extends AbstractService
 
     protected void pullImage(ContainerService service) {
         String image = service.getImage();
-        if (dockerClient.getInternalClient().listImagesCmd().withImageNameFilter(image).exec().isEmpty()) {
+        if (dockerClient.getInternalClient().listImagesCmd().withReferenceFilter(image).exec().isEmpty()) {
             // No image with the requested image ID, so try to pull image
             try (PullImageCmd pullImageCmd = dockerClient.getInternalClient().pullImageCmd(image)) {
                 pullImageCmd
