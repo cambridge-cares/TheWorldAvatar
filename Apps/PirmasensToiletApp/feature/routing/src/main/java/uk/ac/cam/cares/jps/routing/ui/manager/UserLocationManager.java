@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.routing.ui.manager;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.os.Looper;
@@ -43,8 +44,9 @@ public class UserLocationManager {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
+    @SuppressLint("MissingPermission")
     public void requestLastLocation() {
-
+        // permission check is managed in RoutingFragment
         fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
                 double latitude = location.getLatitude();
@@ -56,6 +58,7 @@ public class UserLocationManager {
 
     }
 
+    @SuppressLint("MissingPermission")
     public void startLocationUpdates() {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
