@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
 
@@ -26,7 +27,7 @@ public class GFAAgent extends JPSAgent{
     private String kgurl;
     public String floorsCsv;
 
-    public void init() {
+    public synchronized void init() {
         readConfig();
         this.dbUrl = endpointConfig.getDbUrl(dbName);
         this.dbUser = endpointConfig.getDbUser();
@@ -50,7 +51,14 @@ public class GFAAgent extends JPSAgent{
     }
 
     @Override
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+        return processRequestParameters(requestParams);
+    }
+
+    @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
+
+        System.out.println("debug mode");
         try {
             if(requestParams.equals("gfa")){            
                 //calculate GFA 1. query footpring 2. query height (if no height, estimate 3.2m/floor) 3. calculate 4. store

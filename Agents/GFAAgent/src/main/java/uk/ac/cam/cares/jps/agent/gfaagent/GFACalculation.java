@@ -21,7 +21,7 @@ public class GFACalculation {
     }
     
     public void calculationGFA(){
-        JSONArray result = postgisCliente.executeQuery(gfaSQLQuery);
+        JSONArray result = postgisClient.executeQuery(gfaSQLQuery);
         if (!result.isEmpty()) {
 
         }

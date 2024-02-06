@@ -10,7 +10,7 @@
                 "Mounts": [
                   {
                     "Type": "bind",
-                    "Source": "../../../../../../Agents/GFAAgent/gfaagent/src/main/resources",
+                    "Source": "../../../../../../Agents/GFAAgent/src/main/resources",
                     "Target": "/resources"
                   }
                 ],
@@ -38,8 +38,8 @@
 		"EndpointSpec": {
 			"Ports": [
 				{
-                    "Name": "web",
-                    "Protocol": "tcp",
+          "Name": "web",
+          "Protocol": "tcp",
 					"TargetPort": "5005",
 					"PublishedPort": "5005"
 				}
