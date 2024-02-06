@@ -2,16 +2,11 @@ package uk.ac.cam.cares.jps.agent.gfaagent;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
-import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
-import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 public class GFAkg {
     private RemoteStoreClient kgClient;
@@ -19,7 +14,7 @@ public class GFAkg {
 
     public GFAkg (String kgUrl) {
         this.kgurl = kgUrl;
-        this.kgClient = new RemoteStoreClient(kgUrl,kgUrl,null,null);
+        this.kgClient = new RemoteStoreClient(kgUrl,kgUrl,null,null);;
     }
 
     public void saveGFA(JSONArray gfaResult){
@@ -28,11 +23,12 @@ public class GFAkg {
 
         for(int i = 0; i < gfaResult.length(); i++){
             JSONObject objects = gfaResult.getJSONObject(i);
-            iri = kgurl + objects.getString("iri").split(".com")[1];
+            iri = kgurl + objects.getString("iri").split(".com/")[1];
+            gfa = objects.getFloat("gfa");
 
-            gfa = objects.getFloat("GFA");
+            InsertDataQuery modify = Queries.INSERT_DATA();
+            Iri objectIri = iri(iri);
 
-            Iri objectIri = iri(this.getObjectIri());
         }
     }
 }
