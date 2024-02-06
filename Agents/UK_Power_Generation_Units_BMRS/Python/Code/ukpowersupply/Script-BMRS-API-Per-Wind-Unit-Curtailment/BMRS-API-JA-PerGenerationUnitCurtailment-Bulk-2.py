@@ -1,5 +1,3 @@
-#KEY: iwx6raw9m7nqq0f
-
 #TEST from page 193: https://www.elexon.co.uk/documents/training-guidance/bsc-guidance-notes/bmrs-api-and-data-push-user-guide-2/
 
 ###Libraries###
@@ -57,7 +55,7 @@ def query_curtailment(YYYY, MM, DD, PP):
     #Keep in mind, however, that there's a but and sell side to keep track of (think the buy side might use something like offerPrice and offerVolume, rather than bidPrice and bidVolume), so you'd need to consider this change too.
     #Currently the bidding is not used here, but rather, as this is for curtailment, sell side volumes are considered.
     #This process is also specifically used for renewables. 
-    queryoutput = post_elexon(url='https://api.bmreports.com/BMRS/DETSYSPRICES/v1?APIKey=iwx6raw9m7nqq0f&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&SettlementPeriod='+PP+'&ServiceType=xml',) #All
+    queryoutput = post_elexon(url='https://api.bmreports.com/BMRS/DETSYSPRICES/v1?APIKey=<PROVIDE_BMRS_API_KEY>&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&SettlementPeriod='+PP+'&ServiceType=xml',) #All
     queryoutput = queryoutput.replace("'\n b'","")
     queryoutput = queryoutput.replace("</","<")
     queryoutput = queryoutput.replace("<bidVolume>","<id>")

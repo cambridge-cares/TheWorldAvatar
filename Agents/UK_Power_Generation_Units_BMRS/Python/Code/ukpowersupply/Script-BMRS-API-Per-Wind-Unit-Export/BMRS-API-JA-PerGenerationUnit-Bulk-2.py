@@ -1,5 +1,3 @@
-#KEY: iwx6raw9m7nqq0f
-
 #TEST from page 193: https://www.elexon.co.uk/documents/training-guidance/bsc-guidance-notes/bmrs-api-and-data-push-user-guide-2/
 
 ###Libraries###
@@ -53,7 +51,7 @@ def post_elexon(url):
 
 
 def query_units(YYYY, MM, DD):
-    queryoutput = post_elexon(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=iwx6raw9m7nqq0f&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&Period=*&NGCBMUnitID=&ServiceType=xml',) #All
+    queryoutput = post_elexon(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=<PROVIDE_BMRS_API_KEY>&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&Period=*&NGCBMUnitID=&ServiceType=xml',) #All
     queryoutput = queryoutput.replace("'\n b'","")
     queryoutput = queryoutput.split("<marketGenerationBMUId>")
     queryoutput.remove(queryoutput[0])

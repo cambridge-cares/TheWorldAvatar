@@ -1,5 +1,3 @@
-#KEY: iwx6raw9m7nqq0f
-
 #TEST from page 193: https://www.elexon.co.uk/documents/training-guidance/bsc-guidance-notes/bmrs-api-and-data-push-user-guide-2/
 
 ###Libraries###
@@ -56,17 +54,17 @@ def post_elexon(url):
 
 def run_query(YYYY, MM, DD, PP):
     #Query All
-    makeurl = 'https://api.bmreports.com/BMRS/B1770/v1?APIKey=iwx6raw9m7nqq0f&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&Period='+PP+'&ServiceType=xml'
+    makeurl = 'https://api.bmreports.com/BMRS/B1770/v1?APIKey=<PROVIDE_BMRS_API_KEY>&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&Period='+PP+'&ServiceType=xml'
     return post_elexon(url=makeurl,)
     
     #Specific
     #WHILW #48WSTN1000WHILWQ
-    #post_elexon(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=iwx6raw9m7nqq0f&SettlementDate=2021-01-01&Period=1&NGCBMUnitID=WHILW&ServiceType=xml',) #HEYM2
+    #post_elexon(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=<PROVIDE_BMRS_API_KEY>&SettlementDate=2021-01-01&Period=1&NGCBMUnitID=WHILW&ServiceType=xml',) #HEYM2
 
 
 def run_type_query(YYYY, MM, DD, PP):
     #Query All
-    makeurl = 'https://api.bmreports.com/BMRS/B1620/v1?APIKey=iwx6raw9m7nqq0f&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&Period='+PP+'&ServiceType=xml'
+    makeurl = 'https://api.bmreports.com/BMRS/B1620/v1?APIKey=<PROVIDE_BMRS_API_KEY>&SettlementDate='+YYYY+'-'+MM+'-'+DD+'&Period='+PP+'&ServiceType=xml'
     queryoutput = post_elexon(url=makeurl,)
     queryoutput = queryoutput.replace("'\n b'","")
     queryoutput = queryoutput.replace("<quantity>", "&quot;") #Cannot split multiple times, so as we have 3 terms we want to split on, we will replace the first 2 with the third, then split. 

@@ -1,5 +1,3 @@
-#KEY: iwx6raw9m7nqq0f
-
 #TEST from page 193: https://www.elexon.co.uk/documents/training-guidance/bsc-guidance-notes/bmrs-api-and-data-push-user-guide-2/
 
 ###Libraries###
