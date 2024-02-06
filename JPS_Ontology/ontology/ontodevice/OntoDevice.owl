@@ -275,6 +275,7 @@
                     <rdf:Description rdf:about="http://www.w3.org/ns/ssn/systems/Condition"/>
                     <rdf:Description rdf:about="http://www.w3.org/ns/ssn/systems/OperatingProperty"/>
                     <rdf:Description rdf:about="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
+                    <rdf:Description rdf:about="https://saref.etsi.org/core/State"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Zone"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Setpoint"/>
