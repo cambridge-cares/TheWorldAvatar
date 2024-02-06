@@ -20,11 +20,9 @@ public class GFACalculation {
         this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
     }
     
-    public void calculationGFA(){
+    public JSONArray calculationGFA(){
         JSONArray result = postgisClient.executeQuery(gfaSQLQuery);
-        if (!result.isEmpty()) {
-
-        }
+        return result;
     }
     private static final String gfaSQLQuery = "SELECT building.id, cityobject_genericattrib.urival AS iri,\n" + 
                                                     "(CASE\n" +
