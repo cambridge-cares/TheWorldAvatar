@@ -40,7 +40,7 @@ get_executables(){
                         sitepackage_path=$(python3 -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')
                         filename="$sitepackage_path/podman_compose.py"
                         # NB The -N argument ensures the patch is applied only in forward direction, i.e. reverse or re-application will be ignored. This makes it idempotent!
-                        $patch_executable -u -N $filename -i "${SCRIPTS_DIR}/podman/podman_compose_v$desired_version.patch" > /dev/null 2>&1
+                        $patch_executable -u -N $filename -i "${SCRIPTS_DIR}/podman/podman_compose_v$desired_version.patch" > /dev/null 2>&1 || true
                     else
                         echo "ERROR: '$patch_executable' command not found. Please install it."
                         exit 1
