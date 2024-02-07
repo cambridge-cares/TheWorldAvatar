@@ -1045,7 +1045,6 @@ label[for=select-feature] {
 #sidePanelAck,
 #sidePanelFailure {
     position: relative;
-    z-index: 1;
     overflow: auto;
     /* background: linear-gradient(white, rgba(255, 255, 255, 0));
     -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);        <-- nice effect but messing with the scroll bar. Can't rn figure how to fix 
