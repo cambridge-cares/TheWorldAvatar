@@ -15,6 +15,8 @@
 const express = require('express');
 const next = require('next');
 
+const dotenv = require('dotenv').config();
+
 // Configure the server port; default to 3000 if not specified in environment variables
 const port = process.env.PORT || 3000;
 
@@ -24,6 +26,13 @@ const dev = process.env.NODE_ENV !== 'production';
 // Initialise the Next.js application
 const app = next({ dev });
 const handle = app.getRequestHandler();
+
+// Keycloak dependencies
+const session = require('express-session');
+const Keycloak = require('keycloak-connect');
+
+const memoryStore = new session.MemoryStore();
+const keycloak = new Keycloak({ store: memoryStore });
 
 // Prepare the Next.js application and then start the Express server
 app.prepare().then(() => {
