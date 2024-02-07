@@ -20,15 +20,28 @@ public class GFACalculation {
         this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
     }
     
-    public JSONArray calculationGFA(){
-        JSONArray result = postgisClient.executeQuery(gfaSQLQuery);
-        return result;
+    public void calculationGFA(){
+        postgisClient.executeQuery(gfaSQLInsert);
+        postgisClient.executeQuery(gfaSQLUpdate);
     }
-    private static final String gfaSQLQuery = "SELECT building.id, cityobject_genericattrib.urival AS iri,\n" + 
+
+    private static final String gfaSQLInsert = "INSERT INTO cityobject_genericattrib (attrname, realval, cityobject_id)\n" +
+                                              " SELECT 'GFA', building.id AS cityobject_id\n" + 
                                                     "(CASE\n" +
                                                         "WHEN building.storeys_above_ground IS NOT NULL THEN (public.ST_Area(surface_geometry.geometry)*building.storeys_above_ground)\n" +
                                                         "ELSE (building.measured_height/3.2*public.ST_Area(surface_geometry.geometry))\n" +
-                                                    "END) AS GFA\n" +
-                                                    "FROM building, surface_geometry, cityobject_genericattrib\n" +
-                                                    "WHERE building.lod0_footprint_id = surface_geometry.parent_id  AND building.id = cityobject_genericattrib.cityobject_id AND cityobject_genericattrib.attrname = 'iri'";
+                                                    "END) AS realval\n" +
+                                                    "FROM building, surface_geometry\n" +
+                                                    "WHERE building.lod0_footprint_id = surface_geometry.parent_id\n" +
+                                                    "WHERE NOT EXISTS (SELECT id FROM cityobject_genericattrib WHERE attrname = 'GFA' AND cityobject_id = subquery.id);";
+
+    private static final String gfaSQLUpdate = "WITH subquery AS (\r\n" + 
+                                                "\tSELECT building.id AS id,\r\n" + 
+                                                "       (CASE WHEN building.storeys_above_ground IS NOT NULL THEN (public.ST_Area(surface_geometry.geometry)*building.storeys_above_ground)\r\n" + 
+                                                "       ELSE (building.measured_height/3.2*public.ST_Area(surface_geometry.geometry)) END) AS GFA\r\n" + 
+                                                "       FROM building, surface_geometry\r\n" + 
+                                                "       WHERE building.lod0_footprint_id = surface_geometry.parent_id\r\n" + 
+                                                ")\r\n" + 
+                                                "UPDATE cityobject_genericattrib SET realval = subquery.GFA FROM subquery WHERE attrname = 'GFA' AND cityobject_id = subquery.id;";
+                        
 }

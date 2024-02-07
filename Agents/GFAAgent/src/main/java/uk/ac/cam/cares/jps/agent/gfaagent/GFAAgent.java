@@ -34,7 +34,7 @@ public class GFAAgent extends JPSAgent{
         this.dbUrl = endpointConfig.getDbUrl(dbName);
         this.dbUser = endpointConfig.getDbUser();
         this.dbPassword = endpointConfig.getDbPassword();
-        this.kgurl = endpointConfig.getKGUrl(kgNameSpace);
+        // this.kgurl = endpointConfig.getKGUrl(kgNameSpace);
     }
 
     public void readConfig() {
@@ -43,7 +43,7 @@ public class GFAAgent extends JPSAgent{
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
             this.floorsCsv = prop.getProperty("floors.csv");
-            this.kgNameSpace = prop.getProperty("kg.namespace");
+            // this.kgNameSpace = prop.getProperty("kg.namespace");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
@@ -64,12 +64,12 @@ public class GFAAgent extends JPSAgent{
         System.out.println("debug mode");
         try {
             GFACalculation gfaCalculation = new GFACalculation(dbUrl, dbUser, dbPassword);
-            GFAkg gfAkg = new GFAkg(kgurl);
+            // GFAkg gfAkg = new GFAkg(kgurl);
             boolean test = requestParams.has("gfa");
             if(requestParams.getString("requestUrl").contains("gfa")){            
                 //calculate GFA 1. query footpring 2. query height (if no height, estimate 3.2m/floor) 3. calculate 4. store
-                JSONArray gfaResult = gfaCalculation.calculationGFA();
-                gfAkg.saveGFA(gfaResult);
+                gfaCalculation.calculationGFA();
+                // gfAkg.saveGFA(gfaResult);
             }else if(requestParams.getString("requestUrl").contains("floors")){
                //integrate floors data
                 IntegrateFloors integrateFloors = new IntegrateFloors(floorsCsv, dbUrl, dbUser, dbPassword);

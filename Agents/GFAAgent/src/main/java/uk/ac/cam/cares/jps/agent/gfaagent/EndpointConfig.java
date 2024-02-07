@@ -8,10 +8,10 @@ public class EndpointConfig {
     private PostGISEndpointConfig postGISEndpointConfig;
     private String dbUser;
     private String dbPassword;
-    private BlazegraphEndpointConfig blazegraphEndpointConfig;
-    private String kgurl;
-    private String kguser;
-    private String kgpassword;
+    // private BlazegraphEndpointConfig blazegraphEndpointConfig;
+    // private String kgurl;
+    // private String kguser;
+    // private String kgpassword;
 
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
@@ -19,10 +19,10 @@ public class EndpointConfig {
         this.dbUser = postGISEndpointConfig.getUsername();
         this.dbPassword = postGISEndpointConfig.getPassword();
 
-        blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
-        this.kgurl = blazegraphEndpointConfig.getUrl("ontology");
-        this.kguser = blazegraphEndpointConfig.getUsername();
-        this.kgpassword = blazegraphEndpointConfig.getPassword();
+        // blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
+        // this.kgurl = blazegraphEndpointConfig.getUrl("ontology");
+        // this.kguser = blazegraphEndpointConfig.getUsername();
+        // this.kgpassword = blazegraphEndpointConfig.getPassword();
    
     }
 
@@ -38,15 +38,15 @@ public class EndpointConfig {
         return this.dbPassword;
     }
 
-    public String getKGUrl(String namespace) {
-        return this.blazegraphEndpointConfig.getUrl(namespace);
-    }
+    // public String getKGUrl(String namespace) {
+    //     return this.blazegraphEndpointConfig.getUrl(namespace);
+    // }
 
-    public String getKGUser() {
-        return this.kguser;
-    }
+    // public String getKGUser() {
+    //     return this.kguser;
+    // }
 
-    public String getKGPassword() {
-        return this.kgpassword;
-    }
+    // public String getKGPassword() {
+    //     return this.kgpassword;
+    // }
 }
