@@ -1,6 +1,6 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
-#4.5.0
+#4.5.1
 ### Bug Fixes
 * Removed linear-gradient effect in sidebar due to scrollbar getting affected
 * Increased hover height of selected sidebar tab
