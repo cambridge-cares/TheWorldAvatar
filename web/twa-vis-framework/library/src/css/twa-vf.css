@@ -9,7 +9,14 @@
 @media (prefers-color-scheme: light) {
     :root {
         /* Background colors */
-        --cmcl-blue:   #18677a;
+        --cmcl-blue: #18677a;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Background colors */
+        --cmcl-blue: #18677a;
     }
 }
 
@@ -123,7 +130,8 @@ h6 {
     width: 15px;
     height: 15px;
     text-align: center;
-    margin: 6px
+    margin: 6px;
+    float: right
 }
 
 #sidePanel.small {
@@ -142,10 +150,6 @@ h6 {
     height: calc(100% - 200px);
     border-width: 1px;
     border-radius: 8px
-}
-
-#expandButtonContainer {
-    float: right
 }
 
 #sidePanel.large #expandButtonContainer {
@@ -216,17 +220,6 @@ p {
     overflow-y: auto
 }
 
-#contentContainer {
-    width: 100%;
-    height: 100%;
-    margin-bottom: 70px;
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-    overflow-y: auto
-}
-
 #meta-tree {
     flex: 1;
     overflow-y: scroll
@@ -242,7 +235,7 @@ p {
 
 #footerContainer {
     text-shadow: 2px 2px 3px #000;
-    font-family: Verdana;
+    font-family: Verdana, sans-serif;
     color: #51b7a6;
     text-align: center;
     height: 40px;
@@ -873,7 +866,7 @@ label[for=select-feature] {
 }
 
 .json-container {
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     background-color: #fff;
     color: grey;
@@ -992,14 +985,7 @@ label[for=select-feature] {
     height: 100%
 }
 
-#sidePanelLegend {
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    display: block;
-    padding: 5px;
-    margin: 0 20px 40px 20px
-}
+
 
 .ui-tabs-anchor {
     font-size: 10pt;
@@ -1047,13 +1033,25 @@ label[for=select-feature] {
 
 #sidePanelInner .ui-tabs-nav li.ui-state-active,
 #sidePanelInner .ui-tabs-nav li.ui-tabs-selected {
-    top: -3px;
+    top: -7px;
     background: #628f9d !important;
     box-shadow: 0 4px 8px 0 #222
 }
 
-#sidePanelGeneral {
-    height: calc(100% - 50px)
+
+#sidePanelGeneral,
+#sidePanelLegend,
+#sidePanelLinks,
+#sidePanelAck,
+#sidePanelFailure {
+    position: relative;
+    z-index: 1;
+    overflow: auto;
+    /* background: linear-gradient(white, rgba(255, 255, 255, 0));
+    -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);        <-- nice effect but messing with the scroll bar. Can't rn figure how to fix 
+    mask-image: linear-gradient(to bottom, black 95%, transparent); */
+    margin: 0px 0px 35px 0px;
+    padding: 1em 1em 3em
 }
 
 #sidePanelLinks {
@@ -1696,25 +1694,27 @@ li {
     background-color: #f6f8fa
 }
 
-#sidePanelGeneral {
-    position: relative; 
-    z-index: 1; 
-    overflow: hidden;
-    background: linear-gradient(white, rgba(255,255,255,0)); 
-    -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);
-    mask-image: linear-gradient(to bottom, black 90%, transparent);
-}
+/* override jquery-ui.css styling for hovering over sidebar tabs */
 
-#sidePanelLegend, #sidePanelLinks {
-    position: relative;
-    z-index: 1; 
-    overflow: auto;
-    background: linear-gradient(white, rgba(255,255,255,0));
-    -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);
-    mask-image: linear-gradient(to bottom, black 50%, transparent);
+.ui-state-hover,
+.ui-state-active,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus,
+.ui-widget-header .ui-state-focus,
+.ui-button,
+.ui-button:hover,
+.ui-button:focus,
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default,
+html .ui-button.ui-state-disabled:hover,
+html .ui-button.ui-state-disabled:active {
+    border: unset;
 }
 
 /* zoom and compass element shifted down below the mapbox logo */
-.mapboxgl-ctrl-top-right{
+.mapboxgl-ctrl-top-right {
     top: 30px
 }
