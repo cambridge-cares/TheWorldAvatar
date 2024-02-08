@@ -1,0 +1,24 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+obe: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+iso:    https://www.theworldavatar.com/kg/ontoisochrone/
+geo:    http://www.opengis.net/ont/geosparql#
+time:   http://www.w3.org/2006/time#
+tw:     https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+mappingId	isochrone_transport
+target		iso:{iri} a iso:Isochrone;
+                iso:assumesTransportMode iso:{transportmode_iri};
+                iso:hasTimeThreshold {minute}^^time:minute;
+                iso:hasRoadCondition iso:{roadcondition_iri};
+                iso:hasTotalPopulation {population}^^xsd:integer;
+                geo:hasGeometry geo:{geometry_iri}.
+            geo:{geometry_iri} a geo:Geometry;
+                geo:asWKT {geom}^^xsd:string.
+            iso:{roadcondition_iri} a iso:{roadcondition}.
+            iso:{transportmode_iri} a iso:{transportmode}.
+source      SELECT minute, transportmode, transportmode_iri, poi_type, iri, roadcondition, roadcondition_iri, geometry_iri, population, ST_AsText(ST_Force2D(geom)) as geom  FROM isochrone_aggregated
+
+]]

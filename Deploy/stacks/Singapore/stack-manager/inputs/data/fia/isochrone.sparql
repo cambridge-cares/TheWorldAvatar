@@ -1,0 +1,28 @@
+PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX iso: <https://www.theworldavatar.com/kg/ontoisochrone/>
+
+SELECT DISTINCT ?Property ?Value ?Unit
+WHERE {
+  SERVICE [ONTOP] {
+    {
+      BIND ("Transport Mode" AS ?Property )
+      [IRI] iso:assumesTransportMode ?transportmode_iri.
+      ?transportmode_iri a ?TransportMode.
+      BIND (replace(str(?TransportMode), str(iso:), '') AS ?Value)
+    } UNION {
+      BIND ("Time Threshold" AS ?Property )
+      [IRI] iso:hasTimeThreshold ?Value.
+      BIND ("minutes" AS ?Unit)
+    } UNION {
+      BIND ("Road Condition" AS ?Property )
+      [IRI] iso:hasRoadCondition ?roadcondition_iri.
+      ?roadcondition_iri a ?RoadCondition.
+      BIND (replace(str(?RoadCondition), str(iso:), '') AS ?Value)
+    } UNION {
+      BIND ("Total Population" AS ?Property )
+      [IRI] iso:hasTotalPopulation ?Value
+    }
+  } 
+}

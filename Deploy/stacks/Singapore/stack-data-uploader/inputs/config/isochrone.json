@@ -1,0 +1,37 @@
+{
+  "name": "isochrone",
+  "database": "postgres",
+  "namespace": "kb",
+  "workspace": "twa",
+  "skip": false,
+  "datasetDirectory": "isochrone",
+  "dataSubsets": [
+    {
+      "name": "isochrone_aggregated",
+      "type": "Vector",
+      "skip": true,
+      "sql": "@/inputs/data/isochrone/results/isochrone_aggregated.sql",
+      "geoServerSettings": {
+        "virtualTable": {
+          "name": "isochrone_aggregated",
+          "sql": "@/inputs/data/isochrone/sql/isochrone.sql",
+          "escapeSql": false,
+          "geometry": {
+            "name": "geometry",
+            "type": "Polygon",
+            "srid": 4326
+          }
+        },
+        "defaultStyle": "polygon"
+      }
+    },
+    {
+      "type": "rdf",
+      "subdirectory": "ontoisochrone",
+      "skip": true
+    }
+  ],
+  "mappings": [
+    "isochrone.obda"
+  ]
+}

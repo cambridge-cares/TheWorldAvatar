@@ -1,0 +1,33 @@
+{
+  "database": "postgres",
+  "workspace": "twa",
+  "skip": false,
+  "datasetDirectory": "buildings",
+  "dataSubsets": [
+    {
+      "name": "mainland",
+      "type": "CityDB",
+      "subdirectory": "jurongisland",
+      "skip": true,
+      "importOptions": {
+        "sridIn": "24500"
+      },
+      "parallelTiling": false,
+      "discoverThematicSurface": false,
+      "createTile": true,
+      "geoServerSettings": {
+        "virtualTable": {
+          "name": "mapbox_layer",
+          "sql": "@/inputs/config/mapbox-footprint.sql",
+          "escapeSql": false,
+          "geometry": {
+            "name": "geometry",
+            "type": "Polygon",
+            "srid": 24500
+          }
+        },
+        "defaultStyle": "polygon"
+      }
+    }
+  ]
+}

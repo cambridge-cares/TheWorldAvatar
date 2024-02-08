@@ -1,0 +1,14 @@
+{
+    "services": {
+        "includes": [
+            "visualisation", "feature-info-agent", "filter-agent"
+        ],
+        "excludes": [   
+        ]
+    },
+    "volumes": {
+        "vis-files": "webspace",
+        "fia-queries": "fia",
+        "filter-queries": "filters"
+    }
+}

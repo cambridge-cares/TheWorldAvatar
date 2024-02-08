@@ -1,0 +1,19 @@
+{
+  "name": "tree",
+  "database": "postgres",
+  "workspace": "twa",
+  "skip": true,
+  "datasetDirectory": "tree",
+  "dataSubsets": [
+    {
+      "name": "tree",
+      "type": "vector",
+      "subdirectory": "heritage",
+      "skip": true,
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "sridOut": "EPSG:4326"
+      }
+    }
+  ]
+}

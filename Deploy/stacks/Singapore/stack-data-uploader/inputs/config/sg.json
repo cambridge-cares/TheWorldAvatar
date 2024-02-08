@@ -1,0 +1,11 @@
+{
+  "name": "sg",
+  "externalDatasets": [
+    "buildings",
+    "isochrone",
+    "landplot",
+    "population",
+    "routing",
+    "tree"
+  ]
+}

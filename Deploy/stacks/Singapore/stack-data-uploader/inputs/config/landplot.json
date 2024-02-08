@@ -1,0 +1,46 @@
+{
+  "database": "postgres",
+  "workspace": "twa",
+  "namespace": {
+    "name": "plot",
+    "properties": {
+      "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true,
+      "com.bigdata.rdf.sail.truthMaintenance": false,
+      "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass": "com.bigdata.rdf.axioms.NoAxioms",
+      "com.bigdata.journal.AbstractJournal.bufferMode": "DiskRW"
+    }
+  },
+  "datasetDirectory": "landplot",
+  "skip": false,
+  "dataSubsets": [
+    {
+      "name": "landplot",
+      "type": "vector",
+      "skip": true,
+      "subdirectory": "plot",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326"
+      },
+      "geoServerSettings": {
+        "virtualTable": {
+          "name": "landplot",
+          "sql": "SELECT CONCAT('https://www.theworldavatar.com/kg/landplot/', ogc_fid) AS iri, \"LU_DESC\", \"lod1Geometry\" AS geom FROM landplot",
+          "escapeSql": false,
+          "geometry": {
+            "name": "geom",
+            "type": "MultiPolygon",
+            "srid": 4326
+          }
+        }
+      }
+    },
+    {
+      "type": "rdf",
+      "subdirectory": "abox",
+      "skip": true
+    }
+  ],
+  "mappings": [
+    "plot.obda"
+  ]
+}

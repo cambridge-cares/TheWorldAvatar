@@ -1,0 +1,18 @@
+{
+    "name": "The World Avatar",
+    "stack": "http://stackendpoint",
+    "sources": [
+      {
+        "id": "buildings",
+        "type": "tiles",
+        "uri": "http://stackendpoint/3dtiles/postgres/citydb/lod2-buildings/tileset.json"
+      }
+    ],
+    "layers": [
+      {
+        "id": "3d-tiles-layer",
+        "name": "Buildings",
+        "source": "buildings"
+      }
+    ]
+  }

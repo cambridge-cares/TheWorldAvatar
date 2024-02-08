@@ -1,0 +1,39 @@
+PREFIX ontoplot:<https://www.theworldavatar.com/kg/ontoplot/>
+PREFIX opr: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
+PREFIX ontozoning:<https://www.theworldavatar.com/kg/ontozoning/>
+PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+  {
+    BIND ("Land Use Classification" AS ?Property )
+    ?landusetype_instance rdfs:label ?Value.
+    SERVICE [ONTOP] {
+      [IRI] ontozoning:hasLandUseType ?landusetype_instance;.
+    }
+  } UNION {
+    SERVICE [ONTOP] {
+      { 
+        BIND ("Gross Plot Ratio" AS ?Property)        
+        OPTIONAL {
+          ?regulation opr:allowsGrossPlotRatio/om:hasValue/om:hasNumericalValue ?gpr;
+            opr:appliesTo [IRI].
+        }
+        OPTIONAL {
+          [IRI] opr:isAwaitingDetailedGPREvaluation ?awaiting_detailed_evaluation.
+        }
+        BIND(IF(BOUND(?gpr), ?gpr, IF(?awaiting_detailed_evaluation = true, "Awaiting detailed evaluation", "")) AS ?Value)
+      } UNION {
+        BIND ("Plot Area" AS ?Property)
+        BIND ("sqm" AS ?Unit)
+        [IRI] ontoplot:hasPlotArea/om:hasValue/om:hasNumericalValue ?Value.
+      } UNION {
+        BIND ("Gross Floor Area" AS ?Property)
+        BIND ("sqm" AS ?Unit)
+        [IRI] ontoplot:hasMaximumPermittedGPR/om:hasValue/om:hasNumericalValue ?Value.
+      }
+    }
+  } 
+}

@@ -1,0 +1,22 @@
+{
+    "queries": [
+        {
+            "id": "plots",
+            "class": "https://www.theworldavatar.com/kg/ontoplot/Plot",
+            "metaFile": "plot.sparql",
+            "timeFile": ""
+        },  {
+            "id": "building",
+            "class": "https://w3id.org/bot#Building",
+            "meta" : {
+                "queryFile": "building.sparql"
+            }
+        },  {
+            "id": "Isochrone",
+            "class": "https://www.theworldavatar.com/kg/ontoisochrone/Isochrone",
+            "meta" : {
+                "queryFile": "isochrone.sparql"
+            }
+        }
+    ]
+}

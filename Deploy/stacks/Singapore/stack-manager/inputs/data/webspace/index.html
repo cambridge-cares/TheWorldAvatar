@@ -1,0 +1,276 @@
+<html>
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <!-- ===== CUSTOMISABLE ===== -->
+    <title>TWA-VF: Mapbox</title>
+    <!-- ===== CUSTOMISABLE ===== -->
+
+    <!-- JS -->
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+    <script
+        src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
+    <script src="./lib/twa-vf.min.js" charset="utf-8"></script>
+
+    <!-- ===== CUSTOMISABLE ===== -->
+    <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
+    <script src="./component/component.min.js" charset="utf-8"></script>
+    <!-- ===== CUSTOMISABLE ===== -->
+
+    <!-- CSS -->
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css"
+        rel="stylesheet">
+    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+    <link href="./lib/twa-vf.min.css" rel="stylesheet" />
+
+    <!-- ===== CUSTOMISABLE ===== -->
+    <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
+    <link href="./component/component.min.css" rel="stylesheet" />
+    <link href="./component/legend.css" rel="stylesheet" />
+    <!-- ===== CUSTOMISABLE ===== -->
+
+</head>
+
+<body>
+    <!-- Container the map will be added to -->
+    <div id="map"></div>
+
+    <!-- Element for depth of field overlay -->
+    <div id="tiltShift"></div>
+
+    <!-- Element the map controls will be added to (normally on the left) -->
+    <div id="controlsContainer">
+        <div id="controlContainer">
+
+            <!-- Camera controls -->
+            <div id="cameraContainer" class="controlBlock">
+                <div id="controlTitle" class="controlTitle">
+                    <p>Camera</p>
+                    <div class="tooltip">
+                        <label class="switch"><input type="checkbox"
+                                onclick="MapboxUtils.setTiltshift(this.checked)"><span class="slider round">
+                                <p>DoF</p></label>
+                        <span class="tooltiptext">Toggle depth of field effect</span>
+                    </div>
+                </div>
+                <div class="controlContents">
+                    <a href="#" onclick="MapboxUtils.resetCamera()">Reset to default</a><br />
+                </div>
+            </div>
+
+            <!-- Terrain controls -->
+            <div id="terrainContainer" class="controlBlock">
+                <div id="controlTitle" class="controlTitle">
+                    <p>Imagery</p>
+                    <div class="tooltip">
+                        <label class="switch"><input type="checkbox"
+                                onclick="MapboxUtils.set3DTerrain(this.checked)"><span class="slider round">
+                                <p>3D</p></label>
+                        <span class="tooltiptext">Toggle 3D terrain</span>
+                    </div>
+                </div>
+                <div id="imageryContainer" class="controlContents">
+                </div>
+            </div>
+
+            <!-- Layer controls -->
+            <div id="layerContainer" class="controlBlock">
+                <div id="controlTitle" class="controlTitle">
+                    <p>Layers</p>
+                    <div class="tooltip" id="placenameContainer">
+                        <label class="switch"><input type="checkbox" onclick="MapboxUtils.setPlacenames(this.checked)"
+                                checked><span class="slider round">
+                                <p>PNs</p></label>
+                        <span class="tooltiptext">Toggle place names, labels, and roads </span>
+                    </div>
+                </div>
+                <div class="controlContents">
+                    <div id="layerTreeContainer">
+                        <div class="hummingbird-treeview-converter"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenario change control -->
+            <div id="scenarioChangeContainer" class="controlBlock expanded" onclick="manager.showScenarioSelector()">
+                <div class="tooltip">
+                    <p><b>Change scenario</b></p>
+                    <span class="tooltiptext right" style="width: 225px !important;">Change the current scenario</span>
+                    <div id="currentScenarioName" style="font-style: italic; font-size: 8.5pt;"></div>
+                </div>
+            </div>
+
+            <div id="helpandsearch">
+                <!-- Search icon -->
+                <div id="searchIconContainer" class="controlBlock expanded" onclick="manager.openSearch()">
+                    <div class="tooltip" id="coordEditor">
+                        <i class="fas fa-search fa-lg"></i>
+                        <span class="tooltiptext right" style="width: 100px !important;">Feature search</span>
+                    </div>
+                </div>
+
+                <!-- Help icon -->
+                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                    <div class="tooltip" id="coordEditor">
+                        <i class="fas fa-question fa-lg"></i>
+                        <span class="tooltiptext right">Help</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Container for developer info -->
+            <div id="developerContainer" class="controlBlock" style="display: none;">
+                <div class="tooltip" id="coordEditor" style="float: right;">
+                    <i class="fas fa-pencil-alt"
+                        onclick="event.stopPropagation(); manager.getControlHandler().editInfoPanel()"></i>
+                    <span class="tooltiptext">Change map position</span>
+                </div>
+                <div id="coordsContainer" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side panel for content and metadata -->
+    <div id="sidePanel" class="large expanded">
+        <div class="tooltip" id="slideButtonContainer">
+            <i class="fas fa-chevron-right" id="slideButton" width="16px" class="leftButton" height="16px"
+                onclick="manager.getPanelHandler().toggleExpansion()"></i>
+            <span class="tooltiptext">Show/Hide</span>
+        </div>
+        <div class="tooltip" id="expandButtonContainer">
+            <i class="fas fa-compress-alt" id="expandButton" width="16px" class="rightButton" height="16px"
+                onclick="manager.getPanelHandler().toggleMode()"></i>
+            <span class="tooltiptext">Expand/Collapse</span>
+        </div>
+        <div id="sidePanelInner">
+            <ul>
+                <li><a href="#sidePanelGeneral">General</a></li>
+                <li><a href="#sidePanelLegend">Legend</a></li>
+                <li><a href="#sidePanelLinks">Links</a></li>
+            </ul>
+            <div id="sidePanelGeneral">
+                <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
+                <div id="contentContainer"></div>
+            </div>
+            <div id="sidePanelLegend"></div>
+            <div id="sidePanelLinks"></div>
+        </div>
+        <div id="footerContainer">
+            <div id="footerContent"></div>
+        </div>
+        <div id="returnContainer">
+            <div id="innerReturnContainer">
+                <a href="#" onclick="manager.getPanelHandler().returnToDefault()"><i class="fas fa-arrow-left"
+                        width="16px" height="16px"></i> Return</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code entry point -->
+    <script type="module">
+        // Log the version of the TWA-VF being used.
+        getVisVersion().then(result => console.log("Using TWA-VF " + result));
+
+        $("#sidePanelInner").tabs();
+
+        // Create a new manager instance
+        var manager = new Manager(MapProvider.MAPBOX);
+        window.manager = manager;
+
+        // Read credentials
+        var credentialPromise = manager.readCredentials();
+
+        // Only start the map after data definitions have been read.
+        var dataPromise = manager.loadDefinitions();
+
+        // Start when credentials and definitions have been loaded
+        Promise.all([credentialPromise, dataPromise]).then(() => start());
+
+        /**
+         * Starts the visualisation setup process.
+         */
+        function start() {
+            // Initialise the map object
+            manager.initialiseMap();
+
+            // ===== CUSTOMISABLE =====
+            // Set the default content in the "General" tab of the side panel
+            manager.getPanelHandler().setTitle("<h1>Augmented Singapore</h1>");
+            manager.getPanelHandler().setContent(`
+                        <p>This interface offers a window into the rich augmented representation of Singapore within The World Avatar, 
+                            an open digital ecosystem that enables interoperability between software and data and unlocks knowledge and possibilities.
+                        </p>
+
+                        <p>This interface offers the following application: <br><br>
+                            <b>1) Programmatic Plot Finder </b><br>
+                            Developed as part of the Cities Knowledge Graph project, this tool integrates land plot, land uses, and regulatory information 
+                            into one interface to support urban planners in their tasks. Namely, searching for the permissible Gross Floor Area and programmatic usage of each land plot.
+                            <br><br>
+                            <b>2) 3D Visualisation of Buildings </b><br>
+                            A comprehensive visualisation of all buildings in Singapore in Level of Detail 1 (LOD1). Clicking on the buildings displays the cross-domain data associated with the buildings, such as building height, building usages, amongst others.
+                            <br><br>
+                            <b>3) 2D Visualisation of Heritage Trees </b><br>
+                            Heritage tree data obtained from <a href="https://beta.data.gov.sg/collections/2038/view" target="_blank">National Parks Board</a>, containing information on the species name, common name, and location where the species in commonly found in Singapore.
+                        </p>
+                    `);
+
+            manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+            manager.getPanelHandler().addWaveAnimation();
+            // ===== CUSTOMISABLE =====
+
+            // Save general tab state as default
+            manager.getPanelHandler().storeDefault();
+
+            // Once the underlying style has loaded...
+            MapHandler.MAP.on("style.load", function () {
+
+                // Load registered images and linked files
+                manager.loadImagesAndLinks().then(() => {
+
+                    // Check if the settings contains a scenarios endpoint
+                    let scenariosEnabled = manager.checkForScenarios();
+                    if (scenariosEnabled) {
+                        // Show the scenario selection pane
+                        manager.showScenarioSelector();
+
+                    } else {
+                        // Plot the default visible data
+                        manager.plotData();
+                    }
+                });
+                // Set customised legend in panel
+                var htmlContent = 
+                    "<div class='legend-container'> " +
+                        "<h2>Legend</h2><br/>" +
+                        "<div class='legend-colorbar-label'><p>Population density</p></div>" +
+                        "<div class='legend-colorbar-container'>" +
+                            "<div class='legend-colorbar white-red-gradient'>" +
+                                "<span class='legend-color-label'>0</span>" +
+                                "<span class='legend-color-label'>50</span>" +
+                            "</div>" +
+                        "</div>"+
+                    "</div>";
+                manager.getPanelHandler().setLegend(htmlContent);
+                // Retrieve the sibling container where you wish to insert the new component before it
+                let beforeSiblingContainer = document.getElementById("helpandsearch");
+                // Create a new custom component
+                let custom_component = new SeachEntityComponent("Search Land Plot", MapHandler.MAP, { stackUrl: "http://endpoint", plotNamespace: "plot", layerId: "0.sglandplot" });
+                // Render the custom component before the sibling container
+                custom_component.render(beforeSiblingContainer);
+            });
+        }
+    </script>
+</body>
+
+</html>
