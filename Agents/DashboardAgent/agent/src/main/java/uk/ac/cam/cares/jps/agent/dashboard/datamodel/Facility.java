@@ -3,57 +3,84 @@ package uk.ac.cam.cares.jps.agent.dashboard.datamodel;
 import java.util.*;
 
 /**
- * A class holding the required information to support the enforcement of the Organisation data model.
- * This class cannot be accessed outside the subpackage, and is intended to be a data model for holding facility information.
+ * This data model stores the items and thresholds by group within a facility for interactions with the knowledge graph.
  *
  * @author qhouyee
  */
-public class Facility {
+class Facility {
     private final String facilityName;
-    // Use a set to ensure unique items
-    private final Set<String> roomsAndAssets = new HashSet<>();
+    private final Map<String, Queue<String>> itemCatalog;
+    private final Map<String, Threshold> itemThresholdCatalog;
+    private final Set<String> existingItems;
 
     /**
-     * Standard Constructor. This will store the facility name and its corresponding rooms or assets that is within the facility.
+     * Standard Constructor.
      *
-     * @param facilityName     The name of the facility.
-     * @param roomOrAssetName  The name of the room or asset found in the facility.
+     * @param facilityName The name of the facility.
      */
-    protected Facility(String facilityName, String roomOrAssetName) {
+    protected Facility(String facilityName) {
         this.facilityName = facilityName;
-        this.roomsAndAssets.add(roomOrAssetName);
+        this.itemCatalog = new HashMap<>();
+        this.itemThresholdCatalog = new HashMap<>();
+        this.existingItems = new HashSet<>();
     }
 
     /**
-     * Adds the name of a room or asset found within the same facility.
-     *
-     * @param roomOrAssetName  The name of the room or asset found in the facility.
+     * A getter method to retrieve this facility's name
      */
-    protected void addItem(String roomOrAssetName) {
-        this.roomsAndAssets.add(roomOrAssetName);
+    protected String getName() {
+        return this.facilityName;
     }
 
     /**
-     * A getter method for facility name.
-     */
-    protected String getFacilityName() {return this.facilityName;}
-
-    /**
-     * A getter method to retrieve all assets and rooms within this facility.
+     * Stores the item and item group found within the same facility.
      *
-     * @return An array containing the facility name in the first position, followed by the associated assets and rooms in the facility.
+     * @param name      The name of the item within the facility.
+     * @param itemGroup The item group.
      */
-    protected String[] getFacilityData() {
-        // Initialise a new string array of the total count of rooms and assets and one extra slot for the facility name
-        String[] metadata = new String[this.roomsAndAssets.size() + 1];
-        // Add the facility name in the first position
-        metadata[0] = this.getFacilityName();
-        // Add all remaining items into the remaining slots of the array
-        int counter = 1; // Use a counter to keep track of position
-        for (String item : this.roomsAndAssets) {
-            metadata[counter] = item;
-            counter++;
+    protected void addItem(String name, String itemGroup) {
+        if (!this.existingItems.contains(name)) {
+            this.itemCatalog.computeIfAbsent(itemGroup, k -> new ArrayDeque<>()).offer(name);
+            this.existingItems.add(name);
         }
-        return metadata;
     }
+
+    /**
+     * Stores the thresholds of a specific attribute and item group for the whole facility.
+     * Note that duplicate measure and item groups are ignored.
+     *
+     * @param itemGroup    The item group.
+     * @param measureName  The name of the quantifiable attribute belonging to this room.
+     * @param minThreshold Minimum threshold value for the measure.
+     * @param maxThreshold Maximum threshold value for the measure.
+     */
+    protected void addThresholds(String itemGroup, String measureName, String minThreshold, String maxThreshold) {
+        this.itemThresholdCatalog.computeIfAbsent(itemGroup, k -> new Threshold())
+                .addThreshold(measureName, minThreshold, maxThreshold);
+    }
+
+    /**
+     * A getter method to retrieve all item groups such as assets, rooms, and systems within this facility.
+     *
+     * @return A queue of all available item groups.
+     */
+    protected Queue<String> getItemGroups() {
+        Queue<String> groups = new ArrayDeque<>();
+        if (!this.itemCatalog.isEmpty()) {
+            groups.addAll(this.itemCatalog.keySet());
+        }
+        return groups;
+    }
+
+    /**
+     * A getter method to retrieve all item names belonging to the specified item group within this facility.
+     *
+     * @return A queue of all available item names for that group.
+     */
+    protected Queue<String> getItemNames(String itemGroup) {return new ArrayDeque<>(this.itemCatalog.getOrDefault(itemGroup, new ArrayDeque<>()));}
+
+    /**
+     * A getter method to retrieve the thresholds associated with the specified item group in this facility.
+     */
+    protected Threshold getThresholds(String itemGroup) {return this.itemThresholdCatalog.getOrDefault(itemGroup, null);}
 }

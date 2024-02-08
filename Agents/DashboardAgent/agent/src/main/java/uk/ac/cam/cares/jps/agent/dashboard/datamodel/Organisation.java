@@ -3,169 +3,165 @@ package uk.ac.cam.cares.jps.agent.dashboard.datamodel;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
- * A class storing the required information to display the time series of all facilities associated with an organisation in the dashboard.
+ * A data model storing the required information to display the time series of all facilities associated with an organisation in the dashboard.
+ * This will be the main interface with external classes.
  *
  * @author qhouyee
  */
 public class Organisation {
-    // Key value pair is asset name and its stored information respectively
-    private final Map<String, Asset> assets = new HashMap<>();
-    private final Map<String, Room> rooms = new HashMap<>();
-    private final Map<String, TechnicalSystem> systems = new HashMap<>();
-    private final Queue<String[]> facilityThresholds = new ArrayDeque<>();
-    private final Set<String> uniqueThresholds = new HashSet<>();
-    private final Map<String, Facility> facilities = new HashMap<>();
+    private boolean hasRooms = false;
+    private boolean hasSystems = false;
+    private final String organisationName;
+    private final List<String> itemGroups;
+    private final Map<String, ItemGroup> itemCatalog;
+    private final Map<String, Facility> facilities;
 
     /**
      * Constructor to initialise an organisation object.
      */
-    public Organisation() {
-        // Results may return nothing, so the organisation can be empty
+    public Organisation(String organisationName) {
+        this.organisationName = organisationName;
+        this.itemGroups = new ArrayList<>();
+        this.facilities = new HashMap<>();
+        this.itemCatalog = new HashMap<>();
     }
 
     /**
-     * A getter method to retrieve all available rooms, assets and their corresponding time series and information in the facilities managed by an organisation.
-     * Format: {asset1: [measure1, dataIRI, timeseriesIRI, unit, assetType], [measure2, dataIRI, timeseriesIRI, null(if no unit), assetType]],
-     *          room1: [[measureName, dataIRI, timeseriesIRI, unit, rooms], [measureName, dataIRI, timeseriesIRI, unit, rooms]], ...],
-     *          system1: [[measureName, dataIRI, timeseriesIRI, unit, systems], [measureName, dataIRI, timeseriesIRI, unit, systems]], ...],
-     *          facilities: [[facility1, asset1InFacility1,system1InFacility1,...],[facility2, room1InFacility2,...]]
-     *          thresholds: [[measureName, min, max],...]}
-     *
-     * @return A map linking all assets and rooms to their measures.
+     * A getter method to retrieve this organisation's name
      */
-    public Map<String, Queue<String[]>> getAllMeasures() {
-        // For all assets, store them in a map with their asset type as a key and individual asset names as values
-        Map<String, Queue<String[]>> measures = new HashMap<>();
-        for (Asset asset : this.assets.values()) {
-            String assetName = asset.getAssetName();
-            measures.put(assetName, asset.getAssetData());
-        }
-        for (Room room : this.rooms.values()) {
-            String roomName = room.getRoomName();
-            measures.put(roomName, room.getRoomData());
-        }
-        for (TechnicalSystem system : this.systems.values()) {
-            String systemName = system.getName();
-            measures.put(systemName, system.getData());
-        }
-        // Retrieve all facility data through the use of streams and collect them as a queue
-        Queue<String[]> facilityDataQueue = this.facilities.values()
-                .stream()
-                .map(Facility::getFacilityData)
-                .collect(Collectors.toCollection(ArrayDeque::new));
-        // If the queue has values, add the facility key
-        if (!facilityDataQueue.isEmpty()) measures.put(StringHelper.FACILITY_KEY, facilityDataQueue);
-        // Only add the thresholds if there are values
-        if (!this.facilityThresholds.isEmpty()) measures.put(StringHelper.THRESHOLD_KEY, this.facilityThresholds);
-        return measures;
+    public String getName() {
+        return this.organisationName;
     }
 
     /**
-     * Add a room into this class.
+     * Stores the metadata of an item found within the specified facility.
      *
-     * @param facilityName  Name of the facility that the asset is found in.
-     * @param roomName      Name of the room to be included.
-     * @param unit          Measure unit symbol
-     * @param measureIri    Corresponding dataIRI of the measure associated with the room.
-     * @param timeSeriesIri Corresponding time series IRI of the measure.
+     * @param facilityName  The name of the facility.
+     * @param itemName      The name of the item within the facility.
+     * @param itemGroup     The item group of interest.
+     * @param measureName   The name of the quantifiable attribute belonging to this item.
+     * @param unit          Unit symbol for the attribute.
+     * @param measureIri    Corresponding dataIRI of the measure associated with the item.
+     * @param timeSeriesIri Corresponding time series IRI of the measure associated with the item.
      */
-    public void addRoom(String facilityName, String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        this.addFacilityItem(facilityName, roomName);
-        // Check if the room already exists in the map using its name as a key
-        if (this.rooms.containsKey(roomName)) {
-            // If there is a preceding room object, add only the measure to the right room
-            Room room = this.rooms.get(roomName);
-            room.addMeasure(measureName, unit, measureIri, timeSeriesIri);
-        } else {
-            // If it does not exist, create a new room and add it into the map
-            Room room = new Room(roomName, measureName, unit, measureIri, timeSeriesIri);
-            this.rooms.put(roomName, room);
+    public void addFacilityItem(String facilityName, String itemName, String itemGroup, String measureName, String unit, String measureIri, String timeSeriesIri) {
+        this.facilities.computeIfAbsent(facilityName, k -> new Facility(facilityName)).addItem(itemName, itemGroup);
+        this.itemCatalog.computeIfAbsent(itemGroup, k -> new ItemGroup()).addMeasure(measureName, unit, itemName, measureIri, timeSeriesIri);
+        if (itemGroup.equals(StringHelper.ROOM_KEY)) {
+            this.hasRooms = true;
+        } else if (itemGroup.equals(StringHelper.SYSTEM_KEY)) {
+            this.hasSystems = true;
         }
     }
 
     /**
-     * Add an asset into this class.
+     * Stores the thresholds of a specific attribute and item group for the specified facility.
+     * Note that duplicate measure and item groups are ignored.
      *
-     * @param facilityName  Name of the facility that the asset is found in.
-     * @param assetName     Name of the asset to be included.
-     * @param assetType     Type of the asset to be included.
-     * @param unit          Measure unit symbol
-     * @param measureIri    Corresponding dataIRI of the measure associated with the asset.
-     * @param timeSeriesIri Corresponding time series IRI of the measure.
+     * @param facilityName The name of the facility.
+     * @param itemGroup    The item group of interest.
+     * @param measureName  The name of the quantifiable attribute belonging to this room.
+     * @param minThreshold Minimum threshold value for the measure.
+     * @param maxThreshold Maximum threshold value for the measure.
      */
-    public void addAsset(String facilityName, String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        this.addFacilityItem(facilityName, assetName);
-        // Check if the asset already exists in the map using its name as a key
-        if (this.assets.containsKey(assetName)) {
-            // If there is a preceding asset object, add only the measure to the right asset
-            Asset asset = this.assets.get(assetName);
-            asset.addMeasure(measureName, unit, measureIri, timeSeriesIri);
-        } else {
-            // If it does not exist, create a new asset and add it into the map
-            Asset element = new Asset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
-            this.assets.put(assetName, element);
-        }
+    public void addThresholds(String facilityName, String itemGroup, String measureName, String minThreshold, String maxThreshold) {
+        this.facilities.get(facilityName).addThresholds(itemGroup, measureName, minThreshold, maxThreshold);
     }
 
     /**
-     * Add a system into this class.
+     * Add the time series metadata for the specified item group and measure.
      *
-     * @param facilityName  Name of the facility that the system is found in.
-     * @param systemName    Name of the system to be included.
-     * @param unit          Measure unit symbol
-     * @param measureIri    Corresponding dataIRI of the measure associated with the system.
-     * @param timeSeriesIri Corresponding time series IRI of the measure.
+     * @param itemGroup   The item group of interest.
+     * @param measureName The name of the quantifiable attribute belonging to this item group.
+     * @param itemName    The name for an item which has this quantifiable attribute.
+     * @param column      Corresponding column name storing the measure associated with the item.
+     * @param table       Corresponding table name storing the measure associated with the item.
+     * @param database    Corresponding database name storing the measure associated with the item.
      */
-    public void addSystem(String facilityName, String systemName, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        this.addFacilityItem(facilityName, systemName);
-        // Check if the system already exists in the map using its name as a key
-        if (this.systems.containsKey(systemName)) {
-            // If there is a preceding room object, add only the measure to the right system
-            TechnicalSystem system = this.systems.get(systemName);
-            system.addMeasure(measureName, unit, measureIri, timeSeriesIri);
-        } else {
-            // If it does not exist, create a new technical system and add it into the map
-            TechnicalSystem system = new TechnicalSystem(systemName, measureName, unit, measureIri, timeSeriesIri);
-            this.systems.put(systemName, system);
-        }
+    public void addTimeSeries(String itemGroup, String measureName, String itemName, String column, String table, String database) {
+        this.itemCatalog.get(itemGroup).addTimeSeries(measureName, itemName, column, table, database);
     }
 
     /**
-     * Add the thresholds based on measures into this class.
-     *
-     * @param measureName  Name of the measure.
-     * @param minThreshold Min threshold set for this measure in this facility.
-     * @param maxThreshold Max threshold set for this measure in this facility.
+     * Retrieve the various facilities managed by this organisation.
      */
-    public void addThresholds(String measureName, String minThreshold, String maxThreshold) {
-        String[] thresholdData = new String[]{measureName, minThreshold, maxThreshold};
-        // Verify if this threshold has already been added for the same measure
-        if (!this.uniqueThresholds.contains(String.join("", thresholdData))) {
-            // If not, add it to the queue and the set
-            this.facilityThresholds.offer(thresholdData);
-            this.uniqueThresholds.add(String.join("", thresholdData));
-        }
+    public Queue<String> getFacilities() {
+        Queue<String> results = new ArrayDeque<>();
+        this.facilities.values().forEach(facility -> results.offer(facility.getName()));
+        return results;
     }
 
     /**
-     * Add the associated asset or room for the facility into the facility mapping.
-     *
-     * @param facilityName Name of the facility.
-     * @param itemName     Name of the asset or room in the facility.
+     * Retrieve all available item groups managed under this organisation.
      */
-    private void addFacilityItem(String facilityName, String itemName) {
-        // Check if there is an existing facility
-        if (this.facilities.containsKey(facilityName)) {
-            // If there is one, add the room name to the existing contents
-            Facility facility = this.facilities.get(facilityName);
-            facility.addItem(itemName);
-        } else {
-            // If it does not exist, create a new facility object with the facility and room name
-            Facility facility = new Facility(facilityName, itemName);
-            this.facilities.put(facilityName, facility);
+    public List<String> getAllItemGroups() {
+        // Only attempt to retrieve if it hasn't been processed before
+        // Results should be cached to reduce expensive runtime calls
+        if (this.itemGroups.isEmpty()) {
+            Set<String> tempGroups = new HashSet<>();
+            // Ensure that room and system are the first two results
+            if (this.hasRooms) this.itemGroups.add(StringHelper.ROOM_KEY);
+            if (this.hasSystems) this.itemGroups.add(StringHelper.SYSTEM_KEY);
+            this.facilities.values().forEach(facility -> tempGroups.addAll(facility.getItemGroups()));
+            tempGroups.forEach(current -> {
+                if (!current.equals(StringHelper.ROOM_KEY) && !current.equals(StringHelper.SYSTEM_KEY)) {
+                    this.itemGroups.add(current);
+                }
+            });
         }
+        return this.itemGroups;
+    }
+
+    /**
+     * Retrieve all the item names grouped by facility for the specified item group.
+     *
+     * @param itemGroup The item group of interest.
+     * @return A queue of string arrays containing item and facility name in this sequence.
+     */
+    public Queue<String[]> getFacilityItemInventory(String itemGroup) {
+        Queue<String[]> itemInventory = new ArrayDeque<>();
+        this.facilities.values().forEach(facility -> {
+            Queue<String> currentNames = facility.getItemNames(itemGroup);
+            currentNames.forEach(itemName -> itemInventory.offer(new String[]{itemName, facility.getName()}));
+        });
+        return itemInventory;
+    }
+
+    /**
+     * Retrieve all thresholds for the specified item group across all facilities managed under this organisation.
+     *
+     * @param itemGroup The item group of interest.
+     */
+    public Queue<Threshold> getThresholds(String itemGroup) {
+        Queue<Threshold> thresholds = new ArrayDeque<>();
+        this.facilities.values().forEach(facility -> {
+            Threshold currentThreshold = facility.getThresholds(itemGroup);
+            if (currentThreshold != null) thresholds.offer(currentThreshold);
+        });
+        return thresholds;
+    }
+
+    /**
+     * Retrieve all available measures associated with the specified item group across all facilities managed under this organisation.
+     *
+     * @param itemGroup The item group of interest.
+     */
+    public Set<String> getAllMeasureNames(String itemGroup) {
+        Set<String> measureNames = new HashSet<>();
+        Queue<Measure> measures = this.itemCatalog.get(itemGroup).getMeasures();
+        measures.forEach(measure -> measureNames.add(measure.getName()));
+        return measureNames;
+    }
+
+    /**
+     * Retrieve the specified measure associated with the specified item group across all facilities managed under this organisation.
+     *
+     * @param itemGroup   The item group of interest.
+     * @param measureName The name of the quantifiable attribute belonging to this item.
+     */
+    public Measure getMeasure(String itemGroup, String measureName) {
+        return this.itemCatalog.get(itemGroup).getMeasure(measureName);
     }
 }

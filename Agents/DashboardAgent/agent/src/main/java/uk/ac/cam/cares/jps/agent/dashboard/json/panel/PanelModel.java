@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel;
 
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Organisation;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.LayoutTemplate;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.DefaultGrafanaPanel;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TemplatePanel;
@@ -26,37 +27,27 @@ public class PanelModel {
      * Constructor that process customisable options for the panels in Grafana's JSON model.
      *
      * @param databaseConnectionMap A map linking each database to its connection ID.
-     * @param timeSeries            A map of all assets and rooms mapped to their time series.
+     * @param organisation          A data model containing all time series information within the specified organisation.
      */
-    public PanelModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
+    public PanelModel(Map<String, String> databaseConnectionMap, Organisation organisation) {
         // Row numbers to compute y positions; Initialise from 0
         this.rowNumber = 0; // Each row correspond to one item group
-        // Generate the syntax for all room-related panels if available
-        // Note to start with room as it has additional thresholds keys
-        if (timeSeries.containsKey(StringHelper.ROOM_KEY)) {
-            // Room-related panels are designed to be at the top based on their topological hierarchy
-            // Generate all the panels and store them into a queue
-            Queue<TemplatePanel[]> panelQueue = LayoutTemplate.genRoomLayoutTemplate(timeSeries.get(StringHelper.ROOM_KEY), databaseConnectionMap);
-            separateRoomMeasurePerRow(panelQueue);
-            // Remove the room values once it has been processed
-            timeSeries.remove(StringHelper.ROOM_KEY);
-        }
-        // Generate the syntax for all system-related panels if available
-        if (timeSeries.containsKey(StringHelper.SYSTEM_KEY)) {
-            // Room-related panels are designed to be at the top based on their topological hierarchy
-            // Generate all the panels and store them into a queue
-            Queue<TemplatePanel[]> panelQueue = LayoutTemplate.genSystemsLayoutTemplate(timeSeries.get(StringHelper.SYSTEM_KEY), databaseConnectionMap);
-            groupPanelsAsRow(StringHelper.SYSTEM_KEY, panelQueue);
-            // Remove the systems values once it has been processed
-            timeSeries.remove(StringHelper.SYSTEM_KEY);
-        }
-        // For each item group that is not a room or system
-        for (Map.Entry<String, Map<String, List<String[]>>> entry : timeSeries.entrySet()) {
-            String currentItemGroup = entry.getKey();
-            Map<String, List<String[]>> currentItemMeasureMap = entry.getValue();
-            Queue<TemplatePanel[]> panelQueue = LayoutTemplate.genAssetLayoutTemplate(currentItemGroup, currentItemMeasureMap, databaseConnectionMap);
-            groupPanelsAsRow(currentItemGroup, panelQueue);
-        }
+        organisation.getAllItemGroups().forEach(group ->{
+            Queue<TemplatePanel[]> panelQueue;
+            switch (group){
+                case StringHelper.ROOM_KEY:
+                    panelQueue = LayoutTemplate.genRoomLayoutTemplate(organisation, databaseConnectionMap);
+                    separateRoomMeasurePerRow(panelQueue);
+                    break;
+                case StringHelper.SYSTEM_KEY:
+                    panelQueue = LayoutTemplate.genSystemsLayoutTemplate(organisation, databaseConnectionMap);
+                    groupPanelsAsRow(group, panelQueue);
+                    break;
+                default:
+                    panelQueue = LayoutTemplate.genAssetLayoutTemplate(group, organisation, databaseConnectionMap);
+                    groupPanelsAsRow(group, panelQueue);
+            }
+        });
     }
 
     /**
@@ -84,7 +75,7 @@ public class PanelModel {
             String measureName = firstPanel.getMeasure();
             // Generate a row title, which may include unit if available
             String title = StringHelper.addSpaceBetweenCapitalWords(measureName);
-            title = firstPanel.getUnit().equals("null") ? title : title + "[" + firstPanel.getUnit() + "]";
+            title = firstPanel.getUnit() == null ? title : title + "[" + firstPanel.getUnit() + "]";
             // Populate a new empty queue with only one array for this measure
             Queue<TemplatePanel[]> intermediateQueue = new ArrayDeque<>();
             intermediateQueue.offer(roomPanels);

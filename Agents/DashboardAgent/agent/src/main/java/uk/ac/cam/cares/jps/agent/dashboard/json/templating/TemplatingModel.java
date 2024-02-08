@@ -1,10 +1,11 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Measure;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Organisation;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.TemporalInterval;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * A Java representation of a JSON-like model that encapsulates and enforces information
@@ -21,41 +22,15 @@ public class TemplatingModel {
      * Constructor that process customisable options for the templating variable in Grafana's JSON model.
      *
      * @param databaseConnectionMap A map linking each database to its connection ID.
-     * @param timeSeries            A map of all assets and rooms mapped to their time series.
+     * @param organisation          The organisation's time series data model.
      */
-    public TemplatingModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
-        // Initialise a queue to store these template variables
-        Queue<TemplateVariable> variableQueue = new ArrayDeque<>();
-        if (!timeSeries.isEmpty()) {
-            // If there are values, retrieve the first connection ID, as the postgres variables in Grafana requires a connection ID to function
-            // But for processing facility items, any ID will do and does not matter
-            String connectionID = databaseConnectionMap.values().iterator().next();
-            genTemporalSelectors(connectionID);
-            genFacilityItemFilters(timeSeries, connectionID);
-        }
-        // For each asset type or rooms available
-        for (Map.Entry<String, Map<String, List<String[]>>> entry : timeSeries.entrySet()) {
-            String item = entry.getKey();
-            Map<String, List<String[]>> measures = entry.getValue();
-            // For each of the measures, create a postgres variable that is tied to their asset type or room custom variable
-            for (Map.Entry<String, List<String[]>> measureEntry : measures.entrySet()) {
-                String measure = measureEntry.getKey();
-                List<String[]> measureList = measureEntry.getValue();
-                // Take note to exclude the assets, rooms, systems, and threshold keys as they are not required
-                if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY) && !measure.equals(StringHelper.SYSTEM_KEY) && !measure.equals(StringHelper.THRESHOLD_KEY)) {
-                    // Retrieve the relevant database and database ID from the first item
-                    // Assumes that each measure of a specific asset type belongs to only one database
-                    String database = measureList.get(0)[3];
-                    PostgresVariable postgresVariable = new PostgresVariable(measure, item, databaseConnectionMap.get(database), measureList);
-                    variableQueue.offer(postgresVariable);
-                }
-            }
-        }
-        // While there are still items in the queue,
-        while (!variableQueue.isEmpty()) {
-            // Retrieve the variable to be added, as well as remove it from the queue
-            addVariable(variableQueue.poll());
-        }
+    public TemplatingModel(Map<String, String> databaseConnectionMap, Organisation organisation) {
+        // Retrieve the first connection ID, as the postgres variables in Grafana requires a connection ID to function
+        // but any ID will do and does not matter
+        String connectionID = databaseConnectionMap.values().iterator().next();
+        this.genTemporalSelectors(connectionID);
+        this.genFacilityItemFilters(organisation, connectionID);
+        this.genItemMeasureFilters(organisation, connectionID);
     }
 
     /**
@@ -77,68 +52,56 @@ public class TemplatingModel {
      * The second selector is for comparing the reference month with the current month trends.
      */
     private void genTemporalSelectors(String connectionID) {
-        String[] temporalIntervals = new String[]{TemporalInterval.DAILY_OVER_WEEK, TemporalInterval.DAILY_OVER_MONTH, TemporalInterval.WEEKLY_OVER_MONTH, TemporalInterval.MONTHLY};
+        Queue<String> temporalIntervals = new ArrayDeque<>();
+        temporalIntervals.offer(TemporalInterval.DAILY_OVER_WEEK);
+        temporalIntervals.offer(TemporalInterval.DAILY_OVER_MONTH);
+        temporalIntervals.offer(TemporalInterval.WEEKLY_OVER_MONTH);
+        temporalIntervals.offer(TemporalInterval.MONTHLY);
         CustomVariable intervalSelector = new CustomVariable(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION,
                 temporalIntervals, 2, false, false);
         addVariable(intervalSelector);
-        PostgresVariable refMonthSelector = new PostgresVariable(StringHelper.REF_MONTH_VARIABLE_NAME, connectionID,TemporalInterval.getMonthMap());
+        PostgresVariable refMonthSelector = new PostgresVariable(StringHelper.REF_MONTH_VARIABLE_NAME, connectionID, TemporalInterval.getMonthMap());
         addVariable(refMonthSelector);
     }
 
     /**
-     * Generate the facility and item type filters for the dashboard.
+     * Generate the facility and item group filters for the dashboard.
      *
-     * @param timeSeries   A map of all assets and rooms mapped to their time series.
+     * @param organisation The organisation's time series data model.
      * @param connectionId A Grafana connection ID.
      */
-    private void genFacilityItemFilters(Map<String, Map<String, List<String[]>>> timeSeries, String connectionId) {
-        Map<String, List<String[]>> facilityMapping = timeSeries.get(StringHelper.FACILITY_KEY);
-        // Remove the facility key as it is no longer required
-        timeSeries.remove(StringHelper.FACILITY_KEY);
-        // Create a new custom variable for all facilities
-        // Retrieve all keys for the mappings and transformed it into an array for the input
-        CustomVariable facilityFilterOptions = new CustomVariable("Facilities", FACILITY_FILTER_DESCRIPTION, facilityMapping.keySet().toArray(String[]::new), 0);
+    private void genFacilityItemFilters(Organisation organisation, String connectionId) {
+        // Generate the facility filter variable
+        Queue<String> facilityNames = organisation.getFacilities();
+        CustomVariable facilityFilterOptions = new CustomVariable("Facilities", FACILITY_FILTER_DESCRIPTION, facilityNames, 0);
         addVariable(facilityFilterOptions);
-
-        // The next goal is to create a map for item type - either an asset type or room, that is mapped to their facility and individual elements
-        // Format {assetType: {facility1:[asset1, asset2], facility2:[asset3,asset4]}}
-        // This map is necessary to make it easier to generate a postgres variable from the mappings
-        Map<String, Map<String, List<String>>> typeFacilityItemMapping = new HashMap<>();
-        // Inverse the facility mapping so that it is much faster to access
-        Map<String, List<String>> itemToFacilityMapping = inverseMap(facilityMapping);
-        // Iterate through the assets and rooms by type for the mapping
-        for (Map.Entry<String, Map<String, List<String[]>>> entry : timeSeries.entrySet()) {
-            String itemType = entry.getKey();
-            Map<String, List<String[]>> itemTypeContents = entry.getValue();
-            typeFacilityItemMapping.put(itemType, new HashMap<>()); // Initialise an empty map for this item
-            Map<String, List<String>> facilityItemMapping = typeFacilityItemMapping.get(itemType);
-            // Seek to retrieve either the list of individual rooms, assets, or systems associated with this type
-            String nestedKey = StringHelper.ASSET_KEY;
-            if (itemType.equals(StringHelper.ROOM_KEY)) {
-                nestedKey = StringHelper.ROOM_KEY;
-            } else if (itemType.equals(StringHelper.SYSTEM_KEY)) {
-                nestedKey = StringHelper.SYSTEM_KEY;
-            }
-            // Process the list into an array of items
-            String[] itemsArray = itemTypeContents.get(nestedKey).stream().flatMap(Stream::of).distinct().toArray(String[]::new);
-            // Iterate through each item and add into the mapping
-            for (String itemName : itemsArray) {
-                List<String> facilityNames = itemToFacilityMapping.get(itemName); // The facilities that this item belongs to
-                // For each facility
-                for (String facilityName : facilityNames) {
-                    // Initialise a new array list if there is no pre-existing key
-                    if (!facilityItemMapping.containsKey(facilityName))
-                        facilityItemMapping.put(facilityName, new ArrayList<>());
-                    // Add the item accordingly to the list
-                    facilityItemMapping.get(facilityName).add(itemName);
-                }
-            }
-        }
-
-        // Create a postgres variable for each item type that maps each of its items to its associated facility
-        typeFacilityItemMapping.forEach((itemType, associatedItems) -> {
-            PostgresVariable itemFilterOptions = new PostgresVariable(itemType, associatedItems, connectionId);
+        // Generate the item group filter variable for each item group
+        organisation.getAllItemGroups().forEach(itemGroup -> {
+            Queue<String[]> items = organisation.getFacilityItemInventory(itemGroup);
+            PostgresVariable itemFilterOptions = new PostgresVariable(itemGroup, items, connectionId);
             addVariable(itemFilterOptions);
+        });
+    }
+
+    /**
+     * Generate the item measure filters for the dashboard.
+     *
+     * @param organisation The organisation's time series data model.
+     * @param connectionId A Grafana connection ID.
+     */
+    private void genItemMeasureFilters(Organisation organisation, String connectionId) {
+        // Retrieve all associated items and their measures for each group
+        organisation.getAllItemGroups().forEach(group -> {
+            organisation.getAllMeasureNames(group).forEach(measure -> {
+                // Stores the metadata of item name and column name
+                Measure currentMeasure = organisation.getMeasure(group, measure);
+                Queue<String[]> availableMeasureMetadata = currentMeasure.getTimeSeriesData();
+                // Only create a new variable for each measure of an item group if any metadata is available
+                if (!availableMeasureMetadata.isEmpty()) {
+                    PostgresVariable postgresVariable = new PostgresVariable(measure, group, availableMeasureMetadata, connectionId);
+                    addVariable(postgresVariable);
+                }
+            });
         });
     }
 
@@ -152,28 +115,5 @@ public class TemplatingModel {
         if (this.variablesSyntax.length() != 0) this.variablesSyntax.append(",");
         // Construct its syntax and append it to the key syntax
         this.variablesSyntax.append(variable.construct());
-    }
-
-    /**
-     * Inverse the input map to get the mappings for each item to its key. Note that as one item may belong to multiple keys;
-     * the keys are stored as a list instead.
-     *
-     * @param keyToItemsMap A key to items map. Assumes that there is only one array in the list.
-     * @return the inverse map mapping each item to its list of key(s).
-     */
-    private Map<String, List<String>> inverseMap(Map<String, List<String[]>> keyToItemsMap) {
-        Map<String, List<String>> itemToKeyMap = new HashMap<>();
-        for (Map.Entry<String, List<String[]>> entry : keyToItemsMap.entrySet()) {
-            String key = entry.getKey();
-            List<String[]> associatedItems = entry.getValue();
-            String[] values = associatedItems.get(0);
-            for (String item : values) {
-                // Initialise a new list if the key does not exist
-                itemToKeyMap.computeIfAbsent(item, keyList -> new ArrayList<>());
-                // Append directly to the list
-                itemToKeyMap.get(item).add(key);
-            }
-        }
-        return itemToKeyMap;
     }
 }

@@ -85,7 +85,7 @@ class DashboardClientIntegrationTest {
             Mockito.when(mock.getDashboardUser()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER);
             Mockito.when(mock.getDashboardPassword()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
             // Mock that this returns an empty string array as this test is not for creating dashboards
-            Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
+            Mockito.when(mock.getAllOrganisations()).thenReturn(new ArrayList<>());
         })) {
             StackClient mockStackClient = new StackClient();
             DashboardClient client = new DashboardClient(mockStackClient);
@@ -111,7 +111,7 @@ class DashboardClientIntegrationTest {
             Mockito.when(mock.getDashboardUser()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER);
             Mockito.when(mock.getDashboardPassword()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
             // Mock that this returns an empty string array as this test is not for creating dashboards
-            Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
+            Mockito.when(mock.getAllOrganisations()).thenReturn(new ArrayList<>());
         })) {
             StackClient mockStackClient = new StackClient();
             DashboardClient client = new DashboardClient(mockStackClient);
@@ -138,7 +138,7 @@ class DashboardClientIntegrationTest {
             Mockito.when(mock.getDashboardUser()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER);
             Mockito.when(mock.getDashboardPassword()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
             // Mock that this returns an empty string array as this test is not for creating dashboards
-            Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
+            Mockito.when(mock.getAllOrganisations()).thenReturn(new ArrayList<>());
             Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
             Mockito.when(mock.getRdbDomain()).thenReturn(IntegrationTestUtils.TEST_POSTGIS_JDBC);
             Mockito.when(mock.getRdbUser()).thenReturn(IntegrationTestUtils.TEST_POSTGIS_USER);
@@ -168,7 +168,7 @@ class DashboardClientIntegrationTest {
             Mockito.when(mock.getDashboardUser()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER);
             Mockito.when(mock.getDashboardPassword()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
             // Mock that this returns an empty string array as this test is not for creating dashboards
-            Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
+            Mockito.when(mock.getAllOrganisations()).thenReturn(new ArrayList<>());
             Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
             Mockito.when(mock.getRdbDomain()).thenReturn(IntegrationTestUtils.TEST_POSTGIS_JDBC);
             Mockito.when(mock.getRdbUser()).thenReturn(IntegrationTestUtils.TEST_POSTGIS_USER);
@@ -221,7 +221,7 @@ class DashboardClientIntegrationTest {
     void testInitDashboard_Success() {
         // Insert these triples into the blazegraph
         SparqlClientTest.insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
-        SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
+        SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, false);
         // Create password files
         IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_POSTGIS_PASSWORD_PATH, IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
         IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_DASHBOARD_PASSWORD_PATH, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
@@ -250,7 +250,7 @@ class DashboardClientIntegrationTest {
     void testInitDashboard_OverwriteSuccess() {
         // Insert these triples into the blazegraph
         SparqlClientTest.insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
-        SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
+        SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, false);
         // Create password files
         IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_POSTGIS_PASSWORD_PATH, IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
         IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_DASHBOARD_PASSWORD_PATH, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
@@ -280,13 +280,12 @@ class DashboardClientIntegrationTest {
     private static void verifyDashboardContents(Map<String, Object> jsonModel) {
         // Verify the number of panels generated
         List<Map<String, Object>> rows = (List<Map<String, Object>>) jsonModel.get("panels");
-        assertEquals(2, rows.size()); // there should only be two rows generated
+        assertEquals(3, rows.size()); // there should only be two rows generated
         rows.forEach((row) -> {
             String title = row.get("title").toString();
             List<Object> panels = (List<Object>) row.get("panels");
             if (title.contains(SparqlClientTest.RELATIVE_HUMIDITY)) {
                 assertEquals(3, panels.size()); // If the row is for relative humidity, three panels should be generated
-
             } else if (title.equals(StringHelper.addSpaceBetweenCapitalWords(SparqlClientTest.SAMPLE_LAB_SMART_SENSOR_TYPE))) {
                 assertEquals(2, panels.size()); // If the row is for smart sensor, two panels should be generated
 
@@ -295,6 +294,6 @@ class DashboardClientIntegrationTest {
         // Verify the number of templating variables generated
         Map<String, Object> templatingMap = (Map<String, Object>) jsonModel.get("templating");
         List<Object> templateVarList = (List<Object>) templatingMap.get("list");
-        assertEquals(7, templateVarList.size()); // Seven variables should be generated
+        assertEquals(8, templateVarList.size()); // Seven variables should be generated
     }
 }

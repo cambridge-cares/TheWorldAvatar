@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout;
 
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Measure;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Organisation;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Threshold;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.*;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
@@ -23,35 +26,26 @@ public class LayoutTemplate {
      * will be generated, which display the specified measure for the individual assets of the specified type.
      *
      * @param assetType             The asset type.
-     * @param assetMeasures         A map containing all measures and their metadata to construct the panels for this asset.
+     * @param organisation          A data model containing all time series information within the specified organisation.
      * @param databaseConnectionMap A map linking each database to its connection ID.
      * @return A queue containing all the measure panels available for each asset type.
      */
-    public static Queue<TemplatePanel[]> genAssetLayoutTemplate(String assetType, Map<String, List<String[]>> assetMeasures, Map<String, String> databaseConnectionMap) {
+    public static Queue<TemplatePanel[]> genAssetLayoutTemplate(String assetType, Organisation organisation, Map<String, String> databaseConnectionMap) {
         // Generate an empty queue of arrays for generating panels (at most three to accommodate screen resolutions)
         // At the moment, one horizontal row (encapsulated by one array) is designed to contain only at most have 3 panels
         Queue<TemplatePanel[]> panelQueue = new ArrayDeque<>();
-        // For each of the measures, create a set of chart
-        for (Map.Entry<String, List<String[]>> entry : assetMeasures.entrySet()) {
-            String measure = entry.getKey();
-            // Take note to exclude the asset key as that is not required
-            if (!measure.equals(StringHelper.ASSET_KEY)) {
-                // Sort the metadata based on their names to ensure the same order across charts
-                List<String[]> assetTimeSeries = entry.getValue();
-                assetTimeSeries.sort(Comparator.comparing(metadata -> metadata[0]));
-                // Retrieve the relevant database name and ID from the first item
-                // Assumes that each measure of a specific systems belongs to only one database
-                String database = assetTimeSeries.get(0)[3];
-                String databaseID = databaseConnectionMap.get(database);
-                // Assume the unit of each measure for the systems is consistent
-                String unit = assetTimeSeries.get(0)[4];
-                // Generate a gauge and time series chart with no thresholds
-                Gauge gaugePanel = new Gauge(measure, assetType, unit, databaseID, assetTimeSeries, new String[]{});
-                TimeSeriesChart tsChart = new TimeSeriesChart(measure, assetType, unit, databaseID, assetTimeSeries, new String[]{});
-                TemplatePanel[] panelArr = new TemplatePanel[]{gaugePanel, tsChart};
-                panelQueue.offer(panelArr);
-            }
-        }
+        // For each of the measures, create a set of charts
+        organisation.getAllMeasureNames(assetType).forEach(measure -> {
+            Measure currentMeasure = organisation.getMeasure(assetType, measure);
+            // Retrieve the relevant database name and ID from any item
+            // Assumes that each measure of a specific item group belongs to only one database
+            String databaseID = databaseConnectionMap.get(currentMeasure.getTimeSeriesDatabase());
+            // Generate a gauge and time series chart with no thresholds
+            Gauge gaugePanel = new Gauge(currentMeasure, assetType, databaseID, new String[]{}, false);
+            TimeSeriesChart tsChart = new TimeSeriesChart(currentMeasure, assetType, databaseID, new String[]{});
+            TemplatePanel[] panelArr = new TemplatePanel[]{gaugePanel, tsChart};
+            panelQueue.offer(panelArr);
+        });
         return panelQueue;
     }
 
@@ -60,51 +54,37 @@ public class LayoutTemplate {
      * will be generated per measure of rooms. The first gauge chart displays an average latest value of all available rooms,
      * whereas the second displays the individual latest values.
      *
-     * @param roomMeasures          A map containing all measures and their metadata to construct the panels for rooms.
+     * @param organisation          A data model containing all time series information within the specified organisation.
      * @param databaseConnectionMap A map linking each database to its connection ID.
      * @return A queue containing all the measure panels available for the rooms.
      */
-    public static Queue<TemplatePanel[]> genRoomLayoutTemplate(Map<String, List<String[]>> roomMeasures, Map<String, String> databaseConnectionMap) {
+    public static Queue<TemplatePanel[]> genRoomLayoutTemplate(Organisation organisation, Map<String, String> databaseConnectionMap) {
         // Generate an empty queue of arrays for generating panels (at most three to accommodate screen resolutions)
-        // At the moment, one horizontal row (encapsulated by one array) is designed to contain only at most have 3 panels
+        // At the moment, one horizontal row (encapsulated by one array) is designed to contain only at most 3 panels
         Queue<TemplatePanel[]> panelQueue = new ArrayDeque<>();
-        // For non-rooms, thresholds should be empty
-        Map<String, String[]> thresholdMap = new HashMap<>();
-        // If this item group is rooms and have thresholds available, process them
-        if (roomMeasures.containsKey(StringHelper.THRESHOLD_KEY)) {
-            // Retrieve the thresholds and process it for generating the charts
-            List<String[]> thresholdList = roomMeasures.get(StringHelper.THRESHOLD_KEY);
-            thresholdMap = processThresholdsToMap(thresholdList);
-            roomMeasures.remove(StringHelper.THRESHOLD_KEY); // remove the threshold after processing
-        }
-        // For each of the measures, create a set of chart
-        for (Map.Entry<String, List<String[]>> entry : roomMeasures.entrySet()) {
-            String measure = entry.getKey();
-            // Take note to exclude the rooms key as that is not required
-            if (!measure.equals(StringHelper.ROOM_KEY)) {
-                // Sort the metadata based on their names to ensure the same order across charts
-                List<String[]> roomTimeSeries = entry.getValue();
-                roomTimeSeries.sort(Comparator.comparing(metadata -> metadata[0]));
-                // Retrieve the relevant database name and ID from the first item
-                // Assumes that each measure of a specific asset type belongs to only one database
-                String database = roomTimeSeries.get(0)[3];
-                String databaseID = databaseConnectionMap.get(database);
-                // Assume the unit of each measure for the rooms is consistent
-                String unit = roomTimeSeries.get(0)[4];
-                // Retrieves the thresholds if it is available, else, it should return an empty array
-                String[] thresholds = new String[]{};
-                if (!thresholdMap.isEmpty() && thresholdMap.containsKey(measure)) {
-                    thresholds = thresholdMap.get(measure);
-                }
-                // Generate a gauge panel displaying the average of all time series
-                Gauge averageGaugePanel = new Gauge(measure, StringHelper.ROOM_KEY, unit, databaseID, roomTimeSeries, thresholds, true);
-                // Generate a gauge and time series chart
-                Gauge gaugePanel = new Gauge(measure, StringHelper.ROOM_KEY, unit, databaseID, roomTimeSeries, thresholds);
-                TimeSeriesChart tsChart = new TimeSeriesChart(measure, StringHelper.ROOM_KEY, unit, databaseID, roomTimeSeries, thresholds);
-                TemplatePanel[] panelArr = new TemplatePanel[]{averageGaugePanel, gaugePanel, tsChart};
-                panelQueue.offer(panelArr);
+        // Assumes that thresholds are the same for all facilities as  Grafana can only show one set of threshold per panel
+        // WIP: Figure out a better way to display thresholds for the same measure and item group but different facilities
+        Queue<Threshold> thresholdQueue = organisation.getThresholds(StringHelper.ROOM_KEY);
+        Threshold threshold = thresholdQueue.size()>0 ? thresholdQueue.poll() : null;
+        // For each of the measures, create a set of charts
+        organisation.getAllMeasureNames(StringHelper.ROOM_KEY).forEach(measure -> {
+            Measure currentMeasure = organisation.getMeasure(StringHelper.ROOM_KEY, measure);
+            // Retrieve the relevant database name and ID from any item
+            // Assumes that each measure of a specific item group belongs to only one database
+            String databaseID = databaseConnectionMap.get(currentMeasure.getTimeSeriesDatabase());
+            // Retrieves the thresholds if it is available, else, it should return an empty array
+            String[] thresholds = new String[]{};
+            if (threshold!=null && threshold.contains(measure)) {
+                thresholds = threshold.getThreshold(measure);
             }
-        }
+            // Generate a gauge panel displaying the average of all time series
+            Gauge averageGaugePanel = new Gauge(currentMeasure, StringHelper.ROOM_KEY, databaseID, thresholds, true);
+            // Generate a gauge and time series chart
+            Gauge gaugePanel = new Gauge(currentMeasure, StringHelper.ROOM_KEY, databaseID, thresholds, false);
+            TimeSeriesChart tsChart = new TimeSeriesChart(currentMeasure, StringHelper.ROOM_KEY, databaseID, thresholds);
+            TemplatePanel[] panelArr = new TemplatePanel[]{averageGaugePanel, gaugePanel, tsChart};
+            panelQueue.offer(panelArr);
+        });
         return panelQueue;
     }
 
@@ -114,60 +94,37 @@ public class LayoutTemplate {
      * The third variable panel enables users to select the interval periods for the fourth and fifth charts. The fourth chart displays the trends of the measures for the last period.
      * The fifth displays the current period trends.
      *
-     * @param systemMeasures        A map containing all measures and their metadata to construct the panels for systems.
+     * @param organisation          A data model containing all time series information within the specified organisation.
      * @param databaseConnectionMap A map linking each database to its connection ID.
      * @return A queue containing all the measure panels available for the systems.
      */
-    public static Queue<TemplatePanel[]> genSystemsLayoutTemplate(Map<String, List<String[]>> systemMeasures, Map<String, String> databaseConnectionMap) {
+    public static Queue<TemplatePanel[]> genSystemsLayoutTemplate(Organisation organisation, Map<String, String> databaseConnectionMap) {
         // Generate an empty queue of arrays for generating panels (at most three to accommodate screen resolutions)
         Queue<TemplatePanel[]> panelQueue = new ArrayDeque<>();
         String intervalVarChartDescription = "Select the required time interval for the current and last period trends on the right.";
         String refMonthChartDescription = "Select the reference month for comparison with the current month through the charts on the right.";
         // For each of the measures, create a set of chart
-        for (Map.Entry<String, List<String[]>> entry : systemMeasures.entrySet()) {
-            String measure = entry.getKey();
-            // Take note to exclude the systems key as that is not required
-            if (!measure.equals(StringHelper.SYSTEM_KEY)) {
-                // Sort the metadata based on their names to ensure the same order across charts
-                List<String[]> systemTimeSeries = entry.getValue();
-                systemTimeSeries.sort(Comparator.comparing(metadata -> metadata[1]));
-                // Retrieve the relevant database name and ID from the first item
-                // Assumes that each measure of a specific systems belongs to only one database
-                String database = systemTimeSeries.get(0)[3];
-                String databaseID = databaseConnectionMap.get(database);
-                // Assume the unit of each measure for the systems is consistent
-                String unit = systemTimeSeries.get(0)[4];
-                // Generate related panels
-                PieChart distributionPanel = new PieChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries);
-                BarChart currentMonthMeasureChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 1);
-                TemplatePanel[] panelArr = new TemplatePanel[]{distributionPanel, currentMonthMeasureChart};
-                panelQueue.offer(panelArr);
-                VariablePanel timeIntervalChart = new VariablePanel(StringHelper.INTERVAL_VARIABLE_NAME, intervalVarChartDescription);
-                BarChart lastPeriodMeasureChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 2);
-                BarChart currentPeriodMeasureChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 3);
-                panelArr = new TemplatePanel[]{timeIntervalChart, lastPeriodMeasureChart, currentPeriodMeasureChart};
-                panelQueue.offer(panelArr);
-                VariablePanel refMonthChart = new VariablePanel(StringHelper.REF_MONTH_VARIABLE_NAME, refMonthChartDescription);
-                BarChart dailyComparisonChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 4);
-                BarChart weeklyComparisonChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 5);
-                panelArr = new TemplatePanel[]{refMonthChart, dailyComparisonChart, weeklyComparisonChart};
-                panelQueue.offer(panelArr);
-            }
-        }
+        organisation.getAllMeasureNames(StringHelper.SYSTEM_KEY).forEach(measure -> {
+            Measure currentMeasure = organisation.getMeasure(StringHelper.SYSTEM_KEY, measure);
+            // Retrieve the relevant database name and ID from any item
+            // Assumes that each measure of a specific item group belongs to only one database
+            String databaseID = databaseConnectionMap.get(currentMeasure.getTimeSeriesDatabase());
+            // Generate related panels
+            PieChart distributionPanel = new PieChart(currentMeasure, StringHelper.SYSTEM_KEY, databaseID);
+            BarChart currentMonthMeasureChart = new BarChart(currentMeasure, StringHelper.SYSTEM_KEY, databaseID, 1);
+            TemplatePanel[] panelArr = new TemplatePanel[]{distributionPanel, currentMonthMeasureChart};
+            panelQueue.offer(panelArr);
+            VariablePanel timeIntervalChart = new VariablePanel(StringHelper.INTERVAL_VARIABLE_NAME, intervalVarChartDescription);
+            BarChart lastPeriodMeasureChart = new BarChart(currentMeasure, StringHelper.SYSTEM_KEY, databaseID, 2);
+            BarChart currentPeriodMeasureChart = new BarChart(currentMeasure, StringHelper.SYSTEM_KEY, databaseID, 3);
+            panelArr = new TemplatePanel[]{timeIntervalChart, lastPeriodMeasureChart, currentPeriodMeasureChart};
+            panelQueue.offer(panelArr);
+            VariablePanel refMonthChart = new VariablePanel(StringHelper.REF_MONTH_VARIABLE_NAME, refMonthChartDescription);
+            BarChart dailyComparisonChart = new BarChart(currentMeasure, StringHelper.SYSTEM_KEY, databaseID, 4);
+            BarChart weeklyComparisonChart = new BarChart(currentMeasure, StringHelper.SYSTEM_KEY, databaseID, 5);
+            panelArr = new TemplatePanel[]{refMonthChart, dailyComparisonChart, weeklyComparisonChart};
+            panelQueue.offer(panelArr);
+        });
         return panelQueue;
-    }
-
-    /**
-     * Process the threshold list into a map so that it is easier to retrieve thresholds from.
-     *
-     * @param thresholdList A list of the threshold metadata.
-     * @return A map in the form of {measure: [min, max]}.
-     */
-    private static Map<String, String[]> processThresholdsToMap(List<String[]> thresholdList) {
-        Map<String, String[]> thresholdMap = new HashMap<>();
-        for (String[] threshold : thresholdList) {
-            thresholdMap.put(threshold[0], new String[]{threshold[1], threshold[2]});
-        }
-        return thresholdMap;
     }
 }

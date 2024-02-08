@@ -24,6 +24,7 @@ public class UnitMapper {
 
     // Method to get the string syntax for a given unit
     public static String getUnitSyntax(String unit) {
+        if (unit == null) return "";
         // Get the unit syntax for Grafana if it exists in the map. Otherwise, simply return the unit input
         return UNIT_MAP.getOrDefault(unit.toLowerCase(), unit);
     }

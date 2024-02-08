@@ -1,100 +1,84 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Measure;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.options.TransformationOptionsTest;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PieChartTest {
-    private static final List<String[]> SAMPLE_METADATA = new ArrayList<>();
-    private static final String SAMPLE_MEASURE = "ElectricalConsumption";
-    private static final String SAMPLE_UNIT = "kwh";
     private static final String SAMPLE_DATABASE_ID = "3831j";
-    private static final String SAMPLE_FIRST_SYSTEM_NAME = "Emergency systems";
-    private static final String SAMPLE_FIRST_SYSTEM_COL_NAME = "column4";
-    private static final String SAMPLE_SEC_SYSTEM_NAME = "Kitchen system";
-    private static final String SAMPLE_SEC_SYSTEM_COL_NAME = "column27";
-    private static final String SAMPLE_SYSTEM_TABLE_NAME = "table4";
-    private static final int SAMPLE_PANEL_HEIGHT = 8;
-    private static final int SAMPLE_PANEL_WIDTH = 12;
     private static final int SAMPLE_PANEL_X_POSITION = 1;
     private static final int SAMPLE_PANEL_Y_POSITION = 0;
+    private static final int[] EXPECTED_GEOMETRY_POSITIONS = new int[]{TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
 
-    @BeforeAll
-    static void setup() {
-        SAMPLE_METADATA.add(new String[]{SAMPLE_FIRST_SYSTEM_NAME, SAMPLE_FIRST_SYSTEM_COL_NAME, SAMPLE_SYSTEM_TABLE_NAME});
-        SAMPLE_METADATA.add(new String[]{SAMPLE_SEC_SYSTEM_NAME, SAMPLE_SEC_SYSTEM_COL_NAME, SAMPLE_SYSTEM_TABLE_NAME});
-    }
 
     @Test
     void testConstructor() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_SYSTEM_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Execute the method
-        PieChart chart = new PieChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        PieChart chart = new PieChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID);
         // Verify results
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS), result);
     }
 
     @Test
     void testConstruct_NoUnit() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_SYSTEM_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Construct the object
-        PieChart chart = new PieChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        PieChart chart = new PieChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID);
         // Execute the method
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
-        assertEquals("null", chart.getUnit());
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS), result);
+        assertEquals(sample.getUnit(), chart.getUnit());
     }
 
     @Test
     void testConstruct_WithUnit() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_SYSTEM_TABLE_NAME, SAMPLE_DATABASE_ID, SAMPLE_UNIT};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(true);
         // Construct the object
-        PieChart chart = new PieChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        PieChart chart = new PieChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID);
         // Execute the method
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
-        assertEquals(SAMPLE_UNIT, chart.getUnit());
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS), result);
+        assertEquals(sample.getUnit(), chart.getUnit());
     }
 
     @Test
     void testGetMeasure() {
+        Measure sample = TestUtils.genSampleMeasure(true);
         // Construct the object
-        PieChart chart = new PieChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        PieChart chart = new PieChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID);
         // Execute the method and verify result
-        assertEquals(SAMPLE_MEASURE, chart.getMeasure());
+        assertEquals(sample.getName(), chart.getMeasure());
     }
 
-    public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
-        String titleContent = "Latest " + StringHelper.addSpaceBetweenCapitalWords(metadata[0]) + " distribution";
-        titleContent = metadata[4].equals("null") ? titleContent : titleContent + " [" + metadata[4] + "]";
+    public static String genExpectedResults(Measure measure, String group, String databaseId, int[] geometryPositions) {
+        String measureName = measure.getName();
+        String unit = measure.getUnit();
+        String titleContent = "Latest " + StringHelper.addSpaceBetweenCapitalWords(measureName) + " distribution";
+        titleContent = unit == null ? titleContent : titleContent + " [" + unit + "]";
         // Similar to above
-        String description = "A pie chart displaying the latest distribution for " + metadata[0].toLowerCase() + " of " + metadata[1].toLowerCase();
-        String expectedTransformations = "[" + TransformationOptionsTest.genExpectedOrganizeTransformation(itemDetails, "") + "]";
+        String description = "A pie chart displaying the latest distribution for " + measureName.toLowerCase() + " of " + group.toLowerCase();
+        String expectedTransformations = "[" + TransformationOptionsTest.genExpectedOrganizeTransformation(measure.getTimeSeriesData(), "") + "]";
         // Construct the expected syntax
-        return "{" + TestUtils.genExpectedCommonDefaultGrafanaPanelJson(titleContent, description, "piechart", expectedTransformations, metadata, geometryPositions, "") +
+        return "{" + TestUtils.genExpectedCommonDefaultGrafanaPanelJson(titleContent, description, "piechart", expectedTransformations,
+                databaseId, group, measure, geometryPositions, "") +
                 "\"pluginVersion\":\"10.0.3\"," +
                 "\"fieldConfig\": {" +
                 "\"defaults\": {\"color\": {\"mode\": \"palette-classic\"}," +
                 "\"custom\":{" + "\"hideFrom\":{\"legend\":false,\"tooltip\":false,\"viz\":false}" + "}," +
                 "\"mappings\": []," +
-                "\"unit\":\"" + UnitMapper.getUnitSyntax(metadata[4]) + "\"" +
+                "\"unit\":\"" + UnitMapper.getUnitSyntax(unit) + "\"" +
                 "}," +
                 "\"overrides\": []" +
                 "}," +

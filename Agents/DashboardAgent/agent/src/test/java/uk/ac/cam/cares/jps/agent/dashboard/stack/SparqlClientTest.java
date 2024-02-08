@@ -5,61 +5,84 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.IntegrationTestUtils;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Organisation;
 import uk.ac.cam.cares.jps.agent.dashboard.datamodel.OrganisationTest;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.ThresholdTest;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlQueryTest;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
-import java.util.Map;
-import java.util.Queue;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SparqlClientTest {
-    private static final String SAMPLE_ORGANISATION_NAME = "Org 1";
-    private static final String SAMPLE_BUILDING_INSTANCE = TestUtils.genInstance("Building");
-    private static final String SAMPLE_OFFICE_INSTANCE = TestUtils.genInstance("Office");
+    public static final String SAMPLE_ORGANISATION_NAME = "Org 1";
+    public static final String SAMPLE_BUILDING_INSTANCE = TestUtils.genInstance("Building");
+    public static final String SAMPLE_OFFICE_INSTANCE = TestUtils.genInstance("Office");
     public static final String SAMPLE_OFFICE_NAME = "Admin Office";
-    private static final String SAMPLE_OFFICE_DIRECTOR_ROOM_INSTANCE = TestUtils.genInstance("Room");
-    private static final String SAMPLE_OFFICE_DIRECTOR_ROOM_NAME = "Director's room";
-    private static final String SAMPLE_OFFICE_STAFF_ROOM_INSTANCE = TestUtils.genInstance("Room");
+    public static final String SAMPLE_OFFICE_DIRECTOR_ROOM_INSTANCE = TestUtils.genInstance("Room");
+    public static final String SAMPLE_OFFICE_DIRECTOR_ROOM_NAME = "Director room";
+    public static final String SAMPLE_OFFICE_DIRECTOR_ROOM_TEMPERATURE_MEASURE = TestUtils.genInstance("Measure");
+    public static final String SAMPLE_OFFICE_DIRECTOR_ROOM_TEMPERATURE_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
+    public static final String SAMPLE_OFFICE_STAFF_ROOM_INSTANCE = TestUtils.genInstance("Room");
     public static final String SAMPLE_OFFICE_STAFF_ROOM_NAME = "Staff room";
-    private static final String SAMPLE_OFFICE_STORAGE_ROOM_INSTANCE = TestUtils.genInstance("Room");
-    private static final String SAMPLE_OFFICE_STORAGE_ROOM_NAME = "Staff room";
-    private static final String SAMPLE_OFFICE_SYSTEM_INSTANCE = TestUtils.genInstance("HVAC");
+    public static final String SAMPLE_OFFICE_STAFF_ROOM_REL_HUMIDITY_MEASURE = TestUtils.genInstance("Measure");
+    public static final String SAMPLE_OFFICE_STAFF_ROOM_REL_HUMIDITY_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
+    public static final String SAMPLE_OFFICE_STAFF_ROOM_TEMPERATURE_MEASURE = TestUtils.genInstance("Measure");
+    public static final String SAMPLE_OFFICE_STAFF_ROOM_TEMPERATURE_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
+    public static final String SAMPLE_OFFICE_STORAGE_ROOM_INSTANCE = TestUtils.genInstance("Room");
+    public static final String SAMPLE_OFFICE_STORAGE_ROOM_NAME = "Staff room";
+    public static final String SAMPLE_OFFICE_SYSTEM_INSTANCE = TestUtils.genInstance("HVAC");
     public static final String SAMPLE_OFFICE_SYSTEM_NAME = "HVAC system";
-    private static final String SAMPLE_OFFICE_SUB_SYSTEM_INSTANCE = TestUtils.genInstance("BTU");
-    private static final String SAMPLE_OFFICE_SUB_SYSTEM_NAME = "BTU unit";
+    public static final String SAMPLE_OFFICE_SYSTEM_ELECTRICITY_CONSUMPTION_MEASURE = TestUtils.genInstance("Measure");
+    public static final String SAMPLE_OFFICE_SYSTEM_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
+    public static final String SAMPLE_OFFICE_SUB_SYSTEM_INSTANCE = TestUtils.genInstance("BTU");
+    public static final String SAMPLE_OFFICE_SUB_SYSTEM_NAME = "BTU unit";
+    public static final String SAMPLE_OFFICE_SUB_SYSTEM_ELECTRICITY_CONSUMPTION_MEASURE = TestUtils.genInstance("Measure");
+    public static final String SAMPLE_OFFICE_SUB_SYSTEM_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
     public static final String TEMPERATURE = "Temperature";
     public static final String TEMPERATURE_UNIT = "degree";
     public static final String RELATIVE_HUMIDITY = "Relative Humidity";
-    private static final double TEMPERATURE_MIN_THRESHOLD = 21.1;
-    private static final double TEMPERATURE_MAX_THRESHOLD = 25.6;
+    public static final double TEMPERATURE_MIN_THRESHOLD = 21.1;
+    public static final double TEMPERATURE_MAX_THRESHOLD = 25.6;
     public static final double RELATIVE_HUMIDITY_MIN_THRESHOLD = 50.1;
     public static final double RELATIVE_HUMIDITY_MAX_THRESHOLD = 75.7;
-    private static final String SAMPLE_LAB_INSTANCE = TestUtils.genInstance("Laboratory");
+    public static final String SAMPLE_LAB_INSTANCE = TestUtils.genInstance("Laboratory");
     public static final String SAMPLE_LAB_NAME = "Generic Laboratory";
-    private static final String SAMPLE_LAB_BIO_ROOM_INSTANCE = TestUtils.genInstance("Room");
-    private static final String SAMPLE_LAB_PILOT_ROOM_INSTANCE = TestUtils.genInstance("Room");
-    private static final String SAMPLE_LAB_FRIDGE_NAME = "Chemical Cooling Unit";
-    private static final String SAMPLE_LAB_FRIDGE_TYPE = "Fridge";
-    private static final String SAMPLE_LAB_FRIDGE_INSTANCE = TestUtils.genInstance(SAMPLE_LAB_FRIDGE_TYPE);
+    public static final String SAMPLE_LAB_BIO_ROOM_INSTANCE = TestUtils.genInstance("Room");
+    public static final String SAMPLE_LAB_PILOT_ROOM_INSTANCE = TestUtils.genInstance("Room");
+    public static final String SAMPLE_LAB_FRIDGE_NAME = "Chemical Cooling Unit";
+    public static final String SAMPLE_LAB_FRIDGE_TYPE = "Fridge";
+    public static final String SAMPLE_LAB_FRIDGE_INSTANCE = TestUtils.genInstance(SAMPLE_LAB_FRIDGE_TYPE);
+    public static final String FRIDGE_ELEC_CONSUMPION_MEASURE = TestUtils.genInstance("Measure");
+    public static final String FRIDGE_ELEC_CONSUMPION_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
     public static final String SAMPLE_LAB_SMART_SENSOR_NAME = "Sample Sensor Kit";
     public static final String SAMPLE_LAB_SMART_SENSOR_TYPE = "SmartSensor";
-    private static final String SAMPLE_LAB_SMART_SENSOR_INSTANCE = TestUtils.genInstance(SAMPLE_LAB_SMART_SENSOR_TYPE);
-    private static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE = TestUtils.genInstance("TemperatureSensor");
-    private static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_TWO_INSTANCE = TestUtils.genInstance("StatusSensor");
-    private static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_THREE_INSTANCE = TestUtils.genInstance("ElectricitySensor");
-    private static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FOUR_INSTANCE = TestUtils.genInstance("HumiditySensor");
-    private static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FIVE_INSTANCE = TestUtils.genInstance("StatusSensor");
-    private static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_NAME = "MAU-03";
-    private static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_TYPE = "MakeUpAirUnit";
-    private static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_INSTANCE = TestUtils.genInstance(SAMPLE_LAB_MAKE_UP_AIR_UNIT_TYPE);
-    private static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_INSTANCE = TestUtils.genInstance("Duct");
-    private static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_NAME = "Duct-5";
-    private static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_TEMPERATURE_SENSOR_INSTANCE = TestUtils.genInstance("TemperatureSensor");
-    private static final String STATE = "State";
-    private static final String HUMIDITY_STATE = "Humidity State";
+    public static final String SAMPLE_LAB_SMART_SENSOR_INSTANCE = TestUtils.genInstance(SAMPLE_LAB_SMART_SENSOR_TYPE);
+    public static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE = TestUtils.genInstance("TemperatureSensor");
+    public static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_TWO_INSTANCE = TestUtils.genInstance("StatusSensor");
+    public static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_THREE_INSTANCE = TestUtils.genInstance("ElectricitySensor");
+    public static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FOUR_INSTANCE = TestUtils.genInstance("HumiditySensor");
+    public static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FIVE_INSTANCE = TestUtils.genInstance("StatusSensor");
+    public static final String SMART_SENSOR_ONE_TEMPERATURE_MEASURE = TestUtils.genInstance("Measure");
+    public static final String SMART_SENSOR_ONE_TEMPERATURE_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
+    public static final String SMART_SENSOR_TWO_STATE_MEASURE = TestUtils.genInstance("Measure");
+    public static final String SMART_SENSOR_TWO_STATE_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
+    public static final String SMART_SUB_SENSOR_THREE_ELECTRICITY_CONSUMPTION_MEASURE = TestUtils.genInstance("Measure");
+    public static final String SMART_SUB_SENSOR_THREE_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
+    public static final String SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_MEASURE = TestUtils.genInstance("Measure");
+    public static final String SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
+    public static final String SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_STATE_MEASURE = TestUtils.genInstance("Measure");
+    public static final String SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_STATE_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
+    public static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_NAME = "MAU-03";
+    public static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_TYPE = "MakeUpAirUnit";
+    public static final String MAKEUP_UNIT_TEMP_MEASURE = TestUtils.genInstance("Measure");
+    public static final String MAKEUP_UNIT_TEMP_TIME_SERIES_IRI = TestUtils.genTimeSeriesInstance();
+    public static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_INSTANCE = TestUtils.genInstance(SAMPLE_LAB_MAKE_UP_AIR_UNIT_TYPE);
+    public static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_INSTANCE = TestUtils.genInstance("Duct");
+    public static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_NAME = "Duct-5";
+    public static final String STATE = "State";
+    public static final String HUMIDITY_STATE = "Humidity State";
     public static final String ELECTRICITY_CONSUMPTION = "ElectricityConsumption";
     public static final String ELECTRICITY_CONSUMPTION_UNIT = "kwh";
 
@@ -81,9 +104,9 @@ public class SparqlClientTest {
         // Create a new Sparql client - note there should be no username and password for the test container
         SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
         // Execute method
-        String[] results = client.getAllOrganisations();
+        List<Organisation> results = client.getAllOrganisations();
         // Verify if no organisation is retrieved if there are no related triples
-        assertEquals(0, results.length);
+        assertEquals(0, results.size());
     }
 
     @Test
@@ -91,13 +114,59 @@ public class SparqlClientTest {
         // Insert these triples into the blazegraph
         insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
         insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
+        insertSystemTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
         // Create a new Sparql client - note there should be no username and password for the test container
         SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
         // Execute method
-        String[] results = client.getAllOrganisations();
+        List<Organisation> results = client.getAllOrganisations();
         // Verify if result is as expected
-        assertEquals(1, results.length); // There should only be one organisation
-        assertEquals(SAMPLE_ORGANISATION_NAME, results[0]);
+        assertEquals(1, results.size()); // There should only be one organisation
+        assertEquals(SAMPLE_ORGANISATION_NAME, results.get(0).getName());
+        results.forEach(organisation -> {
+            OrganisationTest.verifyOrganisationModel(organisation, OrganisationTest.genExpectedOrgOutputs(false,
+                    new String[]{SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_SMART_SENSOR_TYPE, TEMPERATURE, TEMPERATURE_UNIT, SMART_SENSOR_ONE_TEMPERATURE_MEASURE, SMART_SENSOR_ONE_TEMPERATURE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_SMART_SENSOR_TYPE, STATE, null, SMART_SENSOR_TWO_STATE_MEASURE, SMART_SENSOR_TWO_STATE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_SMART_SENSOR_TYPE, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, SMART_SUB_SENSOR_THREE_ELECTRICITY_CONSUMPTION_MEASURE, SMART_SUB_SENSOR_THREE_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_SMART_SENSOR_TYPE, RELATIVE_HUMIDITY, null, SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_MEASURE, SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_SMART_SENSOR_TYPE, HUMIDITY_STATE, null, SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_STATE_MEASURE, SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_STATE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_FRIDGE_NAME, SAMPLE_LAB_FRIDGE_TYPE, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, FRIDGE_ELEC_CONSUMPION_MEASURE, FRIDGE_ELEC_CONSUMPION_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_MAKE_UP_AIR_UNIT_NAME + " " + SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_NAME, SAMPLE_LAB_MAKE_UP_AIR_UNIT_TYPE, TEMPERATURE, TEMPERATURE_UNIT, MAKEUP_UNIT_TEMP_MEASURE, MAKEUP_UNIT_TEMP_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_SYSTEM_NAME, StringHelper.SYSTEM_KEY, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, SAMPLE_OFFICE_SYSTEM_ELECTRICITY_CONSUMPTION_MEASURE, SAMPLE_OFFICE_SYSTEM_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_SUB_SYSTEM_NAME, StringHelper.SYSTEM_KEY, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, SAMPLE_OFFICE_SUB_SYSTEM_ELECTRICITY_CONSUMPTION_MEASURE, SAMPLE_OFFICE_SUB_SYSTEM_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_DIRECTOR_ROOM_NAME, StringHelper.ROOM_KEY, TEMPERATURE, TEMPERATURE_UNIT, SAMPLE_OFFICE_DIRECTOR_ROOM_TEMPERATURE_MEASURE, SAMPLE_OFFICE_DIRECTOR_ROOM_TEMPERATURE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_STAFF_ROOM_NAME, StringHelper.ROOM_KEY, TEMPERATURE, TEMPERATURE_UNIT, SAMPLE_OFFICE_STAFF_ROOM_TEMPERATURE_MEASURE, SAMPLE_OFFICE_STAFF_ROOM_TEMPERATURE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_STAFF_ROOM_NAME, StringHelper.ROOM_KEY, RELATIVE_HUMIDITY, null, SAMPLE_OFFICE_STAFF_ROOM_REL_HUMIDITY_MEASURE, SAMPLE_OFFICE_STAFF_ROOM_REL_HUMIDITY_TIME_SERIES_IRI}
+            ), ThresholdTest.genExpectedThresholds(
+                    new String[]{RELATIVE_HUMIDITY, String.valueOf(RELATIVE_HUMIDITY_MIN_THRESHOLD), String.valueOf(RELATIVE_HUMIDITY_MAX_THRESHOLD)},
+                    new String[]{TEMPERATURE, String.valueOf(TEMPERATURE_MIN_THRESHOLD), String.valueOf(TEMPERATURE_MAX_THRESHOLD)}
+
+            ));
+        });
+    }
+
+    @Test
+    void testGetAllOrganisations_OnlyAssetMeasures() {
+        // Insert these triples into the blazegraph
+        insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
+        insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
+        // Create a new Sparql client - note there should be no username and password for the test container
+        SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
+        // Execute method
+        List<Organisation> results = client.getAllOrganisations();
+        // Verify if result is as expected
+        assertEquals(1, results.size()); // There should only be one organisation
+        assertEquals(SAMPLE_ORGANISATION_NAME, results.get(0).getName());
+        results.forEach(organisation -> {
+            OrganisationTest.verifyOrganisationModel(organisation, OrganisationTest.genExpectedOrgOutputs(false,
+                    new String[]{SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_SMART_SENSOR_TYPE, TEMPERATURE, TEMPERATURE_UNIT, SMART_SENSOR_ONE_TEMPERATURE_MEASURE, SMART_SENSOR_ONE_TEMPERATURE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_SMART_SENSOR_TYPE, STATE, null, SMART_SENSOR_TWO_STATE_MEASURE, SMART_SENSOR_TWO_STATE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_SMART_SENSOR_TYPE, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, SMART_SUB_SENSOR_THREE_ELECTRICITY_CONSUMPTION_MEASURE, SMART_SUB_SENSOR_THREE_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_SMART_SENSOR_TYPE, RELATIVE_HUMIDITY, null, SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_MEASURE, SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_SMART_SENSOR_TYPE, HUMIDITY_STATE, null, SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_STATE_MEASURE, SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_STATE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_FRIDGE_NAME, SAMPLE_LAB_FRIDGE_TYPE, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, FRIDGE_ELEC_CONSUMPION_MEASURE, FRIDGE_ELEC_CONSUMPION_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_LAB_MAKE_UP_AIR_UNIT_NAME + " " + SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_NAME, SAMPLE_LAB_MAKE_UP_AIR_UNIT_TYPE, TEMPERATURE, TEMPERATURE_UNIT, MAKEUP_UNIT_TEMP_MEASURE, MAKEUP_UNIT_TEMP_TIME_SERIES_IRI}
+            ));
+        });
     }
 
     @Test
@@ -107,10 +176,21 @@ public class SparqlClientTest {
         // Create a new Sparql client - note there should be no username and password for the test container
         SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
         // Execute method
-        String[] results = client.getAllOrganisations();
+        List<Organisation> results = client.getAllOrganisations();
         // Verify if result is as expected
-        assertEquals(1, results.length); // There should only be one organisation
-        assertEquals(SAMPLE_ORGANISATION_NAME, results[0]);
+        assertEquals(1, results.size()); // There should only be one organisation
+        assertEquals(SAMPLE_ORGANISATION_NAME, results.get(0).getName());
+        results.forEach(organisation -> {
+            OrganisationTest.verifyOrganisationModel(organisation, OrganisationTest.genExpectedOrgOutputs(false,
+                    new String[]{SAMPLE_OFFICE_DIRECTOR_ROOM_NAME, StringHelper.ROOM_KEY, TEMPERATURE, TEMPERATURE_UNIT, SAMPLE_OFFICE_DIRECTOR_ROOM_TEMPERATURE_MEASURE, SAMPLE_OFFICE_DIRECTOR_ROOM_TEMPERATURE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_STAFF_ROOM_NAME, StringHelper.ROOM_KEY, TEMPERATURE, TEMPERATURE_UNIT, SAMPLE_OFFICE_STAFF_ROOM_TEMPERATURE_MEASURE, SAMPLE_OFFICE_STAFF_ROOM_TEMPERATURE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_STAFF_ROOM_NAME, StringHelper.ROOM_KEY, RELATIVE_HUMIDITY, null, SAMPLE_OFFICE_STAFF_ROOM_REL_HUMIDITY_MEASURE, SAMPLE_OFFICE_STAFF_ROOM_REL_HUMIDITY_TIME_SERIES_IRI}
+            ), ThresholdTest.genExpectedThresholds(
+                    new String[]{RELATIVE_HUMIDITY, String.valueOf(RELATIVE_HUMIDITY_MIN_THRESHOLD), String.valueOf(RELATIVE_HUMIDITY_MAX_THRESHOLD)},
+                    new String[]{TEMPERATURE, String.valueOf(TEMPERATURE_MIN_THRESHOLD), String.valueOf(TEMPERATURE_MAX_THRESHOLD)}
+
+            ));
+        });
     }
 
     @Test
@@ -121,108 +201,22 @@ public class SparqlClientTest {
         // Create a new Sparql client - note there should be no username and password for the test container
         SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
         // Execute method
-        String[] results = client.getAllOrganisations();
+        List<Organisation> results = client.getAllOrganisations();
         // Verify if result is as expected
-        assertEquals(1, results.length); // There should only be one organisation
-        assertEquals(SAMPLE_ORGANISATION_NAME, results[0]);
-    }
-
-    @Test
-    void testGetAllSpatialZoneMetaData_AssetMeasures() {
-        // Insert these triples into the blazegraph
-        insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
-        insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
-        // Create a new Sparql client - note there should be no username and password for the test container
-        SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
-        // Execute method
-        Map<String, Queue<String[]>> results = client.getAllSpatialZoneMetaData(SAMPLE_ORGANISATION_NAME);
-        // Verify if result is as expected
-        assertEquals(7, results.size()); // Three assets, two rooms, one threshold and one facility should be returned
-        OrganisationTest.verifyFacilityQueueResults(results, new String[]{SAMPLE_OFFICE_NAME, SAMPLE_LAB_NAME}, new String[]{SAMPLE_OFFICE_NAME, SAMPLE_OFFICE_DIRECTOR_ROOM_NAME, SAMPLE_OFFICE_STAFF_ROOM_NAME}, new String[]{SAMPLE_LAB_NAME, SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_FRIDGE_NAME, SAMPLE_LAB_MAKE_UP_AIR_UNIT_NAME});
-        // For smart sensor
-        Queue<String[]> resultQueue = results.get(SAMPLE_LAB_SMART_SENSOR_NAME);
-        assertEquals(5, resultQueue.size()); // Five measures should be available
-        while (!resultQueue.isEmpty()) {
-            String[] metadata = resultQueue.poll();
-            if (metadata[0].equals(TEMPERATURE))
-                verifyMetadataContents(metadata, TEMPERATURE, TEMPERATURE_UNIT, SAMPLE_LAB_SMART_SENSOR_TYPE);
-            if (metadata[0].equals(RELATIVE_HUMIDITY))
-                verifyMetadataContents(metadata, RELATIVE_HUMIDITY, null, SAMPLE_LAB_SMART_SENSOR_TYPE);
-            if (metadata[0].equals(ELECTRICITY_CONSUMPTION))
-                verifyMetadataContents(metadata, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, SAMPLE_LAB_SMART_SENSOR_TYPE);
-            if (metadata[0].equals(STATE)) verifyMetadataContents(metadata, STATE, null, SAMPLE_LAB_SMART_SENSOR_TYPE);
-            if (metadata[0].equals(HUMIDITY_STATE))
-                verifyMetadataContents(metadata, HUMIDITY_STATE, null, SAMPLE_LAB_SMART_SENSOR_TYPE);
-        }
-        // For make up air unit, only one measure should be available
-        resultQueue = results.get(SAMPLE_LAB_MAKE_UP_AIR_UNIT_NAME + " " + SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_NAME);
-        assertEquals(1, resultQueue.size());
-        verifyMetadataContents(resultQueue.poll(), TEMPERATURE, TEMPERATURE_UNIT, SAMPLE_LAB_MAKE_UP_AIR_UNIT_TYPE);
-        // For fridge, only one measure should be available
-        resultQueue = results.get(SAMPLE_LAB_FRIDGE_NAME);
-        assertEquals(1, resultQueue.size());
-        verifyMetadataContents(resultQueue.poll(), ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, SAMPLE_LAB_FRIDGE_TYPE);
-    }
-
-    @Test
-    void testGetAllSpatialZoneMetaData_RoomAndSystemMeasures() {
-        // Insert these triples into the blazegraph
-        insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
-        insertSystemTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
-        // Create a new Sparql client - note there should be no username and password for the test container
-        SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
-        // Execute method
-        Map<String, Queue<String[]>> results = client.getAllSpatialZoneMetaData(SAMPLE_ORGANISATION_NAME);
-        // Verify if result is as expected
-        assertEquals(6, results.size()); // Two system, two rooms, one threshold and one facility should be returned
-        OrganisationTest.verifyFacilityQueueResults(results, new String[]{SAMPLE_OFFICE_NAME}, new String[]{SAMPLE_OFFICE_NAME, SAMPLE_OFFICE_DIRECTOR_ROOM_NAME, SAMPLE_OFFICE_STAFF_ROOM_NAME, SAMPLE_OFFICE_SYSTEM_NAME, SAMPLE_OFFICE_SUB_SYSTEM_NAME});
-        // For hvac system
-        Queue<String[]> resultQueue = results.get(SAMPLE_OFFICE_SYSTEM_NAME);
-        assertEquals(1, resultQueue.size()); // only one measure should be available
-        String[] metadata = resultQueue.poll();
-        verifyMetadataContents(metadata, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, StringHelper.SYSTEM_KEY);
-        // For hvac subsystem
-        resultQueue = results.get(SAMPLE_OFFICE_SUB_SYSTEM_NAME);
-        assertEquals(1, resultQueue.size()); // only one measure should be available
-        metadata = resultQueue.poll();
-        verifyMetadataContents(metadata, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, StringHelper.SYSTEM_KEY);
-    }
-
-    @Test
-    void testGetAllSpatialZoneMetaData_OnlyRoomMeasures() {
-        // Insert these triples into the blazegraph
-        insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
-        // Create a new Sparql client - note there should be no username and password for the test container
-        SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
-        // Execute method
-        Map<String, Queue<String[]>> results = client.getAllSpatialZoneMetaData(SAMPLE_ORGANISATION_NAME);
-        // Verify if result is as expected
-        OrganisationTest.verifyFacilityQueueResults(results, new String[]{SAMPLE_OFFICE_NAME}, new String[]{SAMPLE_OFFICE_NAME, SAMPLE_OFFICE_DIRECTOR_ROOM_NAME, SAMPLE_OFFICE_STAFF_ROOM_NAME});
-        // Should only have two thresholds
-        Queue<String[]> resultQueue = results.get(StringHelper.THRESHOLD_KEY);
-        while (!resultQueue.isEmpty()) {
-            String[] metadata = resultQueue.poll();
-            if (metadata[0].equals(RELATIVE_HUMIDITY)) {
-                assertEquals(String.valueOf(RELATIVE_HUMIDITY_MIN_THRESHOLD), metadata[1]);
-                assertEquals(String.valueOf(RELATIVE_HUMIDITY_MAX_THRESHOLD), metadata[2]);
-            } else {
-                assertEquals(TEMPERATURE, metadata[0]);
-                assertEquals(String.valueOf(TEMPERATURE_MIN_THRESHOLD), metadata[1]);
-                assertEquals(String.valueOf(TEMPERATURE_MAX_THRESHOLD), metadata[2]);
-            }
-        }
-        // Director's room should only have one temperature measure
-        resultQueue = results.get(SAMPLE_OFFICE_DIRECTOR_ROOM_NAME);
-        assertEquals(1, resultQueue.size());
-        String[] metadata = resultQueue.poll();
-        verifyMetadataContents(metadata, TEMPERATURE, TEMPERATURE_UNIT, StringHelper.ROOM_KEY);
-        // Staff room should have both temperature and humidity measure
-        resultQueue = results.get(SAMPLE_OFFICE_STAFF_ROOM_NAME);
-        assertEquals(2, resultQueue.size());
-        metadata = resultQueue.poll();
-        verifyMetadataContents(metadata, TEMPERATURE, TEMPERATURE_UNIT, StringHelper.ROOM_KEY);
-        metadata = resultQueue.poll();
-        verifyMetadataContents(metadata, RELATIVE_HUMIDITY, null, StringHelper.ROOM_KEY);
+        assertEquals(1, results.size()); // There should only be one organisation
+        assertEquals(SAMPLE_ORGANISATION_NAME, results.get(0).getName());
+        results.forEach(organisation -> {
+            OrganisationTest.verifyOrganisationModel(organisation, OrganisationTest.genExpectedOrgOutputs(false,
+                    new String[]{SAMPLE_OFFICE_SYSTEM_NAME, StringHelper.SYSTEM_KEY, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, SAMPLE_OFFICE_SYSTEM_ELECTRICITY_CONSUMPTION_MEASURE, SAMPLE_OFFICE_SYSTEM_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_SUB_SYSTEM_NAME, StringHelper.SYSTEM_KEY, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, SAMPLE_OFFICE_SUB_SYSTEM_ELECTRICITY_CONSUMPTION_MEASURE, SAMPLE_OFFICE_SUB_SYSTEM_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_DIRECTOR_ROOM_NAME, StringHelper.ROOM_KEY, TEMPERATURE, TEMPERATURE_UNIT, SAMPLE_OFFICE_DIRECTOR_ROOM_TEMPERATURE_MEASURE, SAMPLE_OFFICE_DIRECTOR_ROOM_TEMPERATURE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_STAFF_ROOM_NAME, StringHelper.ROOM_KEY, TEMPERATURE, TEMPERATURE_UNIT, SAMPLE_OFFICE_STAFF_ROOM_TEMPERATURE_MEASURE, SAMPLE_OFFICE_STAFF_ROOM_TEMPERATURE_TIME_SERIES_IRI},
+                    new String[]{SAMPLE_OFFICE_STAFF_ROOM_NAME, StringHelper.ROOM_KEY, RELATIVE_HUMIDITY, null, SAMPLE_OFFICE_STAFF_ROOM_REL_HUMIDITY_MEASURE, SAMPLE_OFFICE_STAFF_ROOM_REL_HUMIDITY_TIME_SERIES_IRI}
+            ), ThresholdTest.genExpectedThresholds(
+                    new String[]{RELATIVE_HUMIDITY, String.valueOf(RELATIVE_HUMIDITY_MIN_THRESHOLD), String.valueOf(RELATIVE_HUMIDITY_MAX_THRESHOLD)},
+                    new String[]{TEMPERATURE, String.valueOf(TEMPERATURE_MIN_THRESHOLD), String.valueOf(TEMPERATURE_MAX_THRESHOLD)}
+            ));
+        });
     }
 
     public static void insertFacilityTriples(String endpoint) {
@@ -274,13 +268,16 @@ public class SparqlClientTest {
                 .append("<").append(SAMPLE_OFFICE_DIRECTOR_ROOM_INSTANCE).append("> rdf:type ontobim:Room;")
                 .append("ontobim:hasIfcRepresentation <").append(directorRoomRepresentation).append(">.")
                 .append("<").append(directorRoomRepresentation).append("> rdfs:label \"").append(SAMPLE_OFFICE_DIRECTOR_ROOM_NAME).append("\".")
-                .append(genMeasureTriples(SAMPLE_OFFICE_DIRECTOR_ROOM_INSTANCE, "ontodevice:hasTemperature", TEMPERATURE, TEMPERATURE_UNIT))
+                .append(genMeasureTriples(SAMPLE_OFFICE_DIRECTOR_ROOM_INSTANCE, "ontodevice:hasTemperature", TEMPERATURE, TEMPERATURE_UNIT,
+                        SAMPLE_OFFICE_DIRECTOR_ROOM_TEMPERATURE_MEASURE, SAMPLE_OFFICE_DIRECTOR_ROOM_TEMPERATURE_TIME_SERIES_IRI))
                 // Staff room should have both temperature and humidity
                 .append("<").append(SAMPLE_OFFICE_STAFF_ROOM_INSTANCE).append("> rdf:type ontobim:Room;")
                 .append("ontobim:hasIfcRepresentation <").append(staffRoomRepresentation).append(">.")
                 .append("<").append(staffRoomRepresentation).append("> rdfs:label \"").append(SAMPLE_OFFICE_STAFF_ROOM_NAME).append("\".")
-                .append(genMeasureTriples(SAMPLE_OFFICE_STAFF_ROOM_INSTANCE, "ontodevice:hasTemperature", TEMPERATURE, TEMPERATURE_UNIT))
-                .append(genMeasureTriples(SAMPLE_OFFICE_STAFF_ROOM_INSTANCE, "ontodevice:hasRelativeHumidity", RELATIVE_HUMIDITY, "", PostGisClientTest.SAMPLE_ROOM_HUMIDITY_INSTANCE, PostGisClientTest.SAMPLE_ROOM_HUMIDITY_TIME_SERIES_INSTANCE))
+                .append(genMeasureTriples(SAMPLE_OFFICE_STAFF_ROOM_INSTANCE, "ontodevice:hasTemperature", TEMPERATURE, TEMPERATURE_UNIT,
+                        SAMPLE_OFFICE_STAFF_ROOM_TEMPERATURE_MEASURE, SAMPLE_OFFICE_STAFF_ROOM_TEMPERATURE_TIME_SERIES_IRI))
+                .append(genMeasureTriples(SAMPLE_OFFICE_STAFF_ROOM_INSTANCE, "ontodevice:hasRelativeHumidity", RELATIVE_HUMIDITY, "",
+                        SAMPLE_OFFICE_STAFF_ROOM_REL_HUMIDITY_MEASURE, SAMPLE_OFFICE_STAFF_ROOM_REL_HUMIDITY_TIME_SERIES_IRI))
                 // Storage room has no measures
                 .append("<").append(SAMPLE_OFFICE_STORAGE_ROOM_INSTANCE).append("> rdf:type ontobim:Room;")
                 .append("ontobim:hasIfcRepresentation <").append(storageRoomRepresentation).append(">.")
@@ -299,14 +296,14 @@ public class SparqlClientTest {
                 .append("ontotechsystem:composedOf <").append(SAMPLE_OFFICE_SUB_SYSTEM_INSTANCE).append(">.") // Include its subsystem
                 // Generate the measure for the system's energy consumption with actual GIS data
                 .append(genMeasureTriples(SAMPLE_OFFICE_SYSTEM_INSTANCE, "ontoubemmp:consumesEnergy", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT,
-                        PostGisClientTest.SAMPLE_SYSTEM_ELEC_CONSUMPTION_INSTANCE, PostGisClientTest.SAMPLE_SYSTEM_ELEC_CONSUMPTION_TIME_SERIES_INSTANCE))
+                        SAMPLE_OFFICE_SYSTEM_ELECTRICITY_CONSUMPTION_MEASURE, SAMPLE_OFFICE_SYSTEM_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI))
                 // Generate the measure for the sub-system's energy consumption, this will not be instantiated in the postgis system
                 .append("<").append(SAMPLE_OFFICE_SUB_SYSTEM_INSTANCE).append("> rdfs:label \"").append(SAMPLE_OFFICE_SUB_SYSTEM_NAME).append("\".")
-                .append(genMeasureTriples(SAMPLE_OFFICE_SUB_SYSTEM_INSTANCE, "ontoubemmp:consumesEnergy", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT))
+                .append(genMeasureTriples(SAMPLE_OFFICE_SUB_SYSTEM_INSTANCE, "ontoubemmp:consumesEnergy", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT,
+                        SAMPLE_OFFICE_SUB_SYSTEM_ELECTRICITY_CONSUMPTION_MEASURE, SAMPLE_OFFICE_SUB_SYSTEM_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI))
                 .append("}");
         IntegrationTestUtils.updateEndpoint(endpoint, builder.toString());
     }
-
 
     public static void insertAssetTriples(String endpoint, boolean isComplex) {
         StringBuilder builder = new StringBuilder();
@@ -319,38 +316,34 @@ public class SparqlClientTest {
                 .append("INSERT DATA {")
                 // First sub sensor pattern
                 .append("<").append(SAMPLE_LAB_SMART_SENSOR_INSTANCE).append("> ontodevice:sendsSignalTo <").append(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE).append(">.")
-                .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE, "ontodevice:measures", TEMPERATURE, TEMPERATURE_UNIT, PostGisClientTest.SAMPLE_TEMPERATURE_INSTANCE, PostGisClientTest.SAMPLE_TEMPERATURE_TIME_SERIES_INSTANCE));
+                .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE, "ontodevice:measures", TEMPERATURE, TEMPERATURE_UNIT, SMART_SENSOR_ONE_TEMPERATURE_MEASURE, SMART_SENSOR_ONE_TEMPERATURE_TIME_SERIES_IRI));
         if (isComplex) {
             // Second sub sensor pattern
             builder.append("<").append(SAMPLE_LAB_SMART_SENSOR_INSTANCE).append("> ontodevice:sendsSignalTo <").append(intermediateSensorTwo).append(">.")
                     .append("<").append(intermediateSensorTwo).append("> saref:consistsOf <").append(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_TWO_INSTANCE).append(">.")
-                    .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_TWO_INSTANCE, "observes", STATE, ""))
+                    .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_TWO_INSTANCE, "observes", STATE, "", SMART_SENSOR_TWO_STATE_MEASURE, SMART_SENSOR_TWO_STATE_TIME_SERIES_IRI))
                     // Third sub sensor pattern
                     .append("<").append(SAMPLE_LAB_SMART_SENSOR_INSTANCE).append("> saref:consistsOf <").append(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_THREE_INSTANCE).append(">.")
-                    .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_THREE_INSTANCE, "ontodevice:measures", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT))
+                    .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_THREE_INSTANCE, "ontodevice:measures", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, SMART_SUB_SENSOR_THREE_ELECTRICITY_CONSUMPTION_MEASURE, SMART_SUB_SENSOR_THREE_ELECTRICITY_CONSUMPTION_TIME_SERIES_IRI))
                     // Fourth sub sensor pattern
                     .append("<").append(SAMPLE_LAB_SMART_SENSOR_INSTANCE).append("> saref:consistsOf <").append(intermediateSensorFour).append(">.")
                     .append("<").append(intermediateSensorFour).append("> ontodevice:sendsSignalTo <").append(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FOUR_INSTANCE).append(">.")
-                    .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FOUR_INSTANCE, "ontodevice:measures", RELATIVE_HUMIDITY, ""))
+                    .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FOUR_INSTANCE, "ontodevice:measures", RELATIVE_HUMIDITY, "", SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_MEASURE, SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_TIME_SERIES_IRI))
                     // Fifth sub sensor pattern - directly nested below sensor four
                     .append("<").append(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FOUR_INSTANCE).append("> saref:consistsOf <").append(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FIVE_INSTANCE).append(">.")
-                    .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FIVE_INSTANCE, "observes", HUMIDITY_STATE, ""))
+                    .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_FIVE_INSTANCE, "observes", HUMIDITY_STATE, "", SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_STATE_MEASURE, SMART_SUB_SENSOR_FOUR_REL_HUMIDITY_STATE_TIME_SERIES_IRI))
                     // Pattern inclusive of an additional sub element
                     .append("<").append(SAMPLE_LAB_MAKE_UP_AIR_UNIT_INSTANCE).append("> saref:consistsOf <").append(SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_INSTANCE).append(">.")
-                    .append(genMeasureTriples(intermediateMAUSensor, "ontodevice:measures", TEMPERATURE, TEMPERATURE_UNIT))
+                    .append(genMeasureTriples(intermediateMAUSensor, "ontodevice:measures", TEMPERATURE, TEMPERATURE_UNIT, MAKEUP_UNIT_TEMP_MEASURE, MAKEUP_UNIT_TEMP_TIME_SERIES_IRI))
                     .append("<").append(intermediateMAUSensor).append("> ontodevice:isAttachedTo <").append(SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_INSTANCE).append(">.")
                     .append("<").append(SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_INSTANCE).append("> rdfs:label \"").append(SAMPLE_LAB_MAKE_UP_AIR_UNIT_DUCT_NAME).append("\".")
                     // For alternate measure paths
                     .append("<").append(SAMPLE_LAB_FRIDGE_INSTANCE).append("> ontodevice:hasOperatingRange <").append(operatingRangeInstance).append(">.")
                     .append("<").append(operatingRangeInstance).append("> ssn:hasOperatingProperty <").append(operatingPropertyInstance).append(">.")
-                    .append(genMeasureTriples(operatingPropertyInstance, "ontodevice:hasQuantity", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT));
+                    .append(genMeasureTriples(operatingPropertyInstance, "ontodevice:hasQuantity", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, FRIDGE_ELEC_CONSUMPION_MEASURE, FRIDGE_ELEC_CONSUMPION_TIME_SERIES_IRI));
         }
         builder.append("}");
         IntegrationTestUtils.updateEndpoint(endpoint, builder.toString());
-    }
-
-    private static StringBuilder genMeasureTriples(String item, String measureProperty, String measureName, String unit) {
-        return genMeasureTriples(item, measureProperty, measureName, unit, TestUtils.genInstance("Measure"), TestUtils.genTimeSeriesInstance());
     }
 
     private static StringBuilder genMeasureTriples(String item, String measureProperty, String measureName, String unit, String measureInst, String timeSeriesInst) {
@@ -384,14 +377,5 @@ public class SparqlClientTest {
                 .append("om:hasValue <").append(measureInst).append(">.")
                 .append("<").append(measureInst).append("> om:hasNumericalValue ").append(thresholdVal).append(".");
         return builder;
-    }
-
-    private static void verifyMetadataContents(String[] metadata, String measureName, String unit, String itemType) {
-        assertEquals(measureName, metadata[0]);
-        assertTrue(metadata[1].contains(TestUtils.BASE_URI + "Measure_") || metadata[1].equals(PostGisClientTest.SAMPLE_TEMPERATURE_INSTANCE)
-                || metadata[1].equals(PostGisClientTest.SAMPLE_ROOM_HUMIDITY_INSTANCE) || metadata[1].equals(PostGisClientTest.SAMPLE_SYSTEM_ELEC_CONSUMPTION_INSTANCE));
-        assertTrue(metadata[2].contains(TestUtils.BASE_URI + "TimeSeries_"));
-        assertEquals(unit, metadata[3]);
-        assertEquals(itemType, metadata[4]);
     }
 }

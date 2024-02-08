@@ -6,10 +6,9 @@ import com.cmclinnovations.stack.clients.grafana.GrafanaEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Organisation;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 
 /**
  * The public client for other classes to interface and interact with the knowledge graph and the stack to retrieve the necessary information.
@@ -46,6 +45,10 @@ public class StackClient {
         // Initialise a new Sparql client
         this.sparqlClient = new SparqlClient(stackSparqlEndpoint, blazeConfig.getUsername(), blazeConfig.getPassword());
         LOGGER.debug("Services have been successfully retrieved from the stack...");
+        List<Organisation> orgList = this.getAllOrganisations();
+        for (Organisation organisation : orgList) {
+            this.postgisClient.retrieveMeasureRDBLocation(organisation);
+        }
     }
 
     /**
@@ -53,7 +56,7 @@ public class StackClient {
      *
      * @return An array of all available organisations and their associated spatial zones to monitor.
      */
-    public String[] getAllOrganisations() {
+    public List<Organisation> getAllOrganisations() {
         return this.sparqlClient.getAllOrganisations();
     }
 
@@ -101,43 +104,4 @@ public class StackClient {
      * Get the dashboard password credential within this stack.
      */
     public String getDashboardPassword() { return this.dashboardConfig.getPassword(); }
-
-    /**
-     * Get all time series associated with the spatial zones managed by an organisation, namely their assets and rooms' measures in the knowledge graph.
-     * The measure groups are tied to group of asset types. The final format is as follows:
-     * { facilities:{
-     * facility1: [[RoomName1], [AssetName1], [AssetName2], [AssetName6]],
-     * facility2: [[RoomName2], [AssetName3], [AssetName4], [AssetName5], [AssetName7]],
-     * }, assetType1: {
-     * assets: [AssetName1, AssetName2, AssetName3],
-     * measure1: [[AssetName1, ColName1, TableName1, Database, unit],[AssetName2, ColName2, TableName1, Database, unit],[AssetName3, ColName3, TableName1, Database, unit]],
-     * measure2: [[AssetName1, ColName5, TableName1, Database, unit],[AssetName2, ColName6, TableName1, Database, unit],[AssetName3, ColName7, TableName1, Database, unit]],
-     * },
-     * assetType2: {
-     * assets: [AssetName5, AssetName6, AssetName7],
-     * measure1: [[AssetName5, ColName1, TableName1, Database, unit],[AssetName6, ColName2, TableName1, Database, unit],[AssetName7, ColName3, TableName1, Database, unit]],
-     * measure2: [[AssetName5, ColName5, TableName1, Database, unit],[AssetName6, ColName6, TableName1, Database, unit],[AssetName7, ColName7, TableName1, Database, unit]],
-     * },
-     * Rooms:{
-     * thresholds: [[measure1, minThreshold, maxThreshold],[measure2, minThreshold, maxThreshold]],
-     * Rooms: [RoomName1, RoomName2],
-     * measure1: [[RoomName1, ColName1, TableName2, Database, unit],[RoomName2, ColName3, TableName2, Database, unit]],
-     * measure2: [[RoomName1, ColName2, TableName2, Database, unit],[RoomName2, ColName4, TableName2, Database, unit]]
-     * },
-     * systems:{
-     * systems: [System1, Subsystem2],
-     * measure1: [[System1, ColName1, TableName2, Database, unit],[Subsystem2, ColName3, TableName2, Database, unit]],
-     * measure2: [[System1, ColName2, TableName2, Database, unit],[Subsystem2, ColName4, TableName2, Database, unit]]
-     * }
-     * }
-     *
-     * @param organisation The organisation of interest.
-     * @return A map: {assetType: {assets:[asset name list], measure[[measureDetails],[measureDetails]]}, room : {measure: [[measureDetails],[measureDetails]]}}.
-     */
-    public Map<String, Map<String, List<String[]>>> getAllTimeSeries(String organisation) {
-        LOGGER.debug("Retrieving the spatial zone metadata for organisation: {}...", organisation);
-        Map<String, Queue<String[]>> measures = this.sparqlClient.getAllSpatialZoneMetaData(organisation);
-        LOGGER.debug("Retrieving the time series metadata from PostGIS...");
-        return this.postgisClient.getMeasureColAndTableName(measures);
-    }
 }

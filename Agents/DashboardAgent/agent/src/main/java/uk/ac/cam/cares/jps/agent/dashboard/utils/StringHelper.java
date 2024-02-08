@@ -8,7 +8,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils;
 public class StringHelper {
     public static final String FACILITY_KEY = "facilities";
     public static final String ASSET_KEY = "assets";
-    public static final String ROOM_KEY = "Rooms";
+    public static final String ROOM_KEY = "rooms";
     public static final String SYSTEM_KEY = "systems";
     public static final String THRESHOLD_KEY = "threshold";
     public static final String SERVICE_ACCOUNT_NAME = "grafana";

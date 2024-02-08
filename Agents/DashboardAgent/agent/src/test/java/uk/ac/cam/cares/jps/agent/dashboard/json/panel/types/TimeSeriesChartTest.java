@@ -3,119 +3,100 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Measure;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.options.TransformationOptionsTest;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TimeSeriesChartTest {
-    private static final List<String[]> SAMPLE_METADATA = new ArrayList<>();
     private static final String[] SAMPLE_THRESHOLDS = new String[2];
-    private static final String SAMPLE_MEASURE = "ElectricalConsumption";
-    private static final String SAMPLE_UNIT = "kwh";
-    private static final String SAMPLE_ITEM_GROUP = "Fridge";
     private static final String SAMPLE_DATABASE_ID = "eaus17";
-    private static final String SAMPLE_FIRST_ASSET_NAME = "asset one";
-    private static final String SAMPLE_FIRST_ASSET_COL_NAME = "column7";
-    private static final String SAMPLE_ASSET_TABLE_NAME = "table1";
-    private static final String SAMPLE_SEC_ASSET_NAME = "asset two";
-    private static final String SAMPLE_SEC_ASSET_COL_NAME = "column16";
     private static final String THRESHOLD_MIN = "3";
     private static final String THRESHOLD_MAX = "8";
-    private static final int SAMPLE_PANEL_HEIGHT = 8;
-    private static final int SAMPLE_PANEL_WIDTH = 12;
     private static final int SAMPLE_PANEL_X_POSITION = 1;
     private static final int SAMPLE_PANEL_Y_POSITION = 0;
-
+    private static final int[] EXPECTED_GEOMETRY_POSITIONS = new int[]{TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
 
     @BeforeAll
     static void setup() {
-        SAMPLE_METADATA.add(new String[]{SAMPLE_FIRST_ASSET_NAME, SAMPLE_FIRST_ASSET_COL_NAME, SAMPLE_ASSET_TABLE_NAME});
-        SAMPLE_METADATA.add(new String[]{SAMPLE_SEC_ASSET_NAME, SAMPLE_SEC_ASSET_COL_NAME, SAMPLE_ASSET_TABLE_NAME});
         SAMPLE_THRESHOLDS[0] = THRESHOLD_MIN;
         SAMPLE_THRESHOLDS[1] = THRESHOLD_MAX;
     }
 
     @Test
-    void testConstructWithThresholds() {
+    void testConstruct_WithThresholds() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Construct the object
-        TimeSeriesChart chart = new TimeSeriesChart(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, SAMPLE_THRESHOLDS);
+        TimeSeriesChart chart = new TimeSeriesChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, SAMPLE_THRESHOLDS);
         // Execute the method
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, SAMPLE_THRESHOLDS), result);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, SAMPLE_THRESHOLDS), result);
     }
 
     @Test
-    void testConstructNoThresholds() {
+    void testConstruct_NoThresholds() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Construct the object
-        TimeSeriesChart chart = new TimeSeriesChart(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
+        TimeSeriesChart chart = new TimeSeriesChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, new String[]{});
         // Execute the method
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, new String[]{}), result);
     }
 
     @Test
     void testConstructNoUnit() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Construct the object
-        TimeSeriesChart chart = new TimeSeriesChart(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
+        TimeSeriesChart chart = new TimeSeriesChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, new String[]{});
         // Execute the method
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
-        assertEquals("null", chart.getUnit());
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, new String[]{}), result);
+        assertEquals(sample.getUnit(), chart.getUnit());
     }
 
     @Test
     void testConstructWithUnit() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, SAMPLE_UNIT, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(true);
         // Construct the object
-        TimeSeriesChart chart = new TimeSeriesChart(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
+        TimeSeriesChart chart = new TimeSeriesChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, new String[]{});
         // Execute the method
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
-        assertEquals(SAMPLE_UNIT, chart.getUnit());
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, new String[]{}), result);
+        assertEquals(sample.getUnit(), chart.getUnit());
     }
 
     @Test
     void testGetMeasure() {
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Construct the object
-        TimeSeriesChart chart = new TimeSeriesChart(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
+        TimeSeriesChart chart = new TimeSeriesChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, new String[]{});
         // Execute the method and verify result
-        assertEquals(SAMPLE_MEASURE, chart.getMeasure());
+        assertEquals(sample.getName(), chart.getMeasure());
     }
 
-    public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
-        return genExpectedResults(metadata, geometryPositions, itemDetails, new String[]{});
-    }
-
-    public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String[] thresholds) {
-        String titleContent = StringHelper.addSpaceBetweenCapitalWords(metadata[0]) + " of " + StringHelper.addSpaceBetweenCapitalWords(metadata[1]);
-        titleContent = metadata[4].equals("null") ? titleContent : titleContent + " [" + metadata[4] + "]";
-        String description = "A chart displaying the time series of " + metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase();
-        String expectedTransformations = "[" + TransformationOptionsTest.genExpectedOrganizeTransformation(itemDetails, "") + "]";
+    public static String genExpectedResults(Measure measure, String group, String databaseId, int[] geometryPositions, String[] thresholds) {
+        String measureName = measure.getName();
+        String unit = measure.getUnit();
+        String titleContent = StringHelper.addSpaceBetweenCapitalWords(measureName) + " of " + StringHelper.addSpaceBetweenCapitalWords(group);
+        titleContent = unit == null ? titleContent : titleContent + " [" + unit + "]";
+        String description = "A chart displaying the time series of " + measureName.toLowerCase() + " for " + group.toLowerCase();
+        String expectedTransformations = "[" + TransformationOptionsTest.genExpectedOrganizeTransformation(measure.getTimeSeriesData(), "") + "]";
         String thresholdStyle = thresholds.length == 0 ? "off" : "area";
         String thresholdSteps = thresholds.length == 0 ? "" : "\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +
                 "{\"color\":\"red\",\"value\":null},{\"color\":\"green\",\"value\":" + thresholds[0] + "}," +
                 "{\"color\":\"red\",\"value\":" + thresholds[1] + "}]},";
-        return "{" + TestUtils.genExpectedCommonDefaultGrafanaPanelJson(titleContent, description, "timeseries", expectedTransformations, metadata, geometryPositions) +
+        return "{" + TestUtils.genExpectedCommonDefaultGrafanaPanelJson(titleContent, description, "timeseries", expectedTransformations,
+                databaseId, group, measure, geometryPositions, "") +
                 "\"fieldConfig\": { " +
                 "\"defaults\": {\"color\": {\"mode\": \"palette-classic\"}," +
                 "\"custom\":{" + "\"axisCenteredZero\":false,\"axisColorMode\":\"text\"," +
@@ -128,7 +109,7 @@ public class TimeSeriesChartTest {
                 "}," +
                 thresholdSteps +
                 "\"mappings\": []," +
-                "\"unit\":\"" + UnitMapper.getUnitSyntax(metadata[4]) + "\"" +
+                "\"unit\":\"" + UnitMapper.getUnitSyntax(unit) + "\"" +
                 "}," +
                 "\"overrides\": []" +
                 "}," +

@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Organisation;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
@@ -51,9 +52,9 @@ public class DashboardClient {
         this.createServiceAccountToken();
         this.createDataSources();
         // For each organisation, a separate dashboard should be generated
-        String[] orgArray = this.serviceClient.getAllOrganisations();
+        List<Organisation> orgList = this.serviceClient.getAllOrganisations();
         Queue<String> dashboardUids = new ArrayDeque<>();
-        for (String organisation : orgArray) {
+        for (Organisation organisation : orgList) {
             String uid = this.createDashboard(organisation);
             dashboardUids.offer(uid);
         }
@@ -155,19 +156,17 @@ public class DashboardClient {
     /**
      * Create the dashboard required for the specified organisation and its facilities.
      *
-     * @param organisation The name of the organisation.
+     * @param organisation The organisation object containing all the metadata.
      */
-    private String createDashboard(String organisation) {
+    private String createDashboard(Organisation organisation) {
         LOGGER.info("Initialising a new dashboard...");
         String route = this.serviceClient.getDashboardUrl() + DASHBOARD_CREATION_ROUTE;
         // Generate title
-        String title = "Overview for " + organisation;
-        // Retrieve all time series for the model
-        Map<String, Map<String, List<String[]>>> timeSeries = this.serviceClient.getAllTimeSeries(organisation);
+        String title = "Overview for " + organisation.getName();
         LOGGER.debug("Generating JSON model syntax...");
         String jsonSyntax;
         try {
-            GrafanaModel dataModel = new GrafanaModel(title, this.databaseConnectionMap, timeSeries);
+            GrafanaModel dataModel = new GrafanaModel(title, this.databaseConnectionMap, organisation);
             dataModel = this.overwriteExistingModel(title, dataModel);
             jsonSyntax = dataModel.construct();
         } catch (Exception e) {

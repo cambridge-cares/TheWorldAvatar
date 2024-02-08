@@ -1,167 +1,154 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Measure;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.TemporalInterval;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.options.TransformationOptionsTest;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BarChartTest {
-    private static final List<String[]> SAMPLE_METADATA = new ArrayList<>();
-    private static final String SAMPLE_MEASURE = "ElectricalConsumption";
-    private static final String SAMPLE_UNIT = "kwh";
     private static final String SAMPLE_DATABASE_ID = "fsv8f87";
-    private static final String SAMPLE_FIRST_SYSTEM_NAME = "Emergency systems";
-    private static final String SAMPLE_FIRST_SYSTEM_COL_NAME = "column8";
-    private static final String SAMPLE_SEC_SYSTEM_NAME = "Kitchen system";
-    private static final String SAMPLE_SEC_SYSTEM_COL_NAME = "column22";
-    private static final String SAMPLE_SYSTEM_TABLE_NAME = "table5";
     private static final String INTERVAL_VAR_NAME = "interval";
     private static final String CURR_MONTH_SQL_VARIABLE = "currmonth";
     private static final String REF_MONTH_SQL_VARIABLE = "refmonth";
-    private static final int SAMPLE_PANEL_HEIGHT = 8;
-    private static final int SAMPLE_PANEL_WIDTH = 12;
     private static final int SAMPLE_PANEL_X_POSITION = 1;
     private static final int SAMPLE_PANEL_Y_POSITION = 0;
-
-    @BeforeAll
-    static void setup() {
-        SAMPLE_METADATA.add(new String[]{SAMPLE_FIRST_SYSTEM_NAME, SAMPLE_FIRST_SYSTEM_COL_NAME, SAMPLE_SYSTEM_TABLE_NAME});
-        SAMPLE_METADATA.add(new String[]{SAMPLE_SEC_SYSTEM_NAME, SAMPLE_SEC_SYSTEM_COL_NAME, SAMPLE_SYSTEM_TABLE_NAME});
-    }
+    private static final int[] EXPECTED_GEOMETRY_POSITIONS = new int[]{TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
 
     @Test
     void testConstructor_ChartTypeOne() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_SYSTEM_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Execute the method
-        BarChart chart = new BarChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, 1);
+        BarChart chart = new BarChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, 1);
         // Verify results
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, 1), result);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, 1),
+                result);
     }
 
     @Test
     void testConstructor_ChartTypeTwo() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_SYSTEM_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Execute the method
-        BarChart chart = new BarChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, 2);
+        BarChart chart = new BarChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, 2);
         // Verify results
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, 2), result);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, 2),
+                result);
     }
 
     @Test
     void testConstructor_ChartTypeThree() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_SYSTEM_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Execute the method
-        BarChart chart = new BarChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, 3);
+        BarChart chart = new BarChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, 3);
         // Verify results
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, 3), result);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, 3),
+                result);
     }
 
     @Test
     void testConstructor_ChartTypeFour() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_SYSTEM_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Execute the method
-        BarChart chart = new BarChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, 4);
+        BarChart chart = new BarChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, 4);
         // Verify results
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, 4), result);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, 4),
+                result);
     }
 
     @Test
     void testConstructor_ChartTypeFive() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_SYSTEM_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Execute the method
-        BarChart chart = new BarChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, 5);
+        BarChart chart = new BarChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, 5);
         // Verify results
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, 5), result);
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, 5),
+                result);
     }
 
     @Test
     void testConstruct_NoUnit() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_SYSTEM_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
-        // Construct the object
-        BarChart chart = new BarChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, 3);
+        Measure sample = TestUtils.genSampleMeasure(false);
         // Execute the method
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        BarChart chart = new BarChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, 1);
         // Verify results
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, 3), result);
-        assertEquals("null", chart.getUnit());
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, 1),
+                result);
+        assertEquals(sample.getUnit(), chart.getUnit());
     }
 
     @Test
     void testConstruct_WithUnit() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_SYSTEM_TABLE_NAME, SAMPLE_DATABASE_ID, SAMPLE_UNIT};
-        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
-        // Construct the object
-        BarChart chart = new BarChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA, 3);
+        Measure sample = TestUtils.genSampleMeasure(true);
         // Execute the method
-        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        BarChart chart = new BarChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, 1);
         // Verify results
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, 3), result);
-        assertEquals(SAMPLE_UNIT, chart.getUnit());
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, 1),
+                result);
+        assertEquals(sample.getUnit(), chart.getUnit());
     }
 
     @Test
     void testGetMeasure() {
-        // Construct the object
-        BarChart chart = new BarChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA, 3);
+        // Generate expected inputs
+        Measure sample = TestUtils.genSampleMeasure(true);
+        // Execute the method
+        BarChart chart = new BarChart(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, 1);
         // Execute the method and verify result
-        assertEquals(SAMPLE_MEASURE, chart.getMeasure());
+        assertEquals(sample.getName(), chart.getMeasure());
     }
 
     @Test
     void testConstructor_InvalidChartType() {
         // Verify that illegal argument exception is thrown with wrong chart type
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class, () ->
-                new BarChart(SAMPLE_MEASURE, StringHelper.SYSTEM_KEY, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA, 100)
+                new BarChart(TestUtils.genSampleMeasure(true), TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, 100)
         );
         assertEquals("Invalid input for bar chart type. Only 1,2, 3, 4, or 5 is accepted as valid argument.", error.getMessage());
     }
 
 
-    public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, int chartType) {
-        String titleContent = StringHelper.addSpaceBetweenCapitalWords(metadata[0]);
+    public static String genExpectedResults(Measure measure, String group, String databaseId, int[] geometryPositions, int chartType) {
+        String measureName = measure.getName();
+        String unit = measure.getUnit();
+        String titleContent = StringHelper.addSpaceBetweenCapitalWords(measureName);
         String description = "";
         String query = "";
         String orientationOption = "auto";
         String stackingOption = "normal";
         String showValueOption = "never";
         String groupWidthOption = "0.7";
-        List<String[]> transformationInputs = itemDetails;
+        Queue<String[]> transformationInputs = measure.getTimeSeriesData();
         // Process the inputs based on the chart type required
         switch (chartType) {
             case 1:
                 titleContent += " for current month";
-                description = "A bar chart displaying the " + metadata[0].toLowerCase() + " for the current month";
+                description = "A bar chart displaying the " + measureName.toLowerCase() + " for the current month";
                 query = "SELECT to_char(time,'Mon-YY') AS \\\"interval\\\"," +
-                        "${" + StringHelper.formatVariableName(metadata[0]) + StringHelper.formatVariableName(metadata[1]) + ":csv} " +
-                        "FROM \\\"" + metadata[2] + "\\\" " +
+                        "${" + StringHelper.formatVariableName(measureName) + StringHelper.formatVariableName(group) + ":csv} " +
+                        "FROM \\\"" + measure.getTimeSeriesTable() + "\\\" " +
                         "WHERE time BETWEEN DATE_TRUNC('MONTH', TO_TIMESTAMP(${__to}/1000)) AND TO_TIMESTAMP(${__to}/1000)";
                 // Modify the following options
                 orientationOption = "horizontal";
@@ -171,45 +158,44 @@ public class BarChartTest {
                 break;
             case 2:
                 titleContent += " trends for last period";
-                description = "A bar chart displaying the trends for " + metadata[0].toLowerCase() + " over the last period of the specified interval";
-                query = genTrendsQueryConfiguration(metadata[0], metadata[1], metadata[2], false);
+                description = "A bar chart displaying the trends for " + measureName.toLowerCase() + " over the last period of the specified interval";
+                query = genTrendsQueryConfiguration(measureName, group, measure.getTimeSeriesTable(), false);
                 break;
             case 3:
                 titleContent += " trends for current period";
-                description = "A bar chart displaying the trends for " + metadata[0].toLowerCase() + " over the current period of the specified interval";
-                query = genTrendsQueryConfiguration(metadata[0], metadata[1], metadata[2], true);
+                description = "A bar chart displaying the trends for " + measureName.toLowerCase() + " over the current period of the specified interval";
+                query = genTrendsQueryConfiguration(measureName, group, measure.getTimeSeriesTable(), true);
                 break;
             case 4:
                 titleContent = "Daily comparisons for " + titleContent;
-                description = "A bar chart displaying the daily comparisons for " + metadata[0].toLowerCase() + " between the current and reference month";
-                query = genComparisonQueryConfiguration(metadata[2], true, itemDetails);
+                description = "A bar chart displaying the daily comparisons for " + measureName.toLowerCase() + " between the current and reference month";
+                query = genComparisonQueryConfiguration(measure, true);
                 // Modify the following options
                 stackingOption = "none";
                 showValueOption = "always";
-                transformationInputs = List.of(
-                        new String[]{"Current Month", CURR_MONTH_SQL_VARIABLE},
-                        new String[]{StringHelper.REF_MONTH_VARIABLE_NAME, REF_MONTH_SQL_VARIABLE}
-                );
+                transformationInputs = new ArrayDeque<>();
+                transformationInputs.offer(new String[]{"Current Month", CURR_MONTH_SQL_VARIABLE});
+                transformationInputs.offer(new String[]{StringHelper.REF_MONTH_VARIABLE_NAME, REF_MONTH_SQL_VARIABLE});
                 break;
             case 5:
                 titleContent = "Weekly comparisons for " + titleContent;
-                description = "A bar chart displaying the weekly comparisons for " + metadata[0].toLowerCase() + " between the current and reference month";
-                query = genComparisonQueryConfiguration(metadata[2], false, itemDetails);
+                description = "A bar chart displaying the weekly comparisons for " + measureName.toLowerCase() + " between the current and reference month";
+                query = genComparisonQueryConfiguration(measure, false);
                 // Modify the following options
                 stackingOption = "none";
                 showValueOption = "always";
-                transformationInputs = List.of(
-                        new String[]{"Current Month", CURR_MONTH_SQL_VARIABLE},
-                        new String[]{StringHelper.REF_MONTH_VARIABLE_NAME, REF_MONTH_SQL_VARIABLE}
-                );
+                transformationInputs = new ArrayDeque<>();
+                transformationInputs.offer(new String[]{"Current Month", CURR_MONTH_SQL_VARIABLE});
+                transformationInputs.offer(new String[]{StringHelper.REF_MONTH_VARIABLE_NAME, REF_MONTH_SQL_VARIABLE});
                 break;
             default:
         }
-        titleContent = metadata[4].equals("null") ? titleContent : titleContent + " [" + metadata[4] + "]"; // Unit is optional
+        titleContent = unit == null ? titleContent : titleContent + " [" + unit + "]"; // Unit is optional
         String expectedTransformations = "[" +
                 TransformationOptionsTest.genExpectedGroupByTransformation("range", transformationInputs) + "," +
                 TransformationOptionsTest.genExpectedOrganizeTransformation(transformationInputs, " (range)") + "]";
-        return "{" + TestUtils.genExpectedCommonDefaultGrafanaPanelJson(titleContent, description, "barchart", expectedTransformations, metadata, geometryPositions, query) +
+        return "{" + TestUtils.genExpectedCommonDefaultGrafanaPanelJson(titleContent, description, "barchart", expectedTransformations,
+                databaseId, group, measure, geometryPositions, query) +
                 "\"pluginVersion\": \"10.0.3\"," +
                 // Field Configuration
                 "\"fieldConfig\": { " +
@@ -226,7 +212,7 @@ public class BarChartTest {
                 "{\"color\":\"green\",\"value\":null},{\"color\":\"red\",\"value\":80}" +
                 "]}," +
                 "\"mappings\": []," +
-                "\"unit\":\"" + UnitMapper.getUnitSyntax(metadata[4]) + "\"" +
+                "\"unit\":\"" + UnitMapper.getUnitSyntax(unit) + "\"" +
                 "}," +
                 "\"overrides\": []" +
                 "}," + // End of field configuration
@@ -283,13 +269,12 @@ public class BarChartTest {
     /**
      * Generate the query configuration for comparison.
      *
-     * @param tableName          The name of the table containing the data.
-     * @param isDaily            A boolean indicating if we should generate the syntax for daily or weekly intervals.
-     * @param timeSeriesMetadata A list of items and their metadata for the specified measure.
+     * @param measure The measure data model.
+     * @param isDaily A boolean indicating if we should generate the syntax for daily or weekly intervals.
      */
-    private static String genComparisonQueryConfiguration(String tableName, boolean isDaily, List<String[]> timeSeriesMetadata) {
+    private static String genComparisonQueryConfiguration(Measure measure, boolean isDaily) {
         String refMonthVar = StringHelper.formatVariableName(StringHelper.REF_MONTH_VARIABLE_NAME);
-        String measureSummationSyntax = timeSeriesMetadata.stream()
+        String measureSummationSyntax = measure.getTimeSeriesData().stream()
                 .map(meterMetadata -> meterMetadata[1])
                 .collect(Collectors.joining("+"));
         String intervalSyntax = isDaily ? "'Day ' || TO_CHAR(time,'DD')" : "'Week ' || TO_CHAR(time,'W')";
@@ -313,7 +298,7 @@ public class BarChartTest {
                 // For current month, get from start of month to current time
                 " CASE WHEN time BETWEEN DATE_TRUNC('MONTH',TO_TIMESTAMP(${__to}/1000)) AND TO_TIMESTAMP(${__to}/1000) THEN " + measureSummationSyntax +
                 " END AS " + StringHelper.formatEscapeQuoteSQL(CURR_MONTH_SQL_VARIABLE) +
-                " FROM " + StringHelper.formatEscapeQuoteSQL(tableName) +
+                " FROM " + StringHelper.formatEscapeQuoteSQL(measure.getTimeSeriesTable()) +
                 // These comparisons will only be available up to a year ago
                 " WHERE time BETWEEN TO_TIMESTAMP(${__to}/1000)-INTERVAL '1 year' AND TO_TIMESTAMP(${__to}/1000)" +
                 " ORDER BY " + INTERVAL_VAR_NAME + ";";

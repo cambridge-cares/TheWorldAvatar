@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,12 +16,12 @@ public class TransformationOptionsTest {
     private static final String SAMPLE_ASSET_TABLE_NAME = "table1";
     private static final String SAMPLE_SEC_ASSET_NAME = "asset two";
     private static final String SAMPLE_SEC_ASSET_COL_NAME = "column16";
-    private static final List<String[]> SAMPLE_METADATA = new ArrayList<>();
+    private static final ArrayDeque<String[]> SAMPLE_METADATA = new ArrayDeque<>();
 
     @BeforeAll
     static void setup() {
-        SAMPLE_METADATA.add(new String[]{SAMPLE_FIRST_ASSET_NAME, SAMPLE_FIRST_ASSET_COL_NAME, SAMPLE_ASSET_TABLE_NAME});
-        SAMPLE_METADATA.add(new String[]{SAMPLE_SEC_ASSET_NAME, SAMPLE_SEC_ASSET_COL_NAME, SAMPLE_ASSET_TABLE_NAME});
+        SAMPLE_METADATA.offer(new String[]{SAMPLE_FIRST_ASSET_NAME, SAMPLE_FIRST_ASSET_COL_NAME, SAMPLE_ASSET_TABLE_NAME});
+        SAMPLE_METADATA.offer(new String[]{SAMPLE_SEC_ASSET_NAME, SAMPLE_SEC_ASSET_COL_NAME, SAMPLE_ASSET_TABLE_NAME});
     }
 
     @BeforeEach
@@ -32,38 +32,38 @@ public class TransformationOptionsTest {
     @Test
     void testAddOrganizeTransformation_WithoutNameSuffix() {
         // Execute method
-        options.addOrganizeTransformation(SAMPLE_METADATA);
+        options.addOrganizeTransformation(SAMPLE_METADATA.clone());
         // Verify result
-        assertEquals("[" + genExpectedOrganizeTransformation(SAMPLE_METADATA, "") + "]", options.construct());
+        assertEquals("[" + genExpectedOrganizeTransformation(SAMPLE_METADATA.clone(), "") + "]", options.construct());
     }
 
     @Test
     void testAddOrganizeTransformation_WithNameSuffix() {
         // Execute method
-        options.addOrganizeTransformation(" (range)", SAMPLE_METADATA);
+        options.addOrganizeTransformation(" (range)", SAMPLE_METADATA.clone());
         // Verify result
-        assertEquals("[" + genExpectedOrganizeTransformation(SAMPLE_METADATA, " (range)") + "]", options.construct());
+        assertEquals("[" + genExpectedOrganizeTransformation(SAMPLE_METADATA.clone(), " (range)") + "]", options.construct());
     }
 
     @Test
     void testAddGroupByTransformation() {
         // Execute method
-        options.addGroupByTransformation("range", SAMPLE_METADATA);
+        options.addGroupByTransformation("range", SAMPLE_METADATA.clone());
         // Verify result
-        assertEquals("[" + genExpectedGroupByTransformation("range", SAMPLE_METADATA) + "]", options.construct());
+        assertEquals("[" + genExpectedGroupByTransformation("range", SAMPLE_METADATA.clone()) + "]", options.construct());
     }
 
     @Test
     void testConstruct_MultipleTransformations() {
         // Set up the test
-        String expected = "[" + genExpectedGroupByTransformation("range", SAMPLE_METADATA) + "," + genExpectedOrganizeTransformation(SAMPLE_METADATA, " (range)") + "]";
-        options.addGroupByTransformation("range", SAMPLE_METADATA);
-        options.addOrganizeTransformation(" (range)", SAMPLE_METADATA);
+        String expected = "[" + genExpectedGroupByTransformation("range", SAMPLE_METADATA.clone()) + "," + genExpectedOrganizeTransformation(SAMPLE_METADATA.clone(), " (range)") + "]";
+        options.addGroupByTransformation("range", SAMPLE_METADATA.clone());
+        options.addOrganizeTransformation(" (range)", SAMPLE_METADATA.clone());
         // Execute and verify result
         assertEquals(expected, options.construct());
     }
 
-    public static String genExpectedGroupByTransformation(String aggregateType, List<String[]> itemDetails) {
+    public static String genExpectedGroupByTransformation(String aggregateType, Queue<String[]> itemDetails) {
         StringBuilder fieldAggregations = new StringBuilder();
         // Process metadata into the required format
         for (String[] metadata : itemDetails) {
@@ -84,7 +84,7 @@ public class TransformationOptionsTest {
         return results.toString();
     }
 
-    public static String genExpectedOrganizeTransformation(List<String[]> itemDetails, String colNameSuffix) {
+    public static String genExpectedOrganizeTransformation(Queue<String[]> itemDetails, String colNameSuffix) {
         StringBuilder indexMapper = new StringBuilder();
         StringBuilder colNameMapper = new StringBuilder();
         int counter = 1;

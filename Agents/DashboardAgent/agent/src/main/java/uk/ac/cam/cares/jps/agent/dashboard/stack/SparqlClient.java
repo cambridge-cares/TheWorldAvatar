@@ -19,6 +19,7 @@ import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlAction;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlQuery;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
 import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Organisation;
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import org.w3c.dom.Document;
 
@@ -68,24 +69,8 @@ public class SparqlClient {
      *
      * @return An array of all available organisations to monitor.
      */
-    protected String[] getAllOrganisations() {
-        Set<String> organisationsKey = this.organisations.keySet();
-        return organisationsKey.toArray(new String[organisationsKey.size()]);
-    }
-
-    /**
-     * Get all assets and rooms alongside their time series information associated with the spatial zones managed by the specified organisation in the knowledge graph.
-     *
-     * @param organisation The organisation with time series measures available in their facilities.
-     * @return A map linking all rooms, systems, and assets to their measures within the specified organisation's facilities.
-     * Format: {asset1: [measure1, dataIRI, timeseriesIRI, unit, assetType], [measure2, dataIRI, timeseriesIRI, null(if no unit), assetType]],
-     * room1: [[measureName, dataIRI, timeseriesIRI, unit, rooms], [measureName, dataIRI, timeseriesIRI, unit, rooms]], ...],
-     * system1: [[measureName, dataIRI, timeseriesIRI, unit, systems], [measureName, dataIRI, timeseriesIRI, unit, systems]], ...],
-     * facilities: [[facility1, asset1InFacility1,system1InFacility1,...],[facility2, room1InFacility2,...]]
-     * thresholds: [[measureName, min, max],...]}
-     */
-    protected Map<String, Queue<String[]>> getAllSpatialZoneMetaData(String organisation) {
-        return this.organisations.get(organisation).getAllMeasures();
+    protected List<Organisation> getAllOrganisations() {
+        return new ArrayList<>(this.organisations.values());
     }
 
     /**
@@ -207,10 +192,9 @@ public class SparqlClient {
             }
             // Retrieve the organisation
             Organisation organisation = this.organisations.get(dataArray[0]);
-            // Add the item
-            organisation.addRoom(dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
+            organisation.addFacilityItem(dataArray[1], dataArray[2], StringHelper.ROOM_KEY, dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
             if (!minThreshold.isEmpty() && !maxThreshold.isEmpty()) {
-                organisation.addThresholds(dataArray[3], minThreshold, maxThreshold); // Add thresholds
+                organisation.addThresholds(dataArray[1], dataArray[3], StringHelper.ROOM_KEY, minThreshold, maxThreshold); // Add thresholds
             }
         });
     }
@@ -224,7 +208,7 @@ public class SparqlClient {
     private void retrieveSystemMetaData(RDFConnection conn, String endpoint) {
         retrieveMetaData(conn, SparqlQuery.SYSTEM_NAME, SparqlQuery::genFacilitySystemMeasureQuery, (qs, dataArray) -> {
             Organisation organisation = this.organisations.get(dataArray[0]);
-            organisation.addSystem(dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
+            organisation.addFacilityItem(dataArray[1], dataArray[2], StringHelper.SYSTEM_KEY, dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
         });
     }
 
@@ -244,8 +228,7 @@ public class SparqlClient {
                 String assetType = qs.getResource(SparqlQuery.ELEMENT_TYPE).getLocalName();
                 // Retrieve organisation
                 Organisation organisation = this.organisations.get(dataArray[0]);
-                // Add asset
-                organisation.addAsset(dataArray[1], dataArray[2], assetType, dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
+                organisation.addFacilityItem(dataArray[1], dataArray[2], assetType, dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
             });
         }
     }
@@ -283,7 +266,7 @@ public class SparqlClient {
             }
             String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
             // Initialise the organisation if it hasn't yet
-            if (!this.organisations.containsKey(orgName)) this.organisations.put(orgName, new Organisation());
+            this.organisations.putIfAbsent(orgName, new Organisation(orgName));
             // Stores the values into a bi-consumer that can be retrieved in other functions
             dataConsumer.accept(qs, new String[]{orgName, facilityName, objectName, measureName, unit, measureIri, timeSeriesIri});
         });
