@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  stack-data-uploader:
+    configs:
+      - blazegraph
+      - postgis
+      - geoserver
+
+configs:
+  blazegraph:
+    name: ${STACK_NAME}_blazegraph
+    external: true
+  postgis:
+    name: ${STACK_NAME}_postgis
+    external: true
+  geoserver:
+    name: ${STACK_NAME}_geoserver
+    external: true
