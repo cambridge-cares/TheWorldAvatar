@@ -60,12 +60,24 @@ exit;;
         fi
     ;;
     *)
-        # Don't exit if stack has already been removed
-        set -e
-        # Remove named stack
-        ${EXECUTABLE} stack rm "${STACK_NAME}"
-        set +e
-         if [[ -n "$REMOVE_VOLUMES" ]]; then
+        if [ "$EXECUTABLE" == "docker" ]; then
+            # Don't exit if stack has already been removed
+            set -e
+            # Remove named stack
+            ${EXECUTABLE} stack rm "${STACK_NAME}"
+            set +e
+        else
+            # If pod is running remove it
+            for POD_ID in $(${EXECUTABLE} pod ls -q -f "name=${STACK_NAME}") ; do
+                ${EXECUTABLE} pod rm --force "${POD_ID}" > /dev/null
+            done
+            # If container is running outside a pod remove it
+            for CONTAINER_ID in $(${EXECUTABLE} ps -a -q -f "name=${STACK_NAME}"); do
+                ${EXECUTABLE} rm --force "${CONTAINER_ID}" > /dev/null
+            done
+        fi
+
+        if [[ -n "$REMOVE_VOLUMES" ]]; then
             # Remove named volumes
             remove_stack_volumes "${STACK_NAME}"
         fi
