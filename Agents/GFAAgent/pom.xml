@@ -216,6 +216,11 @@
             <artifactId>opencsv</artifactId>
             <version>5.9</version>
         </dependency>
+        <dependency>
+            <groupId>com.intuit.fuzzymatcher</groupId>
+            <artifactId>fuzzy-matcher</artifactId>
+            <version>1.2.0</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
 

@@ -71,8 +71,9 @@ public class GFAAgent extends JPSAgent{
                 gfaCalculation.calculationGFA();
                 // gfAkg.saveGFA(gfaResult);
             }else if(requestParams.getString("requestUrl").contains("floors")){
-               //integrate floors data
-                IntegrateFloors integrateFloors = new IntegrateFloors(floorsCsv, dbUrl, dbUser, dbPassword);
+               //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
+                IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword);
+                integrateFloors.matchAddress(floorsCsv);
             }
 
 

@@ -13,5 +13,15 @@ public class FloorsCsv {
     @CsvBindByName(column = "max_floor_lvl")
     private int floors;
 
-    
+    public String getBLK() {
+        return this.blk;
+    }
+
+    public String getStreet() {
+        return this.street;
+    }
+
+    public int getFloors() {
+        return this.floors;
+    }
 }
