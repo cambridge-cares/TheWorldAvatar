@@ -1,6 +1,13 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
 #4.5.0
+### Bug Fixes
+* Removed linear-gradient effect in sidebar due to scrollbar getting affected
+* Increased hover height of selected sidebar tab
+* Fixed content container overlapping with tabs in sidebar
+* Removed grey outlines in hovered and selected sidebar tabs
+
+#4.5.0
 ### Features
 Three control buttons are now included by default. These are:
 
