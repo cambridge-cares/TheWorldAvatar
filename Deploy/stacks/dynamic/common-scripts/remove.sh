@@ -7,7 +7,7 @@ remove_stack_volumes() {
     while
         # Wait a max of 30 seconds
         (( i < 30 )) \
-        && [[ -n $(docker ps -a --filter "label=com.docker.stack.namespace=$STACK_NAME" --format "{{.ID}}") ]]
+        && [[ -n $(${EXECUTABLE} ps -a --filter "label=com.docker.stack.namespace=$STACK_NAME" --format "{{.ID}}") ]]
     do
         echo "Waiting for containers to be removed"
         sleep 1
