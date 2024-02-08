@@ -6,6 +6,13 @@
 * a tool that can do it for me, looks like it'll beed to be done manually.
 */
 
+@media (prefers-color-scheme: light) {
+    :root {
+        /* Background colors */
+        --cmcl-blue:   #18677a;
+    }
+}
+
 html,
 body {
     width: 100%;
@@ -96,10 +103,10 @@ h6 {
 
 #sidePanel {
     z-index: 999;
-    background-color: #18677a;
+    background-color: var(--cmcl-blue);
     box-sizing: border-box;
-    border: 1px solid #18677a;
-    box-shadow: 0 4px 8px 0 #18677a;
+    border: 1px solid var(--cmcl-blue);
+    box-shadow: 0 4px 8px 0 var(--cmcl-blue);
     font-family: Inter, sans-serif !important;
     font-size: 11pt;
     height: 100%
@@ -998,7 +1005,7 @@ label[for=select-feature] {
 }
 
 #sidePanelInner .ui-widget-header {
-    background: #18677a;
+    background: var(--cmcl-blue);
     border: none;
     border-radius: 0;
     padding: 5px 5px 0 5px
@@ -1068,7 +1075,7 @@ label[for=select-feature] {
 }
 
 #sidePanelLinks ul:hover a:hover {
-    color: #18677a;
+    color: var(--cmcl-blue);
     text-shadow: #333;
 }
 
@@ -1080,7 +1087,6 @@ label[for=select-feature] {
     width: 250px;
     height: auto;
     position: fixed;
-    top: 0;
     left: 0;
     margin: 20px;
     z-index: 1;
@@ -1143,7 +1149,8 @@ label[for=select-feature] {
 #layerContainer .controlContents {
     display: flex;
     flex-flow: column;
-    overflow: hidden
+    overflow: hidden;
+    flex-grow: 1;
 }
 
 #layerTree {
