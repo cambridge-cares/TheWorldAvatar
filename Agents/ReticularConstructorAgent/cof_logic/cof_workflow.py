@@ -107,8 +107,8 @@ class COFProcessor:
         for _, row in self.filtered_cofs.iterrows():
             # Extract relevant information from the row
             precursor_1, precursor_2, linkage, topology_name, cof_nr, assembly_model = self.extract_info_from_row(row)
-            sbu_names, precursor_values = self.get_sbu_names(precursor_1, precursor_2, linkage, assembly_model)            
-            self.process_cof(cof_nr, sbu_names, topology_name, output_path, output_ext, precursor_values)
+            sbu_names, precursor_values, supercell_dimensions = self.get_sbu_names(precursor_1, precursor_2, linkage, assembly_model)            
+            self.process_cof(cof_nr, sbu_names, topology_name, output_path, output_ext, precursor_values, supercell_dimensions)
 
             # Call the separate function for further processing
             # self.process_cof(cof_nr, sbu_names, topology_name, output_path, output_ext)
@@ -172,7 +172,7 @@ class COFProcessor:
         sbu_names = []
         supplementary_sbu = None
         precursor_values = {}
-        
+        supercell_dimensions = None
         swap_needed = self.check_and_swap_precursors(precursor_1, precursor_2)
         
         if swap_needed:
@@ -206,7 +206,8 @@ class COFProcessor:
                                 'kgd-[(6-planar)x1(3-planar)x2(L:2-linear)x6]n',
                                 'pts-[(4-tetrahedral)x1(4-planar)x1(L:2-linear)x4]n', 
                                 'sql-[(4-planar)x1(4-planar)x1(L:2-linear)x4]n',
-                                'hcb-[(3-planar)x1(3-planar)x1(L:2-linear)x3]n']                   
+                                'hcb-[(3-planar)x1(3-planar)x1(L:2-linear)x3]n',
+                                'hca-[(3-planar)x1(3-planar)x1(L:2-linear)x3]n']                   
         
         #'cpt-[(6-planar)x1(2-linear)x3(L:2-linear)x6]n',
         #'ceq-[(6-prism)x1(3-planar)x2(L:2-linear)x6]n',
@@ -214,9 +215,14 @@ class COFProcessor:
         lfr_set_0 = ['LFR-16', 'LFR-17', 'LFR-19'] # branching linkages, reactions with one precursor
         lfr_set_1 = ['LFR-20','LFR-21'] #symmetrical linear linages 
         lfr_set_2 = ['LFR-6','LFR-12','LFR-13','LFR-18'] # single bond
-        lfr_set_3 = ['LFR-10', 'LFR-50'] #symmetrical building unit, carbon carbon
-        lfr_set_4 = ['LFR-3', 'LFR-8', 'LFR-1', 'LFR-7', 'LFR-4', 'LFR-5'] # , 'LFR-32' # symmetric-assymetric two atom bridges involved 
+        lfr_set_3 = ['LFR-10', 'LFR-50','LFR-40'] #symmetrical building unit, carbon carbon
+        lfr_set_4 = ['LFR-3', 'LFR-8', 'LFR-1', 'LFR-7', 'LFR-4', 'LFR-5','LFR-35',] # ,# symmetric-assymetric two atom bridges involved 
         lfr_set_5 = ['LFR-2', 'LFR-11', 'LFR-24']  # , 'LFR-30', 'LFR-31'  assumetric linear linkages
+        
+        if assembly_model == 'sql-[(4-planar)x1(4-planar)x1(L:2-linear)x4]n':
+            supercell_dimensions =  supercell_dimensions = (2, 2, 1)
+        else:
+            supercell_dimensions = (1, 1, 1)
         
         supplementary_sbu = 'dum_dum'
         if assembly_model in list_0_assembly_models:
@@ -271,9 +277,9 @@ class COFProcessor:
         print(precursor_values)
         print('---------LOOK HERE----------')
         
-        return sbu_names, precursor_values
+        return sbu_names, precursor_values, supercell_dimensions
 
-    def process_cof(self, cof_nr, sbu_names, topology_name, output_path, output_ext, precursor_values):
+    def process_cof(self, cof_nr, sbu_names, topology_name, output_path, output_ext, precursor_values, supercell_dimensions):
         """
         Perform further logic on the COF.
         
@@ -292,7 +298,9 @@ class COFProcessor:
         #print(precursor_values)
         output_file_path = os.path.join(output_path, f'generated_cof_{cof_nr}')
         logging.info(f'RUNNING AUTOGRAFS FOR COF number: {cof_nr}')
-        run(sbu_names, topology_name, output_file_path, output_ext)
+        run(sbu_names, topology_name, output_file_path, output_ext, supercell_dimensions)
+        
+
         logging.info(f'Geometry of COF {cof_nr} successfully Generated')
 
         extxyz_file_path = f"{output_file_path}.extxyz"
