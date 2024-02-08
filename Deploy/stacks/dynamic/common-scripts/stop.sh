@@ -23,7 +23,7 @@ else
         if [ "${SERVICE%' '*}" == "podman pull" ]; then
             # Get service name from echoed pull image command
             SERVICE="${SERVICE%':'*}"
-            SERVICE="${SERVICE#*'/'}"
+            SERVICE="${SERVICE##*'/'}"
             # If pod is running remove it
             for POD_ID in $(podman pod ls -q -f "name=${STACK_NAME}_${SERVICE}") ; do
                 podman pod rm --force "${POD_ID}" > /dev/null
