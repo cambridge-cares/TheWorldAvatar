@@ -39,7 +39,8 @@ fi
 case "$STACK_NAME" in
     "")
         echo "Usages:
-    ./stack.sh remove all [OPTIONS]             Remove all stacks
+    ./stack.sh remove all [OPTIONS]             Remove all stacks (docker)
+    ./stack.sh remove all [OPTIONS]             Remove all containers and pods (podman)
     ./stack.sh remove STACK_NAME [OPTIONS]      Remove stack \"STACK_NAME\"
     ./stack.sh remove STACK_NAME SERVICE_NAME   Remove service \"STACK_NAME-SERVICE_NAME\"
     
@@ -48,15 +49,24 @@ Options:
 "
 exit;;
     "all")
-        ALL_STACKS=$(${EXECUTABLE} stack ls --format="{{.Name}}")
-        # Remove all stacks
-        ${EXECUTABLE} swarm leave --force
+        if [ "$EXECUTABLE" == "docker" ]; then
+            ALL_STACKS=$(${EXECUTABLE} stack ls --format="{{.Name}}")
+            # Remove all stacks
+            ${EXECUTABLE} swarm leave --force
 
-        if [[ -n "$REMOVE_VOLUMES" ]]; then
-            # Remove named volumes
-            for STACK_NAME in $ALL_STACKS; do
-                remove_stack_volumes "${STACK_NAME}"
-            done
+            if [[ -n "$REMOVE_VOLUMES" ]]; then
+                # Remove named volumes
+                for STACK_NAME in $ALL_STACKS; do
+                    remove_stack_volumes "${STACK_NAME}"
+                done
+            fi
+        else
+            # NB Removing containers before pods is faster if they don't respond to kill signals.
+            ${EXECUTABLE} rm --force --all
+            ${EXECUTABLE} pod rm --force --all
+            if [[ -n "$REMOVE_VOLUMES" ]]; then
+                ${EXECUTABLE} volume rm --force --all
+            fi
         fi
     ;;
     *)
