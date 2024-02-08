@@ -1,0 +1,8 @@
+SELECT DISTINCT ?{PropertyName1}Value ?{PropertyName2}Value ?{PropertyName3}Value 
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
+    ?SpeciesIRI os:hasProperty{PropertyName2} ?{PropertyName2}Value .
+    ?SpeciesIRI os:hasProperty{PropertyName3} ?{PropertyName3}Value .
+}}
