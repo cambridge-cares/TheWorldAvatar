@@ -45,19 +45,19 @@ public class StackClient {
         // Initialise a new Sparql client
         this.sparqlClient = new SparqlClient(stackSparqlEndpoint, blazeConfig.getUsername(), blazeConfig.getPassword());
         LOGGER.debug("Services have been successfully retrieved from the stack...");
-        List<Organisation> orgList = this.getAllOrganisations();
-        for (Organisation organisation : orgList) {
-            this.postgisClient.retrieveMeasureRDBLocation(organisation);
-        }
     }
 
     /**
-     * Get all organisations who are managing spatial zones within the knowledge graph.
+     * Get all organisations who are managing facilities within the knowledge graph.
      *
-     * @return An array of all available organisations and their associated spatial zones to monitor.
+     * @return An array of all available time series data model for each organisation.
      */
     public List<Organisation> getAllOrganisations() {
-        return this.sparqlClient.getAllOrganisations();
+        List<Organisation> orgList = this.sparqlClient.getAllOrganisations();
+        for (Organisation organisation : orgList) {
+            this.postgisClient.retrieveMeasureRDBLocation(organisation);
+        }
+        return orgList;
     }
 
     /**

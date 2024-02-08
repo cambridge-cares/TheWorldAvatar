@@ -55,13 +55,6 @@ public class SparqlClient {
             String endpoint = sparqlEndpoints.poll();
             executeSparqlAction(endpoint, this::classifyEndpointType);
         }
-        LOGGER.debug("Retrieving all metadata from SPARQL endpoints...");
-        // For each of the spatial zone endpoint, retrieve the metadata associated with them
-        for (String endpoint : this.spatialZoneSparqlEndpoints) {
-            executeSparqlAction(endpoint, this::retrieveRoomMetaData);
-            executeSparqlAction(endpoint, this::retrieveSystemMetaData);
-            executeSparqlAction(endpoint, this::retrieveAssetMetaData);
-        }
     }
 
     /**
@@ -70,6 +63,13 @@ public class SparqlClient {
      * @return An array of all available organisations to monitor.
      */
     protected List<Organisation> getAllOrganisations() {
+        LOGGER.debug("Retrieving all metadata from SPARQL endpoints...");
+        // For each of the spatial zone endpoint, retrieve the metadata associated with them
+        for (String endpoint : this.spatialZoneSparqlEndpoints) {
+            executeSparqlAction(endpoint, this::retrieveRoomMetaData);
+            executeSparqlAction(endpoint, this::retrieveSystemMetaData);
+            executeSparqlAction(endpoint, this::retrieveAssetMetaData);
+        }
         return new ArrayList<>(this.organisations.values());
     }
 
