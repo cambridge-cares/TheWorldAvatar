@@ -1,0 +1,45 @@
+[
+    {
+        "title": "Chemical Species Properties",
+        "description": "Queries related to properties of chemical species",
+        "questions": [
+            "What is the charge of benzene?",
+            "How many hydrogen bond acceptors does H2O have and what is its boiling point?",
+            "Could you provide the number of defined atom stereocenters for chemical species categorized as trinitrotoluene?",
+            
+            "Can you provide information about the chemical classes attributed to InChI=1S/C3H9NO/c1-3(5)2-4/h3,5H,2,4H2,1H3?",
+            "What are the applications of 2-amino-4-sulfanyl-butanoic acid",
+            "Show the IUPAC name of CH2O2",
+
+            "Find all species with boiling point above 0°C",
+            "What are the chemical species having molecular weight around 150 g/mol?",
+            "Provide a roster of chemical entities used as pH regulating agent",
+            "list of chemical species classified as alcohol, employed as a Solvent, with a boiling point between 100°C and 120°C"
+        ]
+    },
+    {
+        "title": "Gas-Phase Reaction Mechanisms",
+        "description": "Queries related to the mechanisms of gas-phase reactions",
+        "questions": [
+            "list all mechanisms that involve O, H, and AR",
+            "what are the reactions involved in the mechanism outlined by www.osti.gov/servlets/purl/90098-26Ev73/webviewable/",
+            "what are the reactions in which O2 reacts to form OH",
+            "what are the rate constant parameters of the reactions involving H2",
+            "compare the kinetic models of the reaction H2 + OH = H + H2O across all the mechanisms it appears in",
+            "compare thermodynamic models of O2 across all the mechanisms in which it appears"
+        ]
+    },
+    {
+        "title": "Quantum Chemistry Computations",
+        "description": "Queries related to quantum chemistry computations",
+        "questions": [
+            "what is the optimized geometry of O2 at the UB3LYP level of theory",
+            "can you provide the molecular structure of H2 calculated using RB3LYP level of theory",
+            "compare zero-point energy when using CC-pVTZ vs CC-pVQZ basis set for Ar",
+            "what is the calculated energy of H2O, specify the basis set",
+            "can you provide the HOMO and LUMO energies for N2 at the RB3LYP level",
+            "what are the rotational constants for H2O at the RB3LYP level",
+            "what is the energy of O2 at the UB3LYP level of theory"
+        ]
+    }
+]

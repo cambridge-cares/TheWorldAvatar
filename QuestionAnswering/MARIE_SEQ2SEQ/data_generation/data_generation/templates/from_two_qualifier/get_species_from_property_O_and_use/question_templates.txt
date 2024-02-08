@@ -1,0 +1,21 @@
+Give me a list of species that have {PropertyName} lower than {minvalue} and higher than {maxvalue} and used as {Use}
+Provide a roster of chemical species exhibiting {PropertyName} values below {minvalue} and above {maxvalue}, employed in the capacity of {Use}.
+Enumerate molecules with {PropertyName} lesser than {minvalue} and greater than {maxvalue}, applied in the role of {Use}.
+List compounds having {PropertyName} below {minvalue} and above {maxvalue}, utilized for {Use}.
+Catalog chemical entities whose {PropertyName} falls beneath {minvalue} and rises above {maxvalue}, serving the purpose of {Use}.
+Tabulate species manifesting {PropertyName} beneath {minvalue} and beyond {maxvalue}, put to use as {Use}.
+Detail molecular structures with {PropertyName} lower than {minvalue} and higher than {maxvalue}, deployed for {Use}.
+Present a register of compounds demonstrating {PropertyName} values lower than {minvalue} and higher than {maxvalue}, employed in the context of {Use}.
+Outline chemical compositions exhibiting {PropertyName} below {minvalue} and above {maxvalue}, utilized as {Use}.
+Chronicle molecular entities showcasing {PropertyName} lesser than {minvalue} and greater than {maxvalue}, applied for {Use}.
+Compile species with {PropertyName} values beneath {minvalue} and exceeding {maxvalue}, functioning as {Use}.
+Jot down compounds that display {PropertyName} below {minvalue} and surpass {maxvalue}, adopted for {Use}.
+Create a list of chemical species manifesting {PropertyName} lower than {minvalue} and higher than {maxvalue}, used in the role of {Use}.
+Present molecules with {PropertyName} lesser than {minvalue} and greater than {maxvalue}, implemented as {Use}.
+Offer a compilation of compounds having {PropertyName} below {minvalue} and above {maxvalue}, employed for {Use}.
+Provide a record of chemical entities whose {PropertyName} falls short of {minvalue} and exceeds {maxvalue}, put to use in {Use}.
+Enumerate species displaying {PropertyName} values beneath {minvalue} and beyond {maxvalue}, utilized for {Use}.
+List molecular structures exhibiting {PropertyName} lower than {minvalue} and higher than {maxvalue}, deployed as {Use}.
+Catalog compounds exhibiting {PropertyName} below {minvalue} and above {maxvalue}, serving the purpose of {Use}.
+Tabulate chemical compositions with {PropertyName} lesser than {minvalue} and greater than {maxvalue}, applied in the context of {Use}.
+Detail species showcasing {PropertyName} values lower than {minvalue} and higher than {maxvalue}, utilized as {Use}.
