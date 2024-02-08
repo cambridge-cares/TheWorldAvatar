@@ -32,7 +32,11 @@ while (( $# >= 1 )); do
 done
 
 if [[ -n "$SERVICE_NAME" ]]; then
-    ${EXECUTABLE} service rm "${STACK_NAME}-${SERVICE_NAME}" || ${EXECUTABLE} service rm "${STACK_NAME}_${SERVICE_NAME}"
+    if [ "$EXECUTABLE" == "docker" ]; then
+        ${EXECUTABLE} service rm "${STACK_NAME}-${SERVICE_NAME}" || ${EXECUTABLE} service rm "${STACK_NAME}_${SERVICE_NAME}"
+    else
+        echo "Info: Not implemented. No action taken."
+    fi
     exit
 fi
 
@@ -42,7 +46,7 @@ case "$STACK_NAME" in
     ./stack.sh remove all [OPTIONS]             Remove all stacks (docker)
     ./stack.sh remove all [OPTIONS]             Remove all containers and pods (podman)
     ./stack.sh remove STACK_NAME [OPTIONS]      Remove stack \"STACK_NAME\"
-    ./stack.sh remove STACK_NAME SERVICE_NAME   Remove service \"STACK_NAME-SERVICE_NAME\"
+    ./stack.sh remove STACK_NAME SERVICE_NAME   Remove service \"STACK_NAME-SERVICE_NAME\" (docker)
     
 Options:
     -v, --volumes       Also remove named volumes
