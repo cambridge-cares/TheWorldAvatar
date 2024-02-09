@@ -50,3 +50,8 @@ delete the folders
 /run/user/${UID}/containers
 ```
 and restart your machine (if you can).
+
+If you find that logging out of your session kills your containers, try enabling lingering (if you have privileges):
+```console
+sudo loginctl enable-linger <user>
+```
