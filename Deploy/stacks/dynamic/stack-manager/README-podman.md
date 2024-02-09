@@ -38,3 +38,15 @@ Starting podman with debug-level verbosity may provide additional insights:
 ```console
 podman --log-level=debug system service -t0
 ```
+
+If you end up in a state where the system is unusable, try
+```console
+podman system reset -f
+```
+delete the folders
+```console
+~/.cache/containers
+~/.local/share/containers
+/run/user/${UID}/containers
+```
+and restart your machine (if you can).
