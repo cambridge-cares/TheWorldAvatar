@@ -4,7 +4,7 @@
         "Name": "mapbox-vis",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/twa-vf:TAG",
+                "Image": "ghcr.io/cambridge-cares/twa-vf:4.5.2-sidebarcontents-SNAPSHOT",
                 "Mounts": [
                     {
                         "Type": "bind",
