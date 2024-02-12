@@ -1,0 +1,55 @@
+{
+    "name": "All Data",
+    "groups": [
+        {
+            "name": "hongkong",
+            "stack": "http://localhost:1234/3DcityDB",
+            "sources": [
+                {
+                    "id": "hongkong-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Abuilding-hongkong_gsl&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "hongkong-layer",
+                    "name": "hongkong",
+                    "treeable": false,
+                    "source": "hongkong-source",
+                    "source-layer": "building-hongkong_gsl",
+                    "type": "fill-extrusion",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFFFFF",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "*",
+                                1.0,
+                                [
+                                    "to-number",
+                                    [
+                                        "get",
+                                        "building_height"
+                                    ]
+                                ]
+                            ],
+                            200
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

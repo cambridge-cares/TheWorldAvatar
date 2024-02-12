@@ -1,0 +1,18 @@
+{
+    "entries": [
+        {
+            "id": "ClassOne",
+            "class": "https://theworldavatar.io/mock-domain/ClassOne",
+            "meta" : {
+                "queryFile": "classOneMeta.sparql"
+            }, 
+            "time": {
+                "queryFile": "classOneTime.sparql",
+                "limit": 72,
+                "unit": "hours",
+                "reference": "latest",
+                "database": "my-database"
+            }
+        }
+    ]
+}

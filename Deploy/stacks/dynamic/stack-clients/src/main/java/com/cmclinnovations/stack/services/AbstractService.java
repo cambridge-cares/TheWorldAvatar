@@ -20,8 +20,7 @@ public abstract class AbstractService implements Service {
 
     static {
         try {
-            Collection<URI> listFiles = FileUtils.listFiles(AbstractService.class
-                    .getResource("/" + AbstractService.class.getPackage().getName().replace('.', '/')), ".class");
+            Collection<URI> listFiles = FileUtils.listFiles(AbstractService.class.getResource(""), ".class");
             for (URI classFile : listFiles) {
                 String path = classFile.toURL().getPath();
                 path = path.replaceFirst(".*!/([^.]*)\\.class", "$1").replace("/", ".");

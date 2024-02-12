@@ -1,0 +1,37 @@
+{
+    "ServiceSpec": {
+      "Name": "dashboard-agent",
+      "TaskTemplate": {
+        "ContainerSpec": {
+          "Image": "dashboard-agent:1.0.1",
+          "Configs": [
+            {
+              "ConfigName": "blazegraph"
+            },
+            {
+              "ConfigName": "postgis"
+            },
+            {
+              "ConfigName": "grafana"
+            }
+          ],
+          "Secrets": [
+            {
+              "SecretName": "blazegraph_password"
+            }, {
+              "SecretName": "postgis_password"
+            },
+            {
+              "SecretName": "grafana_password"
+            }
+          ]
+        }
+      }
+    },
+    "endpoints": {
+      "rest": {
+        "url": "http://localhost:8080/dashboard-agent/",
+        "externalPath": "/dashboard-agent/"
+      }
+    }
+  }

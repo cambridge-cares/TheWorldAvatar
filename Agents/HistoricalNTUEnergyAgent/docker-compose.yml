@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  example:
+    image:  ntu-instantiation-agent:1.0.0
+    build: .
+    container_name: ntu-instantiation-agent
+    ports:
+      - "8080:8080"

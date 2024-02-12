@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  filter-agent:
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    security_opt:
+      - label=disable
+    networks:
+      - stack
+
+configs:
+  blazegraph:
+    name: ${STACK_NAME}_blazegraph
+    external: true
+
+networks:
+  stack:
+    name: ${STACK_NAME}
+    driver: overlay
+    external: true

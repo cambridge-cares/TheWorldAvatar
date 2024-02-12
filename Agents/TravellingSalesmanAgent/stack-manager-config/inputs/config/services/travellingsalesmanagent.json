@@ -1,0 +1,42 @@
+{
+    "ServiceSpec": {
+        "Name": "travellingsalesmanagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/travellingsalesmanagent:1.0.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/TravellingSalesmanAgent/inputs",
+                        "Target": "/inputs"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "travellingsalesmanagent": {
+          "url": "http://localhost:8080/travellingsalesmanagent/",
+          "externalPath": "/travellingsalesmanagent/"
+        }
+    }
+}

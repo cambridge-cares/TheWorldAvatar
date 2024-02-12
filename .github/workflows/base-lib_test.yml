@@ -14,6 +14,7 @@ on:
       - main
     paths:
       - JPS_BASE_LIB/**
+      - .github/workflows/base-lib_test.yml
 
 
 # Job definitions
@@ -28,7 +29,7 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         
       # Produce a valid 'settings.xml' file for Maven by
       # running a script to inject the environment variables
@@ -44,11 +45,12 @@ jobs:
           
       # Set up JDK 11
       - name: Set up JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: "11"
           distribution: "adopt"
-      
+          cache: "maven"
+
       # Build the code without test
       - name: Build code (no tests)
         working-directory: ./JPS_BASE_LIB

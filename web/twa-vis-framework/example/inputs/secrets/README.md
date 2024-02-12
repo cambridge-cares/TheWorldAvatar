@@ -1,0 +1,1 @@
+The `mapbox_username` and `mapbox_api_key` files should be placed within this directory.

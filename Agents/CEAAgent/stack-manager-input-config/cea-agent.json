@@ -1,0 +1,39 @@
+{
+    "ServiceSpec": {
+        "Name": "cea-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/cea-agent:3.4.2",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/CEAAgent/cea-agent/src/main/resources/CEAAgentConfig.properties",
+                        "Target": "/resources/CEAAgentConfig.properties"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "cea-agent": {
+          "url": "http://localhost:8084/cea-agent/",
+          "externalPath": "/cea-agent/"
+        }
+    }
+}

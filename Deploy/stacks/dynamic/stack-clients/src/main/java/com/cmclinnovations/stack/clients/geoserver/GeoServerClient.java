@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.clients.geoserver;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -20,11 +22,11 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
-import com.cmclinnovations.stack.services.GeoServerService;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.Util;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
+import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
@@ -39,8 +41,11 @@ public class GeoServerClient extends ContainerClient {
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static GeoServerClient instance = null;
-    private static final Path STATIC_DATA_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("static_data");
-    private static final Path ICONS_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("icons");
+
+    public static final Path SERVING_DIRECTORY = Path.of("/opt/geoserver_data/www");
+    private static final Path STATIC_DATA_DIRECTORY = SERVING_DIRECTORY.resolve("static_data");
+    private static final Path ICONS_DIRECTORY = SERVING_DIRECTORY.resolve("icons");
+    private static final String GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX = "_geoserver_indices";
 
     public static GeoServerClient getInstance() {
         if (null == instance) {
@@ -95,6 +100,10 @@ public class GeoServerClient extends ContainerClient {
                 throw new RuntimeException("GeoServer workspace " + workspaceName + "' could not be deleted.");
             }
         }
+    }
+
+    public void reload() {
+        manager.getPublisher().reload();
     }
 
     public void loadStyle(GeoServerStyle style, String workspaceName) {
@@ -175,14 +184,16 @@ public class GeoServerClient extends ContainerClient {
 
     public void createPostGISLayer(String workspaceName, String database, String layerName,
             GeoServerVectorSettings geoServerSettings) {
+        String storeName = database;
+
+        createPostGISDataStore(workspaceName, storeName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
+
         // Need to include the "Util.DEFAULT_QUIET_ON_NOT_FOUND" argument because the
         // 2-arg version of "existsLayer" incorrectly calls the 3-arg version of the
         // "existsLayerGroup" method.
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
             logger.info("GeoServer database layer '{}' already exists.", database);
         } else {
-            createPostGISDataStore(workspaceName, layerName, database, "public");
-
             GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
             fte.setProjectionPolicy(ProjectionPolicy.NONE);
             fte.addKeyword("KEYWORD");
@@ -191,12 +202,15 @@ public class GeoServerClient extends ContainerClient {
 
             GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
             if (null != virtualTable) {
+                virtualTable.setName(layerName + "_" + virtualTable.getName());
                 fte.setNativeName(virtualTable.getName());
                 fte.setMetadataVirtualTable(virtualTable);
             }
 
+            processDimensions(geoServerSettings, fte);
+
             if (manager.getPublisher().publishDBLayer(workspaceName,
-                    layerName,
+                    storeName,
                     fte, geoServerSettings)) {
                 logger.info("GeoServer database layer '{}' created.", layerName);
             } else {
@@ -207,12 +221,13 @@ public class GeoServerClient extends ContainerClient {
     }
 
     public void createGeoTiffLayer(String workspaceName, String name, String database, String schema,
-            GeoServerRasterSettings geoServerSettings) {
+            GeoServerRasterSettings geoServerSettings, MultidimSettings mdimSettings) {
 
         if (manager.getReader().existsCoveragestore(workspaceName, name)) {
-            logger.info("GeoServer coveragestore '{}' already exists.", name);
+            logger.info("GeoServer coverage store '{}' already exists.", name);
         } else {
-            PostGISClient.getInstance().createDatabase(database);
+            String geoserverRasterIndexDatabaseName = database + GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX;
+            PostGISClient.getInstance().createDatabase(geoserverRasterIndexDatabaseName);
 
             String containerId = getContainerId("geoserver");
 
@@ -220,7 +235,7 @@ public class GeoServerClient extends ContainerClient {
             datastoreProperties.putIfAbsent("SPI", "org.geotools.data.postgis.PostgisNGDataStoreFactory");
             datastoreProperties.putIfAbsent("host", postgreSQLEndpoint.getHostName());
             datastoreProperties.putIfAbsent("port", postgreSQLEndpoint.getPort());
-            datastoreProperties.putIfAbsent("database", database);
+            datastoreProperties.putIfAbsent("database", geoserverRasterIndexDatabaseName);
             datastoreProperties.putIfAbsent("schema", schema);
             datastoreProperties.putIfAbsent("user", postgreSQLEndpoint.getUsername());
             datastoreProperties.putIfAbsent("passwd", postgreSQLEndpoint.getPassword());
@@ -231,13 +246,31 @@ public class GeoServerClient extends ContainerClient {
             datastoreProperties.putIfAbsent("preparedStatements", "true");
             StringWriter stringWriter = new StringWriter();
 
-            Path geotiffDir = Path.of(StackClient.GEOTIFFS_DIR, name);
+            Path geotiffDir = Path.of(StackClient.GEOTIFFS_DIR, database, schema, name);
             try {
-                datastoreProperties.store(stringWriter, "");
 
-                sendFilesContent(containerId, Map.of("datastore.properties", stringWriter.toString().getBytes(),
-                        "indexer.properties",
-                        "Schema=location:String,*the_geom:Polygon\nPropertyCollectors=".getBytes()),
+                Map<String, byte[]> files = new HashMap<>();
+
+                datastoreProperties.store(stringWriter, "");
+                files.put("datastore.properties", stringWriter.toString().getBytes());
+                String indexerProperties = "Schema=location:String,*the_geom:Polygon\nPropertyCollectors=";
+
+                if (null != mdimSettings) {
+                    TimeOptions timeOptions = mdimSettings.getTimeOptions();
+                    if (null != timeOptions) {
+                        String regex = timeOptions.getRegex();
+                        String format = timeOptions.getFormat();
+
+                        indexerProperties = "TimeAttribute=time\nSchema=location:String,time:java.util.Date,*the_geom:Polygon\nPropertyCollectors=TimestampFileNameExtractorSPI[timeregex](time)";
+                        files.put("timeregex.properties", ("regex=" + regex + ",format=" + format).getBytes());
+
+                    }
+                }
+
+                files.put("indexer.properties",
+                        indexerProperties.getBytes());
+
+                sendFilesContent(containerId, files,
                         geotiffDir.toString());
             } catch (IOException ex) {
                 throw new RuntimeException(
@@ -257,6 +290,8 @@ public class GeoServerClient extends ContainerClient {
                     // TODO Work out how to set the layer title/display name
                 }
 
+                processDimensions(geoServerSettings, storeEncoder);
+
                 if (manager.getPublisher().publishExternalMosaic(
                         workspaceName, name,
                         geotiffDir.toFile(),
@@ -272,5 +307,35 @@ public class GeoServerClient extends ContainerClient {
                         "GeoServer coverage datastore '" + name + "' does not exist and could not be created.", ex);
             }
         }
+    }
+
+    private void processDimensions(GeoServerDimensionSettings dimensionSettings, GSResourceEncoder resourceEncoder) {
+        Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions = dimensionSettings.getDimensions();
+         if (null != dimensions) {
+        dimensions.entrySet().forEach(entry -> resourceEncoder.setMetadataDimension(entry.getKey(), entry.getValue()));
+         }
+    }
+
+    public void addProjectionsToGeoserver(String geoserverContainerID, String wktString, String srid) {
+        String execId;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+        execId = createComplexCommand(geoserverContainerID, "mkdir", "-p",
+                "/opt/geoserver_data/user_projections")
+                .withErrorStream(errorStream)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+        outputStream.reset();
+        errorStream.reset();
+
+        execId = createComplexCommand(geoserverContainerID, "bash", "-c",
+                "echo > /opt/geoserver_data/user_projections/epsg.properties <<EOF " + srid + "=" + wktString
+                        + "\nEOF")
+                .withErrorStream(errorStream)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+
+        GeoServerClient.getInstance().reload();
+        handleErrors(errorStream, execId, logger);
     }
 }
