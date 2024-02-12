@@ -45,6 +45,7 @@ def get_instance_time_series_data(instanceIRI, TSClient, KGClient):
                                 ?dataIRI om:hasUnit ?unit;
                                 ts:hasTimeSeries ?timeSeriesIRI}''' % instanceIRI
     # Execute query
+    #print("QUERY: ", query)
     response = KGClient.execute(query)
 
     # Convert JSONArray String back to list
@@ -66,6 +67,7 @@ def get_instance_time_series_data(instanceIRI, TSClient, KGClient):
     # Retrieve time series data for retrieved set of dataIRIs
     try:
         if len(dataIRIs) > 0:
+            #print("DATAIRI: ", dataIRIs)
             timeseries = TSClient.getTimeSeries(dataIRIs)
         else: 
             print("dataIRIs is not available for: ", instanceIRI)
@@ -74,7 +76,7 @@ def get_instance_time_series_data(instanceIRI, TSClient, KGClient):
         print("Time series is not available for: ", instanceIRI)
         timeseries = None
     # Return time series and associated lists of variables and units
-    return timeseries, dataIRIs, utilities, units
+    return timeseries, utilities, units
 
 
 def get_all_time_series(powerplant, KGClient, TSClient, now, duration, start_1, start_2, start_7):
@@ -502,12 +504,12 @@ def generate_powerplant_visualisation_data(powerplants, powerplant_coordinates, 
             metadata.append(put_metadata_in_json(feature_id, lon, lat))
         # Retrieve time series data
         #timeseries, utilities, units = get_all_time_series(iri, KGClient, TSClient, now, duration, start_1, start_2, start_7)
-        timeseries, dataIRIs, utilities, units = get_instance_time_series_data(iri, TSClient, KGClient)
+        timeseries, utilities, units = get_instance_time_series_data(iri, TSClient, KGClient)
         if timeseries != None: 
             ts_data['ts'].append(timeseries)
             ts_data['id'].append(feature_id)
-            ts_data['units'].append(dict(zip(dataIRIs, units)))
-            ts_data['headers'].append(dict(zip(dataIRIs, utilities)))
+            ts_data['units'].append(units)
+            ts_data['headers'].append(utilities)
     
     # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
     ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
@@ -558,13 +560,13 @@ def generate_generator_visualisation_data(generators, generator_coordinates, KGC
         else:
             metadata.append(put_metadata_in_json(feature_id, lon, lat))
         # Retrieve time series data
-        timeseries, dataIRIs, utilities, units = get_instance_time_series_data(iri, TSClient, KGClient)
+        timeseries, utilities, units = get_instance_time_series_data(iri, TSClient, KGClient)
         if timeseries != None: 
             ts_data['ts'].append(timeseries)
             ts_data['id'].append(feature_id)
-            ts_data['units'].append(dict(zip(dataIRIs, units)))
-            ts_data['headers'].append(dict(zip(dataIRIs, utilities)))
-
+            ts_data['units'].append(units)
+            ts_data['headers'].append(utilities)
+    
     # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
     ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
     # Make JSON file readable in Python
