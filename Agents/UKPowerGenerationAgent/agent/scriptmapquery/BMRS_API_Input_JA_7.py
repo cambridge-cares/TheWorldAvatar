@@ -1,5 +1,3 @@
-#KEY: iwx6raw9m7nqq0f (this should not be in the Version Control). 
-
 #TEST from page 193: https://www.elexon.co.uk/documents/training-guidance/bsc-guidance-notes/bmrs-api-and-data-push-user-guide-2/
 #This corresponds to this information: https://www.bmreports.com/bmrs/?q=actgenration/actualgeneration
 
@@ -293,13 +291,13 @@ def run_query(Key, Year, Month, Day, Period):
     querystring = 'https://api.bmreports.com/BMRS/B1610/v2?APIKey='+Key+'&SettlementDate='+Year+'-'+Month+'-'+Day+'&Period='+Period+'&NGCBMUnitID=&ServiceType=xml'
     
     #Query All
-    #post_elexon_basic(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=iwx6raw9m7nqq0f&SettlementDate=2021-01-01&Period=1&NGCBMUnitID=&ServiceType=xml',) #All 
-    #xmlString = post_elexon(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=iwx6raw9m7nqq0f&SettlementDate=2021-01-01&Period=1&NGCBMUnitID=&ServiceType=xml',) #All
+    #post_elexon_basic(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=<PROVIDE_API_KEY>&SettlementDate=2021-01-01&Period=1&NGCBMUnitID=&ServiceType=xml',) #All 
+    #xmlString = post_elexon(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=<PROVIDE_API_KEY>&SettlementDate=2021-01-01&Period=1&NGCBMUnitID=&ServiceType=xml',) #All
     xmlString = post_elexon(url=querystring,) #All 
     
     #Specific
     #WHILW #48WSTN1000WHILWQ
-    #post_elexon_basic(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=iwx6raw9m7nqq0f&SettlementDate=2021-01-01&Period=1&NGCBMUnitID=WHILW&ServiceType=xml',) #HEYM2
+    #post_elexon_basic(url='https://api.bmreports.com/BMRS/B1610/v2?APIKey=<PROVIDE_API_KEY>&SettlementDate=2021-01-01&Period=1&NGCBMUnitID=WHILW&ServiceType=xml',) #HEYM2
 
     #Try to format information
     IDOutput = xmlStringProcessToArray(xmlString) #The ID Output dictionary. 
@@ -516,7 +514,7 @@ def Auto_Call(Key, AutoFile):
     return dfa, dfb
 
 def download_bmrs_data():
-    Key = 'iwx6raw9m7nqq0f' #Add Here if needed, but remove before push. 
+    Key = '<PROVIDE_API_KEY>' #Add Here if needed, but remove before push. 
     #live_power('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1', Key, '2021', '11', '14', '24', 2)
     Auto_Call(Key, 'https://www.dropbox.com/s/tupqp1nu017xiyw/Input-Template-Auto.csv?dl=1')
     #NOTE: With Manual Mapping Exemption now (i.e. if the value in the "Manual" column is '1', then it does not overwrite the generator to plant mapping and leaves it.
@@ -524,7 +522,7 @@ def download_bmrs_data():
 
 ###Main Function###
 if __name__ == "__main__":
-    Key = 'iwx6raw9m7nqq0f' #Add Here if needed, but remove before push. 
+    Key = '<PROVIDE_API_KEY>' #Add Here if needed, but remove before push. 
     #live_power('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1', Key, '2021', '11', '14', '24', 2)
     Auto_Call(Key, 'https://www.dropbox.com/s/tupqp1nu017xiyw/Input-Template-Auto.csv?dl=1')
     #NOTE: With Manual Mapping Exemption now (i.e. if the value in the "Manual" column is '1', then it does not overwrite the generator to plant mapping and leaves it. 
