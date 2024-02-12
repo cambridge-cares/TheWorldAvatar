@@ -1048,9 +1048,16 @@ label[for=select-feature] {
     overflow: auto;
     /* background: linear-gradient(white, rgba(255, 255, 255, 0));
     -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);        <-- nice effect but messing with the scroll bar. Can't rn figure how to fix 
-    mask-image: linear-gradient(to bottom, black 95%, transparent); */
-    margin: 0px 0px 35px 0px;
+    mask-image: linear-gradient(to bottom, black 95%, transparent); 
+    margin-bottom: 35px; */
     padding: 1em 1em 3em
+}
+
+#contentContainer {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 150px;
 }
 
 #sidePanelLinks {
@@ -1711,9 +1718,16 @@ li {
 html .ui-button.ui-state-disabled:hover,
 html .ui-button.ui-state-disabled:active {
     border: unset;
+    z-index: 1;
 }
 
 /* zoom and compass element shifted down below the mapbox logo */
 .mapboxgl-ctrl-top-right {
-    top: 30px
+    top: 30px;
+}
+
+#waveAnimationContainer {
+    bottom: 0;
+    position: absolute;
+    width: 100%;
 }
