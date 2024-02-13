@@ -27,12 +27,12 @@ class MockWeatherQueryClient extends WeatherQueryClient{
 	}
 
 	@Override 
-	void updateStation(String station_iri) {
+	void updateStation(String stationIri, String timestamp) {
 		// construct time series object
 		// first query all data values
 		SelectQuery query = Queries.SELECT();
 		Variable measure = query.var();
-		GraphPattern queryPattern = iri(station_iri).has(PropertyPaths.path(reports,hasValue),measure);
+		GraphPattern queryPattern = iri(stationIri).has(PropertyPaths.path(reports,hasValue),measure);
 		query.select(measure).where(queryPattern).prefix(p_ems,p_om);
 		
 		JSONArray queryResult = this.kgClient.executeQuery(query.getQueryString());

@@ -1,0 +1,11 @@
+[PrefixDeclaration]
+geo:		http://www.opengis.net/ont/geosparql#
+xsd:		http://www.w3.org/2001/XMLSchema#
+ems:        https://www.theworldavatar.com/kg/ontoems/
+
+[MappingDeclaration] @collection [[
+mappingId   sensor_location
+target      ems:{main_uuid} a geo:Feature ; geo:hasGeometry ems:{geom_uuid} . 
+            ems:{geom_uuid} geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {wkt}"^^geo:wktLiteral .
+source      SELECT ST_AsText(wkb_geometry) as wkt, main_uuid, geom_uuid FROM sensors
+]]

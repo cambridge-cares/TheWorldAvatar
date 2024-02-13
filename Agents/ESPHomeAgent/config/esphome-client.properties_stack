@@ -1,0 +1,12 @@
+# URL to connect to postgreSQL database
+db.url=jdbc:postgresql://<STACK NAME>-postgis:5432/esphome
+# Username to connect to postgreSQL database
+db.user=postgres
+# Password to connect to postgreSQL database
+db.password=postgres
+#SPARQL Query endpoint of triple store
+sparql.query.endpoint=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/esphome/sparql
+#SPARQL Update endpoint of triple store 
+sparql.update.endpoint=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/esphome/sparql
+#data IRI of the parameter/variable that you want to query from the postgreSQL database
+dataIRI=http://www.theworldavatar.com/kb/ontotimeseries/esphome_generic_output_f25ae7aa-9720-4907-bef5-cd8ee3d52b61

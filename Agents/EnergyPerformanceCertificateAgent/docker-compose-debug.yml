@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  epc_agent:
+    image: ghcr.io/cambridge-cares/epc_agent_debug:1.2.0
+    build:
+      context: .
+      target: debug
+    ports:
+      - "${DEBUG_PORT}:5678"
+      - "5679:5679"
+    volumes:
+      - ./agent:/app/agent

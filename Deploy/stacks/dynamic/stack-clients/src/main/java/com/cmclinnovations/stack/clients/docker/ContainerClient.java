@@ -1,24 +1,25 @@
 package com.cmclinnovations.stack.clients.docker;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
+import org.slf4j.Logger;
+
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
 import com.cmclinnovations.stack.clients.utils.LocalTempDir;
 import com.cmclinnovations.stack.clients.utils.TempDir;
-import com.github.dockerjava.api.model.Config;
 import com.github.dockerjava.api.model.Container;
-import com.github.dockerjava.api.model.Secret;
 
 public class ContainerClient extends BaseClient {
 
     private final DockerClient dockerClient;
 
     public ContainerClient() {
-        this.dockerClient = new DockerClient();
+        this.dockerClient = DockerClient.getInstance();
     }
 
     public ContainerClient(DockerClient dockerClient) {
@@ -26,12 +27,12 @@ public class ContainerClient extends BaseClient {
     }
 
     @Override
-    public final <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public final <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         writeEndpointConfig(endpointConfig, dockerClient);
     }
 
     @Override
-    public final <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName,
+    public final <E extends EndpointConfig> E readEndpointConfig(String endpointName,
             Class<E> endpointConfigClass) {
         return readEndpointConfig(endpointName, endpointConfigClass, dockerClient);
     }
@@ -117,52 +118,14 @@ public class ContainerClient extends BaseClient {
         return dockerClient.getContainerId(containerName);
     }
 
-    protected final boolean configExists(String configName) {
-        return dockerClient.configExists(configName);
-    }
-
-    protected final Optional<Config> getConfig(String configName) {
-        return dockerClient.getConfig(configName);
-    }
-
-    protected final Optional<Config> getConfig(List<Config> configs, String configName) {
-        return dockerClient.getConfig(configs, configName);
-    }
-
-    protected final List<Config> getConfigs() {
-        return dockerClient.getConfigs();
-    }
-
-    protected final void addConfig(String configName, String data) {
-        dockerClient.addConfig(configName, data);
-    }
-
-    protected final void addConfig(String configName, byte[] data) {
-        dockerClient.addConfig(configName, data);
-    }
-
-    protected final void removeConfig(Config config) {
-        dockerClient.removeConfig(config);
-    }
-
-    protected final boolean secretExists(String secretName) {
-        return dockerClient.secretExists(secretName);
-    }
-
-    protected final Optional<Secret> getSecret(String secretName) {
-        return dockerClient.getSecret(secretName);
-    }
-
-    protected final List<Secret> getSecrets() {
-        return dockerClient.getSecrets();
-    }
-
-    protected final void addSecret(String secretName, String data) {
-        dockerClient.addSecret(secretName, data);
-    }
-
-    protected final void removeSecret(Secret secret) {
-        dockerClient.removeSecret(secret);
+    protected final void handleErrors(ByteArrayOutputStream errorStream, String execId, Logger logger) {
+        long commandErrorCode = getCommandErrorCode(execId);
+        if (0 != commandErrorCode) {
+            throw new RuntimeException("Docker exec command returned '" + commandErrorCode
+                    + "' and wrote the following to stderr:\n" + errorStream.toString());
+        } else {
+            logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
+        }
     }
 
 }

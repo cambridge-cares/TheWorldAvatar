@@ -8,7 +8,8 @@ import ontomatch.utils.util
 class TestGeocoding(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_enrichement_nohttp(self):
-        addr = "./data/power_plant_DEU/kwl.ttl"
+        #addr = "./data/power_plant_DEU/kwl.ttl"
+        addr = './tests/data/KWL_20_power_plants.ttl'
         add_knowledge = "ontomatch.knowledge.geocoding"
         enriched, handle = ontomatch.knowledge.enrichment.Agent().start(addr, add_knowledge, http=False)
         print(enriched)

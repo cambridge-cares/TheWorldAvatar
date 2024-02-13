@@ -8,7 +8,8 @@
 ########################################
 :numofpoints
     rdf:type example:NumOfPoints;
-    example:hasValue "5"^^xsd:integer;
+    # the default will be no output at new information generation mode
+    example:hasValue "0"^^xsd:integer;
 .
 
 :upperlimit
@@ -21,7 +22,5 @@
     example:hasValue "1"^^xsd:integer;
 .
 
-# # :listofpoints is a placeholder instance that to be updated by RandomAgent
-# :listofpoints
-#     rdf:type example:ListOfPoints;
-# .
+# timestamps for these pure inputs are not needed as they will be added by the
+# derivation framework at the creation of derivation markup

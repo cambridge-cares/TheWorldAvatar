@@ -15,3 +15,6 @@ dist/
 # Miscellaneous files/folders:
 # ignore all environment files *.env
 *.env
+
+# email_auth
+email_auth.json

@@ -1,0 +1,29 @@
+# This file shows a sample http request to initialise and trigger a district heating optimisation run
+# NOTE: To send the request from this file as is, please install the VS Code REST Client extension
+
+# Request parameters
+// Optimisation parameters:
+#   start: Optimisation start dateTime in UTC, i.e., first time step to optimise (and forecast)
+#   optHorizon: Number of time steps to optimise in each optimisation run
+#   numberOfTimeSteps: Number of total time steps to optimise
+#   timeDelta: Frequency (i.e., spacing) of time steps - one of "day", "hour", "minute", "second"
+// Forecast parameters:
+#   heatDemandDataLength: Number of time steps prior to "start" of heat demand data to use for forecasting
+#                         (used to scale data for TFT forecast)
+#   gridTemperatureDataLength: Number of time steps prior to "start" of grid temperature data to use for forecasting
+#                              (used to scale data or retrieve history to refit Prophet model)
+
+POST http://<host>:3838/dh-optimisation-trigger-agent/triggerOptimisation
+Content-Type: application/json
+
+{ 
+  // Optimisation parameters
+  "start": "2020-12-09T00:00:00Z",
+  "optHorizon": 24,
+  "numberOfTimeSteps": 4,
+  "timeDelta": "hour",
+
+  // Forecast parameters
+  "heatDemandDataLength": 8760,
+  "gridTemperatureDataLength": 336
+}

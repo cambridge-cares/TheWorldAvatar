@@ -2,10 +2,14 @@ package uk.ac.cam.cares.jps.base.converter;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -24,17 +28,17 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
@@ -53,8 +57,6 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	public OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	public OWLOntology ontology;
 	public IRI ontologyIRI;
-	public static TBoxConfiguration tBoxConfig;
-	public static ApplicationContext applicationContext;
 	public String SLASH = "/";
 	public String BACKSLASH = "\\";
 	public String FILE_EXT_OWL = ".owl";
@@ -65,7 +67,10 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	
 	public static final String OWL_VERSIONINFO = "versionInfo";
 	public static final String OWL_URL = "http://www.w3.org/2002/07/owl#";
-	
+
+	// Regex to match strings with language tags like "Castle"@en
+	private static final Pattern STRING_WITH_LANG_TAG_PATTERN = Pattern.compile("\"[^\"]*\"\\@[a-zA-Z]+");
+
 	/**
 	 * Creates an OWL class using the name provided. If the name of the parent 
 	 * class is also provided, it creates the subClassOf relation as well.
@@ -115,7 +120,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the class.
 			OWLClass clas = createClass(className);
 			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
-			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, getOWLLiteralWithLanguage(label));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(clas.getIRI(), labelAnnotation)));
 		}
@@ -135,7 +140,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the class.
 			OWLClass clas = createClass(className);
 			OWLAnnotationProperty comment = dataFactory.getRDFSComment();
-			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, dataFactory.getOWLLiteral(definition));
+			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, getOWLLiteralWithLanguage(definition));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(clas.getIRI(), definitionLiteral)));
 		}
@@ -154,7 +159,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLObjectProperty objectProperty = createObjectProperty(property);
 			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
-			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, getOWLLiteralWithLanguage(label));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(objectProperty.getIRI(), labelAnnotation)));
 		}
@@ -174,7 +179,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLObjectProperty objectProperty = createObjectProperty(property);
 			OWLAnnotationProperty comment = dataFactory.getRDFSComment();
-			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, dataFactory.getOWLLiteral(definition));
+			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, getOWLLiteralWithLanguage(definition));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(objectProperty.getIRI(), definitionLiteral)));
 		}
@@ -193,7 +198,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLDataProperty dataProperty = createDataProperty(property);
 			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
-			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, getOWLLiteralWithLanguage(label));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(dataProperty.getIRI(), labelAnnotation)));
 		}
@@ -212,7 +217,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLDataProperty dataProperty = createDataProperty(property);
 			OWLAnnotationProperty comment = dataFactory.getRDFSComment();
-			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, dataFactory.getOWLLiteral(definition));
+			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, getOWLLiteralWithLanguage(definition));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(dataProperty.getIRI(), definitionLiteral)));
 		}
@@ -231,7 +236,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the class.
 			OWLClass clas = createClass(className);
 			OWLAnnotationProperty isDefinedBy = dataFactory.getRDFSIsDefinedBy();
-			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, dataFactory.getOWLLiteral(url));
+			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, IRI.create(url)); 
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(clas.getIRI(), definedByLiteral)));
 		}
@@ -250,7 +255,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLObjectProperty objectProperty = createObjectProperty(property);
 			OWLAnnotationProperty isDefinedBy = dataFactory.getRDFSIsDefinedBy();
-			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, dataFactory.getOWLLiteral(url));
+			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, IRI.create(url));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(objectProperty.getIRI(), definedByLiteral)));
 		}
@@ -269,7 +274,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLDataProperty dataProperty = createDataProperty(property);
 			OWLAnnotationProperty isDefinedBy = dataFactory.getRDFSIsDefinedBy();
-			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, dataFactory.getOWLLiteral(url));
+			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, IRI.create(url));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(dataProperty.getIRI(), definedByLiteral)));
 		}
@@ -286,13 +291,28 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 */
 	public void addLogicalFormulaToObjectProperty(String property, String quantifier, String domain, String range)
 			throws JPSRuntimeException {
-		if (quantifier!=null && !quantifier.isEmpty() && domain != null && !domain.isEmpty() && range != null && !range.isEmpty()) {
+		if (quantifier != null && !quantifier.isEmpty() && domain != null && !domain.isEmpty() && range != null
+				&& !range.isEmpty()) {
 			// Reads the object property from the ontology model. If not
 			// available, it creates the property.
 			OWLObjectProperty objectProperty = createObjectProperty(property);
-			OWLClass rangeClass = null;
-			OWLObjectUnionOf objectUnionOfRanges = null;
-			processUnionOfRelationToAddTypeOfLogicalFormula(objectProperty, quantifier, rangeClass, objectUnionOfRanges, domain, range);
+			if (range.contains("UNION")) {
+				processUnionOfRelationToAddTypeOfLogicalFormula(objectProperty, quantifier, domain, range);
+			} else if (range.contains("INTERSECTION")) {
+				processIntersectionOfRelationToAddTypeOfLogicalFormula(objectProperty, quantifier, domain, range);
+			} else {
+				if (domain.contains("UNION")) {
+					for (String singleDomain : domain.split("UNION")) {
+						processRelationToAddTypeOfLogicalFormula(objectProperty, quantifier, singleDomain, range);
+					}
+				} else if (domain.contains("INTERSECTION")) {
+					for (String singleDomain : domain.split("INTERSECTION")) {
+						processRelationToAddTypeOfLogicalFormula(objectProperty, quantifier, singleDomain, range);
+					}
+				} else {
+					processRelationToAddTypeOfLogicalFormula(objectProperty, quantifier, domain, range);
+				}
+			}
 		}
 	}
 	
@@ -304,101 +324,167 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param quantifier
-	 * @param rangeClass
-	 * @param objectUnionOfRanges
 	 * @param domain
 	 * @param range
 	 * @throws JPSRuntimeException
 	 */
-	private void processUnionOfRelationToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, String quantifier, OWLClass rangeClass, OWLObjectUnionOf objectUnionOfRanges, String domain, String range) throws JPSRuntimeException {
-		if (range.contains("UNION")) {
-			objectUnionOfRanges = getUnionOfRange(objectProperty, range.split("UNION"));
-		}else{
-			rangeClass = createClass(range);
+	private void processUnionOfRelationToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, String quantifier, String domain, String range) throws JPSRuntimeException {
+		OWLObjectUnionOf objectUnionOfRanges = getUnionOfRange(objectProperty, range.split("UNION"));
+		if (domain.contains("UNION")) {
+			for (String singleDomain : domain.split("UNION")) {
+				decideToAddTypeOfLogicalFormula(objectProperty, objectUnionOfRanges, quantifier,
+						singleDomain);
+			}
+		} else if (domain.contains("INTERSECTION")) {
+			for (String singleDomain : domain.split("INTERSECTION")) {
+				decideToAddTypeOfLogicalFormula(objectProperty, objectUnionOfRanges, quantifier,
+						singleDomain);
+			}
+		} else {
+			decideToAddTypeOfLogicalFormula(objectProperty, objectUnionOfRanges, quantifier,
+					domain);
 		}
-		for (String singleDomain : domain.split("UNION")) {
-			decideToAddTypeOfLogicalFormula(objectProperty, rangeClass, objectUnionOfRanges, quantifier,
-					singleDomain, range);
+	}
+
+	/**
+	 * Processes the domain and range values to understand if the term INTERSECTION appears</br> 
+	 * in them. If INTERSECTION appears in the domain, it applies the logical formula to</br>
+	 * each domain class separately. If INTERSECTION appears in the range, it applies the</br>
+	 * the formula to the intersection of the range classes.
+	 * 
+	 * @param objectProperty
+	 * @param quantifier
+	 * @param domain
+	 * @param range
+	 * @throws JPSRuntimeException
+	 */
+	private void processIntersectionOfRelationToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, String quantifier, String domain, String range) throws JPSRuntimeException {
+		OWLObjectIntersectionOf objectIntersectionOfRanges = getIntersectionOfRange(objectProperty, range.split("INTERSECTION"));
+		if (domain.contains("UNION")) {
+			for (String singleDomain : domain.split("UNION")) {
+				decideToAddTypeOfLogicalFormula(objectProperty, objectIntersectionOfRanges, quantifier, singleDomain);
+			}
+		} else if (domain.contains("INTERSECTION")) {
+			for (String singleDomain : domain.split("INTERSECTION")) {
+				decideToAddTypeOfLogicalFormula(objectProperty, objectIntersectionOfRanges, quantifier, singleDomain);
+			}			
+		} else {
+			decideToAddTypeOfLogicalFormula(objectProperty, objectIntersectionOfRanges, quantifier, domain);
+		}
+	}
+
+	/**
+	 * Processes the domain value to understand if the term UNION or</br>
+	 * INTERSECTION appears in them. If UNION or INTERSECTION appears in</br>
+	 * the domain, it applies the logical formula to each domain class</br>
+	 * separately. If UNION or INTERSECTION appears in the range, it applies</br>
+	 * the formula to the union or intersection of the range classes,</br>
+	 * respectively.
+	 * 
+	 * @param objectProperty
+	 * @param quantifier
+	 * @param domain
+	 * @param range
+	 * @throws JPSRuntimeException
+	 */
+	private void processRelationToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, String quantifier, String domain, String range) throws JPSRuntimeException {
+		OWLClass rangeClass = createClass(range);
+		if (domain.contains("UNION")) {
+			for (String singleDomain : domain.split("UNION")) {
+				decideToAddTypeOfLogicalFormula(objectProperty, rangeClass, quantifier, singleDomain);			
+			}
+		} else if (domain.contains("INTERSECTION")) {
+			for (String singleDomain : domain.split("INTERSECTION")) {
+				decideToAddTypeOfLogicalFormula(objectProperty, rangeClass, quantifier, singleDomain);			
+			}
+		} else {
+			decideToAddTypeOfLogicalFormula(objectProperty, rangeClass, quantifier, domain);
 		}
 	}
 	
 	/**
 	 * Decides the type of logical formula needs to be created.</br>
-	 * Currently, it supports formulas with the following two quantifiers:<br>
+	 * Currently, it supports formulae with the following two quantifiers:<br>
 	 * - for all (only)<br>
+	 * - for some (some)<br>
 	 * - exactly 1<br>
 	 * - maximum 1<br>
 	 * - minimum 1<br>
 	 * 
 	 * @param objectProperty
-	 * @param rangeClass
-	 * @param objectUnionOfRanges
+	 * @param classExpression
 	 * @param quantifier
 	 * @param singleDomain
-	 * @param range
 	 * @throws JPSRuntimeException
 	 */
-	private void decideToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, OWLClass rangeClass,
-			OWLObjectUnionOf objectUnionOfRanges, String quantifier, String singleDomain, String range)
-			throws JPSRuntimeException {
+	private void decideToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, OWLClassExpression classExpression,
+			String quantifier, String singleDomain) throws JPSRuntimeException {
 		OWLClass domainClass = createClass(singleDomain);
 		if (quantifier != null && !quantifier.isEmpty() && quantifier.trim().equalsIgnoreCase("only")) {
-			addUniversalQuantification(objectProperty, domainClass, rangeClass, objectUnionOfRanges, range);
-		} else if (quantifier != null && !quantifier.isEmpty()
-				&& quantifier.trim().equalsIgnoreCase("exactly 1")) {
-			addExactlyOneQuantification(objectProperty, domainClass, rangeClass);
-		} else if (quantifier !=null && !quantifier.isEmpty()
-				&& quantifier.trim().equalsIgnoreCase("minimum 1")){
-			addMinimumOneQuantification(objectProperty, domainClass, rangeClass);
-		} else if(quantifier !=null && !quantifier.isEmpty()
-				&& quantifier.trim().equalsIgnoreCase("maximum 1")){
-			addMaximumOneQuantification(objectProperty, domainClass, rangeClass);
+			addUniversalQuantification(objectProperty, domainClass, classExpression);
+		} else if (quantifier != null && !quantifier.isEmpty() && quantifier.trim().equalsIgnoreCase("some")) {
+			addExistentialQuantification(objectProperty, domainClass, classExpression);
+		} else if (quantifier != null && !quantifier.isEmpty() && quantifier.trim().equalsIgnoreCase("exactly 1")) {
+			addExactlyOneQuantification(objectProperty, domainClass, classExpression);
+		} else if (quantifier != null && !quantifier.isEmpty() && quantifier.trim().equalsIgnoreCase("minimum 1")) {
+			addMinimumOneQuantification(objectProperty, domainClass, classExpression);
+		} else if (quantifier != null && !quantifier.isEmpty() && quantifier.trim().equalsIgnoreCase("maximum 1")) {
+			addMaximumOneQuantification(objectProperty, domainClass, classExpression);
 		}
 	}
-	
+
+
 	/**
 	 * Adds a logical formula with a universal quantifier.
 	 * 
 	 * @param objectProperty
 	 * @param domainClass
-	 * @param rangeClass
-	 * @param objectUnionOfRanges
-	 * @param range
+	 * @param classExpression
 	 */
-	private void addUniversalQuantification(OWLObjectProperty objectProperty, OWLClass domainClass, OWLClass rangeClass, OWLObjectUnionOf objectUnionOfRanges, String range){
-		OWLObjectAllValuesFrom restriction;
-		if (range.contains("UNION")) {
-			restriction = dataFactory.getOWLObjectAllValuesFrom(objectProperty, objectUnionOfRanges);
-		} else {
-			restriction = dataFactory.getOWLObjectAllValuesFrom(objectProperty, rangeClass);
-		}
-		manager.applyChange(
-				new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
+	private void addUniversalQuantification(OWLObjectProperty objectProperty, OWLClass domainClass,
+			OWLClassExpression classExpression) {
+		OWLObjectAllValuesFrom restriction = dataFactory.getOWLObjectAllValuesFrom(objectProperty, classExpression);
+		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
 	}
-	
+
 	/**
-	 * Adds a logical formula with an exactly 1 quantifier.
+	 * Adds a logical formula with an existential quantifier.
 	 * 
 	 * @param objectProperty
 	 * @param domainClass
-	 * @param rangeClass
+	 * @param classExpression
 	 */
-	private void addExactlyOneQuantification(OWLObjectProperty objectProperty, OWLClass domainClass, OWLClass rangeClass){
-		OWLObjectCardinalityRestriction restriction;
-		restriction = dataFactory.getOWLObjectExactCardinality(1, objectProperty, rangeClass);
-		manager.applyChange(
-				new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
+	private void addExistentialQuantification(OWLObjectProperty objectProperty, OWLClass domainClass,
+			OWLClassExpression classExpression) {
+		OWLObjectSomeValuesFrom restriction = dataFactory.getOWLObjectSomeValuesFrom(objectProperty, classExpression);
+		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
 	}
-	
+
 	/**
-	 * Adds a logical formula with a minimum 1 quantifier.
+	 * Adds a logical formula with an exactly 1 quantifier and the class expression.
 	 * 
 	 * @param objectProperty
 	 * @param domainClass
-	 * @param rangeClass
+	 * @param classExpression
 	 */
-	private void addMinimumOneQuantification(OWLObjectProperty objectProperty, OWLClass domainClass, OWLClass rangeClass){
-		OWLObjectCardinalityRestriction restriction = dataFactory.getOWLObjectMinCardinality(1, objectProperty, rangeClass);
+	private void addExactlyOneQuantification(OWLObjectProperty objectProperty, OWLClass domainClass,
+			OWLClassExpression classExpression) {
+		OWLObjectCardinalityRestriction restriction = dataFactory.getOWLObjectExactCardinality(1, objectProperty,
+				classExpression);
+		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
+	}
+
+	/**
+	 * Adds a logical formula with a minimum 1 quantifier and the class expression.
+	 * 
+	 * @param objectProperty
+	 * @param domainClass
+	 * @param classExpression
+	 */
+	private void addMinimumOneQuantification(OWLObjectProperty objectProperty, OWLClass domainClass,
+			OWLClassExpression classExpression) {
+		OWLObjectCardinalityRestriction restriction = dataFactory.getOWLObjectMinCardinality(1, objectProperty,
+				classExpression);
 		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
 	}
 	
@@ -407,13 +493,14 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domainClass
-	 * @param rangeClass
+	 * @param classExpression
 	 */
-	private void addMaximumOneQuantification(OWLObjectProperty objectProperty, OWLClass domainClass, OWLClass rangeClass){
-		OWLObjectCardinalityRestriction restriction = dataFactory.getOWLObjectMaxCardinality(1, objectProperty, rangeClass);
+	private void addMaximumOneQuantification(OWLObjectProperty objectProperty, OWLClass domainClass,
+			OWLClassExpression classExpression) {
+		OWLObjectCardinalityRestriction restriction = dataFactory.getOWLObjectMaxCardinality(1, objectProperty,
+				classExpression);
 		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
 	}
-
 	
 	/**
 	 * Creates a data property using the name provided. If the domain and range
@@ -425,10 +512,9 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * @param relation
 	 * @param domain
 	 * @param range
-	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
+	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 			OWLDataProperty dataProperty = createDataProperty(propertyName);
 			
@@ -505,9 +591,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 				break;
 			}
 		}
-
-		addDomain(objectProperty, domain);
-		addRange(objectProperty, range, quantifier);
+		addDomainRange(objectProperty, domain, range, quantifier);
 		OWLObjectProperty parentProperty = null;
 		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
 			// Creates the target property.
@@ -517,7 +601,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			} else if(relation.equalsIgnoreCase(tBoxConfig.getEquivalentToRelation())){
 				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLEquivalentObjectPropertiesAxiom(objectProperty, parentProperty)));				
 			} else if(relation.equalsIgnoreCase(tBoxConfig.getInverseOfRelation())){
-			manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLInverseObjectPropertiesAxiom(objectProperty, parentProperty)));
+				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLInverseObjectPropertiesAxiom(objectProperty, parentProperty)));
 			}
 		}
 	}
@@ -544,62 +628,193 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	}
 	
 	/**
-	 * Adds the domain(s) to the current object property. 
+	 * Adds the domain and range to the current object property.
 	 * 
 	 * @param objectProperty
 	 * @param domain
+	 * @param range
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLObjectProperty objectProperty, String domain) throws JPSRuntimeException {
-		if(domain==null || domain.isEmpty()){
+	private void addDomainRange(OWLObjectProperty objectProperty, String domain, String range, String quantifier)
+			throws JPSRuntimeException {
+		Set<OWLClassExpression> owlClassExpressionsForDomain = new HashSet<>();
+		Set<OWLClassExpression> owlClassExpressionsForRange = new HashSet<>();
+		// Defined a counter to check how many domain classes are in the same
+		// relation as their ancestors.
+		int counterDomain = 0;
+		if (domain != null && !domain.isEmpty()) {
+			List<String> domains = new ArrayList<String>();
+			if (domain.contains("UNION")) {
+				domains = Arrays.asList(domain.split("UNION"));
+			} else if (domain.contains("INTERSECTION")) {
+				domains = Arrays.asList(domain.split("INTERSECTION"));
+			} else {
+				domains.add(domain);
+			}
+			for (String singleDomain : domains) {
+				// Checks if the domain class and any of its ancestors participate
+				// in the same relation
+				if (isDomainsParentInSameRelation(singleDomain.replaceAll("\\s+", "").toLowerCase(),
+						objectProperty.getIRI().getShortForm().toLowerCase())) {
+					counterDomain++;
+				}
+				owlClassExpressionsForDomain.add(createClass(singleDomain));
+			}
+		}
+		// Defined a counter to check how many range classes are in the same
+		// relation as their ancestors.
+		int counterRange = 0;
+		if (range != null && !range.isEmpty()) {
+			List<String> ranges = new ArrayList<String>();
+			if (range.contains("UNION")) {
+				ranges = Arrays.asList(range.split("UNION"));
+			} else if (range.contains("INTERSECTION")) {
+				ranges = Arrays.asList(range.split("INTERSECTION"));
+			} else {
+				ranges.add(range);
+			}
+			for (String singleRange : ranges) {
+				// Checks if the range class and any of its ancestors participate
+				// in the same relation
+				if (isRangeParentInSameRelation(singleRange.replaceAll("\\s+", "").toLowerCase(),
+						objectProperty.getIRI().getShortForm().toLowerCase())) {
+					counterRange++;
+				}
+				owlClassExpressionsForRange.add(createClass(singleRange));
+			}
+		}
+		
+		// Checks if the quantifier is provided and all domain and range
+		// classes and any of their ancestors participate in the same relation
+		// to decide whether to create the domain and range or not
+		if ((quantifier != null && !quantifier.equals(""))
+				&& ((counterDomain > 0
+				&& counterDomain == owlClassExpressionsForDomain.size())
+				|| isDomainsLogicalParentsInSameRelation(objectProperty, domain))
+				&& ((counterRange > 0
+				&& counterRange == owlClassExpressionsForRange.size())
+				|| isRangesLogicalParentsInSameRelation(objectProperty, range))){
 			return;
 		}
-		if(domain.contains("UNION")){
-			addUnionOfDomain(objectProperty, domain.split("UNION"));
-		} else if(domain.contains("INTERSECTION")){
-			addIntersectionOfDomain(objectProperty, domain.split("INTERSECTION"));
-		} else if(domain!=null || !domain.isEmpty()){
-			addSingleClassDomain(objectProperty, domain);
+
+		// Defines the domain for the object property
+		if (domain != null && !domain.isEmpty()) {
+			if (domain.contains("UNION")) {
+				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty,
+						dataFactory.getOWLObjectUnionOf(owlClassExpressionsForDomain))));
+			} else if (domain.contains("INTERSECTION")) {
+				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty,
+						dataFactory.getOWLObjectIntersectionOf(owlClassExpressionsForDomain))));
+			} else {
+				manager.applyChange(new AddAxiom(ontology,
+						dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, createClass(domain))));
+			}
+		}
+		
+		// Defines the range for the object property
+		if (range != null && !range.isEmpty()) {
+			if (range.contains("UNION")) {
+				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty,
+						dataFactory.getOWLObjectUnionOf(owlClassExpressionsForRange))));
+			} else if (range.contains("INTERSECTION")) {
+				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty,
+						dataFactory.getOWLObjectIntersectionOf(owlClassExpressionsForRange))));
+			} else {
+				manager.applyChange(new AddAxiom(ontology,
+						dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty, createClass(range))));
+			}
 		}
 	}
 	
 	/**
-	 * Adds the range(s) to the current data property. 
+	 * This method helps identify the logical subclass of relationship between
+	 * the domain and other domains of the object property. If the domain is A
+	 * or A UNION B, and another domain is A UNION B UNION C, this method will
+	 * conclude that the former domain is a subclass of the latter.
+	 * 
+	 * @param objectProperty
+	 * @param domain
+	 * @return
+	 */
+	private boolean isDomainsLogicalParentsInSameRelation(OWLObjectProperty objectProperty, String domain) {
+		String relation = objectProperty.getIRI().getShortForm().toLowerCase();
+		boolean isDomainsLogicalParentInSameRelation = false;
+		// Detects the subclass of relationship between the domain and all
+		// the other domains of the relation.  
+		if (relationUnionOfDomainClassMap.containsKey(relation)) {
+			List<String> complexDomains = relationUnionOfDomainClassMap.get(relation);
+			int nOfMatchedAtomicDomain = 0;
+				for(String complexDomain: complexDomains) {
+					for(String atomicDomain: domain.split("UNION")) {
+						for(String complexDomainPart: complexDomain.split("UNION")) {
+							if (atomicDomain.trim().equalsIgnoreCase(complexDomainPart.trim())) {
+								nOfMatchedAtomicDomain++;
+								break;
+							}
+						}
+					}
+					if(nOfMatchedAtomicDomain == domain.split("UNION").length
+							&& complexDomain.split("UNION").length > nOfMatchedAtomicDomain) {
+						return true;
+					}
+			}
+		}
+		return isDomainsLogicalParentInSameRelation;
+	}
+
+	/**
+	 * This method helps identify the logical subclass of relationship between
+	 * the range and other ranges of the object property. If the range is A
+	 * or A UNION B, and another range is A UNION B UNION C, this method will
+	 * conclude that the former range is a subclass of the latter. 
+	 * 
+	 * @param objectProperty
+	 * @param range
+	 * @return
+	 */
+	private boolean isRangesLogicalParentsInSameRelation(OWLObjectProperty objectProperty, String range) {
+		String relation = objectProperty.getIRI().getShortForm().toLowerCase();
+		boolean isRangesLogicalParentInSameRelation = false;
+		// Detects the subclass of relationship between the range and all
+		// the other ranges of the relation.  
+		if(relationUnionOfRangeClassMap.containsKey(relation)) {
+			List<String> complexRanges = relationUnionOfRangeClassMap.get(relation);
+			int nOfMatchedAtomicRange = 0;
+				for(String complexRange: complexRanges) {
+					for(String atomicRange: range.split("UNION")) {
+						for(String complexRangePart: complexRange.split("UNION")) {
+							if (atomicRange.trim().equalsIgnoreCase(complexRangePart.trim())) {
+								nOfMatchedAtomicRange++;
+								break;
+							}
+						}
+					}
+					if(nOfMatchedAtomicRange == range.split("UNION").length
+							&& complexRange.split("UNION").length > nOfMatchedAtomicRange) {
+						return true;
+					}
+			}			
+		}
+		return isRangesLogicalParentInSameRelation;
+	}
+
+	
+	/**
+	 * Adds the range to the current data property.
 	 * 
 	 * @param dataProperty
 	 * @param range
 	 * @throws JPSRuntimeException
 	 */
 	private void addRange(OWLDataProperty dataProperty, String range) throws JPSRuntimeException {
-		if(range==null || range.isEmpty()){
+		if (range == null || range.isEmpty()) {
 			return;
 		}
-		if(range.contains("UNION")){
-		} else if(range.contains("INTERSECTION")){
-		}
-		else{
+		if (range.contains("UNION")) {
+		} else if (range.contains("INTERSECTION")) {
+		} else {
 			addSingleDataTypeRange(dataProperty, range);
-		}
-	}
-	
-	/**
-	 * Adds the range(s) to the current object property. 
-	 * 
-	 * @param objectProperty
-	 * @param range
-	 * @param quantifier
-	 * @throws JPSRuntimeException
-	 */
-	private void addRange(OWLObjectProperty objectProperty, String range, String quantifier) throws JPSRuntimeException {
-		if(range==null || range.isEmpty()){
-			return;
-		}
-		if(range.contains("UNION") && (quantifier==null || quantifier.isEmpty())){
-			addUnionOfRange(objectProperty, range.split("UNION"));
-		} else if(range.contains("INTERSECTION") && (quantifier==null || quantifier.isEmpty())){
-			addIntersectionOfRange(objectProperty, range.split("INTERSECTION"));
-		}else if(range!=null || !range.isEmpty()){
-			addSingleClassRange(objectProperty, range);
 		}
 	}
 	
@@ -607,7 +822,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * Adds the domain to the current data property.
 	 * 
 	 * @param dataProperty
-	 * @param domains
+	 * @param domain
 	 * @throws JPSRuntimeException
 	 */
 	private void addSingleClassDomain(OWLDataProperty dataProperty, String domain) throws JPSRuntimeException{
@@ -615,22 +830,9 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		manager.applyChange(new AddAxiom(ontology,
 				dataFactory.getOWLDataPropertyDomainAxiom(dataProperty, owlClass)));
 	}
-	
+
 	/**
-	 * Adds the domain, which is a single class, to the current object property.
-	 * 
-	 * @param objectProperty
-	 * @param domain
-	 * @throws JPSRuntimeException
-	 */
-	private void addSingleClassDomain(OWLObjectProperty objectProperty, String domain) throws JPSRuntimeException{
-		OWLClass owlClass = createClass(domain);
-		manager.applyChange(new AddAxiom(ontology,
-				dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, owlClass)));
-	}
-	
-	/**
-	 * Adds the ranges(s) to the current data property.
+	 * Adds the range to the current data property.
 	 * 
 	 * @param dataProperty
 	 * @param ranges
@@ -644,34 +846,6 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLDataPropertyRangeAxiom(dataProperty, getRange(range))));
 		}
-	}
-	
-	/**
-	 * Adds the range(s) to the current object property.
-	 * 
-	 * @param objectProperty
-	 * @param ranges
-	 * @throws JPSRuntimeException
-	 */
-	private void addSingleClassRange(OWLObjectProperty objectProperty, String range) throws JPSRuntimeException{
-		manager.applyChange(new AddAxiom(ontology,
-					dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty, createClass(range))));
-	}
-	
-	/**
-	 * Adds the range(s) to the current object property.
-	 * 
-	 * @param objectProperty
-	 * @param ranges
-	 * @throws JPSRuntimeException
-	 */
-	private void addUnionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws JPSRuntimeException{
-		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
-		for(String range: ranges){
-			owlClassExpressions.add(createClass(range));
-		}
-		manager.applyChange(new AddAxiom(ontology,
-					dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty, dataFactory.getOWLObjectUnionOf(owlClassExpressions))));
 	}
 	
 	/**
@@ -689,71 +863,81 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		}
 		return dataFactory.getOWLObjectUnionOf(owlClassExpressions);
 	}
-	
+
 	/**
-	 * Adds the range(s) to the current object property.
+	 * Adds the range(s) to the current object property and returns the intersection
+	 * of classes, which form the range.
 	 * 
 	 * @param objectProperty
 	 * @param ranges
 	 * @throws JPSRuntimeException
 	 */
-	private void addIntersectionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws JPSRuntimeException{
+	private OWLObjectIntersectionOf getIntersectionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String range: ranges){
 			owlClassExpressions.add(createClass(range));
 		}
-		manager.applyChange(new AddAxiom(ontology,
-					dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty, dataFactory.getOWLObjectIntersectionOf(owlClassExpressions))));
+		return dataFactory.getOWLObjectIntersectionOf(owlClassExpressions);
+	}
+
+	/**
+	 * Assesses if the domain class and its ancestors participate in the same relation.
+	 * 
+	 * @param domain
+	 * @param relation
+	 * @return
+	 */
+	private boolean isDomainsParentInSameRelation(String domain, String relation) {
+		Set<String> ancestors = new HashSet<String>();
+		ancestors = getAncestors(domain, ancestors);
+		if(childParentMap.containsKey(domain)) {
+			for(String ancestor: ancestors) {
+				if(domainRelationMap.containsKey(ancestor) && domainRelationMap.get(ancestor).contains(relation)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	/**
-	 * Adds the domain(s) to the current object property.
+	 * Assesses if the range class and its ancestors participate in the same relation.
 	 * 
-	 * @param objectProperty
-	 * @param domains
-	 * @throws JPSRuntimeException
+	 * @param range
+	 * @param relation
+	 * @return
 	 */
-	private void addUnionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws JPSRuntimeException{
-		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
-		for(String domain: domains){
-			owlClassExpressions.add(createClass(domain));
+	private boolean isRangeParentInSameRelation(String range, String relation) {
+		Set<String> ancestors = new HashSet<String>();
+		ancestors = getAncestors(range, ancestors);
+		if (childParentMap.containsKey(range)) {
+			for(String ancestor: ancestors) {
+				if(rangeRelationMap.containsKey(ancestor) && rangeRelationMap.get(ancestor).contains(relation)) {
+					return true;
+				}
+			}
 		}
-		manager.applyChange(new AddAxiom(ontology,
-					dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, dataFactory.getOWLObjectUnionOf(owlClassExpressions))));
+		return false;
 	}
-	
+
 	/**
-	 * Adds the domain(s) to the current data property and returns the union 
-	 * of classes, which form the domain.
+	 * Traverses through the @see TBoxGeneration#childParentMap and 
+	 * produces the list ancestors.
 	 * 
-	 * @param objectProperty
-	 * @param domains
-	 * @throws JPSRuntimeException
+	 * @param ontologyClass
+	 * @param ancestors
+	 * @return
 	 */
-	private OWLObjectUnionOf getUnionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws JPSRuntimeException{
-		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
-		for(String domain: domains){
-			owlClassExpressions.add(createClass(domain));
+	private Set<String> getAncestors(String ontologyClass, Set<String> ancestors) {
+		if (childParentMap.containsKey(ontologyClass)) {
+			for (String parent : childParentMap.get(ontologyClass)) {
+				if (!ancestors.contains(parent)) {
+					ancestors.add(parent);
+					getAncestors(parent, ancestors);
+				}
+			}
 		}
-		manager.applyChange(new AddAxiom(ontology,
-					dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, dataFactory.getOWLObjectUnionOf(owlClassExpressions))));
-		return dataFactory.getOWLObjectUnionOf(owlClassExpressions);
-	}
-	
-	/**
-	 * Adds the domain(s) to the current object property.
-	 * 
-	 * @param objectProperty
-	 * @param domains
-	 * @throws JPSRuntimeException
-	 */
-	private void addIntersectionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws JPSRuntimeException{
-		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
-		for(String domain: domains){
-			owlClassExpressions.add(createClass(domain));
-		}
-		manager.applyChange(new AddAxiom(ontology,
-					dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, dataFactory.getOWLObjectIntersectionOf(owlClassExpressions))));
+		return ancestors;
 	}
 	
 	/**
@@ -918,8 +1102,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 				if (classLabel.trim().startsWith(HTTP_PROTOCOL)||classLabel.trim().startsWith(HTTPS_PROTOCOL)) {
 					classInOwl = dataFactory.getOWLClass(classLabel.replace(" ", ""));
 				} else {
-					classInOwl = dataFactory.getOWLClass(
+					if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+						classInOwl = dataFactory.getOWLClass(
+								tBoxConfig.gettBoxIri().concat(classLabel.replace(" ", "")));						
+					} else{
+						classInOwl = dataFactory.getOWLClass(
 							tBoxConfig.gettBoxIri().concat("#").concat(classLabel.replace(" ", "")));
+					}
 				}
 			}
 		}
@@ -946,8 +1135,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLDataProperty(propertyLabel.replace(" ", ""));
 		}
-		return dataFactory.getOWLDataProperty(
+		if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+			return dataFactory.getOWLDataProperty(
+					tBoxConfig.gettBoxIri().concat(propertyLabel.replace(" ", "")));
+		} else {
+			return dataFactory.getOWLDataProperty(
 				tBoxConfig.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
+		}
 	}
 	
 	/**
@@ -970,8 +1164,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLObjectProperty(propertyLabel.replace(" ", ""));
 		}
-		return dataFactory.getOWLObjectProperty(
+		if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+			return dataFactory.getOWLObjectProperty(
+					tBoxConfig.gettBoxIri().concat(propertyLabel.replace(" ", "")));			
+		} else {
+			return dataFactory.getOWLObjectProperty(
 				tBoxConfig.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
+		}
 	}
 	
 	/**
@@ -1008,14 +1207,6 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			logger.error("Property name is empty.");
 			throw new JPSRuntimeException("Property name is empty.");
 		}		
-	}
-	
-	/**
-	 * Initialise variables for reading configuration properties.
-	 */
-	public void init() throws JPSRuntimeException, OWLOntologyCreationException{
-		applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		tBoxConfig = applicationContext.getBean(TBoxConfiguration.class);
 	}
 	
 	/**
@@ -1102,8 +1293,14 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 */
 	private void addDataProperty(OWLDataProperty identifierProperty, String propertyValue, String individialName) throws JPSRuntimeException {
 		OWLLiteral literal = createOWLLiteral(dataFactory, propertyValue);
-		OWLIndividual individual = dataFactory
+		OWLIndividual individual;
+		if(ontologyIRI.toString().endsWith(SLASH)) {
+			individual = dataFactory
+					.getOWLNamedIndividual(ontologyIRI.toString().concat(individialName));
+		} else {
+			individual = dataFactory
 				.getOWLNamedIndividual(ontologyIRI.toString().concat("#").concat(individialName));
+		}
 		manager.applyChange(new AddAxiom(ontology,
 				dataFactory.getOWLDataPropertyAssertionAxiom(identifierProperty, individual, literal)));
 	}
@@ -1132,7 +1329,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	private void representComment() throws JPSRuntimeException{
 		String comment = tBoxConfig.gettBoxComment();
 		if (comment != null && !comment.isEmpty()) {
-			OWLLiteral commentValue = dataFactory.getOWLLiteral(comment);
+			OWLLiteral commentValue = getOWLLiteralWithLanguage(comment);
 			OWLAnnotationProperty commentProperty = dataFactory.getRDFSComment();
 			OWLAnnotation commentPropertyAttributeWithValue = dataFactory.getOWLAnnotation(commentProperty, commentValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, commentPropertyAttributeWithValue));
@@ -1149,8 +1346,14 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		String commitHash = tBoxConfig.getGitCommitHashValue();
 		if (commitHash != null && !commitHash.isEmpty()) {
 			OWLLiteral commitHashValue = dataFactory.getOWLLiteral(commitHash);
-			OWLAnnotationProperty commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
+			OWLAnnotationProperty commit;
+			if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+				commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
+					.gettBoxIri().concat(tBoxConfig.getCompChemGitCommitHash())));
+			} else {
+				commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
 					.gettBoxIri().concat("#").concat(tBoxConfig.getCompChemGitCommitHash())));
+			}
 			OWLAnnotation commitAttributeWithValue = dataFactory.getOWLAnnotation(commit, commitHashValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, commitAttributeWithValue));
 		}
@@ -1199,23 +1402,37 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	}
 	
 	/**
-	 * Extracts the OWL or RDF file name from the IRI of the file.
+	 * Extracts the name of the OWL file being created from the IRI of TBox.
 	 * 
 	 * @param iri
 	 * @return
 	 */
 	private String getOntologyFileNameFromIri(String iri){
-		if (!(iri.contains(FILE_EXT_OWL) || iri.contains(FILE_EXT_RDF))){
-			return null; 
-		}
-		if(iri.contains(SLASH)){
-			String tokens[] = iri.split(SLASH);
-			return tokens[tokens.length-1];
-		} else if(iri.contains(BACKSLASH)){
-			String tokens[] = iri.split(BACKSLASH);
+		String tokens[] = iri.split(SLASH);
+		if(iri.endsWith(SLASH)){
+			return tokens[tokens.length-2];
+		} else if(iri.contains(SLASH)){
 			return tokens[tokens.length-1];
 		} else{
 			return null;
 		}
+	}
+
+	/**
+	 * Returns OWL literal with language handling
+	 * 
+	 * @param stringLiteral
+	 * @return
+	 */
+	private OWLLiteral getOWLLiteralWithLanguage(String stringLiteral) {
+		OWLLiteral owlLiteral;
+		if (STRING_WITH_LANG_TAG_PATTERN.matcher(stringLiteral).matches()) {
+			int atIndex = stringLiteral.lastIndexOf("@");
+			owlLiteral = dataFactory.getOWLLiteral(stringLiteral.substring(1, atIndex - 1),
+					stringLiteral.substring(atIndex + 1));
+		} else {
+			owlLiteral = dataFactory.getOWLLiteral(stringLiteral);
+		}
+		return owlLiteral;
 	}
 }

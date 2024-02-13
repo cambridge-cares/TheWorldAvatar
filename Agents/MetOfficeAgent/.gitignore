@@ -4,7 +4,6 @@ __pycache__/
 build/
 dist/
 *~*
-.vscode/
 .idea/
 *venv/
 coverage.xml
@@ -13,6 +12,9 @@ coverage.xml
 *.png
 assets
 
+## Directories
+tmp_base/
+tmp_stack/
 output/*
 !.gitignore
 

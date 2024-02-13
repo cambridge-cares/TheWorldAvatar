@@ -29,8 +29,9 @@ class TestGeocoding(tests.utils_for_testing.TestCaseOntoMatch):
         self.assertAlmostEqual(long, 10.621739, places=4)
 
     def test_geocoding_kwl(self):
-        ontosrc, ontotgt = self.load_kwl_gppd_ontologies()
-        dfsrc = ontomatch.blocking.create_dataframe_from_ontology(ontosrc)
+        #ontosrc, ontotgt = self.load_kwl_gppd_ontologies()
+        #dfsrc = ontomatch.blocking.create_dataframe_from_ontology(ontosrc)
+        dfsrc, _ = self.read_kwl_gppd_tables()
         columns =  [ str(c) for c in dfsrc.columns ]
         logging.info('columns=%s', columns)
-        self.assertIn('address/postalCode', columns)
+        self.assertIn('capacity', columns)

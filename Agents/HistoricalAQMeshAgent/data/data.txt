@@ -1,0 +1,3 @@
+aqmeshGasData.xlsx and aqmeshParticleAndGeneralData.xlsx files are required to run HistoricalAQMeshAgentXLSXConnectorTest.
+The files must be in the correct format and contain readings for 3 timestamps.
+The files must be placed in this data folder.

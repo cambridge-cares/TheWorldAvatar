@@ -1,0 +1,14 @@
+{
+	"pylon_superhigh_icon": "http://localhost:38383/geoserver/www/icons/pylon_superhigh_icon.png",
+	"pylon_high_icon": "http://localhost:38383/geoserver/www/icons/pylon_high_icon.png",
+	"pylon_medium_icon": "http://localhost:38383/geoserver/www/icons/pylon_medium_icon.png",
+	"cable_ng": "http://localhost:38383/geoserver/www/icons/cable_ng.png",
+	"line_ng_medium_icon": "http://localhost:38383/geoserver/www/icons/line_ng_medium_icon.png",
+	"line_ng_high_icon": "http://localhost:38383/geoserver/www/icons/line_ng_high_icon.png",
+	"line_ng_superhigh_icon": "http://localhost:38383/geoserver/www/icons/line_ng_superhigh_icon.png",
+	"line_ukpn_medium_icon": "http://localhost:38383/geoserver/www/icons/line_ukpn_medium_icon.png",
+	"line_ukpn_high_icon": "http://localhost:38383/geoserver/www/icons/line_ukpn_high_icon.png",
+	"line_ukpn_low_icon": "http://localhost:38383/geoserver/www/icons/line_ukpn_low_icon.png",
+	"NG_logo": "http://localhost:38383/geoserver/www/icons/NG_logo.png",
+	"substation_icon": "http://localhost:38383/geoserver/www/icons/substation_icon.png"
+}

@@ -1,0 +1,22 @@
+Can you provide the {PropertyName} of species classified as {ChemClass}? 
+Can you provide the {PropertyName} of {ChemClass} species?
+Can you furnish the {PropertyName} of chemical species categorized as {ChemClass}?
+Could you offer the {PropertyName} related to molecules grouped as {ChemClass}?
+What is the {PropertyName} of compounds designated under {ChemClass}?
+Please share the {PropertyName} pertaining to chemical species sorted as {ChemClass}.
+I'm interested in knowing the {PropertyName} for molecules classified as {ChemClass}.
+Provide the {PropertyName} for compounds that fall into the {ChemClass} category.
+What's the {PropertyName} of chemical entities belonging to {ChemClass}?
+Tell me the {PropertyName} associated with molecules that are part of {ChemClass}.
+I'd like to learn the {PropertyName} of compounds characterized by {ChemClass}.
+Share the {PropertyName} for chemical species grouped under {ChemClass}.
+What would be the {PropertyName} of molecules assigned to {ChemClass}?
+Inform me about the {PropertyName} corresponding to compounds in the {ChemClass} classification.
+What's the {PropertyName} for chemical entities falling into the {ChemClass} category?
+Could you disclose the {PropertyName} related to molecules sorted into {ChemClass}?
+Provide information on the {PropertyName} of compounds identified as {ChemClass}.
+I'm curious about the {PropertyName} of chemical species organized under {ChemClass}.
+What's the {PropertyName} for molecules categorized as {ChemClass}?
+Tell me the {PropertyName} of compounds labeled within the {ChemClass} group.
+Please elaborate on the {PropertyName} associated with chemical species attributed to {ChemClass}.
+Give me details about the {PropertyName} of molecules classed as {ChemClass}.

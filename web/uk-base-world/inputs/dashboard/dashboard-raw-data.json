@@ -1,0 +1,272 @@
+{
+    "dashboard": {
+        "editable": true,
+        "fiscalYearStartMonth": 0,
+        "graphTooltip": 0,
+        "id": null,
+        "links": [],
+        "liveNow": false,
+        "panels": [
+            {
+                "datasource": {
+                    "type": "postgres",
+                    "uid": "SOURCEUID"
+                },
+                "description": "Raw data direct from the relational database.",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "custom": {
+                            "align": "auto",
+                            "cellOptions": {
+                                "type": "auto"
+                            },
+                            "filterable": true,
+                            "inspect": true
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": [
+                        {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "Site Type"
+                            },
+                            "properties": [
+                                {
+                                    "id": "custom.width",
+                                    "value": 143
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "gridPos": {
+                    "h": 32,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                },
+                "id": 1,
+                "options": {
+                    "cellHeight": "sm",
+                    "footer": {
+                        "countRows": false,
+                        "enablePagination": false,
+                        "fields": "",
+                        "reducer": [
+                            "sum"
+                        ],
+                        "show": false
+                    },
+                    "showHeader": true,
+                    "sortBy": []
+                },
+                "pluginVersion": "9.5.2",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "postgres",
+                            "uid": "SOURCEUID"
+                        },
+                        "editorMode": "code",
+                        "format": "table",
+                        "hide": false,
+                        "rawQuery": true,
+                        "rawSql": "SELECT \"Site Name\", \"Company Name\", \"Site Type\", \"Site Technology\", \"Combined Heat and Power\" AS \"CHP\", \"Primary Fuel\", \"Secondary Fuel\", \"Installed Capacity (MW)\", \"Grid Connection Type\", \"Country\", \"Region\", \"OS Reference\", \"Postcode\", \"Year Commissioned\", \"Latitude\", \"Longitude\" FROM dukes_2023 ",
+                        "refId": "A",
+                        "sql": {
+                            "columns": [
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Site Name\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Company Name\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Site Type\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Site Technology\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Combined Heat and Power\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Primary Fuel\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Secondary Fuel\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Installed Capacity (MW)\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Grid Connection Type\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Country\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Region\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"OS Reference\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Postcode\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Year Commissioned\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Latitude\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Longitude\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                }
+                            ],
+                            "groupBy": [
+                                {
+                                    "property": {
+                                        "type": "string"
+                                    },
+                                    "type": "groupBy"
+                                }
+                            ],
+                            "limit": 50
+                        },
+                        "table": "dukes_2023"
+                    }
+                ],
+                "title": "Raw Data",
+                "type": "table"
+            }
+        ],
+        "refresh": "",
+        "schemaVersion": 38,
+        "style": "dark",
+        "tags": [],
+        "templating": {
+            "list": []
+        },
+        "time": {
+            "from": "now-6h",
+            "to": "now"
+        },
+        "timepicker": {},
+        "timezone": "",
+        "title": "Raw Data",
+        "uid": "e303ce5b-cf72-474a-a38a-426113abe6c8",
+        "version": 2,
+        "weekStart": ""
+    },
+    "overwrite": true
+}

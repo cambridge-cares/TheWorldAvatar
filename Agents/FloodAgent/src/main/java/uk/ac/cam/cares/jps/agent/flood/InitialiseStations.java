@@ -186,7 +186,6 @@ public class InitialiseStations {
 		classes.add(Arrays.asList(LocalDate.class));
 		
 		tsClient.bulkInitTimeSeries(tsList, classes, null);
-		tsClient.disconnectRDB();
 	}
 
 	private static void writeToFile(File file, String output) {

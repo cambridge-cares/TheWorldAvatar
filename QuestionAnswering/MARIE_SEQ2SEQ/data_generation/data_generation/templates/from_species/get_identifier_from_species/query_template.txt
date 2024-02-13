@@ -1,0 +1,13 @@
+SELECT DISTINCT ?label ?{IdentifierName}Value
+WHERE {{
+    ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
+
+    ?SpeciesIRI ?hasIdentifier ?IdentifierIRI .
+    ?IdentifierIRI  rdf:type ?Identifier ; os:value ?species .
+    ?Identifier rdfs:subClassOf os:Identifier .
+
+    FILTER( ?species = "{species}")
+
+    ?SpeciesIRI os:has{IdentifierName} ?{IdentifierName}IRI .
+    ?{IdentifierName}IRI os:value ?{IdentifierName}Value .
+}}

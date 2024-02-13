@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="http://www.theworldavatar.com/kb/agents/Service__PCE_Agent.owl"
+         xmlns="http://www.theworldavatar.com/kb/agents/Service__PCE_Agent.owl#"
+         xmlns:MSM.="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+
+<owl:Ontology rdf:about="http://www.theworldavatar.com/kb/agents/Service__PCE_Agent.owl"/>
+
+<MSM.:Service rdf:about="#Service_eb2cb048d3454897a0baf1a5de24282ed4290f8d">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <MSM.:hasOperation rdf:resource="#Operation_ea5f33013a95f51b9a8cc9a987b638aacc49e870"/>
+</MSM.:Service>
+
+<MSM.:Operation rdf:about="#Operation_ea5f33013a95f51b9a8cc9a987b638aacc49e870">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <MSM.:hasInput rdf:resource="#MessageContent_51f590967a8336f6f6b75cd1c28a03d1cd394a0c"/>
+  <MSM.:hasOutput rdf:resource="#MessageContent_73f0c70c87a6867652de9ad6430136275b32e915"/>
+  <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://127.0.0.1:5000/api/model/predict</MSM.:hasHttpUrl>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of &lt;species&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of OPF with donor &lt;species&gt;</MSM.:hasQuestionTemplates>
+</MSM.:Operation>
+
+<MSM.:MessageContent rdf:about="#MessageContent_51f590967a8336f6f6b75cd1c28a03d1cd394a0c">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <MSM.:hasMandatoryPart rdf:resource="#MessagePart_b9af45ded809accca9464f984e46f28e8af5718e"/>
+</MSM.:MessageContent>
+
+<MSM.:MessagePart rdf:about="#MessagePart_b9af45ded809accca9464f984e46f28e8af5718e">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">species</MSM.:hasName>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species</MSM.:hasType>
+  <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</MSM.:isArray>
+  <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">species</MSM.:hasNerLabel>
+</MSM.:MessagePart>
+
+<MSM.:MessageContent rdf:about="#MessageContent_73f0c70c87a6867652de9ad6430136275b32e915">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <MSM.:hasMandatoryPart rdf:resource="#MessagePart_78eaf13bcb51b8f528a940d6f099ef16407acb2d"/>
+</MSM.:MessageContent>
+
+<MSM.:MessagePart rdf:about="#MessagePart_78eaf13bcb51b8f528a940d6f099ef16407acb2d">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pce</MSM.:hasName>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#PowerConversionEfficiency</MSM.:hasType>
+  <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
+  <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
+</MSM.:MessagePart>
+
+
+</rdf:RDF>

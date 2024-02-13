@@ -1,6 +1,6 @@
 package com.cmclinnovations.stack;
 
-import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.core.datasets.DatasetLoader;
 
 /**
  * Hello world!
@@ -9,7 +9,7 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 public class DataUploader {
     public static void main(String[] args) {
 
-        StackClient.uploadInputDatasets();
+        DatasetLoader.uploadInputDatasets();
 
     }
 }

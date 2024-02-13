@@ -1,0 +1,16 @@
+{
+  "ServiceSpec": {
+    "Name": "android-status-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "android-status-agent:1.0.0"
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/android-status-agent/",
+      "externalPath": "/android-status-agent/"
+    }
+  }
+}

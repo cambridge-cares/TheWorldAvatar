@@ -1,0 +1,153 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "ukpn_pylons",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_overhead_lines_low",
+            "sql": "ALTER TABLE ukpn_overhead_lines_low ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; update ukpn_overhead_lines_low SET voltage_level = 'L' ;",
+            "subdirectory": "vector/ukpn-hv-overhead-lines-shapefile",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-nlt": [
+                        "MULTILINESTRING"
+                    ]
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_overhead_lines_low_extended",
+                    "sql": "SELECT wkb_geometry, line_colour, line_width, ukpn_overhead_lines_low.voltage_level FROM ukpn_overhead_lines_low, ukpn_line_styling WHERE ukpn_overhead_lines_low.voltage_level = ukpn_line_styling.voltage_level",
+                    "escapeSql": false,
+                    "keyColumn": "voltage_level",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "the_world_avatar:overhead-lines"
+            }
+        },
+        {
+            "type": "tabular",
+            "skip": false,
+            "table": "ukpn_line_styling",
+            "subdirectory": "tabular"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_poles_towers_medium",
+            "sql": "ALTER TABLE ukpn_poles_towers_medium ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; UPDATE ukpn_poles_towers_medium SET voltage_level = 'M' ;",
+            "subdirectory": "vector/ukpn-33kv-poles-towers",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_poles_towers_medium_extended",
+                    "sql": "SELECT wkb_geometry, pylon_icon, icon_size, ukpn_poles_towers_medium.voltage_level FROM ukpn_poles_towers_medium, ukpn_line_styling WHERE ukpn_poles_towers_medium.voltage_level = ukpn_line_styling.voltage_level",
+                    "escapeSql": false,
+                    "keyColumn": "voltage_level",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "the_world_avatar:poles-towers"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_overhead_lines_medium",
+            "sql": "ALTER TABLE ukpn_overhead_lines_medium ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; update ukpn_overhead_lines_medium SET voltage_level = 'M' ;",
+            "subdirectory": "vector/33kv-overhead-lines",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-nlt": [
+                        "MULTILINESTRING"
+                    ]
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_overhead_lines_medium_extended",
+                    "sql": "SELECT wkb_geometry, line_colour, line_width, ukpn_overhead_lines_medium.voltage_level FROM ukpn_overhead_lines_medium, ukpn_line_styling WHERE ukpn_overhead_lines_medium.voltage_level = ukpn_line_styling.voltage_level",
+                    "escapeSql": false,
+                    "keyColumn": "voltage_level",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "the_world_avatar:overhead-lines"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_poles_towers_high",
+            "sql": "ALTER TABLE ukpn_poles_towers_high ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; UPDATE ukpn_poles_towers_high SET voltage_level = 'H' ;",
+            "subdirectory": "vector/132kv-poles-towers",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_poles_towers_high_extended",
+                    "sql": "SELECT wkb_geometry, pylon_icon, icon_size, ukpn_poles_towers_high.voltage_level FROM ukpn_poles_towers_high, ukpn_line_styling WHERE ukpn_poles_towers_high.voltage_level = ukpn_line_styling.voltage_level",
+                    "escapeSql": false,
+                    "keyColumn": "voltage_level",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "the_world_avatar:poles-towers"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_overhead_lines_high",
+            "subdirectory": "vector/132kv-overhead-lines",
+            "sql": "ALTER TABLE ukpn_overhead_lines_high ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; update ukpn_overhead_lines_high SET voltage_level = 'H' ;",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-nlt": [
+                        "MULTILINESTRING"
+                    ]
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_overhead_lines_high_extended",
+                    "sql": "SELECT wkb_geometry, line_colour, line_width, ukpn_overhead_lines_high.voltage_level FROM ukpn_overhead_lines_high, ukpn_line_styling WHERE ukpn_overhead_lines_high.voltage_level = ukpn_line_styling.voltage_level",
+                    "escapeSql": false,
+                    "keyColumn": "voltage_level",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "the_world_avatar:overhead-lines"
+            }
+        }
+    ],
+    "mappings": [
+        "ukpn_ontop.obda"
+    ],
+    "styles": [
+        {
+            "name": "poles-towers",
+            "file": "poles-towers.sld"
+        },
+        {
+            "name": "overhead-lines",
+            "file": "overhead-lines.sld"
+        }
+    ]
+}

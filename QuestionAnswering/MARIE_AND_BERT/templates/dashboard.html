@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Marie 3.0 Dashboard</title>
+    <script src="http://kg.cmclinnovations.com/system/assets/jquery/jquery-2.x.min.js"></script>
+
+</head>
+<body>
+<div> - Pubchem dependency status: <div id="pubchem_states"></div> </div>
+<hr/>
+<div> - OntoCompChem dependency status: <div id="ontocompchem_states"></div></div>
+<br/>
+<button id="btn_update">Update dependency status</button><hr/><br/>
+
+
+<!--
+    Another section for checking test results: full-test and unit tests
+-->
+
+<button id="btn_full_test">Run full test</button>
+<div id="label_running"></div>
+<div id="full_test_result"></div>
+<hr/><br/>
+
+
+
+<button id="btn_test_entity_linking">Run entity linking test</button>
+<div id="entity_linking_test_result"></div>
+<hr/><br/>
+
+<button id="btn_test_score_model">Run score model test</button>
+<div id="score_model_test_result"></div>
+<hr/><br/>
+
+<button id="btn_test_value_lookup">Run value lookup test</button>
+<div id="value_lookup_test_result"></div>
+<hr/><br/>
+
+<button id="btn_error_log" onclick=" window.open('/error_log','_blank')">View error log</button>
+<button id="btn_debug_log" onclick=" window.open('/debug_log','_blank')">View debug log</button>
+
+
+
+<script src="../static/js/dashboard.js"></script>
+</body>
+</html>

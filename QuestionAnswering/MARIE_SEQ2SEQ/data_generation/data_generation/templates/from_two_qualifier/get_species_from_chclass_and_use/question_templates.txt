@@ -1,0 +1,21 @@
+Give me a list of species that are classified as {ChemClass} and used as {Use}
+Provide a roster of chemical species classified as {ChemClass} and employed as {Use}.
+List the molecules categorized as {ChemClass} and utilized as {Use}.
+Enumerate the compounds falling under the {ChemClass} designation, which find use as {Use}.
+Can you give me a record of chemical species characterized as {ChemClass} and employed for {Use} purposes?
+I'm interested in knowing the {ChemClass} species that double as {Use}; could you compile a list?
+Please outline a compilation of {ChemClass} species that meet the criteria of being {Use}.
+I'd like information on {ChemClass} species functioning as {Use}; could you furnish me with a list?
+Could you provide a rundown of {ChemClass} entities that fall within the category of {Use}?
+I'm looking for a catalog of {ChemClass} molecules known for their use as {Use}; can you assist?
+In need of a list of {ChemClass} compounds, specifically those put to use as {Use}.
+Please compose a list of {ChemClass} chemical species acknowledged as {Use}.
+Seeking a compilation of {ChemClass} species recognized both as {Use}; can you compile this?
+Can you outline {ChemClass} entities that are formally classified and have applications as {Use}?
+I'm curious about {ChemClass} species functioning in the capacity of {Use}; provide me with a list.
+I require a catalog of {ChemClass} compounds that fit the description of {Use}.
+Could you present a roster of {ChemClass} molecules typically utilized as {Use}?
+Please draft a list of {ChemClass} chemical species that fulfill the role of {Use}.
+I'm inquiring about {ChemClass} entities recognized for their use as {Use}; can you compile a list?
+Provide me with an inventory of {ChemClass} compounds known to possess {Use} qualities.
+Can you enlist {ChemClass} species acknowledged for their role as {Use}?

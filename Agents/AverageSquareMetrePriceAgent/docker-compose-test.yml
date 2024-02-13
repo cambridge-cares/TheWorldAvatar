@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  avgsqmprice_agent:
+    image: ghcr.io/cambridge-cares/avgsqmprice_agent_test:1.1.0
+    build:
+      context: .
+      target: test
+    environment:
+      # The following environment variables are required for the agent Docker container to start
+      # Similar as in the `agent_test.env` file for local testing, triple store endpoints are just 
+      # placeholders and "overwritten" by the mocked `stack_configs.py` module. However, some entry
+      # is required to avoid Exceptions from the AgentConfig class (same applies to other keywords left blank)
+      #--- Stack & Stack Client parameters ---#
+      - STACK_NAME=TESTS
+      - DATABASE=postgres
+      - NAMESPACE=test
+      #--- Agent parameters ---#
+      - THRESHOLD=''
+      #--- Derivation Agent parameters ---#
+      - ONTOAGENT_SERVICE_IRI=https://www.example.com/resource/agents/Service__KL_AvgSqmPrice/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5011/AvgSqmPrice
+      - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
+      - DERIVATION_PERIODIC_TIMESCALE=5
+      - REGISTER_AGENT=false
+      # Required inputs, although values retrieved from mocked `stack_configs.py`
+      - SPARQL_QUERY_ENDPOINT=''
+      - SPARQL_UPDATE_ENDPOINT=''
+      # Required inputs, although not used when initialising DerivationAgent
+      - KG_USERNAME=''
+      - KG_PASSWORD=''
+      - FILE_SERVER_ENDPOINT=''
+      - FILE_SERVER_USERNAME=''
+      - FILE_SERVER_PASSWORD=''
+      #--- Miscellaneous ---#
+      - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
+    ports:
+      - "5011:5000"
+    extra_hosts:
+      # To allow connecting to 'host.docker.internal' on Linux
+      # details: https://github.com/moby/libnetwork/pull/2348#issuecomment-1177610499
+      - "host.docker.internal:host-gateway"
+
+  # Blazegraph
+  blazegraph_agent_test:
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: blazegraph_agent_test
+    ports:
+      - 27149:8080
+
+  # PostgreSQL
+  postgres_agent_test:
+    container_name: postgres_agent_test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    image: postgres:13.3
+    restart: unless-stopped
+    ports:
+      - 7432:5432

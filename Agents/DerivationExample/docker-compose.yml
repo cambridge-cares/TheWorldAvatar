@@ -3,7 +3,7 @@ version: "3.8"
 services:
   derivationexample:
     container_name: derivationexample
-    image: derivationexample:1.0.0
+    image: derivationexample:1.2.0
     build:
       context: ./
     volumes:
@@ -15,7 +15,7 @@ services:
 
   blazegraph:
     container_name: "blazegraph"
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
     restart: unless-stopped
     ports:
       - "8889:8080"
@@ -24,6 +24,7 @@ services:
     secrets:
       - blazegraph_password
     environment:
+      BLAZEGRAPH_USER: bg_user
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
 
   # if the postgres_data volume was initialised with an older version, it is required to remove it

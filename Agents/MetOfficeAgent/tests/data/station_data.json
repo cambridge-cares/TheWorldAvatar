@@ -19,6 +19,7 @@
     "station3":
         {
             "id": "300", 
-            "name": "Test station 3"
+            "latitude": "51.6794",
+            "longitude": "-3.57"
         }
 }

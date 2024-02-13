@@ -1,0 +1,14 @@
+// Example HTTP request to instantiate latest EPC building data for all instantiated UPRNs (and postcodes),
+// retrieving data from all three EPC APIs: domestic, non-domestic, and display
+
+// ocgml_endpoint: Available SPARQL endpoint containing instantiated buildings in OntoCityGML
+//                 (the agent only instantiates EPC data for buildings instantiated in OntoCityGml)
+//                 --> OPTIONAL: if not provided, default namespace from environment variables will be used
+
+POST http://165.232.172.16:5007/epcagent/instantiate/certificates/all
+Content-Type: application/json
+
+{ "query": {
+      "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
+    }
+}
