@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet(urlPatterns = {"/gfa", "/floors"})
+@WebServlet(urlPatterns = {"/calculation", "/floors"})
 public class GFAAgent extends JPSAgent{
     private static final String PROPERTIES_PATH = "/resources/config.properties";
     
@@ -61,16 +61,13 @@ public class GFAAgent extends JPSAgent{
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
-        System.out.println("debug mode");
         try {
             GFACalculation gfaCalculation = new GFACalculation(dbUrl, dbUser, dbPassword);
-            // GFAkg gfAkg = new GFAkg(kgurl);
-            boolean test = requestParams.has("gfa");
-            if(requestParams.getString("requestUrl").contains("gfa")){            
+            if(requestParams.getString("requestUrl").contains("/calculation")){            
                 //calculate GFA 1. query footpring 2. query height (if no height, estimate 3.2m/floor) 3. calculate 4. store
                 gfaCalculation.calculationGFA();
                 // gfAkg.saveGFA(gfaResult);
-            }else if(requestParams.getString("requestUrl").contains("floors")){
+            }else if(requestParams.getString("requestUrl").contains("/floors")){
                //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
                 IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword);
                 integrateFloors.matchAddress(floorsCsv);

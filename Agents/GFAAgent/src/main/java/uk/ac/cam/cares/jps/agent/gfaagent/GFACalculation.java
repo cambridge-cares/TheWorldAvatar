@@ -22,7 +22,6 @@ public class GFACalculation {
     }
     
     public void calculationGFA(){
-        String test = gfaSQLInsert;
         postgisClient.executeQuery(gfaSQLInsert);
     }
 
