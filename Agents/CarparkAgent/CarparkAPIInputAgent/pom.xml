@@ -106,6 +106,13 @@
             <version>${jps.base.version}</version>
         </dependency>
 
+        <!-- for interacting with the stack -->
+        <dependency>
+            <groupId>com.cmclinnovations</groupId>
+            <artifactId>stack-clients</artifactId>
+            <version>1.22.0</version>
+        </dependency>
+
         <!-- For sending HTTP request to the API -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
