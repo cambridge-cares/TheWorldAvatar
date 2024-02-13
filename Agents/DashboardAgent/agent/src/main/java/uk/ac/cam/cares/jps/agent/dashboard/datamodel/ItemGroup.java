@@ -55,6 +55,6 @@ class ItemGroup {
      * A getter method to retrieve the measure object associated with the measure name.
      */
     protected Measure getMeasure(String measureName) {
-        return this.measures.get(measureName);
+        return this.measures.getOrDefault(measureName, null);
     }
 }

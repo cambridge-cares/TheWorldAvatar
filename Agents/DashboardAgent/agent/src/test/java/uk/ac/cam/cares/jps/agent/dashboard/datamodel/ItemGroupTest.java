@@ -23,6 +23,13 @@ class ItemGroupTest {
     }
 
     @Test
+    void testGetMeasure_MissingMeasure() {
+        // Execute method
+        Measure results = SAMPLE.getMeasure(MeasureTest.SAMPLE_MEASURE_NAME);
+        assertNull(results);
+    }
+
+    @Test
     void testAddMeasure_and_GetMeasure() {
         // Execute method
         SAMPLE.addMeasure(MeasureTest.SAMPLE_MEASURE_NAME, MeasureTest.SAMPLE_UNIT, MeasureTest.SAMPLE_ONE_ITEM_NAME, MeasureTest.SAMPLE_ONE_DATA_IRI, MeasureTest.SAMPLE_ONE_TS_IRI);
