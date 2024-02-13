@@ -7,14 +7,11 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils;
  */
 public class StringHelper {
     public static final String FACILITY_KEY = "facilities";
-    public static final String ASSET_KEY = "assets";
     public static final String ROOM_KEY = "rooms";
     public static final String SYSTEM_KEY = "systems";
-    public static final String THRESHOLD_KEY = "threshold";
     public static final String SERVICE_ACCOUNT_NAME = "grafana";
     public static final String INTERVAL_VARIABLE_NAME = "Time Interval";
     public static final String REF_MONTH_VARIABLE_NAME = "Reference Month";
-
 
     // Private constructor to prevent instantiation.
     private StringHelper() {
