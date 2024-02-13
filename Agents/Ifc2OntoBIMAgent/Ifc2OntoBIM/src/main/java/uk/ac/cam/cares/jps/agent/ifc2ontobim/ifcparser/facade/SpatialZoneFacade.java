@@ -216,11 +216,26 @@ public class SpatialZoneFacade {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addVar(CommonQuery.PROJECT_VAR)
                 .addVar(CommonQuery.PARENT_ZONE_VAR)
+                .addVar(CommonQuery.POSTAL_ADDRESS_LINES_VAR)
+                .addVar(CommonQuery.POSTAL_TOWN_VAR)
+                .addVar(CommonQuery.POSTAL_REGION_VAR)
+                .addVar(CommonQuery.POSTAL_COUNTRY_VAR)
+                .addVar(CommonQuery.POSTAL_CODE_VAR)
                 .addVar(CommonQuery.ELEVATION_VAR)
                 .addVar(CommonQuery.TER_ELEVATION_VAR);
         selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCBUILDING)
+                // For address
+                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_BUILDING_ADDRESS, CommonQuery.POSTAL_ADDRESS_VAR)
+                .addWhere(CommonQuery.POSTAL_ADDRESS_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCADDRESS)
+                .addWhere(CommonQuery.POSTAL_ADDRESS_VAR, CommonQuery.IFC_BUILDING_ADDRESS_LINES + OntoBimConstant.BACKSLASH + CommonQuery.LIST_HAS_CONTENT + CommonQuery.EXPRESS_HASSTRING, CommonQuery.POSTAL_ADDRESS_LINES_VAR)
+                .addWhere(CommonQuery.POSTAL_ADDRESS_VAR, CommonQuery.IFC_BUILDING_TOWN + CommonQuery.EXPRESS_HASSTRING, CommonQuery.POSTAL_TOWN_VAR)
+                .addWhere(CommonQuery.POSTAL_ADDRESS_VAR, CommonQuery.IFC_BUILDING_REGION + CommonQuery.EXPRESS_HASSTRING, CommonQuery.POSTAL_REGION_VAR)
+                .addWhere(CommonQuery.POSTAL_ADDRESS_VAR, CommonQuery.IFC_BUILDING_POSTAL_CODE + CommonQuery.EXPRESS_HASSTRING, CommonQuery.POSTAL_CODE_VAR)
+                .addWhere(CommonQuery.POSTAL_ADDRESS_VAR, CommonQuery.IFC_BUILDING_COUNTRY + CommonQuery.EXPRESS_HASSTRING, CommonQuery.POSTAL_COUNTRY_VAR)
+                // For elevation values
                 .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_BUILDING_ELEV + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.ELEVATION_VAR)
                 .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_BUILDING_TERELEV + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.TER_ELEVATION_VAR)
+                // For finding parent zone
                 .addWhere(CommonQuery.RELAGGR_VAR, QueryHandler.RDF_TYPE, CommonQuery.RELAGG)
                 .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_PARENT_ZONE_REL, CommonQuery.PARENT_ZONE_VAR)
                 .addWhere(CommonQuery.PARENT_ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCSITE)
@@ -249,7 +264,13 @@ public class SpatialZoneFacade {
             String terElev = QueryHandler.retrieveLiteral(soln, CommonQuery.TER_ELEVATION_VAR);
             String project = soln.contains(CommonQuery.PROJECT_VAR) ?
                     zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)) : null;
-            IfcBuildingRepresentation building = new IfcBuildingRepresentation(name, uid, placement, project, zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR)), elev, terElev, unitMappings.getIri(OntoBimConstant.METRE_UNIT));
+            String[] address = new String[5];
+            address[0] = QueryHandler.retrieveLiteral(soln, CommonQuery.POSTAL_ADDRESS_LINES_VAR);
+            address[1] = QueryHandler.retrieveLiteral(soln, CommonQuery.POSTAL_TOWN_VAR);
+            address[2] = QueryHandler.retrieveLiteral(soln, CommonQuery.POSTAL_REGION_VAR);
+            address[3] = QueryHandler.retrieveLiteral(soln, CommonQuery.POSTAL_COUNTRY_VAR);
+            address[4] = QueryHandler.retrieveLiteral(soln, CommonQuery.POSTAL_CODE_VAR);
+            IfcBuildingRepresentation building = new IfcBuildingRepresentation(name, uid, placement, project, zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR)), elev, terElev, unitMappings.getIri(OntoBimConstant.METRE_UNIT), address);
             zoneMappings.add(iri, building.getBotBuildingIRI());
             building.constructStatements(statementSet);
         }

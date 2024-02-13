@@ -1,0 +1,9 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoPower,TBox,http://theworldavatar.com/ontology/ontopower/OntoPower.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoPower,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoPower,TBox,OntoPower is an ontology developed for creating a digital twin a power distribution system.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+Pylon,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,A power pylon.,http://theworldavatar.com/ontology/ontopower/OntoPower.owl,Pylon
+Line,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,A power line.,http://theworldavatar.com/ontology/ontopower/OntoPower.owl,Line
+Substation,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,A power substation.,http://theworldavatar.com/ontology/ontopower/OntoPower.owl,Substation
+hasVoltageLevel,Object Property,,,,,,The voltage level of a resource.,http://theworldavatar.com/ontology/ontopower/OntoPower.owl,Voltage Level
+hasMaxVoltage,Object Property,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/PotentialDifference,,The maximum voltage of a resource.,http://theworldavatar.com/ontology/ontopower/OntoPower.owl,Max Voltage

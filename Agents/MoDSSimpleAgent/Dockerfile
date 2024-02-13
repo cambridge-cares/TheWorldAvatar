@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.6-openjdk-11-slim as builder
+FROM maven:3.6.3-openjdk-17-slim AS builder
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 ADD . /root
@@ -26,7 +26,11 @@ ARG MODS_SAVE_DIR="/usr/local/mods-simple-agent/savedsurrogates"
 ARG USER="user"
 RUN useradd -s /bin/bash ${USER}
 
-RUN apt update && apt install openjdk-11-jre mpich rsync -y && \
+RUN mkdir -p /etc/apt/keyrings && \
+    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc && \
+    echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
+
+RUN apt update && apt install temurin-17-jdk mpich rsync -y && \
     mkdir -p "${MODS_BIN_DIR}" && \
     mkdir -p "${MODS_SAVE_DIR}" && \
     chown ${USER}:${USER} "${MODS_BIN_DIR}" && \

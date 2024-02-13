@@ -1,0 +1,25 @@
+{
+    "start": {
+        "center": [-3.023, 55.269],
+        "zoom": 5.5,
+        "bearing": 0,
+        "pitch": 0
+    },
+    "fields": {
+        "name": "name",
+        "description": "desc"
+    },
+    "search": [
+        {
+            "description": "Site Name",
+            "property": "name",
+            "type": "string"
+        },
+        {
+            "description": "Installed Capacity (MW)",
+            "property": "capacity",
+            "type": "number"
+        }
+    ],
+    "dashboard": "http://localhost:383833/dashboard/"
+}

@@ -1,7 +1,7 @@
 # IfcOwlConverter Agent
 
 This agent converts IFC models into TTL files defined by the IfcOwl ontology. It is designed to support the 
-[Ifc2OntoBim Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate IFC models into the ontoBim Abox, and is NOT intended to be run independently. Please build the image for this agent and then proceed to [the other agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate and store your IFC Abox. 
+[Ifc2OntoBIM Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate IFC models into the ontoBim Abox, and is NOT intended to be run independently. Although you can build the image and container for this agent individually, there is no need to do so. Please proceed directly to the [Ifc2OntoBIM Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate and store your IFC Abox. If you are following the instructions of the Ifc2OntoBIM Agent, ignore any of these instructions here; they are not applicable.
 
 ```mermaid
     %%{init: {'theme':'neutral', 'fontFamily':'verdana'}}%%
@@ -64,6 +64,13 @@ docker compose -f "./docker/docker-compose.debug.yml" up -d --build
 docker-compose up -d
 ```
 
+**STACK DEPLOYMENT**
+
+If you want to spin up this agent as part of a stack, do the following:
+- Build the image via `docker compose build`. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mount as required. If you are using this agent with the Ifc2OntoBIM agent, the `data` bind mount for both agents **MUST** be the same, ideally in the `.../stack-manager/inputs/data` directory. See [sample bind mounts](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#bind-mounts) for the configuration syntax.
+- Start the stack manager as usual. This should start the container.
+
 #### 2.3 Running the Agent
 ##### 2.3.1 Precursor
 Place your IFC file(s) into the `<root>/data/` directory. This is directly linked to the relevant directory in a Docker container. The agent is able to convert multiple IFC files at once. 
@@ -85,7 +92,12 @@ Content-Type: application/json
 {"uri":"default"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'default'}" http://localhost:3024/ifcowlconverter/
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"default"}' http://localhost:3024/ifcowlconverter/
+```
+
+If running the agent within a stack:
+```
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"default"}' http://localhost:3838/ifcowlconverter/
 ```
 
 If the agent ran successfully, a JSON Object would be returned as follows:

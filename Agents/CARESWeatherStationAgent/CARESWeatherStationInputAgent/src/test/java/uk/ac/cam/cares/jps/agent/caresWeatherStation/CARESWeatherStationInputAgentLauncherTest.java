@@ -24,9 +24,6 @@ import java.nio.file.Paths;
 
 public class CARESWeatherStationInputAgentLauncherTest {
 
-
-    private static final Logger LOGGER = LogManager.getLogger(CARESWeatherStationInputAgentLauncherTest.class);
-
     // Temporary folder to place a properties file
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -117,30 +114,6 @@ public class CARESWeatherStationInputAgentLauncherTest {
     }
 
     @Test
-    public void testMainErrorWhenCreatingTSClient() throws IOException {
-        //create agent properties file
-        createProperAgentPropertiesFile();
-        //File testFile=new File(Paths.get(args[0],"agent.properties").toString());
-        //Assert.assertTrue(testFile.exists());
-        //Create folder with mapping file
-        String folderName = "mappings";
-        File mappingFolder = folder.newFolder(folderName);
-        // Create empty file in mappings folder
-        File mappingFile = new File(Paths.get(mappingFolder.getCanonicalPath(), "weather.properties").toString());
-        Assert.assertTrue(mappingFile.createNewFile());
-        // Empty properties file for time series client should result in exception
-        try {
-            SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                CARESWeatherStationInputAgentLauncher.initializeAgent(args);
-            });
-        }
-        catch (Exception e) {
-            Assert.assertEquals("Could not construct the time series client needed by the input agent!", e.getMessage());
-        }
-
-    }
-
-    @Test
     public void testMainErrorWhenCreatingAPIConnector() throws IOException {
         createProperClientPropertiesFile();
         // Use a mock for the input agent
@@ -209,14 +182,17 @@ public class CARESWeatherStationInputAgentLauncherTest {
 
         // Use a mock for the input agent
         try(MockedConstruction<CARESWeatherStationInputAgent> mockAgent = Mockito.mockConstruction(CARESWeatherStationInputAgent.class)) {
-            // Use a mock for the connector that returns the dummy readings
-            try(MockedConstruction<CARESWeatherStationAPIConnector> ignored = Mockito.mockConstruction(CARESWeatherStationAPIConnector.class,
-                    (mock, context) -> {
-                        Mockito.when(mock.getWeatherReadings()).thenReturn(readings);
-                    })) {
-                CARESWeatherStationInputAgentLauncher.initializeAgent(args);
-                // Ensure that the update of the agent was invoked
-                Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).updateData(readings);
+            // Use a mock for SparqlHandler
+            try(MockedConstruction<WeatherQueryClient> mockQueryClient = Mockito.mockConstruction(WeatherQueryClient.class)) {
+                // Use a mock for the connector that returns the dummy readings
+                try(MockedConstruction<CARESWeatherStationAPIConnector> ignored = Mockito.mockConstruction(CARESWeatherStationAPIConnector.class,
+                (mock, context) -> {
+                    Mockito.when(mock.getWeatherReadings()).thenReturn(readings);
+                })) {
+                    CARESWeatherStationInputAgentLauncher.initializeAgent(args);
+                    // Ensure that the update of the agent was invoked
+                    Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).updateData(readings);
+                }
             }
         }
     }

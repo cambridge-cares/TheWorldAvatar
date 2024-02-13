@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
@@ -11,16 +12,15 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public final class GeoServerService extends ContainerService {
 
@@ -28,7 +28,6 @@ public final class GeoServerService extends ContainerService {
 
     private static final String ADMIN_USERNAME = "admin";
     private static final String DEFAULT_ADMIN_PASSWORD_FILE = "/run/secrets/geoserver_password";
-    public static final Path SERVING_DIRECTORY = Path.of("/var/geoserver/datadir/www");
 
     private static final HttpClient httpClient = HttpClient.newHttpClient();
     // Convert username:password to Base64 String.
@@ -49,6 +48,8 @@ public final class GeoServerService extends ContainerService {
             geoserverEndpointConfig = new RESTEndpointConfig("geoserver",
                     new URL("http", getHostName(), 8080, "/geoserver/"),
                     ADMIN_USERNAME, passwordFile);
+
+            addEndpointConfig(geoserverEndpointConfig);
         } catch (MalformedURLException ex) {
             throw new RuntimeException("Failed to construct URL for GeoServer config file.", ex);
         }
@@ -56,9 +57,6 @@ public final class GeoServerService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-
-        writeEndpointConfig(geoserverEndpointConfig);
-
         Builder settingsRequestBuilder = createBaseSettingsRequestBuilder();
 
         Optional<JsonNode> settings = getExistingSettings(settingsRequestBuilder);
@@ -69,7 +67,12 @@ public final class GeoServerService extends ContainerService {
             updatePassword();
         }
 
-        createComplexCommand("chown", "-R", "tomcat:tomcat", SERVING_DIRECTORY.toString()).withUser("root").exec();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        createComplexCommand("chown", "-R", "tomcat:tomcat", GeoServerClient.SERVING_DIRECTORY.toString())
+                .withUser("root")
+                .withOutputStream(outputStream)
+                .withErrorStream(outputStream)
+                .exec();
     }
 
     private Builder createBaseSettingsRequestBuilder() {
@@ -139,10 +142,10 @@ public final class GeoServerService extends ContainerService {
     private void updateSettings(Builder settingsRequestBuilder, JsonNode settings) {
         // Add global setting so that the the GeoServer web interface still works
         // through the reverse-proxy.
-        ObjectNode globalNode = ((ObjectNode) settings.get("global"))
-                .put("useHeadersProxyURL", true);
-        ((ObjectNode) globalNode.get("settings"))
-                .put("proxyBaseUrl", "${X-Forwarded-Proto}:\\/\\/${X-Forwarded-Host}\\/geoserver");
+        settings.withObject("/global/settings")
+                .put("proxyBaseUrl", "${X-Forwarded-Proto}:\\/\\/${X-Forwarded-Host}\\/geoserver")
+                .put("useHeadersProxyURL", true)
+                .put("numDecimals", 6);
 
         HttpRequest settingsPutRequest = settingsRequestBuilder
                 .PUT(BodyPublishers.ofString(settings.toString()))
@@ -153,7 +156,7 @@ public final class GeoServerService extends ContainerService {
             httpClient.send(settingsPutRequest, BodyHandlers.discarding());
         } catch (IOException ex) {
             throw new RuntimeException(
-                    "Failed to process send/recieve message as part of GeoServer settings update request.", ex);
+                    "Failed to process send/receive message as part of GeoServer settings update request.", ex);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt(); // set interrupt flag
             throw new RuntimeException("GeoServer settings update request was interupted.", ex);

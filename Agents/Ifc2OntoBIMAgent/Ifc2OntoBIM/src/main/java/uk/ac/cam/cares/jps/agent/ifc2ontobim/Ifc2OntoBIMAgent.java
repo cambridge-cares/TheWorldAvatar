@@ -180,12 +180,12 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
     protected JSONObject runAgent(String[] args, Boolean isGeomRequired, Boolean isIfcOwl) {
         JSONObject response = new JSONObject();
         Map<String, String> config = AccessClient.retrieveClientProperties();
+        NamespaceMapper.setBaseNameSpace(args[0]);
         // Boolean indicates if there is already a preexisting TTL file. If there is one, do not generate another TTL from the IfcOwlConverter agent.
         if (!isIfcOwl) {
             // Convert the IFC files in the target directory to TTL using IfcOwl Schema
             LOGGER.info("Sending POST request to IfcOwlConverterAgent...");
             try {
-                NamespaceMapper.setBaseNameSpace(args[0]);
                 String inputJson = "{\"" + KEY_BASEURI + "\":\"" + args[0] + "\"}";
                 AccessClient.sendPostRequest(config.get(AccessClient.IFC_OWL_CONVERTER_API), inputJson);
             } catch (Exception e) {

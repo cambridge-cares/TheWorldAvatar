@@ -38,9 +38,20 @@ class SpatialZoneStorageTest {
     private static final String TEST_ROOM_UID = "lu1276r9a";
     private static final Double TEST_ELEV = 125.0;
     private static final String NON_EXISTING_ERROR = NON_EXISTENT_IRI + " does not exist in mappings!";
+    private static final String[] ADDRESS = new String[5];
+    private static final String ADDRESS_LINE = "Road Street 52";
+    private static final String CITY = "Cambridge";
+    private static final String STATE = "Cambridgeshire";
+    private static final String COUNTRY = "England";
+    private static final String POSTAL_CODE = "51284";
 
     @BeforeAll
     static void genSingleton() {
+        ADDRESS[0] = ADDRESS_LINE;
+        ADDRESS[1] = CITY;
+        ADDRESS[2] = STATE;
+        ADDRESS[3] = COUNTRY;
+        ADDRESS[4] = POSTAL_CODE;
         testMappings = SpatialZoneStorage.Singleton();
         NamespaceMapper.setBaseNameSpace(TEST_BASE_URI);
     }
@@ -51,7 +62,9 @@ class SpatialZoneStorageTest {
     }
 
     @AfterAll
-    static void resetNamespace(){ NamespaceMapper.setBaseNameSpace("");}
+    static void resetNamespace() {
+        NamespaceMapper.setBaseNameSpace("");
+    }
 
     @Test
     void testGetZoneFail() {
@@ -83,7 +96,7 @@ class SpatialZoneStorageTest {
     void testAddAndGetBuilding() {
         // Create a new sample representation
         IfcBuildingRepresentation sampleBuilding = new IfcBuildingRepresentation(TEST_BUILDING_NAME, TEST_BUILDING_UID,
-                TEST_ZONE_PLACEMENT_IRI, null, TEST_SITE_IRI, TEST_ELEV.toString(), TEST_ELEV.toString(), null);
+                TEST_ZONE_PLACEMENT_IRI, null, TEST_SITE_IRI, TEST_ELEV.toString(), TEST_ELEV.toString(), null, ADDRESS);
         // Execute method
         testMappings.add(TEST_BUILDING_IRI, sampleBuilding.getBotBuildingIRI());
         // Assert if they are equals
