@@ -116,18 +116,34 @@
           "tiles": [
             "http://stackendpoint/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:tree&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
           ]
+        }, {
+          "id": "heritagetree",
+          "type": "vector",
+          "tiles": [
+            "http://stackendpoint/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:heritage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+          ]
         }
       ],
       "layers": [
         {
           "id": "sgtree",
-          "name": "Heritage Trees",
+          "name": "Trees",
           "source": "tree",
           "source-layer": "tree",
           "type": "circle",
           "order":6,
           "paint": {
             "circle-color": "#50723C"
+          }
+        }, {
+          "id": "heritagetree",
+          "name": "Heritage Trees",
+          "source": "heritagetree",
+          "source-layer": "heritage",
+          "type": "circle",
+          "order":6,
+          "paint": {
+            "circle-color": "#28391E"
           }
         }
       ]
