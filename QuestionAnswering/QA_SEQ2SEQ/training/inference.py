@@ -30,7 +30,7 @@ def infer():
     os.makedirs(os.path.dirname(infer_args.out_file), exist_ok=True)
     trans_model = Translator(
         model_args,
-        domain=None if data_args.domain == "multi" else data_args.domain,
+        domain=data_args.domain,
         max_new_tokens=infer_args.max_new_tokens,
     )
 

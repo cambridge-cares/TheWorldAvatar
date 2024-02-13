@@ -9,6 +9,7 @@ from transformers import (
     Seq2SeqTrainingArguments,
     Seq2SeqTrainer,
 )
+from transformers.trainer_utils import EvalPrediction
 import evaluate
 
 from core.data_processing.constants import T5_PREFIX_DOMAINCLS, T5_PREFIX_NL2SPARQL
@@ -44,7 +45,7 @@ def get_trainer(
         source = [T5_PREFIX_NL2SPARQL + x for x in nlqs]
         target = [preprocess_sparql(x["query"]["sparql"]) for x in data]
 
-        if data_args.domain == "multi":
+        if data_args.domain is None:
             src_for_cls = [T5_PREFIX_DOMAINCLS + x for x in nlqs]
             domains = [x["domain"] for x in data]
 
@@ -70,7 +71,7 @@ def get_trainer(
         decoded = [normalize_query(x) for x in decoded]
         return decoded
 
-    def compute_metrics(eval_preds):
+    def compute_metrics(eval_preds: EvalPrediction):
         preds, labels = eval_preds
 
         decoded_labels = decode_tokens_then_normalize(labels)
@@ -85,11 +86,6 @@ def get_trainer(
             exact_match=exactmatch_score,
             combined=combined_score
         )
-
-    train_args.predict_with_generate = True
-    train_args.load_best_model_at_end = True
-    train_args.metric_for_best_model = "combined"
-    train_args.greater_is_better = True
 
     return Seq2SeqTrainer(
         model=model,

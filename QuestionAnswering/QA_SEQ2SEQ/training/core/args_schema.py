@@ -13,6 +13,7 @@ class ModelArguments:
         metadata={"help": "`hf` (Hugging Face), `onnx`."},
     )
 
+
 @dataclass
 class DatasetArguments:
     train_data_path: Optional[str] = field(default=None)
@@ -29,10 +30,7 @@ class DatasetArguments:
             "help": "Maximum target sequence length. Sequences will be right padded (and possibly truncated)."
         },
     )
-    domain: str = field(
-        default="multi",
-        metadata={"help": "`ontospecies`, `ontokin`, or `multi`"},
-    )
+    domain: Optional[str] = field(default=None)
 
 
 @dataclass

@@ -19,6 +19,7 @@ torchrun \
     --evaluation_strategy steps \
     --eval_steps 10 \
     --load_best_model_at_end \
+    --metric_for_best_model "combined" \
     --save_total_limit 2 \
     --report_to wandb \
     --run_name flan-t5-small
