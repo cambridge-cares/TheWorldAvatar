@@ -58,70 +58,13 @@ and it should return:
 ```
 {"Result":["Input agent object initialized.","The device has been instantiated."]}
 ```
-Change the Device type accordingly. The values currently available are "FumeHood", "WalkInFumeHood", "CanopyHood_VAV", "CanopyHood_CAV", "Pipe", "Duct", "Valve", "PreCoolCoil", "MidCoil", "OffCoil", "Filter", "Fan", "T-Joint", "Cooling", "MakeupAirUnit", "VAV-S", "VAV-E", "Damper", "ExhaustFan", "FCU-HE", "FanCoilUnit". The different requests can be found below:
+Change the Device type accordingly. The values currently available are "FumeHood", "WalkInFumeHood", "CanopyHood_VAV", "CanopyHood_CAV", "Pipe", "Duct", "Valve", "PreCoolCoil", "MidCoil", "OffCoil", "Filter", "Fan", "T-Joint", "Cooling", "MakeupAirUnit", "VAV-S", "VAV-E", "Damper", "ExhaustFan", "FCU-HE", "FanCoilUnit". An example request for instantiating a fumehood can be found below:
 
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"FumeHood\"}" http://localhost:1027/bms-instantiation-agent/instantiate
 ```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"WalkInFumeHood\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"CanopyHood_VAV\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"CanopyHood_CAV\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Pipe\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Duct\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Valve\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"PreCoolCoil\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"MidCoil\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"OffCoil\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Filter\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Fan\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"T-Joint\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Cooling\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"MakeupAirUnit\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"VAV-S\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"VAV-E\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Damper\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"ExhaustFan\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"FCU-HE\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"FanCoilUnit\"}" http://localhost:1027/bms-instantiation-agent/instantiate
-```
-
 The agent is designed to instantiate one device per request. To instantiate one device after another, edit `data.csv` accordingly before sending another request to the agent.
+
+## Note
+This agent is able to carry out the above mentioned functions but it is unfinished and missing the following:
+1) unit tests
