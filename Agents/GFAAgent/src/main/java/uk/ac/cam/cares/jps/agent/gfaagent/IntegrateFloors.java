@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.gfaagent;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -35,29 +37,30 @@ public class IntegrateFloors {
         
     }
 
-    public void matchAddress (String floorsCsv) throws IOException{
+    public void matchAddress (String floorsCsv) throws IOException, SQLException{
         MatchService matchService = new MatchService();
         //query address infor from osm db
         List<Document> polyDoc = new ArrayList<>();
-        JSONArray polyResults = postgisClient.executeQuery(polygonSQLQuery);
-        for (int i = 0; i < polyResults.length(); i++){
-            String osmAddress = polyResults.getJSONObject(i).getString("addr_street");
-            String num = polyResults.getJSONObject(i).getString("addr_housenumber");
-            int id = polyResults.getJSONObject(i).getInt("ogc_fid");
-            Document preDocument = new Document.Builder(String.valueOf(id))
+        ResultSet polyResults = postgisClient.executeQuerytoResultSet(polygonSQLQuery);
+        while (polyResults.next()) {
+            String osmAddress = polyResults.getString("addr_street");
+            String num = polyResults.getString("addr_housenumber");
+            int id = polyResults.getInt("ogc_fid");
+            String buildingiri = polyResults.getString("building_iri");
+            Document preDocument = new Document.Builder(buildingiri)
                 .addElement(new Element.Builder<String>().setValue(num).setType(ElementType.NUMBER).setWeight(0.5).createElement())
                 .addElement(new Element.Builder<String>().setValue(osmAddress).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
                 .createDocument();
-                polyDoc.add(preDocument);
+            polyDoc.add(preDocument);
         }
 
         List<Document> pointDoc = new ArrayList<>();
         JSONArray pointResults = postgisClient.executeQuery(pointSQLQuery);
-        for (int i = 0; i < polyResults.length(); i++){
+        for (int i = 0; i < pointResults.length(); i++){
             String osmAddress = pointResults.getJSONObject(i).getString("addr_street");
             String num = pointResults.getJSONObject(i).getString("addr_housenumber");
-            int id = pointResults.getJSONObject(i).getInt("ogc_fid");
-            Document preDocument = new Document.Builder(String.valueOf(id))
+            // int id = pointResults.getJSONObject(i).getInt("ogc_fid");
+            Document preDocument = new Document.Builder(String.valueOf(i))
                 .addElement(new Element.Builder<String>().setValue(num).setType(ElementType.NUMBER).setWeight(0.5).createElement())
                 .addElement(new Element.Builder<String>().setValue(osmAddress).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
                 .createDocument();
@@ -85,38 +88,48 @@ public class IntegrateFloors {
             
             Map<String, List<Match<Document>>> resultPoly = matchService.applyMatchByDocId(matchDoc,polyDoc);
             Map<String, List<Match<Document>>> resultPoint = matchService.applyMatchByDocId(matchDoc,pointDoc);
-            String polyId = null;
+            String polyIri = null;
             for (Map.Entry<String, List<Match<Document>>> entry : resultPoly.entrySet()) {
                 for (Match<Document> match : entry.getValue()) {
                     if(match.getScore().getResult()>polyScore && match.getScore().getResult()>0.5){
                         System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
                         polyScore = match.getScore().getResult();
-                        polyId = match.getMatchedWith().getKey();
+                        polyIri = match.getMatchedWith().getKey();
                     }
                 }
             }
-            String pointId = null;
+            int pointId = -1;
             for (Map.Entry<String, List<Match<Document>>> entry : resultPoint.entrySet()) {
                 for (Match<Document> match : entry.getValue()) {
                     if(match.getScore().getResult()>pointScore && match.getScore().getResult()>0.5){
                         System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
                         pointScore = match.getScore().getResult();
-                        pointId = match.getMatchedWith().getKey();
+                        pointId = Integer.valueOf(match.getMatchedWith().getKey());
                     }
                 }
             }
             
+            //store floors data based on building iri from osm agent
+            int floors = hdbFloors.get(i).getFloors();
+            String buildingiri = null;
             if(pointScore > polyScore && pointScore != 0) {
-
+                buildingiri = pointResults.getJSONObject(pointId).getString("building_iri");
             } else if (polyScore != 0){
-
+                buildingiri = polyIri;
             }
+
+            String buildingSQLUpdate = "UPDATE b SET b.storeys_above_ground = " + floors + 
+                                        "FROM building b\n" + 
+                                        "INNER JOIN\n" + 
+                                        "cityobject_genericattrib cg\n" + 
+                                        "ON b.id = cg.cityobject_id AND cg.strval = " + buildingiri;
+            postgisClient.executeUpdate(buildingSQLUpdate);
         }
         
         // beans.forEach(System.out::println);
     }
 
-    private static final String polygonSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_levels_underground FROM polygons";
-    private static final String pointSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_levels_underground FROM points";
+    private static final String polygonSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_levels_underground, building_iri FROM polygons WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
+    private static final String pointSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_levels_underground, building_iri FROM points WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
 
 }
