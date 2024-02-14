@@ -29,9 +29,32 @@ At the moment, a working understanding of these two tools will suffice for the d
 ./stack.sh start <STACK NAME>
 ```
 
+5) Once the data have been uploaded, please ping the building identification agent for the company table to match their building IRIs. 
+    a) Once the building IRIs have been appended, please go to the `mainland` geoserver layer and update the query as below:
+    ```
+    WITH "uuid_table" AS 
+    ( SELECT "strval" AS "uuid", "cityobject_id" FROM "citydb"."cityobject_genericattrib" WHERE "attrname" = 'uuid' ), 
+    "iri_table" AS ( SELECT "urival" AS "iri", "cityobject_id" FROM "citydb"."cityobject_genericattrib" WHERE "attrname" = 'iri' ), 
+    // new line below
+    "companies" AS (SELECT "heat_emissions", "building_iri" FROM "company") 
+    SELECT "building"."id" AS "building_id", 
+    COALESCE("measured_height", 100.0) AS "building_height", 
+    "geometry", 
+    "uuid", 
+    "iri" ,
+    "heat_emissions" // new parameter
+    FROM "citydb"."building" 
+    JOIN "citydb"."surface_geometry" ON "citydb"."surface_geometry"."root_id" = "citydb"."building"."lod0_footprint_id" 
+    JOIN "uuid_table" ON "citydb"."building"."id" = "uuid_table"."cityobject_id" 
+    JOIN "iri_table" ON "citydb"."building"."id" = "iri_table"."cityobject_id"
+    LEFT JOIN "companies" ON "uuid_table"."uuid" = "companies"."building_iri" // new line
+    WHERE "citydb"."surface_geometry"."geometry" IS NOT NULL
+    ```
 ## 3. Miscellaneous Functions
 ### Agents
 Please ensure that the visualisation, feature-info-agent, and filter-agent services are deployed in the stack. The Plot Finder requires these three services to function.
+
+The `Building Identification Agent` is also required for the heat emissions of factories.
 
 ### Legend
 The mapbox visualisation can currently generate legends for different parameters manually. Please  check out the `manager.getPanelHandler().setLegend(htmlContent);` line at the `./stack-manager/inputs/data/webspace/index.html`.

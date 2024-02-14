@@ -29,5 +29,8 @@
         "defaultStyle": "polygon"
       }
     }
+  ],
+  "mappings": [
+    "buildings.obda"
   ]
 }

@@ -34,7 +34,17 @@
         "visibility": "visible"
       },
       "paint": {
-        "fill-extrusion-color": "#8D99AE",
+        "fill-extrusion-color": [
+          "case",
+              ["==",["get","heat_emissions"], null],
+              "#8D99AE",
+              ["interpolate",
+                ["linear"],
+                ["number",["get","heat_emissions"]],
+                0,"#A7E8BD",
+                30,"#FF4E00"
+              ]
+        ],
         "fill-extrusion-base": 0,
         "fill-extrusion-height": [
           "case", ["has","building_height"],
