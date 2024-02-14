@@ -65,7 +65,7 @@ public class LayoutTemplate {
         // Assumes that thresholds are the same for all facilities as  Grafana can only show one set of threshold per panel
         // WIP: Figure out a better way to display thresholds for the same measure and item group but different facilities
         Queue<Threshold> thresholdQueue = organisation.getThresholds(StringHelper.ROOM_KEY);
-        Threshold threshold = thresholdQueue.size()>0 ? thresholdQueue.poll() : null;
+        Threshold threshold = !thresholdQueue.isEmpty() ? thresholdQueue.poll() : null;
         // For each of the measures, create a set of charts
         organisation.getAllMeasureNames(StringHelper.ROOM_KEY).forEach(measure -> {
             Measure currentMeasure = organisation.getMeasure(StringHelper.ROOM_KEY, measure);
@@ -74,7 +74,7 @@ public class LayoutTemplate {
             String databaseID = databaseConnectionMap.get(currentMeasure.getTimeSeriesDatabase());
             // Retrieves the thresholds if it is available, else, it should return an empty array
             String[] thresholds = new String[]{};
-            if (threshold!=null && threshold.contains(measure)) {
+            if (threshold != null && threshold.contains(measure)) {
                 thresholds = threshold.getThreshold(measure);
             }
             // Generate a gauge panel displaying the average of all time series
@@ -125,6 +125,50 @@ public class LayoutTemplate {
             panelArr = new TemplatePanel[]{refMonthChart, dailyComparisonChart, weeklyComparisonChart};
             panelQueue.offer(panelArr);
         });
+        return panelQueue;
+    }
+
+    /**
+     * Generates the layout template for the weather station and all their associated measures. The first row will display the latest humidity and rainfall up to four hours ago.
+     * The second row will display the latest temperature, UV index, and wind conditions (if they are available).
+     *
+     * @param organisation          A data model containing all time series information within the specified organisation.
+     * @param databaseConnectionMap A map linking each database to its connection ID.
+     * @return A queue containing all the measure panels available for the weather station.
+     */
+    public static Queue<TemplatePanel[]> genWeatherStationLayoutTemplate(Organisation organisation, Map<String, String> databaseConnectionMap) {
+        Queue<TemplatePanel[]> panelQueue = new ArrayDeque<>();
+        // For first row
+        // Retrieves all the required measures
+        Measure humidity = organisation.getMeasure(StringHelper.WEATHER_STATION_KEY, StringHelper.WEATHER_STATION_HUMIDITY_FIELD);
+        Measure precipitation = organisation.getMeasure(StringHelper.WEATHER_STATION_KEY, StringHelper.WEATHER_STATION_PRECIPITATION_FIELD);
+        String databaseID = databaseConnectionMap.get(humidity.getTimeSeriesDatabase());
+        // Generate the required panels
+        CanvasPanel weatherStateFourHoursAgo = new CanvasPanel(humidity, precipitation, databaseID, 4);
+        CanvasPanel weatherStateThreeHoursAgo = new CanvasPanel(humidity, precipitation, databaseID, 3);
+        CanvasPanel weatherStateTwoHoursAgo = new CanvasPanel(humidity, precipitation, databaseID, 2);
+        CanvasPanel weatherStateOneHourAgo = new CanvasPanel(humidity, precipitation, databaseID, 1);
+        CanvasPanel weatherStateNow = new CanvasPanel(humidity, precipitation, databaseID, 0);
+        TemplatePanel[] panelArr = new TemplatePanel[]{weatherStateFourHoursAgo, weatherStateThreeHoursAgo, weatherStateTwoHoursAgo, weatherStateOneHourAgo, weatherStateNow};
+        panelQueue.offer(panelArr);
+        // For second row
+        // Retrieves all the required measures
+        Measure temperature = organisation.getMeasure(StringHelper.WEATHER_STATION_KEY, StringHelper.WEATHER_STATION_TEMPERATURE_FIELD);
+        Measure feelsLikeTemperature = organisation.getMeasure(StringHelper.WEATHER_STATION_KEY, StringHelper.WEATHER_STATION_FEELS_LIKE_TEMPERATURE_FIELD);
+        Measure uvIndex = organisation.getMeasure(StringHelper.WEATHER_STATION_KEY, StringHelper.WEATHER_STATION_UV_INDEX_FIELD);
+        Measure windDirection = organisation.getMeasure(StringHelper.WEATHER_STATION_KEY, StringHelper.WEATHER_STATION_WIND_DIRECTION_FIELD);
+        Measure windChill = organisation.getMeasure(StringHelper.WEATHER_STATION_KEY, StringHelper.WEATHER_STATION_WIND_CHILL_FIELD);
+        // Generate the required panels
+        CanvasPanel latestTemperatureConditions = new CanvasPanel(1, temperature, feelsLikeTemperature, databaseConnectionMap.get(temperature.getTimeSeriesDatabase()));
+        Gauge uvIndexChart = new Gauge(uvIndex, StringHelper.WEATHER_STATION_KEY, uvIndex.getTimeSeriesDatabase(), new String[]{}, false);
+        // Only process wind conditions if there are values
+        if (windDirection != null) {
+            CanvasPanel latestWindConditions = new CanvasPanel(2, windDirection, windChill, databaseConnectionMap.get(windDirection.getTimeSeriesDatabase()));
+            panelArr = new TemplatePanel[]{latestTemperatureConditions, uvIndexChart, latestWindConditions};
+        } else {
+            panelArr = new TemplatePanel[]{latestTemperatureConditions, uvIndexChart};
+        }
+        panelQueue.offer(panelArr);
         return panelQueue;
     }
 }
