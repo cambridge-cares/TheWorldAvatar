@@ -1,0 +1,29 @@
+{
+  "database": "postgres",
+  "workspace": "twa",
+  "skip": false,
+  "datasetDirectory": "companies",
+  "dataSubsets": [
+    {
+      "type": "vector",
+      "table": "company",
+      "skip": false,
+      "subdirectory": "tabular",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    }
+  ],
+  "mappings": [
+    "company.obda"
+  ]
+}

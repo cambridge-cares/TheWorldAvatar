@@ -2,6 +2,7 @@
   "name": "sg",
   "externalDatasets": [
     "buildings",
+    "company",
     "isochrone",
     "landplot",
     "population",

@@ -1,0 +1,88 @@
+[PrefixDeclaration]
+:               https://www.theworldavatar.com/kg/infrastructure/
+building:       https://www.theworldavatar.com/kg/Building/
+ontobim:        https://www.theworldavatar.com/kg/ontobim/
+ontocompany:    http://www.theworldavatar.com/kg/ontocompany/
+ontochemplant:  http://www.theworldavatar.com/kg/ontochemplant/
+rdf:            http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:           http://www.w3.org/2000/01/rdf-schema#
+owl:            http://www.w3.org/2002/07/owl#
+xsd:            http://www.w3.org/2001/XMLSchema#
+skos:           http://www.w3.org/2004/02/skos/core#
+om:             http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+mappingId       chemicalplants
+target          :company/{uuid} a ontocompany:Company;
+                    rdfs:label "{owner}"^^xsd:string;
+                    ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
+                    ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
+                    ontocompany:isOwnerOf :chemplant/{uuid}.
+                building:{building_iri} ontobim:hasFacility :chemplant/{uuid}.
+                :chemplant/{uuid} a ontochemplant:ChemicalPlant;
+                    ontocompany:belongsToIndustry ontocompany:ChemicalIndustry;
+                    ontocompany:hasDesignCapacity :designcapacity/{uuid};
+                    ontocompany:hasSpecificEnergyConsumption :energyconsumption/{uuid};
+                    ontocompany:hasGeneratedHeat :generatedheat/{uuid}.
+                ontocompany:ChemicalIndustry rdfs:label "Chemical Industry"^^xsd:string.
+                :designcapacity/{uuid} om:hasValue :designcapacitymeasure/{uuid}.
+                :designcapacitymeasure/{uuid} om:hasNumericalValue "{production_volume}"^^xsd:float;
+                    om:hasUnit :designcapacityunit/{uuid}. 
+                :designcapacityunit/{uuid} skos:notation "tons/year"^^xsd:string.
+                :energyconsumption/{uuid} om:hasValue :energyconsumptionmeasure/{uuid}.
+                :energyconsumptionmeasure/{uuid} om:hasNumericalValue "{specific_energy_consumption_mj}"^^xsd:float;
+                    om:hasUnit :energyconsumptionunit/{uuid}. 
+                :energyconsumptionunit/{uuid} skos:notation "MJ/kg"^^xsd:string.
+                :generatedheat/{uuid} om:hasValue :generatedheatmeasure/{uuid}.
+                :generatedheatmeasure/{uuid} om:hasNumericalValue "{heat_emissions}"^^xsd:float;
+                    om:hasUnit :generatedheatunit/{uuid}. 
+                :generatedheatunit/{uuid} skos:notation "MW"^^xsd:string.
+source          SELECT
+                    "ogc_fid" AS "uuid",
+                    "building_iri",
+                    "owner",
+                    "ssic_code",
+                    "business_activity",
+                    "specific_energy_consumption_mj",
+                    "production_volume",
+                    "heat_emissions"
+                FROM
+                    "company" 
+                WHERE "infrastructure_type" = 'Chemical Plant'
+
+mappingId       datacentre
+target          :company/{uuid} a ontocompany:Company;
+                    rdfs:label "{owner}"^^xsd:string;
+                    ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
+                    ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
+                    ontocompany:hasDataCentre :datacenter/{uuid}.
+                building:{building_iri} ontobim:hasFacility :datacenter/{uuid}.
+                :datacenter/{uuid} a ontocompany:DataCentre;
+                    ontocompany:hasITLoad :itload/{uuid};
+                    ontocompany:hasFloorArea :floorarea/{uuid};
+                    ontocompany:hasGeneratedHeat :generatedheat/{uuid}.
+                :itload/{uuid} om:hasValue :itloadmeasure/{uuid}.
+                :itloadmeasure/{uuid} om:hasNumericalValue "{it_load}"^^xsd:float;
+                    om:hasUnit :itloadunit/{uuid}. 
+                :itloadunit/{uuid} skos:notation "MW"^^xsd:string.
+                :floorarea/{uuid} om:hasValue :floorareameasure/{uuid}.
+                :floorareameasure/{uuid} om:hasNumericalValue "{floor_area}"^^xsd:float;
+                    om:hasUnit :floorareaunit/{uuid}. 
+                :floorareaunit/{uuid} skos:notation "sqm"^^xsd:string.
+                :generatedheat/{uuid} om:hasValue :generatedheatmeasure/{uuid}.
+                :generatedheatmeasure/{uuid} om:hasNumericalValue "{heat_emissions}"^^xsd:float;
+                    om:hasUnit :generatedheatunit/{uuid}. 
+                :generatedheatunit/{uuid} skos:notation "MW"^^xsd:string.
+source          SELECT
+                    "ogc_fid" AS "uuid",
+                    "building_iri",
+                    "owner",
+                    "ssic_code",
+                    "business_activity",
+                    "it_load",
+                    "floor_area",
+                    "heat_emissions"
+                FROM
+                    "company" 
+                WHERE "infrastructure_type" = 'Data Centre'
+]]
