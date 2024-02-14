@@ -360,7 +360,7 @@ public class GDALClient extends ContainerClient {
 
         String execId;
         if (inputFormat.equals("netCDF")) {
-            logger.info("netCDF found, uploading witt translate");
+            logger.info("netCDF found, uploading without translate and creating gdal virtual format .vrt file");
             execId = createComplexCommand(gdalContainerId, "cp",
                     filePath,
                     postgresOutputPath)
@@ -370,6 +370,15 @@ public class GDALClient extends ContainerClient {
                     .exec();
             handleErrors(errorStream, execId, logger);
             multipleRastersFromMultiDim(mdimSettings, filePath, geotiffsOutputDirectory, databaseName, layerName);
+            
+            String outputRasterFilePath = FileUtils.replaceExtension(postgresOutputPath,"vrt");
+            execId = createComplexCommand(gdalContainerId, "gdalwarp", 
+                    "-t_srs", "EPSG:4326",  "NETCDF:" + postgresOutputPath + ":" + mdimSettings.getLayerArrayName(),
+                    outputRasterFilePath)
+                    .withErrorStream(errorStream)
+                    .exec();
+            handleErrors(errorStream, execId, logger);
+            postgresOutputPath = outputRasterFilePath;
         } else {
             execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
                     "-if", inputFormat,
@@ -394,7 +403,7 @@ public class GDALClient extends ContainerClient {
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
                 .withHereDocument("CREATE EXTENSION IF NOT EXISTS postgis_raster;" +
                         "ALTER DATABASE \"" + database + "\" SET postgis.enable_outdb_rasters = True;" +
-                        "ALTER DATABASE \"" + database + "\" SET postgis.gdal_enabled_drivers = 'GTiff netCDF';")
+                        "ALTER DATABASE \"" + database + "\" SET postgis.gdal_enabled_drivers = 'GTiff netCDF VRT';")
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId, logger);
