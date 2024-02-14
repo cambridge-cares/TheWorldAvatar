@@ -11,6 +11,7 @@ OS = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
 OKIN = "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#"
 OCC = "http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#"
 OBE = "https://www.theworldavatar.com/kg/ontobuiltenv/"
+OZNG = "https://www.theworldavatar.com/kg/ontozoning/"
 
 
 NAMESPACE2PREFIX = {
@@ -25,6 +26,7 @@ NAMESPACE2PREFIX = {
     OS: "os",
     OKIN: "okin",
     OCC: "occ",
+    OZNG: "ozng",
     "http://www.daml.org/2003/01/periodictable/PeriodicTable#": "pt",
     "http://semanticscience.org/resource/": "CHEMINF",
     "http://purl.obolibrary.org/obo/": "CHMO",

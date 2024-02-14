@@ -64,9 +64,9 @@ SELECT DISTINCT ?IsAwaitingDetailedGPREval WHERE {{
         if len(bindings) == 0:
             return None
         val = bindings[0]["IsAwaitingDetailedGPREval"]["value"]
-        if val == "true":
+        if val in ["true", "1"]:
             return True
-        elif val == "false":
+        elif val in ["false", "0"]:
             return False
         else:
             raise Exception("Unexpected is_awaiting_detailed_gpr_eval:", bindings)

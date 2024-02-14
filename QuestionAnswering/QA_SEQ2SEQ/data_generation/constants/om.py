@@ -6,5 +6,6 @@
 OM_KEY_LABELS = {
     "metre": ["metre", "m"],
     "squareMetre": ["square metre", "m2", "m^2"],
-    "poundSterling": ["pound", "pound sterling", "British pound", "GBP"]
+    "poundSterling": ["pound", "pound sterling", "British pound", "GBP"],
+    "one": [""]
 }

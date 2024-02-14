@@ -1,6 +1,6 @@
 import random
 
-from constants.functions import OBE_NUM_OPS, NumOp
+from constants.functions import OBE_NUM_OPS
 from constants.namespaces import OM
 from constants.om import OM_KEY_LABELS
 from constants.ontobuiltenv import OBE_ATTR_LABELS, OBEAttrKey
