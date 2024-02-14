@@ -18,6 +18,7 @@ public class Config {
     public static final String STATIC_SOURCE_TABLE = System.getenv("STATIC_SOURCE_TABLE");
     public static final String VIRTUAL_SENSOR_AGENT_URL = System.getenv("VIRTUAL_SENSOR_AGENT_URL");
     public static final String ELEVATION_CONTOURS_TABLE = System.getenv("ELEVATION_CONTOURS_TABLE");
+    public static final String WEATHER_LAYER_NAME = System.getenv("WEATHER_LAYER_NAME");
 
     private Config() {
         throw new IllegalStateException();
