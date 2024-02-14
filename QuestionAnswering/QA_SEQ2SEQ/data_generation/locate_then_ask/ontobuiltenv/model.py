@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import List, Optional, Tuple
 
 from constants.ontobuiltenv import OBEAttrKey
+from locate_then_ask.model import OmMeasure
 
 
 @dataclass(frozen=True)
@@ -19,19 +20,11 @@ class IctAddress:
             if getattr(self, key) is not None
         )
 
-
 @dataclass(frozen=True)
 class OBEPropertyUsage:
     iri: str
     concept: str  # a
     usage_share: Optional[Decimal]  # obe:hasUsageShare
-
-
-@dataclass(frozen=True)
-class OmMeasure:
-    numerical_value: Decimal  # om:hasNumericalValue
-    unit_iri: str  # om:hasUnit
-
 
 @dataclass(frozen=True)
 class OBEProperty:
