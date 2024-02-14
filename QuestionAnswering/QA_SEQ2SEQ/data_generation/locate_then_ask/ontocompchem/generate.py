@@ -66,6 +66,7 @@ class DatasetGenerator:
 
             example = dict(
                 id=i,
+                domain="ontocompchem",
                 verbalization=verbalization,
                 query=dict(
                     sparql=query_sparql,

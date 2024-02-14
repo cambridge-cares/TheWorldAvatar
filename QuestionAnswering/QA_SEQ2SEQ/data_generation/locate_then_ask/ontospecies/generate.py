@@ -152,6 +152,7 @@ class DatasetGenerator:
 
                 example = dict(
                     id=example_id,
+                    domain="ontospecies",
                     verbalization=verbalization,
                     query=dict(
                         sparql=query_sparql,

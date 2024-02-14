@@ -124,13 +124,10 @@ class DatasetGenerator:
 
             if cls == "Mechanism":
                 example_maker = self.example_maker_mechanism
-                topic_entity = "mechanism"
             elif cls == "Reaction":
                 example_maker = self.example_maker_reaction
-                topic_entity = "reaction"
             elif cls == "Species":
                 example_maker = self.example_maker_species
-                topic_entity = "species"
             else:
                 raise Exception()
 
@@ -140,7 +137,7 @@ class DatasetGenerator:
 
             example = dict(
                 id=i,
-                topic_entity=topic_entity,
+                domain="ontokin",
                 verbalization=verbalization,
                 query=dict(
                     sparql=query_sparql,
