@@ -1,21 +1,52 @@
 {
-    "queries": [
+    "entries": [
         {
             "id": "plots",
             "class": "https://www.theworldavatar.com/kg/ontoplot/Plot",
-            "metaFile": "plot.sparql",
-            "timeFile": ""
-        },  {
+            "meta": {
+                "queryFile": "plot.sparql"
+            }
+        },
+        {
             "id": "building",
             "class": "https://w3id.org/bot#Building",
-            "meta" : {
+            "meta": {
                 "queryFile": "building.sparql"
             }
-        },  {
+        },
+        {
             "id": "Isochrone",
             "class": "https://www.theworldavatar.com/kg/ontoisochrone/Isochrone",
-            "meta" : {
+            "meta": {
                 "queryFile": "isochrone.sparql"
+            }
+        },
+        {
+            "id": "Station",
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
+            "meta": {
+                "queryFile": "ReportingStations_Meta.sparql"
+            },
+            "time": {
+                "queryFile": "ReportingStations_Time.sparql",
+                "limit": 24,
+                "unit": "hours",
+                "reference": "latest",
+                "database": "postgres"
+            }
+        },
+        {
+            "id": "Dispersion polygons",
+            "class": "https://www.theworldavatar.com/kg/ontodispersion/DispersionPolygon",
+            "meta": {
+                "queryFile": "dispersion_polygon.sparql"
+            }
+        },
+        {
+            "id": "Ships",
+            "class": "https://www.theworldavatar.com/kg/ontodispersion/Ship",
+            "meta": {
+                "queryFile": "ship_meta.sparql"
             }
         }
     ]
