@@ -67,13 +67,3 @@ This diagram below is broken down further to allow an easier view.
 
 
 ```
-### 2.1 Concepts
-Solar Device
-
-### 2.2 Relationships
-
-### 2.3 Properties
-
-## 3. Change Log
-### [1.0] - 2023-06-13
-Added ontology.
