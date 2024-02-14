@@ -24,6 +24,7 @@
     <!-- ===== CUSTOMISABLE ===== -->
     <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
     <script src="./component/component.min.js" charset="utf-8"></script>
+    <script src="./DispersionHandler.js" charset="utf-8"></script>
     <!-- ===== CUSTOMISABLE ===== -->
 
     <!-- CSS -->
@@ -102,6 +103,9 @@
                 </div>
             </div>
 
+            <!-- dropdown selections -->
+            <div id="selectionsContainer"></div>
+
             <!-- Scenario change control -->
             <div id="scenarioChangeContainer" class="controlBlock expanded" onclick="manager.showScenarioSelector()">
                 <div class="tooltip">
@@ -178,7 +182,7 @@
     </div>
 
     <!-- Code entry point -->
-    <script type="module">
+    <script>
         // Log the version of the TWA-VF being used.
         getVisVersion().then(result => console.log("Using TWA-VF " + result));
 
@@ -188,6 +192,9 @@
         var manager = new Manager(MapProvider.MAPBOX);
         window.manager = manager;
 
+        var dispersionHandler = new DispersionHandler("http://localhost:3838", manager);
+        var dispersionPromise = dispersionHandler.setDispersions(dispersionHandler);
+
         // Read credentials
         var credentialPromise = manager.readCredentials();
 
@@ -195,7 +202,7 @@
         var dataPromise = manager.loadDefinitions();
 
         // Start when credentials and definitions have been loaded
-        Promise.all([credentialPromise, dataPromise]).then(() => start());
+        Promise.all([credentialPromise, dataPromise, dispersionPromise]).then(() => start());
 
         /**
          * Starts the visualisation setup process.
@@ -249,7 +256,10 @@
                         // Plot the default visible data
                         manager.plotData();
                     }
-                });
+                }).then(() => {
+                    return dispersionHandler.buildDropdown(dispersionHandler);
+                }).then(() => dispersionHandler.plotData());
+
                 // Set customised legend in panel
                 var htmlContent = 
                     "<div class='legend-container'> " +
@@ -266,7 +276,7 @@
                 // Retrieve the sibling container where you wish to insert the new component before it
                 let beforeSiblingContainer = document.getElementById("helpandsearch");
                 // Create a new custom component
-                let custom_component = new SeachEntityComponent("Search Land Plot", MapHandler.MAP, { stackUrl: "http://endpoint", plotNamespace: "plot", layerId: "0.sglandplot" });
+                let custom_component = new SeachEntityComponent("Search Land Plot", MapHandler.MAP, { stackUrl: "http://localhost:3838", plotNamespace: "plot", layerId: "0.sglandplot" });
                 // Render the custom component before the sibling container
                 custom_component.render(beforeSiblingContainer);
             });
