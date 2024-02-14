@@ -52,6 +52,19 @@ public class GaugeTest {
     }
 
     @Test
+    void testConstructor_MultipleThresholds() {
+        // Generate expected inputs
+        Measure sample = TestUtils.genSampleMeasure(true);
+        String[] thresholds =  new String[]{"0", "3", "6", "8"};
+        // Execute the method
+        Gauge chart = new Gauge(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, thresholds, true);
+        // Verify results
+        String result = chart.construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        assertEquals(genExpectedResults(sample, TestUtils.ASSET_TYPE_ONE, SAMPLE_DATABASE_ID, EXPECTED_GEOMETRY_POSITIONS, thresholds, genAggregateQuery(sample, true)),
+                result);
+    }
+
+    @Test
     void testConstructor_NoOptionalValues() {
         // Generate expected inputs
         Measure sample = TestUtils.genSampleMeasure(true);
@@ -116,13 +129,18 @@ public class GaugeTest {
         String colorMode = "palette-classic";
         String colorSteps = "{\"color\":\"red\",\"value\":80}";
         String minMax = "";
-        if (thresholds.length != 0) {
+       if (thresholds.length != 0) {
             showThresholdMarkers = true;
             colorMode = "thresholds";
-            colorSteps = "{\"color\":\"green\",\"value\":" + thresholds[0] + "},{\"color\":\"red\",\"value\":" + thresholds[1] + "}";
+            colorSteps = thresholds.length == 4 ? "{\"color\":\"green\",\"value\":null},{\"color\":\"yellow\",\"value\":" + thresholds[0] +
+                    "},{\"color\":\"orange\",\"value\":" + thresholds[1] + "}" +
+                    "},{\"color\":\"red\",\"value\":" + thresholds[2] + "}" +
+                    "},{\"color\":\"dark-red\",\"value\":" + thresholds[3] + "}" :
+                    // Else, color steps should be from min (green) to max (red) threshold
+                    "{\"color\":\"green\",\"value\":" + thresholds[0] + "},{\"color\":\"red\",\"value\":" + thresholds[1] + "}";
             // Ensure that the gauge can see past the max threshold to allow user to the limits
             double minValue = Float.parseFloat(thresholds[0]) - 1.0;
-            double maxValue = Float.parseFloat(thresholds[1]) + 1.0;
+            double maxValue = Float.parseFloat(thresholds[thresholds.length - 1]) + 1.0; // Always retrieve the last object
             minMax = "\"min\":" + minValue + ",\"max\":" + maxValue + ",";
         }
         return "{" + TestUtils.genExpectedCommonDefaultGrafanaPanelJson(titleContent, description, "gauge", expectedTransformations,

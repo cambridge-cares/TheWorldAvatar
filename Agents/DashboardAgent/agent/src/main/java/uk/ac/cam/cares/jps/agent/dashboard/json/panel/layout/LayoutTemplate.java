@@ -160,7 +160,7 @@ public class LayoutTemplate {
         Measure windChill = organisation.getMeasure(StringHelper.WEATHER_STATION_KEY, StringHelper.WEATHER_STATION_WIND_CHILL_FIELD);
         // Generate the required panels
         CanvasPanel latestTemperatureConditions = new CanvasPanel(1, temperature, feelsLikeTemperature, databaseConnectionMap.get(temperature.getTimeSeriesDatabase()));
-        Gauge uvIndexChart = new Gauge(uvIndex, StringHelper.WEATHER_STATION_KEY, uvIndex.getTimeSeriesDatabase(), new String[]{}, false);
+        Gauge uvIndexChart = new Gauge(uvIndex, StringHelper.WEATHER_STATION_KEY, uvIndex.getTimeSeriesDatabase(), new String[]{"0", "3", "6", "8"}, false);
         // Only process wind conditions if there are values
         if (windDirection != null) {
             CanvasPanel latestWindConditions = new CanvasPanel(2, windDirection, windChill, databaseConnectionMap.get(windDirection.getTimeSeriesDatabase()));

@@ -78,11 +78,16 @@ public class Gauge extends DefaultGrafanaPanel {
         if (thresholds.length != 0) {
             this.showThresholdMarkers = true;
             this.colorMode = "thresholds";
-            // Color steps should be from min (green) to max (red) threshold
-            this.colorSteps = "{\"color\":\"green\",\"value\":" + thresholds[0] + "},{\"color\":\"red\",\"value\":" + thresholds[1] + "}";
+            // Color steps should have five steps, from green, yellow, orange, red, to dark-red if there are four thresholds
+            this.colorSteps = thresholds.length == 4 ? "{\"color\":\"green\",\"value\":null},{\"color\":\"yellow\",\"value\":" + thresholds[0] +
+                    "},{\"color\":\"orange\",\"value\":" + thresholds[1] + "}" +
+                    "},{\"color\":\"red\",\"value\":" + thresholds[2] + "}" +
+                    "},{\"color\":\"dark-red\",\"value\":" + thresholds[3] + "}" :
+                    // Else, color steps should be from min (green) to max (red) threshold
+                    "{\"color\":\"green\",\"value\":" + thresholds[0] + "},{\"color\":\"red\",\"value\":" + thresholds[1] + "}";
             // Ensure that the gauge can see past the min and max threshold to allow user to recognise the limits
             double minValue = Float.parseFloat(thresholds[0]) - 1.0;
-            double maxValue = Float.parseFloat(thresholds[1]) + 1.0;
+            double maxValue = Float.parseFloat(thresholds[thresholds.length - 1]) + 1.0; // Always retrieve the last object
             this.minMaxVals = "\"min\":" + minValue + ",\"max\":" + maxValue + ",";
         }
     }
