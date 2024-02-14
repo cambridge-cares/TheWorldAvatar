@@ -1,0 +1,60 @@
+{
+    "ServiceSpec": {
+        "Name": "ship-input-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.4-dev-live-ship-data-SNAPSHOT",
+				"Env": [
+					"DATABASE=postgres",
+					"DATA_DIR=/data",
+					"LAST_READ_FILE=/misc/last_read_file",
+					"TIME_OFFSET_FILE=/misc/time_offset_file",
+					"GEOSERVER_WORKSPACE=dispersion",
+					"EMISSIONS_AGENT_URL=http://sg-emissions-agent:8080/EmissionsAgent/",
+					"EMISSIONS_AGENT_IRI=http://theworldavatar.com/kg/dispersion/EmissionsAgent",
+					"PYTHON_SERVICE_URL=http://sg-python-service:5000",
+					"PARALLELISE_CALCULATIONS=true",
+					"USE_LIVE_DATA=false",
+					"API_KEY=",
+					"BOUNDING_BOXES=[[[1.219097, 103.776165], [1.3096076, 103.9019436]], [[1.2162967, 103.6518113], [1.3067911, 103.741632]]]",
+					"UPLOAD_INTERVAL_MINUTES=10"
+				],
+				"Configs": [
+					{
+						"ConfigName": "postgis"
+					},
+					{
+						"ConfigName": "blazegraph"
+					},
+					{
+						"ConfigName": "ontop"
+					},
+					{
+						"ConfigName": "geoserver"
+					}
+				],
+				"Secrets": [
+					{
+						"SecretName": "postgis_password"
+					},
+					{
+						"SecretName": "geoserver_password"
+					}
+				],
+                "Mounts": [
+					{
+                        "Type": "volume",
+                        "Source": "misc",
+                        "Target": "/misc"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ship-input-agent": {
+            "url": "http://localhost:8080/ShipInputAgent/",
+            "externalPath": "/ship-input-agent/"
+        }
+    }
+}

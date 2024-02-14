@@ -1,10 +1,19 @@
 {
     "services": {
         "includes": [
-            "visualisation", "feature-info-agent", "filter-agent"
+            "visualisation",
+            "feature-info-agent",
+            "filter-agent",
+            "emissions-agent",
+            "file-server",
+            "weather-agent",
+            "dispersion-interactor",
+            "aermod-agent",
+            "python-service",
+            "virtual-sensor-agent",
+            "ship-input-agent"
         ],
-        "excludes": [   
-        ]
+        "excludes": []
     },
     "volumes": {
         "vis-files": "webspace",
