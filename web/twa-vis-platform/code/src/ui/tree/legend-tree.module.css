@@ -1,25 +1,40 @@
+
 .legendContainer {
-    /* Basic container styling */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
   
   .legendItem {
+    width: 100%;  
     display: flex;
-    align-items: center;
-    margin-bottom: 8px;
+    align-items: center; /* Vertically center icon and text */
+    margin-bottom: 4px;  
+    box-sizing: border-box;
+    padding: 6px; 
+    border-style: solid;
+    border-color: var(--border-secondary);
+    border-width: 0px 0px 1px 0px;
   }
   
-  .legendIcon {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+  .legendItem:hover {
+    background-color: var(--background-secondary);
+  }
+  
+  .legendIcon { 
+    width: 24px; /* Adjust if needed */
+    height: 24px; 
+    margin-right: 8px; 
   }
   
   .legendColorBlock {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px; 
   }
   
   .legendText {
-    /* Style your legend description text */
+    font-size: 11pt;  /* Matches your layer tree text size */
+    color: var(--text-color-primary); 
   }
