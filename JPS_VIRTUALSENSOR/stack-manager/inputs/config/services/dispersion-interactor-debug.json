@@ -21,6 +21,7 @@
 					"STATIC_SOURCE_TABLE=static",
 					"VIRTUAL_SENSOR_AGENT_URL=http://ship-stack-virtual-sensor-agent:8080/VirtualSensorAgent/",
 					"ELEVATION_CONTOURS_TABLE=elevation_contours",
+					"WEATHER_LAYER_NAME=weather",
                     "JPDA_ADDRESS=0.0.0.0:5005",
                     "JPDA_TRANSPORT=dt_socket",
                     "DEBUG=ON"

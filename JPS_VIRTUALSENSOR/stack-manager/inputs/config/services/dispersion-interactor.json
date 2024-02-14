@@ -20,7 +20,8 @@
 					"BUILDINGS_TABLE=buildings",
 					"STATIC_SOURCE_TABLE=static",
 					"VIRTUAL_SENSOR_AGENT_URL=http://ship-stack-virtual-sensor-agent:8080/VirtualSensorAgent/",
-					"ELEVATION_CONTOURS_TABLE=elevation_contours"
+					"ELEVATION_CONTOURS_TABLE=elevation_contours",
+					"WEATHER_LAYER_NAME=weather"
 				],
 				"Configs": [
 					{
