@@ -48,10 +48,10 @@ public class GetDataJson extends HttpServlet {
 
         JSONObject dataJson = null;
         try (Connection conn = dispersionPostGISClient.getConnection()) {
-            List<Boolean> layers = queryClient.getLayers(Instant.parse(timestep).getEpochSecond(), derivationIri, conn);
+            List<Boolean> layers = queryClient.getLayers(Long.parseLong(timestep), derivationIri, conn);
 
             dataJson = createDataJson(pollutantLabel, scopeLabel, weatherStation, layers, conn, pollutant,
-                    derivationIri, Instant.parse(timestep).getEpochSecond(), z, pirmasensVis);
+                    derivationIri, Long.parseLong(timestep), z, pirmasensVis);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

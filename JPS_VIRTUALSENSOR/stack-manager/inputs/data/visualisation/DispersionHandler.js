@@ -153,7 +153,11 @@ class DispersionHandler {
             let timestep = timesteps[i];
             let timestepOption = document.createElement("option");
             timestepOption.setAttribute("value", timestep);
-            timestepOption.innerHTML = timestep;
+
+            // convert unix timestamp into human readable date
+            let date = new Date(timestep * 1000);
+
+            timestepOption.innerHTML = date.toString();
             timestepElementSelect.appendChild(timestepOption);
 
             if (i == 0) {
@@ -209,7 +213,7 @@ class DispersionHandler {
     }
 
     onTimestepChange(timestep) {
-        this.selectedTimestep = timestep;
+        this.selectedTimestep = Number(timestep);
         this.plotData();
     }
 
