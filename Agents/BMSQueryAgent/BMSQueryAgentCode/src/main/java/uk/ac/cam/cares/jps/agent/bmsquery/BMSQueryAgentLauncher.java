@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  *
  * @author sandradeng20
  */
-@WebServlet(urlPatterns = {"/status", "/retrieve/equipment", "/retrieve/zones"})
+@WebServlet(urlPatterns = {"/status", "/retrieve/equipment", "/retrieve/zones", "/retrieve/lab", "/retrieve/office"})
 public class BMSQueryAgentLauncher extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgentLauncher.class);
 
@@ -72,7 +72,17 @@ public class BMSQueryAgentLauncher extends JPSAgent {
                 // handle the case "retrieve/zones", return the list of zones (buildings, facilities, rooms)
                 JSONObject queryResult = agent.queryAllZones();
 
-                LOGGER.info("query for zones is completed");
+                LOGGER.info("query for all zones is completed");
+                return queryResult;
+            } else if (url.contains("lab")) {
+                JSONObject queryResult = agent.queryLabZones();
+
+                LOGGER.info("query for lab zones is completed");
+                return queryResult;
+            } else if (url.contains("office")) {
+                JSONObject queryResult = agent.queryOfficeZones();
+
+                LOGGER.info("query for office zones is completed");
                 return queryResult;
             } else if (url.contains("equipment")) {
                 // handle the case "retrieve/equipment", return the list of equipments in a given room
@@ -121,18 +131,23 @@ public class BMSQueryAgentLauncher extends JPSAgent {
      * Initialize agent and its remotestore client with EndpointConfig which get other agents' config from docker stack
      */
     private BMSQueryAgent initializeAgent() {
-        EndpointConfig endpointConfig = new EndpointConfig();
-
         BMSQueryAgent agent = createBMSQueryAgent();
 
+        RemoteStoreClient labRsClient = getRsClient("lab");
+        RemoteStoreClient officeRsClient = getRsClient("caresOffice");
+        agent.setRSClient(labRsClient, officeRsClient);
+
+        LOGGER.info("Input agent object initialized.");
+        return agent;
+    }
+
+    private RemoteStoreClient getRsClient(String namespace) {
+        EndpointConfig endpointConfig = new EndpointConfig(namespace);
         RemoteStoreClient rsClient = new RemoteStoreClient();
         rsClient.setUser(endpointConfig.getKguser());
         rsClient.setPassword(endpointConfig.getKgpassword());
         rsClient.setQueryEndpoint(endpointConfig.getKgurl());
-        agent.setRSClient(rsClient);
-
-        LOGGER.info("Input agent object initialized.");
-        return agent;
+        return rsClient;
     }
 
     /**

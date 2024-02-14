@@ -28,8 +28,9 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.utils.AbstractTempPath;
 import com.cmclinnovations.stack.clients.utils.TempDir;
 import com.github.dockerjava.api.command.CopyArchiveToContainerCmd;
 import com.github.dockerjava.api.command.CreateConfigCmd;
@@ -306,7 +307,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         createComplexCommand(containerId, "mkdir", "-p", directoryPath).withUser(user).exec();
     }
 
-    private final class RemoteTempDir extends TempDir {
+    private final class RemoteTempDir extends AbstractTempPath implements TempDir {
 
         private final String containerId;
 
@@ -330,9 +331,27 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
                         targetDir);
             } else {
                 throw new RuntimeException("Couldn't copy '" + sourcePath + "' into '" + targetDir
-                        + "' as the source was niether a file nor a directory.");
+                        + "' as the source was neither a file nor a directory.");
             }
+        }
 
+        @Override
+        public void copyTo(Path targetDir) {
+            String sourcePath = toString();
+            try {
+                retrieveFiles(containerId, sourcePath).forEach((path, content) -> {
+                    try {
+                        Path localAbsPath = targetDir.resolve(Path.of(path));
+                        Files.createDirectories(localAbsPath.getParent());
+                        Files.write(localAbsPath, content);
+                    } catch (IOException ex) {
+                        throw new RuntimeException("Couldn't copy file '" + path + "'' from '" + sourcePath + "' into '"
+                                + targetDir + "'.", ex);
+                    }
+                });
+            } catch (IOException ex) {
+                throw new RuntimeException("Couldn't copy '" + sourcePath + "' into '" + targetDir + "'.", ex);
+            }
         }
     }
 
@@ -490,7 +509,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     public Optional<Container> getContainer(String containerName, boolean showAll) {
         try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
             Pattern fullContainerNamePattern = Pattern
-                    .compile("/?" + StackClient.getStackName() + "-" + containerName + "(?:\\..*)?");
+                    .compile("/?" + StackClient.getStackNameForRegex() + "-" + containerName + "(?:\\..*)?");
             List<Container> possibleContainers = listContainersCmd.withNameFilter(List.of(containerName))
                     .withLabelFilter(StackClient.getStackNameLabelMap())
                     .withShowAll(showAll).exec();
@@ -596,12 +615,12 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     }
 
     @Override
-    public <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         writeEndpointConfig(endpointConfig, this);
     }
 
     @Override
-    public <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
+    public <E extends EndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
         return readEndpointConfig(endpointName, endpointConfigClass, this);
     }
 
@@ -629,7 +648,11 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
     public List<Secret> getSecrets() {
         try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
-            return listSecretsCmd.withLabelFilter(getSecretLabels()).exec().stream().collect(Collectors.toList());
+            Map<String, String> secretLabels = getSecretLabels();
+            if (null != secretLabels) {
+                listSecretsCmd.withLabelFilter(secretLabels);
+            }
+            return listSecretsCmd.exec().stream().collect(Collectors.toList());
         }
     }
 

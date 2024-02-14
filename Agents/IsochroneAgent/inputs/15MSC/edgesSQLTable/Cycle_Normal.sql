@@ -1,0 +1,1 @@
+SELECT gid as id, source, target, length_m/5.5 as cost FROM routing_ways_segment

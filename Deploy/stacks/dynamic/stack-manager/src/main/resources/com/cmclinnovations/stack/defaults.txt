@@ -3,4 +3,6 @@ postgis
 adminer
 ontop
 gdal
+citydbimpexp
+citytiler
 geoserver
