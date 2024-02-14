@@ -1,0 +1,10 @@
+# Initialise a dispersion simulation in the MBS area
+POST http://localhost:3838/dispersion-interactor/StartScheduledDispersion
+?ewkt=SRID=32648;POLYGON((350000 134475,360000 134475,360000 144475,350000 144475,350000 134475))
+&nx=100
+&ny=100
+&z=0
+&z=50
+&label=Jurong Island
+&delayMinutes=0
+&intervalMinutes=60
