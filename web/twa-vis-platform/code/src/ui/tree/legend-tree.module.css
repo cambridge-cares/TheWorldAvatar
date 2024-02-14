@@ -1,0 +1,25 @@
+.legendContainer {
+    /* Basic container styling */
+  }
+  
+  .legendItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .legendIcon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+  }
+  
+  .legendColorBlock {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+  }
+  
+  .legendText {
+    /* Style your legend description text */
+  }
