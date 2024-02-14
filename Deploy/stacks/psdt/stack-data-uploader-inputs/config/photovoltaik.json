@@ -1,5 +1,5 @@
 {
-    "name": "solarkataster",
+    "name": "photovoltaik",
     "database": "postgres",
     "workspace": "twa",
     "datasetDirectory": "photovoltaik",

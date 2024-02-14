@@ -14,7 +14,7 @@
           <PointSymbolizer>
             <Graphic>
               <ExternalGraphic>
-                <OnlineResource xlink:type="simple" xlink:href="./aw-sewage.png" />
+                <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/www/icons/aw-sewage.png" />
                 <Format>image/png</Format>
               </ExternalGraphic>
             </Graphic>
