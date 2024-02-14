@@ -158,12 +158,15 @@ public class AssetKGInterface {
         JSONObject AssetData = new JSONObject();
         //Create IRIs
         //Create Device IRI
-        //TODO create safety check here -- class must exist in the given ontology
-        String devicePrefix = getPrefixStringFromName(AssetDataRaw.getString("Prefix"));
-        deviceIRIString = genIRIString(AssetDataRaw.getString("AssetClass"), devicePrefix);
+        //String devicePrefix = getPrefixStringFromName(AssetDataRaw.getString("Prefix"));
+        String devicePrefix = AssetDataRaw.getString("Prefix");
+        //deviceIRIString = genIRIString(AssetDataRaw.getString("AssetClass"), devicePrefix);
+        deviceIRIString = genIRIString("Device", P_DEV);
         String itemIRI = genIRIString("Item", P_ASSET);
-        String deviceTypeIRI = devicePrefix+AssetDataRaw.getString("AssetClass");
-        
+        //String deviceTypeIRI = devicePrefix+AssetDataRaw.getString("AssetClass");
+        String deviceTypeIRI = devicePrefix;
+        //String deviceTypeIRI = DeviceString;
+
         AssetData.put("deviceIRI", deviceIRIString);
         AssetData.put("deviceTypeIRI", deviceTypeIRI);
         String id = AssetDataRaw.getString("ID");
@@ -572,7 +575,9 @@ public class AssetKGInterface {
         /*
          * INSTANTIATE QUERY
          */
-        query.insert(deviceIRIVar.isA(deviceTypeIRI));
+        query.insert(deviceIRIVar.isA(Device));
+        query.insert(deviceIRIVar.has(isCategorizedUnder, deviceTypeIRI));
+        query.insert(deviceTypeIRI.isA(UserDefinedCatergory));
         query.insert(itemIRIVar.isA(Item));
 
         //Device
@@ -677,7 +682,9 @@ public class AssetKGInterface {
         
         //Query
         //get device type
-        query.insert(deviceIRI.isA(deviceTypeIRI));
+        query.insert(deviceIRI.isA(Device));
+        query.insert(deviceIRI.has(isCategorizedUnder, deviceTypeIRI));
+        query.insert(deviceTypeIRI.isA(UserDefinedCatergory));
         //Stored in -- Assumes the storage IRI exist somewhere
         if(!storageIRIString.isBlank()){
             query.insert(deviceIRI.has(isStoredIn, iri(storageIRIString)));
@@ -691,6 +698,9 @@ public class AssetKGInterface {
         //get location
         if (LocationString.contains( "Research Wing") || LocationString.contains("CREATE Tower")){
             if(roomIRI != null){
+                //TODO This is dead logic as the prefix is now different
+                //Now all items are devices and systems are not used, so the logic is still valid in the sense taht it defaults to the `else` clause anyways
+                //Currently debating if it should still be kept for backward comaptibility or should it be deleted as the prev version is not valid now anyways
                 if (devicePrefix.equals(P_SYS)){
                     query.insert(roomIRI.has(containsSystem, deviceIRI));
                 }

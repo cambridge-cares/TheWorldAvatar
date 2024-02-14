@@ -164,6 +164,8 @@ public class AssetManagerAgent extends JPSAgent{
                 jsonMessage = getDataForUI();
             }
             else if (urlPath.contains("instantiate")){
+                //TODO since the prefix is nto used anymore in the new instances, current;ly debating if this should be kept
+                //As its a mine waiting to be stepped on as is. Should it be deleted? Should new checks be added instead?
                 if(assetData.getString("Prefix").isBlank() || assetData.getString("Prefix") == null){
                     try (InputStream input = new FileInputStream(ontoMapProperties)) {
                         // Load properties file from specified path
@@ -178,8 +180,6 @@ public class AssetManagerAgent extends JPSAgent{
                         catch (Exception e) {
                             throw new IOException ("The asset class keys cannot be retrieved from the properties file: ", e);
                         }
-                        
-
                     }
                     catch (Exception e) {
                         throw new JPSRuntimeException("Failed to read properties file: ", e);

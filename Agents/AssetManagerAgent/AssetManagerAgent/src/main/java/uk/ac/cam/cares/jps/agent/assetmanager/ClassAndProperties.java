@@ -95,6 +95,8 @@ public class ClassAndProperties {
     public static final Iri hasInverval = Pref_ASSET.iri("hasInverval");
     public static final Iri hasImageURI = Pref_ASSET.iri("hasImageURI");
     public static final Iri purchasedUnder = Pref_ASSET.iri("purchasedUnder");
+    public static final Iri isCategorizedUnder = Pref_ASSET.iri("isCategorizedUnder");
+    public static final Iri UserDefinedCatergory = Pref_ASSET.iri("UserDefinedCatergory");
 
     public static final Iri hasDataSheet = Pref_DEV.iri("hasDataSheet");
     public static final Iri hasPrice = Pref_DEV.iri("hasPrice");
@@ -149,6 +151,7 @@ public class ClassAndProperties {
     public static final Iri MaintenanceSchedule = Pref_ASSET.iri("MaintenanceSchedule");
     public static final Iri MaintenanceTask = Pref_ASSET.iri("MaintenanceTask");
     public static final Iri hasInterval = Pref_ASSET.iri("hasInterval");
+    public static final Iri Device = Pref_DEV.iri("Device");
 
     public static final Iri Person = Pref_FIBO_AAP.iri("Person");
     public static final Iri PersonName = Pref_FIBO_AAP.iri("PersonName");
@@ -174,6 +177,7 @@ public class ClassAndProperties {
     public static final String ChineseYuanString = P_OM + "ChineseYuan";
     public static final String GreatBritishPoundSterlingString = P_OM + "poundSterling";
     public static final String EuroString = P_OM + "euro";
+    public static final String DeviceString = P_DEV + "Device";
      
 
     public ClassAndProperties(){
