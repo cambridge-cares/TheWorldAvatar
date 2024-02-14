@@ -261,7 +261,7 @@ class DispersionHandler {
             let legendContainer = document.getElementById("legend-container");
             colourBarElement = document.createElement("div");
             colourBarElement.id = "dispersion-colorbar-container";
-            colourBarElement.setAttribute("style", "display: flex; justify-content: center;");
+            colourBarElement.setAttribute("style", "display: flex; justify-content: center; margin-top:50px;");
 
             legendContainer.appendChild(colourBarElement);
         }
@@ -281,11 +281,9 @@ class DispersionHandler {
 
         let imgElement = document.createElement("img");
         imgElement.setAttribute("src", colourBarUrl);
-        imgElement.setAttribute("width", "350px");
+        imgElement.setAttribute("width", "200px");
         colourBarElement.innerHTML = "";
         colourBarElement.appendChild(imgElement);
-
-        // colourBarElement.setAttribute("style", "background-image: url(" + colourBarUrl + ")");
     }
 
     createVirtualSensor(lat, lng) {

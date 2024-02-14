@@ -1,272 +1,553 @@
 {
-  "name": "Augmented Singapore",
-  "stack": "http://stackendpoint",
-  "sources": [
-    {
-      "id": "buildings",
-      "type": "vector",
-      "tiles": [
-        "http://stackendpoint/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:mainland&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-      ]
-    },{
-      "id": "plot",
-      "type": "vector",
-      "tiles": [
-          "http://stackendpoint/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:landplot&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-      ]
-    },{
-      "id": "population",
-      "type": "raster",
-      "tiles": [
-        "http://stackendpoint/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
-      ]
-    }
-  ],
-  "layers": [
-    {
-      "id": "buildings",
-      "name": "Buildings",
-      "source": "buildings",
-      "source-layer": "mainland",
-      "type": "fill-extrusion",
-      "order":7,
-      "layout": {
-        "visibility": "visible"
-      },
-      "paint": {
-        "fill-extrusion-color": [
-          "case",
-              ["==",["get","heat_emissions"], null],
-              "#8D99AE",
-              ["interpolate",
-                ["linear"],
-                ["number",["get","heat_emissions"]],
-                0,"#A7E8BD",
-                30,"#FF4E00"
-              ]
-        ],
-        "fill-extrusion-base": 0,
-        "fill-extrusion-height": [
-          "case", ["has","building_height"],
-          ["*",1.4,["to-number",["get","building_height"]]],
-          2
-        ]
-      }
-    },{
-      "id": "sglandplot",
-      "name": "Land Plots",
-      "source": "plot",
-      "source-layer": "landplot",
-      "type": "fill",
-      "order":1,
-      "layout": {
-        "visibility": "visible"
-      },
-      "paint": {
-        "fill-color": [
-          "match",
-          ["get","LU_DESC"],
-          "AGRICULTURE","#8c875d",
-          "BEACH AREA","#f9f7c7",
-          "BUSINESS 1","#c8a5cf",
-          "BUSINESS 1 - WHITE","#c8a5cf",
-          "BUSINESS 2","#b10166",
-          "BUSINESS 2 - WHITE","#b10166",
-          "BUSINESS PARK","#227fa2",
-          "BUSINESS PARK - WHITE","#227fa2",
-          "CEMETERY","#9f8900",
-          "CIVIC & COMMUNITY INSTITUTION","#cc0022",
-          "COMMERCIAL","#215297",
-          "COMMERCIAL / INSTITUTION","#9ffeff",
-          "COMMERCIAL & RESIDENTIAL","#36ade5",
-          "EDUCATIONAL INSTITUTION","#f4f2c2",
-          "HEALTH & MEDICAL CARE","#cc0022",
-          "HOTEL","#a79cc6",
-          "LIGHT RAPID TRANSIT","#ffffff",
-          "MASS RAPID TRANSIT","#ffffff",
-          "OPEN SPACE","#abb20e",
-          "PARK","#3ba339",
-          "PLACE OF WORSHIP","#cc0022",
-          "PORT / AIRPORT","#d0d0d0",
-          "RESERVE SITE","#fef66d",
-          "RESIDENTIAL","#f6bb81",
-          "RESIDENTIAL / INSTITUTION","#ef9c36",
-          "RESIDENTIAL WITH COMMERCIAL AT 1ST STOREY","#e78384",
-          "ROAD","#ffffff",
-          "SPECIAL USE","#516703",
-          "SPORTS & RECREATION","#a3d49d",
-          "TRANSPORT FACILITIES","#959a9d",
-          "UTILITY","#959a9d",
-          "WATERBODY","#bedef3",
-          "WHITE","#f5f1f2",
-          "#808080"
-        ],
-        "fill-opacity": 0.5,
-        "fill-outline-color": "#000000"
-      }
-    },{
-      "id": "population",
-      "type": "raster",
-      "name": "Population",
-      "source": "population",
-      "minzoom": 8,
-      "order": 4,
-      "layout": {
-        "visibility": "none"
-      }
-    }
-  ],
-  "groups": [
-    {
-      "name": "Biodiversity",
-      "sources": [
+    "name": "Augmented Singapore",
+    "stack": "http://localhost:3838",
+    "sources": [
         {
-          "id": "tree",
-          "type": "vector",
-          "tiles": [
-            "http://stackendpoint/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:tree&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-          ]
-        }, {
-          "id": "heritagetree",
-          "type": "vector",
-          "tiles": [
-            "http://stackendpoint/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:heritage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-          ]
-        }
-      ],
-      "layers": [
-        {
-          "id": "sgtree",
-          "name": "Trees",
-          "source": "tree",
-          "source-layer": "tree",
-          "type": "circle",
-          "order":6,
-          "paint": {
-            "circle-color": "#50723C"
-          }
-        }, {
-          "id": "heritagetree",
-          "name": "Heritage Trees",
-          "source": "heritagetree",
-          "source-layer": "heritage",
-          "type": "circle",
-          "order":6,
-          "paint": {
-            "circle-color": "#28391E"
-          }
-        }
-      ]
-    },{
-      "name": "Park Accessibility",
-      "sources": [
-        {
-          "id": "walk",
-          "type": "geojson",
-          "cluster": false,
-          "clusterMaxZoom": 14,
-          "clusterRadius": 100,
-          "data": "http://stackendpoint/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson"
-        }
-      ],
-      "layers": [
-        {
-          "id": "walk_layer_5",
-          "name": "5 minute walking accessibility",
-          "source": "walk",
-          "type": "fill",
-          "order": 5,
-          "layout": {
-            "visibility": "none"
-          },
-          "filter": [
-            "all",
-            ["in","Park",
-              ["get","poi_type"]
-            ],
-            ["==",["to-number",["get","minute"]],5]
-          ],
-          "paint": {
-            "fill-color": [
-              "case",
-              ["==",["get","minute"],null],
-              "#000000",
-              ["interpolate",
-                ["linear"],
-                ["number",["get","minute"]],
-                0,"#0074E4",
-                10,"#00C86F"
-              ]
-            ],
-            "fill-outline-color": "#FF0000",
-            "fill-opacity": 0.20
-          }
+            "id": "buildings",
+            "type": "vector",
+            "tiles": [
+                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:mainland&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            ]
         },
         {
-          "id": "walk_layer_10",
-          "name": "10 minute walking accessibility",
-          "source": "walk",
-          "type": "fill",
-          "order": 5,
-          "layout": {
-            "visibility": "none"
-          },
-          "filter": [
-            "all",
-            ["in","Park",
-              ["get","poi_type"]
-            ],
-            ["==",["to-number",["get","minute"]],10]
-          ],
-          "paint": {
-            "fill-color": [
-              "case",
-              ["==",["get","minute"],null],
-              "#000000",
-              ["interpolate",
-                ["linear"],
-                ["number",["get","minute"]],
-                0,"#0074E4",
-                10,"#00C86F"
-              ]
-            ], 
-            "fill-outline-color": "#FF0000",
-            "fill-opacity": 0.20
-          }
+            "id": "plot",
+            "type": "vector",
+            "tiles": [
+                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:landplot&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            ]
         },
         {
-          "id": "walk_layer_15",
-          "name": "15 minute walking accessibility",
-          "source": "walk",
-          "type": "fill",
-          "order": 5,
-          "layout": {
-            "visibility": "none"
-          },
-          "filter": [
-            "all",
-            ["in","Park",
-              ["get","poi_type"]
-            ],
-            ["==",["to-number",["get","minute"]],15]
-          ],
-          "paint": {
-            "fill-color": [
-              "case",
-              ["==",["get","minute"],null],
-              "#000000",
-              ["interpolate",
-                ["linear"],
-                ["number",["get","minute"]],
-                0,"#0074E4",
-                10,"#00C86F"
-              ]
-            ],
-            "fill-outline-color": "#FF0000",
-            "fill-opacity": 0.20
-          }
+            "id": "population",
+            "type": "raster",
+            "tiles": [
+                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+            ]
         }
-      ]
-    }
-  ]
+    ],
+    "layers": [
+        {
+            "id": "buildings",
+            "name": "Buildings",
+            "source": "buildings",
+            "source-layer": "mainland",
+            "type": "fill-extrusion",
+            "order": 7,
+            "layout": {
+                "visibility": "none"
+            },
+            "paint": {
+                "fill-extrusion-color": [
+                    "case",
+                    [
+                        "==",
+                        [
+                            "get",
+                            "heat_emissions"
+                        ],
+                        null
+                    ],
+                    "#8D99AE",
+                    [
+                        "interpolate",
+                        [
+                            "linear"
+                        ],
+                        [
+                            "number",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ]
+                        ],
+                        0,
+                        "#A7E8BD",
+                        30,
+                        "#FF4E00"
+                    ]
+                ],
+                "fill-extrusion-base": 0,
+                "fill-extrusion-height": [
+                    "case",
+                    [
+                        "has",
+                        "building_height"
+                    ],
+                    [
+                        "*",
+                        1.4,
+                        [
+                            "to-number",
+                            [
+                                "get",
+                                "building_height"
+                            ]
+                        ]
+                    ],
+                    2
+                ]
+            }
+        },
+        {
+            "id": "sglandplot",
+            "name": "Land Plots",
+            "source": "plot",
+            "source-layer": "landplot",
+            "type": "fill",
+            "order": 1,
+            "layout": {
+                "visibility": "none"
+            },
+            "paint": {
+                "fill-color": [
+                    "match",
+                    [
+                        "get",
+                        "LU_DESC"
+                    ],
+                    "AGRICULTURE",
+                    "#8c875d",
+                    "BEACH AREA",
+                    "#f9f7c7",
+                    "BUSINESS 1",
+                    "#c8a5cf",
+                    "BUSINESS 1 - WHITE",
+                    "#c8a5cf",
+                    "BUSINESS 2",
+                    "#b10166",
+                    "BUSINESS 2 - WHITE",
+                    "#b10166",
+                    "BUSINESS PARK",
+                    "#227fa2",
+                    "BUSINESS PARK - WHITE",
+                    "#227fa2",
+                    "CEMETERY",
+                    "#9f8900",
+                    "CIVIC & COMMUNITY INSTITUTION",
+                    "#cc0022",
+                    "COMMERCIAL",
+                    "#215297",
+                    "COMMERCIAL / INSTITUTION",
+                    "#9ffeff",
+                    "COMMERCIAL & RESIDENTIAL",
+                    "#36ade5",
+                    "EDUCATIONAL INSTITUTION",
+                    "#f4f2c2",
+                    "HEALTH & MEDICAL CARE",
+                    "#cc0022",
+                    "HOTEL",
+                    "#a79cc6",
+                    "LIGHT RAPID TRANSIT",
+                    "#ffffff",
+                    "MASS RAPID TRANSIT",
+                    "#ffffff",
+                    "OPEN SPACE",
+                    "#abb20e",
+                    "PARK",
+                    "#3ba339",
+                    "PLACE OF WORSHIP",
+                    "#cc0022",
+                    "PORT / AIRPORT",
+                    "#d0d0d0",
+                    "RESERVE SITE",
+                    "#fef66d",
+                    "RESIDENTIAL",
+                    "#f6bb81",
+                    "RESIDENTIAL / INSTITUTION",
+                    "#ef9c36",
+                    "RESIDENTIAL WITH COMMERCIAL AT 1ST STOREY",
+                    "#e78384",
+                    "ROAD",
+                    "#ffffff",
+                    "SPECIAL USE",
+                    "#516703",
+                    "SPORTS & RECREATION",
+                    "#a3d49d",
+                    "TRANSPORT FACILITIES",
+                    "#959a9d",
+                    "UTILITY",
+                    "#959a9d",
+                    "WATERBODY",
+                    "#bedef3",
+                    "WHITE",
+                    "#f5f1f2",
+                    "#808080"
+                ],
+                "fill-opacity": 0.5,
+                "fill-outline-color": "#000000"
+            }
+        },
+        {
+            "id": "population",
+            "type": "raster",
+            "name": "Population",
+            "source": "population",
+            "minzoom": 8,
+            "order": 4,
+            "layout": {
+                "visibility": "none"
+            }
+        }
+    ],
+    "groups": [
+        {
+            "name": "Biodiversity",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "tree",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:tree&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "heritagetree",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:heritage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "sgtree",
+                    "name": "Trees",
+                    "source": "tree",
+                    "source-layer": "tree",
+                    "type": "circle",
+                    "order": 6,
+                    "paint": {
+                        "circle-color": "#50723C"
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "heritagetree",
+                    "name": "Heritage Trees",
+                    "source": "heritagetree",
+                    "source-layer": "heritage",
+                    "type": "circle",
+                    "order": 6,
+                    "paint": {
+                        "circle-color": "#28391E"
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Park Accessibility",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "walk",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "walk_layer_5",
+                    "name": "5 minute walking accessibility",
+                    "source": "walk",
+                    "type": "fill",
+                    "order": 5,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Park",
+                            [
+                                "get",
+                                "poi_type"
+                            ]
+                        ],
+                        [
+                            "==",
+                            [
+                                "to-number",
+                                [
+                                    "get",
+                                    "minute"
+                                ]
+                            ],
+                            5
+                        ]
+                    ],
+                    "paint": {
+                        "fill-color": [
+                            "case",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "minute"
+                                ],
+                                null
+                            ],
+                            "#000000",
+                            [
+                                "interpolate",
+                                [
+                                    "linear"
+                                ],
+                                [
+                                    "number",
+                                    [
+                                        "get",
+                                        "minute"
+                                    ]
+                                ],
+                                0,
+                                "#0074E4",
+                                10,
+                                "#00C86F"
+                            ]
+                        ],
+                        "fill-outline-color": "#FF0000",
+                        "fill-opacity": 0.20
+                    }
+                },
+                {
+                    "id": "walk_layer_10",
+                    "name": "10 minute walking accessibility",
+                    "source": "walk",
+                    "type": "fill",
+                    "order": 5,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Park",
+                            [
+                                "get",
+                                "poi_type"
+                            ]
+                        ],
+                        [
+                            "==",
+                            [
+                                "to-number",
+                                [
+                                    "get",
+                                    "minute"
+                                ]
+                            ],
+                            10
+                        ]
+                    ],
+                    "paint": {
+                        "fill-color": [
+                            "case",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "minute"
+                                ],
+                                null
+                            ],
+                            "#000000",
+                            [
+                                "interpolate",
+                                [
+                                    "linear"
+                                ],
+                                [
+                                    "number",
+                                    [
+                                        "get",
+                                        "minute"
+                                    ]
+                                ],
+                                0,
+                                "#0074E4",
+                                10,
+                                "#00C86F"
+                            ]
+                        ],
+                        "fill-outline-color": "#FF0000",
+                        "fill-opacity": 0.20
+                    }
+                },
+                {
+                    "id": "walk_layer_15",
+                    "name": "15 minute walking accessibility",
+                    "source": "walk",
+                    "type": "fill",
+                    "order": 5,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Park",
+                            [
+                                "get",
+                                "poi_type"
+                            ]
+                        ],
+                        [
+                            "==",
+                            [
+                                "to-number",
+                                [
+                                    "get",
+                                    "minute"
+                                ]
+                            ],
+                            15
+                        ]
+                    ],
+                    "paint": {
+                        "fill-color": [
+                            "case",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "minute"
+                                ],
+                                null
+                            ],
+                            "#000000",
+                            [
+                                "interpolate",
+                                [
+                                    "linear"
+                                ],
+                                [
+                                    "number",
+                                    [
+                                        "get",
+                                        "minute"
+                                    ]
+                                ],
+                                0,
+                                "#0074E4",
+                                10,
+                                "#00C86F"
+                            ]
+                        ],
+                        "fill-outline-color": "#FF0000",
+                        "fill-opacity": 0.20
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Dispersion",
+            "expanded": false,
+            "sources": [
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
+                    ],
+                    "id": "dispersion-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
+                    ],
+                    "id": "weather-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
+                    ],
+                    "id": "ship-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
+                    ],
+                    "id": "sensor-source",
+                    "type": "vector"
+                }
+            ],
+            "layers": [
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Plumes",
+                    "paint": {
+                        "fill-outline-color": [
+                            "get",
+                            "stroke"
+                        ],
+                        "fill-color": [
+                            "get",
+                            "fill"
+                        ],
+                        "fill-opacity": 0.3
+                    },
+                    "id": "dispersion-layer",
+                    "source": "dispersion-source",
+                    "source-layer": "dispersion_contours",
+                    "type": "fill",
+                    "minzoom": 4
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Weather station",
+                    "paint": {
+                        "circle-color": "blue"
+                    },
+                    "id": "weather-layer",
+                    "source": "weather-source",
+                    "source-layer": "weather",
+                    "type": "circle"
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Ships",
+                    "paint": {
+                        "circle-color": "black"
+                    },
+                    "id": "ships-layer",
+                    "source": "ship-source",
+                    "source-layer": "ships",
+                    "type": "circle",
+                    "minzoom": 4
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Virtual sensors",
+                    "paint": {
+                        "circle-color": "red"
+                    },
+                    "id": "sensor-layer",
+                    "source": "sensor-source",
+                    "source-layer": "sensors",
+                    "type": "circle",
+                    "minzoom": 4
+                }
+            ]
+        }
+    ]
 }
