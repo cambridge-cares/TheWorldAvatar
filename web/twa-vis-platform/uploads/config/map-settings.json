@@ -1,8 +1,15 @@
 {
     "type": "mapbox",
     "camera": {
-        "default": "Cambridge",
+        "default": "Kings Lynn",
         "positions": [
+            {
+                "name": "Kings Lynn",
+                "center": [0.4023, 52.7517],
+                "zoom": 13,
+                "bearing": 0,
+                "pitch": 45
+            },
             {
                 "name": "Cambridge",
                 "center": [0.11926, 52.20472],
