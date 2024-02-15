@@ -92,6 +92,7 @@ public class AssetRetriever {
         );
         Variable deviceIRIVar = SparqlBuilder.var("deviceIRI");
         Variable deviceTypeIRI = SparqlBuilder.var("deviceTypeIRI");
+        Variable deviceTypeLiteral = SparqlBuilder.var("deviceType");
         Variable itemIRIVar = SparqlBuilder.var("itemIRI");
         Variable labelLiteralVar = SparqlBuilder.var("label");
         //Owner and human
@@ -134,7 +135,9 @@ public class AssetRetriever {
 
         //get device on "deviceVar" from asset namespace
         query.where(deviceIRIVar.has(hasItemInventoryIdentifier, ID));
-        query.where(deviceIRIVar.isA(deviceTypeIRI));
+        query.where(deviceIRIVar.has(isCategorizedUnder, deviceTypeIRI));
+        query.where(deviceTypeIRI.has(RDFS.LABEL, deviceTypeLiteral));
+
         //get Item IRI from device IRI from asset namespace
         query.where(itemIRIVar.has(references, deviceIRIVar));
 
@@ -194,7 +197,7 @@ public class AssetRetriever {
     
     private void handleAssetData (JSONArray requestResult) {
         String[] keyArray = {
-                "deviceIRI","deviceTypeIRI","itemIRI","label","personIRI","personNameIRI","assignedTo","serialNum",
+                "deviceIRI","deviceTypeIRI","deviceType","itemIRI","label","personIRI","personNameIRI","assignedTo","serialNum",
                 "modelNumber", "amtMoney", "priceMeasureIRI", "price", "currencyIRI", "manufacturerURL", "SpecSheetIRI",
                 "SpecSheet", "SpecSheetPage", "ManualIRI", "Manual", "SupplierOrgIRI", "SupplierNameIRI",
                 "SupplierName","ManufacturerIRI", "ManufacturerNameIRI","ManufacturerName","workspaceIRI",
@@ -231,7 +234,8 @@ public class AssetRetriever {
         
         //Query
         //get device type
-        query.where(deviceIRI.isA(deviceTypeIRI));
+        //query.where(deviceIRI.isA(deviceTypeIRI));
+
         //get location
         query.where(
                 GraphPatterns.optional(roomIRI.has(containsElement, deviceIRI),
@@ -275,7 +279,6 @@ public class AssetRetriever {
 
     void handleDeviceData (JSONArray requestResult) {
         String[] keyArray = {
-            "deviceTypeIRI",
             "roomIRI",
             "roomTypeIRI",
             "IFCReprIRI",

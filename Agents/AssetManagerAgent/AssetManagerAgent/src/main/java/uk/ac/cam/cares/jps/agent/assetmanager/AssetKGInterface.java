@@ -147,6 +147,7 @@ public class AssetKGInterface {
 
 
     public JSONObject instantiate (JSONObject AssetDataRaw) throws Exception{
+        JSONObject existingIRIs = AssetDataRaw.getJSONObject("existingIRIs");
         //Get IRI from ID
         String deviceIRIString = existenceChecker.getIRIStringbyID(AssetDataRaw.getString("ID"));
         if(deviceIRIString != null){
@@ -161,8 +162,18 @@ public class AssetKGInterface {
         //String devicePrefix = getPrefixStringFromName(AssetDataRaw.getString("Prefix"));
         String devicePrefix = AssetDataRaw.getString("Prefix");
         //deviceIRIString = genIRIString(AssetDataRaw.getString("AssetClass"), devicePrefix);
-        deviceIRIString = genIRIString("Device", P_DEV);
-        String itemIRI = genIRIString("Item", P_ASSET);
+        if (existingIRIs.has("deviceIRI")){
+            deviceIRIString = existingIRIs.getString("deviceIRI");
+        }else{
+            deviceIRIString = genIRIString("Device", P_DEV);
+        }
+
+        String itemIRI;
+        if (existingIRIs.has("itemIRI")){
+            itemIRI = existingIRIs.getString("itemIRI");
+        }else{
+            itemIRI = genIRIString("Item", P_ASSET);
+        }
         //String deviceTypeIRI = devicePrefix+AssetDataRaw.getString("AssetClass");
         String deviceTypeIRI = devicePrefix;
         //String deviceTypeIRI = DeviceString;
@@ -207,6 +218,7 @@ public class AssetKGInterface {
 
 
         //Persons IRI
+        
         String assigneeName = AssetDataRaw.getString("AssignedTo");
         String workspaceName = AssetDataRaw.getString("WorkspaceName");
         String personIRI = "";
@@ -225,7 +237,12 @@ public class AssetKGInterface {
 
         if(!workspaceName.isBlank()){
             LOGGER.info("Handling Workspace IRI:" + workspaceName);
-            workspaceIRI = existenceChecker.getWorkspaceIRIStringByName(workspaceName, true);
+            if (existingIRIs.has("workspaceIRI")){
+                workspaceIRI = existingIRIs.getString("workspaceIRI");
+            }
+            else{
+                workspaceIRI = existenceChecker.getWorkspaceIRIStringByName(workspaceName, true);
+            }
             LOGGER.debug("workspaceIRI:" + workspaceIRI);
         }
         AssetData.put("assignedTo", assigneeName);
@@ -683,8 +700,6 @@ public class AssetKGInterface {
         //Query
         //get device type
         query.insert(deviceIRI.isA(Device));
-        query.insert(deviceIRI.has(isCategorizedUnder, deviceTypeIRI));
-        query.insert(deviceTypeIRI.isA(UserDefinedCatergory));
         //Stored in -- Assumes the storage IRI exist somewhere
         if(!storageIRIString.isBlank()){
             query.insert(deviceIRI.has(isStoredIn, iri(storageIRIString)));

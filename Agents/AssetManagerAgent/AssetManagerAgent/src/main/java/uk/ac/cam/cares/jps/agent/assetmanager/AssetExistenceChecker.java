@@ -43,7 +43,7 @@ public class AssetExistenceChecker {
     }
     public JSONObject getPersonTriples(String name, Boolean generate){
         JSONObject result = new JSONObject();
-        JSONArray reqResult = getIRIbyLiteral (name, hasPersonName, storeClientAsset);
+        JSONArray reqResult = getIRIbyLiteral (name, hasPersonName, storeClientPurchDoc);
 
         switch (reqResult.length()) {
             case 0:
@@ -75,7 +75,7 @@ public class AssetExistenceChecker {
     }
     public JSONObject getOrganizationTriples (String orgName, Boolean generate) {
         JSONObject result = new JSONObject();
-        JSONArray reqResult = getIRIbyLiteral (orgName, hasLegalName, storeClientAsset);
+        JSONArray reqResult = getIRIbyLiteral (orgName, hasLegalName, storeClientPurchDoc);
         String OrgNameIRI, OrgIRI;
         LOGGER.info("Organization check query for name::" + orgName + ": " + reqResult);
         switch (reqResult.length()) {
