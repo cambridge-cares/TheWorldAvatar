@@ -3,35 +3,31 @@ import json
 import os
 import random
 import time
-from typing import List, Optional
+from typing import Optional
 
 import networkx as nx
 import numpy as np
 from tqdm import tqdm
+from locate_then_ask.singapore.mock_entity_store import MockSgEntityStore
+
+from utils.numerical import normalize_1d
+from utils.json import EnumEncoder
 from constants.fs import ROOTDIR
-from constants.ontobuiltenv import OBE_PROPERTYUSAGE_LABELS, OBEAttrKey
 from constants.plot import OPltPlotAttrKey
 from locate_then_ask.query_graph import QueryGraph
 from locate_then_ask.singapore.ask import OPltPlotAsker
 from locate_then_ask.singapore.entity_store import SgEntityStore
 from locate_then_ask.singapore.locate import OPltPlotLocator
-from utils.numerical import normalize_1d
-
-from utils.json import EnumEncoder
 
 
 class SgDatasetGenerator:
     SEED_ENTITIES_FILEPATH = os.path.join(ROOTDIR, "data/seed_entities/singapore.txt")
 
     ASK2WEIGHT = {
-        "name": 1,
-        "count": 1,  # 1 agg (count)
-        "attribute": 7,  # 11 keys
-        "agg": 4,  # 3 agg (min, max, avg) + 3 keys (numerical)
-        "name_byExtremeAttr": 3,  # 2 agg (min, max) + 3 keys (numerical)
-        "attr_byEntityFreq": 6,  # 3 agg (min, max, count) + 6 keys (discrete)
-        "attr_byExtremeAttr": 8,  # 2 agg (min, max) + 11 keys
-        "discreteAttr_byExtremeAvgAttr": 8,  # 3 agg (min, max, agg) + 9 keys (discrete, numerical)
+        "count": 1,
+        "attribute": 3,
+        "agg": 3,
+        "attr_byExtremeAttr": 3,
     }
 
     @classmethod
@@ -72,9 +68,12 @@ LIMIT 200"""
         return [x for x in entities if x]
 
     def __init__(
-        self, bg_endpoint: Optional[str] = None, ontop_endpoint: Optional[str] = None
+        self, bg_endpoint: Optional[str] = None, ontop_endpoint: Optional[str] = None, synthetic_abox: bool = False
     ):
-        store = SgEntityStore(bg_endpoint, ontop_endpoint)
+        if synthetic_abox:
+            store = MockSgEntityStore(bg_endpoint, ontop_endpoint)
+        else:
+            store = SgEntityStore(bg_endpoint, ontop_endpoint)
         self.locator = OPltPlotLocator(store)
         self.asker = OPltPlotAsker()
 
@@ -180,11 +179,13 @@ if __name__ == "__main__":
     parser.add_argument("--bg_endpoint", type=str, default=None)
     parser.add_argument("--ontop_endpoint", type=str, default=None)
     parser.add_argument("--n_repeats", type=int, default=1)
+    parser.add_argument("--synthetic_abox", action="store_true", default=False)
     args = parser.parse_args()
 
     ds_gen = SgDatasetGenerator(
         bg_endpoint=args.bg_endpoint,
         ontop_endpoint=args.ontop_endpoint,
+        synthetic_abox=args.synthetic_abox
     )
     examples = []
     examples.extend(ds_gen.generate(args.n_repeats))

@@ -1,5 +1,7 @@
 import random
 
+import numpy as np
+
 from constants.functions import OBE_NUM_OPS
 from constants.namespaces import NAMESPACE2PREFIX, OM, OZNG
 from constants.om import OM_KEY_LABELS
@@ -12,10 +14,18 @@ from constants.plot import (
 from locate_then_ask.model import OmMeasure
 from locate_then_ask.query_graph import QueryGraph
 from locate_then_ask.singapore.entity_store import SgEntityStore
-from utils.numerical import make_operand_and_verbn
+from utils.numerical import make_operand_and_verbn, normalize_1d
 
 
 class OPltPlotLocator:
+    ATTR_KEY_WEIGHTS = {
+        OPltPlotAttrKey.LAND_USE_TYPE_TYPE: 29,
+        OPltPlotAttrKey.GROSS_PLOT_RATIO: 1,
+        OPltPlotAttrKey.IS_AWAITING_DETAILED_GPR_EVAL: 1,
+        OPltPlotAttrKey.PLOT_AREA: 1,
+        OPltPlotAttrKey.GROSS_FLOOR_AREA: 1,
+    }
+
     def __init__(self, store: SgEntityStore):
         self.store = store
 
@@ -67,8 +77,12 @@ class OPltPlotLocator:
 
         entity = self.store.get(entity_iri)
         keys = entity.get_nonnone_keys()
-        conds = []
-        for k in random.sample(keys, k=cond_num):
+        weights = [self.ATTR_KEY_WEIGHTS[k] for k in keys]
+
+        conds = []        
+        for k in np.random.choice(
+            keys, size=min(cond_num, len(keys)), p=normalize_1d(weights), replace=False
+        ):
             if k is OPltPlotAttrKey.LAND_USE_TYPE_TYPE:
                 assert entity.land_use_type_type is not None
                 assert entity.land_use_type_type.startswith(OZNG)
@@ -89,7 +103,9 @@ class OPltPlotLocator:
                 )
             elif k is OPltPlotAttrKey.IS_AWAITING_DETAILED_GPR_EVAL:
                 assert entity.is_awaiting_detailed_gpr_eval is not None
-                literal_node = query_graph.make_literal_node(entity.is_awaiting_detailed_gpr_eval)
+                literal_node = query_graph.make_literal_node(
+                    entity.is_awaiting_detailed_gpr_eval
+                )
                 query_graph.add_triple("Plot", PLOT_ATTR_2_PRED[k], literal_node, key=k)
                 if entity.is_awaiting_detailed_gpr_eval:
                     cond = "which is awaiting detailed gross plot ratio evaluation"

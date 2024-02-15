@@ -1,6 +1,6 @@
 from decimal import Decimal
 import random
-from constants.namespaces import DABGEO, OBE, OM
+from constants.namespaces import DABGEO, OBE
 
 from locate_then_ask.ontobuiltenv.model import OBEProperty
 from .address import IctAddressSynthesizer
