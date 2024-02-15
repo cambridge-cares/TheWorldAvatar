@@ -28,8 +28,6 @@ public class BuildingIdentificationAgent extends JPSAgent {
     public static final String KEY_SRID = "srid";
     public static final String KEY_TABLE = "table";
     public static final String KEY_COLUMN = "column";
-    public static final String KEY_SCHEMA = "schema";
-    public static final String KEY_IRI_PREFIX = "iriPrefix";
     public static final String KEY_ONE_MANY = "oneToMany";
     public static final String KEY_NEW_TABLE = "newTable";
     public static final String KEY_FILTER_COLUMNS = "filterColumns";
