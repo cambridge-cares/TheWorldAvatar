@@ -148,7 +148,7 @@
   </dependencies>
 
   <build>
-    <finalName>esphome-control-agent</finalName>
+    <finalName>bms-update-agent</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
