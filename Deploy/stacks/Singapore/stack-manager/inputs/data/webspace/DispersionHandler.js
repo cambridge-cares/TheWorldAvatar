@@ -232,8 +232,6 @@ class DispersionHandler {
     }
 
     plotData() {
-        this.updateVirtualSensors(this.dispersions[this.selectedSimulation].derivationIri);
-
         MapHandler.MAP.setFilter('0.2.dispersion-layer', ["all",
             ['==', ['string', ['get', 'derivation']], this.dispersions[this.selectedSimulation].derivationIri],
             ['==', ['to-number', ['get', 'time']], this.selectedTimestep],
@@ -303,17 +301,19 @@ class DispersionHandler {
         return $.post(url);
     }
 
-    updateVirtualSensors(derivation) {
-        let url = this.agentBaseUrl;
-        url += '/dispersion-interactor/UpdateVirtualSensors?';
+    updateVirtualSensors() {
+        for (let i in Object.keys(this.dispersions)) {
+            let url = this.agentBaseUrl;
+            url += '/dispersion-interactor/UpdateVirtualSensors?';
 
-        let params = {
-            derivation: derivation
-        };
+            let params = {
+                derivation: this.dispersions[Object.keys(this.dispersions)[i]].derivationIri
+            };
 
-        let searchParams = new URLSearchParams(params);
-        url += searchParams;
+            let searchParams = new URLSearchParams(params);
+            url += searchParams;
 
-        $.post(url);
+            $.post(url);
+        }
     }
 }
