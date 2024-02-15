@@ -73,7 +73,9 @@ def result():
     dumpPDF(data)
 
     status = getPrinterStatus()
+    
     if status == "Printer OK...":
+        '''
         pdf_file = open('file.pdf', 'rb')
         pdf_data = pdf_file.read()
         prn = win32print.OpenPrinter(printer_name)
@@ -84,9 +86,13 @@ def result():
         win32print.EndDocPrinter(prn)
         win32print.ClosePrinter(prn)
         return "Print Success!", 200
+        '''
+        win32api.ShellExecute (0, "print", 'file.pdf', None, ".", 0)
+        
     
     else:
         return "Printer is having an issue: " + status, 500
+    
 
 
 @app.route('/', methods=['GET'])
