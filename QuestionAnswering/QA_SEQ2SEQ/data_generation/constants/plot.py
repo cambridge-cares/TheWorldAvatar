@@ -1,8 +1,27 @@
+from enum import Enum
+
+
+class OPltPlotAttrKey(Enum):
+    LAND_USE_TYPE_TYPE = "LandUseTypeType"
+    GROSS_PLOT_RATIO = "GrossPlotRatio"
+    IS_AWAITING_DETAILED_GPR_EVAL = "IsAwaitingDetailedGPREvaluation"
+    PLOT_AREA = "PlotArea"
+    GROSS_FLOOR_AREA = "GrossFloorArea"
+
+
 PLOT_ATTR_LABELS = {
-    "LandUseType": ["land use type", "land use classification"],
-    "GrossPlotRatio": ["gross plot ratio"],
-    "PlotArea": ["plot area"],
-    "GrossFloorArea": ["gross floor area"],
+    OPltPlotAttrKey.LAND_USE_TYPE_TYPE: ["land use type", "land use classification"],
+    OPltPlotAttrKey.GROSS_PLOT_RATIO: ["gross plot ratio"],
+    OPltPlotAttrKey.PLOT_AREA: ["plot area"],
+    OPltPlotAttrKey.GROSS_FLOOR_AREA: ["gross floor area"],
+}
+
+PLOT_ATTR_2_PRED = {
+    OPltPlotAttrKey.LAND_USE_TYPE_TYPE: "ozng:hasLandUseType/a",
+    OPltPlotAttrKey.IS_AWAITING_DETAILED_GPR_EVAL: "oplnrgl:isAwaitingDetailedGPREvaluation",
+    OPltPlotAttrKey.GROSS_PLOT_RATIO: "^oplnrgl:appliesTo/oplnrgl:allowsGrossPlotRatio/om:hasValue",
+    OPltPlotAttrKey.PLOT_AREA: "oplt:hasPlotArea/om:hasValue",
+    OPltPlotAttrKey.GROSS_FLOOR_AREA: "oplt:hasMaximumPermittedGPR/om:hasValue",
 }
 
 OZNG_LANDUSETYPE_LABELS = {
