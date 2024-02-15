@@ -1,10 +1,14 @@
 package uk.ac.cam.cares.jps.agent.gfaagent;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.apache.jena.vocabulary.AS;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 public class GFACalculation {
 
     private final String dbUrl;
@@ -22,7 +26,13 @@ public class GFACalculation {
     }
     
     public void calculationGFA(){
-        postgisClient.executeQuery(gfaSQLInsert);
+        try (Connection srcConn = postgisClient.getConnection()) {
+            try (Statement stmt = srcConn.createStatement()) {
+                stmt.executeUpdate(gfaSQLInsert);
+            }
+        }catch (SQLException e) {
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }  
     }
 
     private static final String gfaSQLInsert = "INSERT INTO cityobject_genericattrib (attrname, realval, cityobject_id)\n" +
