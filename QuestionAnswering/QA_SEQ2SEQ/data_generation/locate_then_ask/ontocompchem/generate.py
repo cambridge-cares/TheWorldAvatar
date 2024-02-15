@@ -3,6 +3,7 @@ import json
 import os
 import random
 import time
+from typing import Optional
 
 from tqdm import tqdm
 import networkx as nx
@@ -19,15 +20,17 @@ SEED_SPECIES_PATH = "data/seed_entities/ontocompchem.txt"
 
 class DatasetGenerator:
     @classmethod
-    def retrieve_seed_entities(cls):
+    def retrieve_seed_entities(cls, kg_endpoint: Optional[str]):
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_PATH)
 
         if not os.path.isfile(filepath):
+            assert (
+                kg_endpoint is not None
+            ), "No cached seed entities found, kg_endpoint must not be None."
+
             from locate_then_ask.kg_client import KgClient
 
-            kg_client = KgClient(
-                "http://178.128.105.213:3838/blazegraph/namespace/ontocompchem/sparql"
-            )
+            kg_client = KgClient(kg_endpoint)
             query = """SELECT DISTINCT ?Species WHERE {
     ?MolecularComputation occ:hasSpeciesModel/occ:hasSpecies ?Species
 }"""
@@ -43,13 +46,13 @@ class DatasetGenerator:
 
         return seed_entities
 
-    def __init__(self, synthetic_abox: bool):
+    def __init__(self, kg_endpoint: Optional[str], synthetic_abox: bool):
         self.locator = OCCLocator(MockOCCEntityStore() if synthetic_abox else None)
         self.asker = OCCAsker()
         if synthetic_abox:
             self.seed_entities = ["placeholder" for _ in range(100)]
         else:
-            self.seed_entities = self.retrieve_seed_entities()
+            self.seed_entities = self.retrieve_seed_entities(kg_endpoint)
             random.shuffle(self.seed_entities)
 
     def generate(self, repeats: int = 1):
@@ -81,11 +84,14 @@ class DatasetGenerator:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--kg_endpoint", type=str, default=None)
     parser.add_argument("--n_repeats", type=int, default=1)
     parser.add_argument("--synthetic_abox", action="store_true")
     args = parser.parse_args()
 
-    ds_gen = DatasetGenerator(synthetic_abox=args.synthetic_abox)
+    ds_gen = DatasetGenerator(
+        kg_endpoint=args.kg_endpoint, synthetic_abox=args.synthetic_abox
+    )
     examples = ds_gen.generate(repeats=args.n_repeats)
 
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")

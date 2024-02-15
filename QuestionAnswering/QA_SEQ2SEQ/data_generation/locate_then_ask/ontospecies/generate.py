@@ -3,6 +3,7 @@ import json
 import os
 import random
 import time
+from typing import Optional
 
 import networkx as nx
 import numpy as np
@@ -29,16 +30,18 @@ class DatasetGenerator:
     }
 
     @classmethod
-    def _retrieve_seed_species(self):
+    def retrieve_seed_species(self, kg_endpoint: Optional[str]):
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_FILEPATH)
 
         if not os.path.isfile(filepath):
+            assert (
+                kg_endpoint is not None
+            ), "No cached seed species found, kg_endpoint must not be None."
+
             print("No seed species found. Retrieving seed species...")
             from locate_then_ask.kg_client import KgClient
 
-            kg_client = KgClient(
-                "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql"
-            )
+            kg_client = KgClient(kg_endpoint)
 
             species_attr_values = "\n        " + "\n        ".join(
                 ["(os:has{p})".format(p=p.value) for p in OSPropertyKey]
@@ -71,14 +74,14 @@ class DatasetGenerator:
 
         return [x for x in entities if x]
 
-    def __init__(self, synthetic_abox: bool = False):
+    def __init__(self, kg_endpoint: Optional[str] = None, synthetic_abox: bool = False):
         self.locator = OSSpeciesLocator(MockOSEntityStore() if synthetic_abox else None)
         self.asker = OSAsker()
 
         if synthetic_abox:
             self.seed_species = ["placeholder" for _ in range(1000)]
         else:
-            self.seed_species = self._retrieve_seed_species()
+            self.seed_species = self.retrieve_seed_species(kg_endpoint)
         random.shuffle(self.seed_species)
 
     def _locate(self, locate_strategy: str, species_id: int):
@@ -163,18 +166,21 @@ class DatasetGenerator:
                 example_id += 1
 
                 pbar.update(_species_id_new - _species_id)
-                species_id += _species_id_new - _species_id 
+                species_id += _species_id_new - _species_id
 
         return examples
 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
+    parser.add_argument("--kg_endpoint", type=str, default=None)
     parser.add_argument("--synthetic_abox", action="store_true")
     parser.add_argument("--n_repeats", type=int, default=1)
     args = parser.parse_args()
 
-    ds_gen = DatasetGenerator(args.synthetic_abox)
+    ds_gen = DatasetGenerator(
+        kg_endpoint=args.kg_endpoint, synthetic_abox=args.synthetic_abox
+    )
     examples = ds_gen.generate(args.n_repeats)
 
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")

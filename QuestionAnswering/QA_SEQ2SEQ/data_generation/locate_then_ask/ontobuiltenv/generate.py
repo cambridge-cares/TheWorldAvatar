@@ -3,7 +3,7 @@ import json
 import os
 import random
 import time
-from typing import List
+from typing import List, Optional
 
 import networkx as nx
 import numpy as np
@@ -36,14 +36,16 @@ class OBEDatasetGenerator:
     }
 
     @classmethod
-    def _retrieve_seed_entities(cls):
+    def retrieve_seed_entities(cls, kg_endpoint: Optional[str]):
         if not os.path.isfile(cls.SEED_ENTITIES_FILEPATH):
+            assert (
+                kg_endpoint is not None
+            ), "No cached seed entities found, kg_endpoint must not be None"
+
             print("No seed entities found. Retrieving seed entities...")
             from locate_then_ask.kg_client import KgClient
 
-            kg_client = KgClient(
-                "http://165.232.172.16:3838/blazegraph/namespace/kingslynn/sparql"
-            )
+            kg_client = KgClient(kg_endpoint)
 
             iris: List[str] = []
 
@@ -89,14 +91,14 @@ LIMIT {num}"""
 
         return [x for x in entities if x]
 
-    def __init__(self, synthetic_abox: bool = False):
+    def __init__(self, kg_endpoint: Optional[str] = None, synthetic_abox: bool = False):
         self.locator = OBELocator(MockOBEEntityStore() if synthetic_abox else None)
         self.asker = OBEAsker()
 
         if synthetic_abox:
             self.seed_entities = ["placeholder" for _ in range(100)]
         else:
-            self.seed_entities = self._retrieve_seed_entities()
+            self.seed_entities = self.retrieve_seed_entities(kg_endpoint)
         random.shuffle(self.seed_entities)
 
     def _locate(self, entity: str, locate_strategy: str):
@@ -216,11 +218,14 @@ LIMIT {num}"""
 
 if __name__ == "__main__":
     parser = ArgumentParser()
+    parser.add_argument("--kg_endpoint", type=str, default=None)
     parser.add_argument("--n_repeats", type=int, default=1)
     parser.add_argument("--synthetic_abox", action="store_true")
     args = parser.parse_args()
 
-    ds_gen = OBEDatasetGenerator(synthetic_abox=args.synthetic_abox)
+    ds_gen = OBEDatasetGenerator(
+        kg_endpoint=args.kg_endpoint, synthetic_abox=args.synthetic_abox
+    )
     examples = []
     examples.extend(ds_gen.generate(args.n_repeats))
 
