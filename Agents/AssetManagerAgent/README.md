@@ -11,7 +11,7 @@ Currently the agent is capable of :
 
 ## Structure
 The agent is composed of 2 parts, the agent and the printing server. 
-The agent handles all interaction between the client and both the knowledge graph and printing server, wile the printing server will handle the interaction with the printer. The interaction between the client, agent, printer and knowledge graph is outlined in the following graph:
+The agent handles all interaction between the client and both the knowledge graph and printing server, while the printing server will handle the interaction with the printer. The interaction between the client, agent, printer and knowledge graph is outlined in the following graph:
 
 [PUT GRAPH HERE]
 
@@ -23,10 +23,9 @@ Hence the agent relies on inputting the assets into 2 namespaces: the `lab` and 
 
 
 
-
 ## Installation
 ### Printing Server
-The target printer need to be installed first in the host of the server. The intallation of this printer may vary between printer types, but generally a printer driver is needed to connect to the printer.Please check with your respective printer manufacturer for the printer driver. Keep in mind some printer driver may only be available for certain OS. Once the printer is installed, the printer can be identified under specific names.
+The target printer need to be installed first in the host of the server. The intallation of this printer may vary between printer types, but generally a printer driver is needed to connect to the printer. Please check with your respective printer manufacturer for the printer driver. Keep in mind some printer driver may only be available for certain OS. Once the printer is installed, the printer can be identified under specific names. Currently the printer server is designed to run on a Windows environment. If a linux environment is used instead, a CUPS server is recommended instead.
 
 The printing server could be packaged as either a .exe file or run as is a Flask server. The .exe format is provided in case running the server as a Python application is unfavorable. **It is recommended to create a new virutal environement before installing/ running the server.**
 A requirement.txt file is included in the repository to use:
@@ -58,7 +57,8 @@ Update the following files in the `./config` folder:
     - `target_qr_size`: QR code size target in cm.
     - `url.manual`: URL for the accessing the asset's manual. The URL produced will have the manual name appended to the end of the URL.
 
-- `/ontologyMap.properties`: A map of the asset class and their respective ontology. Please update if there is any new asset class or change in ontology structure.
+- `/ontologyMap.properties`: A map of the asset type and their IRIs. Refer to he available values in [AssetClass](#instantiation)
+
 
 Update the following files in the `./credentials` folder:
  - Add your git credentials with your git username and token in respectively `repo_username.txt` and `repo_password.txt`.
@@ -89,8 +89,8 @@ Takes in asset data in the request parameter. **If any data is missing please us
 
 
 | Parameter        | Mandatory  Field                        | 
-|:----------------:|:---------------------------------------:|
-| Prefix           |                                         |             
+|:----------------:|:---------------------------------------:|  
+| Prefix (DEPRECATED) |                                      |           
 | AssetClass       | Y                                       |             
 | ID               | Y                                       |
 | deliveryDate     |                                         |            
@@ -118,16 +118,27 @@ Takes in asset data in the request parameter. **If any data is missing please us
 | price            |                                         |
 
 The parameters:
-- Prefix: The prefix to be used to describe the type of the asset. The list of accepted prefixes are: 
-    - ontodevice
-    - ontolab
-    - ontosystem
-    - ontoinma
-    - ontoelectricalpowerequipment
-    - ontoems
+- Prefix (DEPRECATED): 
+    **NOTE: As of the newest version the `Prefix` key is deleted as the asset type is now instantiated differently. Requests for the previous version of the agent will have the `Prefix` key ignored, but should still be updated.**
 
-    The prefix can be left blank on request and the asset instantiated will have the prefix mapped from `.\config\ontologyMap.properties`
-- AssetClass : The class of the asset type.
+    The prefix to be used to describe the type of the asset. The list of accepted prefixes are: 
+        - ontodevice
+        - ontolab
+        - ontosystem
+        - ontoinma
+        - ontoelectricalpowerequipment
+        - ontoems
+
+        The prefix can be left blank on request and the asset instantiated will have the prefix mapped from `.\config\ontologyMap.properties`
+
+    
+- AssetClass : The class of the asset type. Available classes are:
+    - LabEquipment
+    - Laptop
+    - Monitor
+    - OtherIT
+    - Printer
+    - Workstation
 
 - ID : Asset ID. The format accepted for the ID is `YYYY-MM-DD/[ID#]`, where the `ID#` is an integer. If an asset is part of another asset the format for `ID#` of `[int].[int].[int]. ...` is also accepted, where the hierarchy of the item is suggested by the point. This is usually used for systems of devices. When left blank, the delivery date  will be used as provided in `deliveryDate` and the largest number of `ID# + 1` will be used. If `deliveryDate` is left blank, then the date of when the command was sent will be used instead.
 
@@ -170,6 +181,14 @@ Content-Type: application/json
 ```json
 {"Result":[{"deviceIRI":"https://www.theworldavatar.com/kg/ontodevice/Pump_4e01c511-9618-47c4-855b-94d0d944ee52","ID":"2021-04-01/973"},"Command Success"]}
 ```
+
+The endpoint also accepts instantiating a set of assets where the ID generated will have the `[int].[int].[int]. ...` format. The main ID number will have the largest number of `ID# + 1`. The ID generated in order from the first item in the request body :`largestID# + 1 . 0`, `largestID# + 1 . 1`, `largestID# + 1 . 2`, ...
+
+The content of the request are contained in a key `setData`, which value is a JSONArray containing the above format for asset-wise instantiation. An example of this request:
+```json
+
+```
+
 ##### - `/addmaintenance`
 For adding maintenance instances of the assets.
 The parameters:
@@ -183,15 +202,14 @@ The request at least has to have either/both LastService or NextService. ID and 
 
 All time data regarding maintenance will be stored in scale of days (`yyyy-MM-dd`) and for interval in months. In case the next service is not given, but the interval and last service time is given, the next service time will automatically be inferred as `last service time + interval`.
 
-If the asset already has a maintenance shcedule, **the previous data will be overwritten** instead.
-
+This endpoint creates new maintenance data on every call to allow for maintenance by several party and adding irregular maintenance on top of regular ones. Hence the responsibility of maintaining the maintenance data will lie on the user.
 
 ##### - `/addmanual`
 For instantiating manual instances to the assets.
 The parameters:
 - targetID : The ID of the asset that the manual is meant for
 - comments : A remark regarding the manual
-- documentType : Whether the document is a `Manual` or a`SpecSheet`
+- documentType : Whether the document is a `Manual` or a `SpecSheet`
 - encoded : Base-64 encoding of the datasheet pdf
 - fileName : The name of the file the manual is to be saved as
 
@@ -210,7 +228,7 @@ Content-Type: application/json
 
 #### Printing
 ##### - `/printbulk`
-Print QR code for a list of assets. Accpets either IRI or ID or mix of both
+Print QR code for a list of assets. Accepts either IRI or ID or mix of both
 The parameters are:
 - IRI : A JSONArray of IRIs or ID
 Example request and succesful response:
@@ -260,8 +278,8 @@ The response will be composed of:
 - ID: JSONArray, the first element is the ID and the second the IRI.
 - Result : The retrieved data. Composed of three element, in order:
     - A JSONArray of the literals and IRIs of the agent-created instances.
-    - A boolean of whether the asset has a related timeseries in the KG. Uses the BMS endpoint for as default for this purpose.
-    - Confirmation command is success.
+    - A boolean of whether the asset has a related timeseries in the KG. Uses the BMS endpoint as default for this purpose.
+    - Confirmation command succeed.
 Example:
 - Request
 ```
@@ -339,15 +357,15 @@ This endpoint does not accept any request parameter
 
 #### Delete
 ##### - `/delete`
-Deletes all asset information from all namespace. As if the asset is never instantiated.
+Deletes asset information from all namespace. As if the asset is never instantiated.
 
 The delete is done by using `/retrieve` to retrieve asset-related IRI of the asset. Some of these IRIs are then used to find triples with the asset IRI and/or item IRI as either subject or object in the provided namespace to be deleted. (*NOTE:This is why it takes ~ 10s per delete. A better delete query could be made, but it will be more specific and require development time. As this was a hotfix for a previous mistake, this is the easiest and fastly developed universal delete I can come up with at the moment*). Therefore this does not delete instances not directly affiliated with the asset, for example, the person instances of the user and the organizations. This is done in case the instance is affiliated with other triples shich is immportant for other assets / agents.
 
-The delete command records the deleted asset in a log file in `\app\deleteLog.log` in the container. Each triple deleted will be associated to a UUID int he following format:
+The delete command records the deleted asset in a log file in `\app\deleteLog.log` in the container. Each triple deleted will be associated to a UUID in the following format:
 ```
 [UUID]::[endpoint triple is deleted from]::{"subject":[IRI], "predicate":[IRI], "object":[IRI]}
 ```
-This is meant as a precaution of mis-delete, an undo feature. The actual undo however is not yet implemented as currently the deletion works fine (Its best to have the undo implemented eventually. Never got in a car crash before, but I still weear my seatbelt till now...). The deleted triple recoreded is obtained by doing a SELECT query with a similar query to the delete query before each deletion. (*NOTE: Again, also why each delete takes ~10s per delete.*). 
+This is meant as a precaution of mis-delete, an undo feature. The actual undo however is not yet implemented as currently the deletion works fine (Its best to have the undo implemented eventually). The deleted triple recorded is obtained by doing a SELECT query with a similar query to the delete query before each deletion. (*NOTE: Again, also why each delete takes ~10s per delete.*). 
 
 
 ***You may want to backup `\app\deleteLog.log` before updating/deleting the container***
