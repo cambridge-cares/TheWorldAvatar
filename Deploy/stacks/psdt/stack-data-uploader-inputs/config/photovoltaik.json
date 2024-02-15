@@ -1,0 +1,39 @@
+{
+    "name": "photovoltaik",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "photovoltaik",
+    "dataSubsets": [
+        {
+            "type": "Vector",
+            "schema": "public",
+            "table": "photovoltaik",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-overwrite": []
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "Photovoltaik_colour",
+                    "sql": "SELECT *, CASE\nWHEN \"richtung\" < 0 THEN '#e8beff'\nWHEN \"richtung\" < 45 THEN '#006fff'\nWHEN \"richtung\" < 135 THEN '#00e6a9'\nWHEN \"richtung\" < 225 THEN '#ffff00'\nWHEN \"richtung\" < 315 THEN '#e600a9'\nELSE '#006fff'\nEND AS colour\nFROM \"photovoltaik\"\n",
+                    "escapeSql": true,
+                    "keyColumn": "OBJECTID",
+                    "geometry": {
+                        "name": "Shape",
+                        "type": "MultiPolygon",
+                        "srid": 25832
+                    }
+                },
+                "defaultStyle": "twa:photovoltaik"
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "photovoltaik",
+            "file": "photovoltaik.sld"
+        }
+    ]
+}
