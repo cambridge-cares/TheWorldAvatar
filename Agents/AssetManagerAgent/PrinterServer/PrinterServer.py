@@ -75,21 +75,9 @@ def result():
     status = getPrinterStatus()
     
     if status == "Printer OK...":
-        '''
-        pdf_file = open('file.pdf', 'rb')
-        pdf_data = pdf_file.read()
-        prn = win32print.OpenPrinter(printer_name)
-        printer_job = win32print.StartDocPrinter(prn, 1, ("file.pdf", None, "RAW"))
-        win32print.StartPagePrinter(prn)
-        win32print.WritePrinter(prn, pdf_data)
-        win32print.EndPagePrinter(prn)
-        win32print.EndDocPrinter(prn)
-        win32print.ClosePrinter(prn)
-        return "Print Success!", 200
-        '''
+        win32print.SetDefaultPrinter(printer_name)
         win32api.ShellExecute (0, "print", 'file.pdf', None, ".", 0)
-        
-    
+        return "Print Success!", 200     
     else:
         return "Printer is having an issue: " + status, 500
     
