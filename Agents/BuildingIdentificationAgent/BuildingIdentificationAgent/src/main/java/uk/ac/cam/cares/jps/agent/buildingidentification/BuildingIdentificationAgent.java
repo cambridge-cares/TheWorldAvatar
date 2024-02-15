@@ -32,6 +32,8 @@ public class BuildingIdentificationAgent extends JPSAgent {
     public static final String KEY_IRI_PREFIX = "iriPrefix";
     public static final String KEY_ONE_MANY = "oneToMany";
     public static final String KEY_NEW_TABLE = "newTable";
+    public static final String KEY_FILTER_COLUMNS = "filterColumns";
+    public static final String KEY_EXCLUDED_VALUES = "excludedValues";
     private static final String EPSG = "EPSG:";
     public static final String POINT_TYPE = "ST_Point";
 
@@ -51,10 +53,10 @@ public class BuildingIdentificationAgent extends JPSAgent {
             String dbUser = null;
             String dbPassword = null;
 
-            if (requestParams.has(dbUrl)) {
-                dbUrl = requestParams.getString(dbUrl);
-                dbUser = requestParams.getString(dbUser);
-                dbPassword = requestParams.getString(dbPassword);
+            if (requestParams.has("dbUrl")) {
+                dbUrl = requestParams.getString("dbUrl");
+                dbUser = requestParams.getString("dbUser");
+                dbPassword = requestParams.getString("dbPassword");
             } else {
                 String dbName = "postgres";
                 EndpointConfig endpointConfig = new EndpointConfig();
@@ -126,7 +128,15 @@ public class BuildingIdentificationAgent extends JPSAgent {
             } else if (requestParams.getString(KEY_REQ_URL).contains(ROUTE_POSTGIS)) {
                 String tableName = requestParams.getString(KEY_TABLE);
 
-                if (!oneToMany) {
+                if (oneToMany) {
+                    JSONArray filterColumns = requestParams.getJSONArray(KEY_FILTER_COLUMNS);
+                    JSONArray excludedValues = requestParams.getJSONArray(KEY_EXCLUDED_VALUES);
+
+                    Map<Integer, List<String>> buildings = linkMultipleBuildings(tableName, columnName, dbSrid,
+                            filterColumns, excludedValues);
+                    numberBuildingsIdentified = buildings.values().stream().mapToInt(p -> p.size()).sum();
+                    updateMultipleBuildings(tableName, newTable, buildings);
+                } else {
                     String geomType = getGeometryType(tableName, columnName);
                     Map<Integer, String> buildings;
                     if (geomType.equals(POINT_TYPE))
@@ -135,20 +145,8 @@ public class BuildingIdentificationAgent extends JPSAgent {
                         buildings = linkBuildingsTableNonPoint(maxDistance, tableName, columnName, dbSrid);
                     numberBuildingsIdentified = buildings.size();
                     updateBuildings(buildings, tableName);
-                    responseObject.put(COLUMN_NAME, new JSONArray(buildings.values()));
-                } else {
-                    Map<Integer, List<String>> buildings = linkMultipleBuildings(tableName, columnName, dbSrid);
-                    numberBuildingsIdentified = buildings.values().stream().mapToInt(p -> p.size()).sum();
-                    updateMultipleBuildings(tableName, newTable, buildings);
-
-                    JSONArray responseArray = new JSONArray();
-
-                    buildings.values().stream().forEach(p -> {
-                        p.stream().forEach(iri -> responseArray.put(iri));
-                    });
-
-                    responseObject.put(COLUMN_NAME, responseArray);
                 }
+
             } else {
                 String route = requestParams.getString(KEY_REQ_URL);
                 LOGGER.fatal("{}{}", "The Building Identification Agent does not support the route ", route);
@@ -274,9 +272,8 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
                     " from citydb.cityobject, citydb.cityobject_genericattrib "
                     +
-                    "WHERE \"cityobject_genericattrib\".\"strval\" IS NOT NULL " +
 
-                    " AND \"cityobject_genericattrib\".\"attrname\" != 'TYPE' " +
+                    " AND \"cityobject_genericattrib\".\"attrname\" = 'uuid' " +
 
                     " AND cityobject.objectclass_id = 26 " +
 
@@ -328,8 +325,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     " r1.geometry <-> cityobject.envelope AS dist, " +
                     " r1.geometry <-> ST_Boundary(cityobject.envelope) AS distBoundary " +
                     " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
-                    " where cityobject_genericattrib.strval IS NOT NULL " +
-                    " AND cityobject_genericattrib.attrname != 'TYPE' " +
+                    " where cityobject_genericattrib.attrname = 'uuid' " +
                     " AND cityobject.objectclass_id = 26 " +
                     " AND cityobject.id = cityobject_genericattrib.cityobject_id" +
                     " ORDER BY dist, distBoundary " +
@@ -371,11 +367,11 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     " SELECT cityobject_genericattrib.strval AS iri, " +
                     " envelope AS footprint " +
                     " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
-                    " WHERE cityobject_genericattrib.attrname != 'TYPE' " +
+                    " WHERE cityobject_genericattrib.attrname = 'uuid' " +
                     " AND cityobject.objectclass_id = 26 " +
                     " AND cityobject.id = cityobject_genericattrib.cityobject_id" +
-                    " ) r2 ON public.ST_Within(r1.geometry, r2.footprint) " +
-                    " WHERE r2.iri IS NOT NULL; ", columnName, srid, tableName);
+                    " ) r2 ON public.ST_Within(r1.geometry, r2.footprint) ;",
+                    columnName, srid, tableName);
             ResultSet result = stmt.executeQuery(sqlString);
 
             while (result.next()) {
@@ -399,24 +395,51 @@ public class BuildingIdentificationAgent extends JPSAgent {
     }
 
     private Map<Integer, List<String>> linkMultipleBuildings(String tableName, String columnName,
-            Integer srid) {
+            Integer srid, JSONArray filterColumns, JSONArray excludedValues) {
 
         Map<Integer, List<String>> buildings = new HashMap<>();
+
+        String sqlTemplate = String.format("SELECT ogc_fid, iri FROM " +
+                " ( SELECT cityobject_genericattrib.strval AS iri, " +
+                " envelope AS footprint " +
+                " FROM citydb.cityobject, " +
+                " citydb.cityobject_genericattrib " +
+                " WHERE cityobject.objectclass_id = 26 " +
+                " AND cityobject.id = cityobject_genericattrib.cityobject_id " +
+                " AND cityobject_genericattrib.attrname = 'uuid') r2 " +
+                " LEFT JOIN LATERAL " +
+                " (SELECT ogc_fid, " +
+                " r2.footprint <-> public.ST_TRANSFORM(\"%s\", %d) AS dist " +
+                " FROM %s ", columnName, srid, tableName);
+        StringBuilder sqlBuilder = new StringBuilder(sqlTemplate);
+        sqlBuilder.append(System.lineSeparator());
+
+        for (int i = 0; i < filterColumns.length(); i++) {
+
+            StringBuilder filterString = new StringBuilder(String.format(" AND \"%s\" NOT IN (", filterColumns.get(i)));
+            JSONArray removedValues = excludedValues.getJSONArray(i);
+            for (int j = 0; j < removedValues.length(); j++) {
+                String columnValue = String.format(",'%s'", removedValues.getString(j));
+                if (j == 0)
+                    columnValue = columnValue.replace(",", "");
+                filterString.append(columnValue);
+            }
+            filterString.append(") ");
+            String filterFinal = filterString.toString();
+            if (i == 0)
+                filterFinal = filterFinal.replace("AND", "WHERE");
+            sqlBuilder.append(filterFinal);
+        }
+
+        sqlBuilder.append(System.lineSeparator());
+        sqlBuilder.append(" order by dist ")
+                .append(" limit 1) r1 on true;");
+
+        String sqlString = sqlBuilder.toString();
 
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
 
-            String sqlString = String.format("SELECT ogc_fid, iri FROM " +
-                    "(SELECT ogc_fid, public.ST_TRANSFORM(\"%s\", %d) AS geometry FROM %s) r1 " +
-                    "LEFT JOIN ( " +
-                    " SELECT cityobject_genericattrib.strval AS iri, " +
-                    " envelope AS footprint " +
-                    " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
-                    " WHERE cityobject.objectclass_id = 26 " +
-                    " AND cityobject.id = cityobject_genericattrib.cityobject_id" +
-                    " AND cityobject_genericattrib.attrname != 'TYPE' " +
-                    " ) r2 ON public.ST_Within(r2.footprint, r1.geometry) " +
-                    " WHERE r2.iri IS NOT NULL; ", columnName, srid, tableName);
             ResultSet result = stmt.executeQuery(sqlString);
 
             while (result.next()) {

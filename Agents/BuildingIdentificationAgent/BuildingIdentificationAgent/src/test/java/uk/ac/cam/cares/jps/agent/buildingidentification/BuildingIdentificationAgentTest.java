@@ -43,10 +43,15 @@ class BuildingIdentificationAgentTest {
         request.put("dbPassword", System.getenv("dbPassword"));
 
         request.put("requestUrl", "/postgis");
-        request.put("table", "public.carpark");
+        request.put("table", "public.landplot");
         // Uncomment the next two lines for landplots
-        // request.put("column", "lod1Geometry");
-        // request.put("oneToMany", "true");
+        request.put("column", "lod1Geometry");
+        request.put("oneToMany", "true");
+        request.put("filterColumns", new JSONArray(new String[] { "LU_DESC" }));
+        JSONArray excludedValues = new JSONArray();
+        JSONArray excludedLandType = new JSONArray(new String[] { "ROAD", "PARK" });
+        excludedValues.put(excludedLandType);
+        request.put("excludedValues", excludedValues);
 
         JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
 
