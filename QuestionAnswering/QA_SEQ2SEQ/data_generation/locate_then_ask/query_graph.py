@@ -42,7 +42,7 @@ class QueryGraph(nx.DiGraph):
     def add_topic_node(self, n: str, iri: Optional[str] = None):
         self.add_node(n, topic_entity=True, iri=iri)
 
-    def make_literal_node(self, value: Union[str, Decimal], key: Optional[Any] = None):
+    def make_literal_node(self, value: Union[str, bool], key: Optional[Any] = None):
         """Adds a grounded literal node to the graph and returns the node."""
         literal_num = sum(n.startswith(self._LITERAL_PREFIX) for n in self.nodes())
         n = self._LITERAL_PREFIX + str(literal_num)
@@ -84,11 +84,21 @@ class QueryGraph(nx.DiGraph):
     def add_question_node(self, n: str, agg: Optional[AggOp] = None):
         self.add_node(n, question_node=True, agg=agg)
 
-    def add_triple(self, s: str, p: str, o: str):
-        self.add_edge(s, o, label=p)
+    def add_triple(self, s: str, p: str, o: str, **attrs):
+        self.add_edge(s, o, label=p, **attrs)
 
-    def add_triples(self, triples: Iterable[Tuple[str, str, str]]):
-        self.add_edges_from([(s, o, dict(label=p)) for s, p, o in triples])
+    def add_triples(self, triples: Iterable[Union[Tuple[str, str, str], Tuple[str, str, str, dict]]]):
+        lst = []
+        for tpl in triples:
+            if len(tpl) == 3:
+                s, p, o = tpl
+                lst.append((s, o, dict(label=p)))
+            elif len(tpl) == 4:
+                s, p, o, attrs = tpl
+                lst.append((s, o, {**dict(label=p), **attrs}))
+            else:
+                raise ValueError("Unexpected number of elements for triple tuple: " + str(tpl))
+        self.add_edges_from(lst)
 
     def add_groupby(self, n: str):
         if self._GROUPBY_KEY not in self.graph:

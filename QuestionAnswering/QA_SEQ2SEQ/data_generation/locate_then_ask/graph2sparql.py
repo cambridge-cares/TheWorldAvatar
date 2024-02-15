@@ -5,7 +5,7 @@ import networkx as nx
 from constants.functions import AggOp, NumOp, StrOp
 from locate_then_ask.query_graph import QueryGraph
 
-QuerySparl = str
+QuerySparql = str
 
 
 class Graph2Sparql:
@@ -15,7 +15,16 @@ class Graph2Sparql:
             return "?" + n
 
         if query_graph.nodes[n].get("literal"):
-            return '"{label}"'.format(label=query_graph.nodes[n]["label"])
+            val = query_graph.nodes[n]["label"]
+            if isinstance(val, str):
+                return '"{label}"'.format(label=val)
+            elif isinstance(val, bool):
+                if val:
+                    return "true"
+                else:
+                    return "false"
+            else:
+                raise ValueError("Unrecognized value type: " + str(val))
         elif query_graph.nodes[n].get("prefixed"):
             return query_graph.nodes[n]["iri"]
         else:
@@ -201,4 +210,4 @@ class Graph2Sparql:
         if limit_clause:
             sparql += "\n" + limit_clause
 
-        return QuerySparl(sparql)
+        return QuerySparql(sparql)

@@ -15,7 +15,7 @@ class SgEntityStore:
     def get(self, entity_iri: str):
         if entity_iri not in self.iri2entity:
             self.iri2entity[entity_iri] = OPltPlot(
-                land_use_type=self.retrieve_landUseType(entity_iri),
+                land_use_type_type=self.retrieve_landUseType(entity_iri),
                 gross_plot_ratio=self.retrieve_omMeasure_byPredicate(
                     entity_iri, predicate="^oplnrgl:appliesTo/oplnrgl:allowsGrossPlotRatio/om:hasValue"
                 ),

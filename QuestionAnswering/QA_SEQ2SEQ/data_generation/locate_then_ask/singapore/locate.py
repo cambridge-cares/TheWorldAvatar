@@ -1,10 +1,14 @@
 import random
-from typing import Literal
 
 from constants.functions import OBE_NUM_OPS
 from constants.namespaces import NAMESPACE2PREFIX, OM, OZNG
 from constants.om import OM_KEY_LABELS
-from constants.plot import OZNG_LANDUSETYPE_LABELS, PLOT_ATTR_LABELS
+from constants.plot import (
+    OZNG_LANDUSETYPE_LABELS,
+    PLOT_ATTR_2_PRED,
+    PLOT_ATTR_LABELS,
+    OPltPlotAttrKey,
+)
 from locate_then_ask.model import OmMeasure
 from locate_then_ask.query_graph import QueryGraph
 from locate_then_ask.singapore.entity_store import SgEntityStore
@@ -23,7 +27,7 @@ class OPltPlotLocator:
     def _locate_measure(
         self,
         query_graph: QueryGraph,
-        key: Literal["GrossPlotRatio", "PlotArea", "GrossFloorArea"],
+        key: OPltPlotAttrKey,
         measure: OmMeasure,
     ):
         operator = random.choice(OBE_NUM_OPS)
@@ -31,8 +35,8 @@ class OPltPlotLocator:
             operator, value=measure.numerical_value
         )
 
-        measurevalue_node = query_graph.make_blank_node(key=key)
-        numval_node = key + "NumericalValue"
+        measurevalue_node = query_graph.make_blank_node()
+        numval_node = key.value + "NumericalValue"
         query_graph.add_literal_node(numval_node)
 
         assert measure.unit_iri.startswith(OM), measure.unit_iri
@@ -41,25 +45,12 @@ class OPltPlotLocator:
         query_graph.add_iri_node(unit_node, prefixed=True)
         unit_verbn = random.choice(OM_KEY_LABELS[unit])
 
-        if key == "GrossPlotRatio":
-            pred = "^oplnrgl:appliesTo/oplnrgl:allowsGrossPlotRatio/om:hasValue"
-        elif key == "PlotArea":
-            pred = "oplt:hasPlotArea/om:hasValue"
-        elif key == "GrossFloorArea":
-            pred = "oplt:hasMaximumPermittedGPR/om:hasValue"
-        else:
-            raise Exception("Unrecognised key: " + key)
-
         query_graph.add_func(
             target_node=numval_node, operator=operator, operand=operand
         )
         query_graph.add_triples(
             [
-                (
-                    "Plot",
-                    pred,
-                    measurevalue_node,
-                ),
+                ("Plot", PLOT_ATTR_2_PRED[key], measurevalue_node, dict(key=key)),
                 (measurevalue_node, "om:hasNumericalValue", numval_node),
                 (measurevalue_node, "om:hasUnit", unit_node),
             ]
@@ -78,41 +69,41 @@ class OPltPlotLocator:
         keys = entity.get_nonnone_keys()
         conds = []
         for k in random.sample(keys, k=attr_num):
-            if k == "land_use_type":
-                assert entity.land_use_type is not None
-                assert entity.land_use_type.startswith(OZNG)
-                clsname = entity.land_use_type[len(OZNG) :]
-                query_graph.add_triple(
-                    "Plot", "ozng:hasLandUseType/a", NAMESPACE2PREFIX[OZNG] + clsname
+            if k is OPltPlotAttrKey.LAND_USE_TYPE_TYPE:
+                assert entity.land_use_type_type is not None
+                assert entity.land_use_type_type.startswith(OZNG)
+                clsname = entity.land_use_type_type[len(OZNG) :]
+                clsname_node = "{prefix}:{name}".format(
+                    prefix=NAMESPACE2PREFIX[OZNG], name=clsname
                 )
+                query_graph.add_iri_node(clsname_node, prefixed=True)
+                query_graph.add_triple("Plot", PLOT_ATTR_2_PRED[k], clsname_node, key=k)
                 cond = "whose {attr} is {value}".format(
                     attr=random.choice(["land use type", "land use classification"]),
                     value=random.choice(OZNG_LANDUSETYPE_LABELS[clsname]),
                 )
-            elif k == "gross_plot_ratio":
+            elif k is OPltPlotAttrKey.GROSS_PLOT_RATIO:
                 assert entity.gross_plot_ratio is not None
                 cond = self._locate_measure(
-                    query_graph, key="GrossPlotRatio", measure=entity.gross_plot_ratio
+                    query_graph, key=k, measure=entity.gross_plot_ratio
                 )
-            elif k == "is_awaiting_detailed_gpr_eval":
+            elif k is OPltPlotAttrKey.IS_AWAITING_DETAILED_GPR_EVAL:
                 assert entity.is_awaiting_detailed_gpr_eval is not None
+                literal_node = query_graph.make_literal_node(entity.is_awaiting_detailed_gpr_eval)
+                query_graph.add_triple("Plot", PLOT_ATTR_2_PRED[k], literal_node, key=k)
                 if entity.is_awaiting_detailed_gpr_eval:
-                    val = "true^^xsd:boolean"
+                    cond = "which is awaiting detailed gross plot ratio evaluation"
                 else:
-                    val = "false^^xsd:boolean"
-                query_graph.add_triple(
-                    "Plot", "oplnrgl:isAwaitingDetailedGPREvaluation", val
-                )
-                cond = "which is awaiting detailed gross plot ratio evaluation"
-            elif k == "plot_area":
+                    cond = "which is not awaiting detailed gross plot ratio evaluation"
+            elif k is OPltPlotAttrKey.PLOT_AREA:
                 assert entity.plot_area is not None
                 cond = self._locate_measure(
-                    query_graph, key="PlotArea", measure=entity.plot_area
+                    query_graph, key=k, measure=entity.plot_area
                 )
-            elif k == "gross_floor_area":
+            elif k is OPltPlotAttrKey.GROSS_FLOOR_AREA:
                 assert entity.gross_floor_area is not None
                 cond = self._locate_measure(
-                    query_graph, key="GrossFloorArea", measure=entity.gross_floor_area
+                    query_graph, key=k, measure=entity.gross_floor_area
                 )
             else:
                 raise Exception("Unexpected key: " + k)
