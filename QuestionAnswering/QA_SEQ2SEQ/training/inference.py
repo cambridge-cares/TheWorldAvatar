@@ -70,7 +70,7 @@ def infer():
             t_end = time.time()
 
             domain = (
-                data_args.domain if data_args.domain != "multi" else datum["domain"]
+                data_args.domain if data_args.domain else datum["domain"]
             )
             writer.writerow(
                 [
