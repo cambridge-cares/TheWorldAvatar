@@ -5,6 +5,7 @@ import json
 from constants.functions import AggOp, NumOp, StrOp
 from constants.ontobuiltenv import OBEAttrKey
 from constants.ontospecies import OSIdentifierKey, OSPropertyKey, OSSpeciesAttrKey
+from constants.plot import OPltPlotAttrKey
 
 
 PUBLIC_ENUMS = {
@@ -15,6 +16,7 @@ PUBLIC_ENUMS = {
     "OSPropertyKey": OSPropertyKey,
     "OSIdentifierKey": OSIdentifierKey,
     "OBEAttrKey": OBEAttrKey,
+    "OPltPlotAttrKey": OPltPlotAttrKey
 }
 
 

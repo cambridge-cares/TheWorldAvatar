@@ -19,7 +19,7 @@ class OPltPlotLocator:
     def __init__(self, store: SgEntityStore):
         self.store = store
 
-    def locate_concept(self, entity_iri: str):
+    def locate_concept_name(self, entity_iri: str):
         query_graph = QueryGraph()
         query_graph.add_topic_node("Plot", iri=entity_iri)
         return query_graph, random.choice(["plot", "land plot"])
@@ -62,13 +62,13 @@ class OPltPlotLocator:
 
         return verbn
 
-    def locate_attrs(self, entity_iri: str, attr_num: int):
-        query_graph, concept = self.locate_concept(entity_iri)
+    def locate_concept_and_literal_multi(self, entity_iri: str, cond_num: int):
+        query_graph, concept = self.locate_concept_name(entity_iri)
 
         entity = self.store.get(entity_iri)
         keys = entity.get_nonnone_keys()
         conds = []
-        for k in random.sample(keys, k=attr_num):
+        for k in random.sample(keys, k=cond_num):
             if k is OPltPlotAttrKey.LAND_USE_TYPE_TYPE:
                 assert entity.land_use_type_type is not None
                 assert entity.land_use_type_type.startswith(OZNG)

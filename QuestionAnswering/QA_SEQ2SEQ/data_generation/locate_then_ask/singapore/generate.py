@@ -10,19 +10,18 @@ import numpy as np
 from tqdm import tqdm
 from constants.fs import ROOTDIR
 from constants.ontobuiltenv import OBE_PROPERTYUSAGE_LABELS, OBEAttrKey
+from constants.plot import OPltPlotAttrKey
 from locate_then_ask.query_graph import QueryGraph
+from locate_then_ask.singapore.ask import OPltPlotAsker
+from locate_then_ask.singapore.entity_store import SgEntityStore
+from locate_then_ask.singapore.locate import OPltPlotLocator
 from utils.numerical import normalize_1d
 
-from .ask import OBEAsker
-from .locate import OBELocator
-from .mock_entity_store import MockOBEEntityStore
 from utils.json import EnumEncoder
 
 
-class OBEDatasetGenerator:
-    SEED_ENTITIES_FILEPATH = os.path.join(
-        ROOTDIR, "data/seed_entities/ontobuiltenv.txt"
-    )
+class SgDatasetGenerator:
+    SEED_ENTITIES_FILEPATH = os.path.join(ROOTDIR, "data/seed_entities/singapore.txt")
 
     ASK2WEIGHT = {
         "name": 1,
@@ -36,50 +35,31 @@ class OBEDatasetGenerator:
     }
 
     @classmethod
-    def retrieve_seed_entities(cls, kg_endpoint: Optional[str]):
+    def retrieve_seed_entities(
+        cls, bg_endpoint: Optional[str], ontop_endpoint: Optional[str]
+    ):
         if not os.path.isfile(cls.SEED_ENTITIES_FILEPATH):
             assert (
-                kg_endpoint is not None
+                bg_endpoint is not None
             ), "No cached seed entities found, kg_endpoint must not be None"
 
             print("No seed entities found. Retrieving seed entities...")
             from locate_then_ask.kg_client import KgClient
 
-            kg_client = KgClient(kg_endpoint)
+            kg_client = KgClient(bg_endpoint)
 
-            iris: List[str] = []
+            query_template = """PREFIX oplt: <https://www.theworldavatar.com/kg/ontoplot/>
 
-            query_template_by_use = """PREFIX dabgeo: <http://www.purl.org/oema/infrastructure/>
-PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
-
-SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {{
-    ?x a/rdfs:subClassOf* obe:Property ;
-       obe:hasPropertyUsage/a obe:{PropertyUsage} ;
-       ?p ?o .
+SELECT DISTINCT ?Plot WHERE {{
+    SERVICE <{ontop}> {{
+        ?Plot a oplt:Plot
+    }}
 }}
-GROUP BY ?x
-ORDER BY DESC(?degree)
-LIMIT {num}"""
+LIMIT 200"""
 
-            for use in OBE_PROPERTYUSAGE_LABELS.keys():
-                query = query_template_by_use.format(PropertyUsage=use, num=20)
-                bindings = kg_client.query(query)["results"]["bindings"]
-                iris.extend(x["x"]["value"] for x in bindings)
-
-            query_template_by_type = """PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
-
-SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {{
-    ?x a {type} ;
-       ?p ?o .
-}}
-GROUP BY ?x
-ORDER BY DESC(?degree)
-LIMIT {num}"""
-
-            for concept, num in (("obe:Flat", 60), ("obe:Property", 40)):
-                query = query_template_by_type.format(type=concept, num=num)
-                bindings = kg_client.query(query)["results"]["bindings"]
-                iris.extend(x["x"]["value"] for x in bindings)
+            query = query_template.format(ontop=ontop_endpoint)
+            bindings = kg_client.query(query)["results"]["bindings"]
+            iris = [x["Plot"]["value"] for x in bindings]
 
             entities = tuple(iris)
             with open(cls.SEED_ENTITIES_FILEPATH, "w") as f:
@@ -91,14 +71,14 @@ LIMIT {num}"""
 
         return [x for x in entities if x]
 
-    def __init__(self, kg_endpoint: Optional[str] = None, synthetic_abox: bool = False):
-        self.locator = OBELocator(MockOBEEntityStore() if synthetic_abox else None)
-        self.asker = OBEAsker()
+    def __init__(
+        self, bg_endpoint: Optional[str] = None, ontop_endpoint: Optional[str] = None
+    ):
+        store = SgEntityStore(bg_endpoint, ontop_endpoint)
+        self.locator = OPltPlotLocator(store)
+        self.asker = OPltPlotAsker()
 
-        if synthetic_abox:
-            self.seed_entities = ["placeholder" for _ in range(100)]
-        else:
-            self.seed_entities = self.retrieve_seed_entities(kg_endpoint)
+        self.seed_entities = self.retrieve_seed_entities(bg_endpoint, ontop_endpoint)
         random.shuffle(self.seed_entities)
 
     def _locate(self, entity: str, locate_strategy: str):
@@ -119,38 +99,32 @@ LIMIT {num}"""
             ask_strategies = [
                 "count",
                 "agg",
-                "name_byExtremeAttr",
-                "attr_byEntityFreq",
                 "attr_byExtremeAttr",
-                "discreteAttr_byExtremeAvgAttr",
             ]
         elif locate_strategy == "concept_and_literal":
-            ask_strategies = ["name", "count", "attribute"]
+            ask_strategies = ["count", "attribute"]
 
             sampled_attr_keys = tuple(
-                key for _, key in query_graph.nodes(data="key") if key is not None
+                key for _, _, key in query_graph.edges(data="key") if key is not None
             )
             unsampled_numerical_keys = [
-                k for k in OBEAsker.NUMERICAL_KEYS if k not in sampled_attr_keys 
+                k for k in OPltPlotAsker.NUMERICAL_KEYS if k not in sampled_attr_keys
             ]
             if unsampled_numerical_keys:
-                ask_strategies.extend(["agg", "name_byExtremeAttr"])
+                ask_strategies.append("agg")
                 if len(unsampled_numerical_keys) >= 2 or any(
-                    k not in sampled_attr_keys and k not in unsampled_numerical_keys for k in OBEAttrKey
+                    k not in sampled_attr_keys
+                    and k not in unsampled_numerical_keys
+                    and k is not OPltPlotAttrKey.IS_AWAITING_DETAILED_GPR_EVAL
+                    for k in OPltPlotAttrKey
                 ):
                     ask_strategies.append("attr_byExtremeAttr")
-                if any(k not in sampled_attr_keys for k in OBEAsker.DISCRETE_ATTRS):
-                    ask_strategies.append("discreteAttr_byExtremeAvgAttr")
-            if any(k not in sampled_attr_keys for k in OBEAsker.DISCRETE_ATTRS):
-                ask_strategies.append("attr_byEntityFreq")
         else:
             raise ValueError("Unexpected locate strategy: " + locate_strategy)
         return ask_strategies
 
     def _ask(self, query_graph: QueryGraph, verbn: str, ask_strategy: str):
-        if ask_strategy == "name":
-            query_sparql, verbn = self.asker.ask_name(query_graph, verbn)
-        elif ask_strategy == "count":
+        if ask_strategy == "count":
             query_sparql, verbn = self.asker.ask_count(query_graph, verbn)
         elif ask_strategy == "attribute":
             attr_num = np.random.choice([1, 2, 3], p=normalize_1d([3, 2, 1]))
@@ -160,24 +134,9 @@ LIMIT {num}"""
         elif ask_strategy == "agg":
             attr_num = np.random.choice([1, 2, 3], p=normalize_1d([3, 2, 1]))
             query_sparql, verbn = self.asker.ask_agg(query_graph, verbn, attr_num)
-        elif ask_strategy == "name_byExtremeAttr":
-            limit = random.randrange(1, 100)
-            query_sparql, verbn = self.asker.ask_name_byExtremeAttr(
-                query_graph, verbn, limit
-            )
-        elif ask_strategy == "attr_byEntityFreq":
-            limit = random.randrange(1, 100)
-            query_sparql, verbn = self.asker.ask_attr_byEntityFreq(
-                query_graph, verbn, limit
-            )
         elif ask_strategy == "attr_byExtremeAttr":
             limit = random.randrange(1, 100)
             query_sparql, verbn = self.asker.ask_attr_byExtremeAttr(
-                query_graph, verbn, limit=limit
-            )
-        elif ask_strategy == "discreteAttr_byExtremeAvgAttr":
-            limit = random.randrange(1, 100)
-            query_sparql, verbn = self.asker.ask_discreteAttr_byExtremeAvgAttr(
                 query_graph, verbn, limit=limit
             )
         else:
@@ -204,8 +163,8 @@ LIMIT {num}"""
 
             example = dict(
                 id=i,
-                domain="ontobuiltenv",
-                verbalization=verbn,
+                domain="singapore",
+                verbalization=verbn + "?",
                 query=dict(
                     sparql=query_sparql,
                     graph=nx.node_link_data(query_graph),
@@ -218,19 +177,20 @@ LIMIT {num}"""
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--kg_endpoint", type=str, default=None)
+    parser.add_argument("--bg_endpoint", type=str, default=None)
+    parser.add_argument("--ontop_endpoint", type=str, default=None)
     parser.add_argument("--n_repeats", type=int, default=1)
-    parser.add_argument("--synthetic_abox", action="store_true")
     args = parser.parse_args()
 
-    ds_gen = OBEDatasetGenerator(
-        kg_endpoint=args.kg_endpoint, synthetic_abox=args.synthetic_abox
+    ds_gen = SgDatasetGenerator(
+        bg_endpoint=args.bg_endpoint,
+        ontop_endpoint=args.ontop_endpoint,
     )
     examples = []
     examples.extend(ds_gen.generate(args.n_repeats))
 
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")
-    filename = "data/ontobuiltenv_{timestamp}.json".format(timestamp=time_label)
+    filename = "data/singapore_{timestamp}.json".format(timestamp=time_label)
 
     with open(os.path.join(ROOTDIR, filename), "w") as f:
         json.dump(examples, f, indent=4, cls=EnumEncoder)

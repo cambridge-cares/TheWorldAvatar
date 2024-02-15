@@ -165,13 +165,12 @@ class OPltPlotAsker:
             ]
         )
 
-        qn_key = random.choice(
-            [
-                x
-                for x in self._find_unsampled_keys(query_graph)
-                if x is not extr_attr_key
-            ]
-        )
+        cands = [
+            x
+            for x in self._find_unsampled_keys(query_graph)
+            if x is not extr_attr_key
+        ]
+        qn_key = random.choice(cands)
         qn_attr_verbn = self._ask_attr(query_graph, qn_key)
         query_graph.add_groupby(qn_key.value)
         query_graph.add_orderby(value_node, desc=modifier is AggOp.MAX)
