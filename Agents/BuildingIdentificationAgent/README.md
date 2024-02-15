@@ -1,7 +1,7 @@
 # Building Identification Agent
 
 
-The Building Identification Agent takes a list of geospatial coordinates as input. These coordinates can specified as part of the JSONObject sent in the POST request to this agent. Alternatively, the user can store these coordinates as Point geometries in a PostgreSQL table and specify the name of this table. The agent retrieves the Universally Unique Identifier (UUID) of the building nearest to each point by querying buildings footprint data from the 'citydb' schema of the 'postgres' database in the stack. These UUIDs are returned within a JSONObject. If the point geometries were queried from a user-specified PostgreSQL table, these UUIDs will also be appended as a column with the name 'building_id' to the same table. This 'building_id' column will have the character varying PostgreSQL data type.
+The Building Identification Agent takes a list of geometries as input. If these geometries are points, they can specified as part of the JSONObject sent in the POST request to this agent. Alternatively, the user can store these geometries in a PostgreSQL table and specify the name of this table. The agent retrieves the Universally Unique Identifier (UUID) of the buildings associated with each geometry by querying buildings footprint data from the 'citydb' schema of the 'postgres' database in the stack. These UUIDs are returned within a JSONObject. If the point geometries were queried from a user-specified PostgreSQL table, the building UUIDs are returned to the user in two possible formats. If the user specifies that there should only be one building matched to each geometry, the building UUIDs are appended as a column with the name 'building_id' to the same table. This 'building_id' column will have the character varying PostgreSQL data type. Alternatively, if the user specifies that multiple buildings need to be matched with each input geometry, a new table is created containing the unique identifiers from the user-specified table and the UUIDs of the buildings matched to each user-specified geometry.
 
 
 ## 1. Agent Deployment
@@ -70,23 +70,29 @@ This endpoint should be used when the user has stored the coordinates that need 
 This endpoint accepts the following POST request parameters.  :
 
 - ```table```: The name of the PostgreSQL table containing the coordinates to be matched as POSTGIS Point geometries. If the table is not located within the "public" schema, the schema name should also be included. For example, if the table is called "test" and it is located in the "industry" schema, the value of this parameter should be specified as the string "industry.test". This table must be stored in a schema within the "postgres" database.
-- ```maxDistance``` (Optional): The maximum allowable distance between the centre of the matched building footprint and the specified coordinates in meters. If the nearest building is further than ```maxDistance```, the matching still takes place but a warning is printed in the Docker logs. The default value of this parameter is 100 meters.
 - ```column```: The column in the PostgreSQL table containing the geometries to be matched.
+- ```maxDistance``` (Optional): The maximum allowable distance between the centre of the matched building footprint and the specified coordinates in meters. If the nearest building is further than ```maxDistance```, the matching still takes place but a warning is printed in the Docker logs. The default value of this parameter is 100 meters. This parameter is only applicable if the geometries in the user-specified table and column are points.
+- ```oneToMany``` (Optional): A Boolean parameter specifying whether each user-specified geometry should be associated with one or several buildings. If this parameter value is set to "true", the code identifies the geometry in the user-specified column closest to each building while excluding geometries based on user-specified attributes. The default value of this parameter is false.
+The following optional parameters are only applicable if ```oneToMany``` is "true".
+- ```newTable``` (Optional): The name of the table in which the results of the matching should be stored. By default, this table is called 'matched_buildings' and it is created in the 'public' schema.
+- ```filterColumns``` (Optional): A JSONArray of strings specifying the columns of the user-specified table containing the attributes required to exclude unwanted geometries. This parameter
+- ```excludedValues``` (Optional): A JSONArray of JSONArrays. Each nested JSONArray contains a list of strings specifying values of the corresponding attribute specified in ```filterColumns``` which should be excluded from the matching.
 
-The following is an example POST request for the postgis route, assuming that the user has created a table called "test" in a schema called "industry" with the required format :
+
+The following is an example POST request for the postgis route, assuming that the user has created a table called "landplot" in the "public" schema with the required format :
 
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","table":"industry.test"}'  "localhost:3838/buildingidentificationagent/postgis"
+curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","table":"public.landplot","column":"lod1Geometry","oneToMany":"true","filterColumns":["LU_DESC"],"excludedValues":[["ROAD", "PARK"]]}'  "localhost:3838/buildingidentificationagent/postgis"
 ```
 
-Upon successful completion, the agent returns a JSONObject indicating the number of buildings matched and their corresponding UUIDs. The following is a representative example: 
+Upon successful completion, the agent returns a JSONObject indicating the number of buildings matched. The following is a representative example: 
 
 ```
-{"number_matched":2,"building_iri":["UUID_fe4d706f-eb92-4382-ba38-9b953af41301","UUID_b86a1c8a-84b8-4ce9-8df6-72016de1fb54"]}
+{"number_matched":106359}
 ```
 
-The list of building UUIDs are also appended as an additional column called "building_iri" to the user-specified table.
+If ```oneToMany`` is false, the list of building UUIDs are appended as an additional column called "building_iri" to the user-specified table. If it is true, a new table is created containing the building IRIs matched to each user-specified geometry. 
 
 
 
