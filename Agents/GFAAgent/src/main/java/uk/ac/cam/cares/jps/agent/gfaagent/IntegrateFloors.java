@@ -86,75 +86,70 @@ public class IntegrateFloors {
                     }
                     
                 }
+                //get data from csv
+                List<FloorsCsv> hdbFloors = new CsvToBeanBuilder(new FileReader(floorsCsv))
+                        .withType(FloorsCsv.class)
+                        .build()
+                        .parse();
+
+
+                //fuzzy match
+                for (int i = 0; i < hdbFloors.size(); i++){
+                    double polyScore = 0.0;
+                    double pointScore = 0.0;
+                    String blk =  hdbFloors.get(i).getBLK();
+                    String address = hdbFloors.get(i).getStreet();
+
+                    Document matchDoc = new Document.Builder(String.valueOf(i))
+                            .addElement(new Element.Builder<String>().setValue(blk).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
+                            .addElement(new Element.Builder<String>().setValue(address).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
+                            .setThreshold(0.5).createDocument();
+                    
+                    Map<String, List<Match<Document>>> resultPoint = matchService.applyMatchByDocId(matchDoc,pointDoc);
+                    Map<String, List<Match<Document>>> resultPoly = matchService.applyMatchByDocId(matchDoc,polyDoc);
+                    
+                    String polyIri = null;
+                    for (Map.Entry<String, List<Match<Document>>> entry : resultPoly.entrySet()) {
+                        for (Match<Document> match : entry.getValue()) {
+                            if(match.getScore().getResult()>polyScore && match.getScore().getResult()>0.5){
+                                System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
+                                polyScore = match.getScore().getResult();
+                                polyIri = match.getMatchedWith().getKey();
+                            }
+                        }
+                    }
+                    String pointIri = null;
+                    for (Map.Entry<String, List<Match<Document>>> entry : resultPoint.entrySet()) {
+                        for (Match<Document> match : entry.getValue()) {
+                            if(match.getScore().getResult()>pointScore && match.getScore().getResult()>0.5){
+                                System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
+                                pointScore = match.getScore().getResult();
+                                pointIri = match.getMatchedWith().getKey();
+                            }
+                        }
+                    }
+                    
+                    //store floors data based on building iri from osm agent
+                    int floors = hdbFloors.get(i).getFloors();
+                    String buildingiri = null;
+                    if(pointScore > polyScore && pointScore != 0) {
+                        buildingiri = pointIri;
+                    } else if (polyScore != 0){
+                        buildingiri = polyIri;
+                    }
+
+                    if (buildingiri != null) {
+                        String buildingSQLUpdate = "UPDATE building b SET storeys_above_ground = " + floors + 
+                                                " FROM cityobject_genericattrib cg\n" + 
+                                                "WHERE b.id = cg.cityobject_id AND cg.strval = '" + buildingiri + "';";
+                        postgisClient.executeUpdate(buildingSQLUpdate);
+                    }
+                    
+                }
             }
         } catch (SQLException e) {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }       
-
-        //get data from csv
-        List<FloorsCsv> hdbFloors = new CsvToBeanBuilder(new FileReader(floorsCsv))
-                .withType(FloorsCsv.class)
-                .build()
-                .parse();
-        
-        
-        //fuzzy match
-        for (int i = 0; i < hdbFloors.size(); i++){
-            double polyScore = 0.0;
-            double pointScore = 0.0;
-            String blk =  hdbFloors.get(i).getBLK();
-            String address = hdbFloors.get(i).getStreet();
-
-            Document matchDoc = new Document.Builder(String.valueOf(i))
-                    .addElement(new Element.Builder<String>().setValue(blk).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-                    .addElement(new Element.Builder<String>().setValue(address).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-                    .setThreshold(0.5).createDocument();
-            
-            Map<String, List<Match<Document>>> resultPoint = matchService.applyMatchByDocId(matchDoc,pointDoc);
-            Map<String, List<Match<Document>>> resultPoly = matchService.applyMatchByDocId(matchDoc,polyDoc);
-            
-            String polyIri = null;
-            for (Map.Entry<String, List<Match<Document>>> entry : resultPoly.entrySet()) {
-                for (Match<Document> match : entry.getValue()) {
-                    if(match.getScore().getResult()>polyScore && match.getScore().getResult()>0.5){
-                        System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
-                        polyScore = match.getScore().getResult();
-                        polyIri = match.getMatchedWith().getKey();
-                    }
-                }
-            }
-            String pointIri = null;
-            for (Map.Entry<String, List<Match<Document>>> entry : resultPoint.entrySet()) {
-                for (Match<Document> match : entry.getValue()) {
-                    if(match.getScore().getResult()>pointScore && match.getScore().getResult()>0.5){
-                        System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
-                        pointScore = match.getScore().getResult();
-                        pointIri = match.getMatchedWith().getKey();
-                    }
-                }
-            }
-            
-            //store floors data based on building iri from osm agent
-            int floors = hdbFloors.get(i).getFloors();
-            String buildingiri = null;
-            if(pointScore > polyScore && pointScore != 0) {
-                buildingiri = pointIri;
-            } else if (polyScore != 0){
-                buildingiri = polyIri;
-            }
-
-            if (buildingiri != null) {
-                String buildingSQLUpdate = "UPDATE b SET b.storeys_above_ground = " + floors + 
-                                        "FROM building b\n" + 
-                                        "INNER JOIN\n" + 
-                                        "cityobject_genericattrib cg\n" + 
-                                        "ON b.id = cg.cityobject_id AND cg.strval = " + buildingiri;
-                postgisClient.executeUpdate(buildingSQLUpdate);
-            }
-            
-        }
-        
-        // beans.forEach(System.out::println);
     }
 
     private static final String polygonSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM polygons WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
