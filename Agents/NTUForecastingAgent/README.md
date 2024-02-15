@@ -27,7 +27,7 @@ If the instructions for the forecasting agent and historical NTUEnergy agent wer
   "services": {
     "includes": [
       "historical-ntuenergy-agent",
-      "forecasting-agent-debug",
+      "forecasting-agent",
       "ntu-forecasting-agent"
     ]
   }
