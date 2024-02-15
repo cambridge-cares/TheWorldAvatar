@@ -16,6 +16,14 @@
             "Source": "<YOUR_WORK_DIR>/TheWorldAvatar/Agents/BMSUpdateAgent/config",
             "Target": "/app/config"
           }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "bms_update_agent_keycloak.json",
+            "File": {
+              "Name":"/app/BMSUpdateAgent/BMSUpdateAgent/src/main/webapp/WEB-INF/keycloak.json"
+            }
+          }
         ]
       }
     }

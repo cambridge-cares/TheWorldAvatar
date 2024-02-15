@@ -15,7 +15,7 @@
           },
           {
             "Type": "volume",
-            "Source": "database",
+            "Source": "keycloak_data",
             "Target": "/opt/keycloak/data"
           },
           {
