@@ -1,5 +1,5 @@
 # Reference published Docker image for Stack-Client resources to use
-FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM ghcr.io/cambridge-cares/stack-client:1.23.5 as stackclients
 
 # ---------------------------------------------
 # Base image build starts here
