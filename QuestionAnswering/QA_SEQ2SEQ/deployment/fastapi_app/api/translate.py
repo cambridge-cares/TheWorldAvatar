@@ -1,4 +1,4 @@
-from functools import lru_cache
+from functools import cache
 import logging
 import os
 import time
@@ -51,14 +51,19 @@ def get_feature_extraction_client():
     return FeatureExtractionClient()
 
 
-@lru_cache()
+def get_domain():
+    return os.getenv("QA_DOMAIN")
+
+
+@cache
 def get_translator(
     seq2seq_client: Annotated[ISeq2SeqClient, Depends(get_seq2seq_client)],
     feature_extraction_client: Annotated[
         IFeatureExtractionClient, Depends(get_feature_extraction_client)
     ],
+    domain: Annotated[str, Depends(get_domain)],
 ):
-    return Translator(seq2seq_client, feature_extraction_client)
+    return Translator(seq2seq_client, feature_extraction_client, domain=domain)
 
 
 def get_preprocessor() -> IPreprocessor:

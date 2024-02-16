@@ -13,7 +13,7 @@ from openai.types.chat.chat_completion_chunk import (
 import pytest
 
 from api.sparql import get_domain2endpoint, get_kg_client_factory
-from api.translate import get_feature_extraction_client, get_seq2seq_client
+from api.translate import get_domain, get_feature_extraction_client, get_seq2seq_client
 from api.chat import get_openai_client, get_openai_config, get_tokens_counter
 from services.chatbot import OpenAiConfig
 from services.kg_execute.kg_client import KgClient
@@ -29,6 +29,11 @@ client = TestClient(app)
 
 def test_translate():
     # arrange
+    def mock_domain():
+        return None
+
+    app.dependency_overrides[get_domain] = mock_domain
+
     def mock_seq2seq():
         class Mock(ISeq2SeqClient):
             def forward(self, text: str):
@@ -68,7 +73,7 @@ def test_translate():
     }
     actual_json = res.json()
     assert isinstance(actual_json, dict)
-    assert expected_json.items() <= actual_json.items()
+    assert expected_json.items() <= actual_json.items(), print(actual_json)
     assert "latency" in actual_json and isinstance(actual_json["latency"], float)
 
 
@@ -109,11 +114,8 @@ def test_sparql():
 async def test_chat():
     # arrange
     def mock_openai_config():
-        return OpenAiConfig(
-            model="test_model",
-            input_limit=1000
-        )
-    
+        return OpenAiConfig(model="test_model", input_limit=1000)
+
     app.dependency_overrides[get_openai_config] = mock_openai_config
 
     def mock_openai_client():

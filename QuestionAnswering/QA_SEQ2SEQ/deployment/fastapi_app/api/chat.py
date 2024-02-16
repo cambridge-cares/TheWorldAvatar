@@ -1,4 +1,4 @@
-from functools import lru_cache
+from functools import cache
 from importlib import resources
 import json
 import logging
@@ -25,14 +25,14 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@lru_cache
+@cache
 def get_openai_client():
     OPENAI_ENDPOINT = os.getenv("OPENAI_ENDPOINT")
     logger.info("Connecting to chatbot at endpoint: " + OPENAI_ENDPOINT)
     return OpenAI(base_url=OPENAI_ENDPOINT, api_key=os.getenv("OPENAI_API_KEY"))
 
 
-@lru_cache
+@cache
 def get_tokens_counter():
     with resources.as_file(
         resources.files("resources.common").joinpath("tokenizer.model")
@@ -44,7 +44,7 @@ def get_tokens_counter():
 
     return get_tokens_num
 
-@lru_cache
+@cache
 def get_openai_config():
     return OpenAiConfig(
         model=os.getenv("OPENAI_MODEL"),

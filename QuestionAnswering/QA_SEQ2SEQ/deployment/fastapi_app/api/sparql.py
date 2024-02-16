@@ -1,4 +1,4 @@
-from functools import lru_cache
+from functools import cache
 import logging
 import os
 import time
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@lru_cache
+@cache
 def get_domain2endpoint():
     return {
         key[len("KG_ENDPOINT_") :].lower(): value

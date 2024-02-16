@@ -49,6 +49,9 @@ class SgCompact2VerboseConverter:
             pred, obj = pattern.tails[0]
             assert pred.endswith("om:hasValue")
 
+            if not obj.startswith("?"):
+                return [], [], [pattern]
+
             """
             ?Plot *om:hasValue {key} .
             ?{key} om:hasNumericalValue ?{key}NumericalValue ; 
@@ -84,7 +87,7 @@ class SgCompact2VerboseConverter:
     def convert(self, sparql_compact: SparqlQuery):
         select_vars_verbose = list(sparql_compact.select_clause.vars)
 
-        bg_patterns_verbose, ontop_patterns_verbose = [], []
+        bg_patterns_verbose, ontop_patterns_verbose = [], [TriplePattern.from_triple("?Plot", "a", "oplt:Plot")]
         for pattern in sparql_compact.where_clause.graph_patterns:
             flag = False
             for func in [

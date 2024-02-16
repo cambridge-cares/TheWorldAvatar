@@ -30,6 +30,7 @@ class TestSgCompact2VerboseConverter:
                 # SELECT DISTINCT (COUNT(?Plot) AS ?PlotCount) WHERE {
                 #     ?LandUseType a ozng:Commercial .
                 #     SERVICE <http://localhost:8000/ontop/sparql> {
+                #         ?Plot a oplt:Plot .
                 #         ?Plot ozng:hasLandUseType ?LandUseType .
                 #     }
                 # }
@@ -47,8 +48,11 @@ class TestSgCompact2VerboseConverter:
                                 endpoint="http://localhost:8000/ontop/sparql",
                                 graph_patterns=[
                                     TriplePattern.from_triple(
+                                        "?Plot", "a", "oplt:Plot"
+                                    ),
+                                    TriplePattern.from_triple(
                                         "?Plot", "ozng:hasLandUseType", "?LandUseType"
-                                    )
+                                    ),
                                 ],
                             ),
                         ]
@@ -61,7 +65,9 @@ class TestSgCompact2VerboseConverter:
                 #   ?Plot oplnrgl:isAwaitingDetailedGPREvaluation ?IsAwaitingDetailedGPREvaluation .
                 # }
                 SparqlQuery(
-                    select_clause=SelectClause(vars=["?GrossPlotRatio", "?IsAwaitingDetailedGPREvaluation"]),
+                    select_clause=SelectClause(
+                        vars=["?GrossPlotRatio", "?IsAwaitingDetailedGPREvaluation"]
+                    ),
                     where_clause=WhereClause(
                         graph_patterns=[
                             TriplePattern.from_triple(
@@ -79,6 +85,7 @@ class TestSgCompact2VerboseConverter:
                 ),
                 # SELECT DISTINCT ?GrossPlotRatio ?IsAwaitingDetailedGPREvaluation ?GrossPlotRatioNumericalValue ?GrossPlotRatioUnit WHERE {
                 #   SERVICES <http://localhost:8000/ontop/sparql> {
+                #     ?Plot a oplt:Plot .
                 #     ?Plot ^oplnrgl:appliesTo/oplnrgl:allowsGrossPlotRatio/om:hasValue ?GrossPlotRatio .
                 #     ?GrossPlotRatio om:hasNumericalValue ?GrossPlotRatioNumericalValue ; om:hasUnit ?GrossPlotRatioUnit .
                 #     ?Plot oplnrgl:isAwaitingDetailedGPREvaluation ?IsAwaitingDetailedGPREvaluation .
@@ -86,13 +93,22 @@ class TestSgCompact2VerboseConverter:
                 # }
                 SparqlQuery(
                     select_clause=SelectClause(
-                        vars=["?GrossPlotRatio", "?IsAwaitingDetailedGPREvaluation","?GrossPlotRatioNumericalValue","?GrossPlotRatioUnit"], solution_modifier="DISTINCT"
+                        vars=[
+                            "?GrossPlotRatio",
+                            "?IsAwaitingDetailedGPREvaluation",
+                            "?GrossPlotRatioNumericalValue",
+                            "?GrossPlotRatioUnit",
+                        ],
+                        solution_modifier="DISTINCT",
                     ),
                     where_clause=WhereClause(
                         graph_patterns=[
                             ServicePattern(
                                 endpoint="http://localhost:8000/ontop/sparql",
                                 graph_patterns=[
+                                    TriplePattern.from_triple(
+                                        "?Plot", "a", "oplt:Plot"
+                                    ),
                                     TriplePattern.from_triple(
                                         "?Plot",
                                         "^oplnrgl:appliesTo/oplnrgl:allowsGrossPlotRatio/om:hasValue",

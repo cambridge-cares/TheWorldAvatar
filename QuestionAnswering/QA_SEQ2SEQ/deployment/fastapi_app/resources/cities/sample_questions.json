@@ -1,7 +1,7 @@
 [
     {
         "title": "King's Lynn",
-        "description": "Queries related to properties of chemical species",
+        "description": "Data about buildings in King's Kynn",
         "questions": [
             "How many buildings are there?",
             "How many properties with previous sales transaction records and energy performance certificate (EPC) data are there?",
@@ -16,6 +16,16 @@
             "Find me all hospitals in the area",
             "Please give me buildings with mixed residential and office use, where at least 65% of the building is for residence",
             "What are the 3 post codes with the lowest average building price?"
+        ]
+    },
+    {
+        "title": "Singapore",
+        "description": "Data about Singapore's master plan zoning",
+        "questions": [
+            "How many land plots are designated for commercial use?",
+            "what is the area of the largest residential lot?",
+            "what is the minimum gross plot ratio of lots designated for health and medical care facilities",
+            "average gross floor area allowed for lots for business activities"
         ]
     }
 ]

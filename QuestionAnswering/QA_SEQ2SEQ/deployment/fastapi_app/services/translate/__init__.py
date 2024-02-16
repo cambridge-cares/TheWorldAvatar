@@ -39,8 +39,9 @@ class Translator:
         self,
         seq2seq_client: ISeq2SeqClient,
         feature_extraction_client: IFeatureExtractionClient,
+        domain: Optional[str] = None
     ):
-        self.domain = os.getenv("QA_DOMAIN")
+        self.domain = domain
         self.model = seq2seq_client
         self.domain2postprocessor: Dict[str, PostProcessor] = dict(
             ontospecies=OSPostProcessor(feature_extraction_client),
