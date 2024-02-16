@@ -262,8 +262,12 @@ public class GeoServerClient extends ContainerClient {
                         String format = timeOptions.getFormat();
 
                         indexerProperties = "TimeAttribute=time\nSchema=location:String,time:java.util.Date,*the_geom:Polygon\nPropertyCollectors=TimestampFileNameExtractorSPI[timeregex](time)";
+                        if (null != format){
                         files.put("timeregex.properties", ("regex=" + regex + ",format=" + format).getBytes());
-
+                    }
+                        else {
+                            files.put("timeregex.properties", ("regex=" + regex).getBytes());
+                        }
                     }
                 }
 
