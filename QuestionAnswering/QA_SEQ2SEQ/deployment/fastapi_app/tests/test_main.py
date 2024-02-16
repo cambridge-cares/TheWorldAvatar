@@ -14,7 +14,8 @@ import pytest
 
 from api.sparql import get_domain2endpoint, get_kg_client_factory
 from api.translate import get_feature_extraction_client, get_seq2seq_client
-from api.chat import get_openai_client, get_tokens_counter
+from api.chat import get_openai_client, get_openai_config, get_tokens_counter
+from services.chatbot import OpenAiConfig
 from services.kg_execute.kg_client import KgClient
 from services.translate.triton_client.feature_extraction_client import (
     IFeatureExtractionClient,
@@ -107,6 +108,14 @@ def test_sparql():
 @pytest.mark.asyncio
 async def test_chat():
     # arrange
+    def mock_openai_config():
+        return OpenAiConfig(
+            model="test_model",
+            input_limit=1000
+        )
+    
+    app.dependency_overrides[get_openai_config] = mock_openai_config
+
     def mock_openai_client():
         class MockCompletions(resources.Completions):
             def __init__(self):

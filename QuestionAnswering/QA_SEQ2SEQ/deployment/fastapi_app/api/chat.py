@@ -12,7 +12,7 @@ from openai import OpenAI
 from pydantic import BaseModel
 import sentencepiece as spm
 
-from services.chatbot import ChatbotClient
+from services.chatbot import ChatbotClient, OpenAiConfig
 
 
 class ChatRequest(BaseModel):
@@ -44,15 +44,21 @@ def get_tokens_counter():
 
     return get_tokens_num
 
+@lru_cache
+def get_openai_config():
+    return OpenAiConfig(
+        model=os.getenv("OPENAI_MODEL"),
+        input_limit=int(os.getenv("OPENAI_INPUT_LIMIT")),
+    )
 
 def get_chatbot_client(
     openai_client: Annotated[OpenAI, Depends(get_openai_client)],
+    openai_config: Annotated[OpenAiConfig, Depends(get_openai_config)],
     tokens_counter: Annotated[Callable[[str], int], Depends(get_tokens_counter)],
 ):
     return ChatbotClient(
         openai_client=openai_client,
-        model=os.getenv("OPENAI_MODEL"),
-        input_limit=int(os.getenv("OPENAI_INPUT_LIMIT")),
+        openai_config=openai_config,
         tokens_counter=tokens_counter,
     )
 

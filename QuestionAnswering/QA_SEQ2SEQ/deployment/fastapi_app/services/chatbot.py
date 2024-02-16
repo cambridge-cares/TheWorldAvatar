@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import json
 import logging
 from importlib import resources
@@ -33,6 +34,12 @@ def binary_search(low: int, high: int, fn: Callable[[int], int], target: int):
     return low
 
 
+@dataclass(frozen=True)
+class OpenAiConfig:
+    model: str
+    input_limit: int
+
+
 class ChatbotClient:
     PROMPT_TEMPLATE: Dict[str, str] = json.loads(
         resources.files("resources.common").joinpath("prompt_template.json").read_text()
@@ -41,22 +48,23 @@ class ChatbotClient:
     def __init__(
         self,
         openai_client: OpenAI,
-        model: str,
-        input_limit: int,
+        openai_config: OpenAiConfig,
         tokens_counter: Callable[[str], int],
     ):
         self.openai_client = openai_client
-        self.model = model
-        self.input_limit = input_limit - tokens_counter(self.PROMPT_TEMPLATE["system"])
+        self.model = openai_config.model
+        self.user_input_limit = openai_config.input_limit - tokens_counter(
+            self.PROMPT_TEMPLATE["system"]
+        )
         self.count_tokens = tokens_counter
 
     def request_stream(self, question: str, data: str) -> Stream[ChatCompletionChunk]:
         content = self.PROMPT_TEMPLATE["user"].format(question=question, data=data)
 
-        if self.count_tokens(content) > self.input_limit:
+        if self.count_tokens(content) > self.user_input_limit:
             logger.info(
                 "The supplied data exceeds the token limit of {num} tokens. The data will be truncated.".format(
-                    num=self.input_limit
+                    num=self.user_input_limit
                 )
             )
             content = self.PROMPT_TEMPLATE["user"].format(question=question, data=data)
@@ -64,7 +72,7 @@ class ChatbotClient:
                 low=0,
                 high=len(content),
                 fn=lambda idx: self.count_tokens(content[:idx]),
-                target=self.input_limit,
+                target=self.user_input_limit,
             )
             content = content[:truncate_idx]
 
