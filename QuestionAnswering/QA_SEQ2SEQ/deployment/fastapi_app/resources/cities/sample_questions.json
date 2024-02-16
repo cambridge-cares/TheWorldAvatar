@@ -1,5 +1,6 @@
 [
     {
+        "domain": "kingslynn",
         "title": "King's Lynn",
         "description": "Data about buildings in King's Kynn",
         "questions": [
@@ -19,6 +20,7 @@
         ]
     },
     {
+        "domain": "singapore",
         "title": "Singapore",
         "description": "Data about Singapore's master plan zoning",
         "questions": [

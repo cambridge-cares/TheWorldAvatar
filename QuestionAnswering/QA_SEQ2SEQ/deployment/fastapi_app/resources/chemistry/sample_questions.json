@@ -1,5 +1,6 @@
 [
     {
+        "domain": "ontospecies",
         "title": "Chemical Species Properties",
         "description": "Queries related to properties of chemical species",
         "questions": [
@@ -18,6 +19,7 @@
         ]
     },
     {
+        "domain": "ontokin",
         "title": "Gas-Phase Reaction Mechanisms",
         "description": "Queries related to the mechanisms of gas-phase reactions",
         "questions": [
@@ -30,6 +32,7 @@
         ]
     },
     {
+        "domain": "ontocompchem",
         "title": "Quantum Chemistry Computations",
         "description": "Queries related to quantum chemistry computations",
         "questions": [

@@ -92,7 +92,7 @@
 <section class="three-quarter-width">
     <h3>Example Questions</h3>
 
-    {% for question_group in sample_questions[superdomain] %}
+    {% for question_group in sample_questions %}
     <button type="submit" class="accordion">{{ question_group["title"] }}</button>
     <div class="accordion-panel">
         <p>{{ question_group["description"] }}</p>

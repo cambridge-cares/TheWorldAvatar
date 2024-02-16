@@ -31,6 +31,11 @@ async def home(request: Request):
     superdomain = os.getenv("QA_SUPERDOMAIN", "chemistry")
     model_path = os.getenv("SEQ2SEQ_MODEL_PATH")
     model_version = model_path.split("/")[-1] if model_path else model_path
+    sample_questions = (
+        SAMPLE_QUESTIONS[superdomain]
+        if not os.getenv("QA_DOMAIN")
+        else [x for x in SAMPLE_QUESTIONS[superdomain] if x["domain"] == os.getenv("QA_DOMAIN")]
+    )
 
     return templates.TemplateResponse(
         "qa.html",
@@ -40,6 +45,6 @@ async def home(request: Request):
             model_version=model_version,
             title=METADATA[superdomain]["title"],
             subtitle_paras=METADATA[superdomain]["subtitle"].split("\n"),
-            sample_questions=SAMPLE_QUESTIONS,
+            sample_questions=sample_questions,
         ),
     )
