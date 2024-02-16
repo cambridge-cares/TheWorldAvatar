@@ -1,5 +1,7 @@
 # NTU Forecasting Agent
 
+NOTE: THIS AGENT IS UNFINISHED
+
 This agent is designed to deploy the forecasting agent for the NTU energy scenario. In order to produce forecasts, requests can be sent to this agent which, if necessary, instantiates triples in the knowledge graph and finally lets the forecasting agent predict the time series according to the request's specified arguments. Thus, the NTU forecasting agent can only be deployed in a stack together with the forecasting agent.
 
 # 1. Setup
