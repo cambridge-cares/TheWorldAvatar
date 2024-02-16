@@ -9,19 +9,25 @@ The agent functions as below:
 
 ## 2. Pre-requisites
 ### 2.1 SensorLogger mobile application setup 
-The SensorLogger mobile application can downloaded either from [GooglePlay](https://play.google.com/store/apps/details?id=com.kelvin.sensorapp&hl=en&gl=US) or [IOS](https://apps.apple.com/us/app/sensor-logger/id1531582925), depending on the operating mobile OS. The steps to configure the endpoints in SensorLogger mobile app can be found [here](https://github.com/tszheichoi/awesome-sensor-logger#Live-Data-Streaming), which can be summarized as below:
+The SensorLogger mobile application can downloaded either from [GooglePlay](https://play.google.com/store/apps/details?id=com.kelvin.sensorapp&hl=en&gl=US) or [IOS](https://apps.apple.com/us/app/sensor-logger/id1531582925), depending on the operating mobile OS. The steps to configure the endpoints in SensorLogger mobile app can be found [here](https://github.com/tszheichoi/awesome-sensor-logger#Live-Data-Streaming), which is summarized as below:
 1) Enable HTTP PUSH under settings 
 2) Specify PUSH URL following `http://<LOCAL-URL>:10102/SensorLoggerMobileAppAgent/update`
 3) Replace `<LOCAL-URL>` with the same network connected from both your local environment and your phone. `<LOCAL-URL>` can be obtained from the IPv4 Address under Wireless LAN adapter Wi-Fi of your server by running `ipconfig` on command prompt.
 
 ### 2.2 Access Agent setup
-The agent has been implemented to work with [Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent), the steps to set up Access Agent as part of the stack can be found here [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent#spinning-up-the-access-agent-as-part-of-a-stack) which can be summarized as below:
+The agent has been implemented to work with [Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent), the steps to set up Access Agent as part of the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent#spinning-up-the-access-agent-as-part-of-a-stack) which is summarized as below:
 1) Replace the `STACK-NAME` with your intended stack-name in the [access-agent.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/AccessAgent/access-agent-dev-stack/access-agent.json) file.
 2) Place the [access-agent.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/AccessAgent/access-agent-dev-stack/access-agent.json) in the [stack-manager config directory].
 
 ## 3. Agent Configuration 
-### 3.1 Downsampling frequency
-The downsampling frequency can be configured in [config.properties](sensorloggermobileappagent/src/main/resources/config.properties).
+#### Downsampling frequency
+The downsampling method and frequency for the different measurements can be configured in [config.properties](sensorloggermobileappagent/src/main/resources/config.properties).
+- `DSResolution` sets the time interval in seconds of the timeseries data to be downsampled.
+- `DStype` refers to the downsampling method used which the enum types can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/core/downsampling#downsampling-type). 
+
+#### Timer Delay and Timer Frequency
+- `timerDelay` sets the initial time delay in seconds before the first timeseries instantiation.
+- `timerFrequency` sets the time in seconds between each subsequent timeseries instantiation.
 
 ## 4. Deploy 
 ### 4.1 Retrieving SensorLoggerMobileAppAgent's image
