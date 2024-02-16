@@ -211,8 +211,8 @@ class BindClause(GraphPattern):
 
 @dataclass(order=True, frozen=True)
 class ServicePattern(GraphPattern):
-    graph_patterns: Tuple[GraphPattern, ...]
     endpoint: str
+    graph_patterns: Tuple[GraphPattern, ...]
 
     def __post_init__(self):
         if not isinstance(self.graph_patterns, tuple):

@@ -10,6 +10,7 @@ from .data_processing.ontokin.postprocess import OKPostProcessor
 from .data_processing.ontospecies.postprocess import OSPostProcessor
 from .data_processing.ontocompchem.postprocess import OCCPostProcessor
 from .data_processing.ontobuiltenv.postprocess import OBEPostProcessor
+from .data_processing.singapore.postprocess import SgPostProcessor
 from .data_processing.postprocess import PostProcessor
 from .data_processing.sparql import postprocess_sparql
 from .sparql import SparqlQuery
@@ -46,6 +47,7 @@ class Translator:
             ontokin=OKPostProcessor(),
             ontocompchem=OCCPostProcessor(),
             kingslynn=OBEPostProcessor(),
+            singapore=SgPostProcessor()
         )
 
     def _get_domain(self, question: str):

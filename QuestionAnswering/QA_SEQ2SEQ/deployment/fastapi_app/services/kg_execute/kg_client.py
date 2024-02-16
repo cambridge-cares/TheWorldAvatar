@@ -25,7 +25,10 @@ PREFIX op: <http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>
-PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>"""
+PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX oplnrgl: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
+PREFIX oplt: <https://www.theworldavatar.com/kg/ontoplot/>
+PREFIX ozng: <https://www.theworldavatar.com/kg/ontozoning/>"""
 
     def __init__(
         self,

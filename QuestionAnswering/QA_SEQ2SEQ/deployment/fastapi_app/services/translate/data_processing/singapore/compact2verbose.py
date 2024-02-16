@@ -120,7 +120,7 @@ class SgCompact2VerboseConverter:
 
         bg_patterns_verbose.append(
             ServicePattern(
-                graph_patterns=ontop_patterns_verbose, endpoint=self.ontop_endpoint
+                endpoint=self.ontop_endpoint, graph_patterns=ontop_patterns_verbose
             )
         )
         return SparqlQuery(
