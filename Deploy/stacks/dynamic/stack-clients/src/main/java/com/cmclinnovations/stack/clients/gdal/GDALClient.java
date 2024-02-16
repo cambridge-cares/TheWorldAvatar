@@ -286,14 +286,17 @@ public class GDALClient extends ContainerClient {
             timeSqlType = "TEXT";
         }
         for (int index = 0; index < timeArray.length(); index++) {
-            
+
             String outputRasterFilePath;
 
             if (null != dateTimeFormat) {
-                outputRasterFilePath = outputDirectory.resolve(variableArrayName + "_" + timeArray.getString(index) + ".tif").toString();}
-            
+                outputRasterFilePath = outputDirectory
+                        .resolve(variableArrayName + "_" + timeArray.getString(index) + ".tif").toString();
+            }
+
             else {
-            outputRasterFilePath = outputDirectory.resolve(variableArrayName + "_" + index + ".tif").toString();}
+                outputRasterFilePath = outputDirectory.resolve(variableArrayName + "_" + index + ".tif").toString();
+            }
 
             String execId = createComplexCommand(gdalContainerId, "gdalwarp", "-srcband", Integer.toString(index + 1),
                     "-t_srs", "EPSG:4326", "-r", "cubicspline", "-wo", "OPTIMIZE_SIZE=YES", "-multi", "-wo",
@@ -305,16 +308,16 @@ public class GDALClient extends ContainerClient {
             errorStream.reset();
         }
 
-    String hereDocument = "CREATE TABLE IF NOT EXISTS " + layername
-            + "_times (bands SERIAL, time " + timeSqlType + " PRIMARY KEY); " +
-            "INSERT INTO " + layername + "_times (time) VALUES " + dateTimes.toString() + ";";
-    String execId = createComplexCommand(postGISContainerId,
-            "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
-            .withHereDocument(hereDocument)
-            .withErrorStream(errorStream)
-            .exec();
+        String hereDocument = "CREATE TABLE IF NOT EXISTS " + layername
+                + "_times (bands SERIAL, time " + timeSqlType + " PRIMARY KEY); " +
+                "INSERT INTO " + layername + "_times (time) VALUES " + dateTimes.toString() + ";";
+        String execId = createComplexCommand(postGISContainerId,
+                "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
+                .withHereDocument(hereDocument)
+                .withErrorStream(errorStream)
+                .exec();
 
-    handleErrors(errorStream, execId, logger);
+        handleErrors(errorStream, execId, logger);
         errorStream.reset();
     }
 
