@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-manager</artifactId>
-  <version>1.23.6-hotfix-building-iri-SNAPSHOT</version>
+  <version>1.23.6</version>
 
   <name>Stack Manager</name>
   <url>https://theworldavatar.io</url>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>com.cmclinnovations</groupId>
       <artifactId>stack-clients</artifactId>
-      <version>1.23.6-hotfix-building-iri-SNAPSHOT</version>
+      <version>1.23.6</version>
     </dependency>
 
     <dependency>
