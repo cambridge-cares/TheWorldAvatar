@@ -208,3 +208,24 @@ class BindClause(GraphPattern):
 
     def __str__(self):
         return "BIND ({expr} AS {var})".format(expr=self.exprn, var=self.var)
+
+@dataclass(order=True, frozen=True)
+class ServicePattern(GraphPattern):
+    graph_patterns: Tuple[GraphPattern, ...]
+    endpoint: str
+
+    def __post_init__(self):
+        if not isinstance(self.graph_patterns, tuple):
+            object.__setattr__(self, "graph_patterns", tuple(self.graph_patterns))
+
+    def __str__(self):
+        return "SERVICE <{endpoint}> {{\n{group_graph_pattern}\n}}".format(
+            endpoint=self.endpoint,
+            group_graph_pattern="\n".join(
+                [
+                    "  " + line
+                    for pattern in self.graph_patterns
+                    for line in pattern.tolines()
+                ]
+            ),
+        )
