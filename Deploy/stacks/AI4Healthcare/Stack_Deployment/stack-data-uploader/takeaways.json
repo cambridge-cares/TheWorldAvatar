@@ -1,0 +1,42 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "takeaways",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "takeaways",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "geom",
+                    "SEPARATOR": "COMMA"
+                },
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "Longitude",
+                    "Y_POSSIBLE_NAMES": "Latitude"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": " takeaways_extended",
+                    "sql": "SELECT geom, \"Name\", \"Address\", \"Coding\", \"Council\" FROM  takeaways",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                }
+            }
+        }
+    ],
+    "mappings": [
+        "FoodRetailing_takeaways.obda"
+    ]
+}
