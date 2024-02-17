@@ -1,40 +1,59 @@
 {
-    "name": "All Data",
+    "name": "All Layers",
     "groups": [
         {
-            "name": "cambridge",
-            "stack": "http://174.138.27.240:3840",
+            "name": "Cam-Ely-Wisbech Buildings",
+            "stack": "http://174.138.27.240:3838",
             "sources": [
                 {
                     "id": "cambridge-source",
                     "type": "vector",
                     "tiles": [
-                        "http://174.138.27.240:3840/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Acambridge_gsl&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://174.138.27.240:3838/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Acambridge_gsl&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
+                },
+                {
+                    "id": "area-of-interest-Cambridge",
+                    "type": "geojson",
+                    "data": "data/aoi_Cambridge.geojson", 
+                    "generateId": true
+                },
+                {
+                    "id": "area-of-interest-Ely",
+                    "type": "geojson",
+                    "data": "data/aoi_Ely.geojson", 
+                    "generateId": true
+                },
+                {
+                    "id": "area-of-interest-Wisbech",
+                    "type": "geojson",
+                    "data": "data/aoi_Wisbech.geojson", 
+                    "generateId": true
                 }
             ],
             "layers": [
                 {
                     "id": "cambridge-layer",
-                    "name": "Cambridge",
+                    "name": "Cambridge-Ely-Wisbech Building",
                     "treeable": false,
                     "source": "cambridge-source",
                     "source-layer": "cambridge_gsl",
                     "type": "fill-extrusion",
+                    "order": 23,
                     "layout": {
                         "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": [
                             "step",
-                            ["get", "Current Energy Efficiency (%)"],
-                            "#E5043E",       
-                            20, "#e88329", 
-                            38, "#f8ad69", 
-                            54, "#f8da22",
-                            68, "#88d14b",
-                            80, "#10b75b",
-                            91, "#0cca82"
+                            ["get", "building_height"],
+                            "#FF0000",       
+                            3.57, "#0769AD", 
+                            7.14, "#0769AD", 
+                            10.71, "#0769AD",
+                            14.28, "#0769AD",
+                            17.85, "#AD0202",
+                            21.42, "#AD0202"
                         ],
                         "fill-extrusion-opacity": 0.9,
                         "fill-extrusion-base": 0,
@@ -45,7 +64,261 @@
                             200
                         ]
                     }
+                },
+                {
+                    "id": "aoi-Cambridge-layer",
+                    "name": "This layer is the area of interest, i.e. greater King's Lynn area", 
+                    "source": "area-of-interest-Cambridge",
+                    "type": "circle",
+                    "treeable": false,
+                    "maxzoom": 12,
+                    "order": 0,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
+                        "circle-opacity": 0.15,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
+                    }
+                },
+                {
+                    "id": "aoi-Ely-layer",
+                    "name": "This layer is the area of interest, i.e. greater King's Lynn area", 
+                    "source": "area-of-interest-Ely",
+                    "type": "circle",
+                    "treeable": false,
+                    "maxzoom": 12,
+                    "order": 0,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
+                        "circle-opacity": 0.15,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
+                    }
+                },
+                {
+                    "id": "aoi-Wisbech-layer",
+                    "name": "This layer is the area of interest, i.e. greater King's Lynn area", 
+                    "source": "area-of-interest-Wisbech",
+                    "type": "circle",
+                    "treeable": false,
+                    "maxzoom": 12,
+                    "order": 0,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
+                        "circle-opacity": 0.15,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
+                    }
                 }
+            ]
+        },
+        {
+            "name": "Kings-Lynn Buildings",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "area-of-interest",
+                    "type": "geojson",
+                    "data": "data/aoi_KingsLynn.geojson", 
+                    "generateId": true
+                },
+                {
+                    "id": "ocgml_buildings",
+                    "type": "geojson",
+                    "data": "data/buildings/os_bha_buildings.geojson"
+                },
+                {
+                    "id": "obe_buildings",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "building_sales",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:transactions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "building_values",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:marketvalues&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "buildings-layer-value",
+                    "name": "Property Value Estimates",
+                    "source": "building_values",
+                    "source-layer": "marketvalues",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case", 
+                            ["==", ["get", "price"], null], "#000000", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "price"]],
+                            50000, "#0769AD",
+                            1200000, "#AD0202"
+                        ]],
+                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "buildings-layer-sales",
+                    "name": "Actual Property Sales",
+                    "source": "building_sales",
+                    "source-layer": "transactions",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 22,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case", 
+                            ["==", ["get", "price"], null], "#000000", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "price"]],
+                            50000, "#0769AD",
+                            1200000, "#AD0202"
+                        ]],
+                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "obe_buildings-layer-usage",
+                    "name": "Buildings with usage information",
+                    "source": "obe_buildings",
+                    "source-layer": "buildings",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 21,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "match",
+                            ["get", "primary_usage_category"],
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Domestic", "#808080",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/EmergencyServices", "#D62728",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/MedicalCare", "#FF7F0E",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Education", "#2CA02C",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic", "#1F77B4",
+                            "#808080"
+                          ],
+                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "aoi-layer",
+                    "name": "This layer is the area of interest, i.e. greater King's Lynn area", 
+                    "source": "area-of-interest",
+                    "type": "circle",
+                    "treeable": false,
+                    "maxzoom": 12,
+                    "order": 0,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
+                        "circle-opacity": 0.15,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
+                    }
+                }
+            ]
+        },
+        {   "name": "GPS Tracking",
+            "stack": "http://174.138.27.240:5007",
+            "sources": [
+                {
+                    "id": "Recorded Points Sources",
+                    "type": "vector",
+                    "tiles": [
+                        "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_data&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "Movement Trajectory Sources",
+                    "type": "raster",
+                    "tiles": [
+                        "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_line&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    ]
+                }
+
+            ],
+            "layers": [
+                {
+                    "id": "Recorded Points_layer",
+                    "name": "Recorded Points",
+                    "source": "Recorded Points Sources",
+                    "source-layer": "gps_data",
+                    "type": "symbol",
+                    "minzoom": 6,
+                    "order": 24,
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "gpslocation2",
+                        "icon-size": 0.37,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                },
+                {
+                    "id": "Movement Trajectory_layer",
+                    "name": "Movement Trajectory",
+                    "source": "Movement Trajectory Sources",
+                    "type": "raster",
+                    "minzoom": 4,
+                    "order": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+
             ]
         },
         {   "name": "Food Hygiene Rating",
@@ -69,9 +342,10 @@
                     "source": "fhr-cambridge-source",
                     "source-layer": "fhr_cambridge",
                     "type": "symbol",
-                    "minzoom": 4,
+                    "minzoom": 6,
+                    "order": 24,
                     "layout": {
-                        "visibility": "visible",
+                        "visibility": "none",
                         "icon-image": "FoodHygieneRating",
                         "icon-size": 0.45,
                         "icon-allow-overlap": true,
@@ -237,7 +511,67 @@
                     }
                 }
             ]
-        }
-        
+        },
+        {   "name": "Green Space",
+            "stack": "http://174.138.27.240:5007",
+            "sources": [
+                {
+                    "id": "green-space-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "green-space_layer",
+                    "name": "Green Space for Cambridgeshire",
+                    "source": "green-space-source",
+                    "type": "raster",
+                    "minzoom": 4,
+                    "order": 1,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                },
+                {
+                    "id": "green-space_layer_2",
+                    "name": "Green Space for Norfolk, including King's Lynn",
+                    "source": "green-space-source",
+                    "type": "raster",
+                    "minzoom": 4,
+                    "order": 1,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                }
+            ]
+        },
+        {   "name": "Cropmap",
+            "stack": "http://174.138.27.240:5007",
+            "sources": [
+                {
+                    "id": "cropmap-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "cropmap_layer",
+                    "name": "Cropmap for Cambridgeshire",
+                    "source": "cropmap-source",
+                    "type": "raster",
+                    "minzoom": 4,
+                    "order": 2,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        } 
     ]
 }
