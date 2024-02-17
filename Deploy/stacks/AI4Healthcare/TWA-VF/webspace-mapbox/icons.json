@@ -20,7 +20,9 @@
 	"ea_water-level": "data/icons/ea_water-level.png",
 	"ea_wind": "data/icons/ea_wind.png",
 	"air_airquality": "data/icons/air_airquality.png",
-	"FHR": "data/icons/FHR.png",
+	"FoodHygieneRating": "data/icons/FoodHygieneRating.png",
+	"gpslocation": "data/icons/gpslocation.png",
+	"gpslocation2": "data/icons/gpslocation2.png",
 
 	"power-primary": "data/icons/power-primary.png",
 	"power-secondary": "data/icons/power-secondary.png",
