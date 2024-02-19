@@ -1,0 +1,5 @@
+rdflib
+networkx
+SPARQLWrapper
+tqdm
+openai
