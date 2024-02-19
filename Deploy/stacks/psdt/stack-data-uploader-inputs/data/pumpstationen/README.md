@@ -1,0 +1,1 @@
+Open the file `Hebewerke-PS-2022.xlsx` in Excel, export it as csv, run the sanitisation script (in the stack inputs folder), and copy the resulting sanitised csv file into a subfolder called `hebewerke/` of the present folder.

@@ -1,0 +1,518 @@
+{
+    "name": "Pirmasens",
+    "stack": "http://localhost:3838",
+    "groups": [
+        {
+            "name": "Gebäude",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "buildings-lod2-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod2/qt_2_0___tileset.json"
+                },
+                {
+                    "id": "hugo-ball-lod3-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_hugoball.json",
+                    "position": [7.621620, 49.191232, 380.0]
+                },
+                {
+                    "id": "hugo-ball-solarpanel-lod3-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_hugoball_solarpanel.json",
+                    "position": [7.621620, 49.191232, 380.0]
+                },
+                {
+                    "id": "leibniz-lod3-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_leibniz.json",
+                    "position": [7.607026, 49.202303, 406.5],
+                    "rotation": [0, 0, 2.93]
+                },
+                {
+                    "id": "leibniz-solarpanel-lod3-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_leibniz_solarpanel.json",
+                    "position": [7.607026, 49.202303, 406.5],
+                    "rotation": [0, 0, 2.93]
+                },
+                {
+                    "id": "erlenbrunnerstr45-lod3-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive.json",
+                    "position": [7.6226484, 49.1804827, 415.0]
+                },
+                {
+                    "id": "erlenbrunnerstr45-solarpanel-lod3-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive_solarpanel.json",
+                    "position": [7.6226484, 49.1804827, 415.0]
+                },
+                {
+                    "id": "measurementstation-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_station.json",
+                    "position": [7.614578, 49.191995, 378.4]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "buildings-lod2-tiles-layer",
+                    "name": "Gebäude (3D, LoD2)",
+                    "source": "buildings-lod2-tiles-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "hugo-ball-lod3-tiles-layer",
+                    "name": "Hugo-Ball-Gymnasium (3D, BIM)",
+                    "source": "hugo-ball-lod3-tiles-source",
+                    "visibility": "none",
+                    "clipping": {
+                        "min": 379.9,
+                        "max": 396.1,
+                        "start": 396.1,
+                        "labels": {
+                            "379.9": "Untergeschoss",
+                            "383.0": "Erdgeschoss",
+                            "386.5": "1. Obergeschoss",
+                            "389.8": "2. Obergeschoss",
+                            "393.2": "3. Obergeschoss",
+                            "396.1": "Dach"
+                        }
+                    }
+                },
+                {
+                    "id": "hugo-ball-solarpanel-lod3-tiles-layer",
+                    "name": "Hugo-Ball-Gymnasium, Solar (3D, BIM)",
+                    "source": "hugo-ball-solarpanel-lod3-tiles-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "leibniz-lod3-tiles-layer",
+                    "name": "Leibniz-Gymnasium (3D, BIM)",
+                    "source": "leibniz-lod3-tiles-source",
+                    "visibility": "none",
+                    "clipping": {
+                        "min": 406.4,
+                        "max": 426.5,
+                        "start": 426.5,
+                        "labels": {
+                            "406.4": "Keller",
+                            "410.3": "Erdgeschoss",
+                            "414.1": "1. Obergeschoss",
+                            "417.9": "2. Obergeschoss",
+                            "421.5": "3. Obergeschoss",
+                            "426.5": "Dach"
+                        }
+                    }
+                },
+                {
+                    "id": "leibniz-solarpanel-lod3-tiles-layer",
+                    "name": "Leibniz-Gymnasium, Solar (3D, BIM)",
+                    "source": "leibniz-solarpanel-lod3-tiles-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "erlenbrunnerstr45-lod3-tiles-layer",
+                    "name": "Erlenbrunnerstr. 45 (3D, BIM)",
+                    "source": "erlenbrunnerstr45-lod3-tiles-source",
+                    "visibility": "none",
+                    "clipping": {
+                        "min": 415.42,
+                        "max": 424.3,
+                        "start": 424.3,
+                        "labels": {
+                            "415.42": "Keller",
+                            "417.42": "Garage",
+                            "418.14": "Erdgeschoss",
+                            "420.82": "1. Obergeschoss",
+                            "424.3": "Dach"
+                        }
+                    }
+                },
+                {
+                    "id": "erlenbrunnerstr45-solarpanel-lod3-tiles-layer",
+                    "name": "Erlenbrunnerstr. 45, Solar (3D, BIM)",
+                    "source": "erlenbrunnerstr45-solarpanel-lod3-tiles-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "measurementstation-tiles-layer",
+                    "name": "ZIMEN-Messstation (3D, BIM)",
+                    "source": "measurementstation-tiles-source",
+                    "visibility": "none"
+                }
+            ]
+        },
+        {
+            "name": "Abwasser",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "pumpingstations-vector-points-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:Pumpstationen",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "main-network-kml-source",
+                    "type": "kml",
+                    "uri": "http://localhost:3838/static/ps/sewage/main_network.kml"
+                },
+                {
+                    "id": "sub-network-kml-source",
+                    "type": "kml",
+                    "uri": "http://localhost:3838/static/ps/sewage/sub_network.kml"
+                },
+                {
+                    "id": "erlenbrunnerstr45-sewage-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive_sewage.json",
+                    "position": [7.622713, 49.180485, 415.0]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "pumpingstations-vector-points-layer",
+                    "name": "Pumpstationen (Symbole)",
+                    "source": "pumpingstations-vector-points-source",
+                    "order": 1001,
+                    "visibility": "none"
+                },
+                {
+                    "id": "main-network-kml-layer",
+                    "name": "Hauptnetz",
+                    "source": "main-network-kml-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "sub-network-kml-layer",
+                    "name": "Nebennetz",
+                    "source": "sub-network-kml-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "erlenbrunnerstr45-sewage-tiles-layer",
+                    "name": "Erlenbrunnerstr. 45 (3D)",
+                    "source": "erlenbrunnerstr45-sewage-tiles-source",
+                    "visibility": "none"
+                }
+            ]
+        },
+        {
+            "name": "Digitales Landschaftsmodell",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "dlm-gew01f-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmgew01f",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "dlm-gew01l-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmgew01l",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "dlm-sie02f-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmsie02f",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "dlm-sie03p-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmsie03p",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "dlm-veg01f-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmveg01f",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "dlm-veg02f-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmveg02f",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "dlm-ver01l-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmver01l",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "dlm-ver02l-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmver02l",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "dlm-ver03f-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmver03f",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "dlm-ver03l-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmver03l",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "dlm-ver07p-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:dlmver07p",
+                    "transparency": true,
+                    "format": "image/png"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "dlm-gew01f-layer",
+                    "name": "Gewässer und Bauwerke an Gewässern (Flächen)",
+                    "source": "dlm-gew01f-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "dlm-gew01l-layer",
+                    "name": "Gewässer und Bauwerke an Gewässern (Linien)",
+                    "source": "dlm-gew01l-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "dlm-sie02f-layer",
+                    "name": "Baulich geprägte Flächen",
+                    "source": "dlm-sie02f-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "dlm-sie03p-layer",
+                    "name": "Bauwerke und sonstige Einrichtungen (Punkte)",
+                    "source": "dlm-sie03p-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "dlm-veg01f-layer",
+                    "name": "Landwirtschaftliche Nutzflächen",
+                    "source": "dlm-veg01f-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "dlm-veg02f-layer",
+                    "name": "Forstwirtschaftliche Nutzflächen",
+                    "source": "dlm-veg02f-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "dlm-ver01l-layer",
+                    "name": "Straßenverkehr (Linien)",
+                    "source": "dlm-ver01l-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "dlm-ver02l-layer",
+                    "name": "Wege (Linien)",
+                    "source": "dlm-ver02l-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "dlm-ver03f-layer",
+                    "name": "Bahnverkehr (Flächen)",
+                    "source": "dlm-ver03f-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "dlm-ver03l-layer",
+                    "name": "Bahnverkehr (Linien)",
+                    "source": "dlm-ver03l-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "dlm-ver07p-layer",
+                    "name": "Angaben zum Straßennetz (Punkte)",
+                    "source": "dlm-ver07p-source",
+                    "visibility": "none"
+                }
+            ]
+        },
+        {
+            "name": "Solarkataster",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "solarirradiation-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:einstrahlung",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "solarpv-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:photovoltaik",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "solarthermal-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:solarthermie",
+                    "transparency": true,
+                    "format": "image/png"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "solarirradiation-layer",
+                    "name": "Einstrahlungsraster",
+                    "source": "solarirradiation-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "solarpv-layer",
+                    "name": "Photovoltaik",
+                    "source": "solarpv-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "solarthermal-layer",
+                    "name": "Solarthermie",
+                    "source": "solarthermal-source",
+                    "visibility": "none"
+                }
+            ]
+        },
+        {
+            "name": "Digitales Geländemodell",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "elevation-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:Elevation",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "elevation-contours-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:HoehenlinienDGM",
+                    "transparency": true,
+                    "format": "image/png"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "elevation-layer",
+                    "name": "Elevation",
+                    "source": "elevation-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "elevation-contours-layer",
+                    "name": "Höhenlinien",
+                    "source": "elevation-contours-source",
+                    "visibility": "none"
+                }
+            ]
+        },
+        {
+            "name": "OpenStreetMap",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "power_lines_lines-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:power_lines_lines",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "power_lines_points-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:power_lines_points",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "power_minor_lines_lines-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:power_minor_lines_lines",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "power_minor_lines_points-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:power_minor_lines_points",
+                    "transparency": true,
+                    "format": "image/png"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "power_lines_lines-layer",
+                    "name": "Elektrische Überlandleitungen (Transmission)",
+                    "source": "power_lines_lines-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "power_lines_points-layer",
+                    "name": "Hochspannungsmasten",
+                    "source": "power_lines_points-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "power_minor_lines_lines-layer",
+                    "name": "Elektrische Überlandleitungen (Verteilung)",
+                    "source": "power_minor_lines_lines-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "power_minor_lines_points-layer",
+                    "name": "Mittelspannungsmasten",
+                    "source": "power_minor_lines_points-source",
+                    "visibility": "none"
+                }
+            ]
+        }
+    ]
+}
