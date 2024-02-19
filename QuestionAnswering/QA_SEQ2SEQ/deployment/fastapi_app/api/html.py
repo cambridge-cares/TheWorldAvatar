@@ -37,8 +37,6 @@ async def home(request: Request):
         if superdomain == "cities"
         else None
     )
-    model_path = os.getenv("SEQ2SEQ_MODEL_PATH")
-    model_version = model_path.split("/")[-1] if model_path else model_path
 
     return templates.TemplateResponse(
         "qa.html",
@@ -46,7 +44,6 @@ async def home(request: Request):
             request=request,
             superdomain=superdomain,
             domains=domain_data,
-            model_version=model_version,
             title=METADATA[superdomain]["title"],
             subtitle_paras=METADATA[superdomain]["subtitle"].split("\n"),
             sample_questions=SAMPLE_QUESTIONS[superdomain],

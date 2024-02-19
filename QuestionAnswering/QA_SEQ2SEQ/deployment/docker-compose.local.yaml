@@ -21,7 +21,6 @@ services:
     build:
       context: fastapi_app
     env_file:
-      - triton-variables.env
       - fastapi-variables.env
     ports:
       - 5000:8000
