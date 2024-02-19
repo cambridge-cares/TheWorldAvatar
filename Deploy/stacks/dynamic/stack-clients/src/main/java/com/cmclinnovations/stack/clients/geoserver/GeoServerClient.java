@@ -262,10 +262,9 @@ public class GeoServerClient extends ContainerClient {
                         String format = timeOptions.getFormat();
 
                         indexerProperties = "TimeAttribute=time\nSchema=location:String,time:java.util.Date,*the_geom:Polygon\nPropertyCollectors=TimestampFileNameExtractorSPI[timeregex](time)";
-                        if (null != format){
-                        files.put("timeregex.properties", ("regex=" + regex + ",format=" + format).getBytes());
-                    }
-                        else {
+                        if (null != format) {
+                            files.put("timeregex.properties", ("regex=" + regex + ",format=" + format).getBytes());
+                        } else {
                             files.put("timeregex.properties", ("regex=" + regex).getBytes());
                         }
                     }
@@ -315,9 +314,10 @@ public class GeoServerClient extends ContainerClient {
 
     private void processDimensions(GeoServerDimensionSettings dimensionSettings, GSResourceEncoder resourceEncoder) {
         Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions = dimensionSettings.getDimensions();
-         if (null != dimensions) {
-        dimensions.entrySet().forEach(entry -> resourceEncoder.setMetadataDimension(entry.getKey(), entry.getValue()));
-         }
+        if (null != dimensions) {
+            dimensions.entrySet()
+                    .forEach(entry -> resourceEncoder.setMetadataDimension(entry.getKey(), entry.getValue()));
+        }
     }
 
     public void addProjectionsToGeoserver(String geoserverContainerID, String wktString, String srid) {
