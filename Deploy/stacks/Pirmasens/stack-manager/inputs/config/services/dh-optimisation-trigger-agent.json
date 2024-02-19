@@ -1,0 +1,38 @@
+{
+    "ServiceSpec": {
+        "Name": "dh-optimisation-trigger-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/dh-optimisation-trigger-agent:1.1.1",
+                "Command": [
+                    "/bin/bash", "./delayed_start.sh"
+                ],
+				"Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "/<REPLACE_WITH_YOUR_PIRMASENS_DIRECTORY>/dh-optimisation-trigger-agent-inputs/",
+                        "Target": "/app/resources"
+                    }
+                ],
+                "Env": [
+                    "NAMESPACE=kb",
+                    "FORECASTING_AGENT_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service",
+                    "DH_OPTIMISATION_AGENT_IRI=https://www.theworldavatar.com/resource/agents/Service__DHOptimisationAgent/Service",
+                    "EMISSION_ESTIMATION_AGENT_IRI=https://www.theworldavatar.com/resource/agents/Service__DHEmissionAgent/Service",
+                    "DISPERSION_INTERACTOR_URL=http://dhstack-dispersion-interactor:8080/DispersionInteractor/InitialiseSimulation"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/dh-optimisation-trigger-agent/"
+        }
+    }
+}
