@@ -2,8 +2,8 @@ services:
   triton:
     build:
       context: triton
-    env_file:
-      - triton-variables.env
+    entrypoint: tritonserver
+    command: --model-repository=/models --model-control-mode=explicit --load-model=seq2seq_kingslynn --load-model=seq2seq_singapore
     shm_size: 256m
     # ports:
     #   - 8000:8000

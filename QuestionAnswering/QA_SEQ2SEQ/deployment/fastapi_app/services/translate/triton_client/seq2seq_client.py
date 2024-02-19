@@ -8,7 +8,7 @@ from .constants import TRITON_ENDPOINT
 
 class ISeq2SeqClient:
     @abstractmethod
-    def forward(self, text: str) -> str:
+    def forward(self, text: str, model: str) -> str:
         pass
 
 
@@ -16,7 +16,13 @@ class Seq2SeqClient(ISeq2SeqClient):
     def __init__(self):
         self.client = httpclient.InferenceServerClient(url=TRITON_ENDPOINT)
 
-    def forward(self, text: str):
+    def forward(self, text: str, model: str):
+        if model not in ["seq2seq_chemistry", "seq2seq_singapore", "seq2seq_kingslynn"]:
+            raise ValueError(
+                "Expects model to be either `seq2seq_chemistry`, `seq2seq_kingslynn`, or `seq2seq_singapore`; found "
+                + model
+            )
+
         text = np.array(
             [text],
             dtype=object,
@@ -28,9 +34,7 @@ class Seq2SeqClient(ISeq2SeqClient):
 
         try:
             # Get Predictions
-            pred_response = self.client.infer(
-                model_name="seq2seq", inputs=input_tensors
-            )
+            pred_response = self.client.infer(model_name=model, inputs=input_tensors)
         except ConnectionRefusedError:
             raise ConnectionRefusedError(
                 "Unable to connect to triton server at the endpoint: "

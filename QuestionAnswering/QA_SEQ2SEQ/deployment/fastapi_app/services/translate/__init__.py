@@ -51,11 +51,21 @@ class Translator:
 
     def nl2sparql(self, question: str, domain: Optional[str] = None):
         question_encoded = preprocess_nl(question)
-        pred_raw = self.model.forward(T5_PREFIX_NL2SPARQL + question_encoded)
-        pred_decoded = postprocess_sparql(pred_raw)
 
         if domain is None:
-            domain = self.model.forward(T5_PREFIX_DOMAINCLS + question_encoded)
+            domain = self.model.forward(
+                T5_PREFIX_DOMAINCLS + question_encoded, model="seq2seq_chemistry"
+            )
+
+        if domain in ["kingslynn", "singapore"]:
+            model_name = domain
+        else:
+            model_name = "chemistry"
+        pred_raw = self.model.forward(
+            T5_PREFIX_NL2SPARQL + question_encoded, model="seq2seq_" + model_name
+        )
+        pred_decoded = postprocess_sparql(pred_raw)
+
         postprocessor = self.domain2postprocessor.get(
             domain, self.identity_postprocessor
         )

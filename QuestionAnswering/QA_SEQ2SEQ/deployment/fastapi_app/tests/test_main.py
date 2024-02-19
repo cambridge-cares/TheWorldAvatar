@@ -31,7 +31,7 @@ def test_translate():
     # arrange
     def mock_seq2seq():
         class Mock(ISeq2SeqClient):
-            def forward(self, text: str):
+            def forward(self, text: str, model: str):
                 if text.startswith("translate to SPARQL: "):
                     return "SELECT var_s WHERE &lcub; var_s var_p var_o . &rcub;"
                 elif text.startswith("classify query domain: "):
