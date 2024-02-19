@@ -3,7 +3,7 @@
     "Name": "keycloak",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "quay.io/keycloak/keycloak",
+        "Image": "quay.io/keycloak/keycloak:latest",
         "Command": [
           "./keycloak_start.sh"
         ],
