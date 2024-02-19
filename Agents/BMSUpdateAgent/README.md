@@ -23,13 +23,13 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 Then build image with:
 ```
-docker build . -t bms-update-agent:1.1.0
+docker build . -t bms-update-agent:1.2.0
 ```
 
 ## 1.2. Edit and Add Agent Config to Stack Manager
 Open `stack-manager-input-config-service/bms-update-agent.json` and under the Mounts section, modify the Source and insert the filepath of where the config folder is located at (For Windows users using WSL on Docker, the file path should start with /mnt/c/, which is equivalent to C://).
 
-Copy `stack-manager-input-config-service/bms-update-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
+Copy `stack-manager-input/config/services/bms-update-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
 
 Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it doesn't exist. If it exists already, append the agent to the file as follows:
 ```json
@@ -110,9 +110,10 @@ Please refer to [Deploy/stacks/dynamic/examples/services/keycloak](https://githu
 After BMSUpdateAgent client has been registered in Keycloak,
 
 1. Download client adapter from keycloak admin console.
-2. Replace `realm`, `resource` and `secret` in [src/main/webapp/WEB-INF/keycloak.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/BMSUpdateAgent/src/main/webapp/WEB-INF/keycloak.json)
-3. Replace `STACK_NAME` in src/main/webapp/WEB-INF/keycloak.json
-4. (DEVELOPER) Update src/main/webapp/WEB-INF/web.xml to set up authorization on more endpoints.
+2. Copy [stack-manager-input/secets/bms_updateagent_keycloak.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/stack-manager-input/secrets/bms-update-agent-keycloak.json) to the stack manager's input secrets folder.
+3. Replace `realm`, `resource` and `secret` in the copied secret file
+4. Replace `STACK_NAME` in the copied secret file
+5. (DEVELOPER) Update src/main/webapp/WEB-INF/web.xml to set up authorization on more endpoints.
 
 # 4. Usage
 ## 4.1. Set Route

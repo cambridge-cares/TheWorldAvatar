@@ -23,15 +23,32 @@ This folder contains example keycloak configuration.
    2. Copy the PEM certificate files to stack manger secret folder
 6. Create `keycloak_admin_username` and `keycloak_admin_password` in stack manger secret folder. This will be the credential for the Keycloak Admin Portal.
 
-## Additional Resources
-The above steps will set up the Keycloak container in stack. To configure authorization on individual agent, please refer to the following resources:
-- [Server administration: create and manage realms, users and clients](https://www.keycloak.org/docs/23.0.4/server_admin/)
-- [Java servlet filter adapter: set up authorization on endpoints](https://www.keycloak.org/docs/latest/securing_apps/#_servlet_filter_adapter)
-  - A working examples can be found at [BMSUpdateAgent](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/BMSUpdateAgent/src/main/webapp/WEB-INF/web.xml)
-  - This adapter has been [deprecated](https://www.keycloak.org/2022/02/adapter-deprecation.html). Alternatives haven't been tested with JPS agents.
-- [Step by step guide on managing resource servers](https://www.keycloak.org/docs/23.0.4/authorization_services/#_resource_server_overview)
-  - [Client configuration reference](https://www.keycloak.org/docs/23.0.4/server_admin/#con-basic-settings_server_administration_guide)
-  - Since JPS agents run with reverse proxy, the `auth-server-url` in the downloaded client adapter config need to be updated to the internal address (`http://<STACK_NAME>-keycloak:8080/keycloak/`) of the keycloak container. An example can be found at [BMSUpdateAgent](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/BMSUpdateAgent/src/main/webapp/WEB-INF/keycloak.json)
+## Keycloak Resource Client Set Up
+The above steps will set up the Keycloak container in stack. To configure authorization on individual agent, please refer to the following steps and resources:
+1. Configure the agent with Keycloak Java servlet filter adapter
+   - [Java servlet filter adapter: set up authorization on endpoints](https://www.keycloak.org/docs/latest/securing_apps/#_servlet_filter_adapter)
+   - A working examples can be found at [BMSUpdateAgent web.xml](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/BMSUpdateAgent/src/main/webapp/WEB-INF/web.xml)
+   - This adapter has been [deprecated](https://www.keycloak.org/2022/02/adapter-deprecation.html). Alternatives haven't been tested with JPS agents.
+2. Register resource client in Keycloak.
+   - [Server administration: create and manage realms, users and clients](https://www.keycloak.org/docs/23.0.4/server_admin/)
+   - [Step by step guide on managing resource servers](https://www.keycloak.org/docs/23.0.4/authorization_services/#_resource_server_overview)
+   - [Client configuration reference](https://www.keycloak.org/docs/23.0.4/server_admin/#con-basic-settings_server_administration_guide)
+
+3. Update `Dockerfile` of the agent 
+   1.  Build agent project in exploded file structure form by changing mvn task from `clean package` to `clean compile war:exploded`
+   ```
+    RUN --mount=type=cache,target=/root/.m2/repository mvn clean compile war:exploded
+   ```
+   2. Copy the exploded file compiled to tomcat
+   ```
+    COPY --from=builder /root/BMSUpdateAgent/target/bms-update-agent $CATALINA_HOME/webapps/bms-update-agent
+   ```
+   - Example `Dokerfile` can be found at [BMSUpdateAgent Dockerfile](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/Dockerfile)
+3. Build image and push to registry
+4. Include the `keycloak.json` adapter file downloaded in step1 as a secret of stack-manager. Update `auth-server-url` to the internal address (`http://<STACK_NAME>-keycloak:8080/keycloak/`) of the keycloak container, because JPS agents run with reverse proxy.
+   - Example `keycloak.json` file can be found at [BMSUpdateAgent bms_update_agent_keycloak.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/stack-manager-input/secrets/bms_update_agent_keycloak.json)
+   - Example stack manager client config at [BMSUpdateAgent bms_update_agent.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/stack-manager-input/services/bms_update_agent.json)
+
 
 ## Troubleshoot
 - [Admin console not loading and hostname related issues](https://github.com/keycloak/keycloak/issues/14666)
