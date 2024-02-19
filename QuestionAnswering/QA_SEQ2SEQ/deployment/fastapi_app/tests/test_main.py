@@ -13,7 +13,7 @@ from openai.types.chat.chat_completion_chunk import (
 import pytest
 
 from api.sparql import get_domain2endpoint, get_kg_client_factory
-from api.translate import get_domain, get_feature_extraction_client, get_seq2seq_client
+from api.translate import get_feature_extraction_client, get_seq2seq_client
 from api.chat import get_openai_client, get_openai_config, get_tokens_counter
 from services.chatbot import OpenAiConfig
 from services.kg_execute.kg_client import KgClient
@@ -29,11 +29,6 @@ client = TestClient(app)
 
 def test_translate():
     # arrange
-    def mock_domain():
-        return None
-
-    app.dependency_overrides[get_domain] = mock_domain
-
     def mock_seq2seq():
         class Mock(ISeq2SeqClient):
             def forward(self, text: str):
@@ -58,7 +53,10 @@ def test_translate():
     app.dependency_overrides[get_feature_extraction_client] = mock_feature_extraction
 
     # act
-    res = client.post("/translate", json={"question": "What is the charge of benzene?"})
+    res = client.post(
+        "/translate",
+        json={"question": "What is the charge of benzene?", "domain": None},
+    )
 
     # assert
     assert res.status_code == 200

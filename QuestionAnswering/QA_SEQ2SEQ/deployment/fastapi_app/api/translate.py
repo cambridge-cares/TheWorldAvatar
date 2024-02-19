@@ -23,6 +23,7 @@ from services.translate import Translator, Translator
 
 class TranslateRequest(BaseModel):
     question: str
+    domain: Optional[str]
 
 
 class TranslateResponseSparql(BaseModel):
@@ -51,19 +52,14 @@ def get_feature_extraction_client():
     return FeatureExtractionClient()
 
 
-def get_domain():
-    return os.getenv("QA_DOMAIN")
-
-
 @cache
 def get_translator(
     seq2seq_client: Annotated[ISeq2SeqClient, Depends(get_seq2seq_client)],
     feature_extraction_client: Annotated[
         IFeatureExtractionClient, Depends(get_feature_extraction_client)
     ],
-    domain: Annotated[str, Depends(get_domain)],
 ):
-    return Translator(seq2seq_client, feature_extraction_client, domain=domain)
+    return Translator(seq2seq_client, feature_extraction_client)
 
 
 def get_preprocessor() -> IPreprocessor:
@@ -89,7 +85,9 @@ def translate(
 
     logger.info("Sending translation request to triton server")
     start = time.time()
-    translation_result = translator.nl2sparql(preprocessed_text.for_trans)
+    translation_result = translator.nl2sparql(
+        preprocessed_text.for_trans, domain=req.domain
+    )
     end = time.time()
 
     logger.info("Translation result: " + str(translation_result))

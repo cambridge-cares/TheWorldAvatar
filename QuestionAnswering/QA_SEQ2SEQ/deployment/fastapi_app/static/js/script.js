@@ -27,6 +27,7 @@ Global states
 
 const globalState = (function () {
     const states = {
+        domain: null,
         isProcessing: false,
         chatbotLatency: null,
         err: null
@@ -72,7 +73,7 @@ async function fetchTranslation(question) {
             "Accept": "application/json",
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ question })
+        body: JSON.stringify({ question, domain: globalState.get("domain") })
     })
         .then(throwErrorIfNotOk)
         .then(res => res.json())
@@ -113,10 +114,14 @@ const errorContainer = (function () {
     }
 })();
 
-globalState.registerWatcher("err", (oldVal, newVal) => {
+globalState.registerWatcher("err", (_, newVal) => {
     if (newVal) {
         errorContainer.displayError(newVal)
     }
+})
+
+globalState.registerWatcher("domain", (_, newVal) => {
+    document.getElementById("domain-select").value = newVal;
 })
 
 const inferenceMetadataCard = (function () {
@@ -364,7 +369,7 @@ const chatbotResponseCard = (function () {
                     } catch (err) {
                         console.log("Unexpected data received from streaming server:\n".concat(msg))
                     }
-    
+
                     if (datum !== null) {
                         chatbotResponsePara.innerHTML += datum["content"]
                         if (/\s/.test(chatbotResponsePara.innerHTML.charAt(0))) {
@@ -374,7 +379,7 @@ const chatbotResponseCard = (function () {
                     }
                 }
             })
-            
+
             if (streamInterrupted) {
                 return reader.cancel()
             } else {

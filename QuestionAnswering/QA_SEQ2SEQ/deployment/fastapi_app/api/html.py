@@ -29,22 +29,26 @@ router = APIRouter()
 @router.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     superdomain = os.getenv("QA_SUPERDOMAIN", "chemistry")
+    domain_data = (
+        [
+            dict(value=x["domain"], label=x["label"])
+            for x in SAMPLE_QUESTIONS[superdomain]
+        ]
+        if superdomain == "cities"
+        else None
+    )
     model_path = os.getenv("SEQ2SEQ_MODEL_PATH")
     model_version = model_path.split("/")[-1] if model_path else model_path
-    sample_questions = (
-        SAMPLE_QUESTIONS[superdomain]
-        if not os.getenv("QA_DOMAIN")
-        else [x for x in SAMPLE_QUESTIONS[superdomain] if x["domain"] == os.getenv("QA_DOMAIN")]
-    )
 
     return templates.TemplateResponse(
         "qa.html",
         dict(
             request=request,
             superdomain=superdomain,
+            domains=domain_data,
             model_version=model_version,
             title=METADATA[superdomain]["title"],
             subtitle_paras=METADATA[superdomain]["subtitle"].split("\n"),
-            sample_questions=sample_questions,
+            sample_questions=SAMPLE_QUESTIONS[superdomain],
         ),
     )

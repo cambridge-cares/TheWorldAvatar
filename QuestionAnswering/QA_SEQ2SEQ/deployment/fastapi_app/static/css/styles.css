@@ -28,6 +28,15 @@
     color: #338cea;
 }
 
+#domain-container {
+    position: absolute;
+    top: calc(50% - 60px);
+    left: calc(50% - min(450px, 37.5%));
+    padding: 5px 10px;
+    background: white;
+    color: #338cea;
+}
+
 .special-char {
     cursor: pointer;
 }

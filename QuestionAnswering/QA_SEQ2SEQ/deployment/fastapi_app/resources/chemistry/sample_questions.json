@@ -1,7 +1,7 @@
 [
     {
         "domain": "ontospecies",
-        "title": "Chemical Species Properties",
+        "label": "Chemical Species Properties",
         "description": "Queries related to properties of chemical species",
         "questions": [
             "What is the charge of benzene?",
@@ -20,7 +20,7 @@
     },
     {
         "domain": "ontokin",
-        "title": "Gas-Phase Reaction Mechanisms",
+        "label": "Gas-Phase Reaction Mechanisms",
         "description": "Queries related to the mechanisms of gas-phase reactions",
         "questions": [
             "list all mechanisms that involve O, H, and AR",
@@ -33,7 +33,7 @@
     },
     {
         "domain": "ontocompchem",
-        "title": "Quantum Chemistry Computations",
+        "label": "Quantum Chemistry Computations",
         "description": "Queries related to quantum chemistry computations",
         "questions": [
             "what is the optimized geometry of O2 at the UB3LYP level of theory",

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import logging
-import os
 from typing import Dict, Optional
 
 
@@ -11,7 +10,7 @@ from .data_processing.ontospecies.postprocess import OSPostProcessor
 from .data_processing.ontocompchem.postprocess import OCCPostProcessor
 from .data_processing.ontobuiltenv.postprocess import OBEPostProcessor
 from .data_processing.singapore.postprocess import SgPostProcessor
-from .data_processing.postprocess import PostProcessor
+from .data_processing.postprocess import IdentityPostProcessor, PostProcessor
 from .data_processing.sparql import postprocess_sparql
 from .sparql import SparqlQuery
 from .triton_client.seq2seq_client import ISeq2SeqClient
@@ -39,33 +38,31 @@ class Translator:
         self,
         seq2seq_client: ISeq2SeqClient,
         feature_extraction_client: IFeatureExtractionClient,
-        domain: Optional[str] = None
     ):
-        self.domain = domain
         self.model = seq2seq_client
         self.domain2postprocessor: Dict[str, PostProcessor] = dict(
             ontospecies=OSPostProcessor(feature_extraction_client),
             ontokin=OKPostProcessor(),
             ontocompchem=OCCPostProcessor(),
             kingslynn=OBEPostProcessor(),
-            singapore=SgPostProcessor()
+            singapore=SgPostProcessor(),
         )
+        self.identity_postprocessor = IdentityPostProcessor()
 
-    def _get_domain(self, question: str):
-        if self.domain:
-            return self.domain
-        return self.model.forward(T5_PREFIX_DOMAINCLS + question)
-
-    def nl2sparql(self, question: str):
+    def nl2sparql(self, question: str, domain: Optional[str] = None):
         question_encoded = preprocess_nl(question)
-
-        domain = self._get_domain(question_encoded)
         pred_raw = self.model.forward(T5_PREFIX_NL2SPARQL + question_encoded)
         pred_decoded = postprocess_sparql(pred_raw)
 
+        if domain is None:
+            domain = self.model.forward(T5_PREFIX_DOMAINCLS + question_encoded)
+        postprocessor = self.domain2postprocessor.get(
+            domain, self.identity_postprocessor
+        )
+
         try:
             pred_decoded_parsed = SparqlQuery.fromstring(pred_decoded)
-            pred_verbose = self.domain2postprocessor[domain].postprocess(
+            pred_verbose = postprocessor.postprocess(
                 query=pred_decoded_parsed, nlq=question
             )
             pred_verbose_str = str(pred_verbose)

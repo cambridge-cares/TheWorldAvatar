@@ -31,6 +31,17 @@
         <span class="special-char" onclick="inputField.addToInputText('°C')"><u>°C</u></span>
         <span class="special-char" onclick="inputField.addToInputText('°F')"><u>°F</u></span>
     </div>
+    {% elif superdomain == "cities" %}
+    <div id="domain-container">
+        <label style="margin: 0" for="domain-select">Choose a domain: </label>
+        <select id="domain-select" onchange='globalState.set("domain", this.value)'>
+            {% for item in domains %}
+            <option value='{{ item["value"] }}'>
+                {{ item["label"] }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
     {% endif %}
 
     <div class="input-group">
@@ -93,12 +104,13 @@
     <h3>Example Questions</h3>
 
     {% for question_group in sample_questions %}
-    <button type="submit" class="accordion">{{ question_group["title"] }}</button>
+    <button type="submit" class="accordion">{{ question_group["label"] }}</button>
     <div class="accordion-panel">
         <p>{{ question_group["description"] }}</p>
         <ul>
             {% for question in question_group["questions"] %}
-            <li class="sample-question" onclick='inputField.populateInputText("{{question}}"); askQuestion();'>
+            <li class="sample-question"
+                onclick='inputField.populateInputText("{{ question }}"); globalState.set("domain", "{{ question_group["domain"] }}"); askQuestion();'>
                 {{ question }}
             </li>
             {% endfor %}

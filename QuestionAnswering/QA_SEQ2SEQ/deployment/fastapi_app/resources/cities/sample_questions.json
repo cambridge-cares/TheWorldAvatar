@@ -1,7 +1,7 @@
 [
     {
         "domain": "kingslynn",
-        "title": "King's Lynn",
+        "label": "Buildings in King's Lynn",
         "description": "Data about buildings in King's Kynn",
         "questions": [
             "How many buildings are there?",
@@ -21,7 +21,7 @@
     },
     {
         "domain": "singapore",
-        "title": "Singapore",
+        "label": "Singapore's Land Plots",
         "description": "Data about Singapore's master plan zoning",
         "questions": [
             "How many land plots are designated for commercial use?",
