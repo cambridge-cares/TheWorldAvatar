@@ -19,7 +19,7 @@ Emission,Class,,,,,,Emission emitted by point source,https://www.theworldavatar.
 nx,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Number of cells in x direction,https://www.theworldavatar.com/kg/ontodispersion/,
 ny,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Number of cells in y direction,https://www.theworldavatar.com/kg/ontodispersion/,
 z,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Height,IS-A,,,,Height to simulate,https://www.theworldavatar.com/kg/ontodispersion/,
-SimulationTime,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Unix timestamp to run the simulation,https://www.theworldavatar.com/kg/ontodispersion/,
+SimulationTime,Class,http://www.w3.org/2006/time#Instant,IS-A,,,,Unix timestamp to run the simulation,https://www.theworldavatar.com/kg/ontodispersion/,
 NO2,Class,PollutantID,IS-A,,,,Nitrogen dioxide,https://www.theworldavatar.com/kg/ontodispersion/,NO&#x2082;
 NOx,Class,PollutantID,IS-A,,,,Nitrogen oxides,https://www.theworldavatar.com/kg/ontodispersion/,NO&#8339;
 uHC,Class,PollutantID,IS-A,,,,Unburned hydrocarbon,https://www.theworldavatar.com/kg/ontodispersion/,Unburned hydrocarbons

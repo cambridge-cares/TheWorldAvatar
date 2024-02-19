@@ -1,0 +1,21 @@
+Provide a compilation of chemical compounds exhibiting a {PropertyName} that falls below {minvalue} and surpasses {maxvalue}.
+Enumerate a series of molecules wherein the {PropertyName} is lesser than {minvalue} and greater than {maxvalue}.
+Offer a catalog of molecular species with a {PropertyName} value that is below {minvalue} and above {maxvalue}.
+Present a roster of chemical substances showcasing a {PropertyName} that is lower than {minvalue} and higher than {maxvalue}.
+List various compounds characterized by a {PropertyName} below {minvalue} and above {maxvalue}.
+Outline a selection of molecules displaying a {PropertyName} below {minvalue} and exceeding {maxvalue}.
+Compile a record of molecular species with a {PropertyName} value that falls below {minvalue} and surpasses {maxvalue}.
+Provide a rundown of chemical compounds exhibiting a {PropertyName} lower than {minvalue} and higher than {maxvalue}.
+Offer a comprehensive list of molecules demonstrating a {PropertyName} that is beneath {minvalue} and above {maxvalue}.
+Enumerate several molecular species with a {PropertyName} value below {minvalue} and beyond {maxvalue}.
+Present a catalogue of chemical substances characterized by a {PropertyName} that is lower than {minvalue} and greater than {maxvalue}.
+List various compounds showcasing a {PropertyName} below {minvalue} and surpassing {maxvalue}.
+Outline a collection of molecules displaying a {PropertyName} below {minvalue} and higher than {maxvalue}.
+Compile a roster of molecular species with a {PropertyName} value that falls below {minvalue} and exceeds {maxvalue}.
+Provide a summary of chemical compounds exhibiting a {PropertyName} lower than {minvalue} and surpassing {maxvalue}.
+Offer an inventory of molecules demonstrating a {PropertyName} that is beneath {minvalue} and above {maxvalue}.
+Enumerate multiple molecular species with a {PropertyName} value below {minvalue} and beyond {maxvalue}.
+Present a compendium of chemical substances characterized by a {PropertyName} that is lower than {minvalue} and greater than {maxvalue}.
+List various compounds showcasing a {PropertyName} below {minvalue} and exceeding {maxvalue}.
+Outline a variety of molecules displaying a {PropertyName} below {minvalue} and surpassing {maxvalue}.
+Species with {PropertyName} lower than {minvalue} and higher than {maxvalue}.
