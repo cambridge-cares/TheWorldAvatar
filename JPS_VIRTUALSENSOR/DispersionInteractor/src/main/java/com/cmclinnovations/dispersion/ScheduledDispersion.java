@@ -22,8 +22,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * only works with ship input agent with live data enabled
  */
 @WebServlet(urlPatterns = { "/StartScheduledDispersion" })
-public class StartScheduledDispersion extends HttpServlet {
-    private static final Logger LOGGER = LogManager.getLogger(StartScheduledDispersion.class);
+public class ScheduledDispersion extends HttpServlet {
+    private static final Logger LOGGER = LogManager.getLogger(ScheduledDispersion.class);
     private static final ScheduledExecutorService scheduler = Executors
             .newScheduledThreadPool(1);
     private QueryClient queryClient;
