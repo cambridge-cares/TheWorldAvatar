@@ -241,7 +241,8 @@ p {
     position: absolute;
     bottom: 30;
     left: 0;
-    right: 0
+    right: 0;
+    z-index: 1
 }
 
 #returnContainer {
