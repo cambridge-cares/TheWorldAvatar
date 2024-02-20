@@ -121,7 +121,10 @@ globalState.registerWatcher("err", (_, newVal) => {
 })
 
 globalState.registerWatcher("domain", (_, newVal) => {
-    document.getElementById("domain-select").value = newVal;
+    const elem = document.getElementById("domain-select")
+    if (elem) {
+        elem.value = newVal;
+    }
 })
 
 const inferenceMetadataCard = (function () {
