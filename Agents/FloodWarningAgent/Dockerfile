@@ -1,14 +1,14 @@
 # Install the Flood Alerts/Warnings Agent in Docker container
 #==================================================================================================
 # Reference published Docker image for Stack-Client resources to use
-FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM ghcr.io/cambridge-cares/stack-client:1.20.1 as stackclients
 
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
 FROM python:3.9.14-slim-buster as base
 # Meta data
-LABEL authors = "mh807@cam.ac.uk, mm2692@cam.ac.uk"
+LABEL authors = "mh807@cam.ac.uk"
 LABEL description = "Flood Warnings Agent"
 
 # Keeps Python from generating .pyc files in the container
