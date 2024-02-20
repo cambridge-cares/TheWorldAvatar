@@ -61,6 +61,12 @@ public class ShipInputAgent extends HttpServlet {
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
+
+            if (client != null) {
+                LOGGER.info("There is probably an ongoing live updates going on, ignoring request");
+                return;
+            }
+
             client = new AisStreamWebsocketClient(uri, queryClient);
             client.connect();
         } else if (req.getServletPath().contentEquals(UPDATE_PATH)) {

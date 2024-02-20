@@ -16,5 +16,13 @@ Relevant environment variables:
 2) BOUNDING_BOXES: Refer to "BoundingBoxes" in https://aisstream.io/documentation
 3) USE_LIVE_DATA: Accepted values - true/false. If set to true, live data updates will begin on container startup. If set to false, live updates can still be triggered manually via the route below.
 
-Route: curl -X POST http://localhost:3838/ship-input-agent/live-server
+Route: http://localhost:3838/ship-input-agent/live-server
+To start live updates, submit a POST request, e.g.
+```
+curl -X POST http://localhost:3838/ship-input-agent/live-server
+```
+To stop updates, submit a DELETE request
+```
+curl -X DELETE http://localhost:3838/ship-input-agent/live-server
+```
 
