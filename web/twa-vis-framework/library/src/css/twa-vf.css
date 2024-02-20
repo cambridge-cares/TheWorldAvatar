@@ -47,7 +47,8 @@ h6 {
     height: 100%;
     float: left;
     z-index: 0;
-    background-color: #cad2d3
+    background-color: #cad2d3;
+    flex-grow: 1;
 }
 
 .mapboxgl-popup-content {
@@ -1046,7 +1047,17 @@ label[for=select-feature] {
 #sidePanelFailure {
     position: relative;
     overflow: auto;
-    /* background: linear-gradient(white, rgba(255, 255, 255, 0));
+    /* TODO
+
+    
+    position: sticky;
+    bottom: 0;
+    margin-right: -20px;
+    border-top: 20px solid rgba(255,255,255,.7); 
+    border-image: linear-gradient(rgba(255,255,255,.2),#fff) 100% 0;
+} into the stuff below
+
+    background: linear-gradient(white, rgba(255, 255, 255, 0));
     -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);        <-- nice effect but messing with the scroll bar. Can't rn figure how to fix 
     mask-image: linear-gradient(to bottom, black 95%, transparent); 
     margin-bottom: 35px; */
