@@ -23,5 +23,6 @@ setup(
         'py4jps==1.0.34', 
         'requests==2.28.2',
         'shapely==2.0.1',
+        'werkzeug==2.3.6'
     ]
 )
