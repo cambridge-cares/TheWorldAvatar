@@ -87,7 +87,7 @@ There is an option in ShipInputAgent to pull data from https://aisstream.io/, th
 
 - Obtain an API key from this service at https://aisstream.io/authenticate.
 - Parameters relevant to this API are set in [ship-input-agent.json]
-    1) USE_LIVE_DATA - if this is set to true, ShipInputAgent will start pulling data at startup time. If set to false, live updates can still be triggered by submitting a POST request to http://localhost:3838/ship-input-agent/start-live-server
+    1) USE_LIVE_DATA - if this is set to true, ShipInputAgent will start pulling data at startup time. If set to false, live updates can still be triggered by submitting a POST request to http://localhost:3838/ship-input-agent/live-server
     2) API_KEY - API key for aistream.io
     3) BOUNDING_BOXES - see https://aisstream.io/documentation 
     4) UPLOAD_INTERVAL_MINUTES - The interval where ShipInputAgent accumulates data from aistream.io before uploading to the data to KG, default is 10 minutes.

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -31,6 +30,7 @@ public class AisStreamWebsocketClient extends WebSocketClient {
     private Instant start;
     private int numMessages;
     private Thread thread;
+    private boolean reconnect = true;
 
     public AisStreamWebsocketClient(URI uri, QueryClient queryClient) {
         super(uri);
@@ -38,19 +38,25 @@ public class AisStreamWebsocketClient extends WebSocketClient {
         mmsiToShipMap = new HashMap<>();
     }
 
+    public void setReconnect(boolean reconnect) {
+        this.reconnect = reconnect;
+    }
+
     @Override
     public void onClose(int code, String reason, boolean remote) {
         // The close codes are documented in class org.java_websocket.framing.CloseFrame
         LOGGER.error("Connection closed error code: {}", code);
         LOGGER.error("Connection closed reason: {}", reason);
-        HttpPost post = new HttpPost("http://localhost:8080/ShipInputAgent" + ShipInputAgent.RESTART_PATH);
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-                CloseableHttpResponse response = httpClient.execute(post);) {
-            LOGGER.info("Restarting live updates");
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-            LOGGER.error("Error during restart");
+        if (reconnect) {
+            HttpPost post = new HttpPost("http://localhost:8080/ShipInputAgent" + ShipInputAgent.LIVE_SERVER_PATH);
+            try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                    CloseableHttpResponse response = httpClient.execute(post);) {
+                LOGGER.info("Restarting live updates");
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+                LOGGER.error("Error during restart");
+            }
         }
     }
 

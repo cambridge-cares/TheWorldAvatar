@@ -21,13 +21,13 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-@WebServlet(urlPatterns = { ShipInputAgent.UPDATE_PATH, ShipInputAgent.RESTART_PATH }, loadOnStartup = 1)
+@WebServlet(urlPatterns = { ShipInputAgent.UPDATE_PATH, ShipInputAgent.LIVE_SERVER_PATH }, loadOnStartup = 1)
 public class ShipInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(ShipInputAgent.class);
     private QueryClient queryClient;
     private AisStreamWebsocketClient client;
     public static final String UPDATE_PATH = "/update";
-    public static final String RESTART_PATH = "/start-live-server";
+    public static final String LIVE_SERVER_PATH = "/live-server";
     private static final String URI_STRING = "wss://stream.aisstream.io/v0/stream";
 
     @Override
@@ -54,7 +54,7 @@ public class ShipInputAgent extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (req.getServletPath().contentEquals(RESTART_PATH)) {
+        if (req.getServletPath().contentEquals(LIVE_SERVER_PATH)) {
             URI uri;
             try {
                 uri = new URI(URI_STRING);
@@ -77,6 +77,25 @@ public class ShipInputAgent extends HttpServlet {
             resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().print(responseJson);
+        } else {
+            LOGGER.warn("Unsupported path for POST request");
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (req.getServletPath().contentEquals(LIVE_SERVER_PATH)) {
+            LOGGER.info("Received DELETE request to stop live updates");
+
+            if (client != null) {
+                client.setReconnect(false);
+                client.close();
+                client = null;
+            } else {
+                LOGGER.info("No ongoing live updates to stop");
+            }
+        } else {
+            LOGGER.warn("Unsupported path for DELETE request");
         }
     }
 }
