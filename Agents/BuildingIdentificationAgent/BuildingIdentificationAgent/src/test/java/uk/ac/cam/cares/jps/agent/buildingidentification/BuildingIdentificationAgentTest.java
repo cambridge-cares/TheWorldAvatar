@@ -34,7 +34,7 @@ class BuildingIdentificationAgentTest {
     }
 
     @Test
-    void testAgentTable() {
+    void testAgentTablePoint() {
         JSONObject request = new JSONObject();
         request.put("maxDistance", "100.0");
         // request.put("endpoint", System.getenv("endpoint"));
@@ -43,8 +43,40 @@ class BuildingIdentificationAgentTest {
         request.put("dbPassword", System.getenv("dbPassword"));
 
         request.put("requestUrl", "/postgis");
+        request.put("table", "public.carpark");
+
+        JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
+
+        assertTrue(result.getInt("number_matched") > 0);
+
+    }
+
+    @Test
+    void testAgentTableNonPoint() {
+        JSONObject request = new JSONObject();
+
+        request.put("dbUrl", System.getenv("dbUrl"));
+        request.put("dbUser", System.getenv("dbUser"));
+        request.put("dbPassword", System.getenv("dbPassword"));
+
+        request.put("requestUrl", "/postgis");
+        request.put("table", "public.osm_agent");
+
+        JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
+
+        assertTrue(result.getInt("number_matched") > 0);
+    }
+
+    @Test
+    void testAgentTableOneToMany() {
+        JSONObject request = new JSONObject();
+        request.put("maxDistance", "100.0");
+        request.put("dbUrl", System.getenv("dbUrl"));
+        request.put("dbUser", System.getenv("dbUser"));
+        request.put("dbPassword", System.getenv("dbPassword"));
+
+        request.put("requestUrl", "/postgis");
         request.put("table", "public.landplot");
-        // Uncomment the next two lines for landplots
         request.put("column", "lod1Geometry");
         request.put("oneToMany", "true");
         request.put("filterColumns", new JSONArray(new String[] { "LU_DESC" }));

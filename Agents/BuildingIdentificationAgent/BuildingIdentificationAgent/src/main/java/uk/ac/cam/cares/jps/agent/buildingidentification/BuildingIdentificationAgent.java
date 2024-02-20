@@ -32,6 +32,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
     public static final String KEY_NEW_TABLE = "newTable";
     public static final String KEY_FILTER_COLUMNS = "filterColumns";
     public static final String KEY_EXCLUDED_VALUES = "excludedValues";
+    public static final String KEY_OVERLAP_FRACTION = "overlapFraction";
     private static final String EPSG = "EPSG:";
     public static final String POINT_TYPE = "ST_Point";
 
@@ -88,6 +89,11 @@ public class BuildingIdentificationAgent extends JPSAgent {
             if (requestParams.has(KEY_COLUMN))
                 columnName = requestParams.getString(KEY_COLUMN);
 
+            // Minimum overlap fraction
+            Double overlapFraction = 0.70;
+            if (requestParams.has(KEY_OVERLAP_FRACTION))
+                overlapFraction = requestParams.getDouble(KEY_OVERLAP_FRACTION);
+
             // Boolean variable which is true if there are multiple buildings associated
             // with
             // each user-specified geometry
@@ -140,7 +146,8 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     if (geomType.equals(POINT_TYPE))
                         buildings = linkBuildingsTable(maxDistance, tableName, columnName, dbSrid);
                     else
-                        buildings = linkBuildingsTableNonPoint(maxDistance, tableName, columnName, dbSrid);
+                        buildings = linkBuildingsTableNonPoint(maxDistance, tableName, columnName, dbSrid,
+                                overlapFraction);
                     numberBuildingsIdentified = buildings.size();
                     updateBuildings(buildings, tableName);
                 }
@@ -352,7 +359,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
     }
 
     private Map<Integer, String> linkBuildingsTableNonPoint(double maxDistance, String tableName, String columnName,
-            Integer srid) {
+            Integer srid, double overlapFraction) {
 
         Map<Integer, String> buildings = new HashMap<>();
 
@@ -368,8 +375,8 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     " WHERE cityobject_genericattrib.attrname = 'uuid' " +
                     " AND cityobject.objectclass_id = 26 " +
                     " AND cityobject.id = cityobject_genericattrib.cityobject_id" +
-                    " ) r2 ON public.ST_Within(r1.geometry, r2.footprint) ;",
-                    columnName, srid, tableName);
+                    " ) r2 ON public.ST_Area(public.ST_Intersection(r1.geometry, r2.footprint)) >= %f*GREATEST(public.ST_AREA(r1.geometry), public.ST_AREA(r2.footprint))  ;",
+                    columnName, srid, tableName, overlapFraction);
             ResultSet result = stmt.executeQuery(sqlString);
 
             while (result.next()) {
