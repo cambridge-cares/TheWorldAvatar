@@ -62,6 +62,11 @@ public class ScheduledDispersion extends HttpServlet {
         String derivation = initialiseSimulation.createSimulation(ewkt, nx, ny, citiesNamespace, scopeLabel, zArray,
                 simulationTimeIri);
 
+        if (derivationToExecutorMap.containsKey(derivation)) {
+            LOGGER.info("An ongoing scheduled dispersion for <{}> already exists, skipping request", derivation);
+            return;
+        }
+
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
         LOGGER.info("Starting scheduled dispersion simulations for <{}>", derivation);
