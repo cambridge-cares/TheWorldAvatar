@@ -156,14 +156,16 @@
                 <div id="sidePanelGeneral">
                     <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
                     <div id="contentContainer"></div>
-                    <div id="legendContainer"></div>
-                    <div id="footerContainer">
-                        <div id="footerContent"></div>
-                    </div>
+                    
                 </div>
-                <div id="sidePanelLegend"></div>
+                <div id="sidePanelLegend">
+                    <div id="legendContainer"></div>
+                </div>
                 <div id="sidePanelLinks"></div>
             </div>
+            <div id="footerContainer">
+                        <div id="footerContent"></div>
+                    </div>
             <div id="returnContainer" style="display: none;">
                 <div id="innerReturnContainer">
                     <a href="#" onclick="manager.getPanelHandler().returnToDefault()"><i class="fas fa-arrow-left" width="16px" height="16px"></i> Return</a>
@@ -213,6 +215,7 @@
                 `);
                 
                 manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+                manager.getPanelHandler().addWaveAnimation();
                 // ===== CUSTOMISABLE =====
 
                 // Save general tab state as default

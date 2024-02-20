@@ -1,0 +1,45 @@
+{
+    "name": "pumpstationen",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "pumpstationen",
+    "dataSubsets": [
+        {
+            "type": "Vector",
+            "schema": "public",
+            "name": "Pumpstationen",
+            "subdirectory": "hebewerke",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "LAUNDER": "NO",
+                    "GEOMETRY_NAME": "geom"
+                },
+                "sridIn": "EPSG:25832",
+                "sridOut": "EPSG:25832",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "Rechtswert",
+                    "Y_POSSIBLE_NAMES": "Hochwert",
+                    "AUTODETECT_TYPE": "YES"
+                },
+                "otherOptions": {
+                    "-sql": [
+                        "SELECT CONCAT('https://www.theworldavatar.com/kg/ps/pumpstation-',\"Bauw. Nr.\") as iri, CONCAT(\"Bezeichnung\",', ',\"Straße\") as name, * FROM \"Hebewerke-PS-2022-bereinigt\""
+                    ]
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:pumpstationen"
+            }
+        }
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    },
+    "styles": [
+        {
+            "name": "pumpstationen",
+            "file": "pumpstationen.sld"
+        }
+    ]
+}

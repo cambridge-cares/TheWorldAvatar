@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Dataset {
 
-    static final String DEFAULT_BASE_IRI = "https://www.theworldavatar.com/";
+    static final String DEFAULT_BASE_IRI = "https://www.theworldavatar.com/kg/";
 
     public static final String NAME_KEY = "name";
 
