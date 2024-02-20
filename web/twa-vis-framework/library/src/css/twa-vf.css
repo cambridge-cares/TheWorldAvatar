@@ -1060,11 +1060,6 @@ label[for=select-feature] {
     padding-bottom: 150px;
 }
 
-#sidePanelLinks {
-    height: calc(100% - 50px);
-    font-size: 10pt
-}
-
 #sidePanelLinks a {
     color: #2a6779;
     text-decoration: none
