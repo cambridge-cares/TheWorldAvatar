@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.bmsqueryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -43,21 +45,29 @@ public class MainActivity extends AppCompatActivity {
     private static final Logger LOGGER = LogManager.getLogger(MainActivity.class);
     private ActivityMainBinding binding;
 
-    private final String BMS_RETRIEVE_ZONES = "bms-query-agent/retrieve/lab";
-    private final String BMS_RETRIEVE_EQUIPMENT = "bms-query-agent/retrieve/equipment";
+    private String BMS_RETRIEVE_ZONES;
+    private String BMS_RETRIEVE_EQUIPMENT;
 
     final ArrayList<Building> buildings = new ArrayList<>();
     ArrayList<Spinner> spinners = new ArrayList<>();
 
     boolean isRefreshFinished = true;
+    boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         BasicConfigurator.configure();
 
+        BMS_RETRIEVE_ZONES = getBaseContext().getString(R.string.bms_query_agent_retrieve_lab_path);
+        BMS_RETRIEVE_EQUIPMENT = getBaseContext().getString(R.string.bms_query_agent_retrieve_equipment_path);
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.profileBt.setOnClickListener(v -> {
+            startActivity(new Intent(this, UserProfileActivity.class));
+        });
 
         // create spinner levels with arraylist
         spinners.add(binding.buildingSpinner);
@@ -85,8 +95,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            finishAffinity();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
+    }
+
     private void getZonesFromAgent() {
-        String requestUri = Constants.constructUrlBuilder(BMS_RETRIEVE_ZONES)
+        String requestUri = Constants.constructUrlBuilder(BMS_RETRIEVE_ZONES, getBaseContext())
                 .build().toString();
 
         StringRequest jsonRequest = new StringRequest(Request.Method.GET, requestUri,
@@ -110,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
                 buildings.add(building);
             }
         } catch (JSONException e) {
-            // todo: test with empty json
             throw new RuntimeException("Unable to parse the JSONObject returned from the BMSQueryAgent");
         }
 
@@ -222,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getListOfEquipInstances(Room currentRoom) {
 
-        String requestUri = Constants.constructUrlBuilder(BMS_RETRIEVE_EQUIPMENT)
+        String requestUri = Constants.constructUrlBuilder(BMS_RETRIEVE_EQUIPMENT, getBaseContext())
                 .addQueryParameter("roomIRI", currentRoom.getIri())
                 .build().toString();
 
