@@ -1,0 +1,91 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoFHRS,TBox,http://www.theworldavatar.com/kg/ontofhrs/OntoFHRS.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoFHRS,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoFHRS,TBox,OntoFHRS is an ontology developed for representing food hygiene rating score.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoFHRS,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+BusinessEstablishment,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Business Establishment
+BusinessEstablishmentStart,Class,ies:BoundingState,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Business Establishment Start
+BusinessEstablishmentEnd,Class,ies:BoundingState,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Business Establishment End
+ies:BoundingState,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Bounding State
+ies:ParticularPeriod,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Particular Period
+Canteen,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Canteen
+SchoolCanteen,Class,Canteen,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,School Canteen
+UniversityCanteen,Class,Canteen,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,University Canteen
+CollegeCanteen,Class,Canteen,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,College Canteen
+FoodRetailer,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Food Retailer
+FoodDistributor,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Food Distributor
+FoodTransporter,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Food Transporter
+Hotel,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Hotel
+Bed&Breakfast,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Bed and Breakfast
+GuestHouse,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Guest House
+Takeaway,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Takeaway
+SandwichShop,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Sandwich Shop
+CateringPremise,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Catering Premise
+Supermarket,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Supermarket
+Hypermarket,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Hypermarket
+FarmerFoodFacility,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Farmer Food Facility
+GrowerFoodFacility,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Grower Food Facility
+MobileCaterer,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Mobile Caterer
+Restaurant,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Restaurant
+Cafe,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Cafe
+HospitalPremiseFoodFacility,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Hospital Premise Food Facility
+ChildcarePremiseFoodFacility,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Childcare Premise Food Facility
+CaringPremiseFoodFacility,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Caring Premise Food Facility
+Pub,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Pub
+Bar,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Bar
+NightClub,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Night Club
+FoodManufacturer,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Food Manufacturer
+FoodPacker,Class,BusinessEstablishment,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Food Packer
+Address,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Address
+City,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,City
+Region,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Region
+Country,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Country
+Rating,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Rating
+RatingStart,Class,ies:BoundingState,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Rating Start
+RatingEnd,Class,ies:BoundingState,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Rating End
+ies:ParticularPeriod,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Particular Period
+RatingScheme,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Rating Scheme
+FHRS,Class,RatingScheme,instance-of,,,,,http://www.theworldavatar.com/kg/ontofhrs,FHRS
+FHIS,Class,RatingScheme,instance-of,,,,,http://www.theworldavatar.com/kg/ontofhrs,FHIS
+LocalAuthority,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Local Authority
+Score,Class,,,,,,,http://www.theworldavatar.com/kg/ontofhrs,Score
+HygieneScore,Class,Score,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Hygiene Score
+StructuralScore,Class,Score,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Structural Score
+ConfidenceManagementScore,Class,Score,IS-A,,,,,http://www.theworldavatar.com/kg/ontofhrs,Confidence Management Score
+ies:isStartOf,Object Property,,,BusinessEstablishmentStart,BusinessEstablishment,,,http://www.theworldavatar.com/kg/ontofhrs,is Start Of
+ies:isEndOf,Object Property,,,BusinessEstablishmentEnd,BusinessEstablishment,,,http://www.theworldavatar.com/kg/ontofhrs,is End Of
+ies:inPeriod,Object Property,,,BusinessEstablishmentStart,ies:ParticularPeriod,,,http://www.theworldavatar.com/kg/ontofhrs,in Period
+ies:inPeriod,Object Property,,,BusinessEstablishmentEnd,ies:ParticularPeriod,,,http://www.theworldavatar.com/kg/ontofhrs,in Period
+ies:iso8601PeriodRepresentation,Data Property,,,ies:ParticularPeriod,anyURL,,,http://www.theworldavatar.com/kg/ontofhrs,Period Representation
+hasAddress,Object Property,,,BusinessEstablishment,Address,,,http://www.theworldavatar.com/kg/ontofhrs,has Address
+hasStreetNumber,Data Property,,,Address,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Street Number
+hasStreet,Data Property,,,Address,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Street
+hasCity,Object Property,,,Address,City ,,,http://www.theworldavatar.com/kg/ontofhrs,has City
+hasRegion,Object Property,,,Address,Region,,,http://www.theworldavatar.com/kg/ontofhrs,has Region
+hasCountry,Object Property,,,Address,Country,,,http://www.theworldavatar.com/kg/ontofhrs,has Country
+hasPostcode,Data Property,,,Address,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Postcode
+hasLocalAuthorityBusinessID,Data Property,,,BusinessEstablishment,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Local Authority Business ID
+hasFHRSID,Data Property,,,BusinessEstablishment,string,,,http://www.theworldavatar.com/kg/ontofhrs,has FHRS ID
+hasName,Data Property,,,BusinessEstablishment,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Name
+geo:asWKT,Data Property,,,BusinessEstablishment,string,,,http://www.theworldavatar.com/kg/ontofhrs,geo: asWKT
+hasRating,Object Property,,,BusinessEstablishment,Rating,,,http://www.theworldavatar.com/kg/ontofhrs,has Rating
+hasValue,Data Property,,,Rating,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Value
+hasKey,Data Property,,,Rating,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Key
+indicatesQuality,Data Property,,,Rating,string,,,http://www.theworldavatar.com/kg/ontofhrs,indicates Quality
+hasRatingScheme,Object Property,,,Rating,RatingScheme,,,http://www.theworldavatar.com/kg/ontofhrs,has Rating Scheme
+ies:isStartOf,Object Property,,,RatingStart,Rating,,,http://www.theworldavatar.com/kg/ontofhrs,is Start Of
+ies:isEndOf,Object Property,,,RatingEnd,Rating,,,http://www.theworldavatar.com/kg/ontofhrs,is End Of
+ies:inPeriod,Object Property,,,RatingStart,ies:ParticularPeriod,,,http://www.theworldavatar.com/kg/ontofhrs,in Period
+ies:inPeriod,Object Property,,,RatingEnd,ies:ParticularPeriod,,,http://www.theworldavatar.com/kg/ontofhrs,in Period
+ies:iso8601PeriodRepresentation,Data Property,,,ies:ParticularPeriod,anyURL,,,http://www.theworldavatar.com/kg/ontofhrs,Period Representation
+isNewRatingPending,Data Property,,,BusinessEstablishment,boolean,,,http://www.theworldavatar.com/kg/ontofhrs,is New Rating Pending
+hasLocalAuthority,Object Property,,,BusinessEstablishment,LocalAuthority,,,http://www.theworldavatar.com/kg/ontofhrs,has Local Authority
+hasName,Data Property,,,LocalAuthority,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Name
+hasLocalAuthorityCode,Data Property,,,LocalAuthority,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Local Authority Code
+hasWebsite,Data Property,,,LocalAuthority,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Website
+hasEmailAddress,Data Property,,,LocalAuthority,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Email Address
+hasHygieneScore,Object Property,,,BusinessEstablishment,hasHygieneScore,,,http://www.theworldavatar.com/kg/ontofhrs,has Hygiene Score
+hasStructuralScore,Object Property,,,BusinessEstablishment,hasStructuralScore,,,http://www.theworldavatar.com/kg/ontofhrs,has Structural Score
+hasConfidenceManagementScore,Object Property,,,BusinessEstablishment,hasConfidenceManagementScore,,,http://www.theworldavatar.com/kg/ontofhrs,has Confidence Management Score
+hasValue,Data Property,,,Score,string,,,http://www.theworldavatar.com/kg/ontofhrs,has Value
+indicatesQuality,Data Property,,,Score,string,,,http://www.theworldavatar.com/kg/ontofhrs,indicates Quality
