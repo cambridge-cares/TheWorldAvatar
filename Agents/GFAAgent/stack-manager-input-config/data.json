@@ -1,0 +1,40 @@
+{
+  "name": "Augmented Singapore",
+  "stack": "http://localhost:3838",
+  "sources": [
+    {
+      "id": "buildings",
+      "type": "vector",
+      "tiles": [
+        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:mainland&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "id": "buildings",
+      "name": "Buildings",
+      "source": "buildings",
+      "source-layer": "mainland",
+      "type": "fill-extrusion",
+      "order":7,
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-extrusion-color": [
+          "case",
+            ["==", ["get", "reference GFA"], null], "#8D99AE",
+            ["<", ["get", "GFA"], ["get", "reference GFA"]], "#008000",            
+            "#AD0202"            
+        ],
+        "fill-extrusion-base": 0,
+        "fill-extrusion-height": [
+          "case", ["has","building_height"],
+          ["*",1.4,["to-number",["get","building_height"]]],
+          2
+        ]
+      }
+    }
+  ]
+}
