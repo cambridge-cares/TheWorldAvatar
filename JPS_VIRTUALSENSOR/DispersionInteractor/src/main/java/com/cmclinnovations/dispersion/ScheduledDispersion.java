@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,11 +23,10 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 /**
  * only works with ship input agent with live data enabled
  */
-@WebServlet(urlPatterns = { "/StartScheduledDispersion" })
+@WebServlet(urlPatterns = { "/ScheduledDispersion" })
 public class ScheduledDispersion extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(ScheduledDispersion.class);
-    private static final ScheduledExecutorService scheduler = Executors
-            .newScheduledThreadPool(1);
+    private Map<String, ScheduledExecutorService> derivationToExecutorMap;
     private QueryClient queryClient;
     private DerivationClient devClient;
 
@@ -61,6 +62,8 @@ public class ScheduledDispersion extends HttpServlet {
         String derivation = initialiseSimulation.createSimulation(ewkt, nx, ny, citiesNamespace, scopeLabel, zArray,
                 simulationTimeIri);
 
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
         LOGGER.info("Starting scheduled dispersion simulations for <{}>", derivation);
 
         if (delay > 0) {
@@ -82,6 +85,30 @@ public class ScheduledDispersion extends HttpServlet {
                 LOGGER.error(ex.getMessage());
             }
         }, delay, interval, TimeUnit.MINUTES);
+
+        derivationToExecutorMap.put(derivation, scheduler);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String ewkt = req.getParameter("ewkt");
+        int nx = Integer.parseInt(req.getParameter("nx"));
+        int ny = Integer.parseInt(req.getParameter("ny"));
+        String citiesNamespace = req.getParameter("citiesnamespace");
+        String scopeLabel = req.getParameter("label");
+        String[] zArray = req.getParameterValues("z");
+        String simulationTimeIri = req.getParameter("simulationTimeIri"); // optional
+
+        InitialiseSimulation initialiseSimulation = new InitialiseSimulation();
+        String derivation = initialiseSimulation.createSimulation(ewkt, nx, ny, citiesNamespace, scopeLabel, zArray,
+                simulationTimeIri);
+
+        LOGGER.info("Received DELETE request to stop scheduled updates for <{}>", derivation);
+
+        ScheduledExecutorService scheduler = derivationToExecutorMap.get(derivation);
+        scheduler.shutdown();
+
+        derivationToExecutorMap.remove(derivation);
     }
 
     @Override
@@ -90,5 +117,6 @@ public class ScheduledDispersion extends HttpServlet {
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         queryClient = new QueryClient(storeClient, null, null);
         devClient = new DerivationClient(storeClient, QueryClient.PREFIX);
+        derivationToExecutorMap = new HashMap<>();
     }
 }

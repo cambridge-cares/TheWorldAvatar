@@ -102,6 +102,8 @@ To trigger scheduled live simulations, an example is given in [mbs-live.http].
     6) delayMinutes - Upon submitting the request, the duration to wait before executing a dispersion simulation, it is also the time to subtract from the current time to run the simulation for. For example, if delayMinutes = 30, and the current time is 1pm, the simulation will be executed at 1pm + 30 min, i.e. 130pm, for a simulation at 1pm (using weather and ship data at 1pm).
     7) intervalMinutes - Interval to execute dispersion calculations.
 
+To stop a scheduled task, change the request to DELETE instead of POST.
+
 ### With ships (static data) 
 This workflow calls the ShipInputAgent to add 1 timestep worth of data before triggering an update for AERMOD.
 1) Make sure ShipInputAgent/data is populated with data.
