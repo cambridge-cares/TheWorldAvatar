@@ -106,7 +106,7 @@ class SgCompact2VerboseConverter:
             if not flag:
                 bg_patterns_verbose.append(pattern)
 
-        soln_mod = sparql_compact.solultion_modifier
+        soln_mod = sparql_compact.solution_modifier
         if soln_mod and soln_mod.group_clause:
             addn_vars = set(select_vars_verbose) - set(
                 sparql_compact.select_clause.vars
@@ -131,5 +131,5 @@ class SgCompact2VerboseConverter:
                 solution_modifier="DISTINCT", vars=select_vars_verbose
             ),
             where_clause=WhereClause(bg_patterns_verbose),
-            solultion_modifier=soln_mod_verbose,
+            solution_modifier=soln_mod_verbose,
         )

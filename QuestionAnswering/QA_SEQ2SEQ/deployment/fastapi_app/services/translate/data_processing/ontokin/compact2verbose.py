@@ -516,18 +516,18 @@ class OKSparqlCompact2VerboseConverter:
                 vars=vars, solution_modifier=query.select_clause.solution_modifier
             ),
             where_clause=query.where_clause,
-            solultion_modifier=SolutionModifier(
+            solution_modifier=SolutionModifier(
                 group_clause=GroupClause(
                     (
-                        query.solultion_modifier.group_clause.vars
-                        if query.solultion_modifier
-                        and query.solultion_modifier.group_clause
+                        query.solution_modifier.group_clause.vars
+                        if query.solution_modifier
+                        and query.solution_modifier.group_clause
                         else []
                     )
                     + [x for x in query.select_clause.vars if x != "?ReactionEquation"]
                 ),
-                order_clause=query.solultion_modifier.order_clause if query.solultion_modifier and query.solultion_modifier.order_clause else None,
-                limit_clause=query.solultion_modifier.limit_clause if query.solultion_modifier and query.solultion_modifier.limit_clause else None,
+                order_clause=query.solution_modifier.order_clause if query.solution_modifier and query.solution_modifier.order_clause else None,
+                limit_clause=query.solution_modifier.limit_clause if query.solution_modifier and query.solution_modifier.limit_clause else None,
             ),
         )
 
@@ -575,6 +575,6 @@ class OKSparqlCompact2VerboseConverter:
                 solution_modifier="DISTINCT", vars=select_vars_verbose
             ),
             where_clause=WhereClause(graph_patterns_verbose),
-            solultion_modifier=sparql_compact.solultion_modifier,
+            solution_modifier=sparql_compact.solution_modifier,
         )
         return self._sample_rxn_eqn(sparql_verbose)

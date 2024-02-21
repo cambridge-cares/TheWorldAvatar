@@ -153,5 +153,5 @@ class OCCSparqlCompact2VerboseConverter:
                 solution_modifier="DISTINCT", vars=select_vars_verbose
             ),
             where_clause=WhereClause(graph_patterns_verbose),
-            solultion_modifier=sparql_compact.solultion_modifier
+            solution_modifier=sparql_compact.solution_modifier
         )

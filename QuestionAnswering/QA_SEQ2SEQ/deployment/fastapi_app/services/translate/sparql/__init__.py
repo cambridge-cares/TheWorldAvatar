@@ -11,15 +11,15 @@ from .where_clause import WhereClause
 class SparqlQuery(SparqlBase):
     select_clause: SelectClause
     where_clause: WhereClause
-    solultion_modifier: Optional[SolutionModifier] = None
+    solution_modifier: Optional[SolutionModifier] = None
 
     def __str__(self):
         text = "{select_clause} {where_clause}".format(
             select_clause=self.select_clause,
             where_clause=self.where_clause,
         )
-        if self.solultion_modifier:
-            text += "\n" + str(self.solultion_modifier)
+        if self.solution_modifier:
+            text += "\n" + str(self.solution_modifier)
         return text
 
     @classmethod
