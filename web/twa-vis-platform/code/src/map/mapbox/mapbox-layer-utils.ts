@@ -28,14 +28,16 @@ export async function addAllLayers(dataStore: DataStore) {
  */
 export function addLayer(layer: DataLayer, currentStyle: ImageryOption) {
     const collision = window.map.getLayer(layer.id);
+
     if(collision != null) {
         console.warn("Attempting to add a layer that's already on map: '" + layer.id + "'.");
         return;
     }
 
-    // Clone the original layer definition
+    // Clone the original layer definition and adjust as needed
     const options: JsonObject = {...layer.definition};
     options["id"] = layer.id;
+    options["source"] = layer.source.id;
 
     // Remove properties not expected by Mapbox
     delete options["interactions"];
@@ -43,9 +45,6 @@ export function addLayer(layer: DataLayer, currentStyle: ImageryOption) {
     delete options["treeable"];
     delete options["name"];
     delete options["order"];
-
-    // Ensure it's using adjusted source ID
-    options["source"] = layer.source.id;
 
     // Add attributions if missing
     if(!options["metadata"]) {
@@ -105,4 +104,19 @@ export function addLayer(layer: DataLayer, currentStyle: ImageryOption) {
     // Add to the map
     window.map.addLayer(mapboxObj);
     console.info("Pushed data layer to map '" + layer.id + "'.");
+
+    // Attach a click event listener specific to this layer
+    window.map.on('click', layer.id, (e) => {
+        // Accessing the first feature in the array of features under the click point
+        const feature = e.features && e.features[0];
+
+        if (feature) {
+            // Here you can access the metadata of the clicked feature
+            console.log(`Clicked on ${layer.id}:`, feature.properties);
+
+            // Perform additional actions with the feature's properties (metadata) here
+            // For example, displaying this information in a UI component
+        }
+    });
+
 }
