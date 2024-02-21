@@ -1,5 +1,6 @@
 from testcontainers.core.container import DockerContainer
 
+import requests
 import logging
 import pytest
 import time
@@ -20,11 +21,17 @@ def initialise_triple_store():
     blazegraph.with_exposed_ports(8080)
 
     with blazegraph as container:
-        # Wait some arbitrary time until container is reachable
-        time.sleep(3)
-
-        # Retrieve SPARQL endpoint
-        endpoint = get_endpoint(container)
+        # It ensures that the requested Blazegraph Docker service is ready to accept SPARQL query/update
+        service_available = False
+        while not service_available:
+            try:
+                # Retrieve SPARQL endpoint
+                endpoint = get_endpoint(container)
+                response = requests.head(endpoint)
+                if response.status_code != requests.status_codes.codes.not_found:
+                    service_available = True
+            except (requests.exceptions.ConnectionError, TypeError):
+                time.sleep(3)
 
         yield endpoint
 
