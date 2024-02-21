@@ -63,6 +63,10 @@ public class QueryClient {
     private static final String LOCATION_STRING = PREFIX + "Location";
     private static final Iri LOCATION = iri(LOCATION_STRING);
     private static final Iri SHIP_TYPE = P_DISP.iri("ShipType");
+    private static final Iri DRAUGHT = P_DISP.iri("Draught");
+    private static final Iri DIMENSION = P_DISP.iri("Dimension");
+    private static final Iri IMO_NUMBER = P_DISP.iri("IMONumber");
+    private static final Iri CALLSIGN = P_DISP.iri("CallSign");
     private static final Iri MEASURE = P_OM.iri("Measure");
 
     // properties
@@ -191,6 +195,43 @@ public class QueryClient {
                 modify.insert(shipIri.has(HAS_PROPERTY, shipTypeProperty));
                 modify.insert(shipTypeProperty.isA(SHIP_TYPE).andHas(HAS_VALUE, shipTypeMeasure));
                 modify.insert(shipTypeMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getShipType()));
+
+                // draught
+                if (ship.getDraught() > 0) {
+                    Iri draughtProperty = P_DISP.iri(shipName + "Draught");
+                    Iri draughtMeasure = P_DISP.iri(shipName + "DraughtMeasure");
+                    modify.insert(shipIri.has(HAS_PROPERTY, draughtProperty));
+                    modify.insert(draughtProperty.isA(DRAUGHT).andHas(HAS_VALUE, draughtMeasure));
+                    modify.insert(draughtMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getDraught()));
+                }
+
+                // dimension
+                if (!ship.getDimension().isEmpty()) {
+                    Iri dimensionProperty = P_DISP.iri(shipName + "Dimension");
+                    Iri dimensionMeasure = P_DISP.iri(shipName + "DimensionMeasure");
+                    modify.insert(shipIri.has(HAS_PROPERTY, dimensionProperty));
+                    modify.insert(dimensionProperty.isA(DIMENSION).andHas(HAS_VALUE, dimensionMeasure));
+                    modify.insert(
+                            dimensionMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getDimension().toString()));
+                }
+
+                // IMO number
+                if (ship.getImoNumber() != 0) {
+                    Iri imoProperty = P_DISP.iri(shipName + "IMO");
+                    Iri imoMeasure = P_DISP.iri(shipName + "IMOMeasure");
+                    modify.insert(shipIri.has(HAS_PROPERTY, imoProperty));
+                    modify.insert(imoProperty.isA(IMO_NUMBER).andHas(HAS_VALUE, imoMeasure));
+                    modify.insert(imoMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getImoNumber()));
+                }
+
+                // callsign
+                if (!ship.getCallSign().isEmpty()) {
+                    Iri callSignProperty = P_DISP.iri(shipName + "CallSign");
+                    Iri callSignMeasure = P_DISP.iri(shipName + "CallSignMeasure");
+                    modify.insert(shipIri.has(HAS_PROPERTY, callSignProperty));
+                    modify.insert(callSignProperty.isA(CALLSIGN).andHas(HAS_VALUE, callSignMeasure));
+                    modify.insert(callSignMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getCallSign()));
+                }
 
                 // Location time series
                 Iri locationProperty = P_DISP.iri(shipName + "Location");
@@ -433,19 +474,54 @@ public class QueryClient {
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         Map<String, Integer> valueIriToValueMap = new HashMap<>();
+        List<String> shipIriList = new ArrayList<>();
         for (int i = 0; i < queryResult.length(); i++) {
             String shipIri = queryResult.getJSONObject(i).getString(shipVar.getQueryString().substring(1));
             String valueIri = queryResult.getJSONObject(i)
                     .getString(shipPropertyValueVar.getQueryString().substring(1));
 
             valueIriToValueMap.put(valueIri, iriToShipMap.get(shipIri).getShipType());
+            shipIriList.add(shipIri);
         }
 
         if (!valueIriToValueMap.isEmpty()) {
             ModifyQuery modify = Queries.MODIFY();
             valueIriToValueMap.entrySet().forEach(entry -> modify.delete(iri(entry.getKey()).has(HAS_NUMERICALVALUE, 0))
                     .insert(iri(entry.getKey()).has(HAS_NUMERICALVALUE, entry.getValue())));
-            modify.prefix(P_OM);
+            modify.prefix(P_OM, P_DISP);
+
+            // this is designed for aisstream, ship type comes together in the same message
+            // as the following data
+            shipIriList.forEach(shipIri -> {
+                Ship ship = iriToShipMap.get(shipIri);
+                String shipName = "Ship" + ship.getMmsi();
+
+                Iri draughtProperty = P_DISP.iri(shipName + "Draught");
+                Iri draughtMeasure = P_DISP.iri(shipName + "DraughtMeasure");
+                modify.insert(iri(shipIri).has(HAS_PROPERTY, draughtProperty));
+                modify.insert(draughtProperty.isA(DRAUGHT).andHas(HAS_VALUE, draughtMeasure));
+                modify.insert(draughtMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getDraught()));
+
+                Iri dimensionProperty = P_DISP.iri(shipName + "Dimension");
+                Iri dimensionMeasure = P_DISP.iri(shipName + "DimensionMeasure");
+                modify.insert(iri(shipIri).has(HAS_PROPERTY, dimensionProperty));
+                modify.insert(dimensionProperty.isA(DIMENSION).andHas(HAS_VALUE, dimensionMeasure));
+                modify.insert(
+                        dimensionMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getDimension().toString()));
+
+                Iri imoProperty = P_DISP.iri(shipName + "IMO");
+                Iri imoMeasure = P_DISP.iri(shipName + "IMOMeasure");
+                modify.insert(iri(shipIri).has(HAS_PROPERTY, imoProperty));
+                modify.insert(imoProperty.isA(IMO_NUMBER).andHas(HAS_VALUE, imoMeasure));
+                modify.insert(imoMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getImoNumber()));
+
+                Iri callSignProperty = P_DISP.iri(shipName + "CallSign");
+                Iri callSignMeasure = P_DISP.iri(shipName + "CallSignMeasure");
+                modify.insert(iri(shipIri).has(HAS_PROPERTY, callSignProperty));
+                modify.insert(callSignProperty.isA(CALLSIGN).andHas(HAS_VALUE, callSignMeasure));
+                modify.insert(callSignMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getCallSign()));
+            });
+
             storeClient.executeUpdate(modify.getQueryString());
         }
     }

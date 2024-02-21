@@ -24,11 +24,17 @@ public class Ship {
     private double lon;
     private Instant timestamp; // timestamp when data was obtained
     private String shipName;
+    private double draught = 0;
+    private JSONObject dimension = new JSONObject(); // {"A": 1, "B":2, ...} according to aisstream
+    private int imoNumber = 0;
+    private String callSign = "";
 
     private List<Double> speedList;
     private List<Double> latList;
     private List<Double> lonList;
-    private List<Double> cogList;
+    private List<Double> cogList; // course over ground
+    private List<Double> rotList; // rate of turn
+    private List<Double> headingList; // true heading
     private List<Instant> timestampList;
     private boolean hasTimeSeries;
 
@@ -41,18 +47,23 @@ public class Ship {
         latList = new ArrayList<>();
         lonList = new ArrayList<>();
         cogList = new ArrayList<>();
+        rotList = new ArrayList<>();
+        headingList = new ArrayList<>();
     }
 
     public boolean hasTimeSeries() {
         return hasTimeSeries;
     }
 
-    public void addTimeSeriesData(Instant timestamp, double speed, double lat, double lon, double cog) {
+    public void addTimeSeriesData(Instant timestamp, double speed, double lat, double lon, double cog, double rot,
+            double heading) {
         timestampList.add(timestamp);
         speedList.add(speed);
         latList.add(lat);
         lonList.add(lon);
         cogList.add(cog);
+        rotList.add(rot);
+        headingList.add(heading);
     }
 
     public List<Double> getSpeedList() {
@@ -186,5 +197,37 @@ public class Ship {
 
     public String getShipName() {
         return shipName;
+    }
+
+    public void setDraught(double draught) {
+        this.draught = draught;
+    }
+
+    public double getDraught() {
+        return draught;
+    }
+
+    public void setDimension(JSONObject dimension) {
+        this.dimension = dimension;
+    }
+
+    public JSONObject getDimension() {
+        return dimension;
+    }
+
+    public void setImoNumber(int imoNumber) {
+        this.imoNumber = imoNumber;
+    }
+
+    public int getImoNumber() {
+        return imoNumber;
+    }
+
+    public void setCallSign(String callSign) {
+        this.callSign = callSign.trim();
+    }
+
+    public String getCallSign() {
+        return callSign;
     }
 }

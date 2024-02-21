@@ -92,12 +92,18 @@ public class AisStreamWebsocketClient extends WebSocketClient {
             double lon = positionReport.getDouble("Longitude");
             double speed = positionReport.getDouble("Sog");
             double cog = positionReport.getDouble("Cog");
-            mmsiToShipMap.get(mmsi).addTimeSeriesData(timestampInstant, speed, lat, lon, cog);
+            double rot = positionReport.getDouble("RateOfTurn");
+            double heading = positionReport.getDouble("TrueHeading");
+            mmsiToShipMap.get(mmsi).addTimeSeriesData(timestampInstant, speed, lat, lon, cog, rot, heading);
 
         } else if (messageJson.getString("MessageType").contentEquals("ShipStaticData")) {
             JSONObject staticData = messageJson.getJSONObject("Message").getJSONObject("ShipStaticData");
             int shipType = staticData.getInt("Type");
             mmsiToShipMap.get(mmsi).setShipType(shipType);
+            mmsiToShipMap.get(mmsi).setDimension(staticData.getJSONObject("Dimension"));
+            mmsiToShipMap.get(mmsi).setDraught(staticData.getDouble("MaximumStaticDraught"));
+            mmsiToShipMap.get(mmsi).setImoNumber(staticData.getInt("ImoNumber"));
+            mmsiToShipMap.get(mmsi).setCallSign(staticData.getString("CallSign"));
         }
 
         if (!metaData.getString("ShipName").trim().isBlank()) {
