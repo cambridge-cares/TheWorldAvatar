@@ -22,6 +22,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
 
 /**
  * sends sparql queries
@@ -29,7 +30,7 @@ import java.sql.SQLException;
 public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
     private StoreClientInterface storeClient;
-    private TimeSeriesClient<Long> tsClient;
+    private TimeSeriesClient<Instant> tsClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
     static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
@@ -65,7 +66,7 @@ public class QueryClient {
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;
-        this.tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        this.tsClient = new TimeSeriesClient<>(storeClient, Instant.class);
         this.remoteRDBStoreClient = remoteRDBStoreClient;
     }
 

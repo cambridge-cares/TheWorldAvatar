@@ -85,8 +85,8 @@ public class QueryClient {
 
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient rdbStoreClient;
-    private TimeSeriesClient<Long> tsClientLong;
     private TimeSeriesClient<Instant> tsClientInstant;
+    private TimeSeriesClient<Long> tsClientLong;
     private String citiesNamespace;
     private String namespaceCRS;
     private ServiceEndpoint ontopService;
@@ -195,8 +195,8 @@ public class QueryClient {
 
     public QueryClient(RemoteStoreClient storeClient, String ontopEndpoint, RemoteRDBStoreClient rdbStoreClient) {
         this.storeClient = storeClient;
-        this.tsClientLong = new TimeSeriesClient<>(storeClient, Long.class);
         this.tsClientInstant = new TimeSeriesClient<>(storeClient, Instant.class);
+        this.tsClientLong = new TimeSeriesClient<>(storeClient, Long.class);
         this.rdbStoreClient = rdbStoreClient;
         ontopService = new ServiceEndpoint(ontopEndpoint);
     }
@@ -440,8 +440,8 @@ public class QueryClient {
     }
 
     List<Ship> getShipsWithinTimeAndScopeViaTsClient(long simulationTime, Geometry scope, long timeBuffer) {
-        long simTimeUpperBound = simulationTime + timeBuffer; // +30 minutes
-        long simTimeLowerBound = simulationTime - timeBuffer; // -30 minutes
+        Instant simTimeUpperBound = Instant.ofEpochSecond(simulationTime + timeBuffer);
+        Instant simTimeLowerBound = Instant.ofEpochSecond(simulationTime - timeBuffer);
 
         Map<String, String> measureToShipMap = getMeasureToShipMap();
         List<String> measures = new ArrayList<>(measureToShipMap.keySet());
@@ -449,9 +449,9 @@ public class QueryClient {
         List<Ship> ships = new ArrayList<>();
         try (Connection conn = rdbStoreClient.getConnection()) {
             measures.stream().forEach(measure -> {
-                TimeSeries<Long> ts;
+                TimeSeries<Instant> ts;
                 try {
-                    ts = tsClientLong.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
+                    ts = tsClientInstant.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
                             simTimeUpperBound, conn);
                     if (ts.getValuesAsPoint(measure).isEmpty()) {
                         return;
@@ -467,7 +467,8 @@ public class QueryClient {
                 org.postgis.Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
                 if (ts.getValuesAsPoint(measure).size() > 1) {
                     int i = 0;
-                    while (i < ts.getTimes().size() && ts.getTimes().get(i) < simulationTime) {
+                    while (i < ts.getTimes().size()
+                            && ts.getTimes().get(i).isBefore(Instant.ofEpochSecond(simulationTime))) {
                         postgisPoint = ts.getValuesAsPoint(measure).get(i);
                         i++;
                     }

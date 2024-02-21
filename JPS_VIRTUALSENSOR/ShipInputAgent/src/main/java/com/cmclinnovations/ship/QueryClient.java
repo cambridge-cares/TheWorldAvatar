@@ -26,6 +26,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ import org.postgis.Point;
 public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
     private StoreClientInterface storeClient;
-    private TimeSeriesClient<Long> tsClient;
+    private TimeSeriesClient<Instant> tsClient;
     private DerivationClient derivationClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
@@ -78,7 +79,7 @@ public class QueryClient {
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
 
-    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient,
+    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Instant> tsClient,
             DerivationClient derivationClient, RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;
         this.tsClient = tsClient;
@@ -405,7 +406,7 @@ public class QueryClient {
 
                 // order of dataIRIs is course, speed, location, as defined in the previous loop
                 List<List<?>> values = new ArrayList<>();
-                List<Long> time;
+                List<Instant> time;
                 if (ship.hasTimeSeries()) {
                     time = ship.getTimestampList();
                     values.add(ship.getCogList());
@@ -414,7 +415,7 @@ public class QueryClient {
                     values.add(ship.getLatList());
                     values.add(ship.getLonList());
                 } else {
-                    time = Arrays.asList(ship.getTimestamp().getEpochSecond());
+                    time = Arrays.asList(ship.getTimestamp());
                     values.add(Arrays.asList(ship.getCourse()));
                     values.add(Arrays.asList(ship.getSpeed()));
                     values.add(Arrays.asList(ship.getLocation()));
@@ -422,7 +423,7 @@ public class QueryClient {
                     values.add(Arrays.asList(ship.getLon()));
                 }
 
-                TimeSeries<Long> ts = new TimeSeries<>(time, dataIRIs, values);
+                TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs, values);
                 tsClient.addTimeSeriesData(ts, conn);
             });
         } catch (SQLException e) {

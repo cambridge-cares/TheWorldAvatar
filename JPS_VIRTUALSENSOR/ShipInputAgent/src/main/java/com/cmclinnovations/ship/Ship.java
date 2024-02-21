@@ -72,8 +72,8 @@ public class Ship {
         return speedList;
     }
 
-    public List<Long> getTimestampList() {
-        return timestampList.stream().map(Instant::getEpochSecond).collect(Collectors.toList());
+    public List<Instant> getTimestampList() {
+        return timestampList;
     }
 
     public List<Double> getCogList() {
