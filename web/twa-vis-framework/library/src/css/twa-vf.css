@@ -10,6 +10,8 @@
     :root {
         /* Background colors */
         --cmcl-blue: #18677a;
+        --text-color: #3f464f;
+        --background-color: #f6f8fa;
     }
 }
 
@@ -17,6 +19,8 @@
     :root {
         /* Background colors */
         --cmcl-blue: #18677a;
+        --text-color: #adbac7;
+        --background-color: #22272e;
     }
 }
 
