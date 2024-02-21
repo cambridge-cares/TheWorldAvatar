@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
+from .exceptions import SparqlParseError
 from .sparql_base import SparqlBase
 
 
@@ -56,7 +57,8 @@ class SolutionModifier(SparqlBase):
             while sparql_fragment.startswith("?"):
                 var, sparql_fragment = sparql_fragment.split(maxsplit=1)
                 vars.append(var)
-            assert vars, sparql_fragment
+            if not vars:
+                raise SparqlParseError(sparql_fragment)
             group_clause = GroupClause(vars)
         else:
             group_clause = None
@@ -72,19 +74,21 @@ class SolutionModifier(SparqlBase):
                     ptr = len("DESC")
                     while sparql_fragment[ptr].isspace():
                         ptr += 1
-                    assert sparql_fragment[ptr] == "(", sparql_fragment
+                    
+                    if sparql_fragment[ptr] != "(":
+                        raise SparqlParseError(sparql_fragment)
+            
                     ptr = sparql_fragment.find(")", ptr)
                     if ptr < 0:
-                        raise AssertionError(
-                            "Malformed ORDER BY clause: " + sparql_fragment
-                        )
+                        raise SparqlParseError(sparql_fragment)
                     var = sparql_fragment[: ptr + 1]
                     sparql_fragment = sparql_fragment[ptr + 1 :]
                 else:
                     break
                 vars.append(var)
                 sparql_fragment = sparql_fragment.lstrip()
-            assert vars, sparql_fragment
+            if not vars:
+                raise SparqlParseError(sparql_fragment)
             order_clause = OrderClause(vars)
         else:
             order_clause = None
@@ -100,7 +104,7 @@ class SolutionModifier(SparqlBase):
                 limit_clause = LimitClause(int(items[0]))
                 sparql_fragment = ""
             else:
-                raise AssertionError("Malformed LIMIT clause: " + sparql_fragment)
+                raise SparqlParseError(sparql_fragment)
         else:
             limit_clause = None
 
