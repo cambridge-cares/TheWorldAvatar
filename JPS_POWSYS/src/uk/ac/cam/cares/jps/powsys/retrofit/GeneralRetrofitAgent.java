@@ -9,6 +9,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.powsys.util.Util;
+import java.util.Iterator;
 
 public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 		
@@ -52,7 +54,7 @@ public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 		logger.info("finished retrofitting");
 	}
 	
-	protected String getQueryForBuses() {
+	protected String getQueryForSingleBus() {
 		
 		QueryBuilder builder = new QueryBuilder();
 		builder.select("?entity", "?x", "?y", "?busnumber", "?busnumbervalue", "?bustypevalue", "?vm", "?vmvalue", "?baseKVvalue");
@@ -71,8 +73,13 @@ public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 		builder.a("?baseKV", OPSMODE, "baseKV");
 		builder.prop("?entity", "?baseKV", OCPSYST, "isModeledBy", OCPMATH, "hasModelVariable");
 		builder.prop("?baseKV", "?baseKVvalue", PVALNUMVAL);
-		
+		logger.info("QUERY:" + builder.build().toString());
 		return builder.build().toString();
+	}
+
+	protected String getQueryForBusIRI() {
+		return "PREFIX OCPSYST: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
+		" SELECT ?entity WHERE{ ?network OCPSYST:hasSubsystem ?entity FILTER CONTAINS(str(?entity), \"EBus\")}";
 	}
 	
 	protected String getQueryForGenerator() {
@@ -86,32 +93,71 @@ public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 		
 		return builder.build().toString();
 	}
+
+	protected String getQueryForGenIRI() {
+		return "PREFIX OCPSYST: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
+		" SELECT ?entity WHERE{ ?network OCPSYST:hasSubsystem ?entity FILTER CONTAINS(str(?entity), \"EGen\")}";
+	}
 	
+	protected List<String> getIRIList (ResultSet iri) {
+		String qRes = JenaResultSetFormatter.convertToJSONW3CStandard(iri);
+		List<String> result = new ArrayList();
+		JSONObject jo = new JSONObject(qRes);
+		JSONArray array = jo.getJSONObject("results").getJSONArray("bindings");
+		for (int i=0; i<array.length(); i++) {
+			
+			JSONObject row = array.getJSONObject(i);
+			for (String current : row.keySet()) {
+				String value =  row.getJSONObject(current).getString("value");
+				result.add(value);
+			}
+		}
+		logger.info("IRI:" + result);
+		
+		return result;
+	}
+
 	public List<BusInfo> queryBuses(OntModel model) {
 		
 		List<BusInfo> result = new ArrayList<BusInfo>();
 		
-		String queryBus = getQueryForBuses();
-		ResultSet resultSet = JenaHelper.query(model, queryBus);
-		String json = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		List<String[]> buses = JenaResultSetFormatter.convertToListofStringArrays(json,"entity", "x", "y", "busnumber", "busnumbervalue", "bustypevalue", "vm", "vmvalue", "baseKVvalue");
-				
-		for (String[] current : buses) {
+		String queryBusIRI = getQueryForBusIRI();
+
+		ResultSet resultSet = JenaHelper.query(model, queryBusIRI);
+
+		List<List<String[]>> buses = new ArrayList<List<String[]>>();
+
+		List <String> iriList = getIRIList(resultSet);
+		System.out.println("IRI BUS:" + iriList);
+		for (String iri : iriList) {
+			OntModel modelBus = JenaHelper.createModel(iri);
+			String queryBus = getQueryForSingleBus();
+
+			String resultSingle = JenaResultSetFormatter.convertToJSONW3CStandard(JenaHelper.query(modelBus, queryBus));
+			buses.add(JenaResultSetFormatter.convertToListofStringArrays(resultSingle,"entity", "x", "y", "busnumber", "busnumbervalue", "bustypevalue", "vm", "vmvalue", "baseKVvalue"));
 			
-			BusInfo info = new BusInfo();
-			info.busIri = current[0];
-			
-			info.x = Double.valueOf(current[1]);
-			info.y = Double.valueOf(current[2]);
-			info.busNumberIri = current[3];
-			info.busNumber = current[4];
-			info.busType = current[5];
-			info.voltageMagnitudeIri = current[6];
-			info.voltageMagnitude = Double.valueOf(current[7]);
-			info.baseKV = Double.valueOf(current[8]);
-			
-			result.add(info);
 		}
+		
+		
+		for (List<String[]> bus : buses){
+			for (String[] current : bus) {
+			
+				BusInfo info = new BusInfo();
+				info.busIri = current[0];
+				
+				info.x = Double.valueOf(current[1]);
+				info.y = Double.valueOf(current[2]);
+				info.busNumberIri = current[3];
+				info.busNumber = current[4];
+				info.busType = current[5];
+				info.voltageMagnitudeIri = current[6];
+				info.voltageMagnitude = Double.valueOf(current[7]);
+				info.baseKV = Double.valueOf(current[8]);
+				
+				result.add(info);
+			}
+		}		
+		
 		
 		return result;
 	}

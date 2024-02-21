@@ -41,7 +41,7 @@ import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 public class Dataset {
     protected static final Logger LOGGER = LoggerFactory.getLogger(Dataset.class);
     static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
-    static final String DEFAULT_BASE_IRI = "https://www.theworldavatar.com/";
+    static final String DEFAULT_BASE_IRI = "https://www.theworldavatar.com/kg/";
 
     public static final String NAME_KEY = "name";
 

@@ -1,0 +1,77 @@
+{
+    "name": "osm",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "osm",
+    "dataSubsets": [
+        {
+            "type": "Vector",
+            "name": "power_lines_lines",
+            "skip": false,
+            "subdirectory": "power_lines_lines",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:bdlm_ver02l"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "power_lines_points",
+            "skip": false,
+            "subdirectory": "power_lines_points",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:pylons"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "power_minor_lines_lines",
+            "skip": false,
+            "subdirectory": "power_minor_lines_lines",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:bdlm_ver02l"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "power_minor_lines_points",
+            "skip": false,
+            "subdirectory": "power_minor_lines_points",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:pylons"
+            }
+        }
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    },
+    "styles": [
+        {
+            "name": "bdlm_ver02l",
+            "file": "bdlm_ver02l.sld"
+        },
+        {
+            "name": "pylons",
+            "file": "pylons.sld"
+        }
+    ]
+}
