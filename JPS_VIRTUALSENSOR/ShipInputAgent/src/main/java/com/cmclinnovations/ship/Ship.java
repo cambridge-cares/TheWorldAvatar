@@ -16,6 +16,8 @@ public class Ship {
     private String locationMeasureIri;
     private String courseMeasureIri;
     private String speedMeasureIri;
+    private String latMeasureIri;
+    private String lonMeasureIri;
     private int mmsi;
     private double speed;
     private double course;
@@ -147,6 +149,14 @@ public class Ship {
         return point;
     }
 
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
     public List<Point> getLocationList() {
         List<Point> pointList = new ArrayList<>();
 
@@ -191,6 +201,22 @@ public class Ship {
         return this.speedMeasureIri;
     }
 
+    public void setLatMeasureIri(String latMeasureIri) {
+        this.latMeasureIri = latMeasureIri;
+    }
+
+    public String getLatMeasureIri() {
+        return latMeasureIri;
+    }
+
+    public void setLonMeasureIri(String lonMeasureIri) {
+        this.lonMeasureIri = lonMeasureIri;
+    }
+
+    public String getLonMeasureIri() {
+        return lonMeasureIri;
+    }
+
     public void setShipName(String shipName) {
         this.shipName = "Ship: " + shipName;
     }
@@ -229,5 +255,13 @@ public class Ship {
 
     public String getCallSign() {
         return callSign;
+    }
+
+    public List<Double> getLatList() {
+        return latList;
+    }
+
+    public List<Double> getLonList() {
+        return lonList;
     }
 }

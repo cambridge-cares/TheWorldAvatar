@@ -62,6 +62,10 @@ public class QueryClient {
     private static final Iri MMSI = iri(MMSI_STRING);
     private static final String LOCATION_STRING = PREFIX + "Location";
     private static final Iri LOCATION = iri(LOCATION_STRING);
+    private static final String LATITUDE_STRING = PREFIX + "Latitude";
+    private static final Iri LATITUDE = iri(LATITUDE_STRING);
+    private static final String LONGITUDE_STRING = PREFIX + "Longitude";
+    private static final Iri LONGITUDE = iri(LONGITUDE_STRING);
     private static final Iri SHIP_TYPE = P_DISP.iri("ShipType");
     private static final Iri DRAUGHT = P_DISP.iri("Draught");
     private static final Iri DIMENSION = P_DISP.iri("Dimension");
@@ -263,6 +267,26 @@ public class QueryClient {
                 dataWithTimeSeries.add(courseMeasure);
                 classes.add(Double.class);
 
+                // lat time series
+                Iri latProperty = P_DISP.iri(shipName + "Lat");
+                String latMeasure = PREFIX + shipName + "LatMeasure";
+                modify.insert(shipIri.has(HAS_PROPERTY, latProperty));
+                modify.insert(latProperty.isA(LATITUDE).andHas(HAS_VALUE, iri(latMeasure)));
+                modify.insert(iri(latMeasure).isA(MEASURE));
+
+                dataWithTimeSeries.add(latMeasure);
+                classes.add(Double.class);
+
+                // lon time series
+                Iri lonProperty = P_DISP.iri(shipName + "Lon");
+                String lonMeasure = PREFIX + shipName + "LonMeasure";
+                modify.insert(shipIri.has(HAS_PROPERTY, lonProperty));
+                modify.insert(lonProperty.isA(LONGITUDE).andHas(HAS_VALUE, iri(lonMeasure)));
+                modify.insert(iri(lonMeasure).isA(MEASURE));
+
+                dataWithTimeSeries.add(lonMeasure);
+                classes.add(Double.class);
+
                 dataIRIs.add(dataWithTimeSeries);
                 dataClasses.add(classes);
                 timeUnit.add("Unix timestamp");
@@ -359,6 +383,14 @@ public class QueryClient {
                     shipObject.setCourseMeasureIri(
                             queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
                     break;
+                case LATITUDE_STRING:
+                    shipObject.setLatMeasureIri(
+                            queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
+                    break;
+                case LONGITUDE_STRING:
+                    shipObject.setLonMeasureIri(
+                            queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
+                    break;
                 default:
                     break;
             }
@@ -369,7 +401,7 @@ public class QueryClient {
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             ships.stream().forEach(ship -> {
                 List<String> dataIRIs = Arrays.asList(ship.getCourseMeasureIri(), ship.getSpeedMeasureIri(),
-                        ship.getLocationMeasureIri());
+                        ship.getLocationMeasureIri(), ship.getLatMeasureIri(), ship.getLonMeasureIri());
 
                 // order of dataIRIs is course, speed, location, as defined in the previous loop
                 List<List<?>> values = new ArrayList<>();
@@ -379,11 +411,15 @@ public class QueryClient {
                     values.add(ship.getCogList());
                     values.add(ship.getSpeedList());
                     values.add(ship.getLocationList());
+                    values.add(ship.getLatList());
+                    values.add(ship.getLonList());
                 } else {
                     time = Arrays.asList(ship.getTimestamp().getEpochSecond());
                     values.add(Arrays.asList(ship.getCourse()));
                     values.add(Arrays.asList(ship.getSpeed()));
                     values.add(Arrays.asList(ship.getLocation()));
+                    values.add(Arrays.asList(ship.getLat()));
+                    values.add(Arrays.asList(ship.getLon()));
                 }
 
                 TimeSeries<Long> ts = new TimeSeries<>(time, dataIRIs, values);
