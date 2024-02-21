@@ -39,9 +39,8 @@ class OBEDatasetGenerator:
     @classmethod
     def retrieve_seed_entities(cls, kg_endpoint: Optional[str]):
         if not os.path.isfile(cls.SEED_ENTITIES_FILEPATH):
-            assert (
-                kg_endpoint is not None
-            ), "No cached seed entities found, kg_endpoint must not be None"
+            if kg_endpoint is None:
+                raise ValueError("No cached seed entities found, kg_endpoint must not be None")
 
             print("No seed entities found. Retrieving seed entities...")
             from locate_then_ask.kg_client import KgClient

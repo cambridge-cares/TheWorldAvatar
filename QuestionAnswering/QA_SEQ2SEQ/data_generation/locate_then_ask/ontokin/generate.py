@@ -31,9 +31,9 @@ class DatasetGenerator:
         filepath = os.path.join(ROOTDIR, SEED_ENTITIES_FILEPATH)
 
         if not os.path.isfile(filepath):
-            assert (
-                endpoint is not None
-            ), "No cache of seed entities found, please input endpoint url to query for seed entities."
+            if endpoint is None:
+                raise ValueError("No cached seed entities found, kg_endpoint must not be None")
+            
             from locate_then_ask.kg_client import KgClient
 
             kg_client = KgClient(endpoint, user=user, pw=pw)

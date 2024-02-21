@@ -24,9 +24,8 @@ class DatasetGenerator:
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_PATH)
 
         if not os.path.isfile(filepath):
-            assert (
-                kg_endpoint is not None
-            ), "No cached seed entities found, kg_endpoint must not be None."
+            if kg_endpoint is None:
+                raise ValueError("No cached seed entities found, kg_endpoint must not be None")
 
             from locate_then_ask.kg_client import KgClient
 
