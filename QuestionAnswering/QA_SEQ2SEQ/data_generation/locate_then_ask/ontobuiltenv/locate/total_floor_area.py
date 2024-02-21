@@ -10,7 +10,8 @@ class OBETotalFloorAreaLocator(OBEAttrLocator):
         self.measure_locator = OBEOmMeasureLocator()
         
     def locate(self, query_graph: QueryGraph, entity: OBEProperty):
-        assert entity.total_floor_area is not None
+        if entity.total_floor_area is None:
+            raise ValueError("`entity.total_floor_area` must not be None.")
         
         return self.measure_locator.locate(
             query_graph,

@@ -10,7 +10,8 @@ class OBEGroundElevationLocator(OBEAttrLocator):
         self.measure_locator = OBEOmMeasureLocator()
 
     def locate(self, query_graph: QueryGraph, entity: OBEProperty):
-        assert entity.ground_elevation is not None
+        if entity.ground_elevation is None:
+            raise ValueError("The `ground_elevation` field of `entity` must not be None.")
         
         return self.measure_locator.locate(
             query_graph,
