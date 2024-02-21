@@ -1,6 +1,6 @@
 import random
 
-from constants.functions import OBE_NUM_OPS
+from constants.functions import BASIC_NUM_OPS
 from constants.namespaces import OM
 from constants.om import OM_KEY_LABELS
 from constants.ontobuiltenv import OBE_ATTR_LABELS, OBEAttrKey
@@ -11,7 +11,7 @@ from utils.numerical import make_operand_and_verbn
 
 class OBEOmMeasureLocator:
     def locate(self, query_graph: QueryGraph, key: OBEAttrKey, measure: OmMeasure):
-        operator = random.choice(OBE_NUM_OPS)
+        operator = random.choice(BASIC_NUM_OPS)
         operand, op_verbn = make_operand_and_verbn(
             operator, value=measure.numerical_value
         )

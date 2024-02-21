@@ -1,49 +1,45 @@
 from decimal import Decimal
 from typing import Dict
-from constants.ontozeolite import OZZeoFwAttrKey
+from constants.ontozeolite import ZEOTOPO_SCALAR_KEYS
 
 from locate_then_ask.kg_client import KgClient
-from locate_then_ask.ontozeolite.model import OZZeoFw
+from locate_then_ask.ontozeolite.model import OZCrystalInfo, OZFramework, OZMaterial
 
 
 class OZEntityStore:
-    TOPOLOGY_MEASURE_KEYS = [
-        OZZeoFwAttrKey.ACCESSIBLE_AREA_PER_CELL,
-        OZZeoFwAttrKey.ACCESSIBLE_AREA_PER_GRAM,
-        OZZeoFwAttrKey.ACCESSIBLE_VOLUME,
-        OZZeoFwAttrKey.ACCESSIBLE_VOLUME_PER_CELL,
-        OZZeoFwAttrKey.OCCUPIABLE_AREA_PER_CELL,
-        OZZeoFwAttrKey.OCCUPIABLE_AREA_PER_GRAM,
-        OZZeoFwAttrKey.OCCUPIABLE_VOLUME,
-        OZZeoFwAttrKey.OCCUPIABLE_VOLUME_PER_CELL,
-        OZZeoFwAttrKey.SPECIFIC_ACCESSIBLE_AREA,
-        OZZeoFwAttrKey.SPECIFIC_OCCUPIABLE_AREA,
-        OZZeoFwAttrKey.DENSITY,
-        OZZeoFwAttrKey.FRAMEWORK_DENSITY,
-    ]
-
     def __init__(self, kg_endpoint: str):
         self.kg_client = KgClient(kg_endpoint)
-        self.iri2entity: Dict[str, OZZeoFw] = dict()
+        self.iri2framework: Dict[str, OZFramework] = dict()
+        self.iri2material: Dict[str, OZMaterial] = dict()
 
-    def get(self, entity_iri: str):
-        if entity_iri not in self.iri2entity:
-            self.iri2entity[entity_iri] = OZZeoFw(
+    def get_framework(self, entity_iri: str):
+        if entity_iri not in self.iri2framework:
+            self.iri2framework[entity_iri] = OZFramework(
                 iri=entity_iri,
                 framework_code=self._retrieve_by_property(
                     entity_iri, "zeo:hasFrameworkCode"
                 )[0],
-                unit_cell_volume=self._retrieve_by_property(
-                    entity_iri,
-                    "ocr:hasCrystalInformation/ocr:hasUnitCell/ocr:hasUnitCellVolume/om:hasNumericalValue",
-                )[0],
-                tile_code=self._retrieve_by_property(
-                    entity_iri,
-                    "ocr:hasCrystalInformation/ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode",
-                )[0],
-                topology_measures=self._retrieve_topomeasures(entity_iri),
+                crystal_info=self._retrieve_crystal_info(entity_iri),
+                topo_scalar=self._retrieve_topomeasures(entity_iri),
             )
-        return self.iri2entity[entity_iri]
+        return self.iri2framework[entity_iri]
+
+    def get_material(self, entity_iri: str):
+        if entity_iri not in self.iri2material:
+            self.iri2material[entity_iri] = OZMaterial(
+                iri=entity_iri,
+                framework_iri=self._retrieve_by_property(
+                    entity_iri, "^zeo:hasZeoliticMaterial"
+                )[0],
+                crystal_info=self._retrieve_crystal_info(entity_iri),
+                formulae=self._retrieve_by_property(
+                    entity_iri, "zeo:hasChemicalFormula"
+                ),
+                guest_compound=self._retrieve_by_property(
+                    entity_iri, "zeo/hasGuestCompound/os:formula"
+                ),
+            )
+        return self.iri2material[entity_iri]
 
     def _retrieve_by_property(self, entity_iri: str, prop: str):
         template = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
@@ -60,6 +56,20 @@ SELECT ?x WHERE {{
             for row in self.kg_client.query(query)["results"]["bindings"]
         ]
 
+    def _retrieve_crystal_info(self, entity_iri: str):
+        return OZCrystalInfo(
+            unit_cell_volume=Decimal(
+                self._retrieve_by_property(
+                    entity_iri,
+                    "ocr:hasCrystalInformation/ocr:hasUnitCell/ocr:hasUnitCellVolume/om:hasNumericalValue",
+                )[0]
+            ),
+            tile_code=self._retrieve_by_property(
+                entity_iri,
+                "ocr:hasCrystalInformation/ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode",
+            )[0],
+        )
+
     def _retrieve_topomeasures(self, entity_iri: str):
         key2bindings = {
             key: self._retrieve_by_property(
@@ -68,6 +78,6 @@ SELECT ?x WHERE {{
                     key=key.value
                 ),
             )
-            for key in self.TOPOLOGY_MEASURE_KEYS
+            for key in ZEOTOPO_SCALAR_KEYS
         }
         return {k: Decimal(v[0]) for k, v in key2bindings.items() if v}
