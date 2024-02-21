@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable, Tuple
 
+from .exceptions import SparqlParseError
 from .sparql_base import SparqlBase
 
 
@@ -25,7 +26,9 @@ class SelectClause(SparqlBase):
     def extract(cls, sparql: str):
         """sparql: SELECT ?x ((EXRP) AS ?y)..."""
         sparql = sparql.lstrip()
-        assert sparql.startswith("SELECT")
+        if not sparql.startswith("SELECT"):
+            raise SparqlParseError(sparql)
+        
         sparql = sparql[len("SELECT") :]
         vars = []
         while True:

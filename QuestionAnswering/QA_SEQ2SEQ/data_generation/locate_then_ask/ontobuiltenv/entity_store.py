@@ -11,10 +11,7 @@ from locate_then_ask.ontobuiltenv.model import (
 
 
 class OBEEntityStore:
-    def __init__(
-        self,
-        kg_endpoint: str = "http://165.232.172.16:3838/blazegraph/namespace/kingslynn/sparql",
-    ):
+    def __init__(self, kg_endpoint: str):
         self.kg_client = KgClient(kg_endpoint)
         self.iri2entity: Dict[str, OBEProperty] = dict()
 
@@ -56,9 +53,11 @@ class OBEEntityStore:
             address=address,
             built_form=built_form[0] if len(built_form) > 0 else None,
             energy_rating=energy_rating[0] if len(energy_rating) > 0 else None,
-            number_of_habitable_rooms=Decimal(number_of_habitable_rooms[0])
-            if len(number_of_habitable_rooms) > 0
-            else None,
+            number_of_habitable_rooms=(
+                Decimal(number_of_habitable_rooms[0])
+                if len(number_of_habitable_rooms) > 0
+                else None
+            ),
             property_type=property_type,
             property_usage=property_usage,
             total_floor_area=total_floor_area,
@@ -179,5 +178,5 @@ LIMIT 1"""
 
         if len(response_bindings) == 0:
             return None
-        
+
         return response_bindings[0]["o"]["value"]

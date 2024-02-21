@@ -10,7 +10,8 @@ from utils.numerical import make_operand_and_verbn
 
 class OBENumOfHabitableRoomsLocator(OBEAttrLocator):
     def locate(self, query_graph: QueryGraph, entity: OBEProperty):
-        assert entity.number_of_habitable_rooms is not None
+        if entity.number_of_habitable_rooms is None:
+            raise ValueError("The `number_of_habitable_rooms` field of `entity` must not be None.")
         
         operator = random.choice(OBE_NUM_OPS)
         operand, verbn = make_operand_and_verbn(

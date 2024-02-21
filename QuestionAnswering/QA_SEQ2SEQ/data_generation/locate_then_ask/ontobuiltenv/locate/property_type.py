@@ -12,15 +12,24 @@ class OBEPropertyTypeLocator(OBEAttrLocator):
         "House": ["house"],
         "Maisonette": ["maisonette"],
         "Bungalow": ["bungalow"],
-        "ParkHome": ["park home", "mobile home"]
+        "ParkHome": ["park home", "mobile home"],
     }
-    def locate(self, query_graph: QueryGraph, entity: OBEProperty):
-        assert entity.property_type is not None
 
-        assert entity.property_type.startswith(OBE)
-        clsname = entity.property_type[len(OBE):]
+    def locate(self, query_graph: QueryGraph, entity: OBEProperty):
+        if entity.property_type is None:
+            raise ValueError("The `property_type` of `entity` must not be None.")
+        if not entity.property_type.startswith(OBE):
+            raise ValueError(
+                "`entity.property_type` must start with {expected}. Found: {actual}.".format(
+                    expected=OBE, actual=entity.property_type
+                )
+            )
+
+        clsname = entity.property_type[len(OBE) :]
         clsname_node = "obe:" + clsname
-        query_graph.add_iri_node(clsname_node, prefixed=True, key=OBEAttrKey.PROPERTY_TYPE)
+        query_graph.add_iri_node(
+            clsname_node, prefixed=True, key=OBEAttrKey.PROPERTY_TYPE
+        )
         query_graph.add_triple("Property", "obe:hasPropertyType/a", clsname_node)
 
         verbn = "property type is " + random.choice(self.KEY2LABELS[clsname])

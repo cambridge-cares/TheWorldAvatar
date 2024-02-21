@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Tuple
 
+from .exceptions import SparqlParseError
 from .graph_pattern import (
     FilterClause,
     GraphPattern,
@@ -33,9 +34,13 @@ class WhereClause(SparqlBase):
     def extract(cls, sparql_fragment: str):
         """sparql_fragment: WHERE { ... }"""
         sparql_fragment = sparql_fragment.lstrip()
-        assert sparql_fragment.startswith("WHERE"), sparql_fragment
+        if not sparql_fragment.startswith("WHERE"):
+            raise SparqlParseError(sparql_fragment)
+
         sparql_fragment = sparql_fragment[len("WHERE") :].lstrip()
-        assert sparql_fragment.startswith("{")
+        if not sparql_fragment.startswith("{"):
+            raise SparqlParseError(sparql_fragment)
+
         sparql_fragment = sparql_fragment[1:].lstrip()
 
         graph_patterns = []
@@ -49,5 +54,7 @@ class WhereClause(SparqlBase):
             graph_patterns.append(pattern)
             sparql_fragment = sparql_fragment.lstrip()
 
-        assert sparql_fragment.startswith("}"), sparql_fragment
+        if not sparql_fragment.startswith("}"):
+            raise SparqlParseError(sparql_fragment)
+
         return cls(graph_patterns), sparql_fragment[1:]

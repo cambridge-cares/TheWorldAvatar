@@ -1,5 +1,5 @@
-from typing import Dict, Type, Union
-from constants.namespaces import OKIN, OS
+from typing import Dict
+
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontokin.model import (
     OKMechanism,
@@ -9,11 +9,7 @@ from locate_then_ask.ontokin.model import (
 
 
 class OKEntityStore:
-    def __init__(
-        self,
-        kg_endpoint: str = "http://theworldavatar.com/blazegraph/namespace/ontokin/sparql",
-        **kwargs
-    ):
+    def __init__(self, kg_endpoint: str, **kwargs):
         self.kg_client = KgClient(kg_endpoint, **kwargs)
         self.iri2mechanism: Dict[str, OKMechanism] = dict()
         self.iri2rxn: Dict[str, OKGasPhaseReaction] = dict()
@@ -23,12 +19,12 @@ class OKEntityStore:
         if entity_iri not in self.iri2mechanism:
             self.iri2mechanism[entity_iri] = self.create_mechanism(entity_iri)
         return self.iri2mechanism[entity_iri]
-    
+
     def get_rxn(self, entity_iri: str):
         if entity_iri not in self.iri2rxn:
             self.iri2rxn[entity_iri] = self.create_rxn(entity_iri)
         return self.iri2rxn[entity_iri]
-    
+
     def get_species(self, entity_iri: str):
         if entity_iri not in self.iri2species:
             self.iri2species[entity_iri] = self.create_species(entity_iri)

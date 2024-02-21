@@ -10,11 +10,9 @@ class OBEMarketValueLocator(OBEAttrLocator):
         self.measure_locator = OBEOmMeasureLocator()
 
     def locate(self, query_graph: QueryGraph, entity: OBEProperty):
-        assert entity.market_value is not None
+        if entity.market_value is None:
+            raise ValueError("The `market_value` field of `entity` must not be None.")
 
         return self.measure_locator.locate(
-            query_graph,
-            key=OBEAttrKey.MARKET_VALUE,
-            measure=entity.market_value
+            query_graph, key=OBEAttrKey.MARKET_VALUE, measure=entity.market_value
         )
-    

@@ -1,5 +1,6 @@
 from decimal import Decimal
 import random
+from typing import Optional
 from constants.namespaces import DABGEO, OBE
 
 from locate_then_ask.ontobuiltenv.model import OBEProperty
@@ -9,12 +10,12 @@ from .property_usage import OBEPropertyUsageSynthesizer
 
 
 class OBEPropertySynthesizer:
-    def __init__(self):
-        self.addr_synth = IctAddressSynthesizer()
+    def __init__(self, kg_endpoint: Optional[str] = None):
+        self.addr_synth = IctAddressSynthesizer(kg_endpoint)
         self.propuse_synth = OBEPropertyUsageSynthesizer()
-        self.totalfloorarea_synth = OmMeasureSynthesizer("TotalFloorArea")
-        self.marketvalue_synth = OmMeasureSynthesizer("MarketValue")
-        self.groundelevation_synth = OmMeasureSynthesizer("GroundElevation")
+        self.totalfloorarea_synth = OmMeasureSynthesizer("TotalFloorArea", kg_endpoint)
+        self.marketvalue_synth = OmMeasureSynthesizer("MarketValue", kg_endpoint)
+        self.groundelevation_synth = OmMeasureSynthesizer("GroundElevation", kg_endpoint)
 
     def make(self):
         return OBEProperty(

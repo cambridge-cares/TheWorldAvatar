@@ -12,25 +12,34 @@ from utils.numerical import make_operand_and_verbn
 
 class OBEPropertyUsageLocator(OBEAttrLocator):
     def locate(self, query_graph: QueryGraph, entity: OBEProperty):
-        assert any(entity.property_usage)
+        if len(entity.property_usage) == 0:
+            raise ValueError("`entity.property_usage` must not be empty.")
+        if len(entity.property_usage) != len(set(entity.property_usage)):
+            raise ValueError(
+                "All elements in `entity.property_usage` must be unique. Found: {actual}.".format(
+                    actual=entity.property_usage
+                )
+            )
+        if any(not use.concept.startswith(OBE) for use in entity.property_usage):
+            raise ValueError(
+                "All elements in `entity.property_usage` must start with {prefix}. Found {actual}.".format(
+                    prefix=OBE, actual=entity.property_usage
+                )
+            )
 
         verbns = []
         samples = random.sample(
             entity.property_usage,
             k=random.randint(1, min(len(entity.property_usage), 2)),
         )
-        assert len(samples) == len(set(samples))
         samples.sort(
             key=lambda use: use.usage_share is None
         )  # those with usage_share comes first
         use_share_num = sum(use.usage_share is not None for use in samples)
         do_locate_share_num = random.randint(0, use_share_num)
-        do_locate_shares = (
-            i < do_locate_share_num for i in range(len(samples))
-        )
+        do_locate_shares = (i < do_locate_share_num for i in range(len(samples)))
         for use, do_locate_share in zip(samples, do_locate_shares):
             usage_node = query_graph.make_blank_node(key=OBEAttrKey.PROPERTY_USAGE)
-            assert use.concept.startswith(OBE), use.concept
             clsname = use.concept[len(OBE) :]
             clsname_node = "obe:" + clsname
 

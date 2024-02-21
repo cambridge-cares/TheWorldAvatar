@@ -39,5 +39,5 @@ class OSSparqlPredictionCorrector:
         return SparqlQuery(
             select_clause=sparql.select_clause,
             where_clause=WhereClause(graph_patterns),
-            solultion_modifier=sparql.solultion_modifier,
+            solution_modifier=sparql.solution_modifier,
         )

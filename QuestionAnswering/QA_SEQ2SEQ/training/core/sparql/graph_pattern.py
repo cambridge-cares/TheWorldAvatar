@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import itertools
 from typing import Iterable, Tuple
 
+from .exceptions import SparqlParseError
 from .sparql_base import SparqlBase
 
 
@@ -32,24 +33,34 @@ class ValuesClause(GraphPattern):
     @classmethod
     def extract(cls, sparql_fragment: str):
         """VALUES ?var { {literal} {literal} ... }"""
-        assert sparql_fragment.startswith("VALUES")
+        if not sparql_fragment.startswith("VALUES"):
+            raise SparqlParseError(sparql_fragment)
+
         sparql_fragment = sparql_fragment[len("VALUES") :].lstrip()
-        assert sparql_fragment.startswith("?"), sparql_fragment
+        if not sparql_fragment.startswith("?"):
+            raise SparqlParseError(sparql_fragment)
+
         var, sparql_fragment = sparql_fragment.split(maxsplit=1)
-        
+
         sparql_fragment = sparql_fragment.lstrip()
-        assert sparql_fragment.startswith("{"), sparql_fragment
+        if not sparql_fragment.startswith("{"):
+            raise SparqlParseError(sparql_fragment)
+
         sparql_fragment = sparql_fragment[1:].lstrip()
 
         ptr = 0
         literals = []
         while ptr < len(sparql_fragment) and sparql_fragment[ptr] != "}":
-            assert sparql_fragment[ptr] == '"', sparql_fragment
+            if not (sparql_fragment[ptr] == '"'):
+                raise SparqlParseError(sparql_fragment)
+            
             _ptr = ptr + 1
             _ptr_literal_start = _ptr
             while _ptr < len(sparql_fragment) and sparql_fragment[_ptr] != '"':
                 _ptr += 1
-            assert sparql_fragment[_ptr] == '"'
+
+            if not (sparql_fragment[_ptr] == '"'):
+                raise SparqlParseError(sparql_fragment)
 
             literal = sparql_fragment[_ptr_literal_start:_ptr]
             literals.append(literal)
@@ -59,6 +70,7 @@ class ValuesClause(GraphPattern):
                 ptr += 1
 
         return cls(var, literals), sparql_fragment[ptr + 1 :]
+
 
 @dataclass(order=True, frozen=True)
 class FilterClause(GraphPattern):
@@ -70,7 +82,8 @@ class FilterClause(GraphPattern):
     @classmethod
     def extract(cls, sparql_fragment: str):
         sparql_fragment = sparql_fragment[len("FILTER") :].strip()
-        assert sparql_fragment.startswith("("), sparql_fragment
+        if not sparql_fragment.startswith("("):
+            raise SparqlParseError(sparql_fragment)
 
         sparql_fragment = sparql_fragment[1:].strip()
         ptr = 0
@@ -81,10 +94,12 @@ class FilterClause(GraphPattern):
             if sparql_fragment[ptr] == '"':
                 quote_open = not quote_open
             ptr += 1
-        assert sparql_fragment[ptr] == ")", sparql_fragment
+        if not (sparql_fragment[ptr] == ")"):
+            raise SparqlParseError(sparql_fragment)
         constraint = sparql_fragment[:ptr].strip()
 
         return cls(constraint), sparql_fragment[ptr + 1 :]
+
 
 @dataclass(order=True, frozen=True)
 class TriplePattern(GraphPattern):
@@ -127,29 +142,33 @@ class TriplePattern(GraphPattern):
                     ptr += 1
                 obj = sparql_fragment[: ptr + 1]
                 sparql_fragment = sparql_fragment[ptr + 1 :].strip()
-            elif sparql_fragment.startswith('['):
-                stack = ['[']
+            elif sparql_fragment.startswith("["):
+                stack = ["["]
                 ptr = 1
                 obj = None
                 while ptr < len(sparql_fragment):
                     if sparql_fragment[ptr] in "[":
-                        stack.append('[')
+                        stack.append("[")
                     elif sparql_fragment[ptr] == "]":
-                        assert stack[-1] == '[', "Unexpected close square bracket: " + sparql_fragment
+                        if stack[-1] != "[":
+                            raise SparqlParseError(sparql_fragment)
                         if len(stack) == 1:
-                            obj = sparql_fragment[:ptr + 1]
+                            obj = sparql_fragment[: ptr + 1]
                             sparql_fragment = sparql_fragment[ptr + 1 :].strip()
                             break
                         else:
                             stack.pop()
                     elif sparql_fragment[ptr] == '"':
                         ptr += 1
-                        while ptr < len(sparql_fragment) and sparql_fragment[ptr] != '"':
+                        while (
+                            ptr < len(sparql_fragment) and sparql_fragment[ptr] != '"'
+                        ):
                             ptr += 1
                     else:
                         pass
                     ptr += 1
-                assert obj is not None
+                if obj is None:
+                    raise SparqlParseError(sparql_fragment)
             else:
                 splits = sparql_fragment.split(maxsplit=1)
                 if len(splits) == 2:
@@ -165,13 +184,15 @@ class TriplePattern(GraphPattern):
 
             tails.append((predicate, obj))
 
-            assert sparql_fragment[0] in [";", "."], sparql_fragment
+            if sparql_fragment[0] not in [";", "."]:
+                raise SparqlParseError(sparql_fragment)
             punctuation = sparql_fragment[0]
             sparql_fragment = sparql_fragment[1:]
             if punctuation == ".":
                 break
 
         return cls(subj=subj, tails=tails), sparql_fragment
+
 
 @dataclass(order=True, frozen=True)
 class OptionalClause(GraphPattern):
