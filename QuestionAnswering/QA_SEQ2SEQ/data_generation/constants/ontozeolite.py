@@ -87,3 +87,8 @@ ZEOTOPO_ATTR_LABELS = {
     OZZeoTopoAttrKey.SPHERE_DIAMETER: ["sphere diameter"],
     OZZeoTopoAttrKey.T_ATOM: ["T atom"],
 }
+
+ZEOMATERIAL_ATTR_LABELS = {
+    OZMaterialAttrKey.CHEMICAL_FORMULA: ["chemical formula", "formulation"],
+    OZMaterialAttrKey.GUEST_COMPOUND: ["guest compound", "guest species", "OSDA"]
+}

@@ -31,20 +31,20 @@ class OZEntityStore:
                 framework_iri=self._retrieve_by_property(
                     entity_iri, "^zeo:hasZeoliticMaterial"
                 )[0],
-                crystal_info=self._retrieve_crystal_info(entity_iri),
                 formulae=self._retrieve_by_property(
                     entity_iri, "zeo:hasChemicalFormula"
                 ),
                 guest_compound=self._retrieve_by_property(
-                    entity_iri, "zeo/hasGuestCompound/os:formula"
+                    entity_iri, "zeo:hasGuestCompound/os:formula"
                 ),
             )
         return self.iri2material[entity_iri]
 
     def _retrieve_by_property(self, entity_iri: str, prop: str):
-        template = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        template = """PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
-PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 
 SELECT ?x WHERE {{
     <{IRI}> {prop} ?x .

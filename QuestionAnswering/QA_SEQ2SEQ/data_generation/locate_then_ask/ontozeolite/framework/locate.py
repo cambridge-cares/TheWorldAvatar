@@ -26,15 +26,15 @@ class OZFrameworkLocator:
     def locate_concept_name(self, entity_iri: str):
         query_graph = QueryGraph()
         query_graph.add_topic_node("Framework", iri=entity_iri)
-        return query_graph, "zeolite framework"
+        return query_graph, random.choice(["zeolite framework", "zeolite"])
 
     def locate_name(self, entity_iri):
-        query_graph, _ = self.locate_concept_name(entity_iri)
+        query_graph, concept = self.locate_concept_name(entity_iri)
         entity = self.store.get_framework(entity_iri)
 
         literal_node = query_graph.make_literal_node(entity.framework_code)
         query_graph.add_triple("Framework", "zeo:hasFrameworkCode", literal_node)
-        verbn = "zeolite framework [{label}]".format(label=entity.framework_code)
+        verbn = "{concept} [{label}]".format(concept=concept, label=entity.framework_code)
 
         return query_graph, verbn
 

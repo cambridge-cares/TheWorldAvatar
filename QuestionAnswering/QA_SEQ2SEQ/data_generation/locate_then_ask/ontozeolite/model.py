@@ -27,7 +27,6 @@ class OZFramework:
 class OZMaterial:
     iri: str
     framework_iri: str  # ^zeo:hasZeoliticMaterial
-    crystal_info: OZCrystalInfo  # ocr:hasCrystalInformation
     formulae: Tuple[str, ...]  # zeo:hasChemicalFormula
     guest_compound: Optional[str]  # zeo:hasGuestCompound/os:formula
 

@@ -15,7 +15,9 @@ class OZFrameworkAsker:
         self.graph2sparql = Graph2Sparql()
 
     def _get_unsampled_keys(self, query_graph: QueryGraph):
-        sampled_keys = set([key for _, _, key in query_graph.edges(data="key")])
+        sampled_keys = set(
+            [key for _, _, key in query_graph.out_edges("Framework", data="key")]
+        )
         return tuple(
             [
                 key
@@ -63,7 +65,7 @@ class OZFrameworkAsker:
             qnode = key.value
             query_graph.add_question_node(qnode)
             if isinstance(key, OZCrystalInfoAttrKey):
-                pred = "ocr:has" + key.value
+                pred = "ocr:hasCrystalInformation/ocr:has" + key.value
                 qnode_verbn = random.choice(CRYSTAL_ATTR_LABELS[key])
             else:
                 pred = "zeo:hasZeoliteTopology/zeo:has" + key.value
