@@ -97,7 +97,8 @@ class OPltPlotAsker:
 
     def ask_agg(self, query_graph: QueryGraph, verbalization: str, attr_num: int = 1):
         candidates = self._find_unsampled_numerical_keys(query_graph)
-        assert len(candidates) > 0
+        if len(candidates) == 0:
+            raise ValueError("No attribute key has not been added to `query_graph`.")
 
         verbns = []
         for key in random.sample(candidates, k=min(len(candidates), attr_num)):

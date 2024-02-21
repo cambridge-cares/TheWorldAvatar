@@ -11,7 +11,8 @@ class OKReactionAsker:
         return ask_name(query_graph, verbalization, "Reaction")
 
     def ask_count(self, query_graph: QueryGraph, verbalization: str):
-        assert "Mechanism" in query_graph.nodes()
+        if not query_graph.has_node("Mechanism"):
+            raise ValueError("`Mechanism` node must be present in the query_graph.")
 
         query_graph.add_question_node("Reaction", agg=AggOp.COUNT)
 

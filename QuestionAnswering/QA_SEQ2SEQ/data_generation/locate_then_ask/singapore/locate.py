@@ -79,12 +79,11 @@ class OPltPlotLocator:
         keys = entity.get_nonnone_keys()
         weights = [self.ATTR_KEY_WEIGHTS[k] for k in keys]
 
-        conds = []        
+        conds = []
         for k in np.random.choice(
             keys, size=min(cond_num, len(keys)), p=normalize_1d(weights), replace=False
         ):
             if k is OPltPlotAttrKey.LAND_USE_TYPE_TYPE:
-                assert entity.land_use_type_type is not None
                 assert entity.land_use_type_type.startswith(OZNG)
                 clsname = entity.land_use_type_type[len(OZNG) :]
                 clsname_node = "{prefix}:{name}".format(
@@ -97,12 +96,10 @@ class OPltPlotLocator:
                     value=random.choice(OZNG_LANDUSETYPE_LABELS[clsname]),
                 )
             elif k is OPltPlotAttrKey.GROSS_PLOT_RATIO:
-                assert entity.gross_plot_ratio is not None
                 cond = self._locate_measure(
                     query_graph, key=k, measure=entity.gross_plot_ratio
                 )
             elif k is OPltPlotAttrKey.IS_AWAITING_DETAILED_GPR_EVAL:
-                assert entity.is_awaiting_detailed_gpr_eval is not None
                 literal_node = query_graph.make_literal_node(
                     entity.is_awaiting_detailed_gpr_eval
                 )
@@ -112,12 +109,10 @@ class OPltPlotLocator:
                 else:
                     cond = "which is not awaiting detailed gross plot ratio evaluation"
             elif k is OPltPlotAttrKey.PLOT_AREA:
-                assert entity.plot_area is not None
                 cond = self._locate_measure(
                     query_graph, key=k, measure=entity.plot_area
                 )
             elif k is OPltPlotAttrKey.GROSS_FLOOR_AREA:
-                assert entity.gross_floor_area is not None
                 cond = self._locate_measure(
                     query_graph, key=k, measure=entity.gross_floor_area
                 )
