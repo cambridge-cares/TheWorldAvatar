@@ -12,5 +12,7 @@ services:
       context: fastapi_app
     env_file:
       - fastapi-variables.env
+    environment:
+      - QA_SUPERDOMAIN=cities
     ports:
       - 5000:8000
