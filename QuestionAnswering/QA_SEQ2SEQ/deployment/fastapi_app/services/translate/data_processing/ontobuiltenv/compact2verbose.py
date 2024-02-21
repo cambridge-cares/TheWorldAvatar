@@ -72,160 +72,160 @@ class OBECompact2VerboseConverter:
         return patterns, vars
 
     def _try_convert_property_hasmeasure_triple(self, pattern: GraphPattern):
-        try:
-            """
-            ?Property obe:has{key} ?{key} .
-            """
-            assert isinstance(pattern, TriplePattern)
-            assert pattern.subj == "?Property"
-            assert len(pattern.tails) == 1
+        """
+        ?Property obe:has{key} ?{key} .
+        """
+        if not (
+            isinstance(pattern, TriplePattern)
+            and pattern.subj == "?Property"
+            and len(pattern.tails) == 1
+        ):
+            return None
 
-            p, o = pattern.tails[0]
+        p, o = pattern.tails[0]
 
-            key = p[len("obe:has") :]
-            assert key in [
+        key = p[len("obe:has") :]
+        if not (
+            key
+            in [
                 "TotalFloorArea",
                 "MarketValue",
                 "GroundElevation",
                 "TotalMonetaryValue",
                 "MonetaryValue",
             ]
-            assert o == "?" + key
-
-            """
-            ?Property obe:has{key} ?{key} .
-            ?{key} om:hasValue [
-                om:hasNumericalValue ?{key}NumericalValue ; 
-                om:hasUnit/om:symbol ?{key}Unit
-            ] .
-            """
-            patterns = [
-                pattern,
-                TriplePattern(
-                    "?{key}".format(key=key),
-                    tails=[
-                        (
-                            "om:hasValue",
-                            "[ om:hasNumericalValue ?{key}NumericalValue ; om:hasUnit/om:symbol ?{key}Unit ]".format(
-                                key=key
-                            ),
-                        )
-                    ],
-                ),
-            ]
-            vars = [
-                "?{key}NumericalValue".format(key=key),
-                "?{key}Unit".format(key=key),
-            ]
-            return patterns, vars
-        except AssertionError:
+            and o == "?" + key
+        ):
             return None
+
+        """
+        ?Property obe:has{key} ?{key} .
+        ?{key} om:hasValue [
+            om:hasNumericalValue ?{key}NumericalValue ; 
+            om:hasUnit/om:symbol ?{key}Unit
+        ] .
+        """
+        patterns = [
+            pattern,
+            TriplePattern(
+                "?{key}".format(key=key),
+                tails=[
+                    (
+                        "om:hasValue",
+                        "[ om:hasNumericalValue ?{key}NumericalValue ; om:hasUnit/om:symbol ?{key}Unit ]".format(
+                            key=key
+                        ),
+                    )
+                ],
+            ),
+        ]
+        vars = [
+            "?{key}NumericalValue".format(key=key),
+            "?{key}Unit".format(key=key),
+        ]
+        return patterns, vars
 
     def _try_convert_property_hasaddress_triple(self, pattern: GraphPattern):
-        try:
-            """
-            ?Property obe:hasAddress ?Address .
-            """
-            assert isinstance(pattern, TriplePattern)
-            assert pattern.subj == "?Property"
-            assert len(pattern.tails) == 1
-
-            p, o = pattern.tails[0]
-            assert p == "obe:hasAddress"
-            assert o == "?Address"
-
-            """
-            ?Property obe:hasAddress ?Address .
-            OPTIONAL {
-                ?Address ict:hasBuilidingName ?BuildingName .
-            }
-            OPTIONAL {
-                ?Address ict:hasStreet ?Street .
-            }
-            OPTIONAL {
-                ?Address ict:hasStreetNumber ?StreetNumber .
-            }
-            OPTIONAL {
-                ?Address obe:hasUnitName ?UnitName .
-            }
-            OPTIONAL {
-                ?Address obe:hasPostalCode/rdfs:label ?PostalCode
-            }
-            """
-
-            patterns = [
-                pattern,
-                OptionalClause(
-                    [
-                        TriplePattern.from_triple(
-                            "?Address", "ict:hasBuildingName", "?Building"
-                        )
-                    ]
-                ),
-                OptionalClause(
-                    [TriplePattern.from_triple("?Address", "ict:hasStreet", "?Street")]
-                ),
-                OptionalClause(
-                    [
-                        TriplePattern.from_triple(
-                            "?Address", "ict:hasStreetNumber", "?StreetNumber"
-                        )
-                    ]
-                ),
-                OptionalClause(
-                    [
-                        TriplePattern.from_triple(
-                            "?Address", "obe:hasUnitName", "?UnitName"
-                        )
-                    ]
-                ),
-                OptionalClause(
-                    [
-                        TriplePattern.from_triple(
-                            "?Address", "obe:hasPostalCode/rdfs:label", "?PostalCode"
-                        )
-                    ]
-                ),
-            ]
-            vars = [
-                "?BuildingName",
-                "?Street",
-                "?StreetNumber",
-                "?UnitName",
-                "?PostalCode",
-            ]
-
-            return patterns, vars
-        except AssertionError:
+        """
+        ?Property obe:hasAddress ?Address .
+        """
+        if not (
+            isinstance(pattern, TriplePattern)
+            and pattern.subj == "?Property"
+            and len(pattern.tails) == 1
+        ):
             return None
+
+        p, o = pattern.tails[0]
+        if not (p == "obe:hasAddress" and o == "?Address"):
+            return None
+
+        """
+        ?Property obe:hasAddress ?Address .
+        OPTIONAL {
+            ?Address ict:hasBuilidingName ?BuildingName .
+        }
+        OPTIONAL {
+            ?Address ict:hasStreet ?Street .
+        }
+        OPTIONAL {
+            ?Address ict:hasStreetNumber ?StreetNumber .
+        }
+        OPTIONAL {
+            ?Address obe:hasUnitName ?UnitName .
+        }
+        OPTIONAL {
+            ?Address obe:hasPostalCode/rdfs:label ?PostalCode
+        }
+        """
+
+        patterns = [
+            pattern,
+            OptionalClause(
+                [
+                    TriplePattern.from_triple(
+                        "?Address", "ict:hasBuildingName", "?Building"
+                    )
+                ]
+            ),
+            OptionalClause(
+                [TriplePattern.from_triple("?Address", "ict:hasStreet", "?Street")]
+            ),
+            OptionalClause(
+                [
+                    TriplePattern.from_triple(
+                        "?Address", "ict:hasStreetNumber", "?StreetNumber"
+                    )
+                ]
+            ),
+            OptionalClause(
+                [TriplePattern.from_triple("?Address", "obe:hasUnitName", "?UnitName")]
+            ),
+            OptionalClause(
+                [
+                    TriplePattern.from_triple(
+                        "?Address", "obe:hasPostalCode/rdfs:label", "?PostalCode"
+                    )
+                ]
+            ),
+        ]
+        vars = [
+            "?BuildingName",
+            "?Street",
+            "?StreetNumber",
+            "?UnitName",
+            "?PostalCode",
+        ]
+
+        return patterns, vars
 
     def _try_convert_property_haspropertyusage_triple(self, pattern: GraphPattern):
-        try:
-            """
-            ?Property obe:hasPropertyUsage ?PropertyUsage .
-            """
-            assert isinstance(pattern, TriplePattern)
-            assert pattern.subj == "?Property"
-            assert len(pattern.tails) == 1
-
-            p, o = pattern.tails[0]
-            assert p == "obe:hasPropertyUsage"
-            assert o == "?PropertyUsage"
-
-            """
-            ?Property obe:hasPropertyUsage ?PropertyUsage .
-            ?PropertyUsage a/rdfs:label ?PropertyUsageLabel .
-            """
-            patterns = [
-                pattern,
-                TriplePattern.from_triple(
-                    "?PropertyUsage", "a/rdfs:label", "?PropertyUsageLabel"
-                ),
-            ]
-            vars = ["?PropertyUsageLabel"]
-            return patterns, vars
-        except AssertionError:
+        """
+        ?Property obe:hasPropertyUsage ?PropertyUsage .
+        """
+        if not (
+            isinstance(pattern, TriplePattern)
+            and pattern.subj == "?Property"
+            and len(pattern.tails) == 1
+        ):
             return None
+
+        p, o = pattern.tails[0]
+        if not (p == "obe:hasPropertyUsage" and o == "?PropertyUsage"):
+            return None
+
+        """
+        ?Property obe:hasPropertyUsage ?PropertyUsage .
+        ?PropertyUsage a/rdfs:label ?PropertyUsageLabel .
+        """
+        patterns = [
+            pattern,
+            TriplePattern.from_triple(
+                "?PropertyUsage", "a/rdfs:label", "?PropertyUsageLabel"
+            ),
+        ]
+        vars = ["?PropertyUsageLabel"]
+        return patterns, vars
 
     def convert(self, sparql_compact: SparqlQuery):
         select_vars_verbose = list(sparql_compact.select_clause.vars)

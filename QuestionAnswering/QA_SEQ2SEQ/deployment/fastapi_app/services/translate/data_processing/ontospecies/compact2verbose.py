@@ -129,7 +129,6 @@ class OSSparqlCompact2VerboseConverter:
         if not key in PROPERTY_KEYS:
             return None
         # do not check for obj == "?" + key, because it could be that the predicated has been corrected
-        # assert obj == "?" + key
 
         return self._make_species_hasproperty_patterns(key)
 

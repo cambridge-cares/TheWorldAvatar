@@ -15,85 +15,86 @@ class SgCompact2VerboseConverter:
         self.ontop_endpoint = ontop_endpoint
 
     def _try_converty_haslanduse_triple(self, pattern: GraphPattern):
-        try:
-            """
-            ?Plot ozng:hasLandUseType/a ?LandUseTypeType .
-            """
-            assert isinstance(pattern, TriplePattern)
-            assert len(pattern.tails) == 1
-            subj = pattern.subj
-            pred, obj = pattern.tails[0]
-            assert pred == "ozng:hasLandUseType/a"
-
-            """
-            ?LandUseType a ?LandUseTypeType .
-            SERVICE <?> {
-                ?Plot ozng:hasLandUseType ?LandUseType .
-            }
-            """
-            bg_patterns = [TriplePattern.from_triple("?LandUseType", "a", obj)]
-            ontop_patterns = [
-                TriplePattern.from_triple(subj, "ozng:hasLandUseType", "?LandUseType")
-            ]
-            return [], bg_patterns, ontop_patterns
-        except AssertionError:
+        """
+        ?Plot ozng:hasLandUseType/a ?LandUseTypeType .
+        """
+        if not (isinstance(pattern, TriplePattern) and len(pattern.tails) == 1):
             return None
+
+        subj = pattern.subj
+        pred, obj = pattern.tails[0]
+        if not (pred == "ozng:hasLandUseType/a"):
+            return None
+
+        """
+        ?LandUseType a ?LandUseTypeType .
+        SERVICE <?> {
+            ?Plot ozng:hasLandUseType ?LandUseType .
+        }
+        """
+        bg_patterns = [TriplePattern.from_triple("?LandUseType", "a", obj)]
+        ontop_patterns = [
+            TriplePattern.from_triple(subj, "ozng:hasLandUseType", "?LandUseType")
+        ]
+        return [], bg_patterns, ontop_patterns
 
     def _try_convert_hasmeasure_triple(self, pattern: GraphPattern):
-        try:
-            """
-            ?Plot *om:hasValue {key}.
-            """
-            assert isinstance(pattern, TriplePattern)
-            assert len(pattern.tails) == 1
-            pred, obj = pattern.tails[0]
-            assert pred.endswith("om:hasValue")
-
-            if not obj.startswith("?"):
-                return [], [], [pattern]
-
-            """
-            ?Plot *om:hasValue {key} .
-            ?{key} om:hasNumericalValue ?{key}NumericalValue ; 
-                om:hasUnit/om:symbol ?{key}Unit .
-            """
-            numerical_value = obj + "NumericalValue"
-            unit = obj + "Unit"
-            vars = [numerical_value, unit]
-            ontop_patterns = [
-                pattern,
-                TriplePattern(
-                    obj,
-                    tails=[
-                        ("om:hasNumericalValue", numerical_value),
-                        ("om:hasUnit", unit),
-                    ],
-                ),
-            ]
-            return vars, [], ontop_patterns
-        except AssertionError:
+        """
+        ?Plot *om:hasValue {key}.
+        """
+        if not (isinstance(pattern, TriplePattern) and len(pattern.tails) == 1):
             return None
-        
-    def _try_convert_isAwaitingDetailedGPREvaluation_triple(self, pattern: GraphPattern):
-        try:
-            assert isinstance(pattern, TriplePattern)
-            assert len(pattern.tails) == 1
-            pred, _ = pattern.tails[0]
-            assert pred == "oplnrgl:isAwaitingDetailedGPREvaluation"
+        pred, obj = pattern.tails[0]
+        if not (pred.endswith("om:hasValue")):
+            return None
+
+        if not obj.startswith("?"):
             return [], [], [pattern]
-        except AssertionError:
+
+        """
+        ?Plot *om:hasValue {key} .
+        ?{key} om:hasNumericalValue ?{key}NumericalValue ; 
+            om:hasUnit/om:symbol ?{key}Unit .
+        """
+        numerical_value = obj + "NumericalValue"
+        unit = obj + "Unit"
+        vars = [numerical_value, unit]
+        ontop_patterns = [
+            pattern,
+            TriplePattern(
+                obj,
+                tails=[
+                    ("om:hasNumericalValue", numerical_value),
+                    ("om:hasUnit", unit),
+                ],
+            ),
+        ]
+        return vars, [], ontop_patterns
+
+    def _try_convert_isAwaitingDetailedGPREvaluation_triple(
+        self, pattern: GraphPattern
+    ):
+        if not (isinstance(pattern, TriplePattern) and len(pattern.tails) == 1):
             return None
+
+        pred, _ = pattern.tails[0]
+        if not (pred == "oplnrgl:isAwaitingDetailedGPREvaluation"):
+            return None
+
+        return [], [], [pattern]
 
     def convert(self, sparql_compact: SparqlQuery):
         select_vars_verbose = list(sparql_compact.select_clause.vars)
 
-        bg_patterns_verbose, ontop_patterns_verbose = [], [TriplePattern.from_triple("?Plot", "a", "oplt:Plot")]
+        bg_patterns_verbose, ontop_patterns_verbose = [], [
+            TriplePattern.from_triple("?Plot", "a", "oplt:Plot")
+        ]
         for pattern in sparql_compact.where_clause.graph_patterns:
             flag = False
             for func in [
                 self._try_converty_haslanduse_triple,
                 self._try_convert_hasmeasure_triple,
-                self._try_convert_isAwaitingDetailedGPREvaluation_triple
+                self._try_convert_isAwaitingDetailedGPREvaluation_triple,
             ]:
                 optional = func(pattern)
                 if optional is not None:
