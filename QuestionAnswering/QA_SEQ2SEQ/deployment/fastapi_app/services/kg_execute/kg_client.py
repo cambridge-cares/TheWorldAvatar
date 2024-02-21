@@ -32,7 +32,7 @@ PREFIX ozng: <https://www.theworldavatar.com/kg/ontozoning/>"""
 
     def __init__(
         self,
-        kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
+        kg_endpoint: str,
         user: Optional[str] = None,
         pw: Optional[str] = None,
     ):

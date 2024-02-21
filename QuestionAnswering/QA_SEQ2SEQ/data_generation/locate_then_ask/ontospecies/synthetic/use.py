@@ -1,6 +1,7 @@
 import json
 import os
 import random
+from typing import Optional
 
 from constants.fs import ROOTDIR
 
@@ -9,14 +10,17 @@ class OSUseSynthesizer:
     USES_FILEPATH = "data/ontospecies/Uses.json"
     USE_NUM = 3
 
-    def __init__(self):
+    def __init__(self, kg_endpoint: Optional[str] = None):
         abs_filepath = os.path.join(ROOTDIR, self.USES_FILEPATH)
         if not os.path.exists(abs_filepath):
+            if kg_endpoint is None:
+                raise ValueError(
+                    "No cache of chemclasses found, `kg_endpoint` must be provided."
+                )
+
             from locate_then_ask.kg_client import KgClient
 
-            kg_client = KgClient(
-                "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql"
-            )
+            kg_client = KgClient(kg_endpoint)
 
             uses = set()
             query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -41,6 +45,4 @@ LIMIT 1000"""
         self.uses = uses
 
     def make(self):
-        return random.sample(
-            self.uses, min(self.USE_NUM, len(self.uses))
-        )
+        return random.sample(self.uses, min(self.USE_NUM, len(self.uses)))

@@ -151,12 +151,9 @@ class DatasetGenerator:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--endpoint",
-        default="http://178.128.105.213:3838/blazegraph/namespace/ontokin/sparql",
-    )
-    parser.add_argument("--user", default=None)
-    parser.add_argument("--pw", default=None)
+    parser.add_argument("--endpoint", type=str, default=None)
+    parser.add_argument("--user", type=str, default=None)
+    parser.add_argument("--pw", type=str, default=None)
     parser.add_argument("--n_repeats", type=int, default=1)
     parser.add_argument("--synthetic_abox", action="store_true")
     args = parser.parse_args()
