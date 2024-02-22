@@ -8,6 +8,12 @@
       "tiles": [
         "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:mainland&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
       ]
+    },{
+      "id": "plot",
+      "type": "vector",
+      "tiles": [
+          "http://174.138.23.221:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:landplot&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+      ]
     }
   ],
   "layers": [
@@ -34,6 +40,58 @@
           ["*",1.4,["to-number",["get","building_height"]]],
           2
         ]
+      }
+    },{
+      "id": "sglandplot",
+      "name": "Land Plots",
+      "source": "plot",
+      "source-layer": "landplot",
+      "type": "fill",
+      "order":1,
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": [
+          "match",
+          ["get","LU_DESC"],
+          "AGRICULTURE","#8c875d",
+          "BEACH AREA","#f9f7c7",
+          "BUSINESS 1","#c8a5cf",
+          "BUSINESS 1 - WHITE","#c8a5cf",
+          "BUSINESS 2","#b10166",
+          "BUSINESS 2 - WHITE","#b10166",
+          "BUSINESS PARK","#227fa2",
+          "BUSINESS PARK - WHITE","#227fa2",
+          "CEMETERY","#9f8900",
+          "CIVIC & COMMUNITY INSTITUTION","#cc0022",
+          "COMMERCIAL","#215297",
+          "COMMERCIAL / INSTITUTION","#9ffeff",
+          "COMMERCIAL & RESIDENTIAL","#36ade5",
+          "EDUCATIONAL INSTITUTION","#f4f2c2",
+          "HEALTH & MEDICAL CARE","#cc0022",
+          "HOTEL","#a79cc6",
+          "LIGHT RAPID TRANSIT","#ffffff",
+          "MASS RAPID TRANSIT","#ffffff",
+          "OPEN SPACE","#abb20e",
+          "PARK","#3ba339",
+          "PLACE OF WORSHIP","#cc0022",
+          "PORT / AIRPORT","#d0d0d0",
+          "RESERVE SITE","#fef66d",
+          "RESIDENTIAL","#f6bb81",
+          "RESIDENTIAL / INSTITUTION","#ef9c36",
+          "RESIDENTIAL WITH COMMERCIAL AT 1ST STOREY","#e78384",
+          "ROAD","#ffffff",
+          "SPECIAL USE","#516703",
+          "SPORTS & RECREATION","#a3d49d",
+          "TRANSPORT FACILITIES","#959a9d",
+          "UTILITY","#959a9d",
+          "WATERBODY","#bedef3",
+          "WHITE","#f5f1f2",
+          "#808080"
+        ],
+        "fill-opacity": 0.5,
+        "fill-outline-color": "#000000"
       }
     }
   ]

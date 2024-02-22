@@ -26,11 +26,12 @@ WITH "uuid_table" AS (
         "attrname" = 'GFA'
 ),
 "refGFA_table" AS (
-    SELECT
-        "GFA" AS "reference GFA",
-        "uuid"
-    FROM
-        "public"."landplot"
+    SELECT "mb"."building_iri" AS "uuid", 
+        CASE WHEN "GPR" ~ '^\d+(\.\d+)?$' 
+        THEN ("GPR"::double precision * public.ST_Area("lod1Geometry", true))
+        END AS "reference GFA"
+    FROM "public"."landplot" AS "pl", "public"."matched_buildings" AS "mb"
+    WHERE "pl"."ogc_fid" = "mb"."public_landplot_ogc_fid"           
 )
 SELECT
     "building"."id" AS "building_id",
