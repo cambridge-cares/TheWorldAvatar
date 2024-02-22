@@ -32,6 +32,9 @@ import { addAllSources } from "./mapbox-source-utils";
 import { addAllLayers } from "./mapbox-layer-utils";
 import { addIcons } from "./mapbox-icon-loader";
 
+import { useDispatch } from "react-redux";
+import { setLatLng } from "../../state/floating-panel-click-slice";
+
 // Type definition of incoming properties
 interface MapProperties {
   settings: MapSettings;
@@ -66,11 +69,28 @@ export default function MapboxMapComponent(props: MapProperties) {
   const settings = props.settings;
   const mapContainer = useRef(null);
   const map = useRef(null);
-
+  const dispatch = useDispatch();
   // Run when component loaded
   useEffect(() => {
     initialiseMap();
   }, []);
+
+  useEffect(() => {
+    // Type the event parameter as CustomEvent<any> to access the detail property
+    const mapClickHandler = (event: CustomEvent<any>) => {
+      const lngLat = event.detail;
+      dispatch(setLatLng({ lat: lngLat.lat, lng: lngLat.lng }));
+    };
+
+    // Convert the handler function to match the EventListener interface
+    const eventListener = (e: Event) => mapClickHandler(e as CustomEvent<any>);
+
+    window.addEventListener("mapClickEvent", eventListener);
+
+    return () => {
+      window.removeEventListener("mapClickEvent", eventListener);
+    };
+  }, [dispatch]);
 
   // Initialise the map object
   const initialiseMap = async () => {
@@ -102,8 +122,11 @@ export default function MapboxMapComponent(props: MapProperties) {
 
     // Adding the click event listener here
     window.map.on("click", function (e) {
-      // Logic for handling map clicks
-      console.log("Map clicked at:", e.lngLat);
+      // Create a custom event with the clicked coordinates
+      const customEvent = new CustomEvent("mapClickEvent", {
+        detail: e.lngLat,
+      });
+      window.dispatchEvent(customEvent);
     });
 
     window.map.on("style.load", function () {

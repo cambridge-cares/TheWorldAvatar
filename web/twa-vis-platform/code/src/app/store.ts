@@ -4,6 +4,7 @@ import contextMenuReducer from "state/context-menu-slice";
 import ribbonComponentReducer from "state/ribbon-component-slice";
 import floatingPanelReducer from "state/floating-panel-slice";
 import layerTreeReducer from "state/layer-tree-slice";
+import mapClickReducer from "state/floating-panel-click-slice";
 
 // Initialise and export store
 export const reduxStore = configureStore({
@@ -11,7 +12,8 @@ export const reduxStore = configureStore({
         contextMenu: contextMenuReducer,
         ribbonComponents: ribbonComponentReducer,
         floatingPanel: floatingPanelReducer,
-        layerTree: layerTreeReducer
+        layerTree: layerTreeReducer,
+        mapClick: mapClickReducer
     }
 });
 
