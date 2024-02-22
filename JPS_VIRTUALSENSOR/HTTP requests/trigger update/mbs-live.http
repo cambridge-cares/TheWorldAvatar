@@ -1,4 +1,5 @@
 # Initialise a dispersion simulation in the MBS area
+# Switch POST to DELETE to stop the scheduled simulations
 POST http://localhost:3838/dispersion-interactor/ScheduledDispersion
 ?ewkt=SRID=32648;POLYGON((363838 134778,377838 134778,377838 144778,363838 144778,363838 134778))
 &nx=100
