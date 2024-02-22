@@ -3,7 +3,7 @@
     "Name": "carpark-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "docker.io/library/carpark-agent:1.0.0",
+        "Image": "carpark-agent:1.0.0",
         "Mounts": [
           {
             "Type": "bind",
@@ -17,6 +17,9 @@
           },
           {
               "ConfigName": "postgis"
+          },
+          {
+              "ConfigName": "geoserver"
           }
       ],
       "Secrets": [
@@ -25,6 +28,9 @@
           },
           {
               "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
           }
       ]
       }
