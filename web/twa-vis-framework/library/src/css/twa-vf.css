@@ -1751,11 +1751,3 @@ html .ui-button.ui-state-disabled:active {
     margin-right: 10px;
     top: 30px;
 }
-
-#logout-button {
-    display: block;
-    width: 60px;
-    text-align: center;
-    cursor: pointer;
-    margin-right: 10px;
-}
