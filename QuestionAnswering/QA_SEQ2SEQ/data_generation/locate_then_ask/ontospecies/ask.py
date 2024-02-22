@@ -1,133 +1,141 @@
-import copy
 import random
+
+import numpy as np
+from constants.functions import StrOp
 
 from constants.ontospecies import (
     ABSTRACT_IDENTIFIER_KEY,
     ABSTRACT_PROPERTY_KEY,
-    CHEMCLASS_KEY,
-    IDENTIFIER_KEYS,
     KEY2LABELS,
-    PROPERTY_KEYS,
     SPECIES_ABSTRACT_ATTRIBUTE_KEYS,
-    SPECIES_ATTRIBUTE_KEYS,
-    USE_KEY,
+    OSIdentifierKey,
+    OSPropertyKey,
+    OSSpeciesAttrKey,
 )
-from locate_then_ask.data_model import AskDatum
-from locate_then_ask.ontospecies.graph2sparql import OSGraph2Sparql
-from locate_then_ask.query_graph import QueryGraph, get_preds
+from locate_then_ask.graph2sparql import Graph2Sparql
+from locate_then_ask.query_graph import QueryGraph
+from utils.numerical import normalize_1d
 
 
 class OSAsker:
     def __init__(self):
-        self.graph2sparql = OSGraph2Sparql()
+        self.graph2sparql = Graph2Sparql()
 
     def ask_name(self, query_graph: QueryGraph, verbalization: str):
-        query_graph = copy.deepcopy(query_graph)
-        query_graph.nodes["Species"]["question_node"] = True
+        query_graph.add_question_node("Species")
 
         query_sparql = self.graph2sparql.convert(query_graph)
         verbalization = "What are " + verbalization
 
-        return AskDatum(
-            query_graph=query_graph,
-            query_sparql=query_sparql,
-            verbalization=verbalization,
-        )
+        return query_sparql, verbalization
 
     def ask_attribute(
         self, query_graph: QueryGraph, verbalization: str, attr_num: int = 1
     ):
-        query_graph = copy.deepcopy(query_graph)
+        try:
+            values_node = next(
+                n
+                for n in query_graph.get_objs("Species", "func")
+                if query_graph.nodes[n].get("operator") is StrOp.VALUES
+            )
+            is_many_species = len(query_graph.nodes[values_node].get("operand")) > 1
+        except StopIteration:
+            is_many_species = False
 
-        will_sample_concrete_attribute = random.sample(
-            population=[True, False],
-            counts=[len(SPECIES_ATTRIBUTE_KEYS), len(SPECIES_ABSTRACT_ATTRIBUTE_KEYS)],
-            k=1,
-        )[0]
+        if is_many_species:
+            query_graph.add_question_node("Species")
+
+        will_sample_concrete_attribute = np.random.choice(
+            [True, False],
+            p=normalize_1d(
+                [
+                    len(OSPropertyKey)
+                    + len(OSIdentifierKey)
+                    + len([OSSpeciesAttrKey.CHEMCLASS, OSSpeciesAttrKey.USE]),
+                    len(SPECIES_ABSTRACT_ATTRIBUTE_KEYS) * 2,
+                ]
+            ),
+        )
 
         if will_sample_concrete_attribute:
             sampled_keys = [
-                x[len("os:has") :]
-                for x in get_preds(query_graph, "Species")
-                if x.startswith("os:has")
+                key for _, key in query_graph.nodes(data="key") if key is not None
             ]
-            key_sampling_frame = [
-                x for x in SPECIES_ATTRIBUTE_KEYS if x not in sampled_keys
-            ]
-            keys = random.sample(
-                key_sampling_frame, k=min(attr_num, len(key_sampling_frame))
+            sampling_frame = (
+                list(OSPropertyKey)
+                + list(OSIdentifierKey)
+                + [OSSpeciesAttrKey.CHEMCLASS, OSSpeciesAttrKey.USE]
             )
+            sampling_frame = [x for x in sampling_frame if x not in sampled_keys]
+            weights = [
+                2 if isinstance(k, OSIdentifierKey) else 1 for k in sampling_frame
+            ]
+            keys = np.random.choice(
+                sampling_frame,
+                size=min(attr_num, len(sampling_frame)),
+                replace=False,
+                p=normalize_1d(weights),
+            )
+            # keys = random.sample(sampling_frame, k=min(attr_num, len(sampling_frame)))
             keys_label = []
 
             for key in keys:
-                if key in PROPERTY_KEYS + IDENTIFIER_KEYS:
-                    obj = key
-                    predicate = "os:has{Name}".format(Name=key)
-                elif key in [USE_KEY, CHEMCLASS_KEY]:
-                    obj = key + "Label"
-                    predicate = "os:has{Name}/rdfs:label".format(Name=key)
+                if isinstance(key, OSPropertyKey) or isinstance(key, OSIdentifierKey):
+                    query_graph.add_question_node(key.value)
+                    query_graph.add_triple("Species", "os:has" + key.value, key.value)
+                elif key is OSSpeciesAttrKey.CHEMCLASS or key is OSSpeciesAttrKey.USE:
+                    query_graph.add_question_node(key.value)
+                    query_graph.add_triple(
+                        "Species",
+                        "os:has{key}/rdfs:label".format(key=key.value),
+                        key.value,
+                    )
                 else:
-                    raise ValueError("Unexpected key: " + key)
-
-                query_graph.add_node(obj, question_node=True)
-                query_graph.add_edge("Species", obj, label=predicate)
+                    raise Exception("Unexpected key: " + key)
 
                 key_label = random.choice(KEY2LABELS[key])
                 keys_label.append(key_label)
 
             query_sparql = self.graph2sparql.convert(query_graph)
 
-            species_num = (
-                1
-                if not isinstance(query_graph.nodes["Species"]["label"], list)
-                else len(query_graph.nodes["Species"]["label"])
-            )
-
             template = random.choice(
                 [
-                    "For {E}, what is {possessive_adj} {K}",
-                    "What is the {K} of {E}",
+                    "For {E}, {Q} its {K}",
+                    "{Q} the {K} of {E}",
                 ]
             )
             verbalization = template.format(
+                Q=random.choice(["what is", "compare"])
+                if is_many_species
+                else "what is",
                 E=verbalization,
-                possessive_adj="their" if species_num > 1 else "its",
                 K=" and ".join(keys_label),
             )
         else:
             key = random.choice(SPECIES_ABSTRACT_ATTRIBUTE_KEYS)
             if key == ABSTRACT_PROPERTY_KEY:
-                abstract_key = "os:Property"
+                iri = "os:Property"
             elif key == ABSTRACT_IDENTIFIER_KEY:
-                abstract_key = "os:Identifier"
+                iri = "os:Identifier"
             else:
                 raise ValueError("Unexpected abstract key: " + key)
 
-            query_graph.add_nodes_from(
-                [
-                    (key, dict(question_node=True)),
-                    (
-                        abstract_key,
-                        dict(iri=abstract_key, template_node=True, prefixed=True),
-                    ),
-                ]
+            query_graph.add_question_node(key)
+            query_graph.add_iri_node(iri=iri, prefixed=True, key=key)
+            query_graph.add_triples(
+                [("Species", "?has" + key, key), (key, "a/rdfs:subClassOf*", iri)]
             )
-            query_graph.add_edge("Species", key, label="?has{key}".format(key=key))
-            query_graph.add_edge(key, abstract_key, label="a/rdfs:subClassOf")
 
             key_label = random.choice(KEY2LABELS[key])
 
             query_sparql = self.graph2sparql.convert(query_graph)
-            template = random.choice([
-                "For {E}, what are its {K}",
-                "What are the {K} of {E}"
-            ])
+            template = random.choice(["For {E}, {Q} its {K}", "{Q} the {K} of {E}"])
             verbalization = template.format(
-                E=verbalization, K=key_label
+                Q=random.choice(["what are", "compare"])
+                if is_many_species
+                else "what are",
+                E=verbalization,
+                K=key_label,
             )
 
-        return AskDatum(
-            query_graph=query_graph,
-            query_sparql=query_sparql,
-            verbalization=verbalization,
-        )
+        return query_sparql, verbalization

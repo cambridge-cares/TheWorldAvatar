@@ -1,73 +1,63 @@
-import argparse
 import json
+import os
 import random
-from typing import Dict, List
+from typing import List, Tuple
 
 import networkx as nx
-from combine_then_split import sanitize
-
-from utils.json import EnumEncoder, as_enum
-
-
-def reground(entities_for_regrounding: Dict[str, List[str]], datum: dict):
-    query_graph = nx.node_link_graph(datum["query"]["graph"])
-
-    label2regrounded = dict()    
-    
-    if "LevelOfTheoryLabel" in query_graph.nodes() and not query_graph.nodes["LevelOfTheoryLabel"].get("question_node"):
-        node = query_graph.nodes["LevelOfTheoryLabelFunc"]
-        lots = node["operand"]
-        lots_regrounded = random.sample(entities_for_regrounding["LevelOfTheory"], k=len(lots))
-        node["operand_regrounded"] = lots_regrounded
-        label2regrounded.update({label:regrounded for label, regrounded in zip(lots, lots_regrounded)})
-
-    if "BasisSetLabel" in query_graph.nodes() and not query_graph.nodes["BasisSetLabel"].get("question_node"):
-        node = query_graph.nodes["BasisSetLabelFunc"]
-        bss = node["operand"]
-        bss_regrounded = random.sample(entities_for_regrounding["BasisSet"], k=len(bss))
-        node["operand_regrounded"] = bss_regrounded
-        label2regrounded.update({label:regrounded for label, regrounded in zip(bss, bss_regrounded)})
-
-    if "Species" in query_graph.nodes():
-        node = query_graph.nodes["Species"]
-        species_regrounded = random.choice(entities_for_regrounding["Species"])
-        node["label_regrounded"] = species_regrounded
-        label2regrounded[node["label"]] = species_regrounded
-
-    question = random.choice([datum["verbalization"]] + datum["paraphrases"])
-    sparql = datum["query"]["sparql"]
-
-    for label, regrounded in label2regrounded.items():
-        question = question.replace("[{label}]".format(label=label), "[{label}]".format(label=regrounded), 1)
-        sparql = sparql.replace('"{label}"'.format(label=label), '"{label}"'.format(label=regrounded), 1)
-
-    datum["query"]["graph"] = nx.node_link_data(query_graph)
-    datum["question"] = sanitize(question)
-    datum["query"]["sparql"] = sparql
-
-    return datum
+from constants.fs import ROOTDIR
+from locate_then_ask.query_graph import QueryGraph
+from reground.reground import Regrounder
+from reground.utils import replace_nlq_literal, replace_sparql_literal
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input_file", type=str)
-    parser.add_argument("--output_file", type=str)
-    parser.add_argument("--entities_for_regrounding", type=str)
-    args = parser.parse_args()
+class OCCRegrounder(Regrounder):
+    PATH_TO_ENTITIES_FOR_REGROUNDING = os.path.join(
+        ROOTDIR, "data", "entities_for_regrounding", "ontocompchem.json"
+    )
 
-    with open(args.input_file, "r") as f:
-        data = json.load(f, object_hook=as_enum)
+    def __init__(self):
+        with open(self.PATH_TO_ENTITIES_FOR_REGROUNDING, "r") as f:
+            self.entities_for_regrounding = json.load(f)
 
-    with open(args.entities_for_regrounding, "r") as f:
-        entities_for_regrounding = json.load(f)
-    
-    data = [
-        reground(
-            entities_for_regrounding=entities_for_regrounding, 
-            datum=datum
-        ) 
-        for datum in data
-    ]
+    def reground(self, query_graph: nx.DiGraph, query_sparql: str, paraphrases: List[str]):    
+        query_graph = QueryGraph(query_graph)
 
-    with open(args.output_file, "w") as f:
-        json.dump(data, f, indent=4, cls=EnumEncoder)
+        if "LevelOfTheoryLabel" in query_graph.nodes() and not query_graph.nodes["LevelOfTheoryLabel"].get("question_node"):
+            func_node = query_graph.get_objs("LevelOfTheoryLabel", "func")[0]
+            lots = query_graph.nodes[func_node]["operand"]
+        else:
+            lots = []
+
+        if "BasisSetLabel" in query_graph.nodes() and not query_graph.nodes["BasisSetLabel"].get("question_node"):
+            func_node = query_graph.get_objs("BasisSetLabel", "func")[0]
+            bss = query_graph.nodes[func_node]["operand"]
+        else:
+            bss = []
+
+        species = [] 
+        for _, o, p in query_graph.edges(data="label"):
+            if p == "occ:hasSpeciesModel/occ:hasSpecies/rdfs:label":
+                species.append(query_graph.nodes[o]["label"])
+
+        if not any([lots, bss, species]):
+            return [(query_sparql, p) for p in paraphrases]
+
+        pairs: List[Tuple[str, str]] = []
+        for paraphrase in paraphrases:
+            _query_sparql = str(query_sparql)
+            for lot in lots:
+                _lot = random.choice(self.entities_for_regrounding["LevelOfTheory"])
+                paraphrase = replace_nlq_literal(paraphrase, old=lot, new=_lot)
+                _query_sparql = replace_sparql_literal(_query_sparql, old=lot, new=_lot)
+            for bs in bss:
+                _bs = random.choice(self.entities_for_regrounding["BasisSet"])
+                paraphrase = replace_nlq_literal(paraphrase, old=bs, new=_bs)
+                _query_sparql = replace_sparql_literal(_query_sparql, old=bs, new=_bs)
+            for s in species:
+                _s = random.choice(self.entities_for_regrounding["Species"])
+                paraphrase = replace_nlq_literal(paraphrase, old=s, new=_s)
+                _query_sparql = replace_sparql_literal(_query_sparql, old=s, new=_s)
+
+            pairs.append((_query_sparql, paraphrase))
+
+        return pairs
