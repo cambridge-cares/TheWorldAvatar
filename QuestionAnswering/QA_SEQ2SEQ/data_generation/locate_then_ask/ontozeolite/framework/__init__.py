@@ -10,7 +10,7 @@ from .locate import OZFrameworkLocator
 class OZFrameworkExampleMaker(ExampleMakerBase):
     def __init__(self, store: OZEntityStore):
         self.locator = OZFrameworkLocator(store)
-        self.asker = OZFrameworkAsker(store)
+        self.asker = OZFrameworkAsker()
 
     def make_example(self, entity_iri: str):
         locate_strategy = np.random.choice(

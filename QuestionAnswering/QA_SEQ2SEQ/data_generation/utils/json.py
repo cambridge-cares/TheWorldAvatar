@@ -5,6 +5,7 @@ import json
 from constants.functions import AggOp, NumOp, StrOp
 from constants.ontobuiltenv import OBEAttrKey
 from constants.ontospecies import OSIdentifierKey, OSPropertyKey, OSSpeciesAttrKey
+from constants.ontozeolite import OZCrystalInfoAttrKey, OZMaterialAttrKey, OZZeoTopoAttrKey
 from constants.plot import OPltPlotAttrKey
 
 
@@ -16,7 +17,10 @@ PUBLIC_ENUMS = {
     "OSPropertyKey": OSPropertyKey,
     "OSIdentifierKey": OSIdentifierKey,
     "OBEAttrKey": OBEAttrKey,
-    "OPltPlotAttrKey": OPltPlotAttrKey
+    "OPltPlotAttrKey": OPltPlotAttrKey,
+    "OZCrystalInfoAttrKey": OZCrystalInfoAttrKey,
+    "OZZeoTopoAttrKey": OZZeoTopoAttrKey,
+    "OZMaterialAttrKey": OZMaterialAttrKey
 }
 
 
@@ -28,7 +32,7 @@ class EnumEncoder(json.JSONEncoder):
             return float(obj)
         if type(obj) in PUBLIC_ENUMS.values():
             return {"__enum__": str(obj)}
-        return super().default(self, obj)
+        return super().default(obj)
 
 
 def as_enum(d):

@@ -26,6 +26,13 @@ class OZEntityStore:
 
     def get_material(self, entity_iri: str):
         if entity_iri not in self.iri2material:
+            guest_compound_values = self._retrieve_by_property(
+                entity_iri, "zeo:hasGuestCompound/os:formula"
+            )
+            if len(guest_compound_values) == 0:
+                guest_compound = None
+            else:
+                guest_compound = guest_compound_values[0]
             self.iri2material[entity_iri] = OZMaterial(
                 iri=entity_iri,
                 framework_iri=self._retrieve_by_property(
@@ -34,9 +41,7 @@ class OZEntityStore:
                 formulae=self._retrieve_by_property(
                     entity_iri, "zeo:hasChemicalFormula"
                 ),
-                guest_compound=self._retrieve_by_property(
-                    entity_iri, "zeo:hasGuestCompound/os:formula"
-                ),
+                guest_compound=guest_compound,
             )
         return self.iri2material[entity_iri]
 
@@ -57,17 +62,23 @@ SELECT ?x WHERE {{
         ]
 
     def _retrieve_crystal_info(self, entity_iri: str):
-        return OZCrystalInfo(
-            unit_cell_volume=Decimal(
-                self._retrieve_by_property(
-                    entity_iri,
-                    "ocr:hasCrystalInformation/ocr:hasUnitCell/ocr:hasUnitCellVolume/om:hasNumericalValue",
-                )[0]
-            ),
-            tile_code=self._retrieve_by_property(
+        unit_cell_volume = Decimal(
+            self._retrieve_by_property(
                 entity_iri,
-                "ocr:hasCrystalInformation/ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode",
-            )[0],
+                "ocr:hasCrystalInformation/ocr:hasUnitCell/ocr:hasUnitCellVolume/om:hasNumericalValue",
+            )[0]
+        )
+        tile_code_values = self._retrieve_by_property(
+            entity_iri,
+            "ocr:hasCrystalInformation/ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode",
+        )
+        if len(tile_code_values) == 0:
+            tile_code = None
+        else:
+            tile_code = tile_code_values[0]
+        return OZCrystalInfo(
+            unit_cell_volume=unit_cell_volume,
+            tile_code=tile_code,
         )
 
     def _retrieve_topomeasures(self, entity_iri: str):

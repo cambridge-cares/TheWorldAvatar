@@ -1,6 +1,7 @@
-from dataclasses import dataclass
 from decimal import Decimal
 from typing import Dict, Optional, Tuple
+
+from pydantic.dataclasses import dataclass
 
 from constants.ontozeolite import OZZeoTopoAttrKey
 
@@ -10,7 +11,7 @@ class OZCrystalInfo:
     unit_cell_volume: (
         Decimal  # ocr:hasUnitCell/ocr:hasUnitCellVolume/om:hasNumericalValue
     )
-    tile_code: str  # ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode
+    tile_code: Optional[str]  # ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode
 
 
 @dataclass(frozen=True)

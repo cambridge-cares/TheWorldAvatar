@@ -46,19 +46,50 @@ class OZMaterialAsker:
             query_graph.add_question_node("Framework")
             query_graph.add_triple("Material", "^zeo:hasZeoliticMaterial", "Framework")
             qnode_verbn = "framework"
-        elif key is OZMaterialAttrKey.CRYSTAL_INFO:
-            k = random.choice(tuple(OZCrystalInfoAttrKey))
-            query_graph.add_question_node(k.value)
-            qnode_verbn = random.choice(CRYSTAL_ATTR_LABELS[k])
-            query_graph.add_triple(
-                "Material", "ocr:hasCrystsalInformation/ocr:has" + k.value, k.value
-            )
         elif key is OZMaterialAttrKey.GUEST_COMPOUND:
             query_graph.add_question_node("GuestCompoundFormula")
             query_graph.add_triple(
                 "Material", "zeo:hasGuestCompound/os:formula", "GuestCompoundFormula"
             )
             qnode_verbn = random.choice(ZEOMATERIAL_ATTR_LABELS[key])
+        elif key is OZMaterialAttrKey.CRYSTAL_INFO:
+            k = random.choice(tuple(OZCrystalInfoAttrKey))
+            if k is OZCrystalInfoAttrKey.COORD_TRANSFORM:
+                target_coord = random.choice(["Cartesian", "Fractional"])
+                transform_matrix_node = "TransformationMatrixTo" + target_coord
+                transform_vector_node = "TransformationVectorTo" + target_coord
+                query_graph.add_question_node(transform_matrix_node)
+                query_graph.add_question_node(transform_vector_node)
+
+                bn = query_graph.make_blank_node()
+                query_graph.add_triples(
+                    [
+                        (
+                            "Material",
+                            "ocr:hasCrystalInformation/ocr:hasCoordinateTransformation",
+                            bn,
+                        ),
+                        (bn, "ocr:has" + transform_matrix_node, transform_matrix_node),
+                        (bn, "ocr:has" + transform_vector_node, transform_vector_node),
+                    ]
+                )
+                if target_coord == "Cartesian":
+                    src, target = "fractional", "Cartesian"
+                else:
+                    src, target = "Cartesian", "fractional"
+                qnode_verbn = (
+                    "transformation from {src} to {target} coordinate system".format(
+                        src=src, target=target
+                    )
+                )
+            else:
+                query_graph.add_question_node(k.value)
+                qnode_verbn = random.choice(CRYSTAL_ATTR_LABELS[k])
+                query_graph.add_triple(
+                    "Material", "ocr:hasCrystsalInformation/ocr:has" + k.value, k.value
+                )
+        else:
+            raise ValueError("Unexpected key: " + key)
         query_sparql = self.graph2sparql.convert(query_graph)
 
         template = random.choice(

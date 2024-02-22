@@ -15,10 +15,6 @@ from locate_then_ask.ontozeolite.entity_store import OZEntityStore
 
 
 class OZFrameworkLocator:
-    ATTR_KEY_WEIGHTS = {
-        OZFrameworkAttrKey.CRYSTAL_INFO: 2,
-        OZFrameworkAttrKey.TOPO_ATTR: 10,
-    }
 
     def __init__(self, store: OZEntityStore):
         self.store = store
@@ -45,16 +41,27 @@ class OZFrameworkLocator:
 
         entity = self.store.get_framework(entity_iri)
 
+        if entity.crystal_info.tile_code is None:
+            crystal_info_frame = [OZCrystalInfoAttrKey.UNIT_CELL]
+        else:
+            crystal_info_frame = [
+                OZCrystalInfoAttrKey.UNIT_CELL,
+                OZCrystalInfoAttrKey.TILED_STRUCTURE,
+            ]
+        attr_key_weights = {
+            OZFrameworkAttrKey.CRYSTAL_INFO: len(crystal_info_frame),
+            OZFrameworkAttrKey.TOPO_ATTR: 10,
+        }
         attr2freq: defaultdict[OZFrameworkAttrKey, int] = defaultdict(lambda: 0)
         for k in random.sample(
-            tuple(self.ATTR_KEY_WEIGHTS.keys()),
-            k=min(cond_num, len(self.ATTR_KEY_WEIGHTS)),
-            counts=tuple(self.ATTR_KEY_WEIGHTS.values()),
+            tuple(attr_key_weights.keys()),
+            k=min(cond_num, len(attr_key_weights)),
+            counts=tuple(attr_key_weights.values()),
         ):
             attr2freq[k] += 1
 
         crystalinfo_keys = random.sample(
-            [OZCrystalInfoAttrKey.UNIT_CELL, OZCrystalInfoAttrKey.TILED_STRUCTURE],
+            crystal_info_frame,
             k=attr2freq[OZFrameworkAttrKey.CRYSTAL_INFO],
         )
         toposcalar_keys = random.sample(

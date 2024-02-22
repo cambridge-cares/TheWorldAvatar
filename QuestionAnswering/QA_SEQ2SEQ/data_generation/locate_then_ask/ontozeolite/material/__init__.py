@@ -1,6 +1,6 @@
 import numpy as np
 
-from data_generation.utils.numerical import normalize_1d
+from utils.numerical import normalize_1d
 from locate_then_ask.make_example_base import ExampleMakerBase
 from locate_then_ask.ontozeolite.entity_store import OZEntityStore
 from .locate import OZMaterialLocator
@@ -10,7 +10,7 @@ from .ask import OZMaterialAsker
 class OZMaterialExampleMaker(ExampleMakerBase):
     def __init__(self, store: OZEntityStore):
         self.locator = OZMaterialLocator(store)
-        self.asker = OZMaterialAsker(store)
+        self.asker = OZMaterialAsker()
 
     def make_example(self, entity_iri: str):
         locate_strategy = np.random.choice(["name", "attr"], p=normalize_1d([1, 2]))
@@ -26,7 +26,7 @@ class OZMaterialExampleMaker(ExampleMakerBase):
         else:
             raise Exception("Unexpected `locate_strategy`: " + locate_strategy)
 
-        ask_strategy = np.random.choice(ask_strategies, p=normalize_1d([1, 4]))
+        ask_strategy = np.random.choice(ask_strategies, p=normalize_1d(ask_weights))
         if ask_strategy == "name":
             query_sparql, verbn = self.asker.ask_name(query_graph, verbn)
         elif ask_strategy == "attr":
