@@ -6,23 +6,22 @@
 * a tool that can do it for me, looks like it'll beed to be done manually.
 */
 
-@media (prefers-color-scheme: light) {
-    :root {
-        /* Background colors */
-        --cmcl-blue: #18677a;
-        --text-color: #3f464f;
-        --background-color: #f6f8fa;
-    }
+/* @media (prefers-color-scheme: light) { */
+:root {
+    --cmcl-blue: #18677a;
+    --text-color: #3f464f;
+    --background-color: #f6f8fa;
 }
 
+/* } */
+/* 
 @media (prefers-color-scheme: dark) {
     :root {
-        /* Background colors */
         --cmcl-blue: #18677a;
         --text-color: #adbac7;
         --background-color: #22272e;
     }
-}
+} */
 
 html,
 body {
