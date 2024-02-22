@@ -1,0 +1,667 @@
+PREFIX ubem: <https://www.theworldavatar.com/kg/ontoubemmp/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX tw: <https://www.theworldavatar.com/kg/>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+    {
+        {
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:RoofFacade ;
+                    ubem:hasSolarSuitableArea ?quantity .
+                ?quantity om:hasValue ?area .
+                ?area om:hasUnit om:squareMetre ;
+                    om:hasNumericalValue ?Value .
+                
+                BIND("Roof solar suitable area" AS ?Property) .
+                BIND("m^2" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:NorthWallFacade ;
+                    ubem:hasSolarSuitableArea ?quantity .
+                ?quantity om:hasValue ?area .
+                ?area om:hasUnit om:squareMetre ;
+                    om:hasNumericalValue ?Value .
+                
+                BIND("North wall solar suitable area" AS ?Property) .
+                BIND("m^2" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:SouthWallFacade ;
+                    ubem:hasSolarSuitableArea ?quantity .
+                ?quantity om:hasValue ?area .
+                ?area om:hasUnit om:squareMetre ;
+                    om:hasNumericalValue ?Value .
+                
+                BIND("South wall solar suitable area" AS ?Property) .
+                BIND("m^2" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:WestWallFacade ;
+                    ubem:hasSolarSuitableArea ?quantity .
+                ?quantity om:hasValue ?area .
+                ?area om:hasUnit om:squareMetre ;
+                    om:hasNumericalValue ?Value .
+                
+                BIND("West wall solar suitable area" AS ?Property) .
+                BIND("m^2" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:EastWallFacade ;
+                    ubem:hasSolarSuitableArea ?quantity .
+                ?quantity om:hasValue ?area .
+                ?area om:hasUnit om:squareMetre ;
+                    om:hasNumericalValue ?Value .
+                
+                BIND("East wall solar suitable area" AS ?Property) .
+                BIND("m^2" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] ubem:consumesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatingConsumption ;
+                    ubem:hasValue ?consumption .
+                ?consumption om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Annual building heating consumption" AS ?Property)
+                BIND("kWh" AS ?Unit)
+            }
+            UNION
+            {
+                [IRI] ubem:consumesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualCoolingConsumption ;
+                    ubem:hasValue ?consumption .
+                ?consumption om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Annual building cooling consumption" AS ?Property)
+                BIND("kWh" AS ?Unit)
+            }
+            UNION
+            {
+                [IRI] ubem:consumesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricityConsumption ;
+                    ubem:hasValue ?consumption .
+                ?consumption om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Annual building electricity consumption" AS ?Property)
+                BIND("kWh" AS ?Unit)
+            }
+            UNION
+            {
+                [IRI] ubem:consumesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualGridConsumption ;
+                    ubem:hasValue ?consumption .
+                ?consumption om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Annual building grid consumption" AS ?Property)
+                BIND("kWh" AS ?Unit)
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:RoofFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVPanel ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Roof potential annual electricity generation from photovoltaic panels" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:NorthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVPanel ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("North wall potential annual electricity generation from photovoltaic panels" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:SouthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVPanel ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("South wall potential annual electricity generation from photovoltaic panels" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:EastWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVPanel ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("East wall potential annual electricity generation from photovoltaic panels" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:WestWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVPanel ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("West wall potential annual electricity generation from photovoltaic panels" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:RoofFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:ThermalPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Roof potential annual heat generation from plate type solar collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:NorthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:ThermalPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("North wall potential annual heat generation from plate type solar collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:SouthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:ThermalPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("South wall potential annual heat generation from plate type solar collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:EastWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:ThermalPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("East wall potential annual heat generation from plate type solar collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:WestWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:ThermalPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("West wall potential annual heat generation from plate type solar collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:RoofFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:ThermalTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Roof potential annual heat generation from tube type solar collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:NorthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:ThermalTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("North wall potential annual heat generation from tube type solar collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:SouthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:ThermalTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("South wall potential annual heat generation from tube type solar collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:EastWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:ThermalTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("East wall potential annual heat generation from tube type solar collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:WestWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:ThermalTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("West wall potential annual heat generation from tube type solar collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:RoofFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Roof potential annual electricity generation from plate type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:NorthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("North wall potential annual electricity generation from plate type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:SouthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("South wall potential annual electricity generation from plate type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:EastWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("East wall potential annual electricity generation from plate type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:WestWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("West wall potential annual electricity generation from plate type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:RoofFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Roof potential annual heat generation from plate type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:NorthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("North wall potential annual heat generation from plate type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:SouthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("South wall potential annual heat generation from plate type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:EastWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("East wall potential annual heat generation from plate type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:WestWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTPlateCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("West wall potential annual heat generation from plate type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:RoofFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Roof potential annual electricity generation from tube type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:NorthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("North wall potential annual electricity generation from tube type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:SouthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("South wall potential annual electricity generation from tube type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:EastWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("East wall potential annual electricity generation from tube type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:WestWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualElectricitySupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("West wall potential annual electricity generation from tube type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:RoofFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("Roof potential annual heat generation from tube type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:NorthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("North wall potential annual heat generation from tube type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:SouthWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("South wall potential annual heat generation from tube type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:EastWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("East wall potential annual heat generation from tube type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+            UNION
+            {
+                [IRI] bs:hasFacade ?facade .
+                ?facade rdf:type bs:WestWallFacade ;
+                    ubem:hasTheoreticalEnergyProduction ?device .
+                ?device rdf:type ubem:PVTTubeCollector ;
+                    ubem:producesEnergy ?quantity .
+                ?quantity rdf:type ubem:AnnualHeatSupply ;
+                    om:hasValue ?energy .
+                ?energy om:hasUnit om:kilowattHour ;
+                    om:hasNumericalValue ?Value .
+
+                BIND("West wall potential annual heat generation from tube type photovoltaic-thermal collectors" AS ?Property) .
+                BIND("kWh" AS ?Unit) .
+            }
+        }
+        FILTER(?Value != 0)
+    }
+    UNION
+    {
+        SERVICE [ONTOP] {
+        SELECT DISTINCT ?Property ?Value ?Unit
+        WHERE {
+                {
+                    [IRI] obe:hasPropertyUsage ?usage .
+                    ?usage rdf:type ?Value_ini .
+                    OPTIONAL { ?usage obe:hasUsageShare ?Unit_ini . }
+                    BIND (replace(str(?Value_ini), str(obe:), '') as ?usage_type)
+                    BIND (concat(str(ROUND(?Unit_ini*10000)/100), ' %') as ?Value)
+                    BIND (concat("Property Usage ",str(?usage_type)) AS ?Property )
+                }
+                UNION 
+                {
+                    [IRI] obe:hasPropertyUsage ?usage .
+                    ?usage rdf:type ?Value_ini .
+                    OPTIONAL { ?usage obe:hasUsageLabel ?Name_ini . }
+                    BIND (COALESCE(?Name_ini, " ") AS ?Value)
+                    BIND ("Building Name" AS ?Property )
+                } 
+            }
+        }
+    }
+}

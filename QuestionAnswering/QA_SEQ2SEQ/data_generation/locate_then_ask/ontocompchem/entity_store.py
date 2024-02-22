@@ -1,4 +1,5 @@
-from typing import Dict, Type, Union
+from typing import Dict
+
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontocompchem.model import OCCMolecularComputation, OCCSpecies
 
@@ -6,31 +7,18 @@ from locate_then_ask.ontocompchem.model import OCCMolecularComputation, OCCSpeci
 class OCCEntityStore:
     def __init__(self, kg_endpoint: str, **kwargs):
         self.kg_client = KgClient(kg_endpoint, **kwargs)
-        self.iri2cls: Dict[
-            str, Union[Type[OCCMolecularComputation], Type[OCCSpecies]]
-        ] = dict()
-        self.iri2entity: Dict[str, Union[OCCMolecularComputation, OCCSpecies]] = dict()
+        self.iri2molcomp: Dict[str, OCCMolecularComputation] = dict()
+        self.iri2species: Dict[str, OCCSpecies] = dict()
 
-    def get_cls(self, entity_iri: str):
-        if entity_iri not in self.iri2cls:
-            query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX purl: <http://purl.org/gc/>
-ASK WHERE {{ <{IRI}> a/rdfs:subClassOf* purl:MolecularComputation }}"""
-            query = query_template.format(IRI=entity_iri)
-            if self.kg_client.query(query)["boolean"]:
-                self.iri2cls[entity_iri] = OCCMolecularComputation
-            else:
-                self.iri2cls[entity_iri] = OCCSpecies
-        return self.iri2cls[entity_iri]
+    def get_molcomp(self, entity_iri: str):
+        if entity_iri not in self.iri2molcomp:
+            self.iri2molcomp[entity_iri] = self.create_molcomp(entity_iri)
+        return self.iri2molcomp[entity_iri]
 
-    def get(self, entity_iri: str):
-        if entity_iri not in self.iri2entity:
-            entity_cls = self.get_cls(entity_iri)
-            if entity_cls is OCCMolecularComputation:
-                self.iri2entity[entity_iri] = self.create_molcomp(entity_iri)
-            else:
-                self.iri2entity[entity_iri] = self.create_species(entity_iri)
-        return self.iri2entity[entity_iri]
+    def get_species(self, entity_iri: str):
+        if entity_iri not in self.iri2species:
+            self.iri2species[entity_iri] = self.create_species(entity_iri)
+        return self.iri2species[entity_iri]
 
     def create_molcomp(self, entity_iri: str):
         species = self.retrieve_molcomp_species(entity_iri)

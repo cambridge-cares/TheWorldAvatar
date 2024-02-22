@@ -1,12 +1,13 @@
 from collections import defaultdict
+from decimal import Decimal
 from typing import Dict, List
-from constants.ontospecies import IDENTIFIER_KEYS, PROPERTY_KEYS
+from constants.ontospecies import OSIdentifierKey, OSPropertyKey
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontospecies.model import OSProperty, OSSpecies
 
 
 class OSEntityStore:
-    def __init__(self, kg_endpoint: str):
+    def __init__(self, kg_endpoint: str ):
         self.kg_client = KgClient(kg_endpoint)
         self.iri2entity: Dict[str, OSSpecies] = dict()
 
@@ -37,18 +38,18 @@ SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
 }}"""
         query = query_template.format(
             SpeciesIRI=entity_iri,
-            hasIdentifierNameValues=" ".join(["os:has" + x for x in IDENTIFIER_KEYS]),
+            hasIdentifierNameValues=" ".join(["os:has" + x.value for x in OSIdentifierKey]),
         )
 
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
         value_bindings = [
             {k: v["value"] for k, v in x.items()} for x in response_bindings
         ]
-        accum: Dict[List[Dict[str, str]]] = defaultdict(list)
+        accum: Dict[str, List[str]] = defaultdict(list)
         for binding in value_bindings:
             key = binding["hasIdentifierName"].rsplit("#has", maxsplit=1)[-1]
             accum[key].append(binding["IdentifierNameValue"])
-        return dict(accum)
+        return {OSIdentifierKey(k): v for k, v in accum.items()}
 
     def retrieve_properties(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -68,7 +69,7 @@ SELECT DISTINCT * WHERE {{
 }}"""
         query = query_template.format(
             SpeciesIri=entity_iri,
-            hasPropertyNameValues=" ".join(["os:has" + key for key in PROPERTY_KEYS]),
+            hasPropertyNameValues=" ".join(["os:has" + key.value for key in OSPropertyKey]),
         )
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
         value_bindings = [
@@ -79,13 +80,13 @@ SELECT DISTINCT * WHERE {{
             key = binding["hasPropertyName"].rsplit("#has", maxsplit=1)[-1]
             accum[key].append(
                 OSProperty(
-                    value=float(binding["PropertyNameValue"]),
+                    value=Decimal(binding["PropertyNameValue"]),
                     unit=binding["PropertyNameUnitLabel"],
                     reference_state_value=binding.get("ReferenceStateValue"),
                     reference_state_unit=binding.get("ReferenceStateUnitLabel"),
                 )
             )
-        return dict(accum)
+        return {OSPropertyKey(k): v for k, v in accum.items()}
 
     def retrieve_chemclasses(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -101,11 +102,7 @@ SELECT DISTINCT ?ChemicalClassLabel WHERE {{
         return [x["ChemicalClassLabel"]["value"] for x in response_bindings]
 
     def retrieve_uses(self, entity_iri: str):
-        use_blacklist = [
-            "Other",
-            "Other (specify)",
-            "Not Known or Reasonably Ascertainable",
-        ]
+        use_blacklist = ["Other", "Other (specify)", "Not Known or Reasonably Ascertainable"]
 
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>

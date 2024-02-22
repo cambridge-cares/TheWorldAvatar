@@ -1,0 +1,55 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ps: <https://www.theworldavatar.com/kg/ps/> .
+@prefix ems: <https://www.theworldavatar.com/kg/ontoems/> .
+@prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+
+ps:measurementstation-ZIMEN a ems:ReportingStation ;
+	ps:hasQuantity ps:PirmasensStation_eBC_PM2-5 ;
+	ps:hasQuantity ps:PirmasensStation_Gesamt_UV_Strahlung ;
+	ps:hasQuantity ps:PirmasensStation_Luftdruck ;
+	ps:hasQuantity ps:PirmasensStation_Niederschlag ;
+	ps:hasQuantity ps:PirmasensStation_Ozon ;
+	ps:hasQuantity ps:PirmasensStation_PM10 ;
+	ps:hasQuantity ps:PirmasensStation_Relative_Feuchte ;
+	ps:hasQuantity ps:PirmasensStation_Stickstoffdioxid ;
+	ps:hasQuantity ps:PirmasensStation_Stickstoffmonoxid ;
+	ps:hasQuantity ps:PirmasensStation_Temperatur ;
+	ps:hasQuantity ps:PirmasensStation_Windgeschwindigkeit_rohwert ;
+	ps:hasQuantity ps:PirmasensStation_Windrichtung_rohwert .
+
+ps:PirmasensStation_eBC_PM2-5 rdfs:label "Ruß"^^xsd:string ;
+	om:hasUnit om:microgramPerCubicMetre .
+
+ps:PirmasensStation_Gesamt_UV_Strahlung rdfs:label "UV-Strahlung"^^xsd:string ;
+	om:hasUnit om:wattPerSquareMetre .
+
+ps:PirmasensStation_Luftdruck rdfs:label "Luftdruck"^^xsd:string ;
+	om:hasUnit om:hectopascal .
+
+ps:PirmasensStation_Niederschlag rdfs:label "Niederschlag"^^xsd:string ;
+	om:hasUnit om:millimetre .
+
+ps:PirmasensStation_Ozon rdfs:label "Ozon"^^xsd:string ;
+	om:hasUnit om:microgramPerCubicMetre .
+
+ps:PirmasensStation_PM10 rdfs:label "PM10"^^xsd:string ;
+	om:hasUnit om:microgramPerCubicMetre .
+
+ps:PirmasensStation_Relative_Feuchte rdfs:label "Relative Luftfeuchtigkeit"^^xsd:string ;
+	om:hasUnit om:percent .
+
+ps:PirmasensStation_Stickstoffdioxid rdfs:label "Stickstoffdioxid"^^xsd:string ;
+	om:hasUnit om:microgramPerCubicMetre .
+
+ps:PirmasensStation_Stickstoffmonoxid rdfs:label "Stickstoffmonoxid"^^xsd:string ;
+	om:hasUnit om:microgramPerCubicMetre .
+
+ps:PirmasensStation_Temperatur rdfs:label "Temperatur"^^xsd:string ;
+	om:hasUnit om:degreeCelsius .
+
+ps:PirmasensStation_Windgeschwindigkeit_rohwert rdfs:label "Windgeschwindigkeit"^^xsd:string ;
+	om:hasUnit om:metrePerSecond-Time .
+
+ps:PirmasensStation_Windrichtung_rohwert rdfs:label "Windrichtung"^^xsd:string ;
+	om:hasUnit om:degree .

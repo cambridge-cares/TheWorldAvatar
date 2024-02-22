@@ -1,13 +1,24 @@
+import csv
 import json
 import os
 import time
+import pandas as pd
 
 import transformers
 from tqdm import tqdm
 
 from core.args_schema import DatasetArguments, InferenceArguments, ModelArguments
-from core.translate.multi_domain import MultiDomainTranslator
-from core.translate.single_domain import SingleDomainTranslator
+from core.translate import Translator
+
+HEADER = [
+    "id",
+    "question",
+    "groundtruth_domain",
+    "groundtruth_sparql",
+    "prediction_domain",
+    "prediction_sparql",
+    "latency",
+]
 
 
 def infer():
@@ -17,16 +28,40 @@ def infer():
     model_args, data_args, infer_args = hfparser.parse_args_into_dataclasses()
 
     os.makedirs(os.path.dirname(infer_args.out_file), exist_ok=True)
+    trans_model = Translator(
+        model_args,
+        domain=data_args.domain,
+        max_new_tokens=infer_args.max_new_tokens,
+    )
 
-    if data_args.domain == "multi":
-        trans_model = MultiDomainTranslator(model_args, max_new_tokens=infer_args.max_new_tokens)
+    if data_args.eval_data_path.endswith("json"):
+        with open(data_args.eval_data_path, "r") as f:
+            data = json.load(f)
+    elif data_args.eval_data_path.endswith("csv"):
+        df = pd.read_csv(data_args.eval_data_path)
+        data = df.apply(
+            lambda row: dict(
+                id=row["id"],
+                domain=row["domain"],
+                question=row["nlq"],
+                query=dict(sparql=row["sparql"]),
+            ),
+            axis=1,
+        )
     else:
-        trans_model = SingleDomainTranslator(model_args, domain=data_args.domain, max_new_tokens=infer_args.max_new_tokens)
+        raise ValueError("Unrecognised data format: " + data_args.eval_data_path)
 
-    with open(data_args.eval_data_path, "r") as task:
-        data = json.load(task)
+    if not os.path.exists(infer_args.out_file):
+        os.makedirs(os.path.dirname(infer_args.out_file), exist_ok=True)
+        f = open(infer_args.out_file, "w")
+        writer = csv.writer(f)
+        writer.writerow(HEADER)
+    else:
+        df = pd.read_csv(infer_args.out_file)
+        data = [datum for datum in data if datum["id"] not in df["id"]]
 
-    data_out = []
+        f = open(infer_args.out_file, "w")
+        writer = csv.writer(f)
 
     def task():
         for datum in tqdm(data):
@@ -34,15 +69,20 @@ def infer():
             pred = trans_model.nl2sparql(datum["question"])
             t_end = time.time()
 
-            domain = data_args.domain if data_args.domain != "multi" else datum["domain"]
-            datum_out = dict(
-                id=datum["id"],
-                question=datum["question"],
-                groundtruth=dict(sparql=datum["query"]["sparql"], domain=domain),
-                prediction=pred,
-                latency=t_end - t_start,
+            domain = (
+                data_args.domain if data_args.domain else datum["domain"]
             )
-            data_out.append(datum_out)
+            writer.writerow(
+                [
+                    datum["id"],
+                    datum["question"],
+                    domain,
+                    datum["query"]["sparql"],
+                    pred["domain"],
+                    pred["sparql"]["decoded"],
+                    t_end - t_start,
+                ]
+            )
 
     if infer_args.do_profile:
         try:
@@ -56,9 +96,6 @@ def infer():
     else:
         mem_usage = None
         task()
-
-    with open(infer_args.out_file, "w") as f:
-        json.dump(data_out, f, indent=4)
 
     if mem_usage is not None:
         memfile = infer_args.out_file.rsplit(".", maxsplit=1)[0] + "_mem.txt"

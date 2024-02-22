@@ -1,0 +1,19 @@
+{
+    "datasetDirectory": "tbox",
+    "name": "tbox",
+    "skip": false,
+    "namespace": {
+        "name": "kb",
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true,
+            "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass": "com.bigdata.rdf.axioms.NoAxioms"
+        }
+    },
+    "dataSubsets": [
+        {
+            "type": "rdf",
+            "subdirectory": "subdir",
+            "skip": false
+        }
+    ]
+}

@@ -39,3 +39,46 @@
     width: 200px;
     height: 40px;
 }
+
+ #toggleRoutesBox {
+    background-color: rgba(0, 0, 0, .4);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 10px;
+    line-height: 14pt
+}
+
+#layerContainer {
+    display: flex;
+    flex-flow: column;
+    overflow: hidden;
+}
+
+#layerContainer .controlContents {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+#layerTreeContainer {
+    overflow: scroll;
+}
+
+.distance-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.distance-container>* {
+    background-color: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    font-size: 13px;
+    line-height: 18px;
+    display: block;
+    margin: 0;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
