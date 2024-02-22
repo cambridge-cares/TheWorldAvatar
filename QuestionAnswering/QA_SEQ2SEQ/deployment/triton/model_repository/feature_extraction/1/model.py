@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer
 
 class TritonPythonModel:
     def initialize(self, args):
-        model_path = os.getenv("FEATURE_EXTRACTION_MODEL_PATH")
+        model_path = os.getenv("FEATURE_EXTRACTION_MODEL_PATH", "sentence-transformers/all-MiniLM-L12-v2")
         print("Loading weights for feature extraction model from: " + model_path, flush=True)
         self.model = SentenceTransformer(model_path)
         
