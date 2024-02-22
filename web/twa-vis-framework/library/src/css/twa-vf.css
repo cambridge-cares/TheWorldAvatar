@@ -190,6 +190,7 @@ h6 {
     width: 100%;
     display: flex;
     flex-direction: column;
+    position: absolute;
     height: calc(100% - 27px)
 }
 
@@ -1011,7 +1012,8 @@ label[for=select-feature] {
     bottom: 0;
     border: none;
     padding-top: 0;
-    height: 35px
+    height: 35px;
+    z-index: 2;
 }
 
 .ui-widget-content {
@@ -1065,14 +1067,13 @@ label[for=select-feature] {
     -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);        <-- nice effect but messing with the scroll bar. Can't rn figure how to fix 
     mask-image: linear-gradient(to bottom, black 95%, transparent); 
     margin-bottom: 35px; */
-    padding: 1em 1em 3em
+    padding-bottom: 10em;
 }
 
 #contentContainer {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    padding-bottom: 150px;
 }
 
 #sidePanelLinks a {
