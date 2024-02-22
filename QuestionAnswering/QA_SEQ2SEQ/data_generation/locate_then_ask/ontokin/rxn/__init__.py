@@ -1,7 +1,7 @@
 import random
 
 from locate_then_ask.ontokin.entity_store import OKEntityStore
-from locate_then_ask.ontokin.make_example_base import ExampleMakerBase
+from locate_then_ask.make_example_base import ExampleMakerBase
 from .locate import OKReactionLocator
 from .ask import OKReactionAsker
 

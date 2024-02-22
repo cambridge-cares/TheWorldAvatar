@@ -34,7 +34,9 @@ class OZFrameworkLocator:
 
         literal_node = query_graph.make_literal_node(entity.framework_code)
         query_graph.add_triple("Framework", "zeo:hasFrameworkCode", literal_node)
-        verbn = "{concept} [{label}]".format(concept=concept, label=entity.framework_code)
+        verbn = "{concept} [{label}]".format(
+            concept=concept, label=entity.framework_code
+        )
 
         return query_graph, verbn
 

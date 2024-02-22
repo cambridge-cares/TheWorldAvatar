@@ -17,13 +17,13 @@ class OZMaterialLocator:
     def __init__(self, store: OZEntityStore):
         self.store = store
 
-    def locate_concept_name(self, entity_iri: str):
+    def _locate_concept_name(self, entity_iri: str):
         query_graph = QueryGraph()
         query_graph.add_topic_node("Material", iri=entity_iri)
         return query_graph, random.choice(["zeolite", "zeolite material"])
 
     def locate_name(self, entity_iri):
-        query_graph, concept = self.locate_concept_name(entity_iri)
+        query_graph, concept = self._locate_concept_name(entity_iri)
         entity = self.store.get_material(entity_iri)
         formula = random.choice(entity.formulae)
 
@@ -36,8 +36,7 @@ class OZMaterialLocator:
         return query_graph, verbn
 
     def locate_concept_and_literal_multi(self, entity_iri: str, cond_num: int):
-        query_graph, concept = self.locate_concept_name(entity_iri)
-
+        query_graph, concept = self._locate_concept_name(entity_iri)
         entity = self.store.get_material(entity_iri)
 
         conds = []
