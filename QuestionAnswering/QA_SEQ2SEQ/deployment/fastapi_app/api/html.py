@@ -16,11 +16,33 @@ SAMPLE_QUESTIONS = {
     )
     for domain in domains
 }
+
+SEARCH_GROUPS = {
+    domain: json.loads(
+        files("resources." + domain).joinpath("search_groups.json").read_text()
+    )
+    for domain in domains if domain == "chemistry"
+}
+
+EXPLORE_GROUPS = {
+    domain: json.loads(
+        files("resources." + domain).joinpath("explore_options.json").read_text()
+    )
+    for domain in domains if domain == "chemistry"
+}
+
+HISTORY_GROUPS = {
+    domain: json.loads(
+        files("resources." + domain).joinpath("history.json").read_text()
+    )
+    for domain in domains if domain == "chemistry"
+}
+
 METADATA = {
     domain: json.loads(
         files("resources." + domain).joinpath("metadata.json").read_text()
     )
-    for domain in domains
+    for domain in domains 
 }
 
 router = APIRouter()
@@ -47,5 +69,8 @@ async def home(request: Request):
             title=METADATA[superdomain]["title"],
             subtitle_paras=METADATA[superdomain]["subtitle"].split("\n"),
             sample_questions=SAMPLE_QUESTIONS[superdomain],
+            search_groups=SEARCH_GROUPS[superdomain],
+            explore_groups=EXPLORE_GROUPS[superdomain],
+            history_groups=HISTORY_GROUPS[superdomain],
         ),
     )

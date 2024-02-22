@@ -1,0 +1,69 @@
+[
+  { 
+    "group_label": "Chemical Species",
+    "sections": []
+  },
+  { 
+  "group_label": "Zeolites",
+  "sections": [
+    {
+      "section": "XRD Peaks Positions",
+      "input_rows": [
+        [
+          {"label": "Peak 1 Position (2\u03B8):", "entry": "peak1pos"},
+          {"label": "Peak 1 Width (\u00B1\u0394\u03B8):", "entry": "peak1wid"},
+          {"label": "Peak 1 Threshold (%):", "entry": "peak1int"}
+        ],
+        [
+          {"label": "Peak 2 Position (2\u03B8):", "entry": "peak2pos"},
+          {"label": "Peak 2 Width (\u00B1\u0394\u03B8):", "entry": "peak2wid"},
+          {"label": "Peak 2 Threshold (%):", "entry": "peak2int"}
+        ],
+        [
+          {"label": "Peak 3 Position (2\u03B8):", "entry": "peak3pos"},
+          {"label": "Peak 3 Width (\u00B1\u0394\u03B8):", "entry": "peak3wid"},
+          {"label": "Peak 3 Threshold (%):", "entry": "peak3int"}
+        ]
+      ]
+    },
+    {
+      "section": "Unit Cell Parameters",
+      "input_rows": [
+        [
+          {"label": "a Min (\u212B):", "entry": "ucAmin"},
+          {"label": "a Max (\u212B):", "entry": "ucAmax"},
+          {"label": "b Min (\u212B):", "entry": "ucBmin"},
+          {"label": "b Max (\u212B):", "entry": "ucBmax"},
+          {"label": "c Min (\u212B):", "entry": "ucCmin"},
+          {"label": "c Max (\u212B):", "entry": "ucCmax"}
+        ],
+        [
+          {"label": "\u03B1 Min (\u00B0):", "entry": "ucALmin"},
+          {"label": "\u03B1 Max (\u00B0):", "entry": "ucALmax"},
+          {"label": "\u03B2 Min (\u00B0):", "entry": "ucBEmin"},
+          {"label": "\u03B2 Max (\u00B0):", "entry": "ucBEmax"},
+          {"label": "\u03B3 Min (\u00B0):", "entry": "ucGAmin"},
+          {"label": "\u03B3 Max (\u00B0):", "entry": "ucGAmax"}
+        ]
+      ]
+    },
+    {
+      "section": "Properties",
+      "input_rows": [
+        [
+          {"label": "Framework Density Min (T/1000\u00B3):", "entry": "FWDmin"},
+          {"label": "Framework Density Max (T/1000\u00B3):", "entry": "FWDmax"}
+        ],
+        [
+          {"label": "Topological Density Min:", "entry": "TPDmin"},
+          {"label": "Topological Density Max:", "entry": "TPDmax"}
+        ],
+        [
+          {"label": "Density Min (g/cm\u00B3):", "entry": "DENSmin"},
+          {"label": "Density Max (g/cm\u00B3):", "entry": "DENSmax"}
+        ]
+      ]
+    }
+  ]
+  }
+]

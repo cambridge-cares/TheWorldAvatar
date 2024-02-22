@@ -101,21 +101,87 @@
 </section>
 
 <section class="three-quarter-width">
-    <h3>Example Questions</h3>
-
-    {% for question_group in sample_questions %}
-    <button type="submit" class="accordion">{{ question_group["label"] }}</button>
+    <button type="submit" class="accordion">Example Questions</button>
     <div class="accordion-panel">
-        <p>{{ question_group["description"] }}</p>
-        <ul>
-            {% for question in question_group["questions"] %}
-            <li class="sample-question"
-                onclick='inputField.populateInputText("{{ question }}"); globalState.set("domain", "{{ question_group["domain"] }}"); askQuestion();'>
-                {{ question }}
-            </li>
-            {% endfor %}
-        </ul>
+        {% for question_group in sample_questions %}
+        <button type="submit" class="accordion">{{ question_group["label"] }}</button>
+        <div class="accordion-panel">
+            <p>{{ question_group["description"] }}</p>
+            <ul>
+                {% for question in question_group["questions"] %}
+                <li class="sample-question"
+                    onclick='inputField.populateInputText("{{ question }}"); globalState.set("domain", "{{ question_group.domain }}"); askQuestion();'>
+                    {{ question }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </section>
+
+<section class="three-quarter-width">
+    <button type="button" class="accordion">Advanced Search</button>
+    <div class="accordion-panel">
+        {% for search_group in search_groups %}
+        <button type="button" class="accordion">{{ search_group["group_label"] }}</button>
+        <div class="accordion-panel">
+            <form method="POST" class="search-form">
+                <!-- Loop through each search group -->
+                {% for search_section in search_group["sections"] %}
+                <fieldset class="form-section">
+                    <legend>{{ search_section["section"] }}</legend>
+                    <!-- Loop through each row of inputs -->
+                    {% for input_row in search_section["input_rows"] %}
+                    <div class="input-row">
+                        <!-- Loop through each input in the row -->
+                        {% for input in input_row %}
+                        <div>
+                            <label for="{{ input.entry }}">{{ input.label }}</label>
+                            <input type="text" id="{{ input.entry }}" name="{{ input.entry }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </fieldset>
+                {% endfor %}
+                <input type="submit" value="Find" class="full-width-button">
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="three-quarter-width">
+    <button type="button" class="accordion">Explore</button>
+    <div class="accordion-panel">
+        {% for explore_group in explore_groups %}
+        <button type="button" class="accordion">{{ explore_group["group_label"] }}</button>
+        <div class="accordion-panel">
+            <iframe src="/dash_{{ explore_group.pathname_prefix }}/" width="100%" height="600px"></iframe>
+        </div>
+        {% endfor %}
+    </div> 
+</section>
+
+<section class="three-quarter-width">
+    <button type="submit" class="accordion">History</button>
+    <div class="accordion-panel">
+        {% for history_group in history_groups %}
+        <button type="submit" class="accordion">{{ history_group["label"] }}</button>
+        <div class="accordion-panel">
+            <ul>
+                {% for item in history_group["list"] %}
+                <li id="content">
+                    {{ item|safe }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
 {% endblock %}
+
+

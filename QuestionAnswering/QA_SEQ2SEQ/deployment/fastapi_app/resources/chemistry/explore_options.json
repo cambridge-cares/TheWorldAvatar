@@ -1,0 +1,51 @@
+[
+    {
+        "group_label": "SpeciesExplorer",
+        "pathname_prefix" : "ontospecies",
+        "dropdown_options": [
+          {"label": "Molecular Weight", "value": "MolecularWeight"},
+          {"label": "Boiling Point", "value": "BoilingPoint"},
+          {"label": "Density", "value": "Density"},
+          {"label": "Dissociation Constants", "value": "DissociationConstants"},
+          {"label": "Flash Point", "value": "FlashPoint"},
+          {"label": "Melting Point", "value": "MeltingPoint"},
+          {"label": "Solubility", "value": "Solubility"},
+          {"label": "Vapor Density", "value": "VaporDensity"},
+          {"label": "Viscosity", "value": "Viscosity"},
+          {"label": "Heat of Combustion", "value": "HeatofCombustion"},
+          {"label": "Heat of Vaporization", "value": "HeatofVaporization"},
+          {"label": "HenrysLawConstant", "value": "HenrysLawConstant"},
+          {"label": "Enthalpy of Sublimation", "value": "EnthalpyofSublimation"},
+          {"label": "Surface Tension", "value": "SurfaceTension"},
+          {"label": "Optical Rotation", "value": "OpticalRotation"}
+        ]
+    },
+    { 
+        "group_label": "ZeoExplorer",
+        "pathname_prefix" : "ontozeolite3",
+        "dropdown_options": [
+            {"label": "Topological Density", "value": "?topo_dens"},
+            {"label": "Topological Density 10", "value": "?topo_dens10"},
+            {"label": "Framework Density (T/1000 A^3)", "value": "?fr_dens"},
+            {"label": "Density (g/cm^3)", "value": "?dens"},
+            {"label": "Occupiable Volume (A^3)", "value": "?occ_vol_cell"},
+            {"label": "Occupiable Volume (%)", "value": "?occ_vol"},
+            {"label": "Accessible Volume (A^3)", "value": "?acc_vol_cell"},
+            {"label": "Accessible Volume (%)", "value": "?acc_vol"},
+            {"label": "Occupiable Area (A^2)", "value": "?occ_area_cell"},
+            {"label": "Occupiable Area (m^2/g)", "value": "?occ_area"},
+            {"label": "Accessible Area (A^2)", "value": "?acc_area_cell"},
+            {"label": "Accessible Area (m^2/g)", "value": "?acc_area"},
+            {"label": "Specific Occupiable Area (m^2/cm^3)", "value": "?occ_area_cm3"},
+            {"label": "Specific Accessible Area (m^2/cm^3)", "value": "?acc_area_cm3"},
+            {"label": "Biggest Included Sphere Diameter (A)", "value": "?sp_diam_inc"},
+            {"label": "Biggest a-Propagating Sphere Diameter (A)", "value": "?sp_diam_a"},
+            {"label": "Biggest b-Propagating Sphere Diameter (A)", "value": "?sp_diam_b"},
+            {"label": "Biggest c-Propagating Sphere Diameter (A)", "value": "?sp_diam_c"},
+            {"label": "Ring Size Min", "value": "?min_ring_size"},
+            {"label": "Ring Size Max", "value": "?max_ring_size"},
+            {"label": "Tile Edges Min", "value": "?min_nOfEdges"},
+            {"label": "Tile Edges Max", "value": "?max_nOfEdges"}
+        ]
+    }
+]

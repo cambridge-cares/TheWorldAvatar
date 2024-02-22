@@ -1,0 +1,34 @@
+.search-form .input-row {
+    display: flex;
+    justify-content: space-between; /* This will space out the flex items */
+    align-items: flex-end; /* Ensures items are aligned at their bottom edge */
+    flex-wrap: wrap; /* Allows items to move to the next line on small screens */
+}
+
+.search-form .input-row > div {
+    flex-grow: 1; /* Allows the div to grow and fill the space */
+    flex-basis: 0; /* Starts the sizing of each item from 0 */
+    margin-right: 20px; /* Adds some space between the items */
+}
+
+.search-form .input-row > div:last-child {
+    margin-right: 0; /* Removes margin from the last child to avoid extra spacing on the right */
+}
+
+.search-form .input-row > div > input[type="text"] {
+    width: 100%; /* Ensures the input takes the full width of its parent div */
+    box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+    font-family: inherit;
+}
+
+legend {
+    font-family: inherit;
+    font-size: 12pt; /* Larger font size for section titles */
+    margin-top: 12px;
+    margin-bottom: 12px; /* Space below the legend */
+}
+
+label {
+    font-family: inherit;
+    font-size: 10pt; /* Consistent font size for labels */
+}
