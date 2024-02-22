@@ -1,11 +1,16 @@
 import random
 
+import numpy as np
+
 from constants.ontozeolite import (
     CRYSTAL_ATTR_LABELS,
+    CRYSTAL_SCALAR_KEYS,
     ZEOTOPO_ATTR_LABELS,
+    ZEOTOPO_SCALAR_KEYS,
     OZCrystalInfoAttrKey,
     OZZeoTopoAttrKey,
 )
+from utils.numerical import normalize_1d
 from locate_then_ask.graph2sparql import Graph2Sparql
 from locate_then_ask.query_graph import QueryGraph
 
@@ -32,7 +37,16 @@ class OZFrameworkAsker:
         return query_sparql, "what are the {located}?".format(located=verbalization)
 
     def ask_attr(self, query_graph: QueryGraph, verbalization: str):
-        key = random.choice(self._get_unsampled_keys(query_graph))
+        unsampled_keys = self._get_unsampled_keys(query_graph)
+        key = np.random.choice(
+            unsampled_keys,
+            p=normalize_1d(
+                [
+                    (1 if (x in CRYSTAL_SCALAR_KEYS or x in ZEOTOPO_SCALAR_KEYS) else 5)
+                    for x in unsampled_keys
+                ]
+            ),
+        )
         if key is OZCrystalInfoAttrKey.COORD_TRANSFORM:
             target_coord = random.choice(["Cartesian", "Fractional"])
             transform_matrix_node = "TransformationMatrixTo" + target_coord

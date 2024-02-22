@@ -86,7 +86,7 @@ class OZMaterialAsker:
                 query_graph.add_question_node(k.value)
                 qnode_verbn = random.choice(CRYSTAL_ATTR_LABELS[k])
                 query_graph.add_triple(
-                    "Material", "ocr:hasCrystsalInformation/ocr:has" + k.value, k.value
+                    "Material", "ocr:hasCrystalInformation/ocr:has" + k.value, k.value
                 )
         else:
             raise ValueError("Unexpected key: " + key)

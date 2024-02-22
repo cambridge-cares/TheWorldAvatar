@@ -1,13 +1,11 @@
-from decimal import Decimal
 import json
 import os
 import random
 from typing import Optional
 
 from constants.fs import ROOTDIR
-from constants.ontozeolite import ZEOTOPO_SCALAR_KEYS
 from locate_then_ask.kg_client import KgClient
-from locate_then_ask.ontozeolite.model import OZFramework, OZMaterial
+from locate_then_ask.ontozeolite.model import OZMaterial
 from .crystal_info import OZCrystalInfoSynthesizer
 
 

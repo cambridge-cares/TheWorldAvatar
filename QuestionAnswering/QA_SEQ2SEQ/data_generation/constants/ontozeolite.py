@@ -8,6 +8,12 @@ class OZCrystalInfoAttrKey(Enum):
     COORD_TRANSFORM = "CoordinateTransformation"
 
 
+CRYSTAL_SCALAR_KEYS = [
+    OZCrystalInfoAttrKey.UNIT_CELL,
+    OZCrystalInfoAttrKey.TILED_STRUCTURE,
+]
+
+
 class OZZeoTopoAttrKey(Enum):
     ACCESSIBLE_AREA_PER_CELL = "AccessibleAreaPerCell"
     ACCESSIBLE_AREA_PER_GRAM = "AccessibleAreaPerGram"

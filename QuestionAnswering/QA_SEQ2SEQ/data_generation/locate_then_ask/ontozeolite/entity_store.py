@@ -1,9 +1,9 @@
 from decimal import Decimal
 from typing import Dict
-from constants.ontozeolite import ZEOTOPO_SCALAR_KEYS
 
+from constants.ontozeolite import ZEOTOPO_SCALAR_KEYS
 from locate_then_ask.kg_client import KgClient
-from locate_then_ask.ontozeolite.model import OZCrystalInfo, OZFramework, OZMaterial
+from .model import OZCrystalInfo, OZFramework, OZMaterial
 
 
 class OZEntityStore:

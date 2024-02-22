@@ -3,6 +3,7 @@ import random
 
 from constants.functions import BASIC_NUM_OPS
 from constants.ontozeolite import (
+    CRYSTAL_SCALAR_KEYS,
     ZEOTOPO_ATTR_LABELS,
     ZEOTOPO_SCALAR_KEYS,
     OZCrystalInfoAttrKey,
@@ -41,13 +42,10 @@ class OZFrameworkLocator:
 
         entity = self.store.get_framework(entity_iri)
 
+        crystal_info_frame = list(CRYSTAL_SCALAR_KEYS)
         if entity.crystal_info.tile_code is None:
-            crystal_info_frame = [OZCrystalInfoAttrKey.UNIT_CELL]
-        else:
-            crystal_info_frame = [
-                OZCrystalInfoAttrKey.UNIT_CELL,
-                OZCrystalInfoAttrKey.TILED_STRUCTURE,
-            ]
+            crystal_info_frame.remove(OZCrystalInfoAttrKey.UNIT_CELL)
+
         attr_key_weights = {
             OZFrameworkAttrKey.CRYSTAL_INFO: len(crystal_info_frame),
             OZFrameworkAttrKey.TOPO_ATTR: 10,
