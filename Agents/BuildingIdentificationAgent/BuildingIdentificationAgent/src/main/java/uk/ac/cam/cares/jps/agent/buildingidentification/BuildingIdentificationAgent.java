@@ -146,7 +146,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     if (geomType.equals(POINT_TYPE))
                         buildings = linkBuildingsTable(maxDistance, tableName, columnName, dbSrid);
                     else
-                        buildings = linkBuildingsTableNonPoint(maxDistance, tableName, columnName, dbSrid,
+                        buildings = linkBuildingsTableNonPoint(tableName, columnName, dbSrid,
                                 overlapFraction);
                     numberBuildingsIdentified = buildings.size();
                     updateBuildings(buildings, tableName);
@@ -358,7 +358,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
     }
 
-    private Map<Integer, String> linkBuildingsTableNonPoint(double maxDistance, String tableName, String columnName,
+    private Map<Integer, String> linkBuildingsTableNonPoint(String tableName, String columnName,
             Integer srid, double overlapFraction) {
 
         Map<Integer, String> buildings = new HashMap<>();
@@ -366,29 +366,20 @@ public class BuildingIdentificationAgent extends JPSAgent {
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
 
-            String sqlString = String.format("SELECT ogc_fid, iri, dist FROM " +
-                    "(SELECT ogc_fid, public.ST_TRANSFORM(\"%s\", %d) AS geometry FROM %s) r1 " +
-                    "LEFT JOIN ( " +
-                    " SELECT cityobject_genericattrib.strval AS iri, " +
-                    " envelope AS footprint " +
-                    " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
-                    " WHERE cityobject_genericattrib.attrname = 'uuid' " +
-                    " AND cityobject.objectclass_id = 26 " +
-                    " AND cityobject.id = cityobject_genericattrib.cityobject_id" +
-                    " ) r2 ON public.ST_Area(public.ST_Intersection(r1.geometry, r2.footprint)) >= %f*GREATEST(public.ST_AREA(r1.geometry), public.ST_AREA(r2.footprint))  ;",
-                    columnName, srid, tableName, overlapFraction);
+            String sqlString = String.format(" With temp_table AS ( " +
+                    " (SELECT case when ST_ISVALID(\"%s\") THEN ST_TRANSFORM(\"%s\", %d) " +
+                    " WHEN NOT ST_ISVALID(\"%s\") THEN ST_TRANSFORM(ST_MAKEVALID(\"%s\"), %d) END " +
+                    " as geometry, ogc_fid from \"%s\" )" +
+                    " select uuid, temp_table.ogc_fid as ogc_fid from building_footprints, temp_table " +
+                    " where st_intersects(temp_table.geometry, footprint_geometry) " +
+                    " AND ST_AREA(ST_INTERSECTION(footprint_geometry, temp_table.geometry)) >= %f*ST_AREA(temp_table.geometry) ",
+                    columnName, columnName, srid, columnName, columnName, srid, tableName, overlapFraction);
             ResultSet result = stmt.executeQuery(sqlString);
 
             while (result.next()) {
                 int ogcFid = result.getInt("ogc_fid");
-                String buildingId = result.getString("iri");
+                String buildingId = result.getString("uuid");
                 buildings.put(ogcFid, buildingId);
-                Double dist = result.getDouble("dist");
-
-                if (dist > maxDistance)
-                    LOGGER.warn(" The building with UUID {} has been matched to a geometry {} meters away",
-                            buildingId, dist);
-
             }
 
         } catch (SQLException e) {
