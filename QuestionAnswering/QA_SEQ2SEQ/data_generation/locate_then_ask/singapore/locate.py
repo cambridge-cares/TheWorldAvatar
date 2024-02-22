@@ -49,7 +49,13 @@ class OPltPlotLocator:
         numval_node = key.value + "NumericalValue"
         query_graph.add_literal_node(numval_node)
 
-        assert measure.unit_iri.startswith(OM), measure.unit_iri
+        if not measure.unit_iri.startswith(OM):
+            raise ValueError(
+                "Expects `measure.unit_iri` to start with {expected}. Actual: {actual}.".format(
+                    expected=OM, actual=measure.unit_iri
+                )
+            )
+
         unit = measure.unit_iri[len(OM) :]
         unit_node = "om:" + unit
         query_graph.add_iri_node(unit_node, prefixed=True)
@@ -84,7 +90,13 @@ class OPltPlotLocator:
             keys, size=min(cond_num, len(keys)), p=normalize_1d(weights), replace=False
         ):
             if k is OPltPlotAttrKey.LAND_USE_TYPE_TYPE:
-                assert entity.land_use_type_type.startswith(OZNG)
+                if not entity.land_use_type_type.startswith(OZNG):
+                    raise ValueError(
+                        "Expects `entity.land_use_type_type` to start with {expected}. Found: {actual}.".format(
+                            expected=OZNG, actual=entity.land_use_type_type
+                        )
+                    )
+
                 clsname = entity.land_use_type_type[len(OZNG) :]
                 clsname_node = "{prefix}:{name}".format(
                     prefix=NAMESPACE2PREFIX[OZNG], name=clsname
