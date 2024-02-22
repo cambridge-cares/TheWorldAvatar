@@ -40,7 +40,7 @@ public class UpdatedGSFeatureDimensionInfoEncoder extends GSFeatureDimensionInfo
 
     public void setNearestMatchEnabled(Boolean nearestMatchEnabled) {
         this.nearestMatchEnabled = nearestMatchEnabled;
-        set(NEAREST_MATCH_ENABLED, nearestMatchEnabled != null ? nearestMatchEnabled.toString() : "false");
+        set(NEAREST_MATCH_ENABLED, nearestMatchEnabled.toString());
 
     }
 
@@ -50,7 +50,7 @@ public class UpdatedGSFeatureDimensionInfoEncoder extends GSFeatureDimensionInfo
 
     public void setRawNearestMatchEnabled(Boolean rawNearestMatchEnabled) {
         this.rawNearestMatchEnabled = rawNearestMatchEnabled;
-        set(RAW_NEAREST_MATCH_ENABLED, rawNearestMatchEnabled != null ? rawNearestMatchEnabled.toString() : "false");
+        set(RAW_NEAREST_MATCH_ENABLED, rawNearestMatchEnabled.toString());
     }
 
     public void setUnits(String units) {
@@ -63,7 +63,7 @@ public class UpdatedGSFeatureDimensionInfoEncoder extends GSFeatureDimensionInfo
 
     public void setStartValue(String startValue) {
         this.startValue = startValue;
-        set(START_VALUE, startValue != null ? startValue : "");
+        set(START_VALUE, startValue);
     }
 
     public String getEndValue() {
@@ -72,6 +72,6 @@ public class UpdatedGSFeatureDimensionInfoEncoder extends GSFeatureDimensionInfo
 
     public void setEndValue(String endValue) {
         this.endValue = endValue;
-        set(END_VALUE, endValue != null ? endValue : "");
+        set(END_VALUE, endValue);
     }
 }
