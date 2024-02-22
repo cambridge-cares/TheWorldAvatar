@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   stack-data-uploader:
-    image: ghcr.io/cambridge-cares/stack-data-uploader${IMAGE_SUFFIX}:1.24.0
+    image: ghcr.io/cambridge-cares/stack-data-uploader${IMAGE_SUFFIX}:1.24.1-1120-SNAPSHOT
     secrets:
       - blazegraph_password
       - postgis_password
