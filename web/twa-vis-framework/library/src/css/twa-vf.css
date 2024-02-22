@@ -1530,7 +1530,7 @@ li {
     background-color: #b8b8b8
 }
 
-#helpandsearchandlogout {
+#helpandsearch {
     display: flex;
 }
 
@@ -1741,13 +1741,4 @@ html .ui-button.ui-state-disabled:active {
     bottom: 0;
     position: absolute;
     width: 100%;
-}
-
-#logout-button {
-    display: block;
-    width: 60px;
-    text-align: center;
-    cursor: pointer;
-    margin-right: 10px;
-    top: 30px;
 }
