@@ -7,10 +7,7 @@ from locate_then_ask.ontospecies.model import OSProperty, OSSpecies
 
 
 class OSEntityStore:
-    def __init__(
-        self,
-        kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
-    ):
+    def __init__(self, kg_endpoint: str ):
         self.kg_client = KgClient(kg_endpoint)
         self.iri2entity: Dict[str, OSSpecies] = dict()
 

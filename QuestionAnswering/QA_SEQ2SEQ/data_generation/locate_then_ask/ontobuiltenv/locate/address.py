@@ -17,13 +17,15 @@ class OBEAddressLocator(OBEAttrLocator):
     def locate(self, query_graph: QueryGraph, entity: OBEProperty):
         """Locates the topic entity in the query_graph by its address.
         The query_graph is modified in-place."""
-        assert entity.address is not None
+        if entity.address is None:
+            raise ValueError("`address` field of `entity` must not be None.")
 
         address_node = query_graph.make_blank_node(key=OBEAttrKey.ADDRESS)
         query_graph.add_triple("Property", "obe:hasAddress", address_node)
 
         candidates = entity.address.get_nonnone_keys()
-        assert len(candidates) > 0
+        if len(candidates) == 0:
+            raise ValueError("`entity.address` must have at least one field that is not None.")
 
         if "postal_code" in candidates and (len(candidates) == 1 or random.random() < 2/3):
             if len(candidates) == 1 or random.getrandbits(1):

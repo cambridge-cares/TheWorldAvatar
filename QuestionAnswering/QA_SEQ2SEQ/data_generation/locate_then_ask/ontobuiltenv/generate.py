@@ -10,6 +10,7 @@ import numpy as np
 from tqdm import tqdm
 from constants.fs import ROOTDIR
 from constants.ontobuiltenv import OBE_PROPERTYUSAGE_LABELS, OBEAttrKey
+from data_generation.locate_then_ask.ontobuiltenv.entity_store import OBEEntityStore
 from locate_then_ask.query_graph import QueryGraph
 from utils.numerical import normalize_1d
 
@@ -38,9 +39,8 @@ class OBEDatasetGenerator:
     @classmethod
     def retrieve_seed_entities(cls, kg_endpoint: Optional[str]):
         if not os.path.isfile(cls.SEED_ENTITIES_FILEPATH):
-            assert (
-                kg_endpoint is not None
-            ), "No cached seed entities found, kg_endpoint must not be None"
+            if kg_endpoint is None:
+                raise ValueError("No cached seed entities found, kg_endpoint must not be None")
 
             print("No seed entities found. Retrieving seed entities...")
             from locate_then_ask.kg_client import KgClient
@@ -92,7 +92,16 @@ LIMIT {num}"""
         return [x for x in entities if x]
 
     def __init__(self, kg_endpoint: Optional[str] = None, synthetic_abox: bool = False):
-        self.locator = OBELocator(MockOBEEntityStore() if synthetic_abox else None)
+        if synthetic_abox:
+            store = MockOBEEntityStore()
+        elif kg_endpoint is not None:
+            store = OBEEntityStore(kg_endpoint)
+        else:
+            raise ValueError(
+                "`kg_endpoint` must be supplied when `synthetic_abox` is False."
+            )
+
+        self.locator = OBELocator(store)
         self.asker = OBEAsker()
 
         if synthetic_abox:
@@ -131,12 +140,13 @@ LIMIT {num}"""
                 key for _, key in query_graph.nodes(data="key") if key is not None
             )
             unsampled_numerical_keys = [
-                k for k in OBEAsker.NUMERICAL_KEYS if k not in sampled_attr_keys 
+                k for k in OBEAsker.NUMERICAL_KEYS if k not in sampled_attr_keys
             ]
             if unsampled_numerical_keys:
                 ask_strategies.extend(["agg", "name_byExtremeAttr"])
                 if len(unsampled_numerical_keys) >= 2 or any(
-                    k not in sampled_attr_keys and k not in unsampled_numerical_keys for k in OBEAttrKey
+                    k not in sampled_attr_keys and k not in unsampled_numerical_keys
+                    for k in OBEAttrKey
                 ):
                     ask_strategies.append("attr_byExtremeAttr")
                 if any(k not in sampled_attr_keys for k in OBEAsker.DISCRETE_ATTRS):

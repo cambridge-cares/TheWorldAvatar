@@ -2,7 +2,7 @@ from decimal import Decimal
 import json
 import os
 import random
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 from constants.fs import ROOTDIR
 from constants.ontospecies import OSPropertyKey
@@ -28,14 +28,17 @@ class OSPropertySynthesizer:
         OSPropertyKey.TAUTOMERS_COUNT,
     ]
 
-    def __init__(self):
+    def __init__(self, kg_endpoint: Optional[str] = None):
         abs_filepath = os.path.join(ROOTDIR, self.PROPERTY_DATAPOINTS_FILEPATH)
         if not os.path.exists(abs_filepath):
+            if kg_endpoint is None:
+                raise ValueError(
+                    "No cache of chemclasses found, `kg_endpoint` must be provided."
+                )
+
             from locate_then_ask.kg_client import KgClient
 
-            kg_client = KgClient(
-                "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql"
-            )
+            kg_client = KgClient(kg_endpoint)
 
             query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 

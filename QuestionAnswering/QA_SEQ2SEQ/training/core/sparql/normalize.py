@@ -60,7 +60,7 @@ def make_canonical(query: SparqlQuery):
     return SparqlQuery(
         select_clause=query.select_clause,
         where_clause=WhereClause(patterns),
-        solultion_modifier=query.solultion_modifier,
+        solution_modifier=query.solution_modifier,
     )
 
 

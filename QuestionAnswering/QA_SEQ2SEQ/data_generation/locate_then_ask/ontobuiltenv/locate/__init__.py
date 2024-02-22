@@ -37,12 +37,8 @@ class OBELocator:
         OBEAttrKey.GROUND_ELEVATION: 1,
     }
 
-    def __init__(self, store: Optional[OBEEntityStore]):
-        if store is None:
-            self.store = OBEEntityStore()
-        else:
-            self.store = store
-
+    def __init__(self, store: OBEEntityStore):
+        self.store = store
         self.attr_locators: Dict[OBEAttrKey, OBEAttrLocator] = {
             OBEAttrKey.ADDRESS: OBEAddressLocator(),
             OBEAttrKey.BUILT_FORM: OBEBuiltFormLocator(),

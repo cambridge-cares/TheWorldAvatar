@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from .exceptions import SparqlParseError
 from .query_form import SelectClause
 from .solution_modifier import SolutionModifier
 from .sparql_base import SparqlBase
@@ -11,15 +12,15 @@ from .where_clause import WhereClause
 class SparqlQuery(SparqlBase):
     select_clause: SelectClause
     where_clause: WhereClause
-    solultion_modifier: Optional[SolutionModifier] = None
+    solution_modifier: Optional[SolutionModifier] = None
 
     def __str__(self):
         text = "{select_clause} {where_clause}".format(
             select_clause=self.select_clause,
             where_clause=self.where_clause,
         )
-        if self.solultion_modifier:
-            text += "\n" + str(self.solultion_modifier)
+        if self.solution_modifier:
+            text += "\n" + str(self.solution_modifier)
         return text
 
     @classmethod
@@ -27,5 +28,8 @@ class SparqlQuery(SparqlBase):
         select_clause, sparql_fragment = SelectClause.extract(sparql)
         where_clause, sparql_fragment = WhereClause.extract(sparql_fragment)
         solution_modifier, sparql_fragment = SolutionModifier.extract(sparql_fragment)
-        assert not sparql_fragment or sparql_fragment.isspace(), sparql_fragment
+
+        if sparql_fragment and not sparql_fragment.isspace():
+            raise SparqlParseError(sparql_fragment)
+
         return cls(select_clause, where_clause, solution_modifier)

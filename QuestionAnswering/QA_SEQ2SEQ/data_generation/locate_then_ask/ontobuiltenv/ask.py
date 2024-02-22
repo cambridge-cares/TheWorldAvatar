@@ -141,7 +141,10 @@ class OBEAsker:
 
     def ask_agg(self, query_graph: QueryGraph, verbalization: str, attr_num: int = 1):
         candidates = self._find_unsampled_numerical_keys(query_graph)
-        assert len(candidates) > 0
+        if len(candidates) == 0:
+            raise ValueError(
+                "`ask_agg` requires at least one numerical key to not have been added to the `query_graph`."
+            )
 
         verbns = []
         for key in random.sample(candidates, k=min(len(candidates), attr_num)):

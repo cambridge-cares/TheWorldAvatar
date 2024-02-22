@@ -20,16 +20,20 @@ class OBEOmMeasureLocator:
         numval_node = key.value + "NumericalValue"
         query_graph.add_literal_node(numval_node)
 
-        assert measure.unit_iri.startswith(OM), measure.unit_iri
+        if not measure.unit_iri.startswith(OM):
+            raise ValueError(
+                "Expects `measure.unit_iri` to start with {expected}. Found: {actual}.".format(
+                    expected=OM, actual=measure.unit_iri
+                )
+            )
+
         unit = measure.unit_iri[len(OM) :]
         unit_node = "om:" + unit
         query_graph.add_iri_node(unit_node, prefixed=True)
         unit_verbn = random.choice(OM_KEY_LABELS[unit])
 
         query_graph.add_func(
-            target_node=numval_node,
-            operator=operator,
-            operand=operand
+            target_node=numval_node, operator=operator, operand=operand
         )
         query_graph.add_triples(
             [

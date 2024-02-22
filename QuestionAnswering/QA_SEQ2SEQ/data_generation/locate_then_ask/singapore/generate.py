@@ -35,9 +35,8 @@ class SgDatasetGenerator:
         cls, bg_endpoint: Optional[str], ontop_endpoint: Optional[str]
     ):
         if not os.path.isfile(cls.SEED_ENTITIES_FILEPATH):
-            assert (
-                bg_endpoint is not None
-            ), "No cached seed entities found, kg_endpoint must not be None"
+            if bg_endpoint is None:
+                raise ValueError("No cached seed entities found, kg_endpoint must not be None")
 
             print("No seed entities found. Retrieving seed entities...")
             from locate_then_ask.kg_client import KgClient

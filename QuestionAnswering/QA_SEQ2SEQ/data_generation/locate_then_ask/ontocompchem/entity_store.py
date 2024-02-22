@@ -1,14 +1,11 @@
-from typing import Dict, Type, Union
+from typing import Dict
+
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontocompchem.model import OCCMolecularComputation, OCCSpecies
 
 
 class OCCEntityStore:
-    def __init__(
-        self,
-        kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontocompchem/sparql",
-        **kwargs
-    ):
+    def __init__(self, kg_endpoint: str, **kwargs):
         self.kg_client = KgClient(kg_endpoint, **kwargs)
         self.iri2molcomp: Dict[str, OCCMolecularComputation] = dict()
         self.iri2species: Dict[str, OCCSpecies] = dict()
@@ -17,7 +14,7 @@ class OCCEntityStore:
         if entity_iri not in self.iri2molcomp:
             self.iri2molcomp[entity_iri] = self.create_molcomp(entity_iri)
         return self.iri2molcomp[entity_iri]
-    
+
     def get_species(self, entity_iri: str):
         if entity_iri not in self.iri2species:
             self.iri2species[entity_iri] = self.create_species(entity_iri)
@@ -31,7 +28,7 @@ class OCCEntityStore:
             iri=entity_iri,
             species_iri=species,
             level_of_theory=level_of_theory,
-            basis_set=basis_set
+            basis_set=basis_set,
         )
 
     def retrieve_molcomp_species(self, entity_iri: str):
@@ -73,9 +70,7 @@ SELECT DISTINCT ?BasisSetLabel WHERE {{
         molcomp_iris = self.retrieve_species_molcomp(entity_iri)
 
         return OCCSpecies(
-            iri=entity_iri,
-            label=label,
-            molecular_computation_iris=molcomp_iris
+            iri=entity_iri, label=label, molecular_computation_iris=molcomp_iris
         )
 
     def retrieve_species_label(self, entity_iri: str):
@@ -87,7 +82,7 @@ LIMIT 1"""
         query = query_template.format(IRI=entity_iri)
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
         return response_bindings[0]["Label"]["value"]
-    
+
     def retrieve_species_molcomp(self, entity_iri: str):
         query_template = """PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>
 
@@ -97,4 +92,3 @@ SELECT DISTINCT ?MolecularComputation WHERE {{
         query = query_template.format(IRI=entity_iri)
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
         return [x["MolecularComputation"]["value"] for x in response_bindings]
-    
