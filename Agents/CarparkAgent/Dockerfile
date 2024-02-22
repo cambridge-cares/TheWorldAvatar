@@ -51,6 +51,14 @@ ENV CARPARK_APIPROPERTIES="/usr/local/tomcat/config/api.properties"
 ENV CARPARK_CLIENTPROPERTIES="/usr/local/tomcat/config/client.properties"
 ENV CARPARK_AGENT_MAPPINGS="/usr/local/tomcat/config/mappings"
 
+# also name of the table in PostGIS
+ENV LAYERNAME="carparks"
+
+# currently ontop reads from the default database
+ENV DATABASE="postgres"
+
+ENV GEOSERVER_WORKSPACE="carparks"
+
 COPY --from=builder /root/CarparkAPIInputAgent/output/carpark-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
