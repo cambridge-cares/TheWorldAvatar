@@ -1,0 +1,13 @@
+.dashContainer {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.dashContainer h1 {
+    font-size: 32pt;
+}

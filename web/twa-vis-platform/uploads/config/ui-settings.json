@@ -1,0 +1,12 @@
+{
+    "branding": {
+        "logo": "/img/whatever.svg",
+        "toolbarLogo": "/uploads/images/toolbar-logo.svg"
+    },
+    "modules": {
+        "landing": true,
+        "help": true,
+        "map": true,
+        "dashboard": true
+    }
+}

@@ -1,0 +1,27 @@
+#
+# Compose file for the TWA-VP.
+#
+version: "3.8"
+
+# All Services
+services:
+
+  # Empty TWA-VF visualisation image for deployment. Builds a base image that, when combined
+  # with a volume of files, can be used as a visualisation. It is not intended that this
+  # config is used to run the twa-vf image.
+  visualise:
+    image: ghcr.io/cambridge-cares/twa-vf:dev-vis-platform-SNAPSHOT
+    container_name: "twa-vis-platform"
+    restart: "no"
+    build:
+      context: "./"
+      dockerfile: "Dockerfile"
+      labels:
+        authors: "support@cmcl.io"
+        description: "TWA Visualisation Platform image."
+    volumes:
+      - type: bind
+        source: ./config
+        target: /twa/config
+    ports:
+      - "80:3000" 
