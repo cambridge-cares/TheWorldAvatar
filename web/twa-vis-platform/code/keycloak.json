@@ -1,8 +1,0 @@
-{
-  "realm": "oisin",
-  "auth-server-url": "http://localhost:1916/",
-  "ssl-required": "external",
-  "resource": "twa",
-  "public-client": true,
-  "confidential-port": 0
-}
