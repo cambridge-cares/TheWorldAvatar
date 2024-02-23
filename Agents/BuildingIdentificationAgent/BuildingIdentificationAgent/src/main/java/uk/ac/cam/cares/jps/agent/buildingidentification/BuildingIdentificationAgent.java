@@ -38,7 +38,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
     private static final Logger LOGGER = LogManager.getLogger(BuildingIdentificationAgent.class);
 
-    private static final String COLUMN_NAME = "building_iri";
+    private static final String BUILDINGS_COLUMN = "building_uuid";
 
     // RDBStore client to query postgis
     private RemoteRDBStoreClient rdbStoreClient;
@@ -127,7 +127,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
                 LOGGER.info("{}, {}", locations.get(0).get(0), locations.get(0).get(1));
                 List<String> buildings = linkBuildingsArray(dbSrid, maxDistance, locations);
-                responseObject.put(COLUMN_NAME, new JSONArray(buildings));
+                responseObject.put(BUILDINGS_COLUMN, new JSONArray(buildings));
                 numberBuildingsIdentified = buildings.size();
             } else if (requestParams.getString(KEY_REQ_URL).contains(ROUTE_POSTGIS)) {
                 String tableName = requestParams.getString(KEY_TABLE);
@@ -136,20 +136,18 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     JSONArray filterColumns = requestParams.getJSONArray(KEY_FILTER_COLUMNS);
                     JSONArray excludedValues = requestParams.getJSONArray(KEY_EXCLUDED_VALUES);
 
-                    Map<Integer, List<String>> buildings = linkMultipleBuildings(tableName, columnName, dbSrid,
-                            filterColumns, excludedValues);
-                    numberBuildingsIdentified = buildings.values().stream().mapToInt(p -> p.size()).sum();
-                    updateMultipleBuildings(tableName, newTable, buildings);
+                    linkMultipleBuildings(tableName, columnName, dbSrid,
+                            filterColumns, excludedValues, newTable);
+                    numberBuildingsIdentified = getNumberOfMatchedBuildings(newTable);
+
                 } else {
                     String geomType = getGeometryType(tableName, columnName);
-                    Map<Integer, String> buildings;
                     if (geomType.equals(POINT_TYPE))
-                        buildings = linkBuildingsTable(maxDistance, tableName, columnName, dbSrid);
+                        linkBuildingsTablePoint(maxDistance, tableName, columnName, dbSrid);
                     else
-                        buildings = linkBuildingsTableNonPoint(tableName, columnName, dbSrid,
+                        linkBuildingsTableNonPoint(tableName, columnName, dbSrid,
                                 overlapFraction);
-                    numberBuildingsIdentified = buildings.size();
-                    updateBuildings(buildings, tableName);
+                    numberBuildingsIdentified = getNumberOfMatchedBuildings(tableName);
                 }
 
             } else {
@@ -222,7 +220,8 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
-            String sqlString = String.format("SELECT ST_GEOMETRYTYPE(%s) as geom_type from %s limit 1;", columnName,
+            String sqlString = String.format("SELECT ST_GEOMETRYTYPE(\"%s\") as geom_type from \"%s\" limit 1;",
+                    columnName,
                     tableName);
             ResultSet result = stmt.executeQuery(sqlString);
             if (result.next()) {
@@ -243,15 +242,14 @@ public class BuildingIdentificationAgent extends JPSAgent {
      * 
      * @param dbSrid: SRID used to store buildings data in citydb schema
      * 
-     * @return None
+     * @return list of matchde building UUIDs
      * 
      *         For this function to work efficiently for large numbers of points,
-     *         one must create a spatial index on envelope and
-     *         ST_Boundary(envelope)
+     *         one must create a spatial index on footprint_geometry
      *         as follows:
      * 
-     *         create index "envelope_boundary" on citydb.cityobject
-     *         using gist(envelope, public.ST_BOUNDARY(envelope)) ;
+     *         create index "building_footprint_index" on building_footprints
+     *         using gist(footprint_geometry) ;
      * 
      *         Also, the <-> operator should be used to find nearest neighbours.
      *         Using ST_DISTANCE causes POSTGIS to execute a sequential scan
@@ -269,22 +267,12 @@ public class BuildingIdentificationAgent extends JPSAgent {
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
 
-            String sqlTemplate = "select cityobject_genericattrib.strval as iri, "
+            String sqlTemplate = "select uuid, "
                     +
-                    "public.ST_Point(%f, %f, %d) <-> envelope AS dist," +
+                    "public.ST_Point(%f, %f, %d) <-> footprint_geometry AS dist " +
 
-                    "public.ST_Point(%f, %f, %d) <-> public.ST_Boundary(envelope) AS distBoundary " +
-
-                    " from citydb.cityobject, citydb.cityobject_genericattrib "
-                    +
-
-                    " AND \"cityobject_genericattrib\".\"attrname\" = 'uuid' " +
-
-                    " AND cityobject.objectclass_id = 26 " +
-
-                    " AND cityobject.id = cityobject_genericattrib.cityobject_id "
-                    +
-                    " order by dist, distBoundary " +
+                    " from building_footprints " +
+                    " order by dist " +
                     " limit 1;";
 
             for (int i = 0; i < locations.size(); i++) {
@@ -295,7 +283,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 ResultSet result = stmt.executeQuery(sqlString);
 
                 while (result.next()) {
-                    String buildingId = result.getString("iri");
+                    String buildingId = result.getString("uuid");
                     buildings.add(buildingId);
 
                     Double dist = result.getDouble("dist");
@@ -315,98 +303,97 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
     }
 
-    private Map<Integer, String> linkBuildingsTable(double maxDistance, String tableName, String columnName,
+    private void linkBuildingsTablePoint(double maxDistance, String tableName, String columnName,
             Integer srid) {
 
-        Map<Integer, String> buildings = new HashMap<>();
-
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
 
-            String sqlString = String.format("SELECT ogc_fid, iri, dist FROM " +
-                    "(SELECT ogc_fid, public.ST_TRANSFORM(\"%s\", %d) AS geometry FROM %s) r1 " +
-                    "LEFT JOIN LATERAL ( " +
-                    " SELECT cityobject_genericattrib.strval AS iri, " +
-                    " r1.geometry <-> cityobject.envelope AS dist, " +
-                    " r1.geometry <-> ST_Boundary(cityobject.envelope) AS distBoundary " +
-                    " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
-                    " where cityobject_genericattrib.attrname = 'uuid' " +
-                    " AND cityobject.objectclass_id = 26 " +
-                    " AND cityobject.id = cityobject_genericattrib.cityobject_id" +
-                    " ORDER BY dist, distBoundary " +
-                    " LIMIT 1 " +
-                    " ) r2 ON true;", columnName, srid, tableName);
-            ResultSet result = stmt.executeQuery(sqlString);
-
-            while (result.next()) {
-                int ogcFid = result.getInt("ogc_fid");
-                String buildingId = result.getString("iri");
-                buildings.put(ogcFid, buildingId);
-                Double dist = result.getDouble("dist");
-
-                if (dist > maxDistance)
-                    LOGGER.warn(" The building with UUID {} has been matched to a point {} meters away",
-                            buildingId, dist);
-
-            }
+            String sqlString = String.format(
+                    " alter table \"%s\" drop column if exists %s ;" +
+                            " alter table \"%s\" add column %s character varying (10000) ; " +
+                            " UPDATE \"%s\" set %s = match.uuid from ( " +
+                            "SELECT ogc_fid, uuid, dist FROM " +
+                            "(SELECT ogc_fid, public.ST_TRANSFORM(\"%s\", %d) AS geometry FROM \"%s\") r1 " +
+                            "LEFT JOIN LATERAL ( " +
+                            " SELECT uuid, " +
+                            " r1.geometry <-> footprint_geometry AS dist " +
+                            " FROM building_footprints " +
+                            " ORDER BY dist " +
+                            " LIMIT 1 " +
+                            " ) r2 ON true " +
+                            " ) match " +
+                            " where \"%s\".ogc_fid = match.ogc_fid " +
+                            " AND match.dist < %f ; ",
+                    tableName, BUILDINGS_COLUMN,
+                    tableName, BUILDINGS_COLUMN,
+                    tableName, BUILDINGS_COLUMN,
+                    columnName, srid, tableName,
+                    tableName,
+                    maxDistance);
+            stmt.executeUpdate(sqlString);
 
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         }
 
-        return buildings;
-
     }
 
-    private Map<Integer, String> linkBuildingsTableNonPoint(String tableName, String columnName,
+    private void linkBuildingsTableNonPoint(String tableName, String columnName,
             Integer srid, double overlapFraction) {
 
-        Map<Integer, String> buildings = new HashMap<>();
-
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
 
-            String sqlString = String.format(" With temp_table AS ( " +
-                    " (SELECT case when ST_ISVALID(\"%s\") THEN ST_TRANSFORM(\"%s\", %d) " +
-                    " WHEN NOT ST_ISVALID(\"%s\") THEN ST_TRANSFORM(ST_MAKEVALID(\"%s\"), %d) END " +
-                    " as geometry, ogc_fid from \"%s\" )" +
-                    " select uuid, temp_table.ogc_fid as ogc_fid from building_footprints, temp_table " +
-                    " where st_intersects(temp_table.geometry, footprint_geometry) " +
-                    " AND ST_AREA(ST_INTERSECTION(footprint_geometry, temp_table.geometry)) >= %f*ST_AREA(temp_table.geometry) ",
-                    columnName, columnName, srid, columnName, columnName, srid, tableName, overlapFraction);
-            ResultSet result = stmt.executeQuery(sqlString);
+            String sqlString = String.format(
 
-            while (result.next()) {
-                int ogcFid = result.getInt("ogc_fid");
-                String buildingId = result.getString("uuid");
-                buildings.put(ogcFid, buildingId);
-            }
+                    " alter table \"%s\" drop column if exists %s ;" +
+                            " alter table \"%s\" add column %s character varying (10000) ; " +
+                            " With temp_table AS " +
+                            " (SELECT case when ST_ISVALID(\"%s\") THEN ST_TRANSFORM(\"%s\", %d) " +
+                            " WHEN NOT ST_ISVALID(\"%s\") THEN ST_TRANSFORM(ST_MAKEVALID(\"%s\"), %d) END " +
+                            " as geometry, ogc_fid from \"%s\" )" +
+                            " UPDATE \"%s\" set %s = match.uuid from ( " +
+                            " select uuid, temp_table.ogc_fid as iden from building_footprints, temp_table " +
+                            " where ST_INTERSECTS(temp_table.geometry, footprint_geometry) " +
+                            " AND ST_AREA(ST_INTERSECTION(footprint_geometry, temp_table.geometry)) >= %f*ST_AREA(temp_table.geometry) ) match "
+                            +
+                            " where \"%s\".ogc_fid = match.iden ",
+                    tableName, BUILDINGS_COLUMN,
+                    tableName, BUILDINGS_COLUMN,
+                    columnName, columnName, srid,
+                    columnName, columnName, srid,
+                    tableName,
+                    tableName, BUILDINGS_COLUMN,
+                    overlapFraction,
+                    tableName);
+            stmt.executeUpdate(sqlString);
 
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         }
 
-        return buildings;
-
     }
 
-    private Map<Integer, List<String>> linkMultipleBuildings(String tableName, String columnName,
-            Integer srid, JSONArray filterColumns, JSONArray excludedValues) {
+    private void linkMultipleBuildings(String tableName, String columnName,
+            Integer srid, JSONArray filterColumns, JSONArray excludedValues, String newTable) {
 
-        Map<Integer, List<String>> buildings = new HashMap<>();
+        String sqlTemplate = String.format(
 
-        String sqlTemplate = String.format("SELECT ogc_fid, iri FROM " +
-                " ( SELECT cityobject_genericattrib.strval AS iri, " +
-                " envelope AS footprint " +
-                " FROM citydb.cityobject, " +
-                " citydb.cityobject_genericattrib " +
-                " WHERE cityobject.objectclass_id = 26 " +
-                " AND cityobject.id = cityobject_genericattrib.cityobject_id " +
-                " AND cityobject_genericattrib.attrname = 'uuid') r2 " +
-                " LEFT JOIN LATERAL " +
-                " (SELECT ogc_fid, " +
-                " r2.footprint <-> public.ST_TRANSFORM(\"%s\", %d) AS dist " +
-                " FROM %s ", columnName, srid, tableName);
+                " DROP TABLE IF EXISTS \"%s\" ; " +
+                        " CREATE TABLE \"%s\" AS  ( " +
+                        "SELECT ogc_fid, uuid FROM " +
+                        " ( SELECT uuid, " +
+                        " building_footprint " +
+                        " FROM building_footprints ) r2 " +
+                        " LEFT JOIN LATERAL " +
+                        " (SELECT ogc_fid, " +
+                        " r2.footprint <-> public.ST_TRANSFORM(\"%s\", %d) AS dist " +
+                        " FROM \"%s\" ",
+                newTable,
+                newTable,
+                columnName, srid,
+                tableName);
         StringBuilder sqlBuilder = new StringBuilder(sqlTemplate);
         sqlBuilder.append(System.lineSeparator());
 
@@ -429,50 +416,61 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
         sqlBuilder.append(System.lineSeparator());
         sqlBuilder.append(" order by dist ")
-                .append(" limit 1) r1 on true;");
+                .append(" limit 1) r1 on true ")
+                .append(" ) ; ");
 
         String sqlString = sqlBuilder.toString();
 
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
 
+            stmt.executeUpdate(sqlString);
+
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+    }
+
+    private int getNumberOfMatchedBuildings(String tableName) {
+
+        Integer numberMatched = 0;
+        try (Connection conn = rdbStoreClient.getConnection();
+                Statement stmt = conn.createStatement();) {
+
+            String sqlString = String.format(" select count(*) as total_matched from \"%s\" WHERE %s IS NOT NULL; ",
+                    tableName,
+                    BUILDINGS_COLUMN);
+
             ResultSet result = stmt.executeQuery(sqlString);
 
             while (result.next()) {
-                int ogcFid = result.getInt("ogc_fid");
-                String buildingIri = result.getString("iri");
-                if (buildings.containsKey(ogcFid)) {
-                    buildings.get(ogcFid).add(buildingIri);
-                } else {
-                    List<String> iriList = new ArrayList<>(Arrays.asList(buildingIri));
-                    buildings.put(ogcFid, iriList);
-                }
-
+                numberMatched = result.getInt("total_matched");
             }
 
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         }
 
-        return buildings;
-
+        return numberMatched;
     }
 
+    @Deprecated
     public void updateBuildings(Map<Integer, String> buildings, String tableName) {
 
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
 
             String sqlString = String.format("ALTER TABLE %s " +
-                    "DROP COLUMN IF EXISTS %s ", tableName, COLUMN_NAME);
+                    "DROP COLUMN IF EXISTS %s ", tableName, BUILDINGS_COLUMN);
             stmt.executeUpdate(sqlString);
 
             sqlString = String.format("ALTER TABLE %s " +
-                    " ADD COLUMN %s character varying (10000) ", tableName, COLUMN_NAME);
+                    " ADD COLUMN %s character varying (10000) ", tableName, BUILDINGS_COLUMN);
 
             stmt.executeUpdate(sqlString);
 
-            sqlString = String.format(" UPDATE %s SET %s  = CASE  ", tableName, COLUMN_NAME);
+            sqlString = String.format(" UPDATE %s SET %s  = CASE  ", tableName, BUILDINGS_COLUMN);
 
             StringBuilder update = new StringBuilder(sqlString);
 
@@ -494,6 +492,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
     }
 
+    @Deprecated
     public void updateMultipleBuildings(String userTable, String tableName, Map<Integer, List<String>> buildings) {
 
         userTable = userTable.replace(".", "_");
@@ -506,12 +505,12 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
             sqlString = String.format("CREATE TABLE %s (" +
                     " \"%s_ogc_fid\" bigint NOT NULL, " +
-                    " \"%s\" character varying (10000) ) ;", tableName, userTable, COLUMN_NAME);
+                    " \"%s\" character varying (10000) ) ;", tableName, userTable, BUILDINGS_COLUMN);
 
             stmt.executeUpdate(sqlString);
 
             sqlString = String.format(" INSERT INTO %s (\"%s_ogc_fid\", \"%s\")  VALUES  ", tableName, userTable,
-                    COLUMN_NAME);
+                    BUILDINGS_COLUMN);
 
             StringBuilder update = new StringBuilder(sqlString);
 
