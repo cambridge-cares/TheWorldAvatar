@@ -161,7 +161,7 @@ public class SparqlHandler {
                                 selectQuery.prefix(PREFIX_ONTOCARPARK).select(carpark).where(triplePattern);
                                 kbClient.setQuery(selectQuery.getQueryString());
                                 JSONArray queryResult = kbClient.executeQuery();
-                                carparkIRI = queryResult.getJSONObject(0).get("carpark").toString();
+                                carparkIRI = queryResult.getJSONObject(0).getString("carpark");
                                 //FuzzyMatching for the carpark rates
                                 Map<String, String> map = new HashMap<>();
 
@@ -226,6 +226,7 @@ public class SparqlHandler {
      */
     private String instantiateLotTypeAndAttributesIfNotExist(String iri, String lotType) {
         TriplePattern triplePattern;
+        TriplePattern triplePattern2;
         InsertDataQuery insertQuery;
         SelectQuery selectQuery;
         String lotTypeIRI;
@@ -240,22 +241,26 @@ public class SparqlHandler {
             if (queryResult.isEmpty()) {
                 lotTypeIRI = OntoCarpark_NS + "Carpark_LotType_" + UUID.randomUUID();
                 if (lotType.equalsIgnoreCase("C")) {
-                    //INSERT DATA { <lotTypeIRI> rdf:type ontocarpark:Cars }
+                    //INSERT DATA { <lotTypeIRI> rdf:type ontocarpark:Cars .
+                    //              <iri> rdfs:label "Cars" .}
                     triplePattern = iri(lotTypeIRI).isA(Cars);
-                    insertQuery = Queries.INSERT_DATA(triplePattern);
-                    insertQuery.prefix(PREFIX_ONTOCARPARK);
+                    triplePattern2 = iri(iri).has(label, "Cars");
+                    insertQuery = Queries.INSERT_DATA(triplePattern, triplePattern2);
+                    insertQuery.prefix(PREFIX_ONTOCARPARK, PREFIX_RDFS);
                     kbClient.executeUpdate(insertQuery.getQueryString());
                 } else if (lotType.equalsIgnoreCase("H")) {
                     //INSERT DATA { <lotTypeIRI> rdf:type ontocarpark:HeavyVehicles }
                     triplePattern = iri(lotTypeIRI).isA(HeavyVehicles);
-                    insertQuery = Queries.INSERT_DATA(triplePattern);
-                    insertQuery.prefix(PREFIX_ONTOCARPARK);
+                    triplePattern2 = iri(iri).has(label, "Heavy Vehicles");
+                    insertQuery = Queries.INSERT_DATA(triplePattern, triplePattern2);
+                    insertQuery.prefix(PREFIX_ONTOCARPARK, PREFIX_RDFS);
                     kbClient.executeUpdate(insertQuery.getQueryString());
                 } else {
                     //INSERT DATA { <lotTypeIRI> rdf:type ontocarpark:Motorcycles }
                     triplePattern = iri(lotTypeIRI).isA(Motorcycles);
-                    insertQuery = Queries.INSERT_DATA(triplePattern);
-                    insertQuery.prefix(PREFIX_ONTOCARPARK);
+                    triplePattern2 = iri(iri).has(label, "Motorcycles");
+                    insertQuery = Queries.INSERT_DATA(triplePattern, triplePattern2);
+                    insertQuery.prefix(PREFIX_ONTOCARPARK, PREFIX_RDFS);
                     kbClient.executeUpdate(insertQuery.getQueryString());
                 }
                 //TriplePattern to link LotType IRI to data IRI

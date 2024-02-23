@@ -43,4 +43,6 @@ class CarparkAgentTest {
         JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
         assertEquals("Agent is ready to receive requests.", response.getString("Result"));
     }
+
+    // test for retrieve and create routes is not necessary as the functions implemented in these two routes have been tested in other unit tests
 }

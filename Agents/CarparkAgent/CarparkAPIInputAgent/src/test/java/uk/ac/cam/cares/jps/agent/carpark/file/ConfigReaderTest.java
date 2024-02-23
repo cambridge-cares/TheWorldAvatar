@@ -23,10 +23,8 @@ class ConfigReaderTest {
     private static final String API_PRICING_ENDPOINT_KEY = "carpark.api.pricing.endpoint";
     private static final String MAPPING_FOLDER_KEY = "carpark.mapping.folder";
     private static final String BUILDING_IDENTIFICATION_AGENT_ENDPOINT_KEY = "building.identification.agent.endpoint";
-    private static final String BUILDING_PREFIX_KEY = "building.prefix";
     private static final String MAPPING_FOLDER_ENVIRONMENT_VAR = "CARPARK_AGENT_MAPPINGS";
     private static final String BUILDING_IDENTIFICATION_AGENT_ENDPOINT = "http://testing";
-    private static final String BUILDING_PREFIX = "http://testing-prefix/";
     private static final String SAMPLE_RDB_DB = "jdbc:postgresql://host.docker.internal:5432/carpark";
     private static final String SAMPLE_RDB_USER = "postgres";
     private static final String SAMPLE_RDB_PASS = "postgis";
@@ -230,7 +228,7 @@ class ConfigReaderTest {
 
     @Test
     void testRetrieveKeyToIriMappings_MissingInputs() throws IOException {
-        File config = genSampleAgentProperties("", BUILDING_IDENTIFICATION_AGENT_ENDPOINT, BUILDING_PREFIX);
+        File config = genSampleAgentProperties("", BUILDING_IDENTIFICATION_AGENT_ENDPOINT);
         try {
             // Execute method and ensure right error is thrown
             IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class, () -> ConfigReader.retrieveKeyToIriMappings(config.getAbsolutePath(), TIMESERIES_IRI_PREFIX));
@@ -264,11 +262,11 @@ class ConfigReaderTest {
 
     @Test
     void testBuildingMatchingConfig_MissingInputs() throws IOException {
-        File config = genSampleAgentProperties(MAPPING_FOLDER_ENVIRONMENT_VAR, BUILDING_IDENTIFICATION_AGENT_ENDPOINT, "");
+        File config = genSampleAgentProperties(MAPPING_FOLDER_ENVIRONMENT_VAR, "");
         try {
             // Execute method and ensure right error is thrown
             IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class, () -> ConfigReader.retrieveBuildingMatchingConfig(config.getAbsolutePath()));
-            assertEquals(String.format("Property %s cannot be empty in the file %s", BUILDING_PREFIX_KEY, config.getAbsolutePath()), thrownError.getMessage());
+            assertEquals(String.format("Property %s cannot be empty in the file %s", BUILDING_IDENTIFICATION_AGENT_ENDPOINT_KEY, config.getAbsolutePath()), thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -277,13 +275,12 @@ class ConfigReaderTest {
 
     @Test
     void testBuildingMatchingConfig_Success() throws IOException {
-        File config = genSampleAgentProperties(MAPPING_FOLDER_ENVIRONMENT_VAR, BUILDING_IDENTIFICATION_AGENT_ENDPOINT, BUILDING_PREFIX);
+        File config = genSampleAgentProperties(MAPPING_FOLDER_ENVIRONMENT_VAR, BUILDING_IDENTIFICATION_AGENT_ENDPOINT);
         try {
             // Execute method
             Queue<String> result = ConfigReader.retrieveBuildingMatchingConfig(config.getAbsolutePath());
             // Verify results are expected
             assertEquals(BUILDING_IDENTIFICATION_AGENT_ENDPOINT, result.poll());
-            assertEquals(BUILDING_PREFIX, result.poll());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -328,13 +325,12 @@ class ConfigReaderTest {
         return file;
     }
 
-    public static File genSampleAgentProperties(String mappingFolderVal, String buildingIdentificationAgentEndpoint, String buildingPrefix) throws IOException {
+    public static File genSampleAgentProperties(String mappingFolderVal, String buildingIdentificationAgentEndpoint) throws IOException {
         File agentPropertiesFile = new File(System.getProperty("user.dir") + "/config/agent.properties");
         createFileAndDirectoryIfUnavailable(agentPropertiesFile);
         PrintWriter writer = new PrintWriter(new FileWriter(agentPropertiesFile, true));
         writer.println(MAPPING_FOLDER_KEY + "=" + mappingFolderVal);
         writer.println(BUILDING_IDENTIFICATION_AGENT_ENDPOINT_KEY + "=" + buildingIdentificationAgentEndpoint);
-        writer.println(BUILDING_PREFIX_KEY + "=" + buildingPrefix);
         writer.close();
         return agentPropertiesFile;
     }

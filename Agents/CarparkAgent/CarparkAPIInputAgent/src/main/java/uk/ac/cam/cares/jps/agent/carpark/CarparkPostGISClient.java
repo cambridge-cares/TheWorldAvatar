@@ -70,23 +70,6 @@ public class CarparkPostGISClient extends ContainerClient {
 	public boolean checkCarparkExists(String carparkIRI, Connection conn) {
 		String condition = String.format("carpark_iri = '%s'", carparkIRI);
             return getContext(conn).select(DSL.count()).from(CarparkAgent.LAYERNAME).where(condition).fetchOne(0, int.class) > 0;
-		//String sql = "SELECT COUNT(carpark_iri) FROM " + CarparkAgent.LAYERNAME + " WHERE carpark_iri = " + carparkIRI ;
-		//String sql = String.format("select COUNT(carpark_iri) from %s where carpark_iri = %s", CarparkAgent.LAYERNAME, carparkIRI);
-		//try (Statement stmt = conn.createStatement()) {
-		//	ResultSet result = stmt.executeQuery(sql);
-		//	boolean carparkExists = false;
-		//	while (result.next()) {
-		//		LOGGER.info("The number of count is " + result.getInt("count"));
-		//		if(result.getInt("count") > 0) {
-		//			carparkExists = true;
-		//			break;
-		//		}
-		//	}
-		//	return carparkExists;
-		//} catch (SQLException e) {
-		//	LOGGER.error(e.getMessage());
-		//	return true; // to stop the code from proceeding
-		//}
 	}
 	
 	DSLContext getContext(Connection conn) {
