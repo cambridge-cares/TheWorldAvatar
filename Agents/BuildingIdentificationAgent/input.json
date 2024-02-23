@@ -1,0 +1,28 @@
+{
+    "maxDistance": "100.0",
+    "coordinates": [
+        [
+            103.67455581177452,
+            1.2711156279472327
+        ],
+        [
+            103.68455581177452,
+            1.2611156279472327
+        ]
+    ],
+    "srid": "4326",
+    "table": "points",
+    "column": "geometryProperty",
+    "overlapFraction": "0.60",
+    "oneToMany": "false",
+    "newTable": "matched_buildings",
+    "filterColumns": [
+        "LU_DESC"
+    ],
+    "excludedValues": [
+        [
+            "ROAD",
+            "PARK"
+        ]
+    ]
+}
