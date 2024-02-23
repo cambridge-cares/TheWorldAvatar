@@ -3,21 +3,17 @@ import React from "react";
 import SVG from "react-inlinesvg";
 import { Icon } from "@mui/material";
 import { useSelector } from "react-redux";
-
 import { getLatLng } from "../../state/floating-panel-click-slice";
+import { selectSelectedFeature } from "../../state/map-feature-slice";
 
-/**
- * Displays a static dummy info component
- */
 export default function InfoTree() {
-  // Use useSelector to access the latLng state from the Redux store
   const latLng = useSelector(getLatLng);
+  const selectedFeature = useSelector(selectSelectedFeature); // Use useSelector here
 
   return (
     <div className={styles.infoPanelContainer}>
       <h2>Information</h2>
 
-      {/* Display latitude and longitude if available */}
       {latLng && (
         <div className={styles.infoSection}>
           <h3>Clicked Location</h3>
@@ -26,13 +22,14 @@ export default function InfoTree() {
         </div>
       )}
 
-      <div className={styles.infoSection}>
-        <h3>About this Visualization</h3>
-        <p>
-          This is a placeholder for general information about your map
-          visualization. Describe its purpose, data sources, or key concepts.
-        </p>
-      </div>
+      {selectedFeature && ( // Ensure selectedFeature is not null or undefined
+        <div className={styles.infoSection}>
+          <h3>Feature Information</h3>
+          <p>Name: {selectedFeature.name}</p> {/* Correctly display the name */}
+          <p>Description: {selectedFeature.description}</p>{" "}
+          {/* Display the description */}
+        </div>
+      )}
 
       <div className={styles.infoSection}>
         <h3>How to Use</h3>
