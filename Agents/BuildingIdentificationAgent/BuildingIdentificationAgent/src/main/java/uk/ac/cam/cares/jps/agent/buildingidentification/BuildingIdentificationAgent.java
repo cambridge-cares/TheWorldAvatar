@@ -10,6 +10,10 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.exception.DataAccessException;
+import org.jooq.impl.DSL;
 
 import java.sql.*;
 import java.util.*;
@@ -66,6 +70,9 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
             rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
             int dbSrid = getDbSrid();
+
+            // Create table containing buildings footprints data if it does not exist.
+            getBuildingFootprints();
 
             // Parse optional parameters
 
@@ -212,6 +219,27 @@ public class BuildingIdentificationAgent extends JPSAgent {
             LOGGER.error(e.getMessage());
         }
         return dbSrid;
+    }
+
+    void getBuildingFootprints() {
+        try (Connection conn = rdbStoreClient.getConnection();
+                Statement stmt = conn.createStatement();) {
+            if (!checkTableExists("building_footprints", conn)) {
+                String sqlString = " drop table if exists building_footprints; " +
+                        " create table building_footprints AS ( " +
+                        " SELECT b.id AS ogc_fid, cga.strval AS uuid, ST_Collect(sg.geometry) as footprint_geometry, " +
+                        " MAX(b.measured_height) AS height " +
+                        " FROM citydb.building b " +
+                        " INNER JOIN citydb.cityobject_genericattrib cga ON b.id = cga.cityobject_id " +
+                        " INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.parent_id " +
+                        "  WHERE cga.attrname = 'uuid' AND sg.geometry IS NOT NULL " +
+                        "  GROUP BY b.id, cga.strval ) ; " +
+                        "  CREATE INDEX building_footprint_index ON building_footprints USING gist (footprint_geometry) ; ";
+                stmt.executeUpdate(sqlString);
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
     }
 
     private String getGeometryType(String tableName, String columnName) {
@@ -453,6 +481,21 @@ public class BuildingIdentificationAgent extends JPSAgent {
         }
 
         return numberMatched;
+    }
+
+    boolean checkTableExists(String table, Connection conn) {
+        try {
+            String condition = String.format("table_name = '%s'", table);
+            return getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0,
+                    int.class) == 1;
+        } catch (DataAccessException e) {
+            LOGGER.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    DSLContext getContext(Connection conn) {
+        return DSL.using(conn, SQLDialect.POSTGRES);
     }
 
     @Deprecated
