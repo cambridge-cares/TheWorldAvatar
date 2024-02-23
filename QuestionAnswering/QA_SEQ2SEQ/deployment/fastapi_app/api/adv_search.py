@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException
 import logging
 import os
+import time
+
 from api.plot import SparqlService
-from pydantic import BaseModel, create_model
+from api.sparql import SparqlResponse, UnexpectedDomainError, QueryBadFormed
+from pydantic import create_model
+
 from importlib.resources import files
 import json
 
@@ -21,29 +25,33 @@ for group in SEARCH_FIELDS:
 SearchModel = create_model('SearchRequest', **fields)
 
 class SearchInput(SearchModel):
+    domain : str = None
     print('class created')
-    
-class SearchResponse(BaseModel):
-    data: dict
-    latency: float
 
 @router.post("")
-def adv_search(search_form:SearchInput):
+def adv_search(search_form:SearchInput, domain):
     logger.info(
         "Received request to search KG with the following request body"
     )
     logger.info(search_form)
-
-    pathname_prefix='ontozeolite'    
+    
     KG_URL_CHEMISTRY = os.getenv("KG_URL_CHEMISTRY")
-    sparql_service = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/{pathname_prefix}/sparql")
+    sparql_service = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/{domain}/sparql")
 
-    query = zeolite_adv_search_query(search_form)
+    logger.info("Sending query to KG")  
+    start = time.time()
+    try:
+        query = zeolite_adv_search_query(search_form)
+        end = time.time()
+        logger.info("Results from KG received")
+        data = sparql_service.execute_query(query=query)
 
-    results = sparql_service.execute_query(query=query)
-
-    return SearchResponse(data=results, latency=3.2)
-
+        return SparqlResponse(data=data, latency=end - start)
+      
+    except (UnexpectedDomainError, QueryBadFormed) as e:
+        logger.error(e)
+        raise HTTPException(status_code=400, detail=str(e))
+    
 def zeolite_adv_search_query(params):
 
     base_query = """
@@ -81,11 +89,11 @@ def zeolite_adv_search_query(params):
 
             base_query += f"""
             ?spectrum ocr:hasCharacteristicPeak ?peak{i}.
-            ?peak{i} ocr:hasTwoThetaPosition ?2t{i} ;
-            ocr:hasRelativeIntensity ?i{i} .
+            ?peak{i} ocr:hasTwoThetaPosition ?2thetaposition{i} ;
+            ocr:hasRelativeIntensity ?intensity{i} .
             """
-            filters.append(f"(?2t{i} >= {peakmin} && ?2t{i} <= {peakmax} && ?i{i} > {peak_int})")
-            select_statement += f" ?2t{i} ?i{i}"
+            filters.append(f"(?2thetaposition{i} >= {peakmin} && ?2thetaposition{i} <= {peakmax} && ?intensity{i} > {peak_int})")
+            select_statement += f" ?2thetaposition{i} ?intensity{i}"
 
     # Unit cell parameters
     for param in ['A', 'B', 'C', 'ALPHA', 'BETA', 'GAMMA']:

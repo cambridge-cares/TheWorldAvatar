@@ -553,14 +553,11 @@ async function AdvSearch(domain) {
     try {
         
         const form = document.getElementById('search-form-' + domain); // Adjust selector as needed
-        console.log(domain)
         const formData = new FormData(form);
         const serializedData = JSON.stringify(Object.fromEntries(formData));
         document.getElementById("result-section").style.display = "block"
-        console.log("B")
-        const kg_results = await fetchSearchResults(serializedData);
+        const kg_results = await fetchSearchResults(serializedData, domain);
         kgResponseContainer.render(kg_results["data"])
-        console.log("C")
 
         inferenceMetadataCard.displayKgExecMetadata({ latency: kg_results["latency"] })
     } catch (error) {
@@ -575,11 +572,11 @@ async function AdvSearch(domain) {
     }
 }
 
+async function fetchSearchResults(serializedData, domain) {
+    const url = new URL("./adv_search", window.location.href);
+    url.searchParams.append("domain", domain); // Append domain as a query parameter
 
-
-// Adjust fetchSearchResults to expect a stringified JSON directly
-async function fetchSearchResults(serializedData) {
-    return fetch("./adv_search", {
+    return fetch(url, {
         method: "POST",
         headers: {
             "Accept": "application/json",
@@ -591,8 +588,10 @@ async function fetchSearchResults(serializedData) {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        const data = response.json();
-        console.log(data)
-        return data
+        return response.json();
     })
+    .then(data => {
+        console.log(data);
+        return data;
+    });
 }
