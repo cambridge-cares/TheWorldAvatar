@@ -3,6 +3,7 @@ from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 from api.plot import SparqlService
 import numpy as np
+import os
 
 def create_dash_app(pathname_prefix, dropdown_options):
     dash_app = Dash(__name__, requests_pathname_prefix='/dash_' + pathname_prefix + '/')
@@ -43,8 +44,10 @@ def create_dash_app(pathname_prefix, dropdown_options):
     
     # Conditionally add the searchable dropdown if 'ontospecies' is in pathname_prefix
     if 'ontospecies' in pathname_prefix:
-        sparql_service = SparqlService(endpoint_url=f"http://178.128.105.213:3838/blazegraph-dev/ui/namespace/{pathname_prefix}/sparql")
+        KG_URL_CHEMISTRY = os.getenv("KG_URL_CHEMISTRY")
+        sparql_service = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/{pathname_prefix}/sparql")
         results = sparql_service.get_chemical_class_list()
+        results=results["results"]["bindings"]
         suggestions = [
             {"label": item['label']['value'], "value": item['label']['value']}
             for item in results
@@ -53,7 +56,7 @@ def create_dash_app(pathname_prefix, dropdown_options):
             html.Label('Chemical Class:'),
             dcc.Dropdown(
                 id='my_searchable_dropdown',
-                options=suggestions,  # Assuming suggestions is defined
+                options=suggestions,  
                 searchable=True,
                 placeholder="Type to search...",
                 value="alkene"
@@ -82,8 +85,10 @@ def create_dash_app(pathname_prefix, dropdown_options):
         if 'ontospecies' not in pathname_prefix:
             chemical_class = None
 
-        sparql_service = SparqlService(endpoint_url=f"http://178.128.105.213:3838/blazegraph-dev/ui/namespace/{pathname_prefix}/sparql")
+        KG_URL_CHEMISTRY = os.getenv("KG_URL_CHEMISTRY")
+        sparql_service = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/{pathname_prefix}/sparql")
         results = sparql_service.plot(x_axis_value, y_axis_value, color_variable, chemical_class)
+        results=results["results"]["bindings"]
 
         x_values, y_values, labels, colors = [], [], [], []
         if color_variable:

@@ -4,7 +4,7 @@ Constants
 ------------------------------
 */
 
-TWA_ABOX_IRI_PREFIXES = ["http://www.theworldavatar.com/kb/", "https://www.theworldavatar.com/kg/"]
+TWA_ABOX_IRI_PREFIXES = ["http://www.theworldavatar.com/kb/", "https://www.theworldavatar.com/kg/", "http://www.theworldavatar.com/kg/"]
 
 /* 
 ------------------------------
@@ -532,4 +532,67 @@ async function askQuestion() {
         globalState.set("isProcessing", false);
         chatbotResponseCard.hideChatbotSpinner()
     }
+}
+
+async function AdvSearch(domain) {
+    console.log("A")
+    if (globalState.get("isProcessing")) { // No concurrent questions
+        return;
+    }
+
+    document.getElementById("result-section").style.display = "none"
+
+    globalState.set("isProcessing", true);
+
+    errorContainer.reset()
+    sparqlContainer.reset()
+    kgResponseContainer.reset()
+    chatbotResponseCard.reset()
+    inferenceMetadataCard.reset()
+
+    try {
+        
+        const form = document.getElementById('search-form-' + domain); // Adjust selector as needed
+        console.log(domain)
+        const formData = new FormData(form);
+        const serializedData = JSON.stringify(Object.fromEntries(formData));
+        document.getElementById("result-section").style.display = "block"
+        console.log("B")
+        const kg_results = await fetchSearchResults(serializedData);
+        kgResponseContainer.render(kg_results["data"])
+        console.log("C")
+
+        inferenceMetadataCard.displayKgExecMetadata({ latency: kg_results["latency"] })
+    } catch (error) {
+        console.log(error)
+        if ((error instanceof HttpError) && (error.statusCode == 500)) {
+            globalState.set("err", "An internal server error is encountered. Please try again.")
+        } else {
+            globalState.set("err", "An unexpected error is encountered. Please report it with the following error message<br/>" + error)
+        }
+    } finally {
+        globalState.set("isProcessing", false);
+    }
+}
+
+
+
+// Adjust fetchSearchResults to expect a stringified JSON directly
+async function fetchSearchResults(serializedData) {
+    return fetch("./adv_search", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: serializedData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = response.json();
+        console.log(data)
+        return data
+    })
 }

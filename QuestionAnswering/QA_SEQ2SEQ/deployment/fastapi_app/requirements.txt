@@ -10,3 +10,4 @@ Levenshtein
 jinja2
 sentencepiece
 dash
+python-multipart

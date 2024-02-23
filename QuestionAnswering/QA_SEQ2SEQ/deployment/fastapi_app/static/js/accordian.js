@@ -22,3 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+//any new task, disappear results

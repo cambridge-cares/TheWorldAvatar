@@ -1,4 +1,3 @@
-# services/sparql_service.py
 from SPARQLWrapper import SPARQLWrapper, JSON
 from typing import List, Dict, Any
 import os
@@ -11,21 +10,19 @@ class SparqlService:
         endpoint = SPARQLWrapper(self.endpoint_url)
         BG_USER = os.getenv("BG_USER")
         BG_PASSWORD = os.getenv("BG_PASSWORD")
-        endpoint.setCredentials("bg_user", "admin")  # Adjust credentials as needed
+        endpoint.setCredentials(BG_USER, BG_PASSWORD) 
         endpoint.setQuery(query)
         endpoint.setReturnFormat(JSON)
         results = endpoint.query().convert()
-        return results["results"]["bindings"]
+        return results
 
     def plot(self, x_axis: str, y_axis: str, c_axis: str = None, chemical_class: str = None) -> List[Dict[str, Any]]:
 
         if 'ontozeolite' in self.endpoint_url:
-        # Define the base of your SPARQL query
             query=query_zeolite(x_axis, y_axis, c_axis)
         elif 'ontospecies' in self.endpoint_url:
             query=query_species(x_axis, y_axis, c_axis, chemical_class)
 
-        # Execute the query and return the results
         return self.execute_query(query)
     
     def get_chemical_class_list(self):
@@ -176,19 +173,20 @@ def query_species(x_axis, y_axis, c_axis, chemical_class):
 
 	SELECT DISTINCT ?id {select_statement}
 	WHERE {{
-	   #?speciesIRI rdf:type os:Species ; rdfs:label ?id .
-       ?id rdf:type os:Species .
+       ?speciesIRI rdf:type os:Species .
+       ?speciesIRI os:hasIUPACName ?iupacname .
+       ?iupacname os:value ?id .
        """
     for item in (x for x in [x_axis, y_axis, c_axis] if x is not None):
        query += f"""
-        ?id os:has{item} ?property{item} .
+        ?speciesIRI os:has{item} ?property{item} .
         ?property{item} os:value ?{item} .
         OPTIONAL{{ ?property{item} os:hasProvenance ?provenance{item} .
 	            ?provenance{item} rdfs:label ?provenance{item}label .
                 FILTER(?provenance{item}label = "PubChem agent")}}
         """
     query += f"""
-	   ?id (rdf:|!rdf:)* ?x .
+	   ?speciesIRI (rdf:|!rdf:)* ?x .
 	   ?x ?y ?z .
 	   ?z (rdf:|!rdf:)* ?classIRI .
 	   ?classIRI rdf:type os:ChemicalClass ; rdfs:label "{chemical_class}" .

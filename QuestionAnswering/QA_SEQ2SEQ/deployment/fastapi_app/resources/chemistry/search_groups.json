@@ -1,10 +1,12 @@
 [
   { 
-    "group_label": "Chemical Species",
-    "sections": []
-  },
+    "group_label": "Species",
+    "domain": "ontospecies",
+    "sections": [ ]
+    },
   { 
   "group_label": "Zeolites",
+  "domain": "ontozeolite",
   "sections": [
     {
       "section": "XRD Peaks Positions",
@@ -38,12 +40,12 @@
           {"label": "c Max (\u212B):", "entry": "ucCmax"}
         ],
         [
-          {"label": "\u03B1 Min (\u00B0):", "entry": "ucALmin"},
-          {"label": "\u03B1 Max (\u00B0):", "entry": "ucALmax"},
-          {"label": "\u03B2 Min (\u00B0):", "entry": "ucBEmin"},
-          {"label": "\u03B2 Max (\u00B0):", "entry": "ucBEmax"},
-          {"label": "\u03B3 Min (\u00B0):", "entry": "ucGAmin"},
-          {"label": "\u03B3 Max (\u00B0):", "entry": "ucGAmax"}
+          {"label": "\u03B1 Min (\u00B0):", "entry": "ucALPHAmin"},
+          {"label": "\u03B1 Max (\u00B0):", "entry": "ucALPHAmax"},
+          {"label": "\u03B2 Min (\u00B0):", "entry": "ucBETAmin"},
+          {"label": "\u03B2 Max (\u00B0):", "entry": "ucBETAmax"},
+          {"label": "\u03B3 Min (\u00B0):", "entry": "ucGAMMAmin"},
+          {"label": "\u03B3 Max (\u00B0):", "entry": "ucGAMMAmax"}
         ]
       ]
     },

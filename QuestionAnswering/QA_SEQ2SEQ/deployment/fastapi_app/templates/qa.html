@@ -126,7 +126,7 @@
         {% for search_group in search_groups %}
         <button type="button" class="accordion">{{ search_group["group_label"] }}</button>
         <div class="accordion-panel">
-            <form method="POST" class="search-form">
+            <form id="search-form-{{ search_group.domain }}" class="search-form" onsubmit="return False">
                 <!-- Loop through each search group -->
                 {% for search_section in search_group["sections"] %}
                 <fieldset class="form-section">
@@ -145,8 +145,9 @@
                     {% endfor %}
                 </fieldset>
                 {% endfor %}
-                <input type="submit" value="Find" class="full-width-button">
+                
             </form>
+            <button onclick='AdvSearch("{{ search_group.domain }}")'>Send</button>
         </div>
         {% endfor %}
     </div>
