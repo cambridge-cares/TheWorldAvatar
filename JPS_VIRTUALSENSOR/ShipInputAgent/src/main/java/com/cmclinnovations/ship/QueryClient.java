@@ -55,6 +55,7 @@ public class QueryClient {
     // classes
     // as Iri classes for sparql updates sent directly from here
     private static final Iri SHIP = P_DISP.iri("Ship");
+    private static final Iri SIMULATION_TIME = P_DISP.iri("SimulationTime");
     private static final String SPEED_STRING = PREFIX + "Speed";
     private static final Iri SPEED = iri(SPEED_STRING);
     private static final String COURSE_STRING = PREFIX + "CourseOverGround";
@@ -456,7 +457,7 @@ public class QueryClient {
         modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(EnvConfig.EMISSIONS_AGENT_URL))
                 .andHas(hasInput, inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
-        modify.insert(partIri.has(hasType, SHIP)).prefix(P_DISP);
+        modify.insert(partIri.has(hasType, SHIP).andHas(hasType, SIMULATION_TIME)).prefix(P_DISP);
 
         storeClient.executeUpdate(modify.getQueryString());
     }

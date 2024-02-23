@@ -49,6 +49,7 @@ public class ShipInputAgent extends HttpServlet {
                 throw new RuntimeException(e);
             }
             client = new AisStreamWebsocketClient(uri, queryClient);
+            client.setReconnect(true);
             client.connect();
         }
     }
@@ -61,11 +62,6 @@ public class ShipInputAgent extends HttpServlet {
                 uri = new URI(URI_STRING);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
-            }
-
-            if (client != null) {
-                LOGGER.info("There is probably an ongoing live updates going on, ignoring request");
-                return;
             }
 
             client = new AisStreamWebsocketClient(uri, queryClient);
@@ -97,7 +93,6 @@ public class ShipInputAgent extends HttpServlet {
             if (client != null) {
                 client.setReconnect(false);
                 client.close();
-                client = null;
             } else {
                 LOGGER.info("No ongoing live updates to stop");
             }

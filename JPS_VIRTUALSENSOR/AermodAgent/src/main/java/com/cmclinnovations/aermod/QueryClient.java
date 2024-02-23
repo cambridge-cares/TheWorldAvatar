@@ -10,6 +10,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
@@ -1573,5 +1574,26 @@ public class QueryClient {
 
             iriToSpsMap.get(spsIri).setLabel(labelString);
         }
+    }
+
+    void attachSimTimeToShips(List<Ship> ships, String simulationTimeIri) {
+        ModifyQuery modify = Queries.MODIFY();
+
+        SelectQuery query = Queries.SELECT();
+
+        Variable derivation = query.var();
+        Variable pointSource = query.var();
+        Variable simTimeVar = query.var();
+        Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
+        ValuesPattern<Iri> vp = new ValuesPattern<>(pointSource,
+                ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
+
+        modify.where(vp, derivation.has(isDerivedFrom, pointSource),
+                GraphPatterns.and(derivation.has(isDerivedFrom, simTimeVar), simTimeVar.isA(iri(SIMULATION_TIME)))
+                        .optional())
+                .delete(derivation.has(isDerivedFrom, simTimeVar))
+                .insert(derivation.has(isDerivedFrom, iri(simulationTimeIri)));
+
+        storeClient.executeUpdate(modify.getQueryString());
     }
 }

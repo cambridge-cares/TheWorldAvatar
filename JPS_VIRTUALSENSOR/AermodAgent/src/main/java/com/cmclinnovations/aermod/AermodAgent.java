@@ -126,6 +126,9 @@ public class AermodAgent extends DerivationAgent {
         long timeBuffer = 1800; // 30 minutes
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
 
+        // update ensure ship derivations use the right simulation time
+        queryClient.attachSimTimeToShips(ships, simulationTimeIri);
+
         List<PointSource> allSources = new ArrayList<>();
         allSources.addAll(staticPointSources);
         allSources.addAll(ships);

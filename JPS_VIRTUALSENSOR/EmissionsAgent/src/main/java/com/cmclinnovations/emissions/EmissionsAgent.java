@@ -2,6 +2,8 @@ package com.cmclinnovations.emissions;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -45,8 +47,18 @@ public class EmissionsAgent extends DerivationAgent {
 
     @Override
     public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-        String shipIri = derivationInputs.getAllIris().get(0);
-        Ship ship = queryClient.getShip(shipIri);
+        Map<String, List<String>> inputsMap = derivationInputs.getInputs();
+        String shipIri = inputsMap.get(QueryClient.SHIP).get(0);
+        Long simTime = null;
+        if (inputsMap.containsKey(QueryClient.SIMULATION_TIME)) {
+            String simTimeIri = inputsMap.get(QueryClient.SIMULATION_TIME).get(0);
+            simTime = queryClient.getSimTimeValue(simTimeIri);
+        }
+
+        Ship ship = queryClient.getShip(shipIri, simTime);
+        if (ship == null) {
+            return;
+        }
 
         // convert ship speed to rpm
         double speedRpm = ship.getSpeed() * 2500 / 58.1;
