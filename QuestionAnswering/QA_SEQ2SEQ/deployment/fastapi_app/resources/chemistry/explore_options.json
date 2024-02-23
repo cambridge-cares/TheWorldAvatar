@@ -26,9 +26,9 @@
         "dropdown_options": [
             {"label": "Topological Density", "value": "?topo_dens"},
             {"label": "Topological Density 10", "value": "?topo_dens10"},
-            {"label": "Framework Density (T/1000 A\u00B3)", "value": "?fr_dens"},
+            {"label": "Framework Density (T/1000 \u212B\u00B3)", "value": "?fr_dens"},
             {"label": "Density (g/cm\u00B3)", "value": "?dens"},
-            {"label": "Occupiable Volume (A\u00B3)", "value": "?occ_vol_cell"},
+            {"label": "Occupiable Volume (\u212B\u00B3)", "value": "?occ_vol_cell"},
             {"label": "Occupiable Volume (%)", "value": "?occ_vol"},
             {"label": "Accessible Volume (\u212B\u00B3)", "value": "?acc_vol_cell"},
             {"label": "Accessible Volume (%)", "value": "?acc_vol"},

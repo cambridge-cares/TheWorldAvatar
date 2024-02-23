@@ -6,7 +6,7 @@
     },
   { 
   "group_label": "Zeolites",
-  "domain": "ontozeolite",
+  "domain": "ontozeolite3",
   "sections": [
     {
       "section": "XRD Peaks Positions",
@@ -53,8 +53,8 @@
       "section": "Properties",
       "input_rows": [
         [
-          {"label": "Framework Density Min (T/1000\u00B3):", "entry": "FWDmin"},
-          {"label": "Framework Density Max (T/1000\u00B3):", "entry": "FWDmax"}
+          {"label": "Framework Density Min (T/1000 \u212B\u00B3):", "entry": "FWDmin"},
+          {"label": "Framework Density Max (T/1000 \u212B\u00B3):", "entry": "FWDmax"}
         ],
         [
           {"label": "Topological Density Min:", "entry": "TPDmin"},
@@ -63,6 +63,17 @@
         [
           {"label": "Density Min (g/cm\u00B3):", "entry": "DENSmin"},
           {"label": "Density Max (g/cm\u00B3):", "entry": "DENSmax"}
+        ]
+      ]
+    },
+    {
+      "section": "Properties",
+      "input_rows": [
+        [
+          {"label": "Composition BU 1:", "entry": "CBU1"},
+          {"label": "Composition BU 2:", "entry": "CBU2"},
+          {"label": "Composition BU 3:", "entry": "CBU3"},
+          {"label": "Secondary BU:", "entry": "SBU"}
         ]
       ]
     }

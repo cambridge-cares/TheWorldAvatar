@@ -41,7 +41,8 @@ def adv_search(search_form:SearchInput, domain):
     logger.info("Sending query to KG")  
     start = time.time()
     try:
-        query = zeolite_adv_search_query(search_form)
+        if 'ontozeolite' in domain: 
+            query = zeolite_adv_search_query(search_form)
         end = time.time()
         logger.info("Results from KG received")
         data = sparql_service.execute_query(query=query)
@@ -67,12 +68,12 @@ def zeolite_adv_search_query(params):
     spectrum_section_added = False
     unitcell_section_added = False
     property_section_added = False
+    cbu_section_added = False
     select_statement = ''
     filters = []
     for i in range(1, 4):  # Assuming up to 3 peaks
         attr_peak_pos = f"peak{i}pos"
         peak_pos = getattr(params, attr_peak_pos)
-        print(peak_pos)
         attr_peak_wid = f"peak{i}wid"
         peak_wid = getattr(params, attr_peak_wid) or 0.5
         attr_peak_int = f"peak{i}int"
@@ -153,6 +154,29 @@ def zeolite_adv_search_query(params):
             elif max_val and not min_val:
                 filters.append(f"?{param} <= {max_val}")   
             select_statement += f" ?{param}"
+
+    for i in range(1, 4):  # Assuming up to 3 peaks
+        attr = f"CBU{i}"
+        cbu = getattr(params, attr)
+        if cbu:
+            if not cbu_section_added:
+                base_query += f"""
+                ?zeo zeo:hasZeoliteTopology ?topo .
+                """
+                spectrum_section_added = True
+
+            base_query += f"""
+            ?topo zeo:hasCompositeBU/(zeo:hasCage|zeo:hasTCage|zeo:hasChain) ?cbu{i} .
+            """
+            filters.append(f"?cbu{i} = \"{cbu}\"")
+
+    sbu = getattr(params, "SBU")
+    if sbu:
+        base_query += f"""
+            ?zeo zeo:hasZeoliteTopology ?topo .
+            ?topo zeo:hasSecondaryBU ?sbu.    
+            """
+        filters.append(f"?sbu = \"{sbu}\"")
 
     if filters:
         base_query += "FILTER (" + " && ".join(filters) + ")\n"

@@ -535,7 +535,6 @@ async function askQuestion() {
 }
 
 async function AdvSearch(domain) {
-    console.log("A")
     if (globalState.get("isProcessing")) { // No concurrent questions
         return;
     }
