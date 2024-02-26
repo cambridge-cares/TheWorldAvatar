@@ -11,7 +11,8 @@
             "aermod-agent",
             "python-service",
             "virtual-sensor-agent",
-            "ship-input-agent"
+            "ship-input-agent",
+            "buildingidentificationagent"
         ],
         "excludes": []
     },

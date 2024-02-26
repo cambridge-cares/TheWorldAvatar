@@ -1,0 +1,35 @@
+{
+    "ServiceSpec": {
+        "Name": "buildingidentificationagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/buildingidentificationagent:2.0.0-snapshot",
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "building_identification_agent": {
+            "url": "http://localhost:8080/buildingidentificationagent/",
+            "externalPath": "/buildingidentificationagent/"
+        }
+    }
+}
