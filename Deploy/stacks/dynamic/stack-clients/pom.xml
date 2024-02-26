@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.24.1-582-dcat-SNAPSHOT</version>
+  <version>1.25.0-582-dcat-SNAPSHOT</version>
 
   <name>Stack Clients</name>
   <url>https://theworldavatar.io</url>
@@ -15,11 +15,10 @@
   <parent>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>jps-parent-pom</artifactId>
-    <version>2.2.2</version>
+    <version>2.3.0</version>
   </parent>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.release>11</maven.compiler.release>
@@ -40,54 +39,41 @@
     </repository>
   </distributionManagement>
 
-  <repositories>
-    <repository>
-      <id>GeoSolutions</id>
-      <url>https://maven.geo-solutions.it/</url>
-    </repository>
-  </repositories>
-
   <dependencies>
 
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>2.14.1</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-client -->
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
-      <version>2.38</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson -->
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-json-jackson</artifactId>
-      <version>2.38</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-multipart -->
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-multipart</artifactId>
-      <version>2.38</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.brsanthu/migbase64 -->
     <dependency>
       <groupId>com.brsanthu</groupId>
       <artifactId>migbase64</artifactId>
-      <version>2.2</version>
     </dependency>
 
     <dependency>
       <groupId>io.swagger</groupId>
       <artifactId>swagger-annotations</artifactId>
-      <version>1.6.9</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
@@ -144,20 +130,18 @@
     <dependency>
       <groupId>uk.ac.cam.cares.jps</groupId>
       <artifactId>jps-base-lib</artifactId>
-      <version>1.41.2</version>
+      <version>1.43.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
-      <version>2.2.8</version>
     </dependency>
 
     <dependency>
       <groupId>com.blazegraph</groupId>
       <artifactId>bigdata-client</artifactId>
-      <version>2.1.4</version>
     </dependency>
 
   </dependencies>
@@ -197,8 +181,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <includeScope>
-                runtime</includeScope>
+              <includeScope>runtime</includeScope>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
               <useRepositoryLayout>false</useRepositoryLayout>
             </configuration>
@@ -209,7 +192,6 @@
       <plugin>
         <groupId>io.swagger</groupId>
         <artifactId>swagger-codegen-maven-plugin</artifactId>
-        <version>2.4.37</version>
         <executions>
           <execution>
             <?m2e execute onConfiguration?>
@@ -245,7 +227,6 @@
       <plugin>
         <groupId>io.swagger.codegen.v3</groupId>
         <artifactId>swagger-codegen-maven-plugin</artifactId>
-        <version>3.0.51</version>
         <executions>
           <execution>
             <?m2e execute onConfiguration?>
@@ -281,46 +262,4 @@
 
   </build>
 
-
-  <dependencyManagement>
-
-
-    <dependencies>
-
-      <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>2.10.1</version>
-      </dependency>
-
-
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-compress</artifactId>
-        <version>1.24.0</version>
-      </dependency>
-
-
-      <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-      <dependency>
-        <groupId>org.postgresql</groupId>
-        <artifactId>postgresql</artifactId>
-        <version>42.7.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apiguardian</groupId>
-        <artifactId>apiguardian-api</artifactId>
-        <version>1.1.2</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-client</artifactId>
-        <version>9.4.53.v20231009</version>
-      </dependency>
-
-    </dependencies>
-
-  </dependencyManagement>
 </project>
