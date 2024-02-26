@@ -7,6 +7,7 @@
     "landplot",
     "population",
     "routing",
-    "tree"
+    "tree",
+    tbox"
   ]
 }
