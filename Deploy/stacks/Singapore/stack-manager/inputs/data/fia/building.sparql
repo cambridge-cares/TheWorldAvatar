@@ -22,70 +22,58 @@ WHERE {
     BIND ("Name of Chemical Plant Owner" AS ?Property)
     SERVICE [ONTOP] {
       [IRI] ontobim:hasFacility ?chemplant.
-      ?chemplant rdf:type ontochemplant:ChemicalPlant;
+      ?owner ontocompany:isOwnerOf ?chemplant;
                  rdfs:label ?Value.
     }
   } UNION {
     BIND ("Business Activity of Chemical Plant Owner" AS ?Property)
-    ?company ontocompany:isOwnerOf ?chemplant;
-             ontocompany:hasBusinessActivity ?Value.
-    ?chemplant rdf:type ontochemplant:ChemicalPlant.
-    SERVICE [ONTOP] {
+        SERVICE [ONTOP] {
       [IRI] ontobim:hasFacility ?chemplant.
+	  ?company ontocompany:isOwnerOf ?chemplant;
+             ontocompany:hasBusinessActivity ?Value.
     }
   } UNION {
     BIND ("SSIC Code for Chemical Plant Owner" AS ?Property)
-    ?company ontocompany:isOwnerOf ?chemplant;
-             ontocompany:hasSSICCode ?Value.
     ?chemplant rdf:type ontochemplant:ChemicalPlant.
     SERVICE [ONTOP] {
       [IRI] ontobim:hasFacility ?chemplant.
+	  ?company ontocompany:isOwnerOf ?chemplant;
+             ontocompany:hasSSICCode ?Value.
     }
   } UNION {
-    BIND ("Year of Establishment for Chemical Plant Owner" AS ?Property)
-    ?company ontocompany:isOwnerOf ?chemplant;
-             ontocompany:hasYearOfEstablishment ?Value.
-    ?chemplant rdf:type ontochemplant:ChemicalPlant.
+    BIND ("Year of Establishment for Chemical Plant Owner" AS ?Property)    
     SERVICE [ONTOP] {
       [IRI] ontobim:hasFacility ?chemplant.
+	  ?company ontocompany:isOwnerOf ?chemplant;
+             ontocompany:hasYearOfEstablishment ?Value.
     }
   } UNION {
     BIND ("Chemical Plant Heat Emission" AS ?Property)
     BIND ("MW" AS ?Unit)
-    ?chemplant rdf:type ontochemplant:ChemicalPlant;
-               ontocompany:hasGeneratedHeat/om:hasValue/om:hasNumericalValue ?Value.
     SERVICE [ONTOP] {
       [IRI] ontobim:hasFacility ?chemplant.
+	  ?chemplant ontocompany:hasGeneratedHeat/om:hasValue/om:hasNumericalValue ?Value.
     }
   } UNION {
     BIND ("Chemical Plant Design Capacity" AS ?Property)
     BIND ("tons/year" AS ?Unit)
-    ?chemplant rdf:type ontochemplant:ChemicalPlant;
-               ontocompany:hasDesignCapacity/om:hasValue/om:hasNumericalValue ?Value.
     SERVICE [ONTOP] {
       [IRI] ontobim:hasFacility ?chemplant.
+	  ?chemplant ontocompany:hasDesignCapacity/om:hasValue/om:hasNumericalValue ?Value.
     }
   } UNION {
     BIND ("Chemical Plant Energy Intensity" AS ?Property)
     BIND ("MJ" AS ?Unit)
-    ?chemplant rdf:type ontochemplant:ChemicalPlant;
-               ontocompany:hasSpecificEnergyConsumption/om:hasValue/om:hasNumericalValue ?Value.
     SERVICE [ONTOP] {
       [IRI] ontobim:hasFacility ?chemplant.
+	  ?chemplant ontocompany:hasSpecificEnergyConsumption/om:hasValue/om:hasNumericalValue ?Value.
     }
   } UNION {
     BIND ("Chemical Plant Thermal Efficiency" AS ?Property)
-    ?chemplant rdf:type ontochemplant:ChemicalPlant;
-               ontocompany:hasThermalEfficiency ?Value.
     SERVICE [ONTOP] {
       [IRI] ontobim:hasFacility ?chemplant.
-    }
-  } UNION {
-    BIND ("Chemical Plant Industry" AS ?Property)
-    ?chemplant rdf:type ontochemplant:ChemicalPlant;
-               ontocompany:belongsToIndustry/rdfs:label ?Value.
-    SERVICE [ONTOP] {
-      [IRI] ontobim:hasFacility ?chemplant.
+	  ?chemplant rdf:type ontochemplant:ChemicalPlant;
+               ontochemplant:hasThermalEfficiency ?Value.
     }
   } UNION {
     BIND ("Car Park Facility" AS ?Property)

@@ -23,7 +23,8 @@ target          :company/{uuid} a ontocompany:Company;
                     ontocompany:belongsToIndustry ontocompany:ChemicalIndustry;
                     ontocompany:hasDesignCapacity :designcapacity/{uuid};
                     ontocompany:hasSpecificEnergyConsumption :energyconsumption/{uuid};
-                    ontocompany:hasGeneratedHeat :generatedheat/{uuid}.
+                    ontocompany:hasGeneratedHeat :generatedheat/{uuid};
+                    ontochemplant:hasThermalEfficiency "{thermal_efficiency}"^^xsd:float.
                 ontocompany:ChemicalIndustry rdfs:label "Chemical Industry"^^xsd:string.
                 :designcapacity/{uuid} om:hasValue :designcapacitymeasure/{uuid}.
                 :designcapacitymeasure/{uuid} om:hasNumericalValue "{production_volume}"^^xsd:float;
@@ -45,7 +46,8 @@ source          SELECT
                     "business_activity",
                     "specific_energy_consumption_mj",
                     "production_volume",
-                    "heat_emissions"
+                    "heat_emissions",
+                    thermal_efficiency
                 FROM
                     "company" 
                 WHERE "infrastructure_type" = 'Chemical Plant'

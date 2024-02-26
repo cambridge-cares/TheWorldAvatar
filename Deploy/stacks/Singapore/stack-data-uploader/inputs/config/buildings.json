@@ -8,7 +8,7 @@
       "name": "mainland",
       "type": "CityDB",
       "subdirectory": "jurongisland",
-      "skip": true,
+      "skip": false,
       "importOptions": {
         "sridIn": "24500"
       },

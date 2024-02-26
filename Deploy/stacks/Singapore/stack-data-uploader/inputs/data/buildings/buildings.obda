@@ -1,5 +1,5 @@
 [PrefixDeclaration]
-:               https://www.theworldavatar.com/kg/Building/
+twa:        https://www.theworldavatar.com/kg/
 bot:            https://w3id.org/bot#
 ontobuiltenv:   https://www.theworldavatar.com/kg/ontobuiltenv/
 opr:            https://www.theworldavatar.com/kg/ontoplanningregulations/
@@ -9,40 +9,20 @@ owl:            http://www.w3.org/2002/07/owl#
 xsd:            http://www.w3.org/2001/XMLSchema#
 skos:           http://www.w3.org/2004/02/skos/core#
 om:             http://www.ontology-of-units-of-measure.org/resource/om-2/
+bldg:		http://www.opengis.net/citygml/building/2.0/
+city:		http://cui.unige.ch/citygml/2.0/
+www:		http://www.w3.org/2001/
 
 [MappingDeclaration] @collection [[
-mappingId       building
-target          :{uuid} a bot:Building ;
-                    ontobuiltenv:hasHeight :height/{uuid}.
-                :height/{uuid} om:hasValue :height/measure/{uuid}.
-                :height/measure/{uuid} om:hasNumericalValue "{building_height}"^^xsd:float;
-                    om:hasUnit :height/unit/{uuid}. 
-                :height/unit/{uuid} skos:notation "m"^^xsd:string.
-source          SELECT
-                    "building"."id" AS "building_id",
-                    COALESCE("measured_height", 100.0) AS "building_height",
-                    uuid_table."uuid",
-                    iri_table."iri",
-                    "geometry"
-                FROM
-                    "citydb"."building"
-                JOIN
-                    "citydb"."surface_geometry"
-                    ON "citydb"."surface_geometry"."root_id" = "citydb"."building"."lod0_footprint_id"
-                JOIN
-                    (
-                        SELECT "strval" AS "uuid", "cityobject_id"
-                        FROM   "citydb"."cityobject_genericattrib"
-                        WHERE  "attrname" = 'uuid'
-                    ) AS uuid_table
-                    ON "citydb"."building"."id" = uuid_table."cityobject_id"
-                JOIN
-                    (
-                        SELECT "urival" AS "iri", "cityobject_id"
-                        FROM   "citydb"."cityobject_genericattrib"
-                        WHERE  "attrname" = 'iri'
-                    ) AS iri_table
-                    ON "citydb"."building"."id" = iri_table."cityobject_id"
-                WHERE
-                    "citydb"."surface_geometry"."geometry" IS NOT NULL  
+mappingId   City Object IRI
+target      twa:{class}/{uuid} obda:isCanonicalIRIOf city:cityobject/{"id"} .
+source      SELECT "objectclass"."classname" AS "class", "strval" AS "uuid", "cityobject"."id" AS "id"
+			FROM "citydb"."cityobject_genericattrib" JOIN "citydb"."cityobject" ON "citydb"."cityobject"."id" = "citydb"."cityobject_genericattrib"."cityobject_id"
+			JOIN "citydb"."objectclass" ON "citydb"."objectclass"."id" = "citydb"."cityobject"."objectclass_id"
+			WHERE "citydb"."cityobject_genericattrib"."attrname"='uuid'
+
+mappingId	Building
+target		city:cityobject/{"id"} a bldg:Building ; bldg:storeysBelowGround {"storeys_below_ground"}^^www:XMLSchema#decimal ; bldg:storeysAboveGround {"storeys_above_ground"}^^www:XMLSchema#decimal ; bldg:function {"function"}^^www:XMLSchema#string ; bldg:usage {"usage"}^^www:XMLSchema#string ; bldg:storeyHeightsAboveGround {"storey_heights_above_ground"}^^www:XMLSchema#decimal ; bldg:yearOfConstruction {"year_of_construction"}^^www:XMLSchema#date ; bldg:yearOfDemolition {"year_of_demolition"}^^www:XMLSchema#date ; bldg:measuredHeight {"measured_height"}^^www:XMLSchema#double ; bldg:storeyHeightsBelowGround {"storey_heights_below_ground"}^^www:XMLSchema#decimal ; bldg:class {"class"}^^www:XMLSchema#string . 
+source		SELECT "building_parent_id", "building_root_id", "class", "function", "id", "measured_height", "measured_height_unit", "storey_heights_above_ground", "storey_heights_below_ground", "storeys_above_ground", "storeys_below_ground", "usage", "year_of_construction", "year_of_demolition"
+			FROM "citydb"."building"
 ]]

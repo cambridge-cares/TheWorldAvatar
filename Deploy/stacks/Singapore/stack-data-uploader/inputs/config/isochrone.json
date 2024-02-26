@@ -9,7 +9,7 @@
     {
       "name": "isochrone_aggregated",
       "type": "Vector",
-      "skip": true,
+      "skip": false,
       "sql": "@/inputs/data/isochrone/results/isochrone_aggregated.sql",
       "geoServerSettings": {
         "virtualTable": {
@@ -28,7 +28,7 @@
     {
       "type": "rdf",
       "subdirectory": "ontoisochrone",
-      "skip": true
+      "skip": false
     }
   ],
   "mappings": [
