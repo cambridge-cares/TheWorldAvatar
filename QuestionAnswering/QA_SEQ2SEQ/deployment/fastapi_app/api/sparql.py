@@ -1,3 +1,5 @@
+from collections import defaultdict
+from dataclasses import fields
 from functools import cache
 import logging
 import os
@@ -8,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 
-from services.kg_execute.kg_client import IKgClient, KgClient
+from services.kg_execute.kg_client import IKgClient, KgClient, KgClientConfig
 from services.kg_execute import KgExecutor, KgExecutor, UnexpectedDomainError
 
 
@@ -26,13 +28,21 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+
 @cache
-def get_domain2endpoint():
-    return {
-        key[len("KG_ENDPOINT_") :].lower(): value
-        for key, value in os.environ.items()
-        if key.startswith("KG_ENDPOINT_")
-    }
+def get_domain2kgconfig():
+    domain2kgconfig = defaultdict(dict)
+    for key, value in os.environ.items():
+        flag = False
+        for field in fields(KgClientConfig):
+            prefix = "KG_{field}_".format(field=field.name.upper())
+            if key.startswith(prefix):
+                flag = True
+                domain = key[len(prefix) :].lower()
+                break
+        if flag:
+            domain2kgconfig[domain][field.name] = value
+    return {domain: KgClientConfig(**kv) for domain, kv in domain2kgconfig.items()}
 
 
 def get_kg_client_factory():
@@ -40,7 +50,7 @@ def get_kg_client_factory():
 
 
 def get_kg_executor(
-    domain2endpoint: Annotated[Dict[str, str], Depends(get_domain2endpoint)],
+    domain2endpoint: Annotated[Dict[str, str], Depends(get_domain2kgconfig)],
     kg_client_factory: Annotated[
         Callable[[str], IKgClient], Depends(get_kg_client_factory)
     ],

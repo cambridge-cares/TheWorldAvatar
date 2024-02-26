@@ -123,8 +123,20 @@ class OZCompact2VerboseConverter:
                     ),
                 ],
             ),
-            OptionalClause([obj, "ocr:hasLatticeSystem", "?LatticeSystem"]),
-            OptionalClause([obj, "ocr:hasSymmetryNumber", "?SymmetryNumber"]),
+            OptionalClause(
+                [
+                    TriplePattern.from_triple(
+                        obj, "ocr:hasLatticeSystem", "?LatticeSystem"
+                    )
+                ]
+            ),
+            OptionalClause(
+                [
+                    TriplePattern.from_triple(
+                        obj, "ocr:hasSymmetryNumber", "?SymmetryNumber"
+                    )
+                ]
+            ),
         ]
         vars = [
             "?a",
@@ -452,8 +464,38 @@ class OZCompact2VerboseConverter:
     def convert(self, sparql_compact: SparqlQuery):
         select_vars_verbose = list(sparql_compact.select_clause.vars)
         patterns_verbose = []
+
+        if "?Framework" in sparql_compact.select_clause.vars and not any(
+            pred == "zeo:hasFrameworkCode"
+            and obj.startswith('"')
+            and obj.startswith('"')
+            for pattern in sparql_compact.where_clause.graph_patterns
+            if isinstance(pattern, TriplePattern)
+            for pred, obj in pattern.tails
+        ):
+            select_vars_verbose.append("?FrameworkCode")
+            patterns_verbose.append(
+                TriplePattern.from_triple(
+                    "?Framework", "zeo:hasFrameworkCode", "?FrameworkCode"
+                )
+            )
+        elif "?Material" in sparql_compact.select_clause.vars and not any(
+            pred == "zeo:hasChemicalFormula"
+            and obj.startswith('"')
+            and obj.startswith('"')
+            for pattern in sparql_compact.where_clause.graph_patterns
+            if isinstance(pattern, TriplePattern)
+            for pred, obj in pattern.tails
+        ):
+            select_vars_verbose.append("?ChemicalFormula")
+            patterns_verbose.append(
+                TriplePattern.from_triple(
+                    "?Material", "zeo:hasChemicalFormula", "?ChemicalFormula"
+                )
+            )
         for pattern in sparql_compact.where_clause.graph_patterns:
             if not (isinstance(pattern, TriplePattern) and len(pattern.tails) == 1):
+                patterns_verbose.append(pattern)
                 continue
 
             flag = False

@@ -3,12 +3,20 @@ from typing import Optional
 
 from SPARQLWrapper import SPARQLWrapper, POST, JSON
 from SPARQLWrapper.Wrapper import QueryResult
+from pydantic.dataclasses import dataclass
 
 
 class IKgClient:
     @abstractmethod
     def query(self, query: str) -> QueryResult.ConvertResult:
         pass
+
+
+@dataclass
+class KgClientConfig:
+    endpoint: str
+    user: Optional[str] = None
+    password: Optional[str] = None
 
 
 class KgClient(IKgClient):
@@ -25,21 +33,18 @@ PREFIX op: <http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>
+PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
 PREFIX oplnrgl: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
 PREFIX oplt: <https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX ozng: <https://www.theworldavatar.com/kg/ontozoning/>"""
 
-    def __init__(
-        self,
-        kg_endpoint: str,
-        user: Optional[str] = None,
-        pw: Optional[str] = None,
-    ):
-        sparql = SPARQLWrapper(kg_endpoint)
+    def __init__(self, config: KgClientConfig):
+        sparql = SPARQLWrapper(config.endpoint)
         sparql.setReturnFormat(JSON)
-        if user is not None and pw is not None:
-            sparql.setCredentials(user=user, passwd=pw)
+        if config.user is not None and config.password is not None:
+            sparql.setCredentials(user=config.user, passwd=config.password)
         sparql.setMethod(POST)
         self.sparql = sparql
 

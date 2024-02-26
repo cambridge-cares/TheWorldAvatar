@@ -44,5 +44,18 @@
             "what are the rotational constants for H2O at the RB3LYP level",
             "what is the energy of O2 at the UB3LYP level of theory"
         ]
+    },
+    {
+        "domain": "ontozeolite",
+        "label": "Zeolites",
+        "description": "Queries related to zeolite properties",
+        "questions": [
+            "what are the zeolites with specific accessible area is not greater than 100",
+            "What is the unit cell information of zeolite ABW",
+            "Give me a list of all materials linked to framework LTA",
+            "find guest compound of zeolite [Si34O68]-DOH",
+            "for zeolites belonging to the framework DOH, give me a list of all guest compounds that have been recorded",
+            "what are the frameworks of zeolites in which Li serves as a guest species"
+        ]
     }
 ]
