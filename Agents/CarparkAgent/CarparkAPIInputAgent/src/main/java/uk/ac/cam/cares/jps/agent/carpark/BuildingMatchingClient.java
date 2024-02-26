@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.carpark.file.ConfigReader;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+//Class to contact the building identification agent to match carparks to buildings
 public class BuildingMatchingClient {
     private static final String BUILDING_MATCHING_ERROR = "Unable to execute building identification/matching for the carparks!" ;
     private static final Logger LOGGER = LogManager.getLogger(BuildingMatchingClient.class);
@@ -30,13 +31,17 @@ public class BuildingMatchingClient {
         readBuildingMatchingProperties(filePath);
     }
 
-    //building identification agent endpoint - read via properties file
-    //prefix for building IRI - read via properties file
+    /**
+     * Read buildingIdentificationAgent endpoint
+     */
     private void readBuildingMatchingProperties(String filePath) throws IOException {
         Queue<String> buildingConfigs = ConfigReader.retrieveBuildingMatchingConfig(filePath);
         this.buildingIdentificationAgentEndpoint =  buildingConfigs.poll();
     }
 
+    /**
+     * Match carparks to buildings via the building identification agent postGIS route
+     */
     public void matchCarparkToBuilding() {
         JSONObject requestBody = new JSONObject();
         requestBody.put("table", CARPARK_TABLE);
@@ -45,6 +50,11 @@ public class BuildingMatchingClient {
         LOGGER.info("The number of matches are " +  buildingMatchingInformation.getInt("number_matched"));
     }
 
+    /**
+    * Send post request to building identification agent
+    * @param jsonObjectString json object string containing variables for the postGIS route
+    * @return A response to the request called as a JSON Object
+    */
     private JSONObject sendPostRequest(String jsonObjectString) {
         StringEntity requestEntity = new StringEntity(jsonObjectString, ContentType.APPLICATION_JSON);
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {

@@ -9,7 +9,6 @@ import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.*;
@@ -77,16 +76,18 @@ public class SparqlHandler {
     private static final Iri HeavyVehicles = PREFIX_ONTOCARPARK.iri("HeavyVehicles");
     
 
-    private String agentProperties;
-
     BuildingMatchingClient buildingMatchingClient;
 
     private final List<JSONKeyToIRIMapper> mappings;
 
-    public SparqlHandler(List<JSONKeyToIRIMapper> mappings, RemoteStoreClient kbClient, String agentProperties) {
+    /**
+     * Constructor for SparqlHandler
+     * @param mappings mappings of keys to data IRIs
+     * @param kbClient remoteStoreClient instance
+     */
+    public SparqlHandler(List<JSONKeyToIRIMapper> mappings, RemoteStoreClient kbClient) {
         this.kbClient = kbClient;
         this.mappings = mappings;
-        this.agentProperties = agentProperties;
     }
 
     /**
@@ -128,6 +129,7 @@ public class SparqlHandler {
                                 String location = currentObject.getString("Location");
                                 String latitude = location.split(" ")[0];
                                 String longitude = location.split(" ")[1];
+
                                 //Instantiate lot type IRI and link to data IRI
                                 String lotTypeIri = instantiateLotTypeAndAttributesIfNotExist(iri, lotType);
 
@@ -242,23 +244,28 @@ public class SparqlHandler {
                 lotTypeIRI = OntoCarpark_NS + "Carpark_LotType_" + UUID.randomUUID();
                 if (lotType.equalsIgnoreCase("C")) {
                     //INSERT DATA { <lotTypeIRI> rdf:type ontocarpark:Cars .
-                    //              <iri> rdfs:label "Cars" .}
-                    triplePattern = iri(lotTypeIRI).isA(Cars);
-                    triplePattern2 = iri(iri).has(label, "Cars");
+                    //              <lotTypeIRI> rdfs:label "Cars"
+                    //              <iri> rdfs:label "Cars Available Lots" .}
+                    triplePattern = iri(lotTypeIRI).isA(Cars).andHas(label, "Cars");
+                    triplePattern2 = iri(iri).has(label, "Cars Available Lots");
                     insertQuery = Queries.INSERT_DATA(triplePattern, triplePattern2);
                     insertQuery.prefix(PREFIX_ONTOCARPARK, PREFIX_RDFS);
                     kbClient.executeUpdate(insertQuery.getQueryString());
                 } else if (lotType.equalsIgnoreCase("H")) {
-                    //INSERT DATA { <lotTypeIRI> rdf:type ontocarpark:HeavyVehicles }
-                    triplePattern = iri(lotTypeIRI).isA(HeavyVehicles);
-                    triplePattern2 = iri(iri).has(label, "Heavy Vehicles");
+                    //INSERT DATA { <lotTypeIRI> rdf:type ontocarpark:HeavyVehicles.
+                    //              <lotTypeIRI> rdfs:label "Heavy Vehicles" .
+                    //              <iri> rdfs:label "Heavy Vehicles Available Lots" . }
+                    triplePattern = iri(lotTypeIRI).isA(HeavyVehicles).andHas(label, "Heavy Vehicles");
+                    triplePattern2 = iri(iri).has(label, "Heavy Vehicles Available Lots");
                     insertQuery = Queries.INSERT_DATA(triplePattern, triplePattern2);
                     insertQuery.prefix(PREFIX_ONTOCARPARK, PREFIX_RDFS);
                     kbClient.executeUpdate(insertQuery.getQueryString());
                 } else {
-                    //INSERT DATA { <lotTypeIRI> rdf:type ontocarpark:Motorcycles }
-                    triplePattern = iri(lotTypeIRI).isA(Motorcycles);
-                    triplePattern2 = iri(iri).has(label, "Motorcycles");
+                    //INSERT DATA { <lotTypeIRI> rdf:type ontocarpark:Motorcycles.
+                    //              <lotTypeIRI> rdfs:label "Motorcycles" .
+                    //              <iri> rdfs:label "Motorcycles Available Lots" . }
+                    triplePattern = iri(lotTypeIRI).isA(Motorcycles).andHas(label, "Motorcycles");
+                    triplePattern2 = iri(iri).has(label, "Motorcycles Available Lots");
                     insertQuery = Queries.INSERT_DATA(triplePattern, triplePattern2);
                     insertQuery.prefix(PREFIX_ONTOCARPARK, PREFIX_RDFS);
                     kbClient.executeUpdate(insertQuery.getQueryString());
@@ -285,6 +292,8 @@ public class SparqlHandler {
      * @param carparkName carpark label
      * @param lotTypeIRI lot type IRI
      * @param agency agency in charged of the carpark
+     * @param latitude latitude of carpark's coordinate
+     * @param longitude longitude of carpark's coordinate
      * @return carpark IRI
      */
     private String instantiateCarparkAndAttributesIfnotExist(String carparkID, String carparkName, String lotTypeIRI, String agency, String latitude, String longitude) {
@@ -331,6 +340,13 @@ public class SparqlHandler {
         return carparkIRI;
     }
 
+    /**
+     * Instantiate geospatial information via the CarparkGeospatialClient
+     * @param carparkIRI carpark IRI
+     * @param latitude latitude of carpark's coordinate
+     * @param longitude longitude of carpark's coordinate
+     * @param carparkName name of carpark
+     */
     private void instantiateGeoSpatialInfoIfNotExist(String carparkIRI, Double latitude, Double longitude, String carparkName) {
         //postgisClient is used to interact with the stack's database that will store the geolocation information
         CarparkPostGISClient postgisClient = new CarparkPostGISClient();
@@ -351,11 +367,11 @@ public class SparqlHandler {
 				// table exists, check table contents for an equivalent point or carpark
                 LOGGER.info("Checking for existing carparks to prevent duplicates...");
 				if (!postgisClient.checkCarparkExists(carparkIRI, conn)) {
-                    LOGGER.info("No carparks found...");
+                    LOGGER.info("No existing carpark instance found for " + carparkIRI);
                     geospatialClient.createGeospatialInformation(latitude, longitude, carparkName, carparkIRI);
 					response.put("message", "Geospatial information instantiated for the following: " + carparkName);
 				} else {
-					response.put("message", "A carpark already exist for the following coordinates or IRI");
+					response.put("message", "A carpark already exist for the following: " + carparkIRI);
 				}
 			}
 		} catch (Exception e) {
@@ -441,7 +457,7 @@ public class SparqlHandler {
 
     /**
      * Retrieve and parse carpark rates from JSONObject
-     * @param carparkRatesData
+     * @param carparkRatesData JSONObject containing carpark rates
      * @return map containing weekday, saturday, sunday and PH rates
      */
     private Map<String, String> parseCarparkRates(JSONObject carparkRatesData) {
@@ -556,8 +572,8 @@ public class SparqlHandler {
         selectQuery.prefix(PREFIX_ONTOCARPARK).select(sundayAndPHRate).where(triplePattern);
         String queriedSundayAndPHRate;
         queryResult = kbClient.executeQuery(selectQuery.getQueryString());
-        //INSERT DATA { <carparkIRI> ontocarpark:hasSundayAndPHRates "Sunday and PH rates" }
         if (queryResult.isEmpty()) {
+            //INSERT DATA { <carparkIRI> ontocarpark:hasSundayAndPHRates "Sunday and PH rates" }
             triplePattern = iri(carparkIRI).has(hasSundayAndPHRates, map.get("Sunday and PH rates"));
             insertQuery = new InsertDataQuery();
             insertQuery = Queries.INSERT_DATA(triplePattern);

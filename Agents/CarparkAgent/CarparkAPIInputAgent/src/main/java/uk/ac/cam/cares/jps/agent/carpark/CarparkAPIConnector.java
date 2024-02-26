@@ -97,7 +97,6 @@ public class CarparkAPIConnector {
      */
     private JSONObject retreiveRatesData() {
         String path = pricingApiEndpoint;
-
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet readrequest = new HttpGet(path);
             try (CloseableHttpResponse response = httpClient.execute(readrequest)) {

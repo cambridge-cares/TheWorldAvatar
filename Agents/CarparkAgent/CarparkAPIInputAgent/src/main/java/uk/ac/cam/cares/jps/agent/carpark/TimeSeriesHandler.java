@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 public class TimeSeriesHandler {
     public static final Logger LOGGER = LogManager.getLogger(TimeSeriesHandler.class);
     private TimeSeriesClient<OffsetDateTime> tsclient;
@@ -28,18 +27,34 @@ public class TimeSeriesHandler {
     public static final String timestampKey = "time";
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
+    /**
+     * Constructor for TimeSeriesHandler
+     * @param mappings mapping for keys to data IRIs
+     * @throws IOException
+     */
     public TimeSeriesHandler(List<JSONKeyToIRIMapper> mappings) throws IOException {
         this.mappings = mappings;
     }
 
+    /**
+     * retrieve the number of timeseries from mappings
+     * @return number of timeseries
+     */
     public int getNumberofTimeSeries() {
         return mappings.size();
     }
 
+    /**
+     * Set timeseries client
+     * @param tsclient timeseries cient instance
+     */
     public void setTsClient(TimeSeriesClient<OffsetDateTime> tsclient) {
         this.tsclient = tsclient;
     }
 
+    /**
+     * Check whether timeseries exist and instantiate the timeseries if it does not exist
+     */
     public void initializeTimeSeriesIfNotExist() {
         for (JSONKeyToIRIMapper mapping : mappings) {
             List<String> iris = mapping.getAllIRIs();
@@ -56,6 +71,11 @@ public class TimeSeriesHandler {
         }
     }
 
+    /**
+     * CHeck whether timeseries exist
+     * @param iris list of data IRIs
+     * @return True or False
+     */
     private boolean timeSeriesExist(List<String> iris) {
         for (String iri : iris) {
             try {
@@ -73,6 +93,11 @@ public class TimeSeriesHandler {
         return true;
     }
 
+    /**
+     * Parse and upload timeseries data to the knowledge graph
+     * @param carparkReadings carpark readings retrieved via API
+     * @throws IllegalArgumentException
+     */
     public void updateData(JSONObject carparkReadings) throws IllegalArgumentException {
         Map<String, List<?>> carparkReadingsMap = jsonObjectToMap(carparkReadings);
 
@@ -109,13 +134,18 @@ public class TimeSeriesHandler {
         }
     }
 
-    private Map<String, List<?>> jsonObjectToMap(JSONObject readings) {
+    /**
+     * Parse readings to map
+     * @param carparkReadings carpark readings retrieved via API
+     * @return Map containing keys and timeseries values
+     */
+    private Map<String, List<?>> jsonObjectToMap(JSONObject carparkReadings) {
         // First save the values as Object //
         Map<String, List<?>> readingsMap = new HashMap<>();
         Map<String, List<Object>> firstMap = new HashMap<>();
         JSONArray jsArr;
         try {
-            jsArr = readings.getJSONArray("value");
+            jsArr = carparkReadings.getJSONArray("value");
             for (int i = 0; i < jsArr.length(); i++) {
                 JSONObject currentEntry = jsArr.getJSONObject(i);
 
@@ -153,10 +183,15 @@ public class TimeSeriesHandler {
         return readingsMap;
     }
 
-    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> carparkReadings) {
+    /**
+     * Convert mapped readings to timeseries
+     * @param carparkReadingsMap map containing keys and timeseries values
+     * @return list of timeseries
+     */
+    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> carparkReadingsMap) {
         // Extract the timestamps by mapping the private conversion method on the list items
         // that are supposed to be string (toString() is necessary as the map contains lists of different types)
-        List<OffsetDateTime> carparkTimestamps = carparkReadings.get(TimeSeriesHandler.timestampKey).stream().map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
+        List<OffsetDateTime> carparkTimestamps = carparkReadingsMap.get(TimeSeriesHandler.timestampKey).stream().map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
         try {
             // Construct a time series object for each mapping
             List<TimeSeries<OffsetDateTime>> timeSeries = new ArrayList<>();
@@ -171,15 +206,14 @@ public class TimeSeriesHandler {
                 for (String key : mapping.getAllJSONKeys()) {
                     // Add IRI
                     iris.add(mapping.getIRI(key));
-                    if (carparkReadings.containsKey(key)) {
-                        values.add(carparkReadings.get(key));
+                    if (carparkReadingsMap.containsKey(key)) {
+                        values.add(carparkReadingsMap.get(key));
                     } else {
                         values.add(NaNTyped);
                     }
                 }
                 List<OffsetDateTime> times = carparkTimestamps;
                 // Create the time series object and add it to the list
-
                 TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
                 timeSeries.add(currentTimeSeries);
             }
@@ -190,6 +224,11 @@ public class TimeSeriesHandler {
         }
     }
 
+    /**
+     * Convert timestamp string to include offset
+     * @param timestamp timestamp as string
+     * @return converted timestamp with offset
+     */
     private OffsetDateTime convertStringToOffsetDateTime(String timestamp) {
         // Convert first to a local time
         LocalDateTime localTime = LocalDateTime.parse(timestamp);
@@ -197,6 +236,12 @@ public class TimeSeriesHandler {
         return OffsetDateTime.of(localTime, ZONE_OFFSET);
     }
 
+    /**
+     * Prune timeseries
+     * @param timeSeries timeseries object
+     * @param timeThreshold threshold that determines when to start pruning
+     * @return pruned timeseries
+     */
     private TimeSeries<OffsetDateTime> pruneTimeSeries(TimeSeries<OffsetDateTime> timeSeries, OffsetDateTime timeThreshold) {
         // Find the index from which to start
         List<OffsetDateTime> times = timeSeries.getTimes();
@@ -229,10 +274,6 @@ public class TimeSeriesHandler {
     }
 
     private Class<?> getClassFromJSONKey(String jsonKey) {
-        if (jsonKey.contains("relative_humiditylow") || jsonKey.contains("relative_humidityhigh") || jsonKey.contains("temperaturelow") || jsonKey.contains("temperaturehigh") || jsonKey.contains("windspeedlow") || jsonKey.contains("windspeedhigh")) {
-            return Double.class;
-        } else {
-            return String.class;
-        }
+        return Double.class;
     }
 }

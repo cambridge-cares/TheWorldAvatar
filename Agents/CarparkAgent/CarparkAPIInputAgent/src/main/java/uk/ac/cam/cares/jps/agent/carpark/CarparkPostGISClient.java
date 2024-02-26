@@ -1,10 +1,7 @@
 package uk.ac.cam.cares.jps.agent.carpark;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
@@ -24,7 +21,6 @@ public class CarparkPostGISClient extends ContainerClient {
 	/**
      * Logger for reporting info/errors.
      */
-
 	private static final Logger LOGGER = LogManager.getLogger(CarparkPostGISClient.class);
 
 	private RemoteRDBStoreClient remoteRDBStoreClient;
@@ -32,9 +28,6 @@ public class CarparkPostGISClient extends ContainerClient {
 
 	/**
 	 * Carpark postGIS client constructor
-	 * @param dburl url of postGIS database
-	 * @param dbuser username to access postGIS database
-	 * @param dbpassword password to access postGIS database
 	 */
 	CarparkPostGISClient() {
 		//geolocation data will be instantiated in the stack's postgres database
@@ -67,11 +60,17 @@ public class CarparkPostGISClient extends ContainerClient {
         }
     }
 
+	/**
+	 * Check whether a carpark instance already exist in a table
+	 * @param carparkIRI carpark IRI to check for
+	 * @param conn connection sesssion
+	 * @return True or False
+	 */
 	public boolean checkCarparkExists(String carparkIRI, Connection conn) {
 		String condition = String.format("carpark_iri = '%s'", carparkIRI);
             return getContext(conn).select(DSL.count()).from(CarparkAgent.LAYERNAME).where(condition).fetchOne(0, int.class) > 0;
 	}
-	
+
 	DSLContext getContext(Connection conn) {
 		return DSL.using(conn, SQLDialect.POSTGRES);
 	}

@@ -17,11 +17,17 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
  */
 public class CarparkGeospatialClient {
 	/**
-     * Logger for reporting info/errors.
-     */
+        * Logger for reporting info/errors.
+        */
+        private static final Logger LOGGER = LogManager.getLogger(CarparkGeospatialClient.class);
 
-        private static final Logger LOGGER = LogManager.getLogger(CarparkAgent.class);
-
+        /**
+         * Instantiate geospatial information for each carpark in postGIS and geoserver
+         * @param lat latitude of carpark's coordinate
+         * @param long longitude of carpark's coordinate
+         * @param carparkName name of carpark
+         * @param carparkIRI carpark IRI
+         */
 	public void createGeospatialInformation(double lat, double lon, String carparkName, String carparkIRI) {
 	        String geomUuid = "geometry_" + UUID.randomUUID();
 

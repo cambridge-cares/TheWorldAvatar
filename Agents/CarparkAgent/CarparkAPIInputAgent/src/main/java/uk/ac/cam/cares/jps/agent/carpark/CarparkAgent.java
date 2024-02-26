@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.carpark;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.agent.carpark.file.ConfigReader;
@@ -14,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import javax.servlet.ServletException;
@@ -26,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
-@WebServlet(urlPatterns = {"/retrieve", "/status"})
+@WebServlet(urlPatterns = {"/retrieve", "/create", "/status"})
 
 public class CarparkAgent extends JPSAgent {
     public static String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
@@ -165,7 +163,7 @@ public class CarparkAgent extends JPSAgent {
      * Handle POST /create route and return result message
      * @param args contains the environment variables that indicates the location of each config file
      */
-    private void createRoute(String[] args) {
+    private JSONObject createRoute(String[] args) {
         if (args.length != 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
@@ -197,7 +195,6 @@ public class CarparkAgent extends JPSAgent {
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
 
-        
         LOGGER.info("Retrieving carpark rates from the API...");
         JSONObject ratesReadings;
         try {
@@ -209,7 +206,6 @@ public class CarparkAgent extends JPSAgent {
         LOGGER.info("Retrieved carpark rates for {} carparks", ratesReadings.length());
         jsonMessage.accumulate(JSON_RESULT_KEY, " Retrieved carpark rates for " + ratesReadings.getJSONObject("result").getJSONArray("records").length() + " carparks.");
 
-        
         LOGGER.info("Retrieved available lot readings for {} carparks", carparkReadings.length());
         jsonMessage.put(JSON_RESULT_KEY, "Retrieved available lot readings for " + carparkReadings.getJSONArray("value").length() + " carparks.");
 
@@ -257,7 +253,7 @@ public class CarparkAgent extends JPSAgent {
         LOGGER.info("Setting up the sparql handler...");
         SparqlHandler sparqlHandler;
         try {
-            sparqlHandler = new SparqlHandler(mappings, kbClient, System.getenv(args[0]));
+            sparqlHandler = new SparqlHandler(mappings, kbClient);
         } catch (Exception e) {
             LOGGER.error("Could not build the SparqlHandler ", e);
             throw new JPSRuntimeException("Could not successfully initialise the SparqlHandler Object", e);
@@ -273,6 +269,8 @@ public class CarparkAgent extends JPSAgent {
 
         jsonMessage.accumulate(JSON_RESULT_KEY, " Data has been successfully instantiated!");
         LOGGER.info(jsonMessage.toString());
+
+        return jsonMessage;
     }
 
     /**
