@@ -1,8 +1,8 @@
 import os
 
-from .compact2verbose import SgCompact2VerboseConverter
 from services.translate.data_processing.postprocess import PostProcessor
 from services.translate.sparql import SparqlQuery
+from .compact2verbose import SgCompact2VerboseConverter
 
 
 class SgPostProcessor(PostProcessor):
