@@ -13,12 +13,11 @@ SELECT ?Property ?Value ?Unit
 WHERE {
   {
     BIND ("Building Height" AS ?Property )
+    BIND ("m" AS ?Unit)
     SERVICE [ONTOP] {
-      [IRI] ontobuiltenv:hasHeight/om:hasValue ?measure.
-      ?measure om:hasNumericalValue ?Value;
-               om:hasUnit/skos:notation ?Unit.
+      [IRI] bldg:measuredHeight ?Value.
     }
-  } UNION {
+    } UNION {
     BIND ("Name of Chemical Plant Owner" AS ?Property)
     SERVICE [ONTOP] {
       [IRI] ontobim:hasFacility ?chemplant.
