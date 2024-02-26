@@ -46,6 +46,7 @@ public class GeoServerClient extends ContainerClient {
     private static final Path STATIC_DATA_DIRECTORY = SERVING_DIRECTORY.resolve("static_data");
     private static final Path ICONS_DIRECTORY = SERVING_DIRECTORY.resolve("icons");
     private static final String GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX = "_geoserver_indices";
+    private static final String DIM_PREFIX = "dim_";
 
     public static GeoServerClient getInstance() {
         if (null == instance) {
@@ -316,7 +317,16 @@ public class GeoServerClient extends ContainerClient {
         Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions = dimensionSettings.getDimensions();
         if (null != dimensions) {
             dimensions.entrySet()
-                    .forEach(entry -> resourceEncoder.setMetadataDimension(entry.getKey(), entry.getValue()));
+                    .forEach(entry -> {
+                        String dimName = entry.getKey();
+                        if (!dimName.startsWith(DIM_PREFIX) && !dimName.equals("time")
+                                && !dimName.equals("elevation")) {
+                            throw new RuntimeException(
+                                    "When using a GeoServer custom dimension (i.e. not `time` or `elevation) the name `"
+                                            + dimName + "` must begin with the prefix `dim_`.");
+                        }
+                        resourceEncoder.setMetadataDimension(dimName, entry.getValue());
+                    });
         }
     }
 
