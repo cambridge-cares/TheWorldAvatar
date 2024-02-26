@@ -49,13 +49,13 @@ class OZMaterialLocator:
                 query_graph.add_triple(
                     "Material", "^zeo:hasZeoliticMaterial/zeo:hasFrameworkCode", literal_node, key=k
                 )
-                cond = "whose framework is " + framework.framework_code
+                cond = "whose framework is [{label}]".format(label=framework.framework_code)
             elif k is OZMaterialAttrKey.GUEST_COMPOUND:
                 literal_node = query_graph.make_literal_node(entity.guest_compound)
                 query_graph.add_triple(
                     "Material", "zeo:hasGuestCompound/os:formula", literal_node, key=k
                 )
-                cond = "whose {attr} is {val}".format(
+                cond = "whose {attr} is [{val}]".format(
                     attr=random.choice(ZEOMATERIAL_ATTR_LABELS[k]),
                     val=entity.guest_compound,
                 )
