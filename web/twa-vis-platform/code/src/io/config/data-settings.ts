@@ -14,7 +14,7 @@ import { JsonObject } from "../../types/json";
 export default class DataSettingsStore {
 
     // Location of module settings file
-    private static readonly DEFAULT_FILE = "../uploads/config/data.json";
+    private static readonly DEFAULT_FILE = process.env.DATA_SETTINGS_PATH || "../uploads/config/data.json";
 
     // Cached settings
     private static RAW_JSON: JsonObject | null = null;
