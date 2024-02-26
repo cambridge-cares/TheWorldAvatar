@@ -123,7 +123,7 @@ public class GeometryMatcher {
                 "CASE WHEN public.ST_IsValid(geo) THEN geo ELSE ST_MakeValid(geo) END AS geometry\n" +
                 "FROM rawgeo;";
 
-        String createIndex = "CREATE INDEX geo_id ON %s USING gist (geometry)";
+        String createIndex = "CREATE INDEX %s ON %s USING gist (geometry)";
 
         String tableFormat = "public.\"citydb_%s\"";
         String citydbPoint = String.format(tableFormat, UUID.randomUUID());
@@ -133,7 +133,7 @@ public class GeometryMatcher {
             Statement statement = conn.createStatement();
 
             statement.execute(String.format(citydbTable, citydbPoint, pointSRID));
-            statement.execute(String.format(createIndex, citydbPoint));
+            statement.execute(String.format(createIndex, "geo_id", citydbPoint));
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
@@ -149,7 +149,7 @@ public class GeometryMatcher {
                 Statement statement = conn.createStatement();
 
                 statement.execute(String.format(citydbTable, citydbPolygon, polygonSRID));
-                statement.execute(String.format(createIndex, citydbPolygon));
+                statement.execute(String.format(createIndex, "geom_id", citydbPolygon));
             }
             catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -260,7 +260,7 @@ public class GeometryMatcher {
                 "WHERE building IS NOT NULL AND building_iri IS NULL AND landuse IS NULL AND \n" +
                 "ogc_fid BETWEEN %d AND %d AND\n" +
                 "public.ST_Area(public.ST_Intersection(p.\"geometryProperty\", g.geometry))" +
-                ">= %f*public.ST_Area(p.\"geometryProperty\")";
+                ">= %f*LEAST(public.ST_Area(p.\"geometryProperty\"), public.ST_Area(g.geometry))";
 
         return String.format(update, table, cityTable, start, end, threshold);
     }
