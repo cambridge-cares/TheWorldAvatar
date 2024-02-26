@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.osmagent;
 
-import uk.ac.cam.cares.jps.agent.osmagent.geometry.GeoMatcher;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.agent.osmagent.geometry.GeometryMatcher;
