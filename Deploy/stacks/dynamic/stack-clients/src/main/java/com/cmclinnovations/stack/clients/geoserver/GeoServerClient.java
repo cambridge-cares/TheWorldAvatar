@@ -318,12 +318,12 @@ public class GeoServerClient extends ContainerClient {
         if (null != dimensions) {
             dimensions.entrySet()
                     .forEach(entry -> {
-                        // Custom dimensions need to be lower case with the "dim_" prefix
                         String dimName = entry.getKey();
-                        dimName = dimName.toLowerCase();
                         if (!dimName.startsWith(DIM_PREFIX) && !dimName.equals("time")
                                 && !dimName.equals("elevation")) {
-                            dimName = DIM_PREFIX + dimName;
+                            throw new RuntimeException(
+                                    "When using a GeoServer custom dimension (i.e. not `time` or `elevation) the name `"
+                                            + dimName + "` must begin with the prefix `dim_`.");
                         }
                         resourceEncoder.setMetadataDimension(dimName, entry.getValue());
                     });
