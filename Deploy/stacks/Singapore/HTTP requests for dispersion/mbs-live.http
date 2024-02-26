@@ -1,5 +1,5 @@
 # Initialise a dispersion simulation in the MBS area
-POST http://localhost:3838/dispersion-interactor/StartScheduledDispersion
+POST http://localhost:3838/dispersion-interactor/ScheduledDispersion
 ?ewkt=SRID=32648;POLYGON((363838 134778,377838 134778,377838 144778,363838 144778,363838 134778))
 &nx=100
 &ny=100
