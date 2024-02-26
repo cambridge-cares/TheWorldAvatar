@@ -1,76 +1,76 @@
 {
-  "name": "routing",
-  "database": "postgres",
-  "workspace": "twa",
-  "skip": true,
-  "datasetDirectory": "routing",
-  "dataSubsets": [
-    {
-      "name": "routing",
-      "type": "OSMRouting",
-      "subdirectory": "routing",
-      "skip": true,
-      "schema": "public",
-      "verticesGeoServerSettings": {
-        "virtualTable": {
-          "name": "routing",
-          "sql": "@/inputs/data/routing/sql/nearest_vertex.sql",
-          "escapeSql": false,
-          "geometry": {
-            "name": "the_geom",
-            "type": "Point",
-            "srid": 4326
-          },
-          "parameters": [
-            {
-              "name": "lon",
-              "defaultValue": "1",
-              "regexpValidator": "^[\\d\\.\\+-eE]+$"
+    "name": "routing",
+    "database": "postgres",
+    "workspace": "twa",
+    "skip": false,
+    "datasetDirectory": "routing",
+    "dataSubsets": [
+        {
+            "name": "routing",
+            "type": "OSMRouting",
+            "subdirectory": "routing",
+            "skip": false,
+            "schema": "public",
+            "verticesGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/routing/sql/nearest_vertex.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "Point",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "lon",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        },
+                        {
+                            "name": "lat",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        }
+                    ]
+                }
             },
-            {
-              "name": "lat",
-              "defaultValue": "10",
-              "regexpValidator": "^[\\d\\.\\+-eE]+$"
-            }
-          ]
-        }
-      },
-      "waysGeoServerSettings": {
-        "virtualTable": {
-          "name": "routing",
-          "sql": "@/inputs/data/routing/sql/roaddisplay.sql",
-          "escapeSql": false,
-          "geometry": {
-            "name": "the_geom",
-            "type": "MultiLineString",
-            "srid": 4326
-          }
-        }
-      },
-      "poiGeoServerSettings": {
-        "virtualTable": {
-          "name": "routing",
-          "sql": "@/inputs/data/routing/sql/shortest_paths.sql",
-          "escapeSql": false,
-          "geometry": {
-            "name": "the_geom",
-            "type": "MultiLineString",
-            "srid": 4326
-          },
-          "parameters": [
-            {
-              "name": "source",
-              "defaultValue": "1",
-              "regexpValidator": "^[\\d]+$"
+            "waysGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/routing/sql/roaddisplay.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                }
             },
-            {
-              "name": "target",
-              "defaultValue": "10",
-              "regexpValidator": "^[\\d]+$"
+            "poiGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/routing/sql/shortest_paths.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d]+$"
+                        }
+                    ]
+                }
             }
-          ]
         }
-      }
-    }
-  ]
+    ]
 }

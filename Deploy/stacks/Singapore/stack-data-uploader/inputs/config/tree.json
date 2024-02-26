@@ -1,28 +1,29 @@
 {
-  "name": "tree",
-  "database": "postgres",
-  "workspace": "twa",
-  "skip": true,
-  "datasetDirectory": "tree",
-  "dataSubsets": [
-    {
-      "name": "heritage",
-      "type": "vector",
-      "subdirectory": "heritage",
-      "skip": true,
-      "ogr2ogrOptions": {
-        "sridIn": "EPSG:4326",
-        "sridOut": "EPSG:4326"
-      }
-    }, {
-      "name": "tree",
-      "type": "vector",
-      "subdirectory": "singapore",
-      "skip": true,
-      "ogr2ogrOptions": {
-        "sridIn": "EPSG:4326",
-        "sridOut": "EPSG:4326"
-      }
-    }
-  ]
+    "name": "tree",
+    "database": "postgres",
+    "workspace": "twa",
+    "skip": false,
+    "datasetDirectory": "tree",
+    "dataSubsets": [
+        {
+            "name": "heritage",
+            "type": "vector",
+            "subdirectory": "heritage",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            }
+        },
+        {
+            "name": "tree",
+            "type": "vector",
+            "subdirectory": "singapore",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            }
+        }
+    ]
 }
