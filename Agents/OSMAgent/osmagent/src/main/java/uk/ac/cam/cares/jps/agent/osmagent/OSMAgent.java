@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.osmagent;
 
+import uk.ac.cam.cares.jps.agent.osmagent.geometry.GeoMatcher;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.agent.osmagent.geometry.GeometryMatcher;
@@ -71,7 +72,6 @@ public class OSMAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
         try {
             UsageMatcher usageMatcher = new UsageMatcher(dbUrl, dbUser, dbPassword);
-            GeometryMatcher geometryMatcher = new GeometryMatcher(dbUrl, dbUser, dbPassword);
             UsageShareCalculator shareCalculator = new UsageShareCalculator(dbUrl, dbUser, dbPassword);
 
             // match OSM usage to OntoBuiltEnv:PropertyUsage classes
@@ -79,8 +79,7 @@ public class OSMAgent extends JPSAgent {
             usageMatcher.updateOntoBuilt(pointTable, polygonTable);
 
             // match OSM geometries with building IRI
-            geometryMatcher.matchGeometry(pointTable);
-            geometryMatcher.matchGeometry(polygonTable);
+            GeometryMatcher.matchGeometry(dbUrl, dbUser, dbPassword, pointTable, polygonTable);
 
             // intialise usage table and copy building IRI that has OSM usage
             usageMatcher.copyFromOSM(pointTable, polygonTable, usageTable);
