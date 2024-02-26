@@ -1,33 +1,43 @@
-from typing import List
+from decimal import Decimal
+from typing import Iterable
 import networkx as nx
-from constants.functions import NumOp, StrOp
 
+from constants.functions import AggOp, NumOp, StrOp
 from locate_then_ask.query_graph import QueryGraph
+
+QuerySparql = str
 
 
 class Graph2Sparql:
-    def __init__(self, predicates_to_entities_linked_by_rdfslabel: List[str] = []):
-        self.predicates_to_entities_linked_by_rdfslabel = (
-            predicates_to_entities_linked_by_rdfslabel
-        )
-
+    @classmethod
     def _resolve_node_to_sparql(self, query_graph: QueryGraph, n: str):
-        if query_graph.nodes[n].get("template_node"):
-            if query_graph.nodes[n].get("topic_entity"):
-                return "?" + n
-            elif query_graph.nodes[n].get("literal"):
-                return '"{label}"'.format(label=query_graph.nodes[n]["label"])
-            elif not query_graph.nodes[n].get("prefixed"):
-                return "<{iri}>".format(iri=query_graph.nodes[n]["iri"])
-            else:
-                return query_graph.nodes[n]["iri"]
-        else:
+        if not query_graph.nodes[n].get("template_node"):
             return "?" + n
 
+        if query_graph.nodes[n].get("literal"):
+            val = query_graph.nodes[n]["label"]
+            if isinstance(val, str):
+                return '"{label}"'.format(label=val)
+            elif isinstance(val, bool):
+                if val:
+                    return "true"
+                else:
+                    return "false"
+            else:
+                raise ValueError("Unrecognized value type: " + str(val))
+        elif query_graph.nodes[n].get("prefixed"):
+            return query_graph.nodes[n]["iri"]
+        else:
+            return "<{iri}>".format(iri=query_graph.nodes[n]["iri"])
+
+    @classmethod
     def _make_numerical_operator_pattern(self, query_graph: QueryGraph, s: str, o: str):
-        operand_left = "?" + s
+        lhs = "?" + s
         operator = query_graph.nodes[o]["operator"]
-        operand_right = query_graph.nodes[o]["operand"]
+        assert isinstance(operator, NumOp)
+        operand = query_graph.nodes[o]["operand"]
+        assert isinstance(operand, Iterable)
+        assert all(isinstance(x, Decimal) for x in operand), (s, o, operand)
 
         if operator in [
             NumOp.LESS_THAN,
@@ -36,39 +46,42 @@ class Graph2Sparql:
             NumOp.GREATER_THAN_EQUAL,
             NumOp.EQUAL,
         ]:
+            assert len(operand) == 1
+            rhs = operand[0]
             return "FILTER ( {left} {op} {right} )".format(
-                left=operand_left, op=operator, right=operand_right
+                left=lhs, op=operator.value, right=rhs
             )
-        elif operator == NumOp.INSIDE_RANGE:
-            assert isinstance(operand_right, tuple)
-            assert len(operand_right) == 2
-            low, high = operand_right
+        elif operator is NumOp.INSIDE_RANGE:
+            assert len(operand) == 2
+            low, high = operand
             return "FILTER ( {left} > {low} && {left} < {high} )".format(
-                left=operand_left, low=low, high=high
+                left=lhs, low=low, high=high
             )
-        elif operator == NumOp.AROUND:
-            if operand_right < 0:
+        elif operator is NumOp.AROUND:
+            assert len(operand) == 1
+            rhs = operand[0]
+            if rhs < 0:
                 return "FILTER ( {left} > {right}*1.1 && {left} < {right}*0.9 )".format(
-                    left=operand_left, right=operand_right
+                    left=lhs, right=rhs
                 )
-            elif operand_right > 0:
+            elif rhs > 0:
                 return "FILTER ( {left} > {right}*0.9 && {left} < {right}*1.1 )".format(
-                    left=operand_left, right=operand_right
+                    left=lhs, right=rhs
                 )
             else:
                 return "FILTER ( {left} > -0.1 && {left} < 0.1 )".format(
-                    left=operand_left
+                    left=lhs
                 )
-        elif operator == NumOp.OUTSIDE_RANGE:
-            assert isinstance(operand_right, tuple)
-            assert len(operand_right) == 2
-            low, high = operand_right
+        elif operator is NumOp.OUTSIDE_RANGE:
+            assert len(operand) == 2
+            low, high = operand
             return "FILTER ( {left} < {low} || {left} > {high} )".format(
-                left=operand_left, low=low, high=high
+                left=lhs, low=low, high=high
             )
         else:
             raise ValueError("Unrecognized numerical operator: " + operator)
 
+    @classmethod
     def _make_string_operator_pattern(self, query_graph: QueryGraph, s: str, o: str):
         operand_left = "?" + s
         operator = query_graph.nodes[o]["operator"]
@@ -81,35 +94,39 @@ class Graph2Sparql:
         else:
             raise ValueError("Unrecognized string operator: " + operator)
 
+    @classmethod
     def make_graph_pattern(self, query_graph: QueryGraph, s: str, o: str):
+        assert not QueryGraph.is_blank_node(s)
+
         s_sparql = self._resolve_node_to_sparql(query_graph, s)
         p = query_graph.edges[s, o]["label"]
 
         if p == "func":
             operator = query_graph.nodes[o]["operator"]
-            if isinstance(operator, NumOp):
+            if isinstance(operator, NumOp) or isinstance(operator, NumOp):
                 return self._make_numerical_operator_pattern(query_graph, s, o)
             elif isinstance(operator, StrOp):
                 return self._make_string_operator_pattern(query_graph, s, o)
             else:
                 raise ValueError("Unexpected operator: " + str(operator))
-        if (
-            query_graph.nodes[o].get("template_node")
-            and p in self.predicates_to_entities_linked_by_rdfslabel
-        ):
-            p_sparql = p + "/rdfs:label"
-            o_sparql = '"{label}"'.format(label=query_graph.nodes[o]["label"])
+        if query_graph.nodes[o].get("blank_node"):
+            p_sparql = p
+            tails = " ; ".join(
+                [
+                    "{p} {o}".format(
+                        p=_p, o=self._resolve_node_to_sparql(query_graph, n=_o)
+                    )
+                    for _, _o, _p in query_graph.out_edges(o, data="label")
+                ]
+            )
+            o_sparql = "[ {tails} ]".format(tails=tails)
         else:
             p_sparql = p
             o_sparql = self._resolve_node_to_sparql(query_graph, o)
 
         return "{s} {p} {o} .".format(s=s_sparql, p=p_sparql, o=o_sparql)
 
-    def make_patterns_for_topic_entity_linking(
-        self, query_graph: QueryGraph, topic_node: str
-    ) -> List[str]:
-        return []
-
+    @classmethod
     def make_where_clause(self, query_graph: QueryGraph):
         topic_node = next(
             n
@@ -117,19 +134,17 @@ class Graph2Sparql:
             if topic_entity
         )
 
-        graph_patterns = []
-        if query_graph.nodes[topic_node].get("template_node"):
-            graph_patterns.extend(
-                self.make_patterns_for_topic_entity_linking(query_graph, topic_node)
-            )
-
-        for s, o in nx.edge_dfs(query_graph, topic_node):
-            graph_patterns.append(self.make_graph_pattern(query_graph, s, o))
+        graph_patterns = [
+            self.make_graph_pattern(query_graph, s, o)
+            for s, o in nx.edge_dfs(query_graph, topic_node)
+            if not QueryGraph.is_blank_node(s)
+        ]
 
         return "WHERE {{\n  {group_graph_pattern}\n}}".format(
             group_graph_pattern="\n  ".join(graph_patterns)
         )
 
+    @classmethod
     def make_select_clause(self, query_graph: QueryGraph):
         question_nodes = [
             n
@@ -138,18 +153,61 @@ class Graph2Sparql:
         ]
 
         def resolve_proj(n: str):
-            if query_graph.nodes[n].get("ask_count"):
-                return "(COUNT(?{n}) AS ?{n}Count)".format(n=n)
+            agg = query_graph.nodes[n].get("agg")
+
+            if agg:
+                if agg is AggOp.COUNT:
+                    return "(COUNT(?{n}) AS ?{n}Count)".format(n=n)
+                elif agg is AggOp.AVG:
+                    return "(AVG(?{n}) AS ?{n}Avg)".format(n=n)
+                elif agg is AggOp.MIN:
+                    return "(MIN(?{n}) AS ?{n}Min)".format(n=n)
+                elif agg is AggOp.MAX:
+                    return "(MAX(?{n}) AS ?{n}Max)".format(n=n)
+                else:
+                    raise AssertionError("Unexpected agg argument: " + agg)
+
             return "?" + n
 
         return "SELECT " + " ".join([resolve_proj(n) for n in question_nodes])
 
+    @classmethod
+    def make_groupby_clause(self, query_graph: QueryGraph):
+        if not query_graph.groupby:
+            return None
+        return "GROUP BY " + " ".join("?" + x for x in query_graph.groupby)
+
+    @classmethod
+    def make_order_clause(self, query_graph: QueryGraph):
+        if not query_graph.orderby:
+            return None
+        return "ORDER BY " + " ".join(
+            "DESC(?{n})".format(n=order_cond.var)
+            if order_cond.desc
+            else "?" + order_cond.var
+            for order_cond in query_graph.orderby
+        )
+
+    @classmethod
+    def make_limit_clause(self, query_graph: QueryGraph):
+        if not query_graph.limit:
+            return None
+        return "LIMIT " + str(query_graph.limit)
+
+    @classmethod
     def convert(self, query_graph: QueryGraph):
         select_clause = self.make_select_clause(query_graph)
         where_clause = self.make_where_clause(query_graph)
+        groupby_clause = self.make_groupby_clause(query_graph)
+        order_clause = self.make_order_clause(query_graph)
+        limit_clause = self.make_limit_clause(query_graph)
 
-        sparql_compact = "{SELECT} {WHERE}".format(
-            SELECT=select_clause, WHERE=where_clause
-        )
+        sparql = "{SELECT} {WHERE}".format(SELECT=select_clause, WHERE=where_clause)
+        if groupby_clause:
+            sparql += "\n" + groupby_clause
+        if order_clause:
+            sparql += "\n" + order_clause
+        if limit_clause:
+            sparql += "\n" + limit_clause
 
-        return sparql_compact
+        return QuerySparql(sparql)
