@@ -14,7 +14,7 @@
 
     <!-- Project Properties -->
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Most of these are set in the parent pom -->
     </properties>
 
     <!-- Parent POM -->
