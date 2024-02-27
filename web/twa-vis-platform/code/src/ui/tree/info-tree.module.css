@@ -5,6 +5,21 @@
     flex-direction: column;
   }
   
+  .infoHeadSection { 
+    width: 400px;
+    height: 100px;
+    min-width: 100px;
+    min-height: 100px;
+
+    position: relative;
+    top: 10px;
+    left: 20px;
+
+    display: flex;
+    flex-direction: column;
+    pointer-events: all;
+  }
+
   .infoSection { 
     width: 100%;  
     box-sizing: border-box;
