@@ -1,7 +1,7 @@
 # Building Identification Agent
 
 
-The Building Identification Agent takes a list of geometries as input. If these geometries are points, they can specified as part of the JSONObject sent in the POST request to this agent. Alternatively, the user can store these geometries in a PostgreSQL table and specify the name of this table. The agent retrieves the Universally Unique Identifier (UUID) of the buildings associated with each geometry by querying buildings footprint data from the 'citydb' schema of the 'postgres' database in the stack. These UUIDs are returned within a JSONObject. If the point geometries were queried from a user-specified PostgreSQL table, the building UUIDs are returned to the user in two possible formats. If the user specifies that there should only be one building matched to each geometry, the building UUIDs are appended as a column with the name 'building_id' to the same table. This 'building_id' column will have the character varying PostgreSQL data type. Alternatively, if the user specifies that multiple buildings need to be matched with each input geometry, a new table is created containing the unique identifiers from the user-specified table and the UUIDs of the buildings matched to each user-specified geometry.
+The Building Identification Agent takes a list of geometries as input. If these geometries are points, they can specified as part of the JSONObject sent in the POST request to this agent. Alternatively, the user can store these geometries in a PostgreSQL table and specify the name of this table. The agent retrieves the Universally Unique Identifier (UUID) of the buildings associated with each geometry by querying buildings footprint data from the 'citydb' schema of the 'postgres' database in the stack. These UUIDs are returned within a JSONObject. If the geometries were queried from a user-specified PostgreSQL table, the building UUIDs are returned to the user in two possible formats. If the user specifies that there should only be one building matched to each geometry, the building UUIDs are appended as a column with the name 'building_uuid' to the same table. This 'building_uuid' column will have the character varying PostgreSQL data type. Alternatively, if the user specifies that multiple buildings need to be matched with each input geometry, a new table is created containing the unique identifiers from the user-specified table and the UUIDs of the buildings matched to each user-specified geometry.
 
 
 ## 1. Agent Deployment
@@ -27,9 +27,7 @@ This agent requires the following tools, which **MUST** run on the same stack. T
 
 (1) PostgreSQL database
 
-The agent is designed to use the stack PostgreSQL. It requires the buildings data to be stored in a schema called 'citydb' in the 'postgres' database. This schema must have three tables called 'database_srs', 'cityobject' and 'cityobject_genericattrib'. The EPSG coordinate reference system used in the database is retrieved from the 'database_srs' table. The building footprints are obtained from the 'envelope' column of the 'cityobject' table. The corresponding UUIDs are queried from the 'strval' column of the 'cityobject_genericattrib' table. These UUIDs will appear in the JSONObject returned by this agent for the matched buildings.
-
-If the user-specified coordinates are stored as Point geometries in a PostgreSQL table, the column containing these geometries must have the name 'geometry' and an associated SRID. The agent automatically converts the coordinates from the SRID in the user-specified table to the SRID used to store the building footprints in the 'citydb' schema. The user-specified table must also have a column called 'ogc_fid' containing integers which are unique and non-null. This requirement can be automatically satisfied if the table was created using the [stack data uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader). In addition, the user-specified table must be in the same 'postgres' database that contains the buildings data.
+The agent is designed to use the stack PostgreSQL. It requires the buildings data to be stored in a schema called 'citydb' in the 'postgres' database. The buildings data can be instantiated in the required format by uploading the raw data using the [stack data uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader). The user-specified table must be in the same 'postgres' database that contains the buildings data.
 
 ### 1.2 Docker deployment
 
@@ -65,13 +63,14 @@ Upon successful completion, the agent returns a JSONObject indicating the number
 
 ### 2.2 Postgis route (http://localhost:3838/buildingidentificationagent/postgis)
 
-This endpoint should be used when the user has stored the coordinates that need to be matched as Point geometries in a PostgreSQL table. If the name of the column containing these geometries is not specified, a default value of "geometry" is assumed. The geometries need to have an associated SRID. The agent automatically converts the coordinates from the SRID in the user-specified table to the SRID used to store the building footprints in the "citydb" schema. The user-specified table must also have a column called 'ogc_fid' containing integers which are unique and non-null.
+This endpoint should be used when the user has stored the geometries that need to be matched in a PostgreSQL table. If the name of the column containing these geometries is not specified, a default value of "geometry" is assumed. The geometries need to have an associated SRID. The agent automatically converts the geometries from the SRID in the user-specified table to the SRID used to store the building footprints in the "citydb" schema. The user-specified table must also have a column called 'ogc_fid' containing integers which are unique and non-null.
 
 This endpoint accepts the following POST request parameters.  :
 
-- ```table```: The name of the PostgreSQL table containing the coordinates to be matched as POSTGIS Point geometries. If the table is not located within the "public" schema, the schema name should also be included. For example, if the table is called "test" and it is located in the "industry" schema, the value of this parameter should be specified as the string "industry.test". This table must be stored in a schema within the "postgres" database.
+- ```table```: The name of the PostgreSQL table containing the geometries to be matched. If the table is not located within the "public" schema, the schema name should also be included. For example, if the table is called "test" and it is located in the "industry" schema, the value of this parameter should be specified as the string "industry.test". This table must be stored in a schema within the "postgres" database.
 - ```column```: The column in the PostgreSQL table containing the geometries to be matched.
-- ```maxDistance``` (Optional): The maximum allowable distance between the centre of the matched building footprint and the specified coordinates in meters. If the nearest building is further than ```maxDistance```, the matching still takes place but a warning is printed in the Docker logs. The default value of this parameter is 100 meters. This parameter is only applicable if the geometries in the user-specified table and column are points.
+- ```maxDistance``` (Optional): The maximum allowable distance between the centre of the matched building footprint and the specified coordinates in meters. If the nearest building is further than ```maxDistance``` from a particular user-specified geometry, it will not be matched to any building. The default value of this parameter is 100 meters. This parameter is only applicable if the geometries in the user-specified table and column are points.
+- ```overlapFraction```: If the user-specified geometries are polygons, the matching is performed based on the extent of overlap between each polygon and the buildings with which it intersects. The ratio of the intersection area to the user-specified polygon is required to be at least as large as overlapFraction in order for matching to occur.
 - ```oneToMany``` (Optional): A Boolean parameter specifying whether each user-specified geometry should be associated with one or several buildings. If this parameter value is set to "true", the code identifies the geometry in the user-specified column closest to each building while excluding geometries based on user-specified attributes. The default value of this parameter is false.
 The following optional parameters are only applicable if ```oneToMany``` is "true".
 - ```newTable``` (Optional): The name of the table in which the results of the matching should be stored. By default, this table is called 'matched_buildings' and it is created in the 'public' schema.
@@ -79,8 +78,13 @@ The following optional parameters are only applicable if ```oneToMany``` is "tru
 - ```excludedValues``` (Optional): A JSONArray of JSONArrays. Each nested JSONArray contains a list of strings specifying values of the corresponding attribute specified in ```filterColumns``` which should be excluded from the matching.
 
 
-The following is an example POST request for the postgis route, assuming that the user has created a table called "landplot" in the "public" schema with the required format :
+For both routes, the desired values of various input parameters can be set in the input.json file. Subsequently, the POST request is sent to the agent as follows:
 
+```
+curl -X POST -H "Content-Type: application/json" -d @input.json  "localhost:3838/buildingidentificationagent/postgis"
+```
+
+The POST request can also be manually typed out as in the following example, which assumes that the user has created a table called "landplot" in the "public" schema with the required format :
 
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","table":"public.landplot","column":"lod1Geometry","oneToMany":"true","filterColumns":["LU_DESC"],"excludedValues":[["ROAD", "PARK"]]}'  "localhost:3838/buildingidentificationagent/postgis"
@@ -92,7 +96,7 @@ Upon successful completion, the agent returns a JSONObject indicating the number
 {"number_matched":106359}
 ```
 
-If ```oneToMany`` is false, the list of building UUIDs are appended as an additional column called "building_iri" to the user-specified table. If it is true, a new table is created containing the building IRIs matched to each user-specified geometry. 
+If ```oneToMany`` is false, the list of building UUIDs are appended as an additional column called "building_uuid" to the user-specified table. If it is true, a new table is created containing the building IRIs matched to each user-specified geometry. 
 
 
 
