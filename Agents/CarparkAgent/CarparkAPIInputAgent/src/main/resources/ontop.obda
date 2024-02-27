@@ -11,5 +11,5 @@ mappingId   carpark
 target      building:{building_iri} a bot:Building ; ontobim:hasFacility carpark:{carpark_uuid} .
             carpark:{carpark_uuid} a geo:Feature ; geo:hasGeometry carpark:{geom_uuid} . 
             carpark:{geom_uuid} geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {wkt}"^^geo:wktLiteral .
-source      SELECT ST_AsText(wkb_geometry) as wkt, carpark_uuid, geom_uuid, building_iri FROM carparks
+source      SELECT ST_AsText(wkb_geometry) as wkt, carpark_uuid, geom_uuid, building_uuid FROM carparks
 ]]
