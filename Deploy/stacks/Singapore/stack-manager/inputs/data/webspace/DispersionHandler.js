@@ -10,7 +10,7 @@ class DispersionHandler {
                 dispersionHandler.dispersions = dispersionsJson;
                 dispersionHandler.selectedSimulation = Object.keys(dispersionHandler.dispersions)[0];
             });
-            dispersionHandler.queryForDispersions(dispersionHandler, setDispersionFunction).then(() => resolve());
+            dispersionHandler.queryForDispersions(dispersionHandler, setDispersionFunction).always(() => resolve());
         });
     }
 
