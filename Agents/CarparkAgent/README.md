@@ -69,6 +69,8 @@ In the `Dockerfile`, there are three variables that affects where the geolocatio
 - `DATABASE` the name of the database in postGIS to store the geolocation information
 - `GEOSERVER_WORKSPACE` the name of the workspace in Geoserver to store the geolocation information
 
+Modify `ontop.obda` accordingly if `DATABASE` has been modified.
+
 Open up the command prompt in the same directory as this README, run the command below to build the docker image:
 ```
 docker compose build
