@@ -49,7 +49,7 @@ def default():
     check_stack_status()
 
     logging.info(os.getcwd())
-    model = ClusterModel(NN_model_filepath="/app/NTUEnergyClusterAgent/models/nn_model.h5", kmeans_model_filepath='/app/NTUEnergyClusterAgent/models/kmeans_model.pkl')
+    model = ClusterModel(NN_model_filepath="/app/NTUEnergyClusterAgent/models/BNN_model.xlsx")
 
     all_P_values = []
     all_Q_values = []
@@ -57,6 +57,7 @@ def default():
     ##1. query all iris of bus nodes
     BUSNODE_IRIS = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
+## get only P values. Q not used by NN
     for busNode_iri in BUSNODE_IRIS:
         busNode_iri = busNode_iri['busNode']
         logging.info("running for busnode:" + busNode_iri)
@@ -89,8 +90,10 @@ def default():
         all_P_values.append(P_values)
         all_Q_values.append(Q_values)
 
-    predicted_Vm, predicted_Va = model.run_neural_net(all_P_values, all_Q_values)
+## parse these
+    predicted_probabilities = model.run_neural_net(input_data)
 
+## update KG with probability blue, green, red
     for i, busNode_iri in enumerate(BUSNODE_IRIS):
         busNode_iri = busNode_iri['busNode']
         #get vm iri via bus node
@@ -109,7 +112,5 @@ def default():
         logging.info("result_value_list string: " + str(result_value_list))
         timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, result_iri_list, result_value_list)
         timeseries_instantiation.add_timeseries_data(timeseries_object, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
-
-    clusters = model.run_k_means(predicted_Vm, predicted_Va)
 
     return 'Successfully calculated Vm and Va.'

@@ -34,8 +34,8 @@ class ClusterModel:
         except:
             return "BNN failed"      
     
-    def predict(self, inputData):
-         z1 = np.add(np.matmul(self.W1, inputData), self.b1)
+    def predict(self, input_data):
+         z1 = np.add(np.matmul(self.W1, input_data), self.b1)
          a1 = self.sigmoid(z1)
          z2 = np.add(np.matmul(self.W2, a1), self.b2)
          predictions = self.sigmoid(z2)
