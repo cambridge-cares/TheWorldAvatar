@@ -173,9 +173,12 @@ class OZCompact2VerboseConverter:
                     ocr:hasNumberOfFaces ?NumberOfFaces ;
                     ocr:hasTileFaceNumber [ 
                         ocr:hasValue ?NumberOfTileFaces ;
-                        ocr:isNumberOfTileFaces/ocr:hasNumberOfEdges ?TileFaceNumberOfEdges ; 
+                        ocr:isNumberOfTileFaces [
+                            ocr:hasFaceCode ?FaceCode ;
+                            ocr:hasNumberOfEdges ?TileFaceNumberOfEdges 
+                        ] 
                     ]
-                ] ;
+                ]
             ] ;
             ocr:hasTileSignature ?TileSignature ;
             ocr:hasTransitivity/ocr:hasVectorComponent  
@@ -191,7 +194,7 @@ class OZCompact2VerboseConverter:
                 [
                     (
                         "ocr:hasTileNumber",
-                        "[ ocr:hasValue ?NumberOfTiles ; ocr:isNumberOfTiles [ ocr:hasTileCode ?TileCode ; ocr:hasNumberOfEdges ?NumberOfEdges ; ocr:hasNumberOfVertices ?NumberOfVertices ; ocr:hasNumberOfFaces ?NumberOfFaces ; ocr:hasTileFaceNumber [ ocr:hasValue ?NumberOfTileFaces ; ocr:isNumberOfTileFaces/ocr:hasNumberOfEdges ?TileFaceNumberOfEdges ; ] ] ; ]",
+                        "[ ocr:hasValue ?NumberOfTiles ; ocr:isNumberOfTiles [ ocr:hasTileCode ?TileCode ; ocr:hasNumberOfEdges ?NumberOfEdges ; ocr:hasNumberOfVertices ?NumberOfVertices ; ocr:hasNumberOfFaces ?NumberOfFaces ; ocr:hasTileFaceNumber [ ocr:hasValue ?NumberOfTileFaces ; ocr:isNumberOfTileFaces [ ocr:hasFaceCode ?FaceCode ; ocr:hasNumberOfEdges ?TileFaceNumberOfEdges ] ] ] ]",
                     ),
                     ("ocr:hasTileSignature", "?TileSignature"),
                     (
@@ -207,6 +210,7 @@ class OZCompact2VerboseConverter:
             "?NumberOfEdges",
             "?NumberOfVertices",
             "?NumberOfFaces",
+            "?FaceCode",
             "?NumberOfTileFaces",
             "?TileFaceNumberOfEdges",
             "?TransitivityP",
