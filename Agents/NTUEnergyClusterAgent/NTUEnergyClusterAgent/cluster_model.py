@@ -1,39 +1,47 @@
 import numpy as np
 import pandas as pd
-from sklearn.cluster import KMeans
-from tensorflow.keras.models import load_model
-import joblib
 import logging
 
 class ClusterModel:
-    def __init__(self, NN_model_filepath, kmeans_model_filepath):
+    def __init__(self, nn_model_filepath):
         logging.basicConfig(level=logging.DEBUG)
+        
+        self.input_size = 6
+        self.output_size = 45
+
         # Load the models
-        self.neural_net_model = load_model(NN_model_filepath)
-        self.kmeans_model = joblib.load(kmeans_model_filepath)
-    def run_neural_net(self, all_P_values, all_Q_values):
+        self.W1 = pd.read_excel(nn_model_filepath, 'W1').values
+        self.W2 = pd.read_excel(nn_model_filepath, 'W2').values
+        self.b1 = pd.read_excel(nn_model_filepath, 'b1').values
+        self.b2 = pd.read_excel(nn_model_filepath, 'b2').values
 
-        # load data from KG
-        # Load testing data
-        #test_P_injections = pd.read_excel('TestingData_14bus.xlsx', 'Sheet1').values
-        #test_Q_injections = pd.read_excel('TestingData_14bus.xlsx', 'Sheet2').values
+    def run_neural_net(self, input_data):
 
-        #X_test = np.concatenate([test_P_injections, test_Q_injections], axis=1)
-        #print("shape of original test:", X_test.shape)
-        X_test = np.concatenate([all_P_values, all_Q_values], axis=0).T
-        #X_test = np.array([[P_value], [Q_value]])
-        logging.info("shape of new test:", X_test.shape)
-        # Use the neural network model to predict the voltage magnitudes and phase angles
-        predicted_output = self.neural_net_model.predict(X_test)
-        logging.info(predicted_output.shape)
-        predicted_Vm = predicted_output[:, :14]
-        predicted_Va = predicted_output[:, 14:]
-        return predicted_Vm, predicted_Va
+        try:
+            size = input_data.shape           
+            if size[0] != self.input_size:
+                logging.error("input size:",size[0])
+                raise Exception("Input size does not match expected size")
+            if size[1] != 1:
+                logging.error("input length:",size[1])
+                raise Exception("Input length exceeds 1")
+            
+            predictions = self.predict(input_data)
 
-    def run_k_means(self, predicted_Vm, predicted_Va):
-        # Use the k-means model to predict the cluster each data point belongs to
-        predicted_Vm = np.array(predicted_Vm).T
-        print("predicted vm shape", predicted_Vm.shape)
-        clusters = self.kmeans_model.predict(predicted_Vm)
-        print(clusters.shape)
-        return clusters
+            reshaped_predications = np.reshape(predictions, (self.output_size/3,3))
+            return reshaped_predications
+        
+        except:
+            return "BNN failed"      
+    
+    def predict(self, inputData):
+         z1 = np.add(np.matmul(self.W1, inputData), self.b1)
+         a1 = self.sigmoid(z1)
+         z2 = np.add(np.matmul(self.W2, a1), self.b2)
+         predictions = self.sigmoid(z2)
+         return predictions
+    
+    def sigmoid(self, x):
+        s = np.reciprocal(1.0+np.exp(-1.0*x))
+        return s
+		
