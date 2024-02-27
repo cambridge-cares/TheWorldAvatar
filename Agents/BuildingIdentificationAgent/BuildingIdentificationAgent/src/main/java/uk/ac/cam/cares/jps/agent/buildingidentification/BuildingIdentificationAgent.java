@@ -410,9 +410,9 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
                 " DROP TABLE IF EXISTS \"%s\" ; " +
                         " CREATE TABLE \"%s\" AS  ( " +
-                        "SELECT ogc_fid, uuid FROM " +
-                        " ( SELECT uuid, " +
-                        " building_footprint " +
+                        "SELECT ogc_fid, \"%s\" FROM " +
+                        " ( SELECT uuid AS \"%s\", " +
+                        " footprint_geometry AS footprint " +
                         " FROM building_footprints ) r2 " +
                         " LEFT JOIN LATERAL " +
                         " (SELECT ogc_fid, " +
@@ -420,6 +420,8 @@ public class BuildingIdentificationAgent extends JPSAgent {
                         " FROM \"%s\" ",
                 newTable,
                 newTable,
+                BUILDINGS_COLUMN,
+                BUILDINGS_COLUMN,
                 columnName, srid,
                 tableName);
         StringBuilder sqlBuilder = new StringBuilder(sqlTemplate);
