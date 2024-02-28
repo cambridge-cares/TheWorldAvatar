@@ -20,7 +20,7 @@
 					<RasterSymbolizer>
 						<ColorMap>
 							<ColorMapEntry color="#FFFFFF" quantity="0" opacity="0" />
-							<ColorMapEntry color="#FF0000" quantity="50" opacity="1" />
+							<ColorMapEntry color="#FFFFFF" quantity="50" opacity="1" />
 						</ColorMap>
 						<ContrastEnhancement>
 						<Normalize />
