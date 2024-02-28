@@ -14,7 +14,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/osmagent
-RUN --mount=type=cache,target=/root/.m2/repository mvn package
+RUN --mount=type=cache,target=/root/.m2/repository mvn package -DskipTests
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
@@ -26,7 +26,7 @@ WORKDIR /root/osmagent
 
 # #==================================================================================================
 # Copy the compiled jar from the builder
-COPY --from=builder /root/osmagent/output/osmagent##1.4.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/osmagent/output/osmagent##1.4.0.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 
