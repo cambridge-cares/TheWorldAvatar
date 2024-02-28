@@ -368,7 +368,7 @@ public class DerivedQuantitySparqlTest {
 		String errMsg = testKG.getProperty(ResourceFactory.createResource(statusIRI),
 				 ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
 				 .asLiteral().getString();
-		Assert.assertEquals(excComment, DerivationSparql.escapeSequences(errMsg));
+		Assert.assertEquals(excComment, errMsg);
 
 		Assert.assertTrue(errMsg.contains(exc.getClass().toString()));
 		Assert.assertTrue(errMsg.contains(exc.getMessage()));
@@ -399,7 +399,7 @@ public class DerivedQuantitySparqlTest {
 				 ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
 				 .asLiteral().getString();
 		// the returned value from devClient.markAsError should match the added to triple store
-		Assert.assertEquals(excComment, DerivationSparql.escapeSequences(errMsg));
+		Assert.assertEquals(excComment, errMsg);
 	}
 
 	@Test

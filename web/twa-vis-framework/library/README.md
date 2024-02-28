@@ -86,7 +86,7 @@ The following automated GitHub actions have been setup for the TWA-VF (all defin
     * Reads and parses the version from the `./library/VERSION` file.
     * Builds the TWA-VF Docker image.
     * Pushes the image to the registry with multiple tags.
-    * Generates a ZIP of compiled JS & CSS files and uploads as a GitHub release. 
+    * Generates a ZIP of compiled JS & CSS files and uploads as a GitHub release.
     * Converts HTML content for release email (based on changelog contents, uses Python).
     * Send release email via SMTP connection to CMCL email server.
       * This is done using the `CMCL_MAIL_USERNAME` and `CMCL_MAIL_PASSWORD` repository secrets.
@@ -103,7 +103,7 @@ Issue reporting a bug should also use the provided `bug` tag and link to the TWA
 
 ### Features
 
-Feature requests should be added in a similar manner to bug reports, using the provided `enhancement` tag instead. After filing, any non-trivial feature should be discussed with the development team and the issue updated with the (hopefully clearly scoped) requirements that the feature needs to meet, along with the planned technical approach (if known). 
+Feature requests should be added in a similar manner to bug reports, using the provided `enhancement` tag instead. After filing, any non-trivial feature should be discussed with the development team and the issue updated with the (hopefully clearly scoped) requirements that the feature needs to meet, along with the planned technical approach (if known).
 
 ### Overhaul
 

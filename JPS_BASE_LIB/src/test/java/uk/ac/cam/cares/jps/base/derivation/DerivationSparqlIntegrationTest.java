@@ -59,9 +59,9 @@ class DerivationSparqlIntegrationTest {
 		System.out.println(excComment);
 		Assertions.assertEquals(StatusType.ERROR, devSparql.getStatusType(derivation));
 		String askQuery = String.format(
-				"ASK { <%s> <%s>/<%s> \"%s\" }", derivation, DerivationSparql.derivednamespace + "hasStatus",
-				RDFS.COMMENT.toString(), excComment);
-		Assertions.assertTrue(storeClient.executeQuery(askQuery).getJSONObject(0).getBoolean("ASK"));
+				"SELECT ?c WHERE { <%s> <%s>/<%s> ?c }", derivation, DerivationSparql.derivednamespace + "hasStatus",
+				RDFS.COMMENT.toString());
+		Assertions.assertEquals(excComment, storeClient.executeQuery(askQuery).getJSONObject(0).getString("c"));
 
 		Assertions.assertTrue(excComment.contains(exc.getClass().toString()));
 		Assertions.assertTrue(excComment.contains(exc.getMessage()));

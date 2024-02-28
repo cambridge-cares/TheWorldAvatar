@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} between {minvalue1} and {maxvalue1} and {PropertyName2} around {value2}
+Provide a catalog of chemical species having {PropertyName1} within the range of {minvalue1} to {maxvalue1} and {PropertyName2} approximately at {value2}.
+List molecules exhibiting {PropertyName1} within {minvalue1} to {maxvalue1} and {PropertyName2} near {value2}.
+Enumerate compounds with {PropertyName1} ranging from {minvalue1} to {maxvalue1} and {PropertyName2} centered around {value2}.
+Compile a record of chemical entities showing {PropertyName1} in the interval of {minvalue1} to {maxvalue1} and {PropertyName2} close to {value2}.
+Present a rundown of species featuring {PropertyName1} within {minvalue1} to {maxvalue1} and {PropertyName2} approximately at {value2}.
+Catalog chemical compounds that have {PropertyName1} falling between {minvalue1} and {maxvalue1}, with {PropertyName2} situated around {value2}.
+Provide a list of molecules exhibiting {PropertyName1} spanning from {minvalue1} to {maxvalue1} and {PropertyName2} circling {value2}.
+List compounds showcasing {PropertyName1} within the scope of {minvalue1} to {maxvalue1} and {PropertyName2} near {value2}.
+Enumerate chemical species with {PropertyName1} between {minvalue1} and {maxvalue1} and {PropertyName2} around {value2}.
+Compile a record of chemical entities displaying {PropertyName1} within {minvalue1} to {maxvalue1} and {PropertyName2} centered around {value2}.
+Present a collection of species featuring {PropertyName1} in the range of {minvalue1} to {maxvalue1} and {PropertyName2} approximately at {value2}.
+Catalog chemical species that have {PropertyName1} falling between {minvalue1} and {maxvalue1}, with {PropertyName2} situated around {value2}.
+Provide a list of molecules exhibiting {PropertyName1} spanning from {minvalue1} to {maxvalue1} and {PropertyName2} circling {value2}.
+List compounds showcasing {PropertyName1} within the scope of {minvalue1} to {maxvalue1} and {PropertyName2} near {value2}.
+Enumerate chemical species with {PropertyName1} between {minvalue1} and {maxvalue1} and {PropertyName2} around {value2}.
+Compile a record of chemical entities displaying {PropertyName1} within {minvalue1} to {maxvalue1} and {PropertyName2} centered around {value2}.
+Present a collection of species featuring {PropertyName1} in the range of {minvalue1} to {maxvalue1} and {PropertyName2} approximately at {value2}.
+Catalog chemical species that have {PropertyName1} falling between {minvalue1} and {maxvalue1}, with {PropertyName2} situated around {value2}.
+Provide a list of molecules exhibiting {PropertyName1} spanning from {minvalue1} to {maxvalue1} and {PropertyName2} circling {value2}.
+List compounds showcasing {PropertyName1} within the scope of {minvalue1} to {maxvalue1} and {PropertyName2} near {value2}.

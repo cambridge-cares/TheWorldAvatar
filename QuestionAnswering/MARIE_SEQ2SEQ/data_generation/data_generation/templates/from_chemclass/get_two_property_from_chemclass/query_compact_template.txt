@@ -1,0 +1,8 @@
+SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName2}Value
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue .
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
+    ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
+    ?SpeciesIRI os:hasProperty{PropertyName2} ?{PropertyName2}Value .
+}}
