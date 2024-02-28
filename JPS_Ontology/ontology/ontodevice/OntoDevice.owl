@@ -450,7 +450,14 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/isAttachedTo">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:range rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/PlantItem"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a device being attached to another physical element or object.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is attached to</rdfs:label>
