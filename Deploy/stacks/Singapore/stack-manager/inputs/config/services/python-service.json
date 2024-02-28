@@ -3,9 +3,9 @@
         "Name": "python-service",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/python-service:1.3",
+                "Image": "ghcr.io/cambridge-cares/python-service:1.4-dev-live-ship-data-SNAPSHOT",
                 "Env": [
-                    "FILE_SERVER=http://sg-file-server:8080/FileServer/"
+                    "FILE_SERVER=http://${STACK_NAME}-file-server:8080/FileServer/"
                 ],
                 "Mounts": [
                     {
