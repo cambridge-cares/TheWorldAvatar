@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field, computed_field
-import typing
-from typing import Any, Optional, List, Union
-import rdflib
-from rdflib import Graph, URIRef
+from __future__ import annotations
+
+from pydantic import BaseModel, Field, model_validator
+from typing import Any, List, Union, TypeVar
+from rdflib import Graph, URIRef, Literal
 from rdflib.namespace import RDF, RDFS
 
 import hashlib
@@ -13,21 +13,40 @@ from py4jps.data_model.iris import TWA_BASE_PREFIX
 from py4jps.kg_operations import PySparqlClient
 
 
+T = TypeVar('T')
+
+def as_range_of_object_property(t: T) -> List[Union[T, str]]:
+    # TODO add validator to verify the length of the list as cardinality, also None as default value
+    # TODO handle single instance as well
+    return List[Union[t, str]]
+
+def as_range_of_data_property(t: T) -> List[T]:
+    # TODO add validator to verify the length of the list as cardinality, also None as default value
+    # TODO handle single instance as well
+    return List[t]
+
 class BaseProperty(BaseModel):
     base_prefix: str = Field(default=TWA_BASE_PREFIX, frozen=True)
     namespace: str = Field(default=None, frozen=True)
-    object: Any
+    predicate_iri: str = Field(default=None)
+    range: Any
 
-    @computed_field
-    @property
-    def predicate_iri(self) -> str:
-        return construct_rdf_type(self.base_prefix, self.namespace, self.__class__.__name__)
+    @model_validator(mode='after')
+    def set_predicate_iri(self):
+        if not bool(self.predicate_iri):
+            self.predicate_iri = self.__class__.get_predicate_iri()
+        return self
+
+    @classmethod
+    def get_predicate_iri(cls) -> str:
+        return construct_rdf_type(cls.model_fields['base_prefix'].default, cls.model_fields['namespace'].default, cls.__name__)
 
     def add_property_to_graph(self, subject: str, g: Graph):
         raise NotImplementedError("This is an abstract method.")
 
 
 class BaseOntology(BaseModel):
+    # TODO think about how to make it easier to construct an instance easily by hand (or should it be fully automated?)
     # two directions:
     # 1. firstly, from instance to triples
     #    - store all object properties as pydantic objects
@@ -49,25 +68,32 @@ class BaseOntology(BaseModel):
                   and run root_validator (for those pre=False) in order of how the root_validators are listed in codes,
                   e.g. clz='clz provided in the child class' will be added to 'values' of the input argument of root_validator;
         (IV) end BaseModel __init__;
-        (V) end BaseOntology __init__"""
+        (V) end BaseOntology __init__
+
+    Example:
+    class MyClass(BaseOntology):
+        myObjectProperty: MyObjectProperty
+        myDataProperty: MyDataProperty
+    """
     # NOTE Optional[DataProperty] can be used to indicate cardinality of 0..1
     # NOTE Optional[ObjectProperty] can be used to accmmodate the case where the object property is not instantiated
     base_prefix: str = Field(default=TWA_BASE_PREFIX, frozen=True)
     namespace: str = Field(default=None, frozen=True)
     rdfs_comment: str = Field(default=None)
+    rdf_type: str = Field(default=None)
+    instance_iri: str = Field(default=None)
 
-    @computed_field
-    @property
-    def rdf_type(self) -> str:
-        # see https://docs.pydantic.dev/dev/api/fields/#pydantic.fields.computed_field
-        # TODO rdf_type should be a class attribute
-        return construct_rdf_type(self.base_prefix, self.namespace, self.__class__.__name__)
+    @model_validator(mode='after')
+    def set_rdf_type(self):
+        if not bool(self.rdf_type):
+            self.rdf_type = self.__class__.get_rdf_type()
+        if not bool(self.instance_iri):
+            self.instance_iri = init_instance_iri(self.base_prefix, self.__class__.__name__)
+        return self
 
-    @computed_field
-    @property
-    def instance_iri(self) -> str:
-        # see https://docs.pydantic.dev/dev/api/fields/#pydantic.fields.computed_field
-        return init_instance_iri(self.base_prefix, self.__class__.__name__)
+    @classmethod
+    def get_rdf_type(cls) -> str:
+        return construct_rdf_type(cls.model_fields['base_prefix'].default, cls.model_fields['namespace'].default, cls.__name__)
 
     def push_to_kg(self, sparql_client: PySparqlClient):
         """This method is for pushing new instances to the KG, or updating existing instance."""
@@ -76,11 +102,71 @@ class BaseOntology(BaseModel):
         sparql_client.upload_graph(g)
 
     @classmethod
-    def pull_from_kg(instance_iri: str, sparql_client: PySparqlClient):
+    def pull_from_kg(cls, iris: List[str], sparql_client: PySparqlClient, depth: int = 0) -> List[BaseOntology]:
         # TODO provide the basic implementation for pulling instance from KG
-        # TODO do we only pull instance and its out-going edges, or also in-coming edges?
-        # TODO what do we do with undefined properties in python class?
-        pass
+        # TODO only pull instance and its out-going edges
+        # TODO what do we do with undefined properties in python class? - write a warning message or we can add them to extra_fields https://docs.pydantic.dev/latest/concepts/models/#extra-fields
+        if isinstance(iris, str):
+            iris = [iris]
+        node_dct = sparql_client.get_outgoing_and_attributes(iris) # TODO return format: {iri: {predicate: [object]}}
+        instance_lst = []
+        # TODO handle object properties (where the recursion happens)
+
+        # Here we handle data properties
+        dps = cls.get_data_properties()
+        for iri, props in node_dct.items():
+            instance_lst.append(
+                cls(
+                    instance_iri=iri,
+                    **{
+                        dp_dct['field']: dp_dct['type'](range=props[dp_iri]) if dp_iri in props else None for dp_iri, dp_dct in dps.items()
+                    }
+                )
+            )
+        print("/////////////////////////////////////////////////////////////")
+        print(instance_lst)
+        print("/////////////////////////////////////////////////////////////")
+        # for f in C.model_fields:
+        #     if issubclass(C.model_fields[f].annotation, DataProperty):
+        #         lst.append(C.model_fields[f].annotation(range=d[iri][C.model_fields[f].annotation.get_rdf_type()][0]))
+
+        #     if issubclass(C.model_fields[f].annotation, ObjectProperty):
+        #         print(d[iri][C.model_fields[f].annotation.get_rdf_type()])
+        #         lst.append(C.model_fields[f].annotation(range=d[iri][C.model_fields[f].annotation.get_rdf_type()][0]))
+
+        # for iri in iris:
+        #     field_dct = {}
+        #     for f in cls.model_fields:
+        #         if issubclass(cls.model_fields[f].annotation, DataProperty):
+
+        #     # for cls.model_fields[k] in cls.model_fields.values():
+        #         if isinstance(cls.model_fields[k], ObjectProperty):
+        #             if k in node_dct[iri]:
+        #                 node_dct[iri][k] = [cls.pull_from_kg([iri], sparql_client, depth-1) for iri in node_dct[iri][k]]
+        #     # TODO create a new instance
+        #     lst.append[cls(**field_dct)]
+        #     # for p, o in node_dct[iri].items():
+        #     #     if isinstance(v, list):
+        #     #         node_dct[iri][k] = [cls.pull_from_kg([iri], sparql_client, depth-1) for iri in v]
+        # # TODO how to create a new instance of the class with the returned triples?
+        # TODO add check for rdf_type
+        return instance_lst
+
+    @classmethod
+    def get_object_properties(cls):
+        return {
+            field_info.annotation.get_predicate_iri():{
+                'field': f, 'type': field_info.annotation
+            } for f, field_info in cls.model_fields.items() if issubclass(field_info.annotation, ObjectProperty)
+        }
+
+    @classmethod
+    def get_data_properties(cls):
+        return {
+            field_info.annotation.get_predicate_iri():{
+                'field': f, 'type': field_info.annotation
+            } for f, field_info in cls.model_fields.items() if issubclass(field_info.annotation, DataProperty)
+        }
 
     def create_triples_for_kg(self, g):
         """This method is for creating triples as rdflib.Graph() for the knowledge graph.
@@ -90,13 +176,13 @@ class BaseOntology(BaseModel):
         unless one wants to provide completely different triples."""
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
         if self.rdfs_comment:
-            g.add((URIRef(self.instance_iri), RDFS.comment, rdflib.Literal(self.rdfs_comment)))
+            g.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment)))
         for f, prop in iter(self):
             if f not in ['base_prefix', 'namespace', 'rdfs_comment', 'instance_iri', 'rdf_type'] and bool(prop):
-                if isinstance(prop, BaseProperty):
+                if isinstance(prop, BaseProperty) and bool(prop.range):
                     g = prop.add_property_to_graph(self.instance_iri, g)
                 else:
-                    raise TypeError(f"Type of {prop} is not supported for field {f}.")
+                    raise TypeError(f"Type of {prop} is not supported for field {f} when creating KG triples for instance {self.dict()}.")
         return g
 
     def _exclude_keys_for_compare_(self, *keys_to_exclude):
@@ -140,13 +226,13 @@ class BaseOntology(BaseModel):
 
 
 class ObjectProperty(BaseProperty):
-    object: Union[List[BaseOntology], List[str], BaseOntology, str]
-    # TODO from the test case in test_base_ontology.py, it seems best to provide a custom Type for the object field
-    # so that the user can just provide a list of ontology class or a single ontology class
+    range: as_range_of_object_property(BaseOntology)
+    # TODO modify __init__ so that both instance of BaseOntology and str can be parsed as range
 
     def add_property_to_graph(self, subject: str, g: Graph):
-        # NOTE the object can be a list of BaseOntology or str
-        op = self.object if isinstance(self.object, list) else [self.object]
+        # NOTE the range can be a list of BaseOntology or str
+        # The code will only enter the below if range is not None
+        op = self.range if isinstance(self.range, list) else [self.range]
         for o in op:
             if isinstance(o, BaseOntology):
                 g.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o.instance_iri)))
@@ -160,9 +246,18 @@ class ObjectProperty(BaseProperty):
 
 
 class DataProperty(BaseProperty):
+    # TODO whether str or specific type for the range, we can check during __init__
+    def __init__(self, **data) -> None:
+        if 'range' in data and not isinstance(data['range'], list):
+            data['range'] = [data['range']]
+        super().__init__(**data)
 
     def add_property_to_graph(self, subject: str, g: Graph):
         # TODO implement behaviour to overwrite the existing data property when pushing to KG
-        if self.object:
-            g.add((URIRef(subject), URIRef(self.predicate_iri), rdflib.Literal(self.object)))
+        dp = self.range if isinstance(self.range, list) else [self.range]
+        for d in dp:
+            try:
+                g.add((URIRef(subject), URIRef(self.predicate_iri), Literal(d)))
+            except Exception as e:
+                raise TypeError(f"Type of {d} ({type(d)}) is not supported by rdflib as a data property for {self.predicate_iri}.", e)
         return g

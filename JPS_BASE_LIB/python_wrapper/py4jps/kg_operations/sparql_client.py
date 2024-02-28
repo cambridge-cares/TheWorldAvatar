@@ -1,7 +1,7 @@
 import json
 import requests
 from datetime import datetime
-from typing import Tuple
+from typing import Tuple, Dict, Any, List
 from rdflib import Graph, Literal
 
 from py4jps.kg_operations.gateway import jpsBaseLibGW
@@ -130,3 +130,17 @@ class PySparqlClient:
         query = f"""ASK {{{s} {p} {o}.}}"""
         response = self.perform_query(query)
         return response[0]['ASK']
+
+    def get_outgoing_and_attributes(self, node_iris: List[str]) -> Dict[str, Any]:
+        if isinstance(node_iris, str):
+            node_iris = [node_iris]
+        query = f"""SELECT ?s ?p ?o WHERE {{VALUES ?s {{ {' '.join([f'<{utils.trim_iri(iri)}>' for iri in node_iris])} }} ?s ?p ?o.}}"""
+        response = self.perform_query(query)
+        result = {}
+        for r in response:
+            if r['s'] not in result:
+                result[r['s']] = {}
+            if r['p'] not in result[r['s']]:
+                result[r['s']][r['p']] = []
+            result[r['s']][r['p']].append(r['o'])
+        return result
