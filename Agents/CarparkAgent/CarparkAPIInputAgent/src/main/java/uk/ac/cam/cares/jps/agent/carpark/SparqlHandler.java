@@ -460,7 +460,7 @@ public class SparqlHandler {
      * @param carparkRatesData JSONObject containing carpark rates
      * @return map containing weekday, saturday, sunday and PH rates
      */
-    private Map<String, String> parseCarparkRates(JSONObject carparkRatesData) {
+    public Map<String, String> parseCarparkRates(JSONObject carparkRatesData) {
         Map<String, String> map = new HashMap<>();
         String saturdayRate = carparkRatesData.getString("saturday_rate");
         String sundayAndPHRates = carparkRatesData.getString("sunday_publicholiday_rate");
@@ -469,7 +469,7 @@ public class SparqlHandler {
         String weekdayRate;
 
         if (!(weekdayRate2.equals("-")) && !(weekdayRate2.equals(weekdayRate1))) {
-            weekdayRate = weekdayRate1 + ";" + weekdayRate2;
+            weekdayRate = weekdayRate1 + " ; " + weekdayRate2;
         } else {
             weekdayRate = weekdayRate1;
         }
