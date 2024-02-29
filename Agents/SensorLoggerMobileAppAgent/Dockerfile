@@ -13,7 +13,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 
 # Build
-WORKDIR /root/sensorloggermobileapp_agent
+WORKDIR /root/sensorloggermobileappagent
 RUN --mount=type=cache,target=/root/.m2/repository mvn package
 #==================================================================================================
 
@@ -21,17 +21,14 @@ RUN --mount=type=cache,target=/root/.m2/repository mvn package
 #==================================================================================================
 FROM tomcat:9.0 as agent
 
-WORKDIR /root/sensorloggermobileapp_agent
-ADD https://jdbc.postgresql.org/download/postgresql-42.5.4.jar ./resources/
-
+WORKDIR /root/sensorloggermobileappagent
 
 # #==================================================================================================
 # Copy the compiled jar from the builder
-COPY --from=builder /root/sensorloggermobileapp_agent/output/SensorLoggerMobileAppAgent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/sensorloggermobileappagent/output/sensorloggermobileappagent##1.0.0.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
-# # Port for Java debugging
+# Port for Java debugging
 EXPOSE 5005
-EXPOSE 10102
 
 ENTRYPOINT ["./entrypoint.sh"]

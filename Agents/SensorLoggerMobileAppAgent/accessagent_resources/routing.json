@@ -1,8 +1,7 @@
 [
-
 	{
-		"label": "test",
-		"queryEndpoint": "http://test-blazegraph:8080/blazegraph/namespace/kb/sparql",
-		"updateEndpoint": "http://test-blazegraph:8080/blazegraph/namespace/kb/sparql"
+		"label": "sensorlogger",
+		"queryEndpoint": "http://<STACK-NAME>-blazegraph:8080/blazegraph/namespace/kb/sparql",
+		"updateEndpoint": "http://<STACK-NAME>-blazegraph:8080/blazegraph/namespace/kb/sparql"
 	}
 ]
