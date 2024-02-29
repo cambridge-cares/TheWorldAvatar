@@ -1,0 +1,3 @@
+POST http://localhost:3838/buildingidentificationagent/postgis
+?table=company
+&column=wkb_geometry
