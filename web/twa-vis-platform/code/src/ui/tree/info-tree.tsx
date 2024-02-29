@@ -5,32 +5,47 @@ import { Icon } from "@mui/material";
 import { useSelector } from "react-redux";
 import { getLatLng } from "../../state/floating-panel-click-slice";
 import { selectSelectedFeature } from "../../state/map-feature-slice";
+import PanelHandler from "../../state/panel-handler-slice";
 
+/**
+ * InfoTree component responsible for displaying information about the selected
+ * geographic feature and its location. It renders the selected feature's
+ * details, such as name, description, and IRI, along with the latitude and
+ * longitude of the clicked location. It also fetches and displays additional
+ * feature information from an external data source via PanelHandler.
+ */
 export default function InfoTree() {
+  // State to store the latitude and longitude of the clicked location
   const latLng = useSelector(getLatLng);
-  const selectedFeature = useSelector(selectSelectedFeature); // Use useSelector here
-
-  // State to store the fetched stack data
+  // State to store the currently selected feature's information
+  const selectedFeature = useSelector(selectSelectedFeature);
+  // State to store the modified stack URL
   const [stack, setStack] = useState("");
+  // State to store fetched additional information about the selected feature
+  const [featureInfo, setFeatureInfo] = useState(null);
 
-  // Fetch data from API on component mount
+  // Effect to fetch and set the stack information on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/visualisation/data");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        // Assuming the stack you want to display is at the root of your JSON
-        setStack(data.stack);
-      } catch (error) {
-        console.error("Failed to fetch stack:", error);
-      }
-    };
+    PanelHandler.fetchStack()
+      .then(setStack)
+      .catch((error) => console.error(error));
+  }, []);
 
-    fetchData();
-  }, []); // Empty dependency array means this effect runs once on mount
+  // Effect to fetch additional feature information when a new feature is selected
+  useEffect(() => {
+    if (selectedFeature && selectedFeature.iri) {
+      const scenarioID = "sFCkEoNC"; // Placeholder scenario ID
+      PanelHandler.addSupportingData(selectedFeature, scenarioID)
+        .then((data) => {
+          if (data) {
+            setFeatureInfo(data); // Update state with fetched data
+          } else {
+            // Future Development: Optionally handle the case where no data is returned
+          }
+        })
+        .catch((error) => console.error(error));
+    }
+  }, [selectedFeature]);
 
   return (
     <div className={styles.infoPanelContainer}>
@@ -39,35 +54,36 @@ export default function InfoTree() {
         <div className={styles.infoHeadSection}>
           <h3>Clicked Location</h3>
           <p>
-            Latitude: {latLng.lat.toFixed(2)} Longitude: {latLng.lng.toFixed(2)}{" "}
+            Latitude: {latLng.lat.toFixed(2)} Longitude: {latLng.lng.toFixed(2)}
           </p>
         </div>
       )}
-
-      {selectedFeature && ( // Ensure selectedFeature is not null or undefined
+      {selectedFeature && (
         <div className={styles.infoSection}>
           <h3>Feature Information</h3>
-          <p>Name: {selectedFeature.name}</p> {/* Correctly display the name */}
-          <p>Description: {selectedFeature.description}</p>{" "}
-          <p>IRI: {selectedFeature.iri}</p> {/* Display the description */}
+          <p>Name: {selectedFeature.name}</p>
+          <p>Description: {selectedFeature.description}</p>
+          <p>IRI: {selectedFeature.iri}</p>
         </div>
       )}
-
-      {stack && ( // Display the stack if it's not empty
+      {stack && (
         <div className={styles.infoSection}>
           <h3>Stack Information</h3>
           <p>{stack}</p>
         </div>
       )}
-
-      <div className={styles.infoSection}>
-        <h3>How to Use</h3>
-        <ul>
-          <li>Basic interaction 1</li>
-          <li>Basic interaction 2</li>
-          <li>Additional instructions</li>
-        </ul>
-      </div>
+      {featureInfo && (
+        <div className={styles.infoSection}>
+          <h3>Additional Feature Information</h3>
+          {featureInfo.meta &&
+            Object.entries(featureInfo.meta.Properties).map(([key, value]) => (
+              <p key={key}>
+                {key}: {value.toString()}
+              </p>
+            ))}
+          {/* Iterate over and display other parts of featureInfo as needed */}
+        </div>
+      )}
     </div>
   );
 }
