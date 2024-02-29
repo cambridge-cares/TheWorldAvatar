@@ -119,6 +119,7 @@ class PanelHandler {
 		}
         document.getElementById("returnContainer").style.display = "none";
         window.currentFeature = null;
+        window.currentTimeIndex=0;
 
         // Simulate click on general tab
         // @ts-ignore
@@ -270,6 +271,7 @@ class PanelHandler {
         if(Manager.SETTINGS.getSetting("credo") === true) {
             agentURL = stack + "/CReDoAccessAgent/getMetadataPrivate/";
             agentURL += scenarioID + "?iri=" + encodeURIComponent(iri);
+            agentURL += "&time_index=" + window.currentTimeIndex;
         }
 
         let self = this;

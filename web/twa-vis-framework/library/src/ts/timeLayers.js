@@ -53,6 +53,8 @@ window.addEventListener('load', function () {
         let value = e.target.value;
         console.log(value);
         manager.loadDefinitions().then(() => manager.plotData());
+        window.currentTimeIndex = value;
+        manager.showFeature(window.currentFeature);
         // changeSource(heatURL, '0.0.heat-source', ['0.0.heat-layer'], value);
         // changeSource(powerURL, '0.2.power-connections', ['0.2.power-conn-layer-under', '0.2.power-conn-layer-core', '0.2.power-conn-layer-arrow'], value);
         // all the layers and sources that we want to move
