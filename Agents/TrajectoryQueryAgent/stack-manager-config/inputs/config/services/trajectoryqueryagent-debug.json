@@ -1,0 +1,55 @@
+{
+    "ServiceSpec": {
+      "Name": "trajectoryqueryagent",
+      "TaskTemplate": {
+        "ContainerSpec": {
+          "Image": "trajectoryqueryagent:1.0.0",
+          "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "../../../../../../Agents/TrajectoryQueryAgent/trajectoryqueryagent/src/main/resources",
+                "Target": "/resources"
+            }
+          ],
+          "Env": [
+            "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+          ],  
+          "Configs": [
+            {
+              "ConfigName": "blazegraph"
+            },
+            {
+              "ConfigName": "postgis"
+            },
+            {
+              "ConfigName": "geoserver"
+            }
+          ],
+          "Secrets": [
+            {
+              "SecretName": "postgis_password"
+            },
+            {
+              "SecretName": "geoserver_password"
+            }
+          ]
+        }
+      },
+      "EndpointSpec": {
+        "Ports": [
+          {
+            "Name": "web",
+            "Protocol": "tcp",
+            "TargetPort": "5005",
+            "PublishedPort": "5005"
+          }
+        ]
+      }
+    },
+    "endpoints": {
+      "isochroneagent": {
+        "url": "http://localhost:8080/trajectoryqueryagent/",
+        "externalPath": "/trajectoryqueryagent/"
+      }
+    }
+  }
