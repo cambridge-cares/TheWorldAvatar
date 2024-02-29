@@ -33,6 +33,7 @@ class DataGroup {
      */
     public id: string;
 
+    
     /**
      * 
      */
@@ -45,15 +46,17 @@ class DataGroup {
      * 
      * @param sourceJSON JSON array of source nodes.
      */
-    public parseDataSources(sourcesJSON) {
+    public parseDataSources(sourcesJSON,  value?: number) {
         for(const element of sourcesJSON) {
-            let node = element;
-
+            let node = JSON.parse(JSON.stringify(element).replace('{wildcard}', value.toString()));
             // Create and store source
             let source = new DataSource(node);
 
             let sourceID = this.id + "." + node["id"];
             source.id = sourceID;
+
+            // if (source.dimension){
+            // }
 
             this.dataSources.push(source);
         }
@@ -69,9 +72,9 @@ class DataGroup {
      * @param stack base URL of the connected stack
      * @param layersJSON JSON array of layer nodes.
      */
-    public parseDataLayers(stack: string, layersJSON) {
-        for(var i = 0; i < layersJSON.length; i++) {
-            let node = layersJSON[i];
+    public parseDataLayers(stack: string, layersJSON, value?: number) {
+        for(const element of layersJSON) {
+            let node = JSON.parse(JSON.stringify(element).replace('"{wildcard}"', value.toString()));
 
             // Find the data source for this layer
             let source = this.findSource(node["source"]);
@@ -126,7 +129,6 @@ class DataGroup {
 
                 default:
                     throw new Error("Unknown map provider specified!");
-                break;
             }
 
             // Cache the layer's original definition
@@ -139,9 +141,9 @@ class DataGroup {
 
             // Cache visibility is present
             if(node?.layout?.visibility != null) {
-                layer.cacheVisibility((node?.layout?.visibility == "visible") ? true : false);
+                layer.cacheVisibility((node?.layout?.visibility == "visible"));
             } else if(node?.visibility != null) {
-                layer.cacheVisibility((node?.visibility == "visible") ? true : false);
+                layer.cacheVisibility((node?.visibility == "visible"));
             }
             
             // Register this layer to this connected stack
@@ -199,7 +201,6 @@ class DataGroup {
         this.recurseFindLayer(array, this, id);
         return (array.length === 1) ? array[0] : null;
     }
-
     /**
      * Recurse
      */

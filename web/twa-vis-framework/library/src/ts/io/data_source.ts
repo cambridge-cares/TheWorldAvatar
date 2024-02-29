@@ -13,11 +13,29 @@ class DataSource {
      */
     public type: string;
 
-    /**
+    /** 
      * The JSON object that originally defined this source.
      */
     public definition: Object;
-   
+
+    /**
+     * Dimension name, could be time, elevation, timeString 
+     * @optional
+     * */    
+    public dimension?: string;
+
+    /** 
+     * Minimum of specified dimension
+     * @optional
+     */
+    public minimum?: string;
+
+    /** 
+     * Maximum of specified dimension
+     * @optional
+     */
+    public maximum?: string;
+    
     /**
      * Initialise a new DataSource instance based on a JSON object.
      * 

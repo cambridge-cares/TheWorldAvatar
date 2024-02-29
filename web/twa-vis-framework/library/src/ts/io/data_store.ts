@@ -42,7 +42,6 @@ class DataStore {
         if(depth < 0 || currentGroup === null) return;
 
         let targetName = groupNames[depth];
-        let self = this;
 
         if (targetName === currentGroup.name) {
             if(depth === (groupNames.length - 1)) {
@@ -54,6 +53,8 @@ class DataStore {
                 });
             }
         }
+
+
     }
     
     /**
@@ -64,19 +65,19 @@ class DataStore {
      * 
      * @returns Promise that fulfills when all loading is complete
      */
-    public loadDataGroups(dataJSON) {
+    public loadDataGroups(dataJSON: Object, value: number) {
         if(dataJSON == null) {
             let self = this;
             
             return $.getJSON("./data.json", function(json) {
-                self.recurseLoadDataGroups(json, null, null, self.dataGroups.length);
+                self.recurseLoadDataGroups(json, null, null, self.dataGroups.length, value);
             }).fail((error) => {
                 throw error;
             });    
         }
 
         return new Promise((resolve, reject) => {
-            this.recurseLoadDataGroups(dataJSON, null, null, this.dataGroups.length);
+            this.recurseLoadDataGroups(dataJSON, null, null, this.dataGroups.length, value);
             resolve("done");
         });
     }
@@ -85,7 +86,7 @@ class DataStore {
      * Recursively parses the visualisation definition file into hierarchal
      * DataGroup instances.
      */
-    private recurseLoadDataGroups(currentNode: Object, parentGroup: DataGroup, currentStack: string, groupID: number) {
+    private recurseLoadDataGroups(currentNode: Object,  parentGroup: DataGroup, currentStack: string, groupID: number,  value: number) {
         if(!currentNode["name"]) {
             throw new Error("Cannot parse a DataGroup that has no name!")
         }
@@ -96,7 +97,7 @@ class DataStore {
             currentStack = updateURL(currentNode["stack"]);
         }
 
-        // Initialise data group
+        // Initialise data group    
         let dataGroup = new DataGroup();
         dataGroup.name = currentNode["name"];
         dataGroup.id = groupID.toString();
@@ -117,17 +118,17 @@ class DataStore {
 
         // Parse sources and layers (if present)
         if(currentNode["sources"]) {
-            dataGroup.parseDataSources(currentNode["sources"]);
-        }   
+            dataGroup.parseDataSources(currentNode["sources"], value);
+        }   1
         if(currentNode["layers"]) {
-            dataGroup.parseDataLayers(currentStack, currentNode["layers"]);
+            dataGroup.parseDataLayers(currentStack, currentNode["layers"], value);
         }
 
         // Recurse into sub groups (if present)
         if(currentNode["groups"]) {
-            for(var i = 0; i < currentNode["groups"].length; i++) {
+            for(let i = 0; i < currentNode["groups"].length; i++) {
                 let subNode = currentNode["groups"][i];
-                this.recurseLoadDataGroups(subNode, dataGroup, currentStack, i);
+                this.recurseLoadDataGroups(subNode, dataGroup, currentStack, i, value);
             }
         }
     }
@@ -136,8 +137,8 @@ class DataStore {
      * Returns the layer with the input ID from anywhere in the store.
      */
     public getLayerWithID(id: string): DataLayer {
-        for(var i = 0; i < this.dataGroups.length; i++) {
-            let result = this.dataGroups[i].getLayerWithID(id);
+        for(const element of this.dataGroups) {
+            let result = element.getLayerWithID(id);
             if(result !== null) return result;
         }
         return null;
