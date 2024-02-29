@@ -673,7 +673,10 @@ public class QueryClient {
             if (latestTime != null) {
                 String dispersionRaster = dispersionSimulation
                         .getDispersionRaster(dispersionSimulation.getPollutants().get(0));
-                simulationTimes = tsClient.getTimeSeries(List.of(dispersionRaster), conn).getTimes();
+                simulationTimes = tsClient
+                        .getTimeSeriesWithinBounds(List.of(dispersionRaster), latestTime - 86400, latestTime, conn)
+                        .getTimes();
+                // 86400 = 24 hours
             } else {
                 simulationTimes = new ArrayList<>();
             }
