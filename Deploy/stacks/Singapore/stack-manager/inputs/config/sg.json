@@ -12,7 +12,9 @@
             "python-service",
             "virtual-sensor-agent",
             "ship-input-agent",
-            "buildingidentificationagent"
+            "buildingidentificationagent",
+            "cea-agent",
+            "access-agent"
         ],
         "excludes": []
     },
