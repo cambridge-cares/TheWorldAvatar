@@ -1,0 +1,30 @@
+{
+  "type": "grafana",
+  "ServiceSpec": {
+    "Name": "grafana",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "grafana/grafana-oss:10.0.3",
+        "Secrets": [
+          {
+            "SecretName": "grafana_password"
+          }
+        ],
+        "Mounts": [
+          {
+            "Type": "volume",
+            "Source": "grafana",
+            "Target": "/var/lib/grafana",
+            "ReadOnly": false
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:3000/",
+      "externalPath": "/analytics"
+    }
+  }
+}

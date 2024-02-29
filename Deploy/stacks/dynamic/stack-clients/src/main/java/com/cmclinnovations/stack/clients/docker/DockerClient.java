@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,8 +28,9 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.utils.AbstractTempPath;
 import com.cmclinnovations.stack.clients.utils.TempDir;
 import com.github.dockerjava.api.command.CopyArchiveToContainerCmd;
 import com.github.dockerjava.api.command.CreateConfigCmd;
@@ -141,6 +143,8 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         private long initialisationTimeout = 10;
         private long evaluationTimeout = 60;
 
+        private String user;
+
         public ComplexCommand(String containerId, String... cmd) {
             execCreateCmd = internalClient.execCreateCmd(containerId);
             this.cmd = cmd;
@@ -191,6 +195,11 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
             return this;
         }
 
+        public ComplexCommand withUser(String user) {
+            this.user = user;
+            return this;
+        }
+
         public String exec() {
             boolean attachStdin = null != inputStream;
             boolean attachStdout = null != outputStream;
@@ -214,6 +223,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
                     .withAttachStdin(attachStdin)
                     .withAttachStdout(attachStdout)
                     .withAttachStderr(attachStderr)
+                    .withUser(user)
                     .exec().getId();
 
             try (ExecStartCmd execStartCmd = internalClient.execStartCmd(execId)) {
@@ -293,7 +303,11 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         executeSimpleCommand(containerId, "mkdir", "-p", directoryPath);
     }
 
-    private final class RemoteTempDir extends TempDir {
+    public void makeDir(String containerId, String directoryPath, String user) {
+        createComplexCommand(containerId, "mkdir", "-p", directoryPath).withUser(user).exec();
+    }
+
+    private final class RemoteTempDir extends AbstractTempPath implements TempDir {
 
         private final String containerId;
 
@@ -317,9 +331,27 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
                         targetDir);
             } else {
                 throw new RuntimeException("Couldn't copy '" + sourcePath + "' into '" + targetDir
-                        + "' as the source was niether a file nor a directory.");
+                        + "' as the source was neither a file nor a directory.");
             }
+        }
 
+        @Override
+        public void copyTo(Path targetDir) {
+            String sourcePath = toString();
+            try {
+                retrieveFiles(containerId, sourcePath).forEach((path, content) -> {
+                    try {
+                        Path localAbsPath = targetDir.resolve(Path.of(path));
+                        Files.createDirectories(localAbsPath.getParent());
+                        Files.write(localAbsPath, content);
+                    } catch (IOException ex) {
+                        throw new RuntimeException("Couldn't copy file '" + path + "'' from '" + sourcePath + "' into '"
+                                + targetDir + "'.", ex);
+                    }
+                });
+            } catch (IOException ex) {
+                throw new RuntimeException("Couldn't copy '" + sourcePath + "' into '" + targetDir + "'.", ex);
+            }
         }
     }
 
@@ -476,10 +508,18 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
     public Optional<Container> getContainer(String containerName, boolean showAll) {
         try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
-            return listContainersCmd.withNameFilter(List.of(containerName))
+            Pattern fullContainerNamePattern = Pattern
+                    .compile("/?" + StackClient.getStackNameForRegex() + "-" + containerName + "(?:\\..*)?");
+            List<Container> possibleContainers = listContainersCmd.withNameFilter(List.of(containerName))
                     .withLabelFilter(StackClient.getStackNameLabelMap())
-                    .withShowAll(showAll).exec()
-                    .stream().findAny();
+                    .withShowAll(showAll).exec();
+            return possibleContainers
+                    .stream()
+                    .filter(container -> Stream.of(container.getNames())
+                            .anyMatch(name -> {
+                                return fullContainerNamePattern.matcher(name).matches();
+                            }))
+                    .findAny();
         }
     }
 
@@ -575,12 +615,12 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     }
 
     @Override
-    public <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         writeEndpointConfig(endpointConfig, this);
     }
 
     @Override
-    public <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
+    public <E extends EndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
         return readEndpointConfig(endpointName, endpointConfigClass, this);
     }
 
@@ -608,6 +648,10 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
     public List<Secret> getSecrets() {
         try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
+            Map<String, String> secretLabels = getSecretLabels();
+            if (null != secretLabels) {
+                listSecretsCmd.withLabelFilter(secretLabels);
+            }
             return listSecretsCmd.exec().stream().collect(Collectors.toList());
         }
     }

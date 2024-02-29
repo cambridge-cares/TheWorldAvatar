@@ -16,3 +16,4 @@ assets
 ## User defined
 *.egg-info
 *.env
+tmp_stack/**

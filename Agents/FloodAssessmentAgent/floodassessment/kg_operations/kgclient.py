@@ -44,6 +44,44 @@ class KGClient(PySparqlClient):
             raise Exception(f"Ambiguous severity instantiated for Flood Alert/Warning '{alert_warning_iri}'.")
 
 
+    def get_associated_flood_event(self, alert_warning_iri:str) -> str:
+        # Retrieve flood event IRI associated with flood alert/warning
+        # Returns string of flood event IRI or None
+
+        query = f"""
+            SELECT ?flood
+            WHERE {{   
+            <{alert_warning_iri}> <{RDF_TYPE}> <{FLOOD_ALERT_WARNING}> ; 
+                                  <{FLOOD_WARNS_ABOUT}> ?flood . 
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        if len(res) == 1:
+            return res[0].get('flood')
+        else:
+            return None
+        
+
+    def get_associated_flood_area(self, alert_warning_iri:str) -> str:
+        # Retrieve flood area IRI associated with flood alert/warning
+
+        query = f"""
+            SELECT ?area
+            WHERE {{   
+            <{alert_warning_iri}> <{RDF_TYPE}> <{FLOOD_ALERT_WARNING}> ; 
+                                  ^<{RT_CURRENT_WARNING}> ?area .
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        if len(res) == 1:
+            return res[0].get('area')
+        else:
+            logger.error(f"Ambiguous flood area(s) instantiated for Flood Alert/Warning '{alert_warning_iri}'.")
+            raise Exception(f"Ambiguous flood area(s) instantiated for Flood Alert/Warning '{alert_warning_iri}'.")
+
+
     def summarise_affected_property_values(self, property_value_iris:list) -> int:
         # Retrieve property market values from list of property value IRIs and summarise them
         # Returns sum of property value estimations as float
@@ -113,7 +151,6 @@ class KGClient(PySparqlClient):
             #      when uploading the ontology initially (using the EnergyPerformanceCertificate agent)
             return graph
 
-
         if not flood_iri:
             flood_iri = KB + 'Flood_' + str(uuid.uuid4())
             # Instantiate "general" flood type if no more specific flood type is instantiated/given
@@ -139,7 +176,7 @@ class KGClient(PySparqlClient):
 
         # Affected buildings
         graph.add((URIRef(flood_iri), URIRef(FLOOD_AFFECTS), URIRef(buildings_iri)))
-        graph.add((URIRef(buildings_iri), URIRef(RDF_TYPE), URIRef(FLOOD_BUILDINGS)))
+        graph.add((URIRef(buildings_iri), URIRef(RDF_TYPE), URIRef(FLOOD_BUILDING)))
         graph.add((URIRef(buildings_iri), URIRef(FLOOD_HAS_TOTAL_COUNT), Literal(affected_buildings_count, datatype=XSD_INTEGER))) 
         if affected_buildings_value is not None:
             graph.add((URIRef(buildings_iri), URIRef(FLOOD_HAS_TOTAL_MONETARY_VALUE), URIRef(bldgs_money_iri)))

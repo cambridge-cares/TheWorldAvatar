@@ -2,7 +2,7 @@
 Contains three API routes 
 
 ## InitialiseSimulation
-URL: http://localhost:8084/DispersionInteractor/InitialialiseSimulation
+URL: http://localhost:3838/dispersion-interactor/InitialialiseSimulation
 
 Parameters:
 1) ewkt
@@ -13,18 +13,21 @@ Parameters:
 3) ny
     - number of cells in the y direction
 
-This route creates 1 dispersion derivation in the knowledge graph and ensures that there is one weather station within the simulation polygon.
+4) citiesnamespace (optional)
+   - a string containing one of the namespaces listed at http://www.theworldavatar.com:83/citieskg/#namespaces.
+
+The citiesnamespace parameter is optional and can be omitted if running Aermod Agent for ships only without any static point sources. However, there must be at least one point source within the scope. This route creates 1 dispersion derivation in the knowledge graph and ensures that there is one weather station within the simulation polygon.
 
 If there are no errors, this should return the IRI of the created derivation, e.g. {"derivation": "http://derivation1"}.
 
 ## UpdateShipsAndSimulationTime
-URL: http://localhost:8084/DispersionInteractor/UpdateShipsAndSimulationTime
+URL: http://localhost:3838/dispersion-interactor/UpdateShipsAndSimulationTime
 
 1) This route calls the ShipInputAgent to add 1 timestep worth of data to the ships in the knowledge graph.
 2) The second thing this route triggers is to make the dispersion derivations out-of-date by updating the timestamp of one of the derivation's inputs - SimulationTime, this is the real time at which the simulation is performed.
 
 ## TriggerUpdateDispersion
-URL: http://localhost:8084/DispersionInteractor/TriggerUpdateDispersion
+URL: http://localhost:3838/dispersion-interactor/TriggerUpdateDispersion
 
 Parameter:
 1) derivation

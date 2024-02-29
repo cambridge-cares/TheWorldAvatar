@@ -12,10 +12,15 @@ from nltk.metrics.distance import jaro_similarity, edit_distance, jaro_winkler_s
 import numpy as np
 import pandas as pd
 import sentence_transformers
+import scipy
+import torch
 from tqdm import tqdm
 
 import ontomatch.blocking
 import ontomatch.utils.util
+
+embedding_dict = {}
+tfidf_dict = {}
 
 def check_str(v1, v2):
     return (v1 and v2 and isinstance(v1, str) and isinstance(v2, str))
@@ -70,28 +75,53 @@ def dist_cosine_with_tfidf(v1, v2, n_max_idf=100):
     df_index_tokens = ontomatch.blocking.TokenBasedPairIterator.df_index_tokens_unpruned
     if df_index_tokens is None:
         raise ValueError('df_index_tokens was not created yet')
-    return compare_strings_with_tfidf(v1, v2, n_max_idf, df_index_tokens, log=False)
+    return compare_strings_with_tfidf(v1, v2, n_max_idf, df_index_tokens)
 
 def dist_cosine_binary(v1, v2):
     if not check_str(v1, v2):
         return None
     return compare_strings_binary(v1, v2)
 
+def get_embedding(v):
+    embedding = embedding_dict.get(v)
+    if embedding is None:
+        #embedding = SentenceTransformerWrapper.model.encode(v, convert_to_tensor=True, show_progress_bar=False)
+        embedding = SentenceTransformerWrapper.model.encode(v, convert_to_numpy=True, show_progress_bar=False)
+        embedding_dict[v] = embedding
+    return embedding
+
 def dist_cosine_embedding(v1, v2):
     if not check_str(v1, v2):
         return None
-    embeddings1 = SentenceTransformerWrapper.model.encode(v1, convert_to_tensor=True, show_progress_bar=False)
-    embeddings2 = SentenceTransformerWrapper.model.encode(v2, convert_to_tensor=True, show_progress_bar=False)
-    pytorch_tensor = sentence_transformers.util.pytorch_cos_sim(embeddings1, embeddings2)
+
+    embedding1 = get_embedding(v1)
+    embedding2 = get_embedding(v2)
+
+    #ORIG
+    #pytorch_tensor = sentence_transformers.util.pytorch_cos_sim(embedding1, embedding2)
     # pytorch returns sometimes values such as 1.0000002
     # use min to avoid negative cosine distance
-    cosine_sim = min(1, pytorch_tensor[0].numpy()[0])
+    #cosine_sim = min(1, pytorch_tensor[0].cpu().numpy()[0])
     # negative cosine sim is mapped to 0
-    cosine_distance = 1 - max(0, cosine_sim)
+    #cosine_distance = 1 - max(0, cosine_sim)
+
+    cosine_distance = scipy.spatial.distance.cosine(embedding1, embedding2)
+    
     return cosine_distance
 
 class SentenceTransformerWrapper():
-    model = sentence_transformers.SentenceTransformer('all-MiniLM-L6-v2')
+    if torch.cuda.is_available():
+        device='cuda'
+    else:
+        device = 'cpu'
+    # model = 'all-MiniLM-L6-v2'
+    model = 'stsb-roberta-base'
+    logging.info('initializing SentenceTransformer with model=%s, device=%s', model, device)
+    model = sentence_transformers.SentenceTransformer(model, device=device)
+
+    def create_embedding_dictionary(sentences):
+        embeddings = ontomatch.scoring.SentenceTransformerWrapper.model.encode(sentences,  batch_size=32, convert_to_numpy=True, show_progress_bar=False)
+        ontomatch.scoring.embedding_dict = dict(zip(sentences, embeddings))
 
 def similarity_from_dist_fct(dist_fct, cut_off_mode='fixed', cut_off_value=1, decrease = 'linear'):
     # parameters to describe a monotone decreasing conversion fct c:[0, oo) --> [0,1] with c(0) = 1
@@ -173,6 +203,9 @@ class ScoreManager():
         self.df_scores = None
         self.df_max_scores_1 = None
         self.df_max_scores_2 = None
+        # empty dictionaries
+        ontomatch.scoring.embedding_dict = {}
+        ontomatch.scoring.tfidf_dict = {}
 
     def get_data1(self):
         return self.data1
@@ -226,8 +259,46 @@ class ScoreManager():
 
         return result
 
-    def calculate_similarities_between_datasets_for_pairs(self, candidate_pairs):
+
+    def create_embedding_dictionary(self, params_mapping):
+        # find properties for embedding similarity
+        index_emb_similarity = None
+        for i, fct in enumerate(params_mapping['similarity_functions']):
+            if fct['name'] == 'dist_cosine_embedding':
+                index_emb_similarity = i
+                break
+        
+        props1 = set()
+        props2 = set()
+        for triple in params_mapping['triples']:
+            if triple['sim'] == index_emb_similarity:
+                props1.add(triple['prop1'])
+                props2.add(triple['prop2'])
+
+        # create embedding dictionary in batches
+        sentences = set()
+        for _, row in self.data1.iterrows():
+            for p in props1:
+                s = row[p]
+                if s:
+                    sentences.add(row[p])
+        for _, row in self.data2.iterrows():
+            for p in props2:
+                s = row[p]
+                if s:
+                    sentences.add(s)
+
+        sentences = list(sentences)
+        SentenceTransformerWrapper.create_embedding_dictionary(sentences)
+        logging.info('created embedding dictionary=%s', len(embedding_dict))
+
+    def calculate_similarities_between_datasets_for_pairs(self, candidate_pairs, params_mapping):
         logging.info('calculating similarity vectors, number of pairs=%s', len(candidate_pairs))
+        starttime = time.time()
+
+        if params_mapping:
+            self.create_embedding_dictionary(params_mapping)
+
         count = 0
         rows = []
         for idx1, idx2 in tqdm(candidate_pairs):
@@ -244,7 +315,10 @@ class ScoreManager():
 
         result = pd.DataFrame(data=rows, columns=columns)
         result.set_index(['idx_1', 'idx_2'], inplace=True)
-        logging.info('calculated similarity vectors=%s, score columns=%s', len(result), columns)
+
+        timediff = time.time()-starttime
+        logging.info('calculated similarity vectors=%s, score columns=%s, embedding_dict=%s, time in seconds=%s', 
+            len(result), columns, len(ontomatch.scoring.embedding_dict), timediff)
         return result
 
     def save_similarity_vectors(self, df_scores, file):
@@ -255,16 +329,16 @@ class ScoreManager():
         logging.info('saving all similarity vectors to %s', new_file)
         df_scores.to_csv(new_file)
 
-    def calculate_similarities_between_datasets(self):
+    def calculate_similarities_between_datasets(self, params_mapping=None):
 
         logging.info('similarity vector file=%s', self.similarity_file)
         candidate_pairs = self.pair_iterator.candidate_matching_pairs
         if self.similarity_file is None :
             # calculate similarities from scratch for all candidate pairs
-            self.df_scores = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs)
+            self.df_scores = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs, params_mapping)
         elif not pathlib.Path(self.similarity_file).exists():
             # calculate similarities from scratch for all candidate pairs and store the result
-            self.df_scores = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs)
+            self.df_scores = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs, params_mapping)
             self.save_similarity_vectors(self.df_scores, self.similarity_file)
         else:
             df_loaded = ontomatch.utils.util.read_csv(self.similarity_file)
@@ -276,7 +350,7 @@ class ScoreManager():
             logging.info('loaded similarity vectors, all=%s, intersection=%s', len(df_loaded), len(df_intersection))
             index_diff = candidate_pairs.difference(df_loaded.index)
             if len(index_diff) > 0:
-                df_diff = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs=index_diff)
+                df_diff = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs=index_diff, params_mapping=params_mapping)
                 df_scores_tmp = pd.concat([df_intersection, df_diff])
                 df_all = pd.concat([df_loaded, df_diff])
                 logging.info('number of similarity vectors, all=%s, new=%s, df_scores=%s', len(df_all), len(df_diff), len(df_scores_tmp))
@@ -291,10 +365,9 @@ class ScoreManager():
 
         return self.df_scores
 
-    def calculate_maximum_scores(self, symmetric=False, switch_to_min_of_distance=False):
+    def calculate_maximum_scores(self, switch_to_min_of_distance=False):
         self.df_max_scores_1 = self.__calculate_maximum_scores(1, switch_to_min_of_distance)
-        if symmetric:
-            self.df_max_scores_2 = self.__calculate_maximum_scores(2, switch_to_min_of_distance)
+        self.df_max_scores_2 = self.__calculate_maximum_scores(2, switch_to_min_of_distance)
 
     def __calculate_maximum_scores(self, dataset_id, switch_to_min_of_distance=False):
 
@@ -362,7 +435,7 @@ class ScoreManager():
         df_result.set_index([index_column_name, other_index_column_name], inplace=True)
 
         logging.info('calculated maximum scores, scores=%s, entities=%s', count, len(df_result))
-        logging.info('maximum scores statistics: %s\n%s', str_column_prop, df_result.describe())
+        logging.debug('maximum scores statistics: %s\n%s', str_column_prop, df_result.describe())
         return df_result
 
 def create_score_manager(srconto, tgtonto, params_blocking, params_mapping=None):
@@ -398,7 +471,6 @@ def find_property_mapping(manager: ScoreManager, similarity_functions:list, prop
 
     manager.calculate_similarities_between_datasets()
 
-    #TODO-AE 211229 auto-mapping of properties - add purging
     manager.calculate_maximum_scores()
     df_max_scores_1 = manager.get_max_scores_1()
 
@@ -486,50 +558,49 @@ def get_frequencies(tokens, df_index_tokens):
             frequencies.update({t: freq_sum})
     return frequencies
 
-def compare_strings_with_tfidf(s1, s2, n_max_idf, df_index_tokens, log=True):
+def compare_strings_with_tfidf(s1, s2, n_max_idf, df_index_tokens):
 
     if not s1 and not s2:
         return 0
     if not s1 or not s2:
         return 1
-
-    tokens1 = ontomatch.blocking.tokenize(s1)
-    tokens2 = ontomatch.blocking.tokenize(s2)
-
-    for t1 in tokens1.copy():
-        for t2 in tokens2:
-            if len(t1) > 3 and len(t2) > 3:
-                edit_dist = nltk.edit_distance(t1, t2)
-                if edit_dist == 1:
-                    tokens1.remove(t1)
-                    tokens1.append(t2)
-                    break
-
-    if df_index_tokens is not None:
-        freq1 = get_frequencies(tokens1, df_index_tokens)
-        freq2 = get_frequencies(tokens2, df_index_tokens)
-        v1 = get_tfidf(freq1, n_max_idf)
-        v2 = get_tfidf(freq2, n_max_idf)
-    else:
+    
+    if df_index_tokens is None:
         # binary frequency i.e. 1 is token occurs one ore more times
+        tokens1 = ontomatch.blocking.tokenize(s1)
+        tokens2 = ontomatch.blocking.tokenize(s2)
         v1 = { t:1 for t in tokens1 }
+        norm1 = calculate_norm(v1)
         v2 = { t:1 for t in tokens2 }
+        norm2 = calculate_norm(v2)
+    else:
+        value = tfidf_dict.get(s1)
+        if value is None:
+            tokens1 = ontomatch.blocking.tokenize(s1)
+            freq1 = get_frequencies(tokens1, df_index_tokens)
+            v1 = get_tfidf(freq1, n_max_idf)
+            norm1 = calculate_norm(v1)
+            tfidf_dict[s1] = (v1, norm1)
+        else:
+            v1 = value[0]
+            norm1 = value[1]
 
-    if log:
-        print(freq1)
-        print(freq2)
+        value = tfidf_dict.get(s2)
+        if value is None:
+            tokens2 = ontomatch.blocking.tokenize(s2)
+            freq2 = get_frequencies(tokens2, df_index_tokens)    
+            v2 = get_tfidf(freq2, n_max_idf)    
+            norm2 = calculate_norm(v2)
+            tfidf_dict[s2] = (v2, norm2)
+        else:
+            v2 = value[0]
+            norm2 = value[1]
 
     dot = calculate_dot_product(v1, v2)
     if dot == 0:
         return 1 - 0
 
-    norm1 = calculate_norm(v1)
-    norm2 = calculate_norm(v2)
-
     cosine_distance = 1 - round(dot / (norm1 * norm2), 4)
-
-    if log:
-        print(v1, v2, dot, norm1, norm2, cosine_distance)
 
     return cosine_distance
 

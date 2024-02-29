@@ -4,6 +4,36 @@ The base URL of all requests is:
 
     http(s)://<hostname>:<port>/FileServer/
 
+## Deployment
+
+To deploy the docker image, plese follow below steps:
+1. Pull image in command line via `docker pull ghcr.io/cambridge-cares/fileserver:1.1.0`
+2. Create a `docker-compose.yml` file with the below content, or adding the `fileserver` service block and relevant credential block to your docker-compose file (you may want to adjust the `container_name` and first part of the `ports` as you wish):
+    ```yml
+    version: "3.8"
+
+    services:
+        # File server
+        fileserver:
+            image: ghcr.io/cambridge-cares/fileserver:1.1.0
+            container_name: "fileserver"
+            ports:
+                - 8888:8080
+            # Add secret to set BASIC authentication password
+            secrets:
+                - file_server_password
+
+    # Secrets used to set runtime passwords
+    secrets:
+        file_server_password:
+            file: ./secrets/fileserver_password.txt
+    ```
+3. Populate the `./secrets/fileserver_password.txt` with a credential that you would like to set **NOTE NEVER COMMIT THIS FILE TO GIT**
+4. Compose up via `docker compose -f "docker-compose.yml" up -d --build `
+
+You should now be able to access the fileserver with a username `fs_user` and the credential you set.
+
+
 ## POST
 
 ### Requests

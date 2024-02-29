@@ -41,6 +41,15 @@ public interface JPSConstants {
 	static String ASK_RESULT_KEY = "ASK";
 	
 	/**
+	 * Key to retrieve SPARQL query endpoint
+	 */
+	static String QUERY_ENDPOINT = "queryendpoint";
+	/**
+	 * Key to retrieve SPARQL update endpoint
+	 */
+	static String UPDATE_ENDPOINT = "updateendpoint";
+	
+	/**
 	 * If true then all read files are copied into the scenario bucket.
 	 * If false then copy-on-write, i.e. files are only copied into the scenario bucket if they are changed.
 	 */

@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.base.converter;
 
-import java.io.IOException;
-
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
@@ -58,10 +56,9 @@ public interface ITBoxManagement {
 	 * @param relation
 	 * @param domain
 	 * @param range
-	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException;
+	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws JPSRuntimeException;
 	/**
 	 * Creates an ontological object property.
 	 * 

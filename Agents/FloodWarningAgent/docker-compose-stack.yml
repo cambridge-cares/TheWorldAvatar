@@ -8,19 +8,23 @@ services:
         condition: none
     environment:
       - "STACK_NAME=${STACK_NAME}"
+      - "EXECUTABLE=${EXECUTABLE}"
+      - "API_SOCK=${API_SOCK}"
     security_opt:
       - label=disable
     volumes:
-      - scratch:/stack_scratch
-      - /var/run/docker.sock:/var/run/docker.sock
+      - scratch:/stack_scratch:z
+      - $API_SOCK:/var/run/docker.sock
     networks:
       - stack
+    labels:
+      - "com.docker.compose.project=${STACK_NAME}"
 
 volumes:
   scratch:
     name: ${STACK_NAME}_scratch
     labels:
-      - com.docker.stack.namespace:${STACK_NAME}
+      - com.docker.stack.namespace=${STACK_NAME}
 
 configs:
   blazegraph:
@@ -40,7 +44,8 @@ networks:
   stack:
     name: ${STACK_NAME}
     driver: overlay
-    external: true
+    attachable: true
+    external: false
 
 secrets:
   geoserver_password:

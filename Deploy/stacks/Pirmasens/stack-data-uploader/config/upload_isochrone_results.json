@@ -1,0 +1,34 @@
+{
+    "name": "upload_isochrone_results",
+    "database": "postgres",
+    "workspace": "twa",
+    "namespace": "kb",
+    "datasetDirectory": "isochroneagent_results",
+    "externalDatasets": [
+        "toilet_with_osm"
+    ],
+    "dataSubsets": [
+        {
+            "type": "Vector",
+            "sql": "@/inputs/data/isochroneagent_results/results/isochroneagent_results.sql",
+            "name": "isochrone_aggregated",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "isochrone_aggregated",
+                    "sql": "@/inputs/data/isochroneagent_results/sql/isochrone.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geometry",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "polygon"
+            }
+        }
+    ],
+    "mappings": [
+        "isochrone.obda"
+    ]
+    
+}

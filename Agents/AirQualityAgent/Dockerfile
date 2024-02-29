@@ -1,6 +1,9 @@
 # Install the Air Quality agent in Docker container
 #==================================================================================================
 
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
@@ -17,16 +20,26 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
+# Copy Stack-Client resource from published Docker image (potentially ensure
+# directory structure matches requirements for jpsrm to update py4jps resources)
+RUN mkdir -p ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
+
 # Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
-COPY ./resources/airquality.properties ./resources/airquality.properties
+COPY ./resources/ontop.obda ./resources/ontop.obda
+# Add JDBC driver to allow for retrieval of JDBC connection properties from PostGIS client
+ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Install Python package and the required libraries
+RUN python -m pip install --upgrade pip
 RUN pip install -e .
-# Installation of agentlogging currently suspended due to performance issues
-#RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
+
+# Install StackClients py4jps resource
+RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
+    jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
 
 # Expose port
 EXPOSE 5000
@@ -39,11 +52,11 @@ FROM base as debug
 RUN pip install debugpy
 
 # Set flask app and development environment to allow for hot-reloading
-ENV FLASK_APP=app/airquality/flaskapp/wsgi.py
-ENV FLASK_ENV=development
+ENV FLASK_APP=app/agent/flaskapp/wsgi.py
+ENV FLASK_DEBUG=1
 
 # Launch application in container
-WORKDIR /app/airquality/flaskapp/
+WORKDIR /app/agent/flaskapp/
 CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
 
@@ -52,11 +65,11 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.
 #------------------------------------------------------
 FROM base as prod
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.1.0
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
-COPY ./airquality ./airquality
+COPY ./agent ./agent
 COPY ./app_entry_point.sh .
 
 # Set the entrypoint

@@ -4,7 +4,7 @@ from oscml.utils.util import smiles2mol
 from oscml.kg.get_smiles import get_smiles
 import os
 
-KG_END_POINT = "http://kb/ontospecies"
+KG_END_POINT = "ontospecies"
 THIS_DIR = os.path.dirname(__file__)
 TRAINED_MODELS = os.path.join(THIS_DIR, '..', '..', '..','retrieved_models','trained_models')
 
@@ -22,7 +22,7 @@ def api():
         print("Error: No 'spec_iris' parameter provided.")
 
     smiles = []
-    for siri in spec_iris[1:-1].split(','):
+    for siri in spec_iris.split(','):
         sm = get_smiles(siri,KG_END_POINT)
         print(sm)
         if smiles2mol(sm) is None:

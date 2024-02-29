@@ -21,6 +21,8 @@ MAPPING_UNIT_CONVERSION_FACTOR = {
     OM_GRAMPERMOLE:{OM_KILOGRAMPERMOLE:1e-3},
     OM_LITRE:{OM_MILLILITRE:1e3},
     OM_MILLILITRE:{OM_LITRE:1e-3},
+    OM_GRAMPERLITREPERHOUR:{OM_KILOGRAMPERLITREPERMINUTE:1/6e4},
+    OM_KILOGRAMPERLITREPERMINUTE:{OM_GRAMPERLITREPERHOUR:6e4},
 }
 def unit_conversion_dq(dimensional_quantity: DimensionalQuantity, target_unit: str) -> DimensionalQuantity:
     if dimensional_quantity.hasUnit == target_unit: return dimensional_quantity

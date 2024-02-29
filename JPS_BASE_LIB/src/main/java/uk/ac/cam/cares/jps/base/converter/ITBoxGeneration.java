@@ -2,9 +2,6 @@ package uk.ac.cam.cares.jps.base.converter;
 
 import java.io.IOException;
 
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
@@ -46,11 +43,10 @@ public interface ITBoxGeneration {
 	 * @param relation
 	 * @param domain
 	 * @param range
-	 * @param quantifier
 	 * @throws IOException
 	 * @throws TBoxManagementException
 	 */
-	public void generateDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws IOException, JPSRuntimeException;
+	public void generateDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws IOException, JPSRuntimeException;
 	/**
 	 * Generates an ontological object property.
 	 * 

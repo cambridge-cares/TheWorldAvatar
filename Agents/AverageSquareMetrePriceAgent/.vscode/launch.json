@@ -39,8 +39,8 @@
             ]
         },
         {
-            "type": "python",
             "name": "Stack: Debug",
+            "type": "python",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port}",
@@ -53,8 +53,8 @@
             ]
         },
         {
-            "type": "python",
             "name": "Stack: Build and Debug",
+            "type": "python",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port}",
@@ -67,22 +67,8 @@
             ]
         },
         {
-            "type": "python",
-            "name": "Stack: Update JPSRM and Build and Debug",
-            "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port}",
-            "preLaunchTask": "update-compose-build-deploy",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/avgsqmpriceagent",
-                    "remoteRoot": "/app/avgsqmpriceagent"
-                }
-            ]
-        },
-        {
-            "type": "python",
             "name": "Stack: Reattach and Debug",
+            "type": "python",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port.read}",

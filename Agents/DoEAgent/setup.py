@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='doeagent',
-    version='0.0.1',
+    version='1.2.0',
     author='Jiaru Bai',
     author_email='jb2197@cam.ac.uk',
     license='MIT',
@@ -12,7 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent>=1.4.1', 'summit>=0.8.7', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.2.1'],
+    install_requires=['pyderivationagent>=1.4.3', 'summit>=0.8.9', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.6.1'],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",

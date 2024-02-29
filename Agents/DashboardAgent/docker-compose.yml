@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  dashboard:
+    container_name: dashboard-agent
+    image: dashboard-agent:1.0.1
+    build:
+      context: .
+      target: agent
+    ports:
+      - "3067:8080"

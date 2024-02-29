@@ -1,0 +1,9 @@
+[PrefixDeclaration]
+disp:		https://www.theworldavatar.com/kg/ontodispersion/
+xsd:		http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId   dispersion_polygons
+target      disp:{uuid} a disp:DispersionPolygon ; disp:hasValue {title}^^xsd:string .
+source      SELECT uuid, title FROM dispersion_contours
+]]

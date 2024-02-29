@@ -21,6 +21,9 @@ get_executables(){
             API_SOCK="/var/run/docker.sock"
         fi
 
+        STACK_BASE_DIR="$(pwd)"
+
+        export STACK_BASE_DIR
         export EXECUTABLE
         export COMPOSE_EXECUTABLE
         export API_SOCK
@@ -34,6 +37,8 @@ init_server(){
         fi
     else
         if [ ! -S "$API_SOCK" ] || [ -z "$(pidof podman)" ]; then
+            rm -rf "$API_SOCK"
+            mkdir -p "$(dirname "$API_SOCK")"
             podman system service -t 0 "unix://$API_SOCK" &
         fi
     fi

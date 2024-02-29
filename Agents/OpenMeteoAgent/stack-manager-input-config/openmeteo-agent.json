@@ -1,0 +1,29 @@
+{
+    "ServiceSpec": {
+        "Name": "openmeteo-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "openmeteo-agent:2.0.0",
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "openmeteo-agent": {
+          "url": "http://localhost:8080/openmeteo-agent/",
+          "externalPath": "/openmeteo-agent/"
+        }
+    }
+}

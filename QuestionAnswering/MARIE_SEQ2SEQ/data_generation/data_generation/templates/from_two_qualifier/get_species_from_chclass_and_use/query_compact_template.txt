@@ -1,0 +1,8 @@
+SELECT DISTINCT ?IUPACNameValue 
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue .
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
+    ?SpeciesIRI os:hasUse ?UseValue .
+    FILTER( ?UseValue = "{Use}")
+}}

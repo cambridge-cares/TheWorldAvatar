@@ -1,0 +1,7 @@
+version: "3.0"
+services:
+  web:
+    build: .
+    image: marie
+    ports:
+      - "5003:5003"

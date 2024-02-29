@@ -17,13 +17,17 @@ Before building and deploying the Docker image, several key properties need to b
 
 ```bash
 # Stack & Stack Clients configuration
-STACK_NAME            # Name of stack to which agent shall be deployed
 NAMESPACE             # Blazegraph namespace into which to instantiate data
 DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`, i.e. required for Ontop to access database)
 LAYERNAME             # Geoserver layer name, ALSO table name for geospatial features in PostGIS
 GEOSERVER_WORKSPACE   
 ONTOP_FILE            # Path to ontop mapping file (i.e. path within Docker container)
+BUILDINGS_TABLE       # PostGIS table name containing building footprints
+# Derivation Agent configuration
+# NOTE: value needs to match counterpart specified in the docker-compose.yml file of FloodAssessmentAgent
+FLOOD_ASSESSMENT_AGENT_IRI
 ```
+After instantiating a new flood warning or alert, the `FloodWarningAgent` also instantiates the relevant derivation mark-up (i.e. to allow for automatic flood assessment by the [FloodAssessmentAgent] which is implemented using the Derivation Framework). To mark up affected buildings by a specific flood, PostGIS is used to geospatially assess all (previously) instantiated buildings within the flood area. Hence, the `BUILDINGS_TABLE` needs to be provided to the agent.
 
 ### **2) Accessing Github's Container registry**
 
@@ -33,11 +37,7 @@ docker login ghcr.io -u <github_username>
 <github_personal_access_token>
 ```
 
-### **3) Accessing CMCL docker registry**
-
-The agent requires building the [Stack-Clients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
-
-### **4) VS Code specifics**
+### **3) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -71,7 +71,7 @@ bash ./stack.sh build
 bash ./stack.sh start <STACK_NAME>
 ```
 
-In case of time out issues in automatically building the StackClients resource, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`
+
 
 The *debug version* of the agent can be launched through the provided VS Code `launch.json` configurations:
 > **Build and Debug**: Build Debug Docker image (incl. pushing to [Github package repository]) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
@@ -104,12 +104,12 @@ The provided [Dockerfile] contains instructions to create Docker images for both
 
 ## Provided functionality
 
-Agent start-up will automatically register a recurring task to assimilate latest flood alerts and warning on an hourly basis in the background. Besides this recurring background task, additional HTTP requests can be sent (but might be delayed) to the agent. An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5007/floodwarnings.
+Agent start-up will automatically register a recurring task to assimilate latest flood alerts and warning on an hourly basis in the background. Besides this recurring background task, additional HTTP requests can be sent (but might be delayed) to the agent. An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5009/floodwarnings.
 
-- GET request to update all floos warnings and alerts (i.e. instantiate missing flood areas and flood warnings, update instantiated flood warnings, and delete obsolete flood warnings)
+- GET request to update all flood warnings and alerts (i.e. instantiate missing flood areas and flood warnings, update instantiated flood warnings, and delete obsolete flood warnings)
 > `/floodwarnings/update/all` 
 
-Example requests are provided in the [resources] folder.
+Example requests are provided in the [resources] folder. **Please note**: To reproduce flood alerts and warning in the King's Lynn area, a folder with *mocked* API responses is provided in the [resources] folder and mounted into the Docker container as volume. To instantiate those *mocked* API responses, please use the `HTTPRequest_update_all_mock` example HTTP request.
 
 
 
@@ -120,15 +120,13 @@ Markus Hofmeister (mh807@cam.ac.uk), February 2023
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
-[CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-[CMCL Docker registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 [Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
 
-
 [Environment Agency Real Time flood-monitoring API]: https://environment.data.gov.uk/flood-monitoring/doc/reference#flood-warnings
+[FloodAssessmentAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAssessmentAgent
 [OntoFlood]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoflood
 [Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
 [Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager

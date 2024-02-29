@@ -1,0 +1,29 @@
+{
+    "ServiceSpec": {
+        "Name": "esphome-update-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "esphome-update-agent:1.3.0",
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:8080/esphome-update-agent/",
+            "externalPath": "/esphome-update-agent/"
+        }
+    }
+}

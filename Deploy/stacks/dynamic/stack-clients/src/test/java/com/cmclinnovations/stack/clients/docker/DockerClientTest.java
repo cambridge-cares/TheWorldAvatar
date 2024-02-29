@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -159,7 +160,7 @@ public class DockerClientTest {
 
     private File createFile(File dir, String filename, String data) throws IOException {
         File file = new File(dir, filename);
-        FileUtils.writeStringToFile(file, data, "UTF-8");
+        FileUtils.writeStringToFile(file, data, StandardCharsets.UTF_8);
         return file;
     }
 

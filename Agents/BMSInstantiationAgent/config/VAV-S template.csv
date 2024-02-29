@@ -1,0 +1,30 @@
+[REQUIRED],
+VAVS_label,VAV-S7-14
+AirFlow_IRI,https://www.theworldavatar.com/kg/ontobms/V_AirFlow_
+AirFlow_IRI_label,VAV-S7-14 airflow rate
+DamperState_IRI,https://www.theworldavatar.com/kg/ontobms/DamperState_
+DamperState_IRI_label,VAV-S7-14 damper state
+SetpointQuantity_IRI,https://www.theworldavatar.com/kg/ontobms/V_SetpointQuantity_
+SetpointQuantity_IRI_label,VAV-S7-14 airflow setpoint
+[OPTIONAL],
+Room_IRI,
+Temperature_IRI,https://www.theworldavatar.com/kg/ontobms/V_Temperature_
+Temperature_IRI_label,Room temp
+,
+Room_IRI,
+RelativeHumidity_IRI,https://www.theworldavatar.com/kg/ontobms/V_RelativeHumidity_
+RelativeHumidity_IRI_label,Room Humidity
+HotWaterCmd_IRI,https://www.theworldavatar.com/kg/ontobms/V_Hot_Wtr_valve_Cmd
+HotWaterCmd_IRI_label,VAV-S7-14 hot water valve command
+HotWaterStatus_IRI,https://www.theworldavatar.com/kg/ontobms/V_Hot_Wtr_valve_Status
+HotWaterStatus_IRI_label,VAV-S7-14 hot water valve state
+,
+HeaterControl_IRI,https://www.theworldavatar.com/kg/ontobms/V_Heater_Contol
+HeaterControl_IRI_label,VAV-S7-14 heater control
+HeaterPower_IRI,https://www.theworldavatar.com/kg/ontobms/V_Heater_Power
+HeaterPower_IRI_label,VAV-S7-14 heater power
+HeaterStatus_IRI,https://www.theworldavatar.com/kg/ontobms/V_Heater_Status
+HeaterStatus_IRI_label,VAV-S7-14 heater state
+[ADD ALL INSTANTIATED DEVICES REQUIRING SENDS SIGNAL TO PROPERTY],
+IRI,
+IRI,

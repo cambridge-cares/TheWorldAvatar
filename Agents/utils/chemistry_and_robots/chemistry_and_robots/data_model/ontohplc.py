@@ -96,7 +96,7 @@ class HPLCReport(BaseOntology):
     clz: str = ONTOHPLC_HPLCREPORT
     remoteFilePath: str
     records: List[ChromatogramPoint]
-    generatedFor: ChemicalSolution
+    generatedFor: ChemicalAmount
     localFilePath: str
     lastLocalModifiedAt: float
     lastUploadedAt: float

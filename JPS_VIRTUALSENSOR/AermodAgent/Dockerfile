@@ -1,7 +1,7 @@
 #==================================================================================================
 # Download the Java dependencies (allows them to be cached if unchanged)
 #==================================================================================================
-FROM maven:3.8.3-adoptopenjdk-11 as retriever
+FROM maven:3.8.3-adoptopenjdk-11 AS retriever
 
 # Copy in Maven settings templates and credentials 
 COPY docker/credentials /root/credentials
@@ -17,13 +17,13 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 WORKDIR /root/code
 
 COPY pom.xml ./pom.xml
-RUN mvn clean dependency:resolve
+RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked mvn clean dependency:resolve
 
 #==================================================================================================
 # Build war file
 #==================================================================================================
 
-FROM maven:3.8.3-adoptopenjdk-11 as war_builder
+FROM maven:3.8.3-adoptopenjdk-11 AS war_builder
 
 COPY --from=retriever /root/.m2 /root/.m2
 
@@ -34,21 +34,27 @@ COPY pom.xml ./
 COPY src ./src/
 COPY WEB-INF ./WEB-INF/
 
-RUN mvn package -DskipTests -U -P prod-profile
+RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked mvn package -DskipTests -U -P prod-profile
 
 #==================================================================================================
 # Build aermod components
 #==================================================================================================
-FROM ubuntu:22.10 as aermod_builder
+FROM ubuntu:22.10 AS aermod_builder
 
-RUN apt update
-RUN apt install gfortran dos2unix -y
+RUN apt-get update
+RUN apt-get install gfortran dos2unix -y
+
+#build BPIPPRM (buildings preprocessor)
+COPY bpipprm_source /root/bpipprm_source/
+WORKDIR /root/bpipprm_source
+RUN dos2unix gfortran-bpipprm.sh
+RUN ./gfortran-bpipprm.sh
 
 # build AERMET (meteorological preprocessor)
 COPY aermet_source /root/aermet_source/
 WORKDIR /root/aermet_source
-RUN dos2unix gfortran-aermod_allwarn.sh
-RUN ./gfortran-aermod_allwarn.sh
+RUN dos2unix gfortran-aermet.sh
+RUN ./gfortran-aermet.sh
 
 # build AERMOD
 COPY aermod_source /root/aermod_source/
@@ -59,8 +65,9 @@ RUN ./gfortran-aermod.sh
 #==================================================================================================
 # Copy compiled executables and war file into tomcat image
 #==================================================================================================
-FROM tomcat:9 as agent
+FROM tomcat:9 AS agent
 
+COPY --from=aermod_builder /root/bpipprm_source/bpipprm /root/aermod/
 COPY --from=aermod_builder /root/aermet_source/aermet /root/aermod/
 COPY --from=aermod_builder /root/aermod_source/aermod /root/aermod/
 

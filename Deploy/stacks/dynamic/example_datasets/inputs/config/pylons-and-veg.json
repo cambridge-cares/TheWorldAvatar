@@ -1,8 +1,0 @@
-{
-    "name": "pylons",
-    "externalDatasets": [
-        "pylons",
-        "forestry-reduced",
-        "cropmap-reduced"
-    ]
-}
