@@ -11,6 +11,6 @@ declare global {
         selectFeatures: Object;
         manager: Manager;
         currentFeature: Object;
-        currentTimeIndex: number = 0;
+        currentTimeIndex: number = 1;
     }
 }

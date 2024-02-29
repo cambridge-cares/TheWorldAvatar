@@ -119,7 +119,7 @@ class PanelHandler {
 		}
         document.getElementById("returnContainer").style.display = "none";
         window.currentFeature = null;
-        window.currentTimeIndex=0;
+        window.currentTimeIndex=1;
 
         // Simulate click on general tab
         // @ts-ignore

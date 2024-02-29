@@ -764,7 +764,7 @@ class Manager {
             // Load its data configuration file
             let self = this;
             this.scenarioHandler.getConfiguration(function(dataJSON) {
-                let promise = self.loadDefinitionsFromObject(dataJSON, 0) as Promise<any>;
+                let promise = self.loadDefinitionsFromObject(dataJSON, 1) as Promise<any>;
                 promise.then(() => self.plotData());
             });
         }
