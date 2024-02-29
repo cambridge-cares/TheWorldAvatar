@@ -1,0 +1,15 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX plt:    <https://www.theworldavatar.com/kg/ontoplot/>
+PREFIX geo:    <http://www.opengis.net/ont/geosparql#>
+PREFIX zone:   <https://www.theworldavatar.com/kg/ontozoning/>
+
+SELECT ?iri WHERE {
+       SERVICE <ontop> {
+              ?iri a plt:Plot ;
+                     geo:hasDefaultGeometry [geo:hasMetricArea ?area ] .
+              ?zone zone:hasPlot ?iri;
+                     zone:hasZoneType [rdfs:label ?zonetype] .
+              FILTER( 'null' = [area] || '' = [area] || (?area <= [area] + 200 && ?area >= [area] - 200 ))
+              FILTER( "'null'" = "[zonetype]" || "''" = "[zonetype]" || STR(?zonetype) in ([zonetype]))
+       }
+}

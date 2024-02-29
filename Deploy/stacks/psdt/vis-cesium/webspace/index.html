@@ -1,0 +1,217 @@
+<html>
+    <head>
+        <!-- ===== CUSTOMISABLE ===== -->
+        <title>Pirmasens Digitaler Zwilling</title>
+        <!-- ===== CUSTOMISABLE ===== -->
+
+        <meta charset="utf-8">
+
+        <!-- JS -->
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src="https://cesium.com/downloads/cesiumjs/releases/1.105/Build/Cesium/Cesium.js"></script>
+        <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+        <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
+        <script src="./twa-vf/twa-vf.min.js"></script>
+
+        <!-- ===== CUSTOMISABLE ===== -->
+        <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
+        <!-- ===== CUSTOMISABLE ===== -->
+
+        <!-- CSS -->
+        <link href="https://cesium.com/downloads/cesiumjs/releases/1.105/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
+        <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+        <link href="./twa-vf/twa-vf.min.css" rel="stylesheet" />
+
+        <!-- ===== CUSTOMISABLE ===== -->
+        <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
+        <!-- ===== CUSTOMISABLE ===== -->
+
+    </head>
+    <body>
+        <!-- Container the map will be added to -->
+        <div id="map"></div>
+
+        <!-- Element for depth of field overlay -->
+        <div id="tiltShift"></div>
+
+        <!-- Pop up box for hover-over effecrs -->
+        <div id="cesiumMetaBox"></div>
+
+        <!-- Element the map controls will be added to (normally on the left) -->
+        <div id="controlsContainer">
+            <div id="controlContainer">
+
+                <!-- Camera controls -->
+                <div id="cameraContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle">
+                        <p>Kamera</p>
+                    </div>
+                    <div class="controlContents">
+                        <a href="#" onclick="CesiumUtils.resetCamera()">Zurücksetzen</a>
+                    </div>
+                </div>
+
+                <!-- Terrain controls -->
+                <div id="terrainContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle" style="padding-right: 0px !important;">
+                        <p>Kartendarstellung</p>
+                    </div>
+                    <div id="imageryContainer" class="controlContents">
+                    </div>
+                </div>
+
+                <!-- Layer controls -->
+                <div id="layerContainer" class="controlBlock">
+                    <div id="controlTitle"  class="controlTitle">
+                        <p>Kartenebenen</p>
+                    </div>
+                    <div class="controlContents">
+                        <div id="layerTreeContainer">
+                            <div class="hummingbird-treeview-converter"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clipping plane controls, listeners will be dynamically added later -->
+                <div id="clipControlContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle">
+                        <p style="width: 100%;">Schnittebenen</p>
+                    </div>
+                    <div class="controlContents">
+                        <div id="clipEnableContainer">
+                            <p>Schnittebenen einschalten?</p>
+                            <input type="checkbox" id="clipEnableCheck">
+                        </div>
+                        <div id="clipShowContainer" style="display: none;">
+                            <p>Schnittebenen anzeigen?</p>
+                            <input type="checkbox" id="clipShowCheck" checked>
+                        </div>
+                        <div id="clipSelectContainer" style="display: none;">
+                            <p>Gebäudeebene:</p>
+                            <select id="clipSelectCombo">
+                                <option disabled hidden selected>Gebäudeebene auswählen...</option>
+                                <!-- Other options will be dynamically generated here -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help icon -->
+                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                    <div class="tooltip" id="coordEditor">
+                        <i class="fas fa-question fa-lg"></i>
+                        <span class="tooltiptext right">Help</span>
+                    </div>
+                </div>
+
+                <!-- Container for developer info -->
+                <div id="developerContainer" class="controlBlock" style="display: none;">
+                    <div class="tooltip" id="coordEditor" style="float: right;">
+                        <i class="fas fa-pencil-alt" onclick="event.stopPropagation(); manager.getControlHandler().editInfoPanel()"></i>
+                        <span class="tooltiptext">Change map position</span>
+                    </div>
+                    <div id="coordsContainer" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side panel for content and metdata -->
+        <div id="sidePanel" class="large expanded">
+            <div class="tooltip" id="slideButtonContainer">
+                <i class="fas fa-chevron-right" id="slideButton" width="16px" class="leftButton" height="16px" onclick="manager.getPanelHandler().toggleExpansion()"></i>
+                <span class="tooltiptext">Aufklappen/Zuklappen</span>
+            </div>
+            <div class="tooltip" id="expandButtonContainer">
+                <i class="fas fa-expand" id="expandButton" width="16px" class="rightButton" height="16px" onclick="manager.getPanelHandler().toggleMode()"></i>
+                <span class="tooltiptext">Maximieren/Minimieren</span>
+            </div>
+            <div id="sidePanelInner">
+                <ul>
+                    <li><a href="#sidePanelGeneral">Allgemein</a></li>
+                    <li><a href="#sidePanelLegend">Legende</a></li>
+                    <li><a href="#sidePanelLinks">Links</a></li>
+                </ul>
+                <div id="sidePanelGeneral">
+                    <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
+                    <div id="contentContainer"></div>
+                    <div id="legendContainer"></div>
+                    <div id="footerContainer">
+                        <div id="footerContent"></div>
+                    </div>
+                </div>
+                <div id="sidePanelLegend"></div>
+                <div id="sidePanelLinks"></div>
+            </div>
+            <div id="returnContainer" style="display: none;">
+                <div id="innerReturnContainer">
+                    <a href="#" onclick="manager.getPanelHandler().returnToDefault()"><i class="fas fa-arrow-left" width="16px" height="16px"></i> Return</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code entry point -->
+        <script>
+            $("#sidePanelInner").tabs();
+
+            // ===== CUSTOMISABLE =====
+            // Enter Mapbox account name and API key here, even in Cesium visualisations!
+            //MapHandler.MAP_USER = "";
+            MapHandler.MAP_API = "pk.eyJ1IjoibWhpbGxtYW4iLCJhIjoiY2t1NW5wMDF3MnBzaDJ2cWhyZ2MxbHh4diJ9.TPv5CXdhGvFPkL28tTeXTA";
+            // ===== CUSTOMISABLE =====
+
+            // Create a new manager instance
+            var manager = new Manager(MapProvider.CESIUM);
+            window.manager = manager;
+
+            // Only start the map after data definitions have been read.
+            var dataPromise = manager.loadDefinitions();
+            dataPromise.then(() => start());
+
+            /**
+             * Starts the visualisation setup process.
+             */
+             function start() {
+                // ===== CUSTOMISABLE =====
+                // Optionally provide default map settings.
+                // If no options are provided here , any included in the root group of the first stack that responds and loads
+                // will be used (this is unreliable, so if visualising multiple stacks, I recommend using this override). - Michael
+                /*let optionsOverride = {
+                    "target": [7.605, 49.196, 750],
+                    "heading": 0.0,
+                    "pitch": -45,
+                    "roll": 0.0
+                };*/
+                // ===== CUSTOMISABLE =====
+
+                // Initialise the map object
+                manager.initialiseMap();
+
+                // ===== CUSTOMISABLE =====
+                // Set the default content in the "General" tab of the side panel
+                manager.getPanelHandler().setTitle("<h1>Pirmasens Digitaler Zwilling</h1>");
+                manager.getPanelHandler().setContent(`
+                    <p>(als Teil des World Avatars)</p>
+                    <div style="display: flex; justify-content: center;">
+                        <img src="./img/Flag_of_Pirmasens.png" width="350px"/>
+                    </div>
+                `);
+                
+                manager.getPanelHandler().setFooter("&copy; CMPG,  " + new Date().getFullYear());
+                // ===== CUSTOMISABLE =====
+
+                // Save general tab state as default
+                manager.getPanelHandler().storeDefault();
+
+                // Plot data
+                manager.plotData();
+            }
+          
+        </script>
+    </body>
+</html>

@@ -6,6 +6,23 @@
 * a tool that can do it for me, looks like it'll beed to be done manually.
 */
 
+/* @media (prefers-color-scheme: light) { */
+:root {
+    --cmcl-blue: #18677a;
+    --text-color: #3f464f;
+    --background-color: #f6f8fa;
+}
+
+/* } */
+/* 
+@media (prefers-color-scheme: dark) {
+    :root {
+        --cmcl-blue: #18677a;
+        --text-color: #adbac7;
+        --background-color: #22272e;
+    }
+} */
+
 html,
 body {
     width: 100%;
@@ -33,7 +50,8 @@ h6 {
     height: 100%;
     float: left;
     z-index: 0;
-    background-color: #cad2d3
+    background-color: #cad2d3;
+    flex-grow: 1;
 }
 
 .mapboxgl-popup-content {
@@ -96,10 +114,10 @@ h6 {
 
 #sidePanel {
     z-index: 999;
-    background-color: #18677a;
+    background-color: var(--cmcl-blue);
     box-sizing: border-box;
-    border: 1px solid #18677a;
-    box-shadow: 0 4px 8px 0 #18677a;
+    border: 1px solid var(--cmcl-blue);
+    box-shadow: 0 4px 8px 0 var(--cmcl-blue);
     font-family: Inter, sans-serif !important;
     font-size: 11pt;
     height: 100%
@@ -116,7 +134,8 @@ h6 {
     width: 15px;
     height: 15px;
     text-align: center;
-    margin: 6px
+    margin: 6px;
+    float: right
 }
 
 #sidePanel.small {
@@ -135,10 +154,6 @@ h6 {
     height: calc(100% - 200px);
     border-width: 1px;
     border-radius: 8px
-}
-
-#expandButtonContainer {
-    float: right
 }
 
 #sidePanel.large #expandButtonContainer {
@@ -174,6 +189,7 @@ h6 {
     width: 100%;
     display: flex;
     flex-direction: column;
+    position: absolute;
     height: calc(100% - 27px)
 }
 
@@ -209,17 +225,6 @@ p {
     overflow-y: auto
 }
 
-#contentContainer {
-    width: 100%;
-    height: 100%;
-    margin-bottom: 70px;
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-    overflow-y: auto
-}
-
 #meta-tree {
     flex: 1;
     overflow-y: scroll
@@ -230,19 +235,19 @@ p {
     height: 300px;
     min-height: 300px;
     margin-bottom: 10px;
-    border: 1px solid grey
 }
 
 #footerContainer {
     text-shadow: 2px 2px 3px #000;
-    font-family: Verdana;
+    font-family: Verdana, sans-serif;
     color: #51b7a6;
     text-align: center;
     height: 40px;
     position: absolute;
     bottom: 30;
     left: 0;
-    right: 0
+    right: 0;
+    z-index: 1
 }
 
 #returnContainer {
@@ -866,7 +871,7 @@ label[for=select-feature] {
 }
 
 .json-container {
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     background-color: #fff;
     color: grey;
@@ -985,14 +990,7 @@ label[for=select-feature] {
     height: 100%
 }
 
-#sidePanelLegend {
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    display: block;
-    padding: 5px;
-    margin: 0 20px 40px 20px
-}
+
 
 .ui-tabs-anchor {
     font-size: 10pt;
@@ -1000,7 +998,7 @@ label[for=select-feature] {
 }
 
 #sidePanelInner .ui-widget-header {
-    background: #18677a;
+    background: var(--cmcl-blue);
     border: none;
     border-radius: 0;
     padding: 5px 5px 0 5px
@@ -1013,7 +1011,8 @@ label[for=select-feature] {
     bottom: 0;
     border: none;
     padding-top: 0;
-    height: 35px
+    height: 35px;
+    z-index: 2;
 }
 
 .ui-widget-content {
@@ -1040,18 +1039,32 @@ label[for=select-feature] {
 
 #sidePanelInner .ui-tabs-nav li.ui-state-active,
 #sidePanelInner .ui-tabs-nav li.ui-tabs-selected {
-    top: -3px;
+    top: -7px;
     background: #628f9d !important;
     box-shadow: 0 4px 8px 0 #222
 }
 
-#sidePanelGeneral {
-    height: calc(100% - 50px)
+
+#sidePanelGeneral,
+#sidePanelLegend,
+#sidePanelLinks,
+#sidePanelAck,
+#sidePanelFailure {
+    position: relative;
+    overflow: auto;
+    /* TODO
+
+    background: linear-gradient(white, rgba(255, 255, 255, 0));
+    -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);        <-- nice effect but messing with the scroll bar. Can't rn figure how to fix 
+    mask-image: linear-gradient(to bottom, black 95%, transparent); 
+    margin-bottom: 35px; */
+    padding-bottom: 10em;
 }
 
-#sidePanelLinks {
-    height: calc(100% - 50px);
-    font-size: 10pt
+#contentContainer {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
 }
 
 #sidePanelLinks a {
@@ -1070,7 +1083,7 @@ label[for=select-feature] {
 }
 
 #sidePanelLinks ul:hover a:hover {
-    color: #18677a;
+    color: var(--cmcl-blue);
     text-shadow: #333;
 }
 
@@ -1082,7 +1095,6 @@ label[for=select-feature] {
     width: 250px;
     height: auto;
     position: fixed;
-    top: 0;
     left: 0;
     margin: 20px;
     z-index: 1;
@@ -1145,7 +1157,8 @@ label[for=select-feature] {
 #layerContainer .controlContents {
     display: flex;
     flex-flow: column;
-    overflow: hidden
+    overflow: hidden;
+    flex-grow: 1;
 }
 
 #layerTree {
@@ -1509,7 +1522,7 @@ li {
 }
 
 #helpandsearch {
-    display: flex
+    display: flex;
 }
 
 #searchIconContainer {
@@ -1689,25 +1702,34 @@ li {
     background-color: #f6f8fa
 }
 
-#sidePanelGeneral {
-    position: relative; 
-    z-index: 1; 
-    overflow: hidden;
-    background: linear-gradient(white, rgba(255,255,255,0)); 
-    -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);
-    mask-image: linear-gradient(to bottom, black 90%, transparent);
-}
+/* override jquery-ui.css styling for hovering over sidebar tabs */
 
-#sidePanelLegend, #sidePanelLinks {
-    position: relative;
-    z-index: 1; 
-    overflow: auto;
-    background: linear-gradient(white, rgba(255,255,255,0));
-    -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);
-    mask-image: linear-gradient(to bottom, black 50%, transparent);
+.ui-state-hover,
+.ui-state-active,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus,
+.ui-widget-header .ui-state-focus,
+.ui-button,
+.ui-button:hover,
+.ui-button:focus,
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default,
+html .ui-button.ui-state-disabled:hover,
+html .ui-button.ui-state-disabled:active {
+    border: unset;
+    z-index: 1;
 }
 
 /* zoom and compass element shifted down below the mapbox logo */
-.mapboxgl-ctrl-top-right{
-    top: 30px
+.mapboxgl-ctrl-top-right {
+    top: 30px;
+}
+
+#waveAnimationContainer {
+    bottom: 0;
+    position: absolute;
+    width: 100%;
 }
