@@ -8,21 +8,14 @@ public class EndpointConfig {
     private PostGISEndpointConfig postGISEndpointConfig;
     private String dbUser;
     private String dbPassword;
-    // private BlazegraphEndpointConfig blazegraphEndpointConfig;
-    // private String kgurl;
-    // private String kguser;
-    // private String kgpassword;
+    private String filePath = System.getenv("floors_csv");
+    public String dbName = System.getenv("DATABASE");
 
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
         postGISEndpointConfig = containerClient.readEndpointConfig("postgis", PostGISEndpointConfig.class);
         this.dbUser = postGISEndpointConfig.getUsername();
         this.dbPassword = postGISEndpointConfig.getPassword();
-
-        // blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
-        // this.kgurl = blazegraphEndpointConfig.getUrl("ontology");
-        // this.kguser = blazegraphEndpointConfig.getUsername();
-        // this.kgpassword = blazegraphEndpointConfig.getPassword();
    
     }
 
@@ -38,15 +31,11 @@ public class EndpointConfig {
         return this.dbPassword;
     }
 
-    // public String getKGUrl(String namespace) {
-    //     return this.blazegraphEndpointConfig.getUrl(namespace);
-    // }
+    public String getDbName() {
+        return this.dbName;
+    }
 
-    // public String getKGUser() {
-    //     return this.kguser;
-    // }
-
-    // public String getKGPassword() {
-    //     return this.kgpassword;
-    // }
+    public String getFilepath() {
+        return this.filePath;
+    }
 }
