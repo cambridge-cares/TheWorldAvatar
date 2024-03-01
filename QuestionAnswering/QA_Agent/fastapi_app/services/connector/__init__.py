@@ -1,15 +1,20 @@
-import json
+from functools import cache
 import logging
+from typing import Annotated, List
 
-from services.openai_client import openai_client
+from fastapi import Depends
+from services.nearest_neighbor import NNRetriever, get_nn_retriever
 from services.connector.ontospecies import OntoSpeciesAgent
+from services.connector.agent import IAgent
+from services.func_call import IFuncCallPredictor, get_func_call_predictor
+
 
 logger = logging.getLogger(__name__)
 
+
 class AgentConnector:
-    def __init__(self, model: str = "gpt-3.5-turbo-0125"):
-        self.model = model
-        agents = [OntoSpeciesAgent()]
+    def __init__(self, func_call_predictor: IFuncCallPredictor, agents: List[IAgent]):
+        self.func_call_predictor = func_call_predictor
         self.tools = [x for agent in agents for x in agent.get_tools()]
         self.funcname2agent = {
             method_name: agent
@@ -19,14 +24,27 @@ class AgentConnector:
 
     def query(self, query: str):
         logger.info("Predicting function to call...")
-        response = openai_client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "user", "content": query}],
-            tools=self.tools,
-            tool_choice="auto",
+        func_name, func_args = self.func_call_predictor.predict(
+            tools=self.tools, query=query
         )
-        func = response.choices[0].message.tool_calls[0].function
-        logger.info("Predicted function: " + str(func))
-        return self.funcname2agent[func.name].exec(
-            method_name=func.name, args=json.loads(func.arguments)
+        logger.info(
+            "Predicted function: {name}({args})".format(name=func_name, args=func_args)
         )
+        return self.funcname2agent[func_name].exec(
+            method_name=func_name, args=func_args
+        )
+
+
+@cache
+def get_agents(nn_retriever: Annotated[NNRetriever, Depends(get_nn_retriever)]):
+    return tuple([OntoSpeciesAgent(nn_retriever)])
+
+
+@cache
+def get_agent_connector(
+    func_call_predictor: Annotated[
+        IFuncCallPredictor, Depends(get_func_call_predictor)
+    ],
+    agents: Annotated[List[IAgent], Depends(get_agents)],
+):
+    return AgentConnector(func_call_predictor=func_call_predictor, agents=agents)

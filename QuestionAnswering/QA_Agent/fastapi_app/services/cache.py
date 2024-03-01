@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, TypeVar
+import json
+from typing import Any, Dict, Generic, List, TypeVar
 
 from redis import Redis
 
@@ -39,11 +40,11 @@ class RedisCache(ICache[K, V]):
         self.client = Redis(host="localhost", port=6379, decode_responses=True)
 
     def set(self, key: K, value: V):
-        self.client.set(key, value)
+        self.client.set(key, json.dumps(value))
 
     def get(self, key: K) -> V:
         # TODO: perform type-checks
-        return self.client.get(key)
+        return json.loads(self.client.get(key))
 
     def exists(self, key: K):
         return self.client.exists(key) > 0

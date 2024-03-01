@@ -1,15 +1,15 @@
 import json
 
-from fastapi_app.model.constraint import (
+from model.constraint import (
     AtomicNumericalConstraint,
     CompoundNumericalConstraint,
     LogicalOperator,
 )
-from services.openai_client import openai_client
+from services.openai_client import get_openai_client
 
 
 def parse_unstructured(text: str, schema: dict):
-    response = openai_client.chat.completions.create(
+    response = get_openai_client().chat.completions.create(
         model="gpt-3.5-turbo-0125",
         messages=[{"role": "user", "content": "Find entities where " + text}],
         tools=[

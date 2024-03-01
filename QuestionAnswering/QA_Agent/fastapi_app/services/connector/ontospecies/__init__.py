@@ -4,9 +4,7 @@ from typing import Dict, List, Tuple, Type
 from services.utils.parse import parse_constraint
 from services.nearest_neighbor import NNRetriever
 from services.kg_client import KgClient
-from fastapi_app.model.constraint import (
-    CompoundNumericalConstraint,
-)
+from model.constraint import CompoundNumericalConstraint
 from services.connector.agent import IAgent
 from .constants import (
     SpeciesAttrKey,
@@ -26,9 +24,9 @@ class OntoSpeciesAgent(IAgent):
     ]
     _SPECIES_ATTR_KEYS = [x.value for cls in _SPECIES_ATTR_CLSES for x in cls]
 
-    def __init__(self):
+    def __init__(self, nn_retriever: NNRetriever):
         self.kg_client = KgClient(os.getenv("KG_ENDPOINT_ONTOSPECIES"))
-        self.nn_retriever = NNRetriever()
+        self.nn_retriever = nn_retriever
 
     @classmethod
     def get_tools(cls):
