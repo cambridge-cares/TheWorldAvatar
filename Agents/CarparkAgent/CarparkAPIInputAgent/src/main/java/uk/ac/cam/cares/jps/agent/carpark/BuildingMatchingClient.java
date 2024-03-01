@@ -24,7 +24,7 @@ public class BuildingMatchingClient {
     private static final Logger LOGGER = LogManager.getLogger(BuildingMatchingClient.class);
 
     private String buildingIdentificationAgentEndpoint;
-    private static final String CARPARK_TABLE = "public." + CarparkAgent.LAYERNAME;
+    private static final String CARPARK_TABLE =CarparkAgent.LAYERNAME;
     private static final String CARPARK_GEOM_COLUMN = "wkb_geometry";
 
     public BuildingMatchingClient(String filePath) throws IOException {
