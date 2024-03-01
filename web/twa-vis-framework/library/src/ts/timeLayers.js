@@ -49,12 +49,11 @@ window.addEventListener('load', function () {
     // const powerURL = getSourceURL('0.2.power-connections');
 
 
-    document.getElementById('range-slider').addEventListener('input', function (e) {
+    document.getElementById('time-slider').addEventListener('input', function (e) {
         let value = e.target.value;
         console.log(value);
-        manager.loadDefinitions().then(() => manager.plotData());
-        window.currentTimeIndex = value;
-        manager.showFeature(window.currentFeature);
+        manager.loadDefinitionsFromURL("./data.json", value).then(() => manager.plotData());
+        manager.showFeature(currentFeature);
         // changeSource(heatURL, '0.0.heat-source', ['0.0.heat-layer'], value);
         // changeSource(powerURL, '0.2.power-connections', ['0.2.power-conn-layer-under', '0.2.power-conn-layer-core', '0.2.power-conn-layer-arrow'], value);
         // all the layers and sources that we want to move
