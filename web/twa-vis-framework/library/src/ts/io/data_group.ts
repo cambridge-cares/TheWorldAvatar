@@ -33,11 +33,11 @@ class DataGroup {
      */
     public id: string;
 
-    
+
     /**
      * 
      */
-    public defaultExpanded: boolean = true; 
+    public defaultExpanded: boolean = true;
 
     /**
      * Parses the definition of each data set defined within the group. Note that
@@ -46,8 +46,8 @@ class DataGroup {
      * 
      * @param sourceJSON JSON array of source nodes.
      */
-    public parseDataSources(sourcesJSON,  value?: number) {
-        for(const element of sourcesJSON) {
+    public parseDataSources(sourcesJSON, value?: number) {
+        for (const element of sourcesJSON) {
             let node = JSON.parse(JSON.stringify(element).replace('{wildcard}', value.toString()));
             // Create and store source
             let source = new DataSource(node);
@@ -55,8 +55,7 @@ class DataGroup {
             let sourceID = this.id + "." + node["id"];
             source.id = sourceID;
 
-            // if (source.dimension){
-            // }
+
 
             this.dataSources.push(source);
         }
@@ -73,31 +72,31 @@ class DataGroup {
      * @param layersJSON JSON array of layer nodes.
      */
     public parseDataLayers(stack: string, layersJSON, value?: number) {
-        for(const element of layersJSON) {
+        for (const element of layersJSON) {
             let node = JSON.parse(JSON.stringify(element).replace('"{wildcard}"', value.toString()));
 
             // Find the data source for this layer
             let source = this.findSource(node["source"]);
-            if(source == null) {
+            if (source == null) {
                 console.error("Layer with ID '" + node["id"] + "' references a source that is not defined, will skip it!");
                 continue;
             }
 
             // Update the source setting to use updated source ID
             node["source"] = source.id;
-           
+
             // Append the layer's position to it's ID, making it unique
             let layerID = this.id + "." + node["id"];
 
             // Create a layer of the correct concrete instance
             let layer = null;
-            switch(Manager.PROVIDER) {
+            switch (Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
                     layer = new MapboxLayer(layerID, node["name"], source);
                     layer.definition = node;
 
                     // Store display order if present
-                    if(node.hasOwnProperty("order")) {
+                    if (node.hasOwnProperty("order")) {
                         layer.order = node["order"];
                     }
 
@@ -105,27 +104,27 @@ class DataGroup {
                     layer.cacheInjectableProperties();
 
                     // Register this layer to this connected stack
-                    if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
+                    if (!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
                         Manager.STACK_LAYERS[stack] = [];
                     }
                     Manager.STACK_LAYERS[stack].push(layerID);
-                break;
-    
+                    break;
+
                 case MapProvider.CESIUM:
                     layer = new CesiumLayer(layerID, node["name"], source);
                     layer.definition = node;
-                    
+
                     // Store display order if present
-                    if(node.hasOwnProperty("order")) {
+                    if (node.hasOwnProperty("order")) {
                         layer.order = node["order"];
                     }
 
                     // Register this layer to this connected stack
-                    if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
+                    if (!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
                         Manager.STACK_LAYERS[stack] = [];
                     }
                     Manager.STACK_LAYERS[stack].push(layerID);
-                break;
+                    break;
 
                 default:
                     throw new Error("Unknown map provider specified!");
@@ -135,31 +134,31 @@ class DataGroup {
             layer.definition = node;
 
             // Store display order if present
-            if(node.hasOwnProperty("order")) {
+            if (node.hasOwnProperty("order")) {
                 layer.order = node["order"];
             }
 
             // Cache visibility is present
-            if(node?.layout?.visibility != null) {
+            if (node?.layout?.visibility != null) {
                 layer.cacheVisibility((node?.layout?.visibility == "visible"));
-            } else if(node?.visibility != null) {
+            } else if (node?.visibility != null) {
                 layer.cacheVisibility((node?.visibility == "visible"));
             }
-            
+
             // Register this layer to this connected stack
-            if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
+            if (!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
                 Manager.STACK_LAYERS[stack] = [];
             }
             Manager.STACK_LAYERS[stack].push(layerID);
-           
-            if(node.hasOwnProperty("interactions")) {
+
+            if (node.hasOwnProperty("interactions")) {
                 // Store the level of acceptable mouse interactions
                 layer.interactions = node.interactions;
-            } else if(node.hasOwnProperty("clickable")) {
+            } else if (node.hasOwnProperty("clickable")) {
                 // Support older format of this property
                 layer.interactions = (node.clickable) ? "all" : "none";
             }
-           
+
             this.dataLayers.push(layer);
         }
     }
@@ -179,8 +178,8 @@ class DataGroup {
             return parts[parts.length - 1] === target;
         });
 
-        if(source === null || source === undefined) {
-            if(currentGroup.parentGroup !== null && currentGroup.parentGroup !== undefined) {
+        if (source === null || source === undefined) {
+            if (currentGroup.parentGroup !== null && currentGroup.parentGroup !== undefined) {
                 this.recurseFindSource(array, currentGroup.parentGroup, target);
             }
         } else {
@@ -207,7 +206,7 @@ class DataGroup {
     private recurseFindLayer(array, currentGroup, target) {
         let layer = currentGroup.dataLayers.find(layer => layer.id === target);
 
-        if(layer === null || layer === undefined) {
+        if (layer === null || layer === undefined) {
             currentGroup.subGroups.forEach(subGroup => {
                 this.recurseFindLayer(array, subGroup, target);
             });
@@ -227,7 +226,7 @@ class DataGroup {
         this.recurseFlattenDownLayers(flatLayers, this);
         return flatLayers;
     }
-    
+
     /**
      * Recursively work down the group tree to collect DataLayer instances.
      */
