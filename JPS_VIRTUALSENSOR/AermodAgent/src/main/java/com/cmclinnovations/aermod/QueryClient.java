@@ -117,7 +117,6 @@ public class QueryClient {
     public static final String NY = PREFIX_DISP + "ny";
     public static final String Z = PREFIX_DISP + "z";
     public static final String SCOPE = PREFIX_DISP + "Scope";
-    public static final String CITIES_NAMESPACE = PREFIX_DISP + "OntoCityGMLNamespace";
     public static final String SIMULATION_TIME = PREFIX_DISP + "SimulationTime";
     public static final String NO_X = PREFIX_DISP + "NOx";
     public static final String UHC = PREFIX_DISP + "uHC";
@@ -1037,126 +1036,19 @@ public class QueryClient {
             List<Polygon> footprintPolygons = entrySet.getValue();
             double height = buildingToHeightMap.get(buildingIri);
 
-            Building building = new Building(footprintPolygons, height);
-            building.setIri(buildingIri);
-            building.getFootprint().setSRID(4326);
-            building.getLocation().setSRID(4326);
+            try {
+                Building building = new Building(footprintPolygons, height);
+                building.setIri(buildingIri);
+                building.getLocation().setSRID(4326);
 
-            iriToBuildingMap.put(buildingIri, building);
+                iriToBuildingMap.put(buildingIri, building);
+            } catch (ClassCastException e) {
+                LOGGER.warn("Skipping <{}>, probably a building with holes in the footprint", buildingIri);
+                LOGGER.warn(e.getMessage());
+            }
         });
 
         return iriToBuildingMap;
-    }
-
-    // This method only retrieves items with an object Class ID of 26, which is the
-    // OCGML identifier for buildings.
-    // See
-    // https://3dcitydb-docs.readthedocs.io/en/latest/3dcitydb/schema/core.html
-    // for more details.
-
-    public Map<String, List<List<Polygon>>> getBuildingsNearPollutantSources(List<PointSource> allSources)
-            throws org.apache.jena.sparql.lang.sparql_11.ParseException {
-
-        List<String> cityObjectIRIList = allSources.stream().filter(i -> i.getClass() == StaticPointSource.class)
-                .map(i -> ((StaticPointSource) i).getOcgmlIri().replace("building", "cityobject")
-                        .replace("cityfurniture", "cityobject"))
-                .collect(Collectors.toList());
-
-        Polygon boundingBox = getBoundingBoxOfPointSources(allSources);
-        List<String> newBoxBounds = getCornersForCitiesQuery(boundingBox);
-
-        String lowerBounds = newBoxBounds.get(0);
-        String upperBounds = newBoxBounds.get(1);
-
-        String geoUri = "http://www.bigdata.com/rdf/geospatial#";
-        // where clause for geospatial search
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ONTO_CITYGML)
-                .addPrefix("geo", geoUri)
-                .addWhere("?cityObject", "geo:predicate", "ocgml:EnvelopeType")
-                .addWhere("?cityObject", "geo:searchDatatype", "<http://localhost/blazegraph/literals/POLYGON-3-15>")
-                .addWhere("?cityObject", "geo:customFields", "X0#Y0#Z0#X1#Y1#Z1#X2#Y2#Z2#X3#Y3#Z3#X4#Y4#Z4")
-                // PLACEHOLDER because lowerBounds and upperBounds would be otherwise added as
-                // doubles, not strings
-                .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
-                .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
-
-        // where clause to check that the city object is a building
-        WhereBuilder wb2 = new WhereBuilder()
-                .addPrefix("ocgml", ONTO_CITYGML)
-                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
-                .addWhere("?cityObject", "ocgml:EnvelopeType", "?envelope")
-                .addFilter("?id=26");
-
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?cityObject").addVar("?envelope");
-
-        Query query = sb.build();
-        // add geospatial service
-        ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(geoUri + "search", wb.build().getQueryPattern()));
-        body.addElement(wb2.build().getQueryPattern());
-        query.setQueryPattern(body);
-
-        String queryString = query.toString().replace("PLACEHOLDER", "");
-        JSONArray buildingIRIQueryResult = AccessAgentCaller.queryStore(citiesNamespace, queryString);
-
-        List<String> buildingOCGMLIRIList = new ArrayList<>();
-
-        Map<String, String> buildingToEnvelopeMap = new HashMap<>();
-        for (int i = 0; i < buildingIRIQueryResult.length(); i++) {
-            String envelopeString = buildingIRIQueryResult.getJSONObject(i).getString("envelope");
-            String buildingIri = buildingIRIQueryResult.getJSONObject(i).getString("cityObject").replace("cityobject",
-                    "building");
-            buildingToEnvelopeMap.put(buildingIri, envelopeString);
-            buildingOCGMLIRIList.add(buildingIri);
-        }
-
-        if (citiesNamespace.contentEquals("singaporeEPSG24500")) {
-            // temporary hack, bad code!
-            return estimatePolygonsFromEnvelope(buildingToEnvelopeMap);
-        } else {
-            return buildingsQuery(buildingOCGMLIRIList);
-        }
-    }
-
-    /**
-     * creates a rectangle from min/max of coordinates from allSources
-     * then adds a buffer
-     */
-    private Polygon getBoundingBoxOfPointSources(List<PointSource> allSources) {
-        double buffer = 500;
-        GeometryFactory geoFactory = new GeometryFactory();
-        List<Point> convertedPoints = allSources.stream().map(s -> {
-            double[] xyOriginal = { s.getLocation().getX(), s.getLocation().getY() };
-            double[] xyTransformed = CRSTransformer.transform("EPSG:" + s.getLocation().getSRID(), namespaceCRS,
-                    xyOriginal);
-            return geoFactory.createPoint(new Coordinate(xyTransformed[0], xyTransformed[1]));
-        }).collect(Collectors.toList());
-
-        List<Double> xCoordinates = convertedPoints.stream().map(Point::getX).collect(Collectors.toList());
-        List<Double> yCoordinates = convertedPoints.stream().map(Point::getY).collect(Collectors.toList());
-
-        double xMin = Collections.min(xCoordinates);
-        double yMin = Collections.min(yCoordinates);
-        double xMax = Collections.max(xCoordinates);
-        double yMax = Collections.max(yCoordinates);
-
-        if (allSources.size() == 1) {
-            double expandRange = 10.0;
-            xMin -= expandRange;
-            xMax += expandRange;
-            yMin -= expandRange;
-            yMax += expandRange;
-        }
-
-        Coordinate[] coordinates = { new Coordinate(xMin, yMin), new Coordinate(xMax, yMin),
-                new Coordinate(xMax, yMax), new Coordinate(xMin, yMax), new Coordinate(xMin, yMin) };
-
-        GeometryFactory geometryFactory = new GeometryFactory();
-        Polygon boundingBox = geometryFactory.createPolygon(coordinates);
-
-        return (Polygon) boundingBox.buffer(buffer);
     }
 
     /**
@@ -1185,37 +1077,6 @@ public class QueryClient {
         boundingBox.setSRID(4326);
 
         return (Polygon) boundingBox.buffer(buffer);
-    }
-
-    private List<String> getCornersForCitiesQuery(Polygon boundingBox) {
-        double zMax = 800.0;
-
-        List<Coordinate> coordinatesList = List.of(boundingBox.getCoordinates());
-        List<Double> xCoordinates = coordinatesList.stream().map(c -> c.getX()).collect(Collectors.toList());
-        List<Double> yCoordinates = coordinatesList.stream().map(c -> c.getY()).collect(Collectors.toList());
-        double xMin = Collections.min(xCoordinates);
-        double yMin = Collections.min(yCoordinates);
-        double xMax = Collections.max(xCoordinates);
-        double yMax = Collections.max(yCoordinates);
-
-        List<String> lowerCornerSequence = new ArrayList<>();
-        List<String> upperCornerSequence = new ArrayList<>();
-
-        for (int i = 0; i < 5; i++) {
-            lowerCornerSequence.add(String.valueOf(xMin));
-            lowerCornerSequence.add(String.valueOf(yMin));
-            lowerCornerSequence.add(String.valueOf(0));
-
-            upperCornerSequence.add(String.valueOf(xMax));
-            upperCornerSequence.add(String.valueOf(yMax));
-            upperCornerSequence.add(String.valueOf(zMax));
-        }
-
-        List<String> corners = new ArrayList<>();
-        corners.add(String.join("#", lowerCornerSequence));
-        corners.add(String.join("#", upperCornerSequence));
-
-        return corners;
     }
 
     DSLContext getContext(Connection conn) {
@@ -1416,62 +1277,6 @@ public class QueryClient {
             LOGGER.error("Failed at closing connection");
             LOGGER.error(e.getMessage());
         }
-    }
-
-    /**
-     * will be replaced by new postgis cities kg
-     */
-    void createBuildingsLayer(List<Building> buildings, String derivationIri, long time) {
-        JSONObject featureCollection = new JSONObject();
-        featureCollection.put("type", "FeatureCollection");
-
-        JSONArray features = new JSONArray();
-
-        buildings.stream().forEach(building -> {
-            JSONObject feature = new JSONObject();
-            feature.put("type", "Feature");
-
-            JSONObject properties = new JSONObject();
-            properties.put("color", "#666666");
-            properties.put("opacity", 0.66);
-            properties.put("base", 0);
-            properties.put("height", building.getHeight());
-            properties.put("iri", building.getIri());
-            properties.put("derivation", derivationIri);
-            properties.put("time", time);
-            feature.put("properties", properties);
-
-            JSONObject geometry = new JSONObject();
-            geometry.put("type", "Polygon");
-            JSONArray coordinates = new JSONArray();
-
-            JSONArray footprintPolygon = new JSONArray();
-            String srid = building.getSrid();
-            for (Coordinate coordinate : building.getFootprint().getCoordinates()) {
-                JSONArray point = new JSONArray();
-                double[] xyOriginal = { coordinate.getX(), coordinate.getY() };
-                double[] xyTransformed = CRSTransformer.transform(srid, "EPSG:4326", xyOriginal);
-                point.put(xyTransformed[0]).put(xyTransformed[1]);
-                footprintPolygon.put(point);
-            }
-            coordinates.put(footprintPolygon);
-            geometry.put("coordinates", coordinates);
-
-            feature.put("geometry", geometry);
-            features.put(feature);
-        });
-
-        featureCollection.put("features", features);
-
-        GDALClient gdalClient = GDALClient.getInstance();
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.BUILDINGS_TABLE,
-                featureCollection.toString(), new Ogr2OgrOptions(), true);
-
-        GeoServerClient geoServerClient = GeoServerClient.getInstance();
-        geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-
-        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                EnvConfig.BUILDINGS_TABLE, new GeoServerVectorSettings());
     }
 
     List<List<Double>> getReceptorElevation(Polygon scope, int nx, int ny, int simulationSrid) {

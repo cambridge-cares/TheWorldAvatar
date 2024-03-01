@@ -23,12 +23,6 @@ public class Building {
     private Point location;
     private double baseElevation = 0.0;
 
-    public Building(LinearRing footPrint, double height) {
-        this.footPrint = footPrint;
-        this.height = height;
-        this.location = footPrint.getCentroid();
-    }
-
     public Building(List<Polygon> footPrintPolygons, double height) {
         footPrint = extractFootprint(footPrintPolygons);
         this.height = height;

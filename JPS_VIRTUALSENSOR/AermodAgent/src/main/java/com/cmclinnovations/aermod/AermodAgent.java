@@ -58,17 +58,6 @@ public class AermodAgent extends DerivationAgent {
         String scopeIri = derivationInputs.getIris(QueryClient.SCOPE).get(0);
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
 
-        // citiesNamespaceIri will be null if this parameter was excluded from the POST
-        // request sent to DispersionInteractor
-        String citiesNamespace = null;
-        if (derivationInputs.getIris(QueryClient.CITIES_NAMESPACE) != null) {
-            String citiesNamespaceIri = derivationInputs.getIris(QueryClient.CITIES_NAMESPACE).get(0);
-            citiesNamespace = queryClient.getCitiesNamespace(citiesNamespaceIri);
-        } else {
-            LOGGER.info("No citieskg namespace was specified in the POST request to Dispersion Interactor." +
-                    "Static point sources will not be included in this AERMOD run.");
-        }
-
         long simulationTime = queryClient.getMeasureValueAsLong(simulationTimeIri);
 
         if (simulationTime == 0) {
@@ -83,9 +72,6 @@ public class AermodAgent extends DerivationAgent {
         // get ships within a scope and time
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
 
-        List<StaticPointSource> staticPointSources = new ArrayList<>();
-        BuildingsData bd = null;
-
         // compute srid
         int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180) / 6);
         int srid;
@@ -97,31 +83,11 @@ public class AermodAgent extends DerivationAgent {
         }
 
         Map<String, Building> allBuildings = null;
-        if (citiesNamespace != null) {
-            String namespaceCRS = queryClient.getNamespaceCRS(citiesNamespace);
-            queryClient.setcitiesNamespaceCRS(citiesNamespace, namespaceCRS);
-            try {
-                staticPointSources = queryClient.getStaticPointSourcesWithinScope(scope);
-                bd = new BuildingsData(namespaceCRS, queryClient);
-                bd.setStaticPointSourceProperties(staticPointSources);
-            } catch (ParseException e) {
-                e.printStackTrace();
-                throw new JPSRuntimeException("Could not set static point source properties.");
-            }
-
-        } else {
-            allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
-            staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
-        }
+        LOGGER.info("Querying for buildings within simulation domain");
+        allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
+        List<StaticPointSource> staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
 
         staticPointSources.removeIf(s -> s.getLocation() == null);
-        if (citiesNamespace != null && citiesNamespace.contentEquals("jriEPSG24500")) {
-            // the JI data has static point sources at different heights, yielding weird
-            // results with AERMOD
-            LOGGER.info("Cities namespace = {}", citiesNamespace);
-            LOGGER.info("Setting point source heights to 0");
-            staticPointSources.forEach(s -> s.setHeight(0));
-        }
 
         long timeBuffer = 1800; // 30 minutes
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
@@ -135,24 +101,8 @@ public class AermodAgent extends DerivationAgent {
 
         queryClient.setPointSourceLabel(allSources);
 
-        List<Building> buildings = new ArrayList<>(); // that are near point sources
-        if (citiesNamespace != null) {
-            try {
-                // too many buildings in JI to process
-                if (!citiesNamespace.contentEquals("jriEPSG24500")) {
-                    buildings.addAll(bd.getBuildings(allSources));
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-                throw new JPSRuntimeException("Could not set building properties.");
-            }
-            if (!buildings.isEmpty()) {
-                queryClient.createBuildingsLayer(buildings, derivationInputs.getDerivationIRI(), simulationTime);
-            }
-        } else {
-            // new ontop way
-            buildings = queryClient.getBuildings(allSources, allBuildings);
-        }
+        // new ontop way
+        List<Building> buildings = queryClient.getBuildings(allSources, allBuildings);
 
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
