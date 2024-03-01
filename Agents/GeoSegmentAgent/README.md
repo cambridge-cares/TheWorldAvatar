@@ -1,27 +1,32 @@
 # GeoSegment Agent
 
-This agent is designed to run neural network-based segmentation algorithm to segment raster data input and create a virtual knowledge graph using Ontop and OBDA mapping. 
+This agent is designed to run segmentation algorithms to segment raster data input and create a virtual knowledge graph using Ontop and OBDA mapping.
 
+As of its latest development, the GeoSegment Agent is able to perform the following tasks:
+1. Executes value-based segmentation on raster data using the k-means clustering algorithm. 
+2. Performs semantic segmentation using the Semantic Anything Model (SAM) from Meta.
 
+## 1. Data Preparation
+The agent requires raster data input in GeoTIFF format. The raster data input can be obtained from a variety of sources, such as satellite imagery, aerial photography, or drone imagery. Ensure that the data is accessible to the docker container by placing it into `raster_input` folder.
+The raster data must be pre-processed and converted to the GeoTIFF.
 
-## 3. Build and Run
-The agent is designed to run in two modes, either as a standalone docker container or work within a stack. The build and setup procedures are different for different running modes.
+## 2. Build the Image
 
-####  [Option 1] As a standalone docker container
-Before running the agent in a standalone docker container, it is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine or need to be accessible from the host machine via a fixed URL. However, it is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database.
+To build the Docker image for the GeoSegment Agent, follow these steps:
 
-Once a triple store and a Postgres database has been set up, modify the  `dataIRIs.properties`, `model_parameters.properties` and `ts_client.properties` in the resources folder accordingly. Refer to the property file descriptions for more information.
+1. Navigate to the directory containing the Dockerfile for the GeoSegment Agent.
+2. Execute the following command to build the Docker image:
 
-To build and start the agent, open up the command prompt in the same directory as this README, run
 ```
-docker-compose up -d
+docker build -t geosegment_agent:1.0.0 .
 ```
 
-####  [Option 2] As a stacked docker container
+This will use the Dockerfile to build an image named `geosegment_agent` tagged with `1.0.0`.
 
-Running this agent in a docker stack is a more advanced option as it facilitate interactions between other agents for deployment and visualization. The stack is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+### Note: The GeoSegment Agent can only run within a Docker stack.
+The stack is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager), which is beyond the scope of this README.
 
-A successful setup will result in 9 containers (optional 10):
+A successful setup will result in 9 containers (or more):
 - Default containers
     - Stack Manager (exits when spins up all other containers)
     - Blazegraph
@@ -32,46 +37,41 @@ A successful setup will result in 9 containers (optional 10):
     - Gdal
     - Geoserver
 - GeoSegmentAgent
-- FeatureInfoAgent (Optional)
-  Note: The FeatureInfoAgent is optional and is only required if you want to visualize the result via DTVF.
 
-##### Build the image
-First, build image with:
+## 3. Run the Agent
+
+Once the GeoSegment Agent is successfully spun up within the Docker stack, you can send requests to convert raster data into a virtual knowledge graph. 
+
+### K-Means Clustering Parameters
+
+- `n_clusters`: The number of clusters to form and the number of centroids to generate.
+- `file`: The filename of the GeoTIFF format raster data (that is available within the container).
+- `tablename`: The name of the table to store segmented data in the PostGIS database.
+- `value_to_object_dict`: (Optional) A dictionary that maps raster values to object labels (e.g., `{10: "tree", 20: "building"}`).
+
+Example API call to perform k-means clustering:
+
 ```
-docker build -t geo-segment-agent:1.0.0 .
-```
-The Dockerfile will automatically copy all properties files and mapping folder and set environment variables pointing to their location. Therefore, you do not need to shift the properties files and mapping folder nor add in environment variables manually.
-
-
-##### Add Config to Stack Manager
-Before running the stack manager, you need to add the config files to the stack manager. The config files are located in `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/`.
-- Copy `./GeoSegmentAgent/stack_manager_config/geosegment-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
-- Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it does not exist, following the below structure.
-```json
-{
-  "services": {
-    "includes": [
-      "geosegment-agent",
-      // Other agents you wish to spin up...
-    ],
-    "excludes": [
-      // ...
-    ]
-  }
-}
+curl -X GET http://localhost:5000/k-means-cluster-segmentation?n_clusters=3&file=my_raster_data.tif&tablename=my_table
 ```
 
-After this step, the stack-manager/inputs/config folder will have the following structure:
-```
-config/
-|_ services/
-   |_ geosegment-agent.json
-   |_ ...
-|_ <STACK NAME>.json
-```
-More information about adding custom containers to the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-custom-containers).
+### Semantic Segmentation Parameters (Using SAM Model)
 
-##### Spin Up Stack
-Follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack.
+- `minLon`, `minLat`, `maxLon`, `maxLat`: Coordinates for the bounding box to segment within the raster data.
+- `tablename`: The name of the table in the PostGIS database to store the segmentation results.
 
-##### Run the agent
+Example API call to perform SAM semantic segmentation:
+
+```
+curl -X GET "http://localhost:5000/SAM-semantic-segmentation?minLon=xxx&minLat=yyy&maxLon=zzz&maxLat=www&tablename=my_table"
+```
+### Update OBDA Mapping
+Finally, upload the obda file to the Ontop container by running the following command:
+
+```
+curl -X http://localhost:3838/geosegment-agent/update-obda
+```
+
+Ensure that the GeoTIFF files, table names, and other parameters are specified correctly for your particular segmentation task.
+
+By correctly specifying these input parameters, you can achieve different segmentation results based on the utilized segmentation algorithm (either k-means clustering or SAM semantic segmentation), the characteristics of the input raster data, and your desired output in terms of labeled segments.
