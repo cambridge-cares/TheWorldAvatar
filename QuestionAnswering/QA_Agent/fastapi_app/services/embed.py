@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
+from functools import cache
 from typing import List
 
+from fastapi import Depends
 from openai import OpenAI
+
+from .openai_client import get_openai_client
 
 
 class IEmbedder(ABC):
@@ -16,9 +20,15 @@ class OpenAIEmbedder(IEmbedder):
         self.model = model
 
     def __call__(self, documents: List[str]):
+        # TODO: handle when `documents` or `queries` is an empty Lists
         return [
             x.embedding
             for x in self.client.embeddings.create(
                 input=documents, model=self.model
             ).data
         ]
+
+
+@cache
+def get_embedder():
+    return OpenAIEmbedder(client=get_openai_client())

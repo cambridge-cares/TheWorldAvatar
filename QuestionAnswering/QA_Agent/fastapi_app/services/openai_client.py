@@ -1,3 +1,7 @@
+from functools import cache
+
 from openai import OpenAI
 
-openai_client = OpenAI()
+@cache
+def get_openai_client():
+    return OpenAI()
