@@ -1,5 +1,6 @@
 fastapi
 uvicorn[standard]
+redis
 SPARQLWrapper
 openai
 numpy
