@@ -1,6 +1,8 @@
+import logging
 import os
 from typing import Dict, List, Tuple, Type
 
+from services.utils.functools import expiring_cache
 from services.utils.parse import parse_constraint
 from services.nearest_neighbor import NNRetriever
 from services.kg_client import KgClient
@@ -13,6 +15,9 @@ from .constants import (
     SpeciesIdentifierAttrKey,
     SpeciesPropertyAttrKey,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class OntoSpeciesAgent(IAgent):
@@ -28,20 +33,33 @@ class OntoSpeciesAgent(IAgent):
         self.kg_client = KgClient(os.getenv("KG_ENDPOINT_ONTOSPECIES"))
         self.nn_retriever = nn_retriever
 
+    @expiring_cache()
+    def _get_chemical_classes(self):
+        query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
+SELECT DISTINCT ?Label WHERE {
+    ?s a os:ChemicalClass ; rdfs:label ?Label .
+}"""
+        return [
+            x["Label"]["value"]
+            for x in self.kg_client.query(query)["results"]["bindings"]
+        ]
+
     @classmethod
     def get_tools(cls):
         return [
             {
                 "type": "function",
                 "function": {
-                    "name": "get_chemicalSpecies_attributes",
-                    "description": "Given a chemical species, retrieve its requested attributes e.g. chemical class, application, boiling point, molecular formula",
+                    "name": "lookup_chemicalSpecies_attributes",
+                    "description": "Given a chemical species or chemical class, retrieve its requested attributes e.g. chemical class, application, boiling point, molecular formula",
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "species": {
                                 "type": "string",
-                                "description": "The label of the chemical species e.g. benzene, H2O",
+                                "description": "A common name, molecular formula, or chemical class e.g. benzene, H2O, alcohol",
                             },
                             "attributes": {
                                 "type": "array",
@@ -91,28 +109,40 @@ class OntoSpeciesAgent(IAgent):
 
     def get_name2method(self):
         return {
-            "get_chemicalSpecies_attributes": self.get_chemicalSpecies_attributes,
+            "lookup_chemicalSpecies_attributes": self.lookup_chemicalSpecies_attributes,
             "find_chemicalSpecies": self.find_chemicalSpecies,
         }
 
     def _find_species_iri(self, species: str) -> List[str]:
-        query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        # TODO: look-up an in-memory cache of label to IRI mappings
+        # TODO: use fuzzy matching
+        if species in self._get_chemical_classes():
+            query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
+SELECT DISTINCT ?Species WHERE {{
+    ?Species (a|!a)+ [ a os:ChemicalClass ; rdfs:label "{chemical_class}" ]
+}}""".format(
+                chemical_class=species
+            )
+        else:
+            query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?Species WHERE {{
-  ?Species a os:Species .
-  VALUES ?Label {{ "{label}" }}
-  {{
-  	?Species rdfs:label ?Label
-  }} UNION {{
-  	?Species skos:altLabel ?Label
-  }} UNION {{
-  	?Species ?hasIdentifier [ a/rdfs:subClassOf os:Identifier ; os:value ?Label ]
-  }}
+    ?Species a os:Species .
+    VALUES ?Label {{ "{label}" }}
+    {{
+        ?Species rdfs:label ?Label
+    }} UNION {{
+        ?Species skos:altLabel ?Label
+    }} UNION {{
+        ?Species ?hasIdentifier [ a/rdfs:subClassOf os:Identifier ; os:value ?Label ]
+    }}
 }}""".format(
-            label=species
-        )
+                label=species
+            )
         return [
             x["Species"]["value"]
             for x in self.kg_client.query(query)["results"]["bindings"]
@@ -162,7 +192,8 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
             for x in self.kg_client.query(query)["results"]["bindings"]
         ]
 
-    def get_chemicalSpecies_attributes(self, species: str, attributes: List[str]):
+    def lookup_chemicalSpecies_attributes(self, species: str, attributes: List[str]):
+        logger.info("Aligning attribute keys: " + attributes)
         attr_keys: List[SpeciesAttrKey] = []
         for key in self.nn_retriever.retrieve(
             documents=self._SPECIES_ATTR_KEYS, queries=attributes
@@ -173,7 +204,10 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
                     attr_keys.append(attr_key)
                 except ValueError:
                     pass
+        logger.info("Aligned attribute keys: " + str(attr_keys))
+
         species_iris = self._find_species_iri(species)
+        # TODO: do not include entries with empty attributes
         return [
             {
                 **{"IRI": iri},
@@ -194,6 +228,16 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
         ] = [],
     ) -> List[str]:
         patterns = []
+
+        if chemical_classes:
+            # TODO: instead of align each chemical_class to its closest neighbour, retrieve top-k 
+            # and match to any one of these top-k labels
+            logger.info("Aligning chemical class labels...")
+            stored_chemical_classes = self._get_chemical_classes()
+            chemical_classes = self.nn_retriever.retrieve(
+                stored_chemical_classes, chemical_classes
+            )
+            logger.info("Aligned chemical classes: " + str(chemical_classes))
         for chemical_class in chemical_classes:
             patterns.append(
                 '?Species (a|!a)+ [ a os:ChemicalClass ; rdfs:label "{label}" ] .'.format(
@@ -253,12 +297,13 @@ SELECT ?Label WHERE {{
         uses: List[str] = [],
         properties: List[str] = [],
     ):
+        logger.info("Parsing property constraints...")
         property_constraints = [parse_constraint(x) for x in properties]
         aligned_keys = [
             SpeciesPropertyAttrKey(
                 self.nn_retriever.retrieve(
                     documents=[x.value for x in SpeciesPropertyAttrKey],
-                    queries=[key],
+                    queries=["".join([x.capitalize() for x in key.split()])],
                 )[0]
             )
             for key, _ in property_constraints
@@ -267,7 +312,9 @@ SELECT ?Label WHERE {{
             (aligned_key, constraint)
             for aligned_key, (_, constraint) in zip(aligned_keys, property_constraints)
         ]
+        logger.info("Parsed property constraints: " + str(aligned_property_constraints))
+
         species_iris = self._find_chemicalSpecies_iri(
             chemical_classes, uses, aligned_property_constraints
         )
-        return [dict(iri=iri, label=self._get_label(iri)) for iri in species_iris]
+        return [dict(IRI=iri, label=self._get_label(iri)) for iri in species_iris]

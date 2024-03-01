@@ -14,6 +14,7 @@ def cos_sim(a: np.ndarray, b: np.ndarray):
     return a @ b.T
 
 
+# TODO: use a dedicated vector database and k-NN search engine
 class NNRetriever:
     def __init__(
         self,
@@ -34,6 +35,7 @@ class NNRetriever:
 
     def retrieve(self, documents: List[str], queries: List[str]):
         # TODO: handle when `documents` or `queries` is an empty List
+        # TODO: enable top-k retrieval
         doc_embeds = np.array(self._retrieve_embeddings(documents))
         query_embeds = np.array(self._retrieve_embeddings(queries))
 
