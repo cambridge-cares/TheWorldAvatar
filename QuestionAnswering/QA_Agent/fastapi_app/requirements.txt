@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+SPARQLWrapper
+openai
+numpy
+unit_parse
+Pint
+jinja2
