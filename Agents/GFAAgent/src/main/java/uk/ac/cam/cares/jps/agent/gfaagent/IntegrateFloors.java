@@ -38,7 +38,11 @@ public class IntegrateFloors {
 
         
     }
-
+    /******************************************** */
+    /* Fuzzy match building address from outer data source (csv) and osm agent to integrate floors data to citydb.buildilng */
+    /* INPUT: data file location*/
+    /* floors data store in citydb.building.storeys_above_ground*/
+    /**********************************************/ 
     public void matchAddress (String floorsCsv) throws IOException{
         MatchService matchService = new MatchService();
         //query address infor from osm db

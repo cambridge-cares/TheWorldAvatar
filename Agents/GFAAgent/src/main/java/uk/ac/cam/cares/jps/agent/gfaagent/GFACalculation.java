@@ -25,6 +25,10 @@ public class GFACalculation {
         this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
     }
     
+    /******************************************** */
+    /* Calculate GFA and store in citydb.cityobject_genericattrib */
+    /**********************************************/ 
+
     public void calculationGFA(){
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {

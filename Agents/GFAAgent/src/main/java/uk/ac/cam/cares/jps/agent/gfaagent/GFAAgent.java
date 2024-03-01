@@ -30,28 +30,11 @@ public class GFAAgent extends JPSAgent{
     public String floorsCsv;
 
     public synchronized void init() {
-        // readConfig();
+        this.dbName = endpointConfig.getDbName();
         this.dbUrl = endpointConfig.getDbUrl(dbName);
         this.dbUser = endpointConfig.getDbUser();
-        this.dbPassword = endpointConfig.getDbPassword();
-        this.dbName = endpointConfig.getDbName();
+        this.dbPassword = endpointConfig.getDbPassword();       
         this.floorsCsv = endpointConfig.getFilepath();
-    }
-
-    public void readConfig() {
-        try (InputStream input = FileReader.getStream(PROPERTIES_PATH)) {
-            Properties prop = new Properties();
-            prop.load(input);
-            this.dbName = prop.getProperty("db.name");
-            this.floorsCsv = prop.getProperty("floors.csv");
-            
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException("config.properties file not found");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
-        }
     }
 
     @Override
