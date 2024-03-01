@@ -17,7 +17,9 @@ Important note: Instances where 'sg' is committed - [access-agent.json], [sg.jso
 	- postgis_password
 	- mapbox_username
 	- mapbox_api_key
-2) For deployment, replace all instances of 'localhost' in [index.html], [data.json (MapBox)] and [data.json (Cesium)]. Simply replace and do not add an additional `/` or things will break.
+2) Visualisation settings: 
+    - Replace all instances of `localhost` in [index.html], [data.json (MapBox)] and [data.json (Cesium)] with digital ocean IP. Simply replace and do not add an additional `/` or things will break.
+    - Replace [dispersion-interactor.json] `localhost` in `STACK_URL` with digital ocean IP.
 3) To generate dispersion data, two additional API keys are needed, one from https://aisstream.io/ and another one from https://openweathermap.org/ with OneCall enabled. Insert API key from aisstream in [ship-input-agent.json] and API key from openweather in [weather-agent.json].
 4) Run the following command in [stack-manager]:
 ```
@@ -93,3 +95,4 @@ New sets of gradient bars can be generated in the `./stack-manager/inputs/data/w
 [start-live-updates.http]: <./HTTP requests for dispersion/start-live-updates.http>
 [jurong-live.http]: <./HTTP requests for dispersion/jurong-live.http>
 [mbs-live.http]: <./HTTP requests for dispersion/mbs-live.http>
+[dispersion-interactor.json]: ./stack-manager/inputs/config/services/dispersion-interactor.json
