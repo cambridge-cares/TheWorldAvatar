@@ -5,6 +5,7 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
+from model.qa import QAStep
 from services.connector import AgentConnector, get_agent_connector
 
 
@@ -12,8 +13,13 @@ class QARequest(BaseModel):
     question: str
 
 
-class QAResponse(BaseModel):
+class QAResponseMetadata(BaseModel):
     latency: float
+    steps: List[QAStep]
+
+
+class QAResponse(BaseModel):
+    metadata: QAResponseMetadata
     data: List[dict]
 
 
@@ -30,8 +36,10 @@ def qa(
     logger.info("Received request to QA endpoint with the following request body")
     logger.info(req)
 
-    start = time.time()
-    data = agent_connector.query(req.question)
-    end = time.time()
+    timestamp = time.time()
+    steps, data = agent_connector.query(req.question)
+    latency = time.time() - timestamp
 
-    return QAResponse(latency=end - start, data=data)
+    return QAResponse(
+        metadata=QAResponseMetadata(latency=latency, steps=steps), data=data
+    )
