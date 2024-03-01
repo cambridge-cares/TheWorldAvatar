@@ -7,7 +7,7 @@
         "Mounts": [
           {
             "Type": "bind",
-            "Source": "/mnt/c/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/CarparkAgent/config",
+            "Source": "/c/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/CarparkAgent/config",
             "Target": "/usr/local/tomcat/config"
           }
         ],
