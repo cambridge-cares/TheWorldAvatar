@@ -193,7 +193,7 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
         ]
 
     def lookup_chemicalSpecies_attributes(self, species: str, attributes: List[str]):
-        logger.info("Aligning attribute keys: " + attributes)
+        logger.info("Aligning attribute keys: " + str(attributes))
         attr_keys: List[SpeciesAttrKey] = []
         for key in self.nn_retriever.retrieve(
             documents=self._SPECIES_ATTR_KEYS, queries=attributes
