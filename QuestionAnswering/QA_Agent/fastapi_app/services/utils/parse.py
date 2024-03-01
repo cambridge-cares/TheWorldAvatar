@@ -62,7 +62,8 @@ def parse_constraint(text: str):
             },
         },
     )
-    key = args["key"]
+    # TODO: handle error
+    key: str = args["key"]
 
     if "logical_operator" not in args:
         logical_operator = None
