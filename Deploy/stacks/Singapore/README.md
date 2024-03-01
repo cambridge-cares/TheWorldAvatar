@@ -18,7 +18,7 @@ Important note: Instances where 'sg' is committed - [access-agent.json], [sg.jso
 	- mapbox_username
 	- mapbox_api_key
 2) Visualisation settings: 
-    - Replace all instances of `localhost` in [index.html], [data.json (MapBox)] and [data.json (Cesium)] with digital ocean IP. Simply replace and do not add an additional `/` or things will break.
+    - Replace all instances of `localhost` in [index.html], [data.json (MapBox)] and [data.json (Cesium)] with digital ocean IP.
     - Replace [dispersion-interactor.json] `localhost` in `STACK_URL` with digital ocean IP.
 3) To generate dispersion data, two additional API keys are needed, one from https://aisstream.io/ and another one from https://openweathermap.org/ with OneCall enabled. Insert API key from aisstream in [ship-input-agent.json] and API key from openweather in [weather-agent.json].
 4) Run the following command in [stack-manager]:
@@ -74,6 +74,8 @@ To generate dispersion data, make sure the weather agent and ship input agent ar
     5) label - Text to show in the visualisation for users to select which simulation to display
     6) delayMinutes - Upon submitting the request, the duration to wait before executing a dispersion simulation, it is also the time to subtract from the current time to run the simulation for. For example, if delayMinutes = 30, and the current time is 1pm, the simulation will be executed at 1pm + 30 min, i.e. 130pm, for a simulation at 1pm (using weather and ship data at 1pm).
     7) intervalMinutes - Interval to execute dispersion calculations.
+
+3) To stop either live updates or scheduled simulations, change the request from POST to DELETE.
 
 ## 3. Miscellaneous Functions
 ### Legend
