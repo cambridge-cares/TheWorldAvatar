@@ -46,7 +46,7 @@ FROM
     JOIN "citydb"."surface_geometry" ON "citydb"."surface_geometry"."root_id" = "citydb"."building"."lod0_footprint_id"
     JOIN "uuid_table" ON "citydb"."building"."id" = "uuid_table"."cityobject_id"
     JOIN "iri_table" ON "citydb"."building"."id" = "iri_table"."cityobject_id"
-    JOIN "GFA_table" ON "citydb"."building"."id" = "GFA_table"."cityobject_id"
+    FULL OUTER JOIN "GFA_table" ON "citydb"."building"."id" = "GFA_table"."cityobject_id"
     FULL OUTER JOIN "refGFA_table" ON "uuid_table"."uuid"= "refGFA_table"."uuid"
 WHERE
     "citydb"."surface_geometry"."geometry" IS NOT NULL

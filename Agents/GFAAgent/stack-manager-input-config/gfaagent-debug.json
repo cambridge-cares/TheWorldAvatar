@@ -1,0 +1,60 @@
+{
+    "ServiceSpec": {
+        "Name": "gfaagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/gfaagent:1.0.0-SNAPSHOT",
+                "Env": [
+                  "STACK_NAME=${STACK_NAME}",
+                  "DATABASE=postgres",
+                  "floors_csv=/data/HDBfloors/HDBPropertyInformation.csv",
+                  "JPDA_ADDRESS=0.0.0.0:5005",
+                  "JPDA_TRANSPORT=dt_socket",
+                  "DEBUG=ON"
+                ],
+                "Mounts": [
+                  {
+                    "Type": "bind",
+                    "Source": "../../../../../../Agents/GFAAgent/src/main/resources",
+                    "Target": "/resources"
+                  }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                      "ConfigName": "geoserver"
+                    }
+                  ],
+                "Secrets": [
+                  {
+                    "SecretName": "postgis_password"
+                  },
+                  {
+                    "SecretName": "geoserver_password"
+                  }
+                ]
+            }
+        },
+		"EndpointSpec": {
+			"Ports": [
+				{
+          "Name": "web",
+          "Protocol": "tcp",
+					"TargetPort": "5005",
+					"PublishedPort": "5005"
+				}
+			]
+		}
+    },
+    "endpoints": {
+        "gfaagent": {
+          "url": "http://localhost:8080/gfaagent/",
+          "externalPath": "/gfaagent/"
+        }
+    }
+}
