@@ -56,6 +56,10 @@ def parse_constraint(text: str):
                                 "type": "number",
                                 "description": "The reference value of the constraint operator",
                             },
+                            "unit": {
+                                "type": "string",
+                                "description": "Unit of the physical property e.g. Kelvin, meter",
+                            },
                         },
                     },
                 },
@@ -76,7 +80,9 @@ def parse_constraint(text: str):
 
     constraints = [
         AtomicNumericalConstraint(
-            operator=constraint["operator"], operand=constraint["operand"]
+            operator=constraint["operator"],
+            operand=constraint["operand"],
+            unit=constraint.get("unit"),
         )
         for constraint in args["constraints"]
     ]

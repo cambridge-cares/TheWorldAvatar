@@ -1,12 +1,17 @@
 import logging
 import os
+import time
 from typing import Dict, List, Tuple, Type
+from pint import Quantity
 
+import unit_parse
+
+from model.qa import QAStep
 from services.utils.functools import expiring_cache
 from services.utils.parse import parse_constraint
 from services.nearest_neighbor import NNRetriever
 from services.kg_client import KgClient
-from model.constraint import CompoundNumericalConstraint
+from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
 from services.connector.agent import IAgent
 from .constants import (
     SpeciesAttrKey,
@@ -148,7 +153,7 @@ SELECT DISTINCT ?Species WHERE {{
             for x in self.kg_client.query(query)["results"]["bindings"]
         ]
 
-    def _get_chemicalSpecies_attribute(
+    def _lookup_chemicalSpecies_attribute(
         self, species_iri: str, attr_key: SpeciesAttrKey
     ) -> List[Dict[str, str]]:
         if isinstance(attr_key, SpeciesUseAttrKey):
@@ -193,7 +198,10 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
         ]
 
     def lookup_chemicalSpecies_attributes(self, species: str, attributes: List[str]):
+        steps: List[QAStep] = []
+
         logger.info("Aligning attribute keys: " + str(attributes))
+        timestamp = time.time()
         attr_keys: List[SpeciesAttrKey] = []
         for key in self.nn_retriever.retrieve(
             documents=self._SPECIES_ATTR_KEYS, queries=attributes
@@ -204,22 +212,43 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
                     attr_keys.append(attr_key)
                 except ValueError:
                     pass
+        latency = time.time() - timestamp
         logger.info("Aligned attribute keys: " + str(attr_keys))
 
+        timestamp = time.time()
         species_iris = self._find_species_iri(species)
-        # TODO: do not include entries with empty attributes
-        return [
-            {
-                **{"IRI": iri},
-                **{
-                    key.value: self._get_chemicalSpecies_attribute(iri, key)
-                    for key in attr_keys
-                },
-            }
-            for iri in species_iris
-        ]
+        latency = time.time() - timestamp
+        steps.append(
+            QAStep(
+                latency=latency,
+                action="find_species_iri",
+                arguments=[dict(species=species)],
+            )
+        )
 
-    def _find_chemicalSpecies_iri(
+        timestamp = time.time()
+        data: List[dict] = []
+        for iri in species_iris:
+            datum = dict(IRI=iri)
+            for key in attr_keys:
+                value = self._lookup_chemicalSpecies_attribute(iri, key)
+                if value:
+                    datum[key.value] = value
+            data.append(datum)
+        latency = time.time() - timestamp
+        limit = 10
+        attr_keys_unpacked = [key.value for key in attr_keys]
+        arguments = [
+            dict(iri=iri, attributes=attr_keys_unpacked) for iri in species_iris[:limit]
+        ]
+        if len(species_iris) > limit:
+            arguments.append("...")
+        steps.append(
+            QAStep(latency=latency, action="lookup_attributes", arguments=arguments)
+        )
+        return steps, data
+
+    def _find_chemicalSpecies(
         self,
         chemical_classes: List[str] = [],
         uses: List[str] = [],
@@ -230,7 +259,7 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
         patterns = []
 
         if chemical_classes:
-            # TODO: instead of align each chemical_class to its closest neighbour, retrieve top-k 
+            # TODO: instead of align each chemical_class to its closest neighbour, retrieve top-k
             # and match to any one of these top-k labels
             logger.info("Aligning chemical class labels...")
             stored_chemical_classes = self._get_chemical_classes()
@@ -254,7 +283,7 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
             )
             atomic_constraints = [
                 "?{key}Value {operator} {operand}".format(
-                    key=key.value, operator=x.operator, operand=x.operand
+                    key=key.value, operator=x.operator.value, operand=x.operand
                 )
                 for x in compound_constraint.constraints
             ]
@@ -273,6 +302,9 @@ SELECT ?Species WHERE {{
 }}""".format(
             patterns="\n".join(patterns)
         )
+
+        logger.info("SPARQL query: " + query)
+
         return [
             x["Species"]["value"]
             for x in self.kg_client.query(query)["results"]["bindings"]
@@ -297,8 +329,38 @@ SELECT ?Label WHERE {{
         uses: List[str] = [],
         properties: List[str] = [],
     ):
+        steps = []
+
         logger.info("Parsing property constraints...")
         property_constraints = [parse_constraint(x) for x in properties]
+
+        property_constraints_unit_converted = []
+        for _, compound_constraint in property_constraints:
+            atomic_constraints = []
+            for constraint in compound_constraint.constraints:
+                unit = constraint.unit
+                if constraint.unit:
+                    quantity = unit_parse.parser(
+                        " ".join([str(constraint.operand), constraint.unit])
+                    )
+                    if isinstance(quantity, Quantity):
+                        quantity = quantity.to_base_units()
+                        unit = str(quantity.units)
+                    operand = quantity.magnitude
+                else:
+                    operand = constraint.operand
+                atomic_constraints.append(
+                    AtomicNumericalConstraint(
+                        operator=constraint.operator, operand=operand, unit=unit
+                    )
+                )
+            property_constraints_unit_converted.append(
+                CompoundNumericalConstraint(
+                    logical_operator=compound_constraint.logical_operator,
+                    constraints=atomic_constraints,
+                )
+            )
+
         aligned_keys = [
             SpeciesPropertyAttrKey(
                 self.nn_retriever.retrieve(
@@ -310,11 +372,30 @@ SELECT ?Label WHERE {{
         ]
         aligned_property_constraints = [
             (aligned_key, constraint)
-            for aligned_key, (_, constraint) in zip(aligned_keys, property_constraints)
+            for aligned_key, constraint in zip(aligned_keys, property_constraints_unit_converted)
         ]
         logger.info("Parsed property constraints: " + str(aligned_property_constraints))
 
-        species_iris = self._find_chemicalSpecies_iri(
+        timestamp = time.time()
+        species_iris = self._find_chemicalSpecies(
             chemical_classes, uses, aligned_property_constraints
         )
-        return [dict(IRI=iri, label=self._get_label(iri)) for iri in species_iris]
+        data = [dict(IRI=iri, label=self._get_label(iri)) for iri in species_iris]
+        latency = time.time() - timestamp
+        arguments = dict()
+        if chemical_classes:
+            arguments["chemical_classes"] = chemical_classes
+        if uses:
+            arguments["uses"] = uses
+        if aligned_property_constraints:
+            arguments["properties"] = [
+                dict(property=key, constraint=str(constraint))
+                for key, constraint in aligned_property_constraints
+            ]
+        steps.append(
+            QAStep(
+                action="find_chemicalSpecies", arguments=[arguments], latency=latency
+            )
+        )
+
+        return steps, data
