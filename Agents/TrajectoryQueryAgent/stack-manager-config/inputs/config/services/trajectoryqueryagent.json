@@ -3,7 +3,7 @@
     "Name": "trajectoryqueryagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:1.1.0", 
+        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:1.0.0", 
         "Mounts": [
           {
               "Type": "bind",
@@ -31,16 +31,6 @@
           }
         ]
       }
-    },
-    "EndpointSpec": {
-      "Ports": [
-        {
-          "Name": "web",
-          "Protocol": "tcp",
-          "TargetPort": "5005",
-          "PublishedPort": "5005"
-        }
-      ]
     }
   },
   "endpoints": {
