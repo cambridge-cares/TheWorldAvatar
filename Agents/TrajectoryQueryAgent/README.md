@@ -1,8 +1,13 @@
 # TrajectoryQueryAgent
 ## 1. Description
+TrajectoryQueryAgent is an agent that
+1) Receives `userID` from UserAgent.
+2) SPARQL Query for `pointIRI` using `userID`
+3) Create geoserver layer
+4) Return pointIRI to application as response
 
 ## 2. Pre-requisites
-### 2.1 SensorLogger mobile application setup 
+### 2.1 TrajectoryQueryAgent setup 
 
 
 
@@ -18,14 +23,12 @@ The agent has been implemented to work in the stack, which requires the Trajecto
 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
-### 4.3 Configuring AccessAgent endpoints 
-On this same directory run, replace `STACK-NAME` with your stack-manager name.
+### 4.3 
+To start the agent, run the curl command below: 
 ```
-./copy.sh start <STACK-NAME>
+curl -X POST "localhost:3838/trajectoryqueryagent/createlayer?userID=12345"
 ```
-
-### 4.4 Start recording
-Once all the configurations and server has been set, press the Start Recording button inside the SensorLogger mobile app to begin session. 
+Note: userID=12345 is a placeholder and should be removed before the branch is merged to main.
 
 ## 5. Build and debug
 ## 5.1 Credentials
