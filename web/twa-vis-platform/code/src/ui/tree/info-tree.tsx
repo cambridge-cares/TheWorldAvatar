@@ -78,7 +78,8 @@ export default function InfoTree() {
           {featureInfo.meta &&
             Object.entries(featureInfo.meta.Properties).map(([key, value]) => (
               <p key={key}>
-                {key}: {value.toString()}
+                {key}:{" "}
+                <span className={styles.infoValue}>{value.toString()}</span>
               </p>
             ))}
           {/* Iterate over and display other parts of featureInfo as needed */}

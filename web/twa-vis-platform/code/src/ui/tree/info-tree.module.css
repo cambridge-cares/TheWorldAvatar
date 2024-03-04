@@ -1,40 +1,53 @@
 .infoPanelContainer {
-    width: 100%;
-    height: 100%; 
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .infoHeadSection { 
-    width: 400px;
-    height: 100px;
-    min-width: 100px;
-    min-height: 100px;
+  width: 100%;
+  height: 100%; 
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Enable vertical scrolling for the entire panel container */
+}
 
-    position: relative;
-    top: 10px;
-    left: 20px;
+.infoHeadSection { 
+  width: 400px;
+  height: 100px;
+  min-width: 100px;
+  min-height: 100px;
 
-    display: flex;
-    flex-direction: column;
-    pointer-events: all;
-  }
+  position: relative;
+  top: 10px;
+  left: 20px;
 
-  .infoSection { 
-    width: 100%;  
-    box-sizing: border-box;
-    flex-grow: 1; /* Allow sections to adjust their height if needed */
-    padding: 10px; 
-    border-style: solid;
-    border-color: var(--border-secondary);
-    border-width: 0px 0px 1px 0px;
-  }
-  
-  .infoSection:hover {
-    background-color: var(--background-secondary);
-  }
-  
-  .infoSection h3 {
-    font-size: 14pt; /* Larger than layer tree items */
-    color: var(--text-color-primary);
-  }
+  display: flex;
+  flex-direction: column;
+  pointer-events: all;
+}
+
+.infoSection { 
+  width: 100%;  
+  box-sizing: border-box;
+  flex-grow: 1; /* Allow sections to adjust their height if needed */
+  padding: 10px; 
+  border-style: solid;
+  border-color: var(--border-secondary);
+  border-width: 0px 0px 1px 0px;
+  overflow-y: auto; /* Enable vertical scrolling for each info section */
+}
+
+.infoSection:hover {
+  background-color: var(--background-secondary);
+}
+
+.infoSection h3 {
+  font-size: 14pt; /* Larger than layer tree items */
+  color: var(--text-color-primary);
+}
+
+/*
+Value text styling
+*/
+.infoValue {
+  color: deepskyblue; /* A more vibrant blue */
+  background-color: #f0f0f0; /* Light grey background */
+  padding: 2px 4px; /* Adds some padding around the text */
+  border-radius: 4px; /* Rounds the corners of the background */
+  font-family: Arial, sans-serif; /* Changes the font */
+}
