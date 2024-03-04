@@ -77,4 +77,8 @@ if __name__ == '__main__':
 
         TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, utils.PROPERTIES_FILE)
         TSClient.initTimeSeries(dataIRIs, [double_class] * len(dataIRIs), 'yyyy/MM/dd HH:mm:ss')
+
+        times = gps_object['times']
+        variables = dataIRIs
+
     
