@@ -44,7 +44,9 @@ if __name__ == '__main__':
             'lon': str(df['LONGITUDE'].iloc[0]),  # Adjust to match your CSV structure if necessary
             'times': [f"{row['UTC DATE']} {row['UTC TIME']}" for _, row in df.iterrows()],
             'timeseries': {
-                'Speed': [float(row['SPEED'].split()[0]) for _, row in df.iterrows()],
+                'Speed': df['SPEED'].tolist() if 'SPEED' in df.columns else [],
+                'Distance': df['DISTANCE'].tolist() if 'DISTANCE' in df.columns else [],
+                'Height': df['HEIGHT'].tolist() if 'HEIGHT' in df.columns else [],
             },
         }
 
