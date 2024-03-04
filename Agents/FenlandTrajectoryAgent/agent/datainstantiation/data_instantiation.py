@@ -23,4 +23,23 @@ if __name__ == '__main__':
     instant_class = Instant.now().getClass()
     double_class = jpsBaseLibView.java.lang.Double.TYPE
 
+    # Specify the target folder, and read all the csv file stored in the target folder
+    target_folder_path = 'path/to/your/target/folder/*.csv'  # Please adjust this path as necessary
+    csv_files = glob.glob(target_folder_path)
+    
+    for csv_file in csv_files:
+        df = pd.read_csv(csv_file)  # Read CSV file into DataFrame
+        # Extract object (GPS trajectory) information from the CSV file
+        gps_object = {
+            'object': csv_file.split('/')[-1].replace('.csv', ''),  # Use file name as object name
+            'lat': str(df['LATITUDE'].iloc[0]),  # Use first latitude value as example
+            'lon': str(df['LONGITUDE'].iloc[0]),  # Adjust to match your CSV structure if necessary
+            'geometry': 'ExampleGeometry',  # Placeholder; replace with actual geometry if available
+            'times': [f"{row['UTC DATE']} {row['UTC TIME']}" for _, row in df.iterrows()],
+            'timeseries': {
+                'Speed': [float(row['SPEED'].split()[0]) for _, row in df.iterrows()],
+            },
+        }
+
+        
     
