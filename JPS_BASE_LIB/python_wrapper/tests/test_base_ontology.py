@@ -145,3 +145,14 @@ def test_pull_from_kg(initialise_sparql_client):
     # when recursive depth is 1, C instance should be pulled with A instances
     # but its B instance should not be fully populated, i.e., B's A instances should not be pulled
     assert C.pull_from_kg(c.instance_iri, sparql_client, 1)[0] == _c
+
+
+def test_pull_all_instance_from_kg(initialise_sparql_client):
+    sparql_client = initialise_sparql_client
+    c.push_to_kg(sparql_client)
+    a_list = A.pull_all_instances_from_kg(sparql_client)
+    assert len(a_list) == 3
+    for a_pulled in a_list:
+        assert a_pulled in [a1, a2, a3]
+    assert B.pull_all_instances_from_kg(sparql_client, -1) == [b]
+    assert C.pull_all_instances_from_kg(sparql_client, -1) == [c]

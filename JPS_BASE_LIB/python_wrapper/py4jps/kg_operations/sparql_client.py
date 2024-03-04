@@ -79,6 +79,20 @@ class PySparqlClient:
         """
         self.kg_client.executeUpdate(update)
 
+    def get_all_instances_of_class(self, class_iri):
+        """
+            This function returns all instances of the given class.
+            Arguments:
+                class_iri - IRI of the class
+        """
+        # Prepare query string
+        query = f"""SELECT ?iri WHERE {{ ?iri a <{class_iri}> }}"""
+
+        # Perform query
+        response = self.perform_query(query)
+
+        return [list(r.values())[0] for r in response]
+
     def upload_ontology(self, file_path):
         """
             This function uploads ontology to knowledge graph.

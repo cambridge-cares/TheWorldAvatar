@@ -79,7 +79,7 @@ class BaseOntology(BaseModel):
     # 2. from kg triples to instance
     #    - [done] pull single instance (node) from kg given iri
     #    - [done] arbitary recursive depth when pull triples from kg?
-    #    - TODO pull all instances of a class from kg
+    #    - [done] pull all instances of a class from kg
     """The initialisation and validator sequence:
         (I) start to run BaseOntology.__init__(__pydantic_self__, **data) with **data as the raw input arguments;
         (II) run until super().__init__(**data), note data is updated within BaseOntology before sending to super().init(**data);
@@ -161,6 +161,11 @@ class BaseOntology(BaseModel):
             )
         # TODO add check for rdf_type
         return instance_lst
+
+    @classmethod
+    def pull_all_instances_from_kg(cls, sparql_client: PySparqlClient, recursive_depth: int = 0) -> List[BaseOntology]:
+        iris = sparql_client.get_all_instances_of_class(cls.get_rdf_type())
+        return cls.pull_from_kg(iris, sparql_client, recursive_depth)
 
     @classmethod
     def get_object_properties(cls):

@@ -40,8 +40,8 @@ def initialise_triple_store():
         # Clear logger at the end of the test
         clear_loggers()
 
-
-@pytest.fixture(scope="module")
+# scope is set to function to ensure that the test data is cleared after each test
+@pytest.fixture(scope="function")
 def initialise_sparql_client(initialise_triple_store):
     sparql_endpoint = initialise_triple_store
     sparql_client = PySparqlClient(sparql_endpoint, sparql_endpoint)
