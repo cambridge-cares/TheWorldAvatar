@@ -105,8 +105,7 @@ class PySparqlClient:
 
                 return remote_file_path, timestamp_upload
             else:
-                raise Exception("ERROR: Local file (%s) upload to file server <%s> failed with code %d and response body: %s" % (
-                    local_file_path, self.fs_url, response.status_code, str(response.content)))
+                raise Exception(f"ERROR: Local file ({local_file_path}) upload to file server <{self.fs_url}> failed with code {response.status_code} and response body: {str(response.content)}")
 
     def download_file(self, remote_file_path, downloaded_file_path):
         """This function downloads a file given the remote file path and the local file path to store the downloaded file."""
@@ -116,8 +115,7 @@ class PySparqlClient:
                 for chunk in response.iter_content(chunk_size=128):
                     file_obj.write(chunk)
         else:
-            raise Exception("ERROR: File <%s> download failed with code %d and response body: %s" % (
-                remote_file_path, response.status_code, str(response.content)))
+            raise Exception(f"ERROR: File <{remote_file_path}> download failed with code {response.status_code} and response body: {str(response.content)}")
 
     def upload_graph(self, g: Graph):
         update = """INSERT DATA {""" + g.serialize(format='nt') + "}"
