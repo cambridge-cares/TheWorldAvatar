@@ -47,6 +47,7 @@ if __name__ == '__main__':
                 'Speed': df['SPEED'].tolist() if 'SPEED' in df.columns else [],
                 'Distance': df['DISTANCE'].tolist() if 'DISTANCE' in df.columns else [],
                 'Height': df['HEIGHT'].tolist() if 'HEIGHT' in df.columns else [],
+                'Heading': df['HEADING'].tolist() if 'HEADING' in df.columns else [],
             },
         }
 
@@ -59,23 +60,21 @@ if __name__ == '__main__':
             dataIRI = utils.PREFIXES['ex'] + ts + '_' + str(uuid.uuid4())
             dataIRIs.append(dataIRI)
 
-            # SPARQL query to insert GPS object and time series information
+            # Prepare SPARQL query, assigning units where applicable
+            unit = 'km/h' if ts == 'Speed' else 'M' if ts in ['Distance', 'Height'] else ''
             query = utils.create_sparql_prefix('ex') + \
                     utils.create_sparql_prefix('rdf') + \
                     utils.create_sparql_prefix('rdfs') + \
-                    utils.create_sparql_prefix('geolit') + \
                     f'''INSERT DATA {{
                     <{objectIRI}> rdf:type ex:Object ;
                          rdfs:label "{gps_object['object']}" ;
                          ex:hasTrajectory <{dataIRI}> ;
-                         ex:hasLocation "{gps_object['lat']}#{gps_object['lon']}"^^geolit:lat-lon .
+                         ex:hasLocation "{gps_object['lat']}#{gps_object['lon']}"^^geolit:lat-lon ;
                     <{dataIRI}> rdf:type ex:Trajectory ;
                          rdfs:label "{ts} trajectory" ;
-                         ex:unit "km/h" . }}'''
+                         ex:unit "{unit}" . }}'''
             KGClient.executeUpdate(query)
-            # Initialize and populate time series data in both KG and RDB
+
         TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, utils.PROPERTIES_FILE)
         TSClient.initTimeSeries(dataIRIs, [double_class] * len(dataIRIs), 'yyyy/MM/dd HH:mm:ss')
-
-        
     
