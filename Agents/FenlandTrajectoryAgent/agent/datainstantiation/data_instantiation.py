@@ -34,7 +34,6 @@ if __name__ == '__main__':
             'object': csv_file.split('/')[-1].replace('.csv', ''),  # Use file name as object name
             'lat': str(df['LATITUDE'].iloc[0]),  # Use first latitude value as example
             'lon': str(df['LONGITUDE'].iloc[0]),  # Adjust to match your CSV structure if necessary
-            'geometry': 'ExampleGeometry',  # Placeholder; replace with actual geometry if available
             'times': [f"{row['UTC DATE']} {row['UTC TIME']}" for _, row in df.iterrows()],
             'timeseries': {
                 'Speed': [float(row['SPEED'].split()[0]) for _, row in df.iterrows()],
@@ -59,8 +58,7 @@ if __name__ == '__main__':
                     <{objectIRI}> rdf:type ex:Object ;
                          rdfs:label "{gps_object['object']}" ;
                          ex:hasTrajectory <{dataIRI}> ;
-                         ex:hasLocation "{gps_object['lat']}#{gps_object['lon']}"^^geolit:lat-lon ;
-                         ex:hasGeometry "{gps_object['geometry']}" .
+                         ex:hasLocation "{gps_object['lat']}#{gps_object['lon']}"^^geolit:lat-lon .
                     <{dataIRI}> rdf:type ex:Trajectory ;
                          rdfs:label "{ts} trajectory" ;
                          ex:unit "km/h" . }}'''
