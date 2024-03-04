@@ -41,5 +41,30 @@ if __name__ == '__main__':
             },
         }
 
+        # Generate uuid and IRI for the GPS object
+        objectIRI = utils.PREFIXES['ex'] + 'Object_' + str(uuid.uuid4())
+        dataIRIs = []
+
+        # Create and execute SPARQL queries for RDF data insertion
+        for ts, values in gps_object['timeseries'].items():
+            dataIRI = utils.PREFIXES['ex'] + ts + '_' + str(uuid.uuid4())
+            dataIRIs.append(dataIRI)
+
+            # SPARQL query to insert GPS object and time series information
+            query = utils.create_sparql_prefix('ex') + \
+                    utils.create_sparql_prefix('rdf') + \
+                    utils.create_sparql_prefix('rdfs') + \
+                    utils.create_sparql_prefix('geolit') + \
+                    f'''INSERT DATA {{
+                    <{objectIRI}> rdf:type ex:Object ;
+                         rdfs:label "{gps_object['object']}" ;
+                         ex:hasTrajectory <{dataIRI}> ;
+                         ex:hasLocation "{gps_object['lat']}#{gps_object['lon']}"^^geolit:lat-lon ;
+                         ex:hasGeometry "{gps_object['geometry']}" .
+                    <{dataIRI}> rdf:type ex:Trajectory ;
+                         rdfs:label "{ts} trajectory" ;
+                         ex:unit "km/h" . }}'''
+            KGClient.executeUpdate(query)
+
         
     
