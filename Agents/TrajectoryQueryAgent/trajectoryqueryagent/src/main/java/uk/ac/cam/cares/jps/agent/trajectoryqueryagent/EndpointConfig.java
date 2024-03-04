@@ -12,9 +12,9 @@ public class EndpointConfig {
 
     private String ontopurl;
 
-    private String dburl;
     private String dbuser;
     private String dbpassword;
+    private PostGISEndpointConfig postGISEndpointConfig;
     
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
@@ -24,9 +24,8 @@ public class EndpointConfig {
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
 
-        PostGISEndpointConfig postGISEndpointConfig = containerClient.readEndpointConfig("postgis",
+        postGISEndpointConfig = containerClient.readEndpointConfig("postgis",
                     PostGISEndpointConfig.class);
-        this.dburl = postGISEndpointConfig.getJdbcURL("postgres");
         this.dbuser = postGISEndpointConfig.getUsername();
         this.dbpassword = postGISEndpointConfig.getPassword();
     }
@@ -34,7 +33,10 @@ public class EndpointConfig {
         return this.kgurl;
     }
     public String getDburl() {
-        return this.dburl;
+        return postGISEndpointConfig.getJdbcURL("postgres");
+    }
+    public String getDburl(String database) {
+        return postGISEndpointConfig.getJdbcURL(database);
     }
     public String getDbuser() {
         return this.dbuser;
