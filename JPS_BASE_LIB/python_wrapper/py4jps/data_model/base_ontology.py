@@ -178,7 +178,7 @@ class BaseOntology(BaseModel):
             } for f, field_info in cls.model_fields.items() if issubclass(field_info.annotation, DataProperty)
         }
 
-    def create_triples_for_kg(self, g):
+    def create_triples_for_kg(self, g: Graph) -> Graph:
         """This method is for creating triples as rdflib.Graph() for the knowledge graph.
         By default, it will create triples for the instance itself.
         One can overwrite this method and provide additional triples should they wish.
@@ -222,7 +222,9 @@ class BaseOntology(BaseModel):
         # adapted from https://stackoverflow.com/a/42151923
 
         if isinstance(o, (tuple, list)):
-            return tuple((self._make_hashable_(e) for e in o))
+            # see https://stackoverflow.com/questions/5884066/hashing-a-dictionary/42151923#comment101432942_42151923
+            # NOTE here we sort the list as we assume the order of the range for object/data properties should not matter
+            return tuple(sorted((self._make_hashable_(e) for e in o)))
 
         if isinstance(o, dict):
             # TODO below is a shortcut for the implementation, the specific _exclude_keys_for_compare_ of nested classes are not called

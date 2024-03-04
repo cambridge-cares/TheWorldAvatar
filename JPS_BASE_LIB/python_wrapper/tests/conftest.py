@@ -5,6 +5,8 @@ import logging
 import pytest
 import time
 
+from py4jps.kg_operations import PySparqlClient
+
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 
@@ -37,6 +39,15 @@ def initialise_triple_store():
 
         # Clear logger at the end of the test
         clear_loggers()
+
+
+@pytest.fixture(scope="module")
+def initialise_sparql_client(initialise_triple_store):
+    sparql_endpoint = initialise_triple_store
+    sparql_client = PySparqlClient(sparql_endpoint, sparql_endpoint)
+    sparql_client.perform_update('delete where { ?s ?p ?o }')
+    yield sparql_client
+    sparql_client.perform_update('delete where { ?s ?p ?o }')
 
 
 # ----------------------------------------------------------------------------------
