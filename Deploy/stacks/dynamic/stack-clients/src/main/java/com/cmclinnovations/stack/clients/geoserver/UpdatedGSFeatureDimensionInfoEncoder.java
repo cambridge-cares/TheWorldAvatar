@@ -8,6 +8,10 @@ import it.geosolutions.geoserver.rest.encoder.metadata.GSFeatureDimensionInfoEnc
 
 public class UpdatedGSFeatureDimensionInfoEncoder extends GSFeatureDimensionInfoEncoder {
 
+    private static final String NEAREST_MATCH_ENABLED = "nearestMatchEnabled";
+
+    private static final String RAW_NEAREST_MATCH_ENABLED = "rawNearestMatchEnabled";
+
     public UpdatedGSFeatureDimensionInfoEncoder() {
         super("");
     }
@@ -35,6 +39,8 @@ public class UpdatedGSFeatureDimensionInfoEncoder extends GSFeatureDimensionInfo
 
     public void setNearestMatchEnabled(Boolean nearestMatchEnabled) {
         this.nearestMatchEnabled = nearestMatchEnabled;
+        set(NEAREST_MATCH_ENABLED, nearestMatchEnabled != null ? nearestMatchEnabled.toString() : "false");
+
     }
 
     public Boolean getRawNearestMatchEnabled() {
@@ -43,6 +49,7 @@ public class UpdatedGSFeatureDimensionInfoEncoder extends GSFeatureDimensionInfo
 
     public void setRawNearestMatchEnabled(Boolean rawNearestMatchEnabled) {
         this.rawNearestMatchEnabled = rawNearestMatchEnabled;
+        set(RAW_NEAREST_MATCH_ENABLED, rawNearestMatchEnabled != null ? rawNearestMatchEnabled.toString() : "false");
     }
 
     public void setUnits(String units) {
