@@ -1,0 +1,71 @@
+{
+    "name": "Chile",
+    "groups": [
+        {
+            "name": "Cities Ruler (9*)",
+            "sources": [
+                {
+                    "id": "cities2-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cities2&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "cities2-layer2",
+                    "name": "City's distance to Punta Arenas", 
+                    "source": "cities2-1",
+                    "source-layer": "cities2",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.3,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "DATAICOv2",
+                        "text-field":  ["concat",["get", "NOMBRE"], " @ ", ["to-string", ["round", ["get", "distance_km"]]],"km from PA"],
+                        "text-anchor": [
+                            "case",
+                            ["==",["get", "PESO_ADMIN"], "CAPITAL REGIONAL"],
+                            "right", [
+                                "case",
+                                ["==",["get", "PESO_ADMIN"], "CAPITAL NACIONAL"],
+                                "right", "left"
+                            ]
+                        ],
+                        "text-justify": "right",
+                        "text-radial-offset": 1
+
+                    }
+                },
+                {
+                    "id": "cities2-layer",
+                    "name": "Relative position (red: capitals)", 
+                    "source": "cities2-1",
+                    "source-layer": "cities2",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["==",["get", "PESO_ADMIN"], "CAPITAL NACIONAL"],
+                            15, [
+                                "case",
+                                ["==",["get", "PESO_ADMIN"], "CAPITAL REGIONAL"],
+                                8, 3
+                            ]
+                        ],
+                        "circle-color": [
+                            "case",
+                            ["==",["get", "TIPO"], "PRINCIPAL"],
+                            "#de2402", "#005EB8"
+                        ],
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": 1
+                    }
+                }
+            ]
+        }
+    ]
+}

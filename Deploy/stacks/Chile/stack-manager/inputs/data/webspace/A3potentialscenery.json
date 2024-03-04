@@ -1,0 +1,437 @@
+{
+    "name": "Chile",
+    "groups": [
+        {
+            "name": "Civil infrastructure (6)",
+            "sources": [
+                {
+                    "id": "buildings-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "buildings-1-layer",
+                    "name": "Buildings", 
+                    "source": "buildings-1",
+                    "source-layer": "buildings",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#feea2f"
+                    }
+                },
+                {
+                    "id": "buildings-2-layer",
+                    "name": "Buildings", 
+                    "source": "buildings-1",
+                    "source-layer": "buildings",
+                    "type": "fill-extrusion",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-height": ["+",4,["*", ["to-number", ["get", "buildingle"]], 6]],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-color": [
+                            "case",
+                            ["==", ["get", "building"], "house"],
+                            "#ff9966",[
+                                "case",
+                                ["==", ["get", "building"], "hospital"],
+                                "#ff8080",
+                                ["case",
+                                ["==", ["get", "building"], "apartments"],
+                                "#ff9966",
+                                ["case",
+                                ["==", ["get", "building"], "yes"],
+                                "#feea2f",
+                                "#feea2f"
+                                                                ]]]
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Wind farm suitability Cyan:good, Magenta:bad, Yellow:allowed",
+            "sources": [
+                {
+                    "id": "calc1atlas_capacity_iec1-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlas_capacity_iec1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "calc1atlas_elevationWithBathymetry-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlas_elevationWithBathymetry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "calc1atlaswind50m-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlaswind50m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centraleolic-2",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centraleolic-2",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "country-source",
+                    "type": "vector",
+                    "url": "mapbox://mapbox.country-boundaries-v1"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "calc1atlas_capacity_iec1-layer50",
+                    "name": "Capacity factor IEC1 (4)", 
+                    "source": "calc1atlas_capacity_iec1-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+                    
+
+                },
+                {
+                    "id": "calc1atlas_elevationWithBathymetry-layer50",
+                    "name": "Elevation with bathymetry (4)", 
+                    "source": "calc1atlas_elevationWithBathymetry-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                },
+                {
+                    "id": "calc1atlaswind50m-layer50",
+                    "name": "Mean wind speed at 50m height (4)", 
+                    "source": "calc1atlaswind50m-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                },
+                {
+                    "id": "calc1gov_centraleolic-2-layer",
+                    "name": "Wind farms 2018 (3)", 
+                    "source": "gov_centraleolic-2",
+                    "source-layer": "GOVcentraleolic",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.63,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "EOLICICO"
+                    }
+                },
+                {
+                    "id": "size-layer-eolic",
+                    "name": "Power Yellow:>20MW & Red>100MW (3*)", 
+                    "source": "gov_centraleolic-2",
+                    "source-layer": "GOVcentraleolic",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.63,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": [
+                            "case",
+                            [">", ["to-number", ["get", "potencia"]], 100],
+                            "100W",
+                            [ "case",
+                            [">", ["to-number", ["get", "potencia"]], 20],
+                            "20W","NaN"]
+                        ]
+                    }
+                },
+                {
+                    "id": "country-layer",
+                    "name": "Limits of Chile (1)",
+                    "source": "country-source",
+                    "source-layer": "country_boundaries",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-opacity": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            0.7,
+                                0.0
+                                                                
+                        ],
+                        "line-color": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            "#0000FF",
+                                "#ffffff"
+                                                                
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Potential wind scenaries (3*,4*)",
+            "sources": [
+                {
+                    "id": "abc100-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852//geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Aabx1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&styles=&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "abc100-layer1",
+                    "name": "Wind scenary 100 km from ports", 
+                    "source": "abc100-1",
+                    "source-layer": "abx1",
+                    "type": "fill",
+                    "paint": {
+                        "fill-color": "#ff66cc" ,
+                        "fill-opacity": 0.4                       
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Fuel storage (3)",
+            "sources": [
+                {
+                    "id": "gov_fuelstorage-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVfuelstorage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gov_fuelstorage-1-layer",
+                    "name": "Fuel Storage", 
+                    "source": "gov_fuelstorage-1",
+                    "source-layer": "GOVfuelstorage",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.38,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "STOREFUELICO"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Infrastructure (3)",
+            "sources": [
+                {
+                    "id": "gov_energyconcessions-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVenergyconcessions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_gaslines-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVgaslines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_oillines-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVoillines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_seaports-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVseaports&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gov_energyconcessions-1-layer",
+                    "name": "Energy concessions", 
+                    "source": "gov_energyconcessions-1",
+                    "source-layer": "GOVenergyconcessions",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-opacity": 0.3,
+                        "fill-color":  [
+                            "case",
+                            [">", ["to-number", ["get", "concesion_"]], 200000],
+                            "#2e2eb8",
+                            "#bf80ff"
+                        ]
+                    }
+                },
+                {
+                    "id": "gov_gaslines-1-layer",
+                    "name": "Gas lines", 
+                    "source": "gov_gaslines-1",
+                    "source-layer": "GOVgaslines",
+                    "type": "line",
+                    "paint": {
+                        "line-width": 5,
+                        "line-color": "#8f0000"
+                    }
+                },
+                {
+                    "id": "gov_oillines-1-layer",
+                    "name": "Oil lines", 
+                    "source": "gov_oillines-1",
+                    "source-layer": "GOVoillines",
+                    "type": "line",
+                    "paint": {
+                        "line-width": 5,
+                        "line-color": "#3f0081"
+                    }
+                },
+                {
+                    "id": "gov_seaports-1-layer",
+                    "name": "Seaports", 
+                    "source": "gov_seaports-1",
+                    "source-layer": "GOVseaports",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.43,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "PORTSICO"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Interconnected Data (3*,4*)",
+            "sources": [
+                {
+                    "id": "windspeed10m_point-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:windspeed10m_point&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "windspeed50m_point-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:windspeed50m_point&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "windspeed100m_point-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:windspeed100m_point&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "windspeed10m_point-layer",
+                    "name": "Wind speed @10m height", 
+                    "source": "windspeed10m_point-1",
+                    "source-layer": "windspeed10m_point",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.1,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "DATAICO",
+                        "text-field":  ["concat",["to-string", ["round", ["get", "value"]]]," m/s @ 10m"],
+                        "text-anchor": "left",
+                        "text-justify": "right",
+                        "text-radial-offset": 1
+
+                    }
+                },
+                {
+                    "id": "windspeed50m_point-layer",
+                    "name": "Wind speed @50m height", 
+                    "source": "windspeed50m_point-1",
+                    "source-layer": "windspeed50m_point",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.1,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "DATAICO",
+                        "text-field":  ["concat",["to-string", ["round", ["get", "value"]]]," m/s @ 50m"],
+                        "text-anchor": "left",
+                        "text-justify": "right",
+                        "text-radial-offset": 1
+
+                    }
+                },
+                {
+                    "id": "windspeed100m_point-layer",
+                    "name": "Wind speed @100m height", 
+                    "source": "windspeed100m_point-1",
+                    "source-layer": "windspeed100m_point",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.1,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "DATAICO",
+                        "text-field":  ["concat",["to-string", ["round", ["get", "value"]]]," m/s @ 100m"],
+                        "text-anchor": "left",
+                        "text-justify": "right",
+                        "text-radial-offset": 1
+
+                    }
+                }
+            ]
+        }
+    ]
+}

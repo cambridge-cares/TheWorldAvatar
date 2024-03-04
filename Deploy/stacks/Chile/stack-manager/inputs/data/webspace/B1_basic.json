@@ -1,0 +1,353 @@
+{
+    "name": "Chile",
+    "groups": [
+        {
+            "name": "Limits (1)",
+            "sources": [
+                {
+                    "id": "country-source",
+                    "type": "vector",
+                    "url": "mapbox://mapbox.country-boundaries-v1"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "country-layer",
+                    "name": "Chile",
+                    "source": "country-source",
+                    "source-layer": "country_boundaries",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            0.15,
+                                0.0
+                                                                
+                        ],
+                        "fill-color": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            "#0000FF",
+                                "#ffffff"
+                                                                
+                        ]
+                    }
+                },
+                {
+                    "id": "country2-layer",
+                    "name": "Neighbouring countries",
+                    "source": "country-source",
+                    "source-layer": "country_boundaries",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-opacity": [
+                            "case",
+                            ["all",["==", ["get", "name_en"], "Argentina"],["!=", ["get", "worldview"], "AR"]],
+                            0.2,
+                            [
+                                "case",
+                                ["==", ["get", "name_en"], "Peru"],
+                                0.3,
+                                [
+                                    "case",
+                                    ["==", ["get", "name_en"], "Bolivia"],
+                                    0.4,
+                                        0.0
+                                                                        
+                                ]
+                                                                    
+                            ]
+                                                                
+                        ],
+                        "fill-color": [
+                            "case",
+                            ["==", ["get", "name_en"], "Argentina"],
+                            "#0000FF",
+                            [
+                                "case",
+                                ["==", ["get", "name_en"], "Peru"],
+                                "#0000FF",
+                                [
+                                    "case",
+                                    ["==", ["get", "name_en"], "Bolivia"],
+                                    "#0000FF",
+                                        "#ffffff"
+                                                                        
+                                ]
+                                                                    
+                            ]
+                                                                
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Weather sensors and water storage (2)",
+            "sources": [
+                {
+                    "id": "IDE_weather_station-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:IDE_weather_station&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "IDE_water_storage-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:IDE_water_storage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "IDE_weather_station-1-layer",
+                    "name": "Weather stations", 
+                    "source": "IDE_weather_station-1",
+                    "source-layer": "IDE_weather_station",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.17,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "temp"
+                    },
+                    "paint": {
+                        "icon-opacity": 0.4 
+                    }
+                },
+                {
+                    "id": "IDE_water_storage-1-layer",
+                    "name": "Water storage", 
+                    "source": "IDE_water_storage-1",
+                    "source-layer": "IDE_water_storage",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.10,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "waterstorage"
+                    },
+                    "paint": {
+                        "icon-opacity": 0.4 
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Infrastructure (3)",
+            "sources": [
+                {
+                    "id": "gov_energyconcessions-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVenergyconcessions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_gaslines-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVgaslines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_oillines-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVoillines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_seaports-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVseaports&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gov_energyconcessions-1-layer",
+                    "name": "Energy concessions", 
+                    "source": "gov_energyconcessions-1",
+                    "source-layer": "GOVenergyconcessions",
+                    "type": "fill",
+                    "paint": {
+                        "fill-opacity": 0.3,
+                        "fill-color":  [
+                            "case",
+                            [">", ["to-number", ["get", "concesion_"]], 200000],
+                            "#2e2eb8",
+                            "#bf80ff"
+                        ]
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "gov_gaslines-1-layer",
+                    "name": "Gas lines", 
+                    "source": "gov_gaslines-1",
+                    "source-layer": "GOVgaslines",
+                    "type": "line",
+                    "paint": {
+                        "line-width": 5,
+                        "line-color": "#8f0000"
+                    }
+                },
+                {
+                    "id": "gov_oillines-1-layer",
+                    "name": "Oil lines", 
+                    "source": "gov_oillines-1",
+                    "source-layer": "GOVoillines",
+                    "type": "line",
+                    "paint": {
+                        "line-width": 5,
+                        "line-color": "#3f0081"
+                    }
+                },
+                {
+                    "id": "gov_seaports-1-layer",
+                    "name": "Seaports", 
+                    "source": "gov_seaports-1",
+                    "source-layer": "GOVseaports",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.43,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "PORTSICO"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Energy plants 2018 (3)",
+            "sources": [
+                {
+                    "id": "gov_centralbiomass-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralbiomass&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centralhydro-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralhydro&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centralsolar-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralsolar&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centralthermo-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralthermo&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centraleolic-2",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gov_centralbiomass-1-layer",
+                    "name": "Biomass energy plants", 
+                    "source": "gov_centralbiomass-1",
+                    "source-layer": "GOVcentralbiomass",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.63,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "BIOICO"
+                    }
+                },
+                {
+                    "id": "gov_centralhydro-1-layer",
+                    "name": "Hydro energy plants", 
+                    "source": "gov_centralhydro-1",
+                    "source-layer": "GOVcentralhydro",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.63,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "HYDROICO"
+                    }
+                },
+                {
+                    "id": "gov_centralsolar-1-layer",
+                    "name": "Solar energy plants", 
+                    "source": "gov_centralsolar-1",
+                    "source-layer": "GOVcentralsolar",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.63,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "SOLARICO"
+                    }
+                },
+                {
+                    "id": "gov_centralthermo-1-layer",
+                    "name": "Thermoelectric energy plants", 
+                    "source": "gov_centralthermo-1",
+                    "source-layer": "GOVcentralthermo",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.63,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "THERMOICO"
+                    }
+                },
+                {
+                    "id": "gov_centraleolic-2-layer",
+                    "name": "Wind energy plants", 
+                    "source": "gov_centraleolic-2",
+                    "source-layer": "GOVcentraleolic",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.63,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "EOLICICO"
+                    }
+                }
+            ]
+        }
+    ]
+}

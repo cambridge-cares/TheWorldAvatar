@@ -1,0 +1,668 @@
+{
+    "name": "Chile",
+    "groups": [
+        {
+            "name": "Limits (1)",
+            "sources": [
+                {
+                    "id": "country-source",
+                    "type": "vector",
+                    "url": "mapbox://mapbox.country-boundaries-v1"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "country-layer",
+                    "name": "Chile",
+                    "source": "country-source",
+                    "source-layer": "country_boundaries",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            0.15,
+                                0.0
+                                                                
+                        ],
+                        "fill-color": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            "#0000FF",
+                                "#ffffff"
+                                                                
+                        ]
+                    }
+                },
+                {
+                    "id": "country2-layer",
+                    "name": "Neighbouring countries",
+                    "source": "country-source",
+                    "source-layer": "country_boundaries",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-opacity": [
+                            "case",
+                            ["all",["==", ["get", "name_en"], "Argentina"],["!=", ["get", "worldview"], "AR"]],
+                            0.2,
+                            [
+                                "case",
+                                ["==", ["get", "name_en"], "Peru"],
+                                0.3,
+                                [
+                                    "case",
+                                    ["==", ["get", "name_en"], "Bolivia"],
+                                    0.4,
+                                        0.0
+                                                                        
+                                ]
+                                                                    
+                            ]
+                                                                
+                        ],
+                        "fill-color": [
+                            "case",
+                            ["==", ["get", "name_en"], "Argentina"],
+                            "#0000FF",
+                            [
+                                "case",
+                                ["==", ["get", "name_en"], "Peru"],
+                                "#0000FF",
+                                [
+                                    "case",
+                                    ["==", ["get", "name_en"], "Bolivia"],
+                                    "#0000FF",
+                                        "#ffffff"
+                                                                        
+                                ]
+                                                                    
+                            ]
+                                                                
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Elevation (4)",
+            "sources": [
+                {
+                    "id": "atlas_elevationWithBathymetry-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_elevationWithBathymetry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "atlas_elevationWithBathymetry_1",
+                    "name": "Elevation with bathymetry", 
+                    "source": "atlas_elevationWithBathymetry-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                }
+            ]
+        },
+        {
+            "name": "Wind data (4)",
+            "sources": [
+                {
+                    "id": "atlaswind10m-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlaswind10m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "atlaswind50m-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlaswind50m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "atlaswind100m-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlaswind100m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "atlas-capacity-iec1-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_capacity_iec1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "atlas-capacity-iec2-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_capacity_iec2&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "atlas-capacity-iec3-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_capacity_iec3&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "atlas_PowerDensity10m-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_PowerDensity10m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "atlas_PowerDensity50m-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_PowerDensity50m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "atlas_ExtremeLoads-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_ExtremeLoads&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "atlas_FatigueLoads-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_FatigueLoads&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "wind-layer10",
+                    "name": "Wind speed @10m height", 
+                    "source": "atlaswind10m-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                },
+                {
+                    "id": "wind-layer50",
+                    "name": "Wind speed @50m height", 
+                    "source": "atlaswind50m-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                },
+                {
+                    "id": "wind-layer100",
+                    "name": "Wind speed @100m height", 
+                    "source": "atlaswind100m-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                },
+                {
+                    "id": "atlas-capacity-iec1-layer",
+                    "name": "Capacity factor IEC1", 
+                    "source": "atlas-capacity-iec1-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                },
+                {
+                    "id": "atlas_PowerDensity10m-layer",
+                    "name": "Power density @10m height", 
+                    "source": "atlas_PowerDensity10m-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                },
+                {
+                    "id": "atlas_PowerDensity50m-layer",
+                    "name": "Power density @50m height", 
+                    "source": "atlas_PowerDensity50m-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                }
+            ]
+        },
+        {
+            "name": "Solar data (5)",
+            "sources": [
+                {
+                    "id": "solar-atlas-DNI-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:solar_atlas_DNI&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "solar-atlas-DNI-1-layer",
+                    "name": "Direct normal irradiation (DNI)", 
+                    "source": "solar-atlas-DNI-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Weather sensors and water storage (2)",
+            "sources": [
+                {
+                    "id": "IDE_weather_station-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:IDE_weather_station&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "IDE_water_storage-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:IDE_water_storage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "IDE_weather_station-1-layer",
+                    "name": "Weather stations", 
+                    "source": "IDE_weather_station-1",
+                    "source-layer": "IDE_weather_station",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.17,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "temp",
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "icon-opacity": 0.4 
+                    }
+                },
+                {
+                    "id": "IDE_water_storage-1-layer",
+                    "name": "Water storage", 
+                    "source": "IDE_water_storage-1",
+                    "source-layer": "IDE_water_storage",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.10,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "waterstorage",
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "icon-opacity": 0.4 
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Wind farm suitability Cyan:good, Magenta:bad, Yellow:allowed",
+            "sources": [
+                {
+                    "id": "calc1atlas_capacity_iec1-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlas_capacity_iec1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "calc1atlas_elevationWithBathymetry-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlas_elevationWithBathymetry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "calc1atlaswind50m-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlaswind50m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centraleolic-2",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centraleolic-2",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "country-source",
+                    "type": "vector",
+                    "url": "mapbox://mapbox.country-boundaries-v1"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "calc1atlas_capacity_iec1-layer50",
+                    "name": "Capacity factor IEC1 (4)", 
+                    "source": "calc1atlas_capacity_iec1-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                },
+                {
+                    "id": "calc1atlas_elevationWithBathymetry-layer50",
+                    "name": "Elevation of terrain (4)", 
+                    "source": "calc1atlas_elevationWithBathymetry-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                },
+                {
+                    "id": "calc1atlaswind50m-layer50",
+                    "name": "Mean wind speed @ 50m (4)", 
+                    "source": "calc1atlaswind50m-1",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "none"
+                    }
+
+                },
+                {
+                    "id": "country-layer",
+                    "name": "Chile borders (1)",
+                    "source": "country-source",
+                    "source-layer": "country_boundaries",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-opacity": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            0.7,
+                                0.0
+                                                                
+                        ],
+                        "line-color": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            "#0000FF",
+                                "#ffffff"
+                                                                
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Potential solar scenaries (4*,5*)",
+            "sources": [
+                {
+                    "id": "inter_sole-11",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852//geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Ainter_sole&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&styles=&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "inter_solg-11",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852//geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Ainter_solg&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&styles=&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "inter_sole-layer1",
+                    "name": "Best areas for solar projects (E)", 
+                    "source": "inter_sole-11",
+                    "source-layer": "inter_sole",
+                    "type": "fill",
+                    "paint": {
+                        "fill-color": "#00ff00"                        
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "inter_solg-layer1",
+                    "name": "Best areas for solar projects (G)", 
+                    "source": "inter_solg-11",
+                    "source-layer": "inter_solg",
+                    "type": "fill",
+                    "paint": {
+                        "fill-color": "#b3ffb3"                        
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Energy plants 2023 (3)",
+            "sources": [
+                {
+                    "id": "capacidad6-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852//geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Acapacidad6&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&styles=&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "capacidad6-1-layer",
+                    "name": "All centrals", 
+                    "source": "capacidad6-1",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["!",["get", "error"]],
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 0.4]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#F00010",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["!",["get", "error"]],
+                            1, 0
+                        ]
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "capacidad6-5-layer",
+                    "name": "Thermoelectric type", 
+                    "source": "capacidad6-1",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["all", ["==",["get", "type"], "fossilfuel"], ["!",["get", "error"]]],
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 0.4]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#3E3E3E",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["all", ["==",["get", "type"], "fossilfuel"], ["!",["get", "error"]]],
+                            1, 0
+                        ]
+                    }
+                },
+                {
+                    "id": "capacidad6-3-layer",
+                    "name": "Hydropower type", 
+                    "source": "capacidad6-1",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["all", ["!",["get", "error"]], ["==",["get", "type"], "hydro"]],
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 0.4]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#085CD0",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["all", ["==",["get", "type"], "hydro"], ["!",["get", "error"]]],
+                            1, 0
+                        ]
+                    }
+                },
+                {
+                    "id": "capacidad6-2-layer",
+                    "name": "Biomass type", 
+                    "source": "capacidad6-1",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["==",["get", "type"], "biomass"],
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 0.4]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#19A70D",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["all", ["==",["get", "type"], "biomass"], ["!",["get", "error"]]],
+                            1, 0
+                        ]
+                    }
+                },
+                {
+                    "id": "capacidad6-6-layer",
+                    "name": "Wind type", 
+                    "source": "capacidad6-1",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["all", ["==",["get", "type"], "wind"], ["!",["get", "error"]]],
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 0.4]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#2DF8FB",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["all", ["==",["get", "type"], "wind"], ["!",["get", "error"]]],
+                            1, 0
+                        ]
+                    }
+                },
+                {
+                    "id": "capacidad6-4-layer",
+                    "name": "Solar type", 
+                    "source": "capacidad6-1",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["all", ["==",["get", "type"], "solar"], ["!",["get", "error"]]],
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 0.4]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#FFAD14",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["all", ["==",["get", "type"], "solar"], ["!",["get", "error"]]],
+                            1, 0
+                        ]
+                    }
+                },
+                {
+                    "id": "capacidad6-7-layer",
+                    "name": "Geothermal type", 
+                    "source": "capacidad6-1",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["all", ["==",["get", "type"], "geothermal"], ["!",["get", "error"]]],
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 0.4]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#F00010",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["all", ["==",["get", "type"], "geothermal"], ["!",["get", "error"]]],
+                            1, 0
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

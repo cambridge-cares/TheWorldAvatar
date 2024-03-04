@@ -1,0 +1,454 @@
+{
+    "name": "Chile",
+    "groups": [
+        {
+            "name": "Limits (1)",
+            "sources": [
+                {
+                    "id": "country-source",
+                    "type": "vector",
+                    "url": "mapbox://mapbox.country-boundaries-v1"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "country-layer",
+                    "name": "Chile",
+                    "source": "country-source",
+                    "source-layer": "country_boundaries",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            0.15,
+                                0.0
+                                                                
+                        ],
+                        "fill-color": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            "#0000FF",
+                                "#ffffff"
+                                                                
+                        ]
+                    }
+                },
+                {
+                    "id": "country2-layer",
+                    "name": "Neighbouring countries",
+                    "source": "country-source",
+                    "source-layer": "country_boundaries",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-opacity": [
+                            "case",
+                            ["all",["==", ["get", "name_en"], "Argentina"],["!=", ["get", "worldview"], "AR"]],
+                            0.2,
+                            [
+                                "case",
+                                ["==", ["get", "name_en"], "Peru"],
+                                0.3,
+                                [
+                                    "case",
+                                    ["==", ["get", "name_en"], "Bolivia"],
+                                    0.4,
+                                        0.0
+                                                                        
+                                ]
+                                                                    
+                            ]
+                                                                
+                        ],
+                        "fill-color": [
+                            "case",
+                            ["==", ["get", "name_en"], "Argentina"],
+                            "#0000FF",
+                            [
+                                "case",
+                                ["==", ["get", "name_en"], "Peru"],
+                                "#0000FF",
+                                [
+                                    "case",
+                                    ["==", ["get", "name_en"], "Bolivia"],
+                                    "#0000FF",
+                                        "#ffffff"
+                                                                        
+                                ]
+                                                                    
+                            ]
+                                                                
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Fuel storage (3)",
+            "sources": [
+                {
+                    "id": "gov_fuelstorage-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVfuelstorage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gov_fuelstorage-1-layer",
+                    "name": "Fuel Storage", 
+                    "source": "gov_fuelstorage-1",
+                    "source-layer": "GOVfuelstorage",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.38,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "STOREFUELICO",
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Natural water (7)",
+            "sources": [
+                {
+                    "id": "gfabrik-waterways-3",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikWaterways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gfabrik-waterways-3-layer",
+                    "name": "Waterways", 
+                    "source": "gfabrik-waterways-3",
+                    "source-layer": "gfabrikWaterways",
+                    "type": "line",
+                    "paint": {
+                        "line-width": [
+                            "case",
+                            ["==", ["get", "fclass"], "river"],
+                            2.5,[
+                                "case",
+                                ["==", ["get", "fclass"], "canal"],
+                                1.5,
+                                ["case",
+                                ["==", ["get", "fclass"], "stream"],
+                                1.5,
+                                ["case",
+                                ["==", ["get", "fclass"], "drain"],
+                                1,
+                                1
+                                                                ]]]
+                        ],
+                        "line-opacity": 0.5,
+                        "line-color": [
+                            "case",
+                            ["==", ["get", "fclass"], "river"],
+                            "#03529F",[
+                                "case",
+                                ["==", ["get", "fclass"], "canal"],
+                                "#4d88ff",
+                                ["case",
+                                ["==", ["get", "fclass"], "stream"],
+                                "#66b3ff",
+                                ["case",
+                                ["==", ["get", "fclass"], "drain"],
+                                "#748477",
+                                "#748477"
+                                                                ]]]
+                        ]
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Infrastructure (3)",
+            "sources": [
+                {
+                    "id": "gov_energyconcessions-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVenergyconcessions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_gaslines-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVgaslines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_oillines-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVoillines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_seaports-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVseaports&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gov_energyconcessions-1-layer",
+                    "name": "Energy concessions", 
+                    "source": "gov_energyconcessions-1",
+                    "source-layer": "GOVenergyconcessions",
+                    "type": "fill",
+                    "paint": {
+                        "fill-opacity": 0.3,
+                        "fill-color":  [
+                            "case",
+                            [">", ["to-number", ["get", "concesion_"]], 200000],
+                            "#2e2eb8",
+                            "#bf80ff"
+                        ]
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "gov_gaslines-1-layer",
+                    "name": "Gas lines", 
+                    "source": "gov_gaslines-1",
+                    "source-layer": "GOVgaslines",
+                    "type": "line",
+                    "paint": {
+                        "line-width": 5,
+                        "line-color": "#8f0000"
+                    }
+                },
+                {
+                    "id": "gov_oillines-1-layer",
+                    "name": "Oil lines", 
+                    "source": "gov_oillines-1",
+                    "source-layer": "GOVoillines",
+                    "type": "line",
+                    "paint": {
+                        "line-width": 5,
+                        "line-color": "#3f0081"
+                    }
+                },
+                {
+                    "id": "gov_seaports-1-layer",
+                    "name": "Seaports", 
+                    "source": "gov_seaports-1",
+                    "source-layer": "GOVseaports",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.43,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "PORTSICO",
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Transport elements (7)",
+            "sources": [
+                {
+                    "id": "gfabrik-traffic-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikTraffic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gfabrik-transport-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikTransport&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gfabrik-traffic-1-layer",
+                    "name": "Traffic elements", 
+                    "source": "gfabrik-traffic-1",
+                    "source-layer": "gfabrikTraffic",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": 2,
+                        "circle-color": "#D00202",
+                        "circle-stroke-color": "#D00202",
+                        "circle-stroke-width": 1,
+                        "circle-opacity": 0.3
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "gfabrik-transport-1-layer",
+                    "name": "Transport elements", 
+                    "source": "gfabrik-transport-1",
+                    "source-layer": "gfabrikTransport",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": 2,
+                        "circle-color": "#683902",
+                        "circle-stroke-color": "#683902",
+                        "circle-stroke-width": 1,
+                        "circle-opacity": 0.3
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                    
+                }
+            ]
+        },
+        {
+            "name": "Energy plants 1999-2023 (3)",
+            "sources": [
+                {
+                    "id": "capacidad6-3",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852//geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Acapacidad6&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&styles=&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "capacidad6-2-layer",
+                    "name": "All centrals in 1999", 
+                    "source": "capacidad6-3",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["<=",["to-number", ["get", "anio_servicio_central"]], 1999], 
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 2.6]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#de2402",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["<=",["to-number", ["get", "anio_servicio_central"]], 1999], 
+                            0.5, 0
+                        ]
+                    }
+                },
+                {
+                    "id": "capacidad6-3-layer",
+                    "name": "New centrals in 2000-2007", 
+                    "source": "capacidad6-3",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["all", ["!",["get", "error"]], [">=",["to-number", ["get", "anio_servicio_central"]], 2000], ["<=",["to-number", ["get", "anio_servicio_central"]], 2007]], 
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 2.6]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#de2402",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["all", ["!",["get", "error"]], [">=",["to-number", ["get", "anio_servicio_central"]], 2000], ["<=",["to-number", ["get", "anio_servicio_central"]], 2007]], 
+                            0.5, 0
+                        ]
+                    }
+                },
+                {
+                    "id": "capacidad6-4-layer",
+                    "name": "New centrals in 2008-2013", 
+                    "source": "capacidad6-3",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["all", ["!",["get", "error"]], [">=",["to-number", ["get", "anio_servicio_central"]], 2008], ["<=",["to-number", ["get", "anio_servicio_central"]], 2013]], 
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 2.6]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#de2402",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["all", ["!",["get", "error"]], [">=",["to-number", ["get", "anio_servicio_central"]], 2008], ["<=",["to-number", ["get", "anio_servicio_central"]], 2013]], 
+                            0.5, 0
+                        ]
+                    }
+                },
+                {
+                    "id": "capacidad6-5-layer",
+                    "name": "New centrals in 2014-2018", 
+                    "source": "capacidad6-3",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["all", ["!",["get", "error"]], [">=",["to-number", ["get", "anio_servicio_central"]], 2014], ["<=",["to-number", ["get", "anio_servicio_central"]], 2018]], 
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 2.6]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#de2402",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["all", ["!",["get", "error"]], [">=",["to-number", ["get", "anio_servicio_central"]], 2014], ["<=",["to-number", ["get", "anio_servicio_central"]], 2018]], 
+                            0.5, 0
+                        ]
+                    }
+                },
+                {
+                    "id": "capacidad6-6-layer",
+                    "name": "New centrals in 2019-2023", 
+                    "source": "capacidad6-3",
+                    "source-layer": "capacidad6",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": [
+                            "case",
+                            ["all", ["!",["get", "error"]], [">=",["to-number", ["get", "anio_servicio_central"]], 2019], ["<=",["to-number", ["get", "anio_servicio_central"]], 2023]], 
+                            ["sqrt", ["/", ["+",0,["*", ["to-number", ["get", "potencia_neta_mw"]], 2.6]], ["pi"]]], 0
+                        ],
+                        "circle-color": "#de2402",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": [
+                            "case",
+                            ["all", ["!",["get", "error"]], [">=",["to-number", ["get", "anio_servicio_central"]], 2019], ["<=",["to-number", ["get", "anio_servicio_central"]], 2023]], 
+                            0.5, 0
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

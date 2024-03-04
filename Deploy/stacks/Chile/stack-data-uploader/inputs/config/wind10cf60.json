@@ -1,0 +1,21 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "wind10cf60",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "wind10cf60",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "GEOM_POSSIBLE_NAMES": "geom"
+                }
+            }
+        }
+    ]
+}

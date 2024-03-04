@@ -1,0 +1,695 @@
+{
+    "name": "NHS Sites",
+    "groups": [
+        {
+            "name": "England",
+            "sources": [
+                {
+                    "id": "gp-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:nhs_gp_practices&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gp-source2",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:nhs_gp_practices2&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gp-layer",
+                    "name": "GP Practices", 
+                    "source": "gp-source",
+                    "source-layer": "nhs_gp_practices",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.33,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": [
+                            "case",
+                            ["in", "practice", ["downcase", ["get", "name"]]],
+                            "gp-icon-practice",
+                            "gp-icon"
+                        ]
+                    }
+                },
+                {
+                    "id": "gp-layer2",
+                    "name": "GP Practices2", 
+                    "source": "gp-source2",
+                    "source-layer": "nhs_gp_practices2",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": 5,
+                        "circle-color": "#005EB8",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Chile",
+            "sources": [
+                {
+                    "id": "gp-source3",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:nhs_gp_practices3&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "windfullchile05-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlaswind10m0025&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "atlas-capacity-iec1-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_capacity_iec1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centraleolic-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gov_centraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gp-layer3",
+                    "name": "GP Practices3", 
+                    "source": "gp-source3",
+                    "source-layer": "nhs_gp_practices3",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": 5,
+                        "circle-color": "#005EB8",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": 1
+                    }
+                },
+                {
+                    "id": "wind-layer",
+                    "name": "Wind Chile 05", 
+                    "source": "windfullchile05-1",
+                    "type": "raster"
+
+                },
+                {
+                    "id": "atlas-capacity-iec1-layer",
+                    "name": "capacity-iec1", 
+                    "source": "atlas-capacity-iec1-1",
+                    "type": "raster"
+
+                },
+                {
+                    "id": "gov_central_eolic-layer",
+                    "name": "Centrales Eolicas", 
+                    "source": "gov_centraleolic-1",
+                    "source-layer": "gov_centraleolic",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": 5,
+                        "circle-color": "#005EB8",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": 1
+                    }
+
+                }
+            ]
+        },
+        {
+            "name": "IDE",
+            "sources": [
+                {
+                    "id": "IDE_weather_station-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:IDE_weather_station&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "IDE_water_storage-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:IDE_water_storage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "IDE_weather_station-1-layer",
+                    "name": "Weather stations", 
+                    "source": "IDE_weather_station-1",
+                    "source-layer": "IDE_weather_station",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.43,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "TEMPICO"
+                    }
+                },
+                {
+                    "id": "IDE_water_storage-1-layer",
+                    "name": "Water storage", 
+                    "source": "IDE_water_storage-1",
+                    "source-layer": "IDE_water_storage",
+                    "type": "circle"
+                    
+                }
+            ]
+        },
+        {
+            "name": "gov-centrals",
+            "sources": [
+                {
+                    "id": "gov_centralbiomass-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralbiomass&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centralhydro-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralhydro&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centralsolar-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralsolar&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centralthermo-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralthermo&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centraleolic-2",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gov_centralbiomass-1-layer",
+                    "name": "Biomass centrals", 
+                    "source": "gov_centralbiomass-1",
+                    "source-layer": "GOVcentralbiomass",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.53,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "BIOICO"
+                    }
+                },
+                {
+                    "id": "gov_centralhydro-1-layer",
+                    "name": "Hydro centrals", 
+                    "source": "gov_centralhydro-1",
+                    "source-layer": "GOVcentralhydro",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.53,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "HYDROICO"
+                    }
+                },
+                {
+                    "id": "gov_centralsolar-1-layer",
+                    "name": "Solar centrals", 
+                    "source": "gov_centralsolar-1",
+                    "source-layer": "GOVcentralsolar",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.53,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "SOLARICO"
+                    }
+                },
+                {
+                    "id": "gov_centralthermo-1-layer",
+                    "name": "Thermo centrals", 
+                    "source": "gov_centralthermo-1",
+                    "source-layer": "GOVcentralthermo",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.53,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "THERMOICO"
+                    }
+                },
+                {
+                    "id": "gov_centraleolic-2-layer",
+                    "name": "Eolic centrals", 
+                    "source": "gov_centraleolic-2",
+                    "source-layer": "GOVcentraleolic",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.53,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "EOLICICO"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "gov administration",
+            "sources": [
+                {
+                    "id": "gov-regions-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVregions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov-provinces-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVprovinces&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov-comunes-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcomunes&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gov-regions-1-layer",
+                    "name": "Regions", 
+                    "source": "gov-regions-1",
+                    "source-layer": "GOVregions",
+                    "type": "fill",
+                    "paint": {
+                        "fill-opacity": 0.5
+                    }
+                },
+                {
+                    "id": "gov-provinces-1-layer",
+                    "name": "Provinces", 
+                    "source": "gov-provinces-1",
+                    "source-layer": "GOVprovinces",
+                    "type": "fill",
+                    "paint": {
+                        "fill-opacity": 0.5
+                    }
+                },
+                {
+                    "id": "gov-comunes-1-layer",
+                    "name": "Comunes", 
+                    "source": "gov-comunes-1",
+                    "source-layer": "GOVcomunes",
+                    "type": "fill",
+                    "paint": {
+                        "fill-opacity": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "name": "gov",
+            "sources": [
+                {
+                    "id": "gov_energyconcessions-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVenergyconcessions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_fuelstorage-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVfuelstorage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_gaslines-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVgaslines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_oillines-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVoillines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_seaports-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVseaports&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gov_energyconcessions-1-layer",
+                    "name": "Energy concessions", 
+                    "source": "gov_energyconcessions-1",
+                    "source-layer": "GOVenergyconcessions",
+                    "type": "fill",
+                    "paint": {
+                        "fill-opacity": 0.5
+                    }
+                },
+                {
+                    "id": "gov_fuelstorage-1-layer",
+                    "name": "Fuel Storage", 
+                    "source": "gov_fuelstorage-1",
+                    "source-layer": "GOVfuelstorage",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": 5,
+                        "circle-color": "#005EB8",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": 1
+                    }
+                },
+                {
+                    "id": "gov_gaslines-1-layer",
+                    "name": "Gas lines", 
+                    "source": "gov_gaslines-1",
+                    "source-layer": "GOVgaslines",
+                    "type": "line"
+                },
+                {
+                    "id": "gov_oillines-1-layer",
+                    "name": "Oil lines", 
+                    "source": "gov_oillines-1",
+                    "source-layer": "GOVoillines",
+                    "type": "line"
+                },
+                {
+                    "id": "gov_seaports-1-layer",
+                    "name": "Seaports", 
+                    "source": "gov_seaports-1",
+                    "source-layer": "GOVseaports",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": 5,
+                        "circle-color": "#B80000",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "gfabrik",
+            "sources": [
+                {
+                    "id": "gfabrik-buildings-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikBuildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gfabrik-roads-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikRoads&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gfabrik-railways-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikRailways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gfabrik-water-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gfabrik-waterways-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikWaterways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gfabrik-buildings-1-layer",
+                    "name": "Buildings GF", 
+                    "source": "gfabrik-buildings-1",
+                    "source-layer": "gfabrikBuildings",
+                    "type": "fill"
+                },
+                {
+                    "id": "gfabrik-roads-1-layer",
+                    "name": "Roads", 
+                    "source": "gfabrik-roads-1",
+                    "source-layer": "gfabrikRoads",
+                    "type": "line"
+                    
+                },
+                {
+                    "id": "gfabrik-railways-1-layer",
+                    "name": "Railways", 
+                    "source": "gfabrik-railways-1",
+                    "source-layer": "gfabrikRailways",
+                    "type": "line"
+                },
+                {
+                    "id": "gfabrik-water-1-layer",
+                    "name": "Water", 
+                    "source": "gfabrik-water-1",
+                    "source-layer": "gfabrikWater",
+                    "type": "fill",
+                    "paint": {
+                        "fill-color": "#07B7C2",
+                        "fill-opacity": 0.5
+                    }
+                },
+                {
+                    "id": "gfabrik-waterways-1-layer",
+                    "name": "Waterways", 
+                    "source": "gfabrik-waterways-1",
+                    "source-layer": "gfabrikWaterways",
+                    "type": "line"
+                }
+            ]
+        },
+        {
+            "name": "gfabrik-Others",
+            "sources": [
+                {
+                    "id": "gfabrik-landuse-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikLanduse&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gfabrik-natural-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikNatural&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gfabrik-places-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikPlaces&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gfabrik-pofw-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikPofw&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gfabrik-pois-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikPois&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gfabrik-landuse-1-layer",
+                    "name": "Landuse", 
+                    "source": "gfabrik-landuse-1",
+                    "source-layer": "gfabrikLanduse",
+                    "type": "fill"
+                },
+                {
+                    "id": "gfabrik-natural-1-layer",
+                    "name": "Natural", 
+                    "source": "gfabrik-natural-1",
+                    "source-layer": "gfabrikNatural",
+                    "type": "circle"
+                    
+                },
+                {
+                    "id": "gfabrik-places-1-layer",
+                    "name": "Places", 
+                    "source": "gfabrik-places-1",
+                    "source-layer": "gfabrikPlaces",
+                    "type": "circle"
+                },
+                {
+                    "id": "gfabrik-pofw-1-layer",
+                    "name": "Points of F", 
+                    "source": "gfabrik-pofw-1",
+                    "source-layer": "gfabrikPofw",
+                    "type": "circle"
+                },
+                {
+                    "id": "gfabrik-pois-1-layer",
+                    "name": "Points of interest", 
+                    "source": "gfabrik-pois-1",
+                    "source-layer": "gfabrikPois",
+                    "type": "circle"
+                }
+            ]
+        },
+        {
+            "name": "gfabrik-Transport",
+            "sources": [
+                {
+                    "id": "gfabrik-traffic-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikTraffic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gfabrik-transport-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikTransport&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gfabrik-traffic-1-layer",
+                    "name": "Traffic", 
+                    "source": "gfabrik-traffic-1",
+                    "source-layer": "gfabrikTraffic",
+                    "type": "circle"
+                },
+                {
+                    "id": "gfabrik-transport-1-layer",
+                    "name": "Transport", 
+                    "source": "gfabrik-transport-1",
+                    "source-layer": "gfabrikTransport",
+                    "type": "circle"
+                    
+                }
+            ]
+        },
+        {
+            "name": "HumData",
+            "sources": [
+                {
+                    "id": "buildings-1",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "buildings-1-layer",
+                    "name": "Buildings", 
+                    "source": "buildings-1",
+                    "source-layer": "buildings",
+                    "type": "fill"
+                },
+                {
+                    "id": "buildings-2-layer",
+                    "name": "Buildings", 
+                    "source": "buildings-1",
+                    "source-layer": "buildings",
+                    "type": "fill-extrusion",
+                    "paint": {
+                        "fill-extrusion-height": 2.5,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-color": "#fed541"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "gfabrikTransport",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "gfabrikTransport",
+            "subdirectory": "vector"
+
+        }
+    ]
+   
+
+}

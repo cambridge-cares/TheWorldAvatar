@@ -1,0 +1,137 @@
+{
+    "name": "Chile",
+    "groups": [
+                {
+            "name": "Wind farm suitability Cyan:good, Magenta:bad, Yellow:allowed",
+            "sources": [
+                {
+                    "id": "calc1atlas_capacity_iec1-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlas_capacity_iec1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "calc1atlas_elevationWithBathymetry-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlas_elevationWithBathymetry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "calc1atlaswind50m-1",
+                    "type": "raster",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlaswind50m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centraleolic-2",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "gov_centraleolic-2",
+                    "type": "vector",
+                    "tiles": [
+                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                },
+                {
+                    "id": "country-source",
+                    "type": "vector",
+                    "url": "mapbox://mapbox.country-boundaries-v1"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "calc1atlas_capacity_iec1-layer50",
+                    "name": "Capacity factor IEC1 (4)", 
+                    "source": "calc1atlas_capacity_iec1-1",
+                    "type": "raster"
+
+                },
+                {
+                    "id": "calc1atlas_elevationWithBathymetry-layer50",
+                    "name": "Elevation of terrain (4)", 
+                    "source": "calc1atlas_elevationWithBathymetry-1",
+                    "type": "raster"
+
+                },
+                {
+                    "id": "calc1atlaswind50m-layer50",
+                    "name": "Mean wind speed at 50m height (4)", 
+                    "source": "calc1atlaswind50m-1",
+                    "type": "raster"
+
+                },
+                {
+                    "id": "calc1gov_centraleolic-2-layer",
+                    "name": "Wind farms (3)", 
+                    "source": "gov_centraleolic-2",
+                    "source-layer": "GOVcentraleolic",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.63,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": "EOLICICO"
+                    }
+                },
+                {
+                    "id": "size-layer-eolic",
+                    "name": "Power >20MW and >100 MW (3*)", 
+                    "source": "gov_centraleolic-2",
+                    "source-layer": "GOVcentraleolic",
+                    "type": "symbol",
+                    "layout": {
+                        "icon-size": 0.63,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-image": [
+                            "case",
+                            [">", ["to-number", ["get", "potencia"]], 100],
+                            "100W",
+                            [ "case",
+                            [">", ["to-number", ["get", "potencia"]], 20],
+                            "20W","NaN"]
+                        ]
+                    }
+                },
+                {
+                    "id": "country-layer",
+                    "name": "Boundary of Chile (1)",
+                    "source": "country-source",
+                    "source-layer": "country_boundaries",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-opacity": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            0.7,
+                                0.0
+                                                                
+                        ],
+                        "line-color": [
+                            "case",
+                            ["==", ["get", "name_en"], "Chile"],
+                            "#0000FF",
+                                "#ffffff"
+                                                                
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

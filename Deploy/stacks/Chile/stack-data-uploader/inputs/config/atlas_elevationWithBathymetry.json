@@ -1,0 +1,26 @@
+{
+    "name": "atlas_elevationWithBathymetry",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "atlas_elevationWithBathymetry",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "atlas_elevationWithBathymetry",
+            "skip": false,
+            "subdirectory": "raster",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "atlas_elevationBathymetry"
+                }
+            }
+            
+        }
+    ],
+    "styles": [
+        {
+            "name": "atlas_elevationBathymetry",
+            "file": "atlas_elevationWithBathymetry_style.sld"
+        }
+    ]
+}

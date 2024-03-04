@@ -1,0 +1,21 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "provinces",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "provinces",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"]
+                }
+            }
+        }
+    ]
+   
+
+}

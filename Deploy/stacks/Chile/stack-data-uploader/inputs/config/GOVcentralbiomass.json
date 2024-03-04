@@ -1,0 +1,17 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "GOVcentralbiomass",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "GOVcentralbiomass",
+            "subdirectory": "vector"
+
+        }
+    ]
+   
+
+}
