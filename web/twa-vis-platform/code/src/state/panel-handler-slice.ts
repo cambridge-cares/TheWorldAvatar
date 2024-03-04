@@ -6,6 +6,7 @@ class PanelHandler {
    * @returns {Promise<string>} A promise that resolves to the modified stack URL.
    * @throws {Error} Throws an error if the network response is not OK or if fetching the stack data fails.
    */
+
   static async fetchStack(): Promise<string> {
     try {
       const response = await fetch("/api/visualisation/data");
@@ -31,6 +32,7 @@ class PanelHandler {
    */
   static async addSupportingData(feature: any, scenarioID: string): Promise<any> {
     const iri = feature?.iri;
+
     if (!iri) {
       console.error("Feature is missing required information (IRI).");
       return null;
