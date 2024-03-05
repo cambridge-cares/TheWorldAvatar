@@ -1,11 +1,63 @@
 [PrefixDeclaration]
-geo:		http://www.opengis.net/ont/geosparql#
+rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
+onsf:       http://statistics.data.gov.uk/def/statistical-geography#
+ontogasgrid:      http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/
+om:         http://www.ontology-of-units-of-measure.org/resource/om-2/
+onsid:      http://statistics.data.gov.uk/id/statistical-geography/
+comp:       http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#
+gas:        http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#
 xsd:		http://www.w3.org/2001/XMLSchema#
-ems:        https://www.theworldavatar.com/kg/ontoems/
+ofp:        http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl#
 
 [MappingDeclaration] @collection [[
-mappingId   station_location
-target      <{iri}> a geo:Feature , ems:ReportingStation ; geo:hasGeometry <{geom_iri}> . 
-            <{geom_iri}> geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral .
-source      SELECT ST_AsText(wkb_geometry) as wkt, iri, geom_iri FROM metoffice
-]] 
+mappingId   heat_pump_mapping_electricity_2
+target      onsid:{code} rdf:type onsf:Statistical-Geography ; 
+            gas:hasElecMeters ontogasgrid:ElectricityMeter_{code} ;
+            comp:hasConsumed ontogasgrid:Electricity_{code} . 
+            ontogasgrid:ElectricityConsumptionMeasure_{code} rdf:type om:Measure ; 
+            om:hasUnit om:kilowattHour ; 
+            om:hasNumericalValue {elec_consumption} . 
+            ontogasgrid:Electricity_{code} rdf:type comp:Electricity ; 
+            comp:hasStartUTC "2020-01-01T12:00:00Z"^^xsd:dateTime ; 
+            comp:hasEndUTC "2020-12-31T12:00:00Z"^^xsd:dateTime . 
+            ontogasgrid:KW_Electricity_{code} rdf:type om:Energy ; 
+            om:hasPhenomenon ontogasgrid:Electricity_{code} ; 
+            om:hasValue ontogasgrid:Measure_{code} . 
+            ontogasgrid:ElectricityMeter_{code} rdf:type gas:ElecMeters ; 
+            gas:hasConsumingElecMeters {elec_meter} ; 
+            comp:hasStartUTC "2020-01-01T12:00:00Z"^^xsd:dateTime ; 
+            comp:hasEndUTC "2020-12-31T12:00:00Z"^^xsd:dateTime . 
+source      SELECT "LSOA_code" as code, "Electricity_consump" as elec_consumption, "Electricity_meter" as elec_meter
+            FROM "LSOA_Electricity_consumption" 
+            
+mappingId   heat_pump_mapping_gas
+target      onsid:{code} rdf:type onsf:Statistical-Geography ; 
+            gas:hasGasMeters ontogasgrid:GasMeters_{code} ;
+            comp:hasUsed ontogasgrid:OfftakenGas_{code} . 
+            ontogasgrid:GasConsumptionMeasure_{code} rdf:type om:Measure ; 
+            om:hasUnit om:kilowattHour ; 
+            om:hasNumericalValue {gas_consumption} . 
+            ontogasgrid:OfftakenGas_{code} rdf:type comp:OfftakenGas ; 
+            comp:hasStartUTC "2020-01-01 12:00:00"^^xsd:dateTime ; 
+            comp:hasEndUTC "2020-12-31 12:00:00"^^xsd:dateTime . 
+            ontogasgrid:KW_Gas_{code} rdf:type om:Energy ; 
+            om:hasPhenomenon ontogasgrid:OfftakenGas_{code} ; 
+            om:hasValue ontogasgrid:Measure_{code} . 
+            ontogasgrid:GasMeters_{code} rdf:type gas:GasMeters ; 
+            gas:hasConsumingGasMeters {gas_meter} ; 
+            gas:hasNonConsumingGasMeters {gas_nonmeter} ; 
+            comp:hasStartUTC "2020-01-01T12:00:00Z"^^xsd:dateTime ; 
+            comp:hasEndUTC "2020-12-31T12:00:00Z"^^xsd:dateTime . 
+source      SELECT "LSOA_code" as code, "Gas_consump" as gas_consumption, "Gas_meter" as gas_meter, "Gas_nonmeter" as gas_nonmeter
+            FROM "LSOA_Gas_Consumption" 
+            
+mappingId   heat_pump_mapping_fuel_poor
+target      onsid:{code} rdf:type onsf:Statistical-Geography ; 
+            ofp:hasHouseholds ofp:Household_{code} . 
+            ofp:Household_{code} ofp:hasHouseholds {houses} ; 
+            ofp:fuelpoorhouseholds {poor} ; 
+            ofp:validFrom "2020-01-01T12:00:00Z"^^xsd:dateTime ; 
+            ofp:validTo "2020-12-31T12:00:00Z"^^xsd:dateTime . 
+source      SELECT "LSOA_code" as code, "FuelPoor" as poor, "Household_num" as houses
+            FROM "LSOA_Fuel_Poverty" 
+]]

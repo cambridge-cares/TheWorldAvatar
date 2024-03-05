@@ -7,7 +7,6 @@ from flask import Blueprint, request, jsonify
 
 import agentlogging
 from agent.datainstantiation.readings import upload_all, upload_elec_data_to_KG, upload_gas_data_to_KG, upload_fuel_poverty_to_KG, upload_Geoinfo_to_KG, upload_hadUK_climate_to_KG
-from agent.utils.CEDA_env_config import record_login_info
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 

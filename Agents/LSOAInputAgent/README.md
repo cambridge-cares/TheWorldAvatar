@@ -1,12 +1,14 @@
 # Description
 
-The `LSOAInput agent` is dedicated to process data around the UK Lower-layer Super Output Area (LSOA), which is composited with feature of data download and instantiation.
+The `LSOAInput agent` is dedicated to process data around the UK Lower-layer Super Output Area (LSOA), and wrap the data as triples based on ontologies, and upload the triples into the knowledge graph.
 
 Currently this agent is focusing on the data of electricity consumption, gas consumption, fuel poverty, climate (temperature) and geometric shape to perform the use case of analysing the deployment of heat pump. The data instatiated in the knowledge graph follows[Ontoclimate](http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl), [Ontofuelpoverty](http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl) and [Ontogasgrid](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/GasGrid) ontologies in the [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar). 
 
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager). 
 
-&nbsp;
+Please note that the use of derive informtaion framework for heat pump analysis only need to run part of this agent in advance (to upload temperature data), other functions serve as an supplementary functions to uploaded triples to the blazegraph.
+
+
 # Environment setup (Optional)
 
 For development and testing reasons, follow instructions below to get started.
@@ -40,10 +42,15 @@ This section specifies the minimum requirements to build and deploy the Docker i
 
 ## 1.1 Prerequisites
 
-### **1) Registrate an account at CEDA platform**
+### **1) Download the source files and place in the respective position**
 
-Retrieving [electricity consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption), [gas consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption), [fuel poverty](https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-2022) data from the GOV.UK do not need any preparation, upon runing the agent, those data will be downloaded automatically to the `./downloads ` folder. However, in order to download the hadUK climate grid files, you need to registrate an account at [CEDA platform](https://services.ceda.ac.uk/cedasite/register/info/).  And create `CEDA_username` and `CEDA_password` files contain username and password under the `./secrets` folder.
+Download [electricity consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption), [gas consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption), [fuel poverty](https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-2022) data from the GOV.UK by simply click the link and find the desired `xlsx` file. 
 
+However, in order to download the hadUK climate grid files, you need to registrate an account at [CEDA platform](https://services.ceda.ac.uk/cedasite/register/info/).  After the login, you will be able to download `.nc` file in the [CEDA Archive](https://data.ceda.ac.uk/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.1.0.0/1km/). Click `tas` for mean temperature, `tasmax` for max temperature, `tasmin` for mean temperature and get into a subfolder, click `mon` for monthly data and get into a subfolder, then you sould be able to find your desire year's data such as `tas_hadukgrid_uk_1km_mon_201901-201912.nc`.
+
+The geographical data of the UK is captured in a python pickle file named as `shape_array`, which can be download [here](https://www.dropbox.com/scl/fi/6iw0xarkjartrdprc8iig/shapes_array?rlkey=bv4xulvpxgbehrj6t4m6yhbsx&dl=0). If in doubt, please consult the author Jieyang Xu.
+
+After preparing all files, please place them in `./data` folder.
 ### **2) The environment variables used by the agent container**
 Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
 ```bash
@@ -116,17 +123,6 @@ bash ./stack.sh start <STACK_NAME>
 
 Agent start-up will automatically register a recurring task to assimilate latest data into the KG, i.e. electricity consumption, gas consumption, fuel poverty, climate (temperature) and geometric shape once per year. Besides those recurring background tasks, additional HTTP requests can be sent (but they might be delayed) to the agent. An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5000/]. All requests are to be sent as GET requests and all available endpoints are listed below:
 
-
-<center>-----------Data Download ------------</center>
-
-- GET request to download xslx file of UK subregional (LSOA) Electricity Consumption/meter data
-> /api/lsoainputagent/download/electricity
-- GET request to download xslx file of UK subregional (LSOA) Gas Consumption/meter/nonmeter data
-> api/lsoainputagent/download/gas
-- GET request to download xslx file of UK subregional (LSOA) fuel poverty data
-> /api/lsoainputagent/download/fuelpoverty
-- GET request to download nc files of hadUK climate data in 1km grid
-> /api/lsoainputagent/download/temperature
 <center>-------- Data Instantiation ------------</center>
 
 - GET request to download and instantiate all Electricity Consumption/meter data to KG

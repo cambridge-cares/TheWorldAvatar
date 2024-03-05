@@ -50,292 +50,6 @@ def get_key(val, my_dict):
             return key
     return None
 
-# ------------------------- Read data from source -------------------------------- #
-def read_from_web_elec (year: str = YEAR):
-  '''
-  This function is to read the up-to-date subnational electricity consumption data from web
-  return a dataframe to represent the file been read
-  NOTE: This function can work based on the assumption that the web address and page structure  won't change,
-  if the xlsx file can't be correctly retrieved it is possible that the web infrastructure has been
-  amended.
-
-  Arguments:
-        year: the number of year of which the data you may want to read
-  '''
-  
-  if type(year) != str:
-      logger.error('Provided formate of year is not string')
-      raise InvalidInput('Provided formate of year is not string')
-
-  url = 'https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption'
-
-  # Use requests to get the HTML of the website
-  response = requests.get(url)
-  soup = BeautifulSoup(response.text, 'html.parser')
-
-  # Find the link to the xlsx file on the website
-  download_div = soup.find_all('div', {'class': 'attachment-thumb'})
-  link = download_div[4].find('a', href=True)['href']
-
-  # Download the xlsx file
-  try:
-    if not os.path.exists('./downloads'):
-        os.makedirs('./downloads')
-    file_name = os.path.basename(link)
-    response = requests.get(link)
-    open('./downloads/'+ file_name, 'wb').write(response.content)
-  except Exception as ex:
-    print(ex)
-    logger.error(f"Excel file fail to be downloaded")
-    raise InvalidInput(f'Excel file fail to be downloaded, please check if {url} is a valid address and webpage') from ex
-  
-  logger.info(f'xlsx file {file_name} have been downloaded at the ./downloads folder')
-  # Check if the file is valid
-  if not 'LSOA' in file_name:
-    if 'not' in file_name:
-      logger.error(f"Invalid file downloaded -- check the file in ./downloads folder and source:{url} ")
-      raise InvalidInput(f'The file downloaded is not valid, check the webpage:{url} or download mannually.')
-
-  # Parse the data from the xlsx file into a pandas DataFrame
-  try: 
-    df = pd.read_excel('./downloads/'+ file_name, sheet_name = year, engine='openpyxl',skiprows=4, skipfooter=1)
-    logger.info('Electricity consumption/meter data successfully retrieved from web')
-  
-  except Exception as ex:
-    print(ex)
-    logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the file in ./downloads folder, see if the 'year' sheet exist")
-    raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the file in ./downloads folder, see if the 'year' sheet exist") from ex
-  
-  return df
-
-def read_from_web_gas (year: str = YEAR):
-  '''
-  This function is to read the up-to-date subnational gas consumption data from web
-  return a dataframe to represent the file been read
-  NOTE: This function can work based on the assumption that the web address and page structure  won't change,
-  if the xlsx file can't be correctly retrieved it is possible that the web infrastructure has been
-  amended.
-
-  Arguments:
-        year: the number of year of which the data you may want to read
-  '''
-  if type(year) != str:
-      logger.error('Provided formate of year is not string')
-      raise InvalidInput('Provided formate of year is not string')
-
-  url = 'https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption'
-
-  # Use requests to get the HTML of the website
-  response = requests.get(url)
-  soup = BeautifulSoup(response.text, 'html.parser')
-
-  # Find the link to the xlsx file on the website
-  download_div = soup.find_all('div', {'class': 'attachment-thumb'})
-  link = download_div[4].find('a', href=True)['href']
-
-  # Download the xlsx file
-  try:
-    if not os.path.exists('./downloads'):
-        os.makedirs('./downloads')
-    file_name = os.path.basename(link)
-    response = requests.get(link)
-    open('./downloads/'+ file_name, 'wb').write(response.content)
-  except Exception as ex:
-    print(ex)
-    logger.error(f"Excel file fail to be downloaded")
-    raise InvalidInput(f'Excel file fail to be downloaded, please check if {url} is a valid address and webpage') from ex
-
-  logger.info(f'xlsx file {file_name} have been downloaded at the ./downloads folder')
-  # Check if the file is valid
-  if not 'LSOA' in file_name:
-    if 'not' in file_name:
-      logger.error(f"Invalid file downloaded -- check the file in ./downloads folder and source:{url} ")
-      raise InvalidInput(f'The file downloaded is not valid, check the webpage:{url} or download mannually.')
-  
-  try:
-    # Parse the data from the xlsx file into a pandas DataFrame
-    df = pd.read_excel('./downloads/'+ file_name, sheet_name = year, engine='openpyxl',skiprows=4, skipfooter=1)
-    logger.info('Gas consumption/meter data successfully retrieved from web')
-  
-  except Exception as ex:
-    print(ex)
-    logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the file in ./downloads folder, see if the 'year' sheet exist")
-    raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the file in ./downloads folder, see if the 'year' sheet exist") from ex
-  
-  return df
-
-def read_from_web_fuel_poverty (year: str = YEAR):
-  '''
-  This function is to read the up-to-date subnational fuel poverty data from web
-  return a dataframe to represent the file been read
-  NOTE: This function can work based on the assumption that the web address and page structure  won't change,
-  if the xlsx file can't be correctly retrieved it is possible that the web infrastructure has been
-  amended.
-
-  Arguments:
-        year: the number of year of which the data you may want to read
-  '''
-  # There is a lag between data published time and data time, e.g. the data for 2020 is published on 2022. 
-  # And the published date is always 2 years after the data date
-  if type(year) != str:
-      logger.error('Provided formate of year is not string')
-      raise InvalidInput('Provided formate of year is not string')
-
-  year_published = str(int(year) + 2)
-  
-  url = 'https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-' + year_published
-
-  # Use requests to get the HTML of the website
-  response = requests.get(url)
-  soup = BeautifulSoup(response.text, 'html.parser')
-
-  # Find the link to the xlsx file on the website
-  download_div = soup.find_all('div', {'class': 'attachment-thumb'})
-  link = download_div[0].find('a', href=True)['href']
-
-  # Download the xlsx file
-  try:
-    if not os.path.exists('./downloads'):
-        os.makedirs('./downloads')
-    file_name = os.path.basename(link)
-    response = requests.get(link)
-    open('./downloads/'+ file_name, 'wb').write(response.content)
-  except Exception as ex:
-    print(ex)
-    logger.error(f"Excel file fail to be downloaded")
-    raise InvalidInput(f'Excel file fail to be downloaded, please check if {url} is a valid address and webpage') from ex
-  
-  logger.info(f'xlsx file {file_name} have been downloaded at the ./downloads folder')
-  # Check if the file is valid
-  if not 'sub-regional' in file_name:
-    if not year_published in file_name:
-      logger.error(f"Invalid file downloaded -- check the file in ./downloads folder and source:{url} ")
-      raise InvalidInput(f'The file downloaded is not valid, check the webpage:{url} or download mannually.')
-
-  try:
-    # Parse the data from the xlsx file into a pandas DataFrame
-    df = pd.read_excel('./downloads/'+ file_name, sheet_name="Table 3", skiprows=2, skipfooter=8)
-    logger.info('Fuel poverty data successfully retrieved from web')
-  
-  except Exception as ex:
-    print(ex)
-    logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the file in ./downloads folder, see if the 'Table 3' sheet contains desireable datasets")
-    raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the file in ./downloads folder, see if the 'Table 3' sheet contains desireable datasets") from ex
-  
-  return df
-
-def read_from_web_temp (year: str = YEAR, var_name: str = 'tas'):
-  '''
-    This function is to read the up-to-date hadUK grid (1km) climate data from web
-    doneload nc file only, for data process to be done later
-    NOTE: This function can work based on the assumption that the web address and page structure  won't change,
-    if the nc file can't be correctly retrieved it is possible that the web infrastructure has been
-    amended.
-
-    Arguments:
-          year: the number of year of which the data you may want to read
-          var_name: 'tas'/'tasmax'/'tasmin' Select from those three to download file represent mean, max, min temperature, respectively.
-    '''
-  try:
-    from agent.utils.CEDA_env_config import retrieve_settings, record_login_info
-    if not os.path.exists('./downloads/.env'):
-        record_login_info()
-    CEDA_USERNAME, CEDA_PASSWORD = retrieve_settings()
-  except Exception as ex:
-    print(ex)
-    raise InvalidInput('Fail to retrieve CEDA_USERNAME, CEDA_PASSWORD! Check if they have been placed under ./secrets folder')
-
-  if type(year) != str:
-      logger.error('Provided formate of year is not string')
-      raise InvalidInput('Provided formate of year is not string')
-
-  # Check if the argument is correct
-  if var_name not in ['tas','tasmax','tasmin']:
-        logger.error('Not a valid var_name provided. Please check the spelling/Capitals etc etc...')
-        raise InvalidInput('Not a valid var_name provided. Please check the spelling/Capitals etc etc...')
-    
-  # Web of interest
-  url = f'https://data.ceda.ac.uk/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.1.0.0/1km/{var_name}/mon/latest'
-
-  # Create a session to persist the login
-  session = requests.Session()
-  response = session.get(url)
-
-  # Check if the site is to busy
-  if response.status_code == 500:
-        print("Response 500 Internal Server Error, web is busy try it later please")
-        logger.error('Response 500 Internal Server Error, web is busy try it later please')
-        raise HTTPError(500, "Internal Server Error")
-  
-  soup = BeautifulSoup(response.text, 'html.parser')
-  # Find the link to the nc file on the website
-  download_div = soup.find_all('table', {'class': 'table table-sm'})
-  # Select link based on 'a', href
-  inner_url = download_div[0].find_all('a', href=True)
-  # Select link contain year of interest
-  for year_link in inner_url:
-        if year in year_link['href']:
-          # Select link that could done load the file
-          if len(year_link.attrs) == 1:
-              link = year_link['href']
-
-  # parse the original url into its components
-  parsed_url = urlsplit(link)
-  orginial_path = parsed_url.path
-  # Modify the netloc (the domain)
-  parsed_url = parsed_url._replace(netloc='auth.ceda.ac.uk')
-  # Modify the path 
-  parsed_url = parsed_url._replace(path = '/account/signin/')
-  # Add the query parameter
-  parsed_url = parsed_url._replace(query='r=' + 'https://dap.ceda.ac.uk' + orginial_path + '?' + parsed_url.query)
-  # Use urlunsplit to construct the new URL
-  login_url = urlunsplit(parsed_url)
-
-  # Define the credentials
-  credentials = {
-      "username": CEDA_USERNAME,
-      "password": CEDA_PASSWORD
-  }
-
-  # Get the login page to get the csrf token
-  response = session.get(login_url)
-  soup = BeautifulSoup(response.content, 'html.parser')
-  csrf_token = soup.find('input', {'name': 'csrfmiddlewaretoken'}).get('value')
-  # Add the csrf token to the credentials
-  credentials['csrfmiddlewaretoken'] = csrf_token
-
-  # Make a post request to the login url with the credentials
-  response = session.post(login_url, data=credentials)
-
-  # Check if login was successful
-  if response.status_code == 200:
-      logger.info('logging to CEDA successfully performed!')
-  else:
-      logger.error('logging to CEDA Failed!')
-      raise InvalidInput('logging to CEDA Failed!')
-  
-  try: 
-      if not os.path.exists('./downloads'):
-        os.makedirs('./downloads')
-      # Download the nc file
-      file_name = os.path.basename(link).split('?')[0]
-  except Exception as ex:
-      print(ex)
-      logger.error(f'The hadUK climate data for {year} can not be found, please check the webpage: {url} to see if that year of data file exist')
-      raise InvalidInput(f'The hadUK climate data for {year} can not be found, please check the webpage:{url} to see if that year of data file exist') from ex
-  
-  # Downloading the file
-  open('./downloads/'+ file_name, 'wb').write(response.content)
-  logger.info(f'nc file {file_name} have been downloaded at the ./downloads folder')
-  
-  return './downloads/'+ file_name
-
 def read_from_pickle(pathname: str):
     '''
     This function is to read the local pickle file to get the ONS geographic data
@@ -398,9 +112,10 @@ def upload_elec_data_to_KG (year: str = YEAR,
                         data = json.load(file)
                 else:
                     logger.info("Specified path file can't be found or not valid, try to get the data from web...")
-    except:
-        # Retrieve data from the Web
-        data = read_from_web_elec(year)
+    except Exception as ex:
+        print(ex)
+        logger.error(f"Excel file fail to be found -- electricity consumption")
+        raise InvalidInput(f'Excel file fail to be found, please check if the electricity consumption xlsx has been placed in ./data folder') from ex
 
     LSOA_codes = data["LSOA code"].values
     met_num = data["Number\nof meters\n"].values
@@ -544,9 +259,10 @@ def upload_gas_data_to_KG (year: str = YEAR,
                         data = json.load(file)
                 else:
                     logger.info("Specified path file can't be found or not valid, try to get the data from web...")
-    except:
-        # Retrieve data from the Web
-        data = read_from_web_gas(year)
+    except Exception as ex:
+        print(ex)
+        logger.error(f"Excel file fail to be found -- gas consumption")
+        raise InvalidInput(f'Excel file fail to be found, please check if the gas consumption xlsx has been placed in ./data folder') from ex
 
     LSOA_codes = data["LSOA code"].values
     met_num = data["Number\nof meters\n"].values
@@ -638,7 +354,12 @@ def upload_Geoinfo_to_KG(query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
     '''
     logger.info('Retrieving ONS geographic data from local pickle file ...')
-    LSOA_codes, wkt_codes = read_from_pickle('./data/shapes_array')
+    try:
+        LSOA_codes, wkt_codes = read_from_pickle('./data/shapes_array')
+    except Exception as ex:
+        print(ex)
+        logger.error(f"shape pickle file fail to be found -- electricity consumption")
+        raise InvalidInput(f'shape pickle file fail to be found, please check if the shape pickle file has been placed in ./data folder') from ex
 
     # Split the queries into Batches
     # Perform SPARQL update query in chunks to avoid heap size/memory issues
@@ -729,9 +450,10 @@ def upload_fuel_poverty_to_KG (year: str = YEAR,
                         data = json.load(file)
                 else:
                     logger.info("Specified path file can't be found or not valid, try to get the data from web...")
-    except:
-        # Retrieve data from the Web
-        data = read_from_web_fuel_poverty(year)
+    except Exception as ex:
+        print(ex)
+        logger.error(f"Excel file fail to be found -- fuel poverty")
+        raise InvalidInput(f'Excel file fail to be found, please check if the fuel poverty xlsx has been placed in ./data folder') from ex
 
     LSOA_codes = data["LSOA Code"].values
     house_num = data["Number of households"].values
@@ -836,9 +558,10 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
                 fn = f'./data/{var_name}_hadukgrid_uk_1km_mon_{year}01-{year}12.nc'
             else:
                 fn = path
-        except:
-            # Retrieve data from the Web
-            fn = read_from_web_temp(year, var_name)
+        except Exception as ex:
+            print(ex)
+            logger.error(f"nc file fail to be found -- climate temperature")
+            raise InvalidInput(f'nc file fail to be found, please check if the climate temperature data has been placed in ./data folder') from ex
 
         ds = nc.Dataset(fn)
         var_grid = ds.variables[var_name][:]
