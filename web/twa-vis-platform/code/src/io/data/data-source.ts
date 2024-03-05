@@ -16,6 +16,11 @@ export class DataSource {
     public readonly type: string;
 
     /**
+     * The stack endpoint that stores the associated data to the geographical data.
+     */
+    public readonly stackEndpoint: string;
+
+    /**
      * The JSON object that originally defined this source.
      */
     public readonly definition: JsonObject;
@@ -25,12 +30,14 @@ export class DataSource {
      * 
      * @param id Unique name/id for this source.
      * @param type Type of data.
+     * @param stackEndpoint The stack endpoint storing the data.
      * @param definition The JSON object that originally defined this source.
      */
-    constructor(id: string, type: string, definition: object) {
+    constructor(id: string, type: string, stackEndpoint: string, definition: object) {
         this.id = id;
         this.type = type;
         this.definition = (definition as JsonObject);
+        this.stackEndpoint = stackEndpoint;
 
         console.info("Created DataSource instance '" + this.id + "'.");
     }    

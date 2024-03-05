@@ -17,6 +17,11 @@ export class DataGroup {
     public readonly id: string;
 
     /**
+     * The stack endpoint that stores the associated data for this data group. Note that the subgroups may have different endpoints.
+     */
+    public readonly stackEndpoint: string;
+
+    /**
      * Data sources.
      */
     public readonly dataSources: DataSource[] = [];
@@ -51,10 +56,12 @@ export class DataGroup {
      * 
      * @param name public facing name.
      * @param id unique ID.
+     * @param stackEndpoint The stack endpoint storing the data.
      */
-    constructor(name: string, id: string) {
+    constructor(name: string, id: string, stackEndpoint: string) {
         this.name = name;
         this.id = id;
+        this.stackEndpoint = stackEndpoint;
     }
     
     /**

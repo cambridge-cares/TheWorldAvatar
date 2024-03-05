@@ -44,10 +44,25 @@ export class DataParser {
             throw new Error("Cannot parse a DataGroup that has no name!")
         }
 
+        // Retrieve the current stack for this group
+        let currentStack: string;
+        // If there is a stack property in the data.json, ensure that it is a string
+        if (current["stack"]) {
+            if (typeof current["stack"] === "string") {
+                currentStack = current["stack"];
+            } else {
+                console.error("Unexpected type for 'stack' property");
+                throw new Error("Unexpected type for 'stack' property")
+            }
+            // If there is no stack property, assume that it is inherited from the parent group. Else, leave as undefined
+        } else {
+            currentStack = (parentGroup != null) ? parentGroup.stackEndpoint : "undefined";
+        }
+
         // Initialise data group
         const groupName: string = current["name"] as string;
         const groupID: string = (parentGroup != null) ? (parentGroup.id + "." + depth) : depth.toString();
-        const dataGroup: DataGroup = new DataGroup(groupName, groupID);
+        const dataGroup: DataGroup = new DataGroup(groupName, groupID, currentStack);
 
         // Store parent (if not root)
         if(parentGroup === null || parentGroup === undefined) {
@@ -100,6 +115,7 @@ export class DataParser {
             const source = new DataSource(
                 sourceID,
                 element["type"] as string,
+                dataGroup.stackEndpoint,
                 element
             );
 
