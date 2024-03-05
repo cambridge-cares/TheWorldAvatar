@@ -2,14 +2,14 @@
 
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 2 ] || [ "$1" != "start" ]; then
-    echo "Usage: $0 start <STACK_NAME>"
+    echo "Usage: $0 start <STACK_PORT_NUMBER>"
     exit 1
 fi
 
-STACK_NAME="$2"
+STACK_PORT_NUMBER="$2"
 
 # Set the base URL
-BASE_URL="http://localhost:3838"
+BASE_URL="http://localhost:$STACK_PORT_NUMBER"
 
 # TravellingSalesmanAgent
 TS_URL="$BASE_URL/travellingsalesmanagent/runtsp?function=UR"
