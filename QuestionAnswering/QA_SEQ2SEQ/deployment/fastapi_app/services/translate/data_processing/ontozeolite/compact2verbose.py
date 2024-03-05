@@ -361,13 +361,13 @@ class OZCompact2VerboseConverter:
 
     def _try_convert_hasRingSizes_triple(self, subj: str, pred: str, obj: str):
         """
-        ?Zeolite zeo:hasZeoliteTopology/zeo:hasRingSizes ?RingSizes
+        ?Zeolite zeo:hasTopologicalProperties/zeo:hasRingSizes ?RingSizes
         """
-        if not (pred == "zeo:hasZeoliteTopology/zeo:hasRingSizes"):
+        if not (pred == "zeo:hasTopologicalProperties/zeo:hasRingSizes"):
             return None
 
         """
-        ?Zeolite zeo:hasZeoliteTopology/zeo:hasRingSizes ?RingSizes .
+        ?Zeolite zeo:hasTopologicalProperties/zeo:hasRingSizes ?RingSizes .
         ?RingSizes ocr:hasVectorComponent [ ocr:hasComponentIndex ?RingSizesIndex ; ocr:hasComponentValue ?RingSizesValue ]
         """
         patterns = [
