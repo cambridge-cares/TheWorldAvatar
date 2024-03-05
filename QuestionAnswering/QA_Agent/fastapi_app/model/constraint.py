@@ -40,11 +40,9 @@ class CompoundNumericalConstraint:
         if not self.constraints:
             return ""
 
-        if not self.logical_operator:
-            return str(self.constraints[0])
-
-        if self.logical_operator is LogicalOperator.AND:
-            delimiter = " and "
-        else:
+        if self.logical_operator is LogicalOperator.OR:
             delimiter = " or "
+        else:
+            delimiter = " and "
+            
         return delimiter.join([str(x) for x in self.constraints])

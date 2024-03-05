@@ -299,11 +299,10 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
                 for x in compound_constraint.constraints
             ]
             if compound_constraint.logical_operator:
-                exprn = compound_constraint.logical_operator.value.join(
-                    atomic_constraints
-                )
+                delimiter = compound_constraint.logical_operator.value
             else:
-                exprn = atomic_constraints[0]
+                delimiter = "&&"
+            exprn = delimiter.join(atomic_constraints)
             patterns.append("FILTER ( {exprn} )".format(exprn=exprn))
 
         query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -377,7 +376,9 @@ SELECT DISTINCT ?Label WHERE {{
                         )
                         while isinstance(quantity, list):
                             quantity = quantity[0]
-                        quantity = quantity.to_base_units()
+                        quantity = quantity.to_base_units()  # meter/kg/second
+                        if str(quantity.units) == "kg / mol":
+                            quantity = quantity.to_root_units()  # meter/gram/second
                         unit = str(quantity.units)
                         operand = quantity.magnitude
                     except:
@@ -424,7 +425,7 @@ SELECT DISTINCT ?Label WHERE {{
             arguments["uses"] = uses
         if aligned_property_constraints:
             arguments["properties"] = [
-                dict(property=key, constraint=str(constraint))
+                dict(property=key.value, constraint=str(constraint))
                 for key, constraint in aligned_property_constraints
             ]
         steps.append(
