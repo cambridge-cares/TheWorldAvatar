@@ -1,0 +1,6 @@
+version: "3.8"
+
+services:
+  trajectoryqueryagent:
+    image: ghcr.io/cambridge-cares/user-agent:1.1.0
+    build: .

@@ -1,0 +1,16 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+mon:    https://w3id.org/MON/person.owl#
+sla:    https://www.theworldavatar.com/kg/sensorloggerapp/
+
+[MappingDeclaration] @collection [[
+mappingId   User
+target      mon:Person_{id} a mon:Person;
+                mon:personalMailbox {email}^^xsd:string;
+                mon:firstName {first_name}^^xsd:string;
+                mon:lastName {last_name}^^xsd:string;
+                sla:userName {username}^^xsd:string.
+source      SELECT id, email, first_name, last_name, username
+            FROM "keycloak"."user_entity"
+]]
