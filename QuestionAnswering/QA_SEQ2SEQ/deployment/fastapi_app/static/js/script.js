@@ -273,8 +273,8 @@ function displayIRIDetails(data, iri, filename) {
         color: "white",
         addSelectionOptions: false,
         use: "HTML5",
-        j2sPath: "/static/jmol-16.1.41/jsmol/j2s",
-        script: `load /static/${filename};` 
+        j2sPath: "./static/jmol-16.1.41/jsmol/j2s",
+        script: `load ./static/${filename};` 
     };
 
     Jmol.setDocument(0);
@@ -283,7 +283,7 @@ function displayIRIDetails(data, iri, filename) {
 
     jsmolContainer.innerHTML = Jmol.getAppletHtml(jsmolApplet);
 
-    Jmol.script(jsmolApplet, `load "/static/${filename}";`);
+    Jmol.script(jsmolApplet, `load "./static/${filename}";`);
 }
 
 async function handleIRIClick(iri) {
@@ -293,7 +293,7 @@ async function handleIRIClick(iri) {
     iriInfoContainer.style.display = "block";
 
     try {
-        const response = await fetch(`/get-iri-details?iri=${encodeURIComponent(iri)}`);
+        const response = await fetch(`./get-iri-details?iri=${encodeURIComponent(iri)}`);
         if (!response.ok) {
             throw new Error('Failed to fetch IRI details');
         }
