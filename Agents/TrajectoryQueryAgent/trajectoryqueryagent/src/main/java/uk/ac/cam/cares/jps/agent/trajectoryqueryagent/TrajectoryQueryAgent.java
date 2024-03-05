@@ -60,15 +60,19 @@ public class TrajectoryQueryAgent extends JPSAgent {
             throw new JPSRuntimeException("Unable to validate request sent to the agent.");
         }
 
-        //Retrieve params
+        //Retrieve params (Although currently receiver deviceID)
         this.userID = requestParams.getString(USER_ID);
 
-        //SPARQL query for pointIRI based on userID 
-        //Node smartphoneIRI = NodeFactory.createURI(kgQueryClient.getIRIfromJSONarray(kgQueryClient.getSmartPhoneIRI(deviceID)));
-        //String pointIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getPointIRIArray(smartphoneIRI));
+        //SPARQL query for pointIRI based on userID - Note currently userID is deviceID, needs to be changed
+        Node smartphoneIRI = NodeFactory.createURI(kgQueryClient.getIRIfromJSONarray(kgQueryClient.getSmartPhoneIRI(userID)));
+        String pointIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getPointIRIArray(smartphoneIRI));
+        String altitudeIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getAltitudeIRIArray(smartphoneIRI));
+        String speedIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getSpeedIRIArray(smartphoneIRI));
+        String bearingIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getBearingIRIArray(smartphoneIRI));
+
 
         //Create Geoserver layer
-        createGeoserver();
+        createGeoserver(pointIRI,altitudeIRI,speedIRI,bearingIRI );
 
         //Return pointIRI to app as response
         JSONObject response = new JSONObject();
@@ -77,18 +81,51 @@ public class TrajectoryQueryAgent extends JPSAgent {
     }
 
 
-    private void createGeoserver(){
+    private void createGeoserver(String pointIRI, String altitudeIRI, String speedIRI, String bearingIRI){
+        //Function retrieves column_name from dbTable given IRI
+         String getColumnNameFunction = "CREATE OR REPLACE FUNCTION getColumnName(iri VARCHAR)\n" +
+                 "RETURNS VARCHAR AS\n" +
+                 "$$\n" +
+                 "DECLARE\n" +
+                 "    column_name VARCHAR;\n" +
+                 "BEGIN\n" +
+                 "    SELECT \"columnName\" INTO column_name FROM \"dbTable\" WHERE \"dataIRI\" = iri;\n" +
+                 "    RETURN column_name;\n" +
+                 "END;\n" +
+                 "$$\n" +
+                 "LANGUAGE plpgsql;";
 
-         String getGeometryTableFunction = "CREATE OR REPLACE FUNCTION public.get_geometry_table(\"table\" TEXT, \"columnName\" TEXT)\n" +
-                "RETURNS TABLE (\"time\" timestamptz, \"value\" geometry) AS\n" +
-                "$$\n" +
-                "BEGIN\n" +
-                "RETURN QUERY EXECUTE 'SELECT \"time\", \"' || \"columnName\" || '\" AS value FROM \"' || \"table\" || '\"';\n" +
-                "END;\n" +
-                "$$ LANGUAGE plpgsql;";
+        //Function retrieves table_name from dbTable given IRI
+         String getTableNameFunction= "CREATE OR REPLACE FUNCTION getTableName(iri VARCHAR)\n" +
+                 "RETURNS VARCHAR AS\n" +
+                 "$$\n" +
+                 "DECLARE\n" +
+                 "    table_name VARCHAR;\n" +
+                 "BEGIN\n" +
+                 "    SELECT \"tableName\" INTO table_name FROM \"dbTable\" WHERE \"dataIRI\" = iri;\n" +
+                 "    RETURN table_name;\n" +
+                 "END;\n" +
+                 "$$\n" +
+                 "LANGUAGE plpgsql;";
+
+        //Function retrieves locationTable given pointiri, speediri, altitudeiri, bearingiri
+         String getLocationTableFunction="CREATE OR REPLACE FUNCTION getLocationTable(pointiri VARCHAR, speediri VARCHAR, altitudeiri VARCHAR, bearingiri VARCHAR)\n" +
+                 "RETURNS TABLE (\"time\" timestamptz, \"geom\" geometry, \"speed\" double precision, \"altitude\" double precision, \"bearing\" double precision)\n" +
+                 "AS $$\n" +
+                 "DECLARE\n" +
+                 "    tableName TEXT;\n" +
+                 "BEGIN\n" +
+                 "    tableName := getTableName(pointiri);\n" +
+                 "    RETURN QUERY EXECUTE \n" +
+                 "        format('SELECT time, %I AS geom, %I AS speed, %I AS altitude, %I AS bearing FROM %I', \n" +
+                 "               getColumnName(pointiri), getColumnName(speediri), getColumnName(altitudeiri), getColumnName(bearingiri), tableName);\n" +
+                 "END\n" +
+                 "$$ LANGUAGE plpgsql;";
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
-            executeSql(connection, getGeometryTableFunction);
+            executeSql(connection, getColumnNameFunction);
+            executeSql(connection, getTableNameFunction);
+            executeSql(connection, getLocationTableFunction);
             System.out.println("Created get_geometry_table function.");
         }
         catch (Exception e) {
@@ -105,25 +142,24 @@ public class TrajectoryQueryAgent extends JPSAgent {
         UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
         virtualTable.setSql("SELECT timeseries.time AS time,\n" +
-                "                    timeseries.value AS geom\n" +
-                "                FROM \"dbTable\",\n" +
-                "                    public.get_geometry_table(\"tableName\", \"columnName\") AS timeseries,\n" +
-                "                    information_schema.columns c\n" +
-                "                WHERE \"dbTable\".\"dataIRI\" = '%pointiri%'\n" +
-                "                    AND c.table_schema = 'public'\n" +
-                "                    AND c.table_name = \"tableName\"\n" +
-                "                    AND c.column_name = \"columnName\"\n" +
-                "                    AND c.udt_name = 'geometry'\n");
+                "timeseries.speed AS speed,\n" +
+                "timeseries.altitude AS altitude,\n" +
+                "timeseries.geom AS geom,\n" +
+                "timeseries.bearing AS bearing\n" +
+                "FROM public.getLocationTable('%pointiri%','%speediri%','%altitudeiri%','%bearingiri%') as timeseries");
         virtualTable.setEscapeSql(true);
-        virtualTable.setName("trajectoryVirtualTable");
-        virtualTable.addVirtualTableGeometry("value", "Geometry", "4326"); // geom needs to match the sql query
-        virtualTable.addVirtualTableParameter("pointiri","",".*");
+        virtualTable.setName("trajectoryPointVirtualTable");
+        virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
+        virtualTable.addVirtualTableParameter("pointiri",pointIRI,".*");
+        virtualTable.addVirtualTableParameter("speediri",speedIRI,".*");
+        virtualTable.addVirtualTableParameter("altitudeiri",altitudeIRI,".*");
+        virtualTable.addVirtualTableParameter("bearingiri",bearingIRI,".*");
         geoServerVectorSettings.setVirtualTable(virtualTable);
-        geoServerClient.createPostGISDataStore(workspaceName,"trajectory" , dbName, schema);
-        geoServerClient.createPostGISLayer(workspaceName, dbName,"trajectory" ,geoServerVectorSettings);
+        geoServerClient.createPostGISDataStore(workspaceName,"trajectoryPoint" , dbName, schema);
+        geoServerClient.createPostGISLayer(workspaceName, dbName,"trajectoryPoint" ,geoServerVectorSettings);
 
-        //Sample requests to retrieve Geojson
-        //http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atrajectory&outputFormat=application%2Fjson&viewparams=pointiri:https://www.theworldavatar.com/kg/sensorloggerapp/point_3bfa75a3-5b2c-45d3-b05a-63879a2e7b94
+        //Sample request - specify pointIRI, speedIRI, altitudeIRI, bearingIRI
+        //http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3AtrajectoryPoint&outputFormat=application%2Fjson&viewparams=pointiri:https://www.theworldavatar.com/kg/sensorloggerapp/point_3bfa75a3-5b2c-45d3-b05a-63879a2e7b94;speediri:https://www.theworldavatar.com/kg/sensorloggerapp/measure_speed_b9f3ee65-7269-4aef-a738-fd7bf9485143;altitudeiri=https://www.theworldavatar.com/kg/sensorloggerapp/measure_altitude_86b4c979-4d94-42ff-8844-a64ee1cb1229;bearingiri:https://www.theworldavatar.com/kg/sensorloggerapp/measure_bearing_4733199d-46de-429e-ac1d-c94fca537e7a;
     }
 
     /**

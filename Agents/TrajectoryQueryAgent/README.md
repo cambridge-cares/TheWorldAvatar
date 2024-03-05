@@ -26,7 +26,7 @@ Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. Th
 ### 4.3 
 To start the agent, run the curl command below: 
 ```
-curl -X POST "localhost:3838/trajectoryqueryagent/createlayer?userID=12345"
+curl -X POST "localhost:3838/trajectoryqueryagent/createlayer?userID=605a09c9-d6c5-4ba7-bc28-fe595d698b41"
 ```
 Note: userID=12345 is a placeholder and should be removed before the branch is merged to main.
 
