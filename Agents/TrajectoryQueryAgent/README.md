@@ -8,7 +8,7 @@ TrajectoryQueryAgent is an agent that
 
 ## 2. Pre-requisites
 ### 2.1 TrajectoryQueryAgent setup 
-
+This agent requires information from SensorLoggerMobileAppAgent to be instantiated
 
 
 ## 3. Agent Configuration 
@@ -28,7 +28,7 @@ To start the agent, run the curl command below:
 ```
 curl -X POST "localhost:3838/trajectoryqueryagent/createlayer?userID=605a09c9-d6c5-4ba7-bc28-fe595d698b41"
 ```
-Note: userID=12345 is a placeholder and should be removed before the branch is merged to main.
+Note: userID=605a09c9-d6c5-4ba7-bc28-fe595d698b41 is a placeholder, currently for the agent to work, it takes in deviceID. This should be refractored and removed before the branch is merged to main.
 
 ## 5. Build and debug
 ## 5.1 Credentials

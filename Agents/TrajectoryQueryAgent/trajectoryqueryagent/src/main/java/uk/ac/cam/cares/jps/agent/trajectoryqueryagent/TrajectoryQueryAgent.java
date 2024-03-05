@@ -133,7 +133,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
             throw new JPSRuntimeException(e);
         }
 
-        //Create geoserver layer
+        //Create geoserver point layer
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
         String workspaceName= "twa";
         String schema = "public";
@@ -157,9 +157,47 @@ public class TrajectoryQueryAgent extends JPSAgent {
         geoServerVectorSettings.setVirtualTable(virtualTable);
         geoServerClient.createPostGISDataStore(workspaceName,"trajectoryPoint" , dbName, schema);
         geoServerClient.createPostGISLayer(workspaceName, dbName,"trajectoryPoint" ,geoServerVectorSettings);
+        
+        //Create line layer
+        UpdatedGSVirtualTableEncoder virtualTableLine = new UpdatedGSVirtualTableEncoder();
+        GeoServerVectorSettings geoServerVectorLineSettings = new GeoServerVectorSettings();
+        virtualTableLine.setSql("WITH numbered_points AS (\n" +
+                "    SELECT\n" +
+                "        time,\n" +
+                "        speed,\n" +
+                "        altitude,\n" +
+                "        geom,\n" +
+                "        bearing,\n" +
+                "        LEAD(geom) OVER (ORDER BY time) AS next_geom\n" +
+                "    FROM\n" +
+                "        public.getLocationTable('%pointiri%','%speediri%','%altitudeiri%','%bearingiri%') as timeseries\n" +
+                ")\n" +
+                "SELECT\n" +
+                "    ST_MakeLine(geom, next_geom) AS geom,\n" +
+                "    AVG(speed) AS speed,\n" +
+                "    AVG(altitude) AS altitude,\n" +
+                "    AVG(bearing) AS bearing\n" +
+                "FROM\n" +
+                "    numbered_points\n" +
+                "GROUP BY\n" +
+                "    geom, next_geom");
+        virtualTableLine.setEscapeSql(true);
+        virtualTableLine.setName("trajectoryLineVirtualTable");
+        virtualTableLine.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
+        virtualTableLine.addVirtualTableParameter("pointiri",pointIRI,".*");
+        virtualTableLine.addVirtualTableParameter("speediri",speedIRI,".*");
+        virtualTableLine.addVirtualTableParameter("altitudeiri",altitudeIRI,".*");
+        virtualTableLine.addVirtualTableParameter("bearingiri",bearingIRI,".*");
+        geoServerVectorLineSettings.setVirtualTable(virtualTableLine);
+        geoServerClient.createPostGISDataStore(workspaceName,"trajectoryLine" , dbName, schema);
+        geoServerClient.createPostGISLayer(workspaceName, dbName,"trajectoryLine" ,geoServerVectorLineSettings);
 
-        //Sample request - specify pointIRI, speedIRI, altitudeIRI, bearingIRI
+
+        //Sample point request - specify pointIRI, speedIRI, altitudeIRI, bearingIRI
         //http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3AtrajectoryPoint&outputFormat=application%2Fjson&viewparams=pointiri:https://www.theworldavatar.com/kg/sensorloggerapp/point_3bfa75a3-5b2c-45d3-b05a-63879a2e7b94;speediri:https://www.theworldavatar.com/kg/sensorloggerapp/measure_speed_b9f3ee65-7269-4aef-a738-fd7bf9485143;altitudeiri=https://www.theworldavatar.com/kg/sensorloggerapp/measure_altitude_86b4c979-4d94-42ff-8844-a64ee1cb1229;bearingiri:https://www.theworldavatar.com/kg/sensorloggerapp/measure_bearing_4733199d-46de-429e-ac1d-c94fca537e7a;
+
+        //Sample line request - specify pointIRI, speedIRI, altitudeIRI, bearingIRI
+        //http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3AtrajectoryLine&outputFormat=application%2Fjson&viewparams=pointiri:https://www.theworldavatar.com/kg/sensorloggerapp/point_3bfa75a3-5b2c-45d3-b05a-63879a2e7b94;speediri:https://www.theworldavatar.com/kg/sensorloggerapp/measure_speed_b9f3ee65-7269-4aef-a738-fd7bf9485143;altitudeiri=https://www.theworldavatar.com/kg/sensorloggerapp/measure_altitude_86b4c979-4d94-42ff-8844-a64ee1cb1229;bearingiri:https://www.theworldavatar.com/kg/sensorloggerapp/measure_bearing_4733199d-46de-429e-ac1d-c94fca537e7a;
     }
 
     /**
