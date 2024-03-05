@@ -4,7 +4,6 @@ import time
 from typing import Dict, List, Tuple, Type
 
 import unit_parse
-from pint import Quantity
 
 from model.qa import QAData, QAStep
 from services.utils.functools import expiring_cache
@@ -45,6 +44,19 @@ PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?Label WHERE {
     ?s a os:ChemicalClass ; rdfs:label ?Label .
+}"""
+        return [
+            x["Label"]["value"]
+            for x in self.kg_client.query(query)["results"]["bindings"]
+        ]
+
+    @expiring_cache()
+    def _get_uses(self):
+        query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
+SELECT DISTINCT ?Label WHERE {
+    ?s a os:Use ; rdfs:label ?Label .
 }"""
         return [
             x["Label"]["value"]
@@ -264,25 +276,18 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
     ) -> List[str]:
         patterns = []
 
-        if chemical_classes:
-            # TODO: instead of align each chemical_class to its closest neighbour, retrieve top-k
-            # and match to any one of these top-k labels
-            logger.info("Aligning chemical class labels...")
-            stored_chemical_classes = self._get_chemical_classes()
-            chemical_classes = self.nn_retriever.retrieve(
-                stored_chemical_classes, chemical_classes
-            )
-            logger.info("Aligned chemical classes: " + str(chemical_classes))
         for chemical_class in chemical_classes:
             patterns.append(
                 '?Species (a|!a)+ [ a os:ChemicalClass ; rdfs:label "{label}" ] .'.format(
                     label=chemical_class
                 )
             )
+
         for use in uses:
             patterns.append(
                 '?Species os:hasUse/rdfs:label "{label}" .'.format(label=use)
             )
+
         for key, compound_constraint in properties:
             patterns.append(
                 "?Species os:has{key}/os:value ?{key}Value .".format(key=key.value)
@@ -300,6 +305,7 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
             else:
                 exprn = atomic_constraints[0]
             patterns.append("FILTER ( {exprn} )".format(exprn=exprn))
+
         query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
@@ -337,6 +343,24 @@ SELECT DISTINCT ?Label WHERE {{
     ):
         steps = []
 
+        if chemical_classes:
+            # TODO: instead of align each chemical_class to its closest neighbour, retrieve top-k
+            # and match to any one of these top-k labels
+            logger.info("Aligning chemical class labels...")
+            abox_chemical_classes = self._get_chemical_classes()
+            chemical_classes = self.nn_retriever.retrieve(
+                abox_chemical_classes, chemical_classes
+            )
+            logger.info("Aligned chemical classes: " + str(chemical_classes))
+
+        if uses:
+            # TODO: instead of align each use to its closest neighbour, retrieve top-k
+            # and match to any one of these top-k labels
+            logger.info("Aligning use labels...")
+            abox_uses = self._get_uses()
+            uses = self.nn_retriever.retrieve(abox_uses, uses)
+            logger.info("Aligned uses: " + str(uses))
+
         logger.info("Parsing property constraints...")
         property_constraints = [parse_constraint(x) for x in properties]
 
@@ -344,17 +368,20 @@ SELECT DISTINCT ?Label WHERE {{
         for _, compound_constraint in property_constraints:
             atomic_constraints = []
             for constraint in compound_constraint.constraints:
+                operand = constraint.operand
                 unit = constraint.unit
                 if constraint.unit:
-                    quantity = unit_parse.parser(
-                        " ".join([str(constraint.operand), constraint.unit])
-                    )
-                    if isinstance(quantity, Quantity):
+                    try:
+                        quantity = unit_parse.parser(
+                            " ".join([str(constraint.operand), constraint.unit])
+                        )
+                        while isinstance(quantity, list):
+                            quantity = quantity[0]
                         quantity = quantity.to_base_units()
                         unit = str(quantity.units)
-                    operand = quantity.magnitude
-                else:
-                    operand = constraint.operand
+                        operand = quantity.magnitude
+                    except:
+                        pass
                 atomic_constraints.append(
                     AtomicNumericalConstraint(
                         operator=constraint.operator, operand=operand, unit=unit
