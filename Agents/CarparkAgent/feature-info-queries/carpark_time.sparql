@@ -1,0 +1,14 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX geo:	<http://www.opengis.net/ont/geosparql#>
+PREFIX xsd:	<http://www.w3.org/2001/XMLSchema#>
+PREFIX carpark: <https://www.theworldavatar.com/kg/ontocarpark/>
+PREFIX building: <https://www.theworldavatar.com/kg/Building/>
+PREFIX bot: <https://w3id.org/bot#>
+PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+SELECT DISTINCT ?Measurement ?Name ?Unit WHERE {
+  [IRI] carpark:hasLotType ?lotType .
+  ?lotType carpark:hasLots ?Measurement .
+  ?Measurement rdfs:label ?Name .
+  BIND ("-" as ?Unit).
+}
