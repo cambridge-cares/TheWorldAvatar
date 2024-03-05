@@ -85,6 +85,7 @@ export default function MapContainer() {
             {!isFetching && mapSettings?.current?.["type"] === "mapbox" &&
                 <MapboxMapComponent
                     settings={mapSettings.current}
+                    dataStore= {dataStore.current}
                 />
             }
 

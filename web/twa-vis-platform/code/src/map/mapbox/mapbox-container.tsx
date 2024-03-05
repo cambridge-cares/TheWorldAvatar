@@ -25,8 +25,6 @@ import {
   getDefaultImageryOption,
   getImageryOption,
 } from "./mapbox-imagery-utils";
-import { getAndParseDataSettings } from "../../utils/client-utils";
-import { DataStoreCache } from "../../io/data/data-store-cache";
 import { DataStore } from "../../io/data/data-store";
 import { addAllSources } from "./mapbox-source-utils";
 import { addAllLayers } from "./mapbox-layer-utils";
@@ -38,6 +36,7 @@ import { setLatLng } from "../../state/floating-panel-click-slice";
 // Type definition of incoming properties
 interface MapProperties {
   settings: MapSettings;
+  dataStore: DataStore;
 }
 
 // Return the default style URL
@@ -142,11 +141,10 @@ export default function MapboxMapComponent(props: MapProperties) {
       }
 
       // Parse data configuration and load icons
-      const dataPromise = getAndParseDataSettings();
       const iconPromise = addIcons(settings.icons);
 
-      Promise.all([dataPromise, iconPromise]).then((responses) => {
-        const dataStore = responses[0];
+      Promise.all([iconPromise]).then(() => {
+        let dataStore: DataStore = props.dataStore;
 
         // Once that is done and completed...
         console.log("Data definitions fetched and parsed.");
