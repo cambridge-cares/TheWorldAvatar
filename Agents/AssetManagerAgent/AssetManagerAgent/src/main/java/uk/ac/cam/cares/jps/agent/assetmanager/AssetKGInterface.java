@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.assetmanager;
 
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
+import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.literalOf;
 import static uk.ac.cam.cares.jps.agent.assetmanager.ClassAndProperties.*;
 import static uk.ac.cam.cares.jps.agent.assetmanager.QueryUtil.*;
 
@@ -549,6 +550,8 @@ public class AssetKGInterface {
         //Device
         Iri deviceIRIVar = iri(data.getString("deviceIRI"));
         Iri deviceTypeIRI = iri(data.getString("deviceTypeIRI"));
+        String[] deviceTypeLiteralArr = data.getString("deviceTypeIRI").split("/");
+        String deviceTypeLiteral = deviceTypeLiteralArr[deviceTypeLiteralArr.length-1];
         String ID = data.getString("ID");
         Iri itemIRIVar = iri(data.getString("itemIRI"));
         String labelLiteralVar = data.getString("label");
@@ -595,6 +598,7 @@ public class AssetKGInterface {
         query.insert(deviceIRIVar.isA(Device));
         query.insert(deviceIRIVar.has(isCategorizedUnder, deviceTypeIRI));
         query.insert(deviceTypeIRI.isA(UserDefinedCatergory));
+        query.insert(deviceTypeIRI.has(RDFS.LABEL, literalOf(deviceTypeLiteral)));
         query.insert(itemIRIVar.isA(Item));
 
         //Device

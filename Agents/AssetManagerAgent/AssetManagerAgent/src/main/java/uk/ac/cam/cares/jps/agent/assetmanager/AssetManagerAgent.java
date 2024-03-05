@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.assetmanager;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -164,27 +165,25 @@ public class AssetManagerAgent extends JPSAgent{
                 jsonMessage = getDataForUI();
             }
             else if (urlPath.contains("instantiate")){
-                //TODO since the prefix is nto used anymore in the new instances, current;ly debating if this should be kept
-                //As its a mine waiting to be stepped on as is. Should it be deleted? Should new checks be added instead?
-                if(assetData.getString("Prefix").isBlank() || assetData.getString("Prefix") == null){
-                    try (InputStream input = new FileInputStream(ontoMapProperties)) {
-                        // Load properties file from specified path
-                        Properties prop = new Properties();
-                        prop.load(input);
 
-                        try {
-                            String AssetClass = assetData.getString("AssetClass");
-                            assetData.put("Prefix", prop.getProperty(AssetClass));
+                try (InputStream input = new FileInputStream(ontoMapProperties)) {
+                    // Load properties file from specified path
+                    Properties prop = new Properties();
+                    prop.load(input);
 
-                        }
-                        catch (Exception e) {
-                            throw new IOException ("The asset class keys cannot be retrieved from the properties file: ", e);
-                        }
+                    try {
+                        String AssetClass = assetData.getString("AssetClass");
+                        assetData.put("Prefix", prop.getProperty(AssetClass));
+
                     }
                     catch (Exception e) {
-                        throw new JPSRuntimeException("Failed to read properties file: ", e);
+                        throw new IOException ("The asset class keys cannot be retrieved from the properties file: ", e);
                     }
                 }
+                catch (Exception e) {
+                    throw new JPSRuntimeException("Failed to read properties file: ", e);
+                }
+                
                 if (assetData.has("setData")){
                     jsonMessage = instantiateSet(args, assetData);
                 }
@@ -321,6 +320,9 @@ public class AssetManagerAgent extends JPSAgent{
             if (!(assetData.has("deliveryDate"))){
                 assetData.put("deliveryDate", "");
             }
+            if (!(assetData.has("existingIRIs"))){
+                            assetData.put("existingIRIs", new JSONObject());
+                        }
 
             try {
                 JSONObject iriResult = instanceHandler.instantiate(assetData);
@@ -350,7 +352,7 @@ public class AssetManagerAgent extends JPSAgent{
                 message.accumulate("Result", "Instantiation cancelled: " + 
                     "One of the asset data is invalid: "+
                     assetData +
-                    "Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and ontology prefix and class."
+                    "Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and class."
                 );
                 stillValid = false;
             }
@@ -409,7 +411,7 @@ public class AssetManagerAgent extends JPSAgent{
         if (!data.has("BuildingLocation")){
             return false;
         }
-        if(!data.has("Prefix") && !data.has("AssetClass")){
+        if(!data.has("AssetClass")){
             return false;
         }
 

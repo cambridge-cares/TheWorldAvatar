@@ -43,7 +43,7 @@ public class AssetExistenceChecker {
     }
     public JSONObject getPersonTriples(String name, Boolean generate){
         JSONObject result = new JSONObject();
-        JSONArray reqResult = getIRIbyLiteral (name, hasPersonName, storeClientPurchDoc);
+        JSONArray reqResult = getIRIbyLiteral (name, hasPersonName, storeClientAsset);
 
         switch (reqResult.length()) {
             case 0:
@@ -95,7 +95,7 @@ public class AssetExistenceChecker {
                 OrgNameIRI = reqResult.getJSONObject(0).getString("Subject");
                 result.put("OrgNameIRI", OrgNameIRI);
                 //Query Person instance from person name
-                result.put("OrgIRI", getIRIStringbyIRIObject(iri(OrgNameIRI), hasName, storeClientAsset));
+                result.put("OrgIRI", getIRIStringbyIRIObject(iri(OrgNameIRI), hasName, storeClientPurchDoc));
                 return result;
             default:
                 throw new JPSRuntimeException("An organization has more than 1 instance: " + orgName + ". Check the knowledge graph for duplicates.", null);
