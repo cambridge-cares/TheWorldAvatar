@@ -4,7 +4,6 @@ import SVG from "react-inlinesvg";
 import { Icon } from "@mui/material";
 import { useSelector } from "react-redux";
 import { getLatLng } from "../../state/floating-panel-click-slice";
-import { selectSelectedFeature } from "../../state/map-feature-slice";
 import PanelHandler from "../../state/panel-handler-slice";
 
 /**
@@ -18,7 +17,7 @@ export default function InfoTree() {
   // State to store the latitude and longitude of the clicked location
   const latLng = useSelector(getLatLng);
   // State to store the currently selected feature's information
-  const selectedFeature = useSelector(selectSelectedFeature);
+  const selectedFeatureProperties = useSelector((state) => state.mapFeature.properties);
   // State to store the modified stack URL
   const [stack, setStack] = useState("");
   // State to store fetched additional information about the selected feature
@@ -33,9 +32,9 @@ export default function InfoTree() {
 
   // Effect to fetch additional feature information when a new feature is selected
   useEffect(() => {
-    if (selectedFeature && selectedFeature.iri) {
+    if (selectedFeatureProperties && selectedFeatureProperties.iri) {
       const scenarioID = "sFCkEoNC"; // Placeholder scenario ID
-      PanelHandler.addSupportingData(selectedFeature, scenarioID)
+      PanelHandler.addSupportingData(selectedFeatureProperties, scenarioID)
         .then((data) => {
           if (data) {
             setFeatureInfo(data); // Update state with fetched data
@@ -45,7 +44,7 @@ export default function InfoTree() {
         })
         .catch((error) => console.error(error));
     }
-  }, [selectedFeature]);
+  }, [selectedFeatureProperties]);
 
   return (
     <div className={styles.infoPanelContainer}>
@@ -58,12 +57,12 @@ export default function InfoTree() {
           </p>
         </div>
       )}
-      {selectedFeature && (
+      {selectedFeatureProperties && (
         <div className={styles.infoSection}>
           <h3>Feature Information</h3>
-          <p>Name: {selectedFeature.name}</p>
-          <p>Description: {selectedFeature.description}</p>
-          <p>IRI: {selectedFeature.iri}</p>
+          <p>Name: {selectedFeatureProperties.name}</p>
+          <p>Description: {selectedFeatureProperties.description}</p>
+          <p>IRI: {selectedFeatureProperties.iri}</p>
         </div>
       )}
       {stack && (

@@ -5,7 +5,7 @@ import { JsonArray, JsonObject } from "../../types/json";
 import { getCurrentImageryOption } from "./mapbox-imagery-utils";
 import { ImageryOption, MapSettings } from "../../types/map-settings";
 import { getMapSettings } from "../../utils/client-utils";
-import { setSelectedFeature } from '../../state/map-feature-slice';
+import { setProperties, setSourceLayerId } from '../../state/map-feature-slice';
 import { reduxStore } from "../../app/store";
 /**
  * Given a DataStore instance housing parsed DataLayer instances,
@@ -114,9 +114,9 @@ export function addLayer(layer: DataLayer, currentStyle: ImageryOption) {
         if (feature) {
             // Here you can access the metadata of the clicked feature
             console.log(`Clicked on ${layer.id}:`, feature.properties);
-            reduxStore.dispatch(setSelectedFeature(feature.properties));
-            // Perform additional actions with the feature's properties (metadata) here
-            // For example, displaying this information in a UI component
+            // Stores the feature properties and layer source id in a global state
+            reduxStore.dispatch(setProperties(feature.properties));
+            reduxStore.dispatch(setSourceLayerId(feature.source));
         }
     });
 

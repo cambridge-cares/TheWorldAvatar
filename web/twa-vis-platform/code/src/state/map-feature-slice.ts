@@ -3,17 +3,19 @@ import { createSlice } from '@reduxjs/toolkit';
 export const mapFeatureSlice = createSlice({
     name: 'mapFeature',
     initialState: {
-        selectedFeature: null,
+        properties: null,
+        sourceLayerId: null,
     },
     reducers: {
-        setSelectedFeature: (state, action) => {
-            state.selectedFeature = action.payload;
+        setProperties: (state, action) => {
+            state.properties = action.payload;
+        },
+        setSourceLayerId: (state, action) => {
+            state.sourceLayerId = action.payload;
         },
     },
 });
 
-export const { setSelectedFeature } = mapFeatureSlice.actions;
-
-export const selectSelectedFeature = (state) => state.mapFeature.selectedFeature;
+export const { setProperties, setSourceLayerId } = mapFeatureSlice.actions;
 
 export default mapFeatureSlice.reducer;
