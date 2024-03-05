@@ -1,0 +1,20 @@
+{
+    "dataSets": [
+        {
+            "name": "colleges-1",
+            "dataType": "geojson",
+            "dataLocation": "colleges-1.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["colleges-1-meta.json"],
+            "timeseriesFiles": ["colleges-1-timeseries.json"]
+        },
+        {
+            "name": "departments-1",
+            "dataType": "geojson",
+            "dataLocation": "departments-1.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["departments-1-meta.json"],
+            "timeseriesFiles": ["departments-1-timeseries.json"]
+        }
+    ]
+}

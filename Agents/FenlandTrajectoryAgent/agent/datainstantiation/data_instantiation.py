@@ -18,7 +18,8 @@ if __name__ == '__main__':
     # Initialize KGClient for RDF data manipulation
     KGClient = jpsBaseLibView.RemoteStoreClient(utils.QUERY_ENDPOINT, utils.UPDATE_ENDPOINT)
 
-    # Retrieve Java classes for handling time data and values
+    # Retrieve Java classes for time entries (Instant) and data (ALL Double)
+    # (required for time series client instantiation)
     Instant = jpsBaseLibView.java.time.Instant
     instant_class = Instant.now().getClass()
     double_class = jpsBaseLibView.java.lang.Double.TYPE
@@ -26,11 +27,12 @@ if __name__ == '__main__':
     # Set the target folder
     # read all the csv file stored in the target folder
     # find each csv file containing gps data, launch a loop to instantiate utilities
-    target_folder_path = 'path/to/your/target/folder/*.csv'  # Please adjust this path as necessary
+    target_folder_path = '/home/caresuser/TWA_Healthcare/TheWorldAvatar/Agents/FenlandTrajectoryAgent/agent/raw_data/gps_target_folder/*.csv'  # Please adjust this path as necessary
     csv_files = glob.glob(target_folder_path)
     
     for csv_file in csv_files:
         df = pd.read_csv(csv_file)  # Read CSV file into DataFrame
+        print(df.columns)
 
          # Unit Cleaning, Extract numeric values and handle units for SPEED, DISTANCE, and HEIGHT
         for column in ['SPEED', 'DISTANCE', 'HEIGHT']:
@@ -49,6 +51,12 @@ if __name__ == '__main__':
                 'Height': df['HEIGHT'].tolist() if 'HEIGHT' in df.columns else [],
                 'Heading': df['HEADING'].tolist() if 'HEADING' in df.columns else [],
             },
+            'units': {
+                'Speed': 'km/h',
+                'Distance': 'M',
+                'Height': 'M',
+                'Heading': None  # No unit for Heading
+            }
         }
 
         # Generate uuid and IRI for the GPS object
@@ -61,7 +69,8 @@ if __name__ == '__main__':
             dataIRIs.append(dataIRI)
 
             # Prepare SPARQL query, assigning units where applicable
-            unit = 'km/h' if ts == 'Speed' else 'M' if ts in ['Distance', 'Height'] else ''
+            unit = gps_object['units'][ts] if gps_object['units'][ts] else ""
+
             query = utils.create_sparql_prefix('ex') + \
                     utils.create_sparql_prefix('rdf') + \
                     utils.create_sparql_prefix('rdfs') + \

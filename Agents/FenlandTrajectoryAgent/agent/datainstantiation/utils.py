@@ -10,7 +10,7 @@ from configobj import ConfigObj
 from pathlib import Path
 
 # Define location of properties file (with Triple Store and RDB settings)
-PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "ts_example.properties"))
+PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "FenlandTrajectory.properties"))
 
 # Initialise global variables to be read from properties file
 global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR, MAPBOX_APIKEY
@@ -22,14 +22,14 @@ FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
     # Namespace for this example data
-    'ex': 'http://www.theworldavatar.com/kb/ts_example/',
+    'ex': 'http://www.theworldavatar.com/kb/fenlandtrajectory/',
     'tsa': 'http://www.theworldavatar.com/kb/ontotimeseries/',
     # Namespaces for used ontologies
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
     'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
     'xsd': 'http://www.w3.org/2001/XMLSchema#',
-    'geolit': 'http://www.bigdata.com/rdf/geospatial/literals/v1#',
+    'geolit': 'http://www.bigdata.com/rdf/geospatial/literals/v1',
     'geo': 'http://www.bigdata.com/rdf/geospatial#>'
 }
 
