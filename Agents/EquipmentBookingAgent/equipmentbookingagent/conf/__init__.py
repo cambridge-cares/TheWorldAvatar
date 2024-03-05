@@ -1,0 +1,1 @@
+from .equipment_booking_agent_conf import config_equipment_booking_agent

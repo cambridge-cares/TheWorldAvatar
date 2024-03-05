@@ -1,0 +1,68 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+        <title>TWA Equipment Booking</title>
+    </head>
+
+    <body>
+        <h1>TWA Equipment Booking</h1>
+        <form action="/goal_reactivate" method="post">
+
+            <!-- goal set -->
+            <fieldset class="goal-set">
+                <legend>User</legend>
+                <span class="chem-rxn">Please specify the user making the booking:</span><br><br>
+
+                <select name="goal_set" id="goal_set" class="Input">
+                    <option value="" disabled selected>Please select user</option>
+                    {% for g in goal_set_iri %}
+                    <option value="{{ g.iri }}">{{ g.display }}</option>
+                    {% endfor %}
+                </select>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- goal set -->
+            <fieldset class="goal-set">
+                <legend>Equipment</legend>
+                <span class="chem-rxn">Please equipment to be booked:</span><br><br>
+
+                <select name="goal_set" id="goal_set" class="Input">
+                    <option value="" disabled selected>Please select asset</option>
+                    {% for g in goal_set_iri %}
+                    <option value="{{ g.iri }}">{{ g.display }}</option>
+                    {% endfor %}
+                </select>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- restrictions -->
+            <fieldset class="restrictions">
+                <legend>Period</legend>
+                <span class="restrictions">Please specify the booking period:</span><br><br>
+                <!-- cycleAllowance -->
+                <label for="cycleAllowance">Start:</label>
+                <input type="datetime-local" id="deadline" name="deadline"><br><br>
+
+                <!-- deadline -->
+                <label for="deadline">End:</label>
+                <input type="datetime-local" id="deadline" name="deadline"><br><br>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- laboratories involved -->
+            <div class="laboratories">
+                <span class="laboratories">At the moment, only equipment with pre-existing booking system can be booked.
+                    <br>Please contact developers of TheWorldAvatar if more features needed.</span><br><br>
+            </div><br><br>
+
+            <br><br>
+
+            <!-- submit button -->
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>
