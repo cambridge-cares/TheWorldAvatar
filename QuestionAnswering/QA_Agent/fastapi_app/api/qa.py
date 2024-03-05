@@ -5,7 +5,7 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from model.qa import QAStep
+from model.qa import QAData, QAStep
 from services.connector import AgentConnector, get_agent_connector
 
 
@@ -20,7 +20,7 @@ class QAResponseMetadata(BaseModel):
 
 class QAResponse(BaseModel):
     metadata: QAResponseMetadata
-    data: List[dict]
+    data: QAData
 
 
 logger = logging.getLogger(__name__)
