@@ -28,6 +28,7 @@ export class DataParser {
      */
     public loadData(rawJson: JsonObject): DataStore {
         this.recurse(rawJson, null, null, 0);
+        console.info("Data definition loading complete.");
         return this.dataStore;
     }
 
