@@ -65,9 +65,11 @@
 .introInner {
     background-color: transparent !important;
     margin-bottom: 10px;
+    overflow-y: auto;
 }
 
 .introLower {
+    height: 30%;
     overflow: hidden;
     display: flex;
     flex-direction: row;
