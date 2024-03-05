@@ -2,9 +2,9 @@ import logging
 import os
 import time
 from typing import Dict, List, Tuple, Type
-from pint import Quantity
 
 import unit_parse
+from pint import Quantity
 
 from model.qa import QAStep
 from services.utils.functools import expiring_cache
@@ -297,7 +297,7 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
         query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
-SELECT ?Species WHERE {{
+SELECT DISTINCT ?Species WHERE {{
 {patterns}
 }}""".format(
             patterns="\n".join(patterns)
@@ -313,7 +313,7 @@ SELECT ?Species WHERE {{
     def _get_label(self, iri: str):
         query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         
-SELECT ?Label WHERE {{
+SELECT DISTINCT ?Label WHERE {{
     <{IRI}> rdfs:label ?Label
 }}""".format(
             IRI=iri
