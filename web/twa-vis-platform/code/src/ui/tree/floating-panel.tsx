@@ -1,7 +1,7 @@
 import { Icon, Tooltip } from "@mui/material";
 import styles from "./floating-panel.module.css";
 
-import React from "react";
+import React, { useState } from "react";
 import { getIndex, setIndex } from "../../state/floating-panel-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { DataStore } from "../../io/data/data-store";
@@ -22,6 +22,11 @@ type FloatingPanelContainerProps = {
 export default function FloatingPanelContainer(
   props: FloatingPanelContainerProps
 ) {
+  const [isPanelVisible, setIsPanelVisible] = useState(true);
+  const togglePanelVisibility = () => {
+    setIsPanelVisible(!isPanelVisible);
+  };
+
   const showLegend = props.hideLegend == null || !props.hideLegend;
   const showInfo = props.hideInfo == null || !props.hideInfo;
 
@@ -42,6 +47,19 @@ export default function FloatingPanelContainer(
   return (
     <div className={styles.floatingPanelContainer}>
       <div className={styles.floatingPanelHead}>
+        {/* Toggle visibility button */}
+        <button onClick={() => setIsPanelVisible(!isPanelVisible)}>
+          <Tooltip
+            title={isPanelVisible ? "Hide Panel" : "Show Panel"}
+            enterDelay={500}
+            leaveDelay={200}
+          >
+            <Icon className="material-symbols-outlined">
+              {isPanelVisible ? "visibility_off" : "visibility"}
+            </Icon>
+          </Tooltip>
+        </button>
+
         {/* Layer tree button */}
         <button
           className={activeIndex == 0 ? buttonClassActive : buttonClass}
@@ -92,11 +110,14 @@ export default function FloatingPanelContainer(
         )}
       </div>
 
-      <div className={styles.floatingPanelBody}>
-        {activeIndex === 0 && <LayerTree dataStore={props.dataStore} />}
-        {activeIndex === 1 && <LegendTree />}
-        {activeIndex === 2 && <InfoTree />}
-      </div>
+      {/* Conditionally render the panel's body */}
+      {isPanelVisible && (
+        <div className={styles.floatingPanelBody}>
+          {activeIndex === 0 && <LayerTree dataStore={props.dataStore} />}
+          {activeIndex === 1 && <LegendTree />}
+          {activeIndex === 2 && <InfoTree />}
+        </div>
+      )}
     </div>
   );
 }
