@@ -1,0 +1,15 @@
+services:
+  redis-stack:
+    image: redis/redis-stack:7.2.0-v9
+    ports:
+      - 6379:6379
+      - 8001:8001
+  fastapi-experimental:
+    build:
+      context: fastapi_app
+    env_file:
+      - fastapi-variables.env
+    ports:
+      - 5000:8000
+    depends_on:
+      - redis-stack
