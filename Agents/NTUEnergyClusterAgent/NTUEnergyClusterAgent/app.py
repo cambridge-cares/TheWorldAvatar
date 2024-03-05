@@ -45,62 +45,60 @@ def check_stack_status():
         logging.error("Unable to parse stack parameter.")
 
 @app.route('/')
-def default():
+def default():  
     check_stack_status()
 
     logging.info(os.getcwd())
     model = ClusterModel(NN_model_filepath="/app/NTUEnergyClusterAgent/models/BNN_model.xlsx")
 
     all_P_values = []
-    all_Q_values = []
 
     ##1. query all iris of bus nodes
     BUSNODE_IRIS = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
-## get only P values. Q not used by NN
     for busNode_iri in BUSNODE_IRIS:
         busNode_iri = busNode_iri['busNode']
         logging.info("running for busnode:" + busNode_iri)
         try:
             P_iri = QueryData.query_P_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
-            Q_iri = QueryData.query_Q_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
+            
         except Exception as ex:
-            logging.error("SPARQL query for P or Q IRI for bus node ", busNode_iri," not successful.")
-            raise KGException("SPARQL query for P or Q IRI for bus node ", busNode_iri," not successful.") from ex
+            logging.error("SPARQL query for P IRI for bus node ", busNode_iri," not successful.")
+            raise KGException("SPARQL query for P IRI for bus node ", busNode_iri," not successful.") from ex
 
         try:
-            P_ts = query_all_timeseries(P_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
-            Q_ts = query_all_timeseries(Q_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
+            # get latest
+            P_ts = query_latest_timeseries(P_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
+
         except Exception as ex:
-            logging.error("SPARQL query for P or Q timeseries not successful.")
-            raise KGException("SPARQL query for P or Q timeseries not successful.") from ex
+            logging.error("SPARQL query for P timeseries not successful.")
+            raise KGException("SPARQL query for P timeseries not successful.") from ex
 
         try:
             P_dates = [d.toString() for d in P_ts.getTimes()]
-            Q_dates = [d.toString() for d in Q_ts.getTimes()]
+
         except Exception as ex:
             logging.error("Unable to get timestamps from timeseries object.")
             raise TSException("Unable to get timestamps from timeseries object") from ex
-        if P_dates != Q_dates:
-            raise Exception('The timestamps for P and Q are not the same!')
-
+        
         P_values = [v for v in P_ts.getValues(P_iri)]
-        Q_values = [v for v in Q_ts.getValues(Q_iri)]
 
         all_P_values.append(P_values)
-        all_Q_values.append(Q_values)
 
-## parse these
+    ## parse these
     predicted_probabilities = model.run_neural_net(input_data)
 
 ## update KG with probability blue, green, red
     for i, busNode_iri in enumerate(BUSNODE_IRIS):
         busNode_iri = busNode_iri['busNode']
+
+## get pr pb pg iris 
         #get vm iri via bus node
         vm_iri = QueryData.query_Vm_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
         #get va iri via bus node
         va_iri = QueryData.query_Va_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
         result_iri_list = [vm_iri, va_iri]
+
         timestamp_list = P_dates
         result_value_list = [predicted_Vm[:, i].tolist(), predicted_Va[:, i].tolist()]
         logging.info("timestamp_list: " + str(len(timestamp_list)))
@@ -113,4 +111,4 @@ def default():
         timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, result_iri_list, result_value_list)
         timeseries_instantiation.add_timeseries_data(timeseries_object, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
 
-    return 'Successfully calculated Vm and Va.'
+    return 'Successfully calculated probabilities.'
