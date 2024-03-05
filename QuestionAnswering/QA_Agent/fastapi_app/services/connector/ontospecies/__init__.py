@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple, Type
 import unit_parse
 from pint import Quantity
 
-from model.qa import QAStep
+from model.qa import QAData, QAStep
 from services.utils.functools import expiring_cache
 from services.utils.parse import parse_constraint
 from services.nearest_neighbor import NNRetriever
@@ -161,20 +161,26 @@ SELECT DISTINCT ?Species WHERE {{
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?Use WHERE {{
-    <{IRI}> os:hasUse/rdfs:label ?Use .
+    OPTIONAL {{
+        <{IRI}> os:hasUse/rdfs:label ?Use .
+    }}
 }}"""
         elif isinstance(attr_key, SpeciesChemicalClassAttrKey):
             template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?ChemicalClass WHERE {{
-    <{IRI}> (a|!a)+ [ a os:ChemicalClass ; rdfs:label ?ChemicalClass ] .
+    OPTIONAL {{
+        <{IRI}> (a|!a)+ [ a os:ChemicalClass ; rdfs:label ?ChemicalClass ] .
+    }}
 }}"""
         elif isinstance(attr_key, SpeciesIdentifierAttrKey):
             template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?{key} WHERE {{{{
-    <{{IRI}}> os:has{key}/os:value ?{key} .
+    OPTIONAL {{
+        <{{IRI}}> os:has{key}/os:value ?{key} .
+    }}
 }}}}""".format(
                 key=attr_key.value
             )
@@ -183,10 +189,12 @@ SELECT DISTINCT ?{key} WHERE {{{{
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
-    <{{IRI}}> os:has{key} ?{key} .
-    ?{key} os:value ?Value ; os:unit/rdfs:label ?Unit .
     OPTIONAL {{{{
-        ?{key} os:hasReferenceState [ os:value ?ReferenceStateValue ; os:unit/rdfs:label ?ReferenceStateUnit ] .
+        <{{IRI}}> os:has{key} ?{key} .
+        ?{key} os:value ?Value ; os:unit/rdfs:label ?Unit .
+        OPTIONAL {{{{
+            ?{key} os:hasReferenceState [ os:value ?ReferenceStateValue ; os:unit/rdfs:label ?ReferenceStateUnit ] .
+        }}}}
     }}}}
 }}}}""".format(
                 key=attr_key.value
@@ -227,26 +235,24 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
         )
 
         timestamp = time.time()
-        data: List[dict] = []
+        bindings: List[dict] = []
         for iri in species_iris:
             datum = dict(IRI=iri)
             for key in attr_keys:
-                value = self._lookup_chemicalSpecies_attribute(iri, key)
-                if value:
-                    datum[key.value] = value
-            data.append(datum)
+                datum[key.value] = self._lookup_chemicalSpecies_attribute(iri, key)
+            bindings.append(datum)
         latency = time.time() - timestamp
         limit = 10
         attr_keys_unpacked = [key.value for key in attr_keys]
         arguments = [
-            dict(iri=iri, attributes=attr_keys_unpacked) for iri in species_iris[:limit]
+            dict(IRI=iri, attributes=attr_keys_unpacked) for iri in species_iris[:limit]
         ]
         if len(species_iris) > limit:
             arguments.append("...")
         steps.append(
             QAStep(latency=latency, action="lookup_attributes", arguments=arguments)
         )
-        return steps, data
+        return steps, QAData(vars=["IRI"] + attr_keys_unpacked, bindings=bindings)
 
     def _find_chemicalSpecies(
         self,
@@ -372,7 +378,9 @@ SELECT DISTINCT ?Label WHERE {{
         ]
         aligned_property_constraints = [
             (aligned_key, constraint)
-            for aligned_key, constraint in zip(aligned_keys, property_constraints_unit_converted)
+            for aligned_key, constraint in zip(
+                aligned_keys, property_constraints_unit_converted
+            )
         ]
         logger.info("Parsed property constraints: " + str(aligned_property_constraints))
 
@@ -380,7 +388,7 @@ SELECT DISTINCT ?Label WHERE {{
         species_iris = self._find_chemicalSpecies(
             chemical_classes, uses, aligned_property_constraints
         )
-        data = [dict(IRI=iri, label=self._get_label(iri)) for iri in species_iris]
+        bindings = [dict(IRI=iri, label=self._get_label(iri)) for iri in species_iris]
         latency = time.time() - timestamp
         arguments = dict()
         if chemical_classes:
@@ -398,4 +406,7 @@ SELECT DISTINCT ?Label WHERE {{
             )
         )
 
-        return steps, data
+        return steps, QAData(
+            vars=["IRI", "label"],
+            bindings=bindings,
+        )
