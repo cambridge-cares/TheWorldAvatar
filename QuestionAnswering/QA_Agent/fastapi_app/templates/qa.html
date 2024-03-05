@@ -21,24 +21,11 @@
 </section>
 
 <section class="marie-input-container full-width">
-    {% if superdomain == "chemistry" %}
     <div id="special-chars-container">
         Common units with special characters:
         <span class="special-char" onclick="inputField.addToInputText('°C')"><u>°C</u></span>
         <span class="special-char" onclick="inputField.addToInputText('°F')"><u>°F</u></span>
     </div>
-    {% elif superdomain == "cities" %}
-    <div id="domain-container">
-        <label style="margin: 0" for="domain-select">Choose a domain: </label>
-        <select id="domain-select" onchange='globalState.set("domain", this.value)'>
-            {% for item in domains %}
-            <option value='{{ item["value"] }}'>
-                {{ item["label"] }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-    {% endif %}
 
     <div class="input-group">
         <input id="input-field" type="search" autocomplete="off" placeholder="Type your query..."
