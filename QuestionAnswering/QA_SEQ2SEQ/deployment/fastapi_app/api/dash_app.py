@@ -6,7 +6,7 @@ import numpy as np
 import os
 
 def create_dash_app(pathname_prefix, dropdown_options):
-    dash_app = Dash(__name__, requests_pathname_prefix='/dash_' + pathname_prefix + '/')
+    dash_app = Dash(__name__, requests_pathname_prefix=os.getenv("URL_PREFIX", "") + '/dash_' + pathname_prefix + '/')
 
     # Dash app layout
     layout_components = [
