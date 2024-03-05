@@ -1,7 +1,5 @@
-import { JsonObject } from "../../types/json";
 import { DataGroup } from "./data-group";
 import { DataLayer } from "./data-layer";
-import { DataParser } from "./data-parser";
 import { DataSource } from "./data-source";
 
 /**
@@ -78,32 +76,6 @@ export class DataStore {
             }
         }
     }
-    
-    /**
-     * Recursively find and load all DataGroups defined within the data.json
-     * file.
-     * 
-     * @param dataJSON optional pre-read config in JSON form
-     * 
-     * @returns Promise that fulfills when all loading is complete
-     */
-    public loadDataGroups(rawJson: JsonObject) {
-        if(rawJson == null) {
-            return $.getJSON("../uploads/config/data.json", (json) => {
-                const parser = new DataParser(this);
-                parser.loadData(json);
-            }).fail((error) => {
-                throw error;
-            });    
-        }
-
-        return new Promise((resolve) => {
-            const parser = new DataParser(this);
-            parser.loadData(rawJson);
-            resolve("Data definition loading complete.");
-        });
-    }
-
    
     /**
      * Returns the layer with the input ID from anywhere in the store.

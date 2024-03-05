@@ -15,11 +15,9 @@ export class DataParser {
 
     /**
      * Initialise a new DataParser instance.
-     * 
-     * @param dataStore Data store to populate with parsed objects
      */
-    constructor(dataStore: DataStore) {
-        this.dataStore = dataStore;
+    constructor() {
+        this.dataStore = new DataStore();
     }
 
     /**
@@ -28,8 +26,9 @@ export class DataParser {
      * 
      * @param rawJson JSON of data.json file.
      */
-    public loadData(rawJson: JsonObject) {
+    public loadData(rawJson: JsonObject): DataStore {
         this.recurse(rawJson, null, null, 0);
+        return this.dataStore;
     }
 
     /**

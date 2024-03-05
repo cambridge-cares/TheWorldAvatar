@@ -4,6 +4,7 @@
 
 import { json } from "express";
 import { DataStoreCache } from "../io/data/data-store-cache";
+import { DataParser } from "../io/data/data-parser";
 import { DataStore } from "../io/data/data-store";
 import { MapSettings } from "../types/map-settings";
 
@@ -67,8 +68,7 @@ export async function getAndParseDataSettings(jsonFileURL?: string): Promise<Dat
     const fetchPromise = getDataSettings(jsonFileURL);
     
     return fetchPromise.then((json) => {
-        const dataStore = new DataStore();
-        dataStore.loadDataGroups(json);
+        const dataStore: DataStore = new DataParser().loadData(json);
         DataStoreCache.STORES[key] = dataStore;
         return dataStore;
     });
