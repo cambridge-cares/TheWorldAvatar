@@ -21,6 +21,7 @@ sdist/
 var/
 wheels/
 share/python-wheels/
+static/jmol-16.1.41
 *.egg-info/
 .installed.cfg
 *.egg
