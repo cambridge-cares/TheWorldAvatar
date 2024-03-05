@@ -247,11 +247,75 @@ const sparqlContainer = (function () {
     }
 })()
 
+function displayIRIDetails(data, iri, filename) {
+    const iriInfoPara = document.getElementById("iri-response")
+    const jsmolContainer = document.getElementById("jsmolAppletContainer")
+
+    iriInfoPara.innerHTML = ""
+    const list = document.createElement('ul');
+    const item = document.createElement('li');
+    item.innerHTML = `<strong>IRI</strong>: ${iri}`;
+    list.appendChild(item);
+    for (const [key, value] of Object.entries(data)) {
+        const item = document.createElement('li');
+        item.innerHTML  = `<strong>${key}</strong>: ${value}`;
+        list.appendChild(item);
+    }
+
+    iriInfoPara.appendChild(list);
+    console.log(iriInfoPara.innerHTML)
+
+    // JSmol applet configuration
+    var Info = {
+        width: 400,
+        height: 400,
+        debug: false,
+        color: "white",
+        addSelectionOptions: false,
+        use: "HTML5",
+        j2sPath: "/static/jmol-16.1.41/jsmol/j2s",
+        script: `load /static/${filename};` 
+    };
+
+    Jmol.setDocument(0);
+
+    var jsmolApplet = Jmol.getApplet("jsmolApplet", Info);
+
+    jsmolContainer.innerHTML = Jmol.getAppletHtml(jsmolApplet);
+
+    Jmol.script(jsmolApplet, `load "/static/${filename}";`);
+}
+
+async function handleIRIClick(iri) {
+    const iriInfoContainer = document.getElementById("iri-info-card")
+    console.log("Retrieve and display info for IRI:", iri);
+    
+    iriInfoContainer.style.display = "block";
+
+    try {
+        const response = await fetch(`/get-iri-details?iri=${encodeURIComponent(iri)}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch IRI details');
+        }
+        const responseData = await response.json();
+        const data = responseData.details; 
+        const filename = responseData.filename; 
+        displayIRIDetails(data, iri, filename);
+        console.log(filename);
+    } catch (error) {
+        console.error("Error fetching IRI details:", error);
+        iriInfoContainer.style.display = "none"
+    }
+}
+
 const kgResponseContainer = (function () {
     const kgResultsDiv = document.getElementById("kg-response-container")
     const tableContainer = document.getElementById("table-container")
     const toggleIriButton = document.getElementById("toggle-iri")
-
+    const iriInfoContainer = document.getElementById("iri-info-card")
+    const iriInfoPara = document.getElementById("iri-response")
+    const jsmolContainer = document.getElementById("jsmolAppletContainer")
+    
     let table = null
     let isShowingIRI = false
 
@@ -285,10 +349,32 @@ const kgResponseContainer = (function () {
         }
     }
 
+    async function _handleIRIClick(iri) {
+        console.log("Retrieve and display info for IRI:", iri);
+        
+        iriInfoContainer.style.display = "block";
+    
+        try {
+            const response = await fetch(`/get-iri-details?iri=${encodeURIComponent(iri)}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch IRI details');
+            }
+            const responseData = await response.json();
+            const data = responseData.details; 
+            const filename = responseData.filename; 
+            _displayIRIDetails(data, iri, filename);
+            console.log(filename);
+        } catch (error) {
+            console.error("Error fetching IRI details:", error);
+            iriInfoContainer.innerHTML = "Error loading IRI details.";
+        }
+    }
+
     return {
         reset() {
             kgResultsDiv.style.display = "none"
             tableContainer.innerHTML = ""
+            iriInfoContainer.style.display = "none"
         },
 
         render(data) {
@@ -313,7 +399,14 @@ const kgResponseContainer = (function () {
                 content += `<tr><td>${idx + 1}</td>`
                 vars.forEach(varname => {
                     if (varname in valueset) {
-                        content += `<td>${valueset[varname]["value"]}</td>`
+                        let cellValue = valueset[varname].value;
+                        let isIRI = TWA_ABOX_IRI_PREFIXES.some(prefix => cellValue.startsWith(prefix));
+                        let cellClass = isIRI ? 'clickable-iri' : '';
+                        let onclickStr = ''
+                        if (isIRI) {
+                            onclickStr = `onclick='handleIRIClick("` + cellValue + `")'`
+                        }
+                        content += `<td class="${cellClass}" ${onclickStr}>${cellValue}</td>`;
                     } else {
                         content += "<td></td>"
                     }

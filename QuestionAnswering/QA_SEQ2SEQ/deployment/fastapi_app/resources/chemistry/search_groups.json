@@ -6,7 +6,7 @@
     },
   { 
   "group_label": "Zeolites",
-  "domain": "ontozeolite3",
+  "domain": "ontozeolite",
   "sections": [
     {
       "section": "XRD Peaks Positions",

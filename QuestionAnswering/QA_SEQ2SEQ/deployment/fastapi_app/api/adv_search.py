@@ -92,8 +92,8 @@ def zeolite_adv_search_query(params):
             ?spectrum ocr:hasCharacteristicPeak ?peak{i}.
             ?peak{i} ocr:hasTwoThetaPosition ?2thetaposition{i} ;
             ocr:hasRelativeIntensity ?intensity{i} .
+            FILTER(?2thetaposition{i} >= {peakmin} && ?2thetaposition{i} <= {peakmax} && ?intensity{i} > {peak_int})
             """
-            filters.append(f"(?2thetaposition{i} >= {peakmin} && ?2thetaposition{i} <= {peakmax} && ?intensity{i} > {peak_int})")
             select_statement += f" ?2thetaposition{i} ?intensity{i}"
 
     # Unit cell parameters
@@ -137,7 +137,7 @@ def zeolite_adv_search_query(params):
         if min_val or max_val:
             if not property_section_added:
                 base_query += f"""
-                ?zeo zeo:hasZeoliteTopology ?topo .
+                ?zeo zeo:hasTopologicalProperties ?topo .
                 ?topo zeo:hasFrameworkDensity ?fr_dens_m .
                 ?fr_dens_m om:hasNumericalValue ?FWD .
                 ?topo zeo:hasTopologicalDensity ?t_dens .
@@ -161,7 +161,7 @@ def zeolite_adv_search_query(params):
         if cbu:
             if not cbu_section_added:
                 base_query += f"""
-                ?zeo zeo:hasZeoliteTopology ?topo .
+                ?zeo zeo:hasTopologicalProperties ?topo .
                 """
                 spectrum_section_added = True
 
@@ -173,7 +173,7 @@ def zeolite_adv_search_query(params):
     sbu = getattr(params, "SBU")
     if sbu:
         base_query += f"""
-            ?zeo zeo:hasZeoliteTopology ?topo .
+            ?zeo zeo:hasTopologicalProperties ?topo .
             ?topo zeo:hasSecondaryBU ?sbu.    
             """
         filters.append(f"?sbu = \"{sbu}\"")

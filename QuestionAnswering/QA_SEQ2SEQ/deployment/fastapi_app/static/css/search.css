@@ -23,7 +23,7 @@
 
 legend {
     font-family: inherit;
-    font-size: 1pt; /* Larger font size for section titles */
+    font-size: 12pt; /* Larger font size for section titles */
     margin-top: 12px;
     margin-bottom: 12px; /* Space below the legend */
 }

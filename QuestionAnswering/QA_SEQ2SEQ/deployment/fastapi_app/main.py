@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from api import translate, sparql, chat, html, adv_search
+from api import translate, sparql, chat, html, adv_search, iri_details
 from api.dash_app import create_dash_app
 from fastapi.middleware.wsgi import WSGIMiddleware
 from importlib.resources import files
@@ -15,6 +15,7 @@ app.include_router(translate.router, prefix="/translate")
 app.include_router(sparql.router, prefix="/sparql")
 app.include_router(chat.router, prefix="/chat")
 app.include_router(adv_search.router, prefix='/adv_search')
+app.include_router(iri_details.router, prefix='/get-iri-details')
 
 EXPLORE_OPTIONS = json.loads( files("resources.chemistry").joinpath("explore_options.json").read_text() )
 for explore_group in EXPLORE_OPTIONS:

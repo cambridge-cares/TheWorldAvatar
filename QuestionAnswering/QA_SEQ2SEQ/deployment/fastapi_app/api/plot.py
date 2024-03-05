@@ -23,6 +23,8 @@ class SparqlService:
         elif 'ontospecies' in self.endpoint_url:
             query=query_species(x_axis, y_axis, c_axis, chemical_class)
 
+        print(query)
+
         return self.execute_query(query)
     
     def get_chemical_class_list(self):
@@ -58,7 +60,7 @@ def query_zeolite(x_axis, y_axis, c_axis):
                 SELECT ?id (MIN(?ring_sizes_v) AS ?min_ring_size) (MAX(?ring_sizes_v) AS ?max_ring_size)
                 WHERE {{
                     ?zeo        zeo:hasFrameworkCode            ?id .
-                    ?zeo        zeo:hasZeoliteTopology          ?topo .
+                    ?zeo        zeo:hasTopologicalProperties          ?topo .
                 OPTIONAL{{
                     ?topo       zeo:hasRingSizes                  ?rsizes_v .
                     ?rsizes_v   ocr:hasVectorComponent            ?rs_comp .
@@ -81,7 +83,7 @@ def query_zeolite(x_axis, y_axis, c_axis):
                 }}GROUP BY ?id
             }}
                 ?zeo        zeo:hasFrameworkCode      ?id .
-                ?zeo        zeo:hasZeoliteTopology    ?topo .
+                ?zeo        zeo:hasTopologicalProperties    ?topo .
                 OPTIONAL {{
                     ?topo       zeo:hasFrameworkDensity   ?fr_dens_m .
                     ?fr_dens_m  om:hasNumericalValue      ?fr_dens .

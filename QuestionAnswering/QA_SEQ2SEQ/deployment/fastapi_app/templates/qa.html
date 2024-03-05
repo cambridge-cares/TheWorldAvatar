@@ -76,10 +76,19 @@
                 </div>
             </div>
             <div class="col-md-5">
+                <div class="card" id="iri-info-card" style="display: none; margin-bottom: 2rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">IRI details</h5>
+                        <div>
+                            <p id="iri-response" style="display: inline-block; margin: 0;"></p>
+                        </div>
+                        <div id="jsmolAppletContainer" style="height: 400px; width: 400px; margin: 0 auto;"></div>
+                    </div>
+                </div>
                 <div class="card" id="infer-metadata-card" style="display: none; margin-bottom: 2rem;">
                     <ul class="list-group list-group-flush" id="infer-metadata-list"></ul>
                 </div>
-                <div class="card" id="chatbot-response-card" style="display: none">
+                <div class="card" id="chatbot-response-card" style="display: none; margin-bottom: 2rem;">
                     <div class="card-body">
                         <h5 class="card-title">{{ title }}'s response</h5>
                         <div>
@@ -99,6 +108,12 @@
         </div>
     </div>
 </section>
+
+<!-- Include JSmol JavaScript -->
+<script type="text/javascript" src="./static/jmol-16.1.41/jsmol/JSmol.min.js" ></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <section class="three-quarter-width">
     <button type="submit" class="accordion">Example Questions</button>
@@ -159,7 +174,7 @@
         {% for explore_group in explore_groups %}
         <button type="button" class="accordion">{{ explore_group["group_label"] }}</button>
         <div class="accordion-panel">
-            <iframe src="/dash_{{ explore_group.pathname_prefix }}/" width="100%" height="600px"></iframe>
+            <iframe src="./dash_{{ explore_group.pathname_prefix }}/" width="100%" height="600px"></iframe>
         </div>
         {% endfor %}
     </div> 
