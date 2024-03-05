@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import json
+import os
 from typing import Any, Dict, Generic, List, TypeVar
 
 from redis import Redis
@@ -37,7 +38,7 @@ class DictCache(ICache[K, V]):
 
 class RedisCache(ICache[K, V]):
     def __init__(self):
-        self.client = Redis(host="localhost", port=6379, decode_responses=True)
+        self.client = Redis(host=os.getenv("REDIS_ENDPOINT"), port=6379, decode_responses=True)
 
     def set(self, key: K, value: V):
         self.client.set(key, json.dumps(value))
