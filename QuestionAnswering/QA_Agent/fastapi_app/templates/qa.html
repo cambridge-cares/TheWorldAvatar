@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block body %}
+<section class="intro-container three-quarter-width">
+    <div class="intro-left">
+        <video width="175" height="250" poster="https://kg.cmclinnovations.com/user/images/marie/marie-thumbnail.jpg"
+            controls="controls">
+            <source src="https://kg.cmclinnovations.com/user/videos/animated-marie.mp4" type="video/mp4">
+            </source>
+        </video>
+    </div>
+    <div class="intro-center">
+        <h2>{{ title }} (experimental)</h2>
+        {% for para in subtitle_paras %}
+        <p>{{ para }}</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="marie-input-container full-width">
+    {% if superdomain == "chemistry" %}
+    <div id="special-chars-container">
+        Common units with special characters:
+        <span class="special-char" onclick="inputField.addToInputText('°C')"><u>°C</u></span>
+        <span class="special-char" onclick="inputField.addToInputText('°F')"><u>°F</u></span>
+    </div>
+    {% elif superdomain == "cities" %}
+    <div id="domain-container">
+        <label style="margin: 0" for="domain-select">Choose a domain: </label>
+        <select id="domain-select" onchange='globalState.set("domain", this.value)'>
+            {% for item in domains %}
+            <option value='{{ item["value"] }}'>
+                {{ item["label"] }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    <div class="input-group">
+        <input id="input-field" type="search" autocomplete="off" placeholder="Type your query..."
+            onkeydown="if (event.keyCode == 13) askQuestion()">
+        <button id="ask-button" type="button" class="mybutton" onclick="askQuestion()"></button>
+    </div>
+</section>
+
+<section id="result-section" class="three-quarter-width" style="display: none;">
+    <div id="error-container" style="display: none; margin-bottom: 2rem; color: red;"></div>
+    <div class="container-fluid" style="padding: 0; margin-bottom: 2rem;">
+        <div id="qa-metadata-container" style="margin-bottom: 2rem;">
+            <button id="toggle-steps" type="submit" class="accordion" onclick="">Click to view reasoning steps</button>
+            <div class="accordion-panel">
+                <div id="qa-steps-container"></div>
+            </div>
+        </div>
+        <div id="qa-data-container" style="display: none;">
+            <button id="toggle-iri" type="button" class="btn btn-info"
+                onclick="qaDataContainer.toggleIRIColumns();" style="margin-bottom: 1rem;">Show
+                IRIs</button>
+            <div id="qa-results-container"></div>
+        </div>
+    </div>
+</section>
+
+<section class="three-quarter-width">
+    <h3>Example Questions</h3>
+
+    {% for question_group in sample_questions %}
+    <button type="submit" class="accordion">{{ question_group["label"] }}</button>
+    <div class="accordion-panel">
+        <p>{{ question_group["description"] }}</p>
+        <ul>
+            {% for question in question_group["questions"] %}
+            <li class="sample-question"
+                onclick='inputField.populateInputText("{{ question }}"); globalState.set("domain", "{{ question_group["domain"] }}"); askQuestion();'>
+                {{ question }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}
