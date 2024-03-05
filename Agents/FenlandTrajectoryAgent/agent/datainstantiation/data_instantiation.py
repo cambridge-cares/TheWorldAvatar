@@ -80,5 +80,12 @@ if __name__ == '__main__':
 
         times = gps_object['times']
         variables = dataIRIs
+        values = [gps_object['timeseries'][ts] for ts in gps_object['timeseries']]
+        timeseries = jpsBaseLibView.TimeSeries(times, variables, values)
+        TSClient.addTimeSeriesData(timeseries)
+
+        print(f"GPS trajectory data for {gps_object['object']} successfully added.")
+
+    print("All CSV files processed.")
 
     
