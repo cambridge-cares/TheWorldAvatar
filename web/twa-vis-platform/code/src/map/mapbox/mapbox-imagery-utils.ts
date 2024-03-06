@@ -2,9 +2,9 @@
  * Utilities methods related to base map imagery options on Mapbox maps.
  */
 
-import { ImageryOption, ImagerySettings, MapSettings } from "types/map-settings";
-import { getMapSettings } from "../../utils/client-utils";
-import { reduxStore } from "../../app/store";
+import { reduxStore } from 'app/store';
+import { ImageryOption, ImagerySettings, MapSettings } from 'types/map-settings';
+import { getMapSettings } from 'utils/client-utils';
 
 /**
  * Returns the default imagery option.

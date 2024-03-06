@@ -1,7 +1,6 @@
 /**
  * Utilties to be run on the server.
  */
-import React from "react";
 
 /**
  * Returns the server/client state of the current process.

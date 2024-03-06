@@ -3,8 +3,8 @@
  */
 
 import fs from 'fs/promises';
-import path from "path";
-import { MapSettings } from "types/map-settings";
+import path from 'path';
+import { MapSettings } from 'types/map-settings';
 
 /**
  * This class reads and stores non-data specific map settings from the user

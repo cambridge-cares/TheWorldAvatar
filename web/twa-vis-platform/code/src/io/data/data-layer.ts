@@ -1,5 +1,5 @@
-import { JsonObject } from "../../types/json";
-import { DataSource } from "./data-source";
+import { JsonObject } from 'types/json';
+import { DataSource } from './data-source';
 
 /**
  * Represents a single visual layer of data. Will have concrete classes for each 

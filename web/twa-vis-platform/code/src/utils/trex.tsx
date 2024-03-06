@@ -1,8 +1,8 @@
 "use client";
 
 import Confetti from 'react-confetti';
-import React, { PureComponent } from "react";
-import { easeInOut, motion} from "framer-motion";
+import React, { PureComponent } from 'react';
+import { easeInOut, motion} from 'framer-motion';
 
 // Incoming properties
 type Props = {

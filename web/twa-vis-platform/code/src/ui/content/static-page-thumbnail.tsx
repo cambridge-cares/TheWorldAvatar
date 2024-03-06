@@ -1,12 +1,12 @@
 "use client";
 
-import styles from "./static-page-thumbnail.module.css";
+import styles from './static-page-thumbnail.module.css';
 
-import React from "react";
-import Link from "next/link";
-import { Tooltip } from "@mui/material";
+import React from 'react';
+import Link from 'next/link';
+import { Tooltip } from '@mui/material';
 
-import { OptionalPage } from "io/config/optional-pages";
+import { OptionalPage } from 'io/config/optional-pages';
 
 // Interface for incoming parameters
 interface Props {

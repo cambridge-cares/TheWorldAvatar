@@ -1,15 +1,15 @@
-import styles from "./ribbon.module.css"
-import React, { useRef } from "react";
-import { Box, Tabs, Tab } from "@mui/material";
-import RibbonPanel from "./ribbon-panel";
-import RibbonComponentClick from "./components/ribbon-component-click";
-import RibbonComponentToggle from "./components/ribbon-component-toggle";
-import { closeFullscreen, getMapSettings, openFullscreen } from "../../../utils/client-utils";
-import { set3DTerrain, resetCamera, locateUser } from "map/mapbox/mapbox-camera-utils";
-import RibbonComponentCombo from "./components/ribbon-component-combo";
-import MapSettingsStore from "../../../io/config/map-settings";
-import { CameraPosition, ImageryOption, MapSettings } from "../../../types/map-settings";
-import { setImagery, togglePlacenames } from "../../../map/mapbox/mapbox-imagery-utils";
+import styles from './ribbon.module.css';
+import React, { useRef } from 'react';
+import { Box, Tabs, Tab } from '@mui/material';
+import RibbonPanel from './ribbon-panel';
+
+import RibbonComponentClick from './components/ribbon-component-click';
+import RibbonComponentToggle from './components/ribbon-component-toggle';
+import RibbonComponentCombo from './components/ribbon-component-combo';
+import { set3DTerrain, resetCamera, locateUser } from 'map/mapbox/mapbox-camera-utils';
+import { setImagery, togglePlacenames } from 'map/mapbox/mapbox-imagery-utils';
+import { CameraPosition, ImageryOption, MapSettings } from 'types/map-settings';
+import { closeFullscreen, getMapSettings, openFullscreen } from 'utils/client-utils';
 
 // Type definition for Ribbon parameters
 export type RibbonProps = {

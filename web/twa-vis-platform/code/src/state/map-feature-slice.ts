@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ReduxState } from "../app/store";
+import { ReduxState } from 'app/store';
 
 // Define the LatLngPayload interface directly above the slice where it's used
 interface LatLngPayload {

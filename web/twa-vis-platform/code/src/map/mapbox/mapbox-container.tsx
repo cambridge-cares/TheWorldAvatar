@@ -13,25 +13,22 @@
  */
 "use client";
 
-import "mapbox-gl/dist/mapbox-gl.css";
-import "./mapbox.css";
+import 'mapbox-gl/dist/mapbox-gl.css';
+import './mapbox.css';
 
-import mapboxgl from "mapbox-gl";
-import React, { useRef, useEffect } from "react";
-import { getDefaultCameraPosition } from "./mapbox-camera-utils";
-import { MapSettings } from "../../types/map-settings";
-import {
-  getCurrentImageryOption,
-  getDefaultImageryOption,
-  getImageryOption,
-} from "./mapbox-imagery-utils";
-import { DataStore } from "../../io/data/data-store";
-import { addAllSources } from "./mapbox-source-utils";
-import { addAllLayers } from "./mapbox-layer-utils";
-import { addIcons } from "./mapbox-icon-loader";
+import mapboxgl from 'mapbox-gl';
+import React, { useRef, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
-import { useDispatch } from "react-redux";
-import { setLatLng } from "../../state/map-feature-slice";
+import { MapSettings } from 'types/map-settings';
+import { setLatLng } from 'state/map-feature-slice';
+import { DataStore } from 'io/data/data-store';
+import { getDefaultCameraPosition } from './mapbox-camera-utils';
+import { getCurrentImageryOption, getDefaultImageryOption, getImageryOption } from './mapbox-imagery-utils';
+import { addAllSources } from './mapbox-source-utils';
+import { addAllLayers } from './mapbox-layer-utils';
+import { addIcons } from './mapbox-icon-loader';
+
 
 // Type definition of incoming properties
 interface MapProperties {

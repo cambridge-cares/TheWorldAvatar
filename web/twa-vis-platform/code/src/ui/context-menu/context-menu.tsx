@@ -1,13 +1,13 @@
 "use client";
 
-import styles from "./context-menu.module.css";
+import styles from './context-menu.module.css';
 
-import React from "react";
-import { connect } from "react-redux";
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { ReduxState } from "../../app/store";
-import ContextItem, { ContextItemDefinition } from "./context-item";
-import { addItem, toggleItem } from "../../state/context-menu-slice";
+import { ReduxState } from 'app/store';
+import { addItem, toggleItem } from 'state/context-menu-slice';
+import ContextItem, { ContextItemDefinition } from './context-item';
 
 // Incoming properties type
 type ContextMenuProps = {

@@ -1,11 +1,11 @@
 "use client";
 
-import styles from "./toolbar-component.module.css";
+import styles from './toolbar-component.module.css';
 
-import React from "react";
+import React from 'react';
 
 import Icon from '@mui/material/Icon';
-import { Link, Tooltip } from "@mui/material";
+import { Link, Tooltip } from '@mui/material';
 
 
 // Type definition for incoming parameters

@@ -3,8 +3,8 @@
  */
 
 import fs from 'fs/promises'; // Use the promise-based version of fs
-import path from "path";
-import { JsonObject } from "../../types/json";
+import path from 'path';
+import { JsonObject } from 'types/json';
 
 /**
  * This class reads and stores data settings from the user provided "data.json" file.

@@ -1,6 +1,6 @@
-import styles from "./ribbon-panel.module.css"
+import styles from './ribbon-panel.module.css';
 
-import React from "react";
+import React from 'react';
 
 // Properties for RibbonPanel
 type RibbonPanelProps = {

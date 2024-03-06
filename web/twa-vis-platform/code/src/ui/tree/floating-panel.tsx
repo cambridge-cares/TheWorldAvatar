@@ -1,13 +1,13 @@
-import { Icon, Tooltip } from "@mui/material";
-import styles from "./floating-panel.module.css";
+import { Icon, Tooltip } from '@mui/material';
+import styles from './floating-panel.module.css';
 
-import React, { useState } from "react";
-import { getIndex, setIndex } from "../../state/floating-panel-slice";
-import { useDispatch, useSelector } from "react-redux";
-import { DataStore } from "../../io/data/data-store";
-import LayerTree from "./layer-tree";
-import LegendTree from "./legend-tree";
-import InfoTree from "./info-tree";
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getIndex, setIndex } from 'state/floating-panel-slice';
+import { DataStore } from 'io/data/data-store';
+import LayerTree from './layer-tree';
+import LegendTree from './legend-tree';
+import InfoTree from './info-tree';
 
 // Incoming parameters for component.
 type FloatingPanelContainerProps = {

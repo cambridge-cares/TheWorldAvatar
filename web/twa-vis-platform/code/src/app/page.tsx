@@ -2,13 +2,13 @@
  * Handles the default (i.e. "/") route.
  */
 
-import React from "react";
+import React from 'react';
+import { Metadata } from 'next';
 
-import LandingPage from "ui/pages/landing";
-import UISettings from "io/config/ui-settings";
-import MapContainer from "./visualisation/page";
-import { Metadata } from "next";
-import { OptionalPages } from "io/config/optional-pages";
+import LandingPage from 'ui/pages/landing';
+import UISettings from 'io/config/ui-settings';
+import MapContainer from './visualisation/page';
+import { OptionalPages } from 'io/config/optional-pages';
 
 /**
  * Set page metadata.

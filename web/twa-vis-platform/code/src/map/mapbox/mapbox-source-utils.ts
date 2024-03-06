@@ -1,7 +1,7 @@
-import { AnySourceData, CanvasSourceRaw, GeoJSONSourceRaw, ImageSourceRaw, RasterSource, VectorSource, VideoSourceRaw } from "mapbox-gl";
-import { DataSource } from "../../io/data/data-source";
-import { JsonObject } from "../../types/json";
-import { DataStore } from "../../io/data/data-store";
+import { AnySourceData, CanvasSourceRaw, GeoJSONSourceRaw, ImageSourceRaw, RasterSource, VectorSource, VideoSourceRaw } from 'mapbox-gl';
+import { DataSource } from 'io/data/data-source';
+import { DataStore } from 'io/data/data-store';
+import { JsonObject } from 'types/json';
 
 /**
  * Given a DataStore instance housing parsed DataSource instances,

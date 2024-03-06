@@ -2,8 +2,8 @@
  * Provides an API route that will return the data settings.
  * Used to communicate between client & server sides of the code.
  */
-import { NextRequest } from "next/server";
-import DataSettingsStore from "io/config/data-settings";
+import { NextRequest } from 'next/server';
+import DataSettingsStore from 'io/config/data-settings';
 
 /**
  * Respond to incoming HTTP requests with map settings.

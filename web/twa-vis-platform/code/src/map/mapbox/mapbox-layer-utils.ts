@@ -1,12 +1,13 @@
-import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, HeatmapLayer, LineLayer, RasterLayer, SymbolLayer } from "mapbox-gl";
-import { DataLayer } from "../../io/data/data-layer";
-import { DataStore } from "../../io/data/data-store";
-import { JsonArray, JsonObject } from "../../types/json";
-import { getCurrentImageryOption } from "./mapbox-imagery-utils";
-import { ImageryOption, MapSettings } from "../../types/map-settings";
-import { getMapSettings } from "../../utils/client-utils";
-import { setProperties, setSourceLayerId } from '../../state/map-feature-slice';
-import { reduxStore } from "../../app/store";
+import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, HeatmapLayer, LineLayer, RasterLayer, SymbolLayer } from 'mapbox-gl';
+import { reduxStore } from 'app/store';
+import { DataLayer } from 'io/data/data-layer';
+import { DataStore } from 'io/data/data-store';
+import { setProperties, setSourceLayerId } from 'state/map-feature-slice';
+import { JsonArray, JsonObject } from 'types/json';
+import { ImageryOption, MapSettings } from 'types/map-settings';
+import { getMapSettings } from 'utils/client-utils';
+import { getCurrentImageryOption } from './mapbox-imagery-utils';
+
 /**
  * Given a DataStore instance housing parsed DataLayer instances,
  * this function adds them all to the Mapbox map object.

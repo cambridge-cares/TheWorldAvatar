@@ -10,18 +10,17 @@
 "use client";
 
 import 'mapbox-gl/dist/mapbox-gl.css';
-import styles from "./visualisation.module.css";
+import styles from './visualisation.module.css';
 
-import SVG from 'react-inlinesvg';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Ribbon from './ribbon/ribbon';
 import { addItem, selectItem } from 'state/context-menu-slice';
 import { ContextItemDefinition } from 'ui/context-menu/context-item';
+import FloatingPanelContainer from 'ui/tree/floating-panel';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
-import { getAndParseDataSettings, getMapSettings } from '../../utils/client-utils';
-import FloatingPanelContainer from '../../ui/tree/floating-panel';
+import { getAndParseDataSettings, getMapSettings } from 'utils/client-utils';
 
 
 // Definition of context menu item used to toggle map ribbon.

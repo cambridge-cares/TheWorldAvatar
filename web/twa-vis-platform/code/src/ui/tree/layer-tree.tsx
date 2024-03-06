@@ -1,12 +1,12 @@
-import styles from "./layer-tree.module.css";
+import styles from './layer-tree.module.css';
 
-import React, { useState } from "react";
-import SVG from "react-inlinesvg";
+import React, { useState } from 'react';
+import SVG from 'react-inlinesvg';
+import { Icon } from '@mui/material';
 
-import { DataGroup } from "../../io/data/data-group";
-import { DataLayer } from "../../io/data/data-layer";
-import { DataStore } from "../../io/data/data-store";
-import { Icon } from "@mui/material";
+import { DataGroup } from 'io/data/data-group';
+import { DataLayer } from 'io/data/data-layer';
+import { DataStore } from 'io/data/data-store';
 
 // type definition for incoming properties
 type LayerTreeProps = {

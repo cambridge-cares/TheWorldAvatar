@@ -1,12 +1,12 @@
 "use client";
 
-import styles from "./ribbon-component.module.css";
+import styles from './ribbon-component.module.css';
 
-import React from "react";
+import React from 'react';
 import SVG from 'react-inlinesvg';
-import { Icon, Tooltip } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { getOption, setOption } from "../../../../state/ribbon-component-slice";
+import { Icon, Tooltip } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { getOption, setOption } from 'state/ribbon-component-slice';
 
 
 type Props = {

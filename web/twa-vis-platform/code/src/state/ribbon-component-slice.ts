@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { ReduxState } from "../app/store";
+import { createSlice } from '@reduxjs/toolkit';
+import { ReduxState } from 'app/store';
 
 export const ribbonComponentSlice = createSlice({
     name: "ribbonComponent",

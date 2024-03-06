@@ -1,4 +1,4 @@
-import styles from "./analytics.module.css";
+import styles from './analytics.module.css';
 
 /**
  * Dynamically load and render content from an optional metadata file

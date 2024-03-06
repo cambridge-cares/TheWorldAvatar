@@ -2,17 +2,17 @@
  * Sets a template for all generated HTML files.
  */
 
-import "ui/css/globals.css"
+import 'ui/css/globals.css';
 
-import fs from "fs";
-import path from "path";
-import React from "react";
+import fs from 'fs';
+import path from 'path';
+import React from 'react';
+import { ToastContainer } from 'react-toastify';
 
-import UISettings from "io/config/ui-settings";
-import StartupLogging from "io/startup-logging";
-import { OptionalPages } from "io/config/optional-pages";
-import GlobalContainer from "../ui/global-container";
-import { ToastContainer } from "react-toastify";
+import UISettings from 'io/config/ui-settings';
+import StartupLogging from 'io/startup-logging';
+import { OptionalPages } from 'io/config/optional-pages';
+import GlobalContainer from 'ui/global-container';
 
 /**
  * Performs initialisation when the platform is

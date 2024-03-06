@@ -2,10 +2,10 @@
  * Provides an API route that will return the map configuration settings.
  * Used to communicate between client & server sides of the code.
  */
-import fs from "fs";
+import fs from 'fs';
 
-import MapSettingsStore from "io/config/map-settings";
-import { NextRequest, NextResponse } from "next/server";
+import MapSettingsStore from 'io/config/map-settings';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Respond to incoming HTTP requests with map settings.

@@ -2,11 +2,10 @@
  * Utilities to be run on the client.
  */
 
-import { json } from "express";
-import { DataStoreCache } from "../io/data/data-store-cache";
-import { DataParser } from "../io/data/data-parser";
-import { DataStore } from "../io/data/data-store";
-import { MapSettings } from "../types/map-settings";
+import { DataStoreCache } from 'io/data/data-store-cache';
+import { DataParser } from 'io/data/data-parser';
+import { DataStore } from 'io/data/data-store';
+import { MapSettings } from 'types/map-settings';
 
 /**
  * Open full screen mode.

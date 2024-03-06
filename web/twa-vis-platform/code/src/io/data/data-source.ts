@@ -1,4 +1,4 @@
-import { JsonObject } from "../../types/json";
+import { JsonObject } from 'types/json';
 
 /**
  * This class represents a single source of geographical data within the visualisation.

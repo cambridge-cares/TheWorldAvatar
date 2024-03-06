@@ -3,7 +3,7 @@
 import React from 'react';
 
 import Icon from '@mui/material/Icon';
-import styles from "./icon-button.module.css";
+import styles from './icon-button.module.css';
 
 // Interface for properties
 interface Props {

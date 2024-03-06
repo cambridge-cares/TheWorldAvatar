@@ -5,14 +5,14 @@
 
 "use client";
 
-import styles from "./static-content-page.module.css";
-import "github-markdown-css/github-markdown.css";
+import styles from './static-content-page.module.css';
+import 'github-markdown-css/github-markdown.css';
 
-import Link from "next/link";
-import React from "react";
-import { ReactNode } from "react";
+import Link from 'next/link';
+import React from 'react';
+import { ReactNode } from 'react';
 
-import MaterialIconButton from "ui/buttons/icon-button";
+import MaterialIconButton from 'ui/buttons/icon-button';
 
 // Interface for properties with react nodes
 interface Props {

@@ -1,4 +1,4 @@
-import { DataStore } from "./data-store"
+import { DataStore } from './data-store';
 
 /**
  * This class caches instances of DataStore objects, each one representing a

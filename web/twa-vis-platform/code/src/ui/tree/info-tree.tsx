@@ -1,11 +1,9 @@
-import styles from "./info-tree.module.css";
-import React, { useEffect, useState } from "react";
-import SVG from "react-inlinesvg";
-import { Icon } from "@mui/material";
-import { useSelector } from "react-redux";
-import { DataStore } from "../../io/data/data-store";
-import { getProperties, getSourceLayerId, getLatLng } from "../../state/map-feature-slice";
-import PanelHandler from "../../state/panel-handler-slice";
+import styles from './info-tree.module.css';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { DataStore } from 'io/data/data-store';
+import { getProperties, getSourceLayerId, getLatLng } from 'state/map-feature-slice';
+import PanelHandler from 'state/panel-handler-slice';
 
 // type definition for incoming properties
 type InfoTreeProps = {

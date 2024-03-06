@@ -2,12 +2,12 @@
  * Utilities methods related to camera operations on Mapbox maps.
  */
 
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
 
-import { CameraPosition, CameraSettings, MapSettings } from "types/map-settings";
-import { getMapSettings } from "../../utils/client-utils";
-import { reduxStore } from "../../app/store";
+import { reduxStore } from 'app/store';
+import { CameraPosition, CameraSettings, MapSettings } from 'types/map-settings';
+import { getMapSettings } from 'utils/client-utils';
 
 /**
  * Returns the default camera position object.

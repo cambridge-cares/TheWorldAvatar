@@ -1,14 +1,14 @@
 "use client";
 
-import styles from "./toolbar.module.css";
+import styles from './toolbar.module.css';
 
-import React from "react";
+import React from 'react';
 import SVG from 'react-inlinesvg';
-import { Link } from "@mui/material";
+import { Link } from '@mui/material';
+import { useSelector } from 'react-redux';
 
-import ToolbarComponent from "./toolbar-component";
-import { useSelector } from "react-redux";
-import { selectItem } from "../../state/context-menu-slice";
+import ToolbarComponent from './toolbar-component';
+import { selectItem } from 'state/context-menu-slice';
 
 // Type definition for toolbar properties
 type ToolbarProps = {

@@ -1,7 +1,7 @@
-import styles from "./legend-tree.module.css"; // Assuming you have a CSS module for styling
-import React from "react";
-import SVG from "react-inlinesvg";
-import { Icon } from "@mui/material";
+import styles from './legend-tree.module.css'; // Assuming you have a CSS module for styling
+import React from 'react';
+import SVG from 'react-inlinesvg';
+import { Icon } from '@mui/material';
 
 /**
  * Displays a static dummy legend component

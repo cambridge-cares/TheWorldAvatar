@@ -1,9 +1,9 @@
-import { JsonArray, JsonObject } from "../../types/json";
-import { DataGroup } from "./data-group";
-import { DataLayer } from "./data-layer";
-import { DataSource } from "./data-source";
-import { DataStore } from "./data-store";
-import { MapboxDataLayer } from "./mapbox/mapbox-data-layer";
+import { JsonArray, JsonObject } from 'types/json';
+import { DataGroup } from './data-group';
+import { DataLayer } from './data-layer';
+import { DataSource } from './data-source';
+import { DataStore } from './data-store';
+import { MapboxDataLayer } from './mapbox/mapbox-data-layer';
 
 /**
  * Handles parsing of raw JSON data into instances of the data classes.

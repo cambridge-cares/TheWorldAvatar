@@ -1,6 +1,6 @@
-import { DataGroup } from "./data-group";
-import { DataLayer } from "./data-layer";
-import { DataSource } from "./data-source";
+import { DataGroup } from './data-group';
+import { DataLayer } from './data-layer';
+import { DataSource } from './data-source';
 
 /**
  * This class handles storage of all data groups and their sources. Definitions of data sources,

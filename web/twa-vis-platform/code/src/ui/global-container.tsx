@@ -1,14 +1,14 @@
 "use client";
 
-import React from "react";
+import React from 'react';
 import Konami from 'react-konami-code';
-import {  Provider } from "react-redux";
+import {  Provider } from 'react-redux';
 
-import Trex from "../utils/trex";
-import Toolbar from "./toolbar/toolbar";
-import ContextMenu from "./context-menu/context-menu";
-import { reduxStore } from "../app/store";
-import { SettingsInterface } from "../io/config/ui-settings";
+import Trex from 'utils/trex';
+import ContextMenu from './context-menu/context-menu';
+import Toolbar from './toolbar/toolbar';
+import { reduxStore } from 'app/store';
+import { SettingsInterface } from 'io/config/ui-settings';
 
 // Incoming properties for global container
 type GlobalContainerProps = {

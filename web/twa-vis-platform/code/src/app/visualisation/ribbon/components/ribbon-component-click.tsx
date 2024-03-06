@@ -1,10 +1,10 @@
 "use client";
 
-import styles from "./ribbon-component.module.css";
+import styles from './ribbon-component.module.css';
 
-import React from "react";
+import React from 'react';
 import SVG from 'react-inlinesvg';
-import { Icon, Tooltip } from "@mui/material";
+import { Icon, Tooltip } from '@mui/material';
 
 
 type Props = {
