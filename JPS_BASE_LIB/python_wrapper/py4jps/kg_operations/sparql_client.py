@@ -135,6 +135,12 @@ class PySparqlClient:
         update = """INSERT DATA {""" + g.serialize(format='nt') + "}"
         self.perform_update(update)
 
+    def delete_and_insert_graphs(self, g_to_delete: Graph, g_to_insert: Graph):
+        update = f"""DELETE {{ {g_to_delete.serialize(format='nt')} }}
+                     INSERT {{ {g_to_insert.serialize(format='nt')} }}
+                     WHERE {{ {g_to_delete.serialize(format='nt')} }}"""
+        self.perform_update(update)
+
     def check_if_triple_exist(self, s, p, o, data_type: str = None) -> bool:
         s = "?s" if s is None else f"<{utils.trim_iri(s)}>"
         p = "?p" if p is None else f"<{utils.trim_iri(p)}>"

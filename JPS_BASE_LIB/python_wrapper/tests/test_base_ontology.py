@@ -1,3 +1,5 @@
+import uuid
+
 from rdflib import Graph, RDF, Literal, XSD
 from pydantic import Field
 
@@ -72,6 +74,14 @@ b = B(object_property_b_a=ba, data_property_b=DataProperty_B(range=3))
 cb = ObjectProperty_C_B(range=[b])
 c = C(object_property_c_a=ca, object_property_c_b=cb,
         data_property_c=Data_Property_C(range='c'))
+
+
+def test_is_not_pulled_from_kg_at_initialisation():
+    assert not a1.is_pulled_from_kg
+    assert not a2.is_pulled_from_kg
+    assert not a3.is_pulled_from_kg
+    assert not b.is_pulled_from_kg
+    assert not c.is_pulled_from_kg
 
 
 def test_rdf_type():
@@ -153,6 +163,41 @@ def test_pull_all_instance_from_kg(initialise_sparql_client):
     a_list = A.pull_all_instances_from_kg(sparql_client)
     assert len(a_list) == 3
     for a_pulled in a_list:
+        assert a_pulled.is_pulled_from_kg
         assert a_pulled in [a1, a2, a3]
     assert B.pull_all_instances_from_kg(sparql_client, -1) == [b]
-    assert C.pull_all_instances_from_kg(sparql_client, -1) == [c]
+    c_pulled_list = C.pull_all_instances_from_kg(sparql_client, -1)
+    assert c_pulled_list == [c]
+    c_pulled = c_pulled_list[0]
+    assert c_pulled.is_pulled_from_kg
+    for _a in c_pulled.object_property_c_a.range:
+        assert _a.is_pulled_from_kg
+    assert c_pulled.object_property_c_b.range[0].is_pulled_from_kg
+    for _a in c_pulled.object_property_c_b.range[0].object_property_b_a.range:
+        assert _a.is_pulled_from_kg
+
+
+def test_push_updates_to_kg(initialise_sparql_client):
+    sparql_client = initialise_sparql_client
+    # push fresh instances to kg
+    c.push_to_kg(sparql_client)
+    # (1) test data property
+    # pull a1 from kg and change its data property
+    a1_pulled = A.pull_from_kg(a1.instance_iri, sparql_client)[0]
+    assert a1_pulled.data_property_a.range[0] == 'a1'
+    new_str = 'a1 changed' + str(uuid.uuid4())
+    a1_pulled.data_property_a.replace_in_range('a1', new_str)
+    a1_pulled.push_updates_to_kg(sparql_client)
+    assert not sparql_client.check_if_triple_exist(a1.instance_iri, a1.data_property_a.predicate_iri, 'a1', XSD.string.toPython())
+    assert sparql_client.check_if_triple_exist(a1.instance_iri, a1.data_property_a.predicate_iri, new_str, XSD.string.toPython())
+    # (2) test object property
+    # pull c from kg and change its object property
+    c_pulled = C.pull_from_kg(c.instance_iri, sparql_client)[0]
+    # replace a1 with a3 in c's object property
+    c_pulled.object_property_c_a.replace_in_range(a1, a3)
+    # remove link between b and c
+    c_pulled.object_property_c_b.remove_from_range(b)
+    c_pulled.push_updates_to_kg(sparql_client)
+    assert not sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a1.instance_iri)
+    assert sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a3.instance_iri)
+    assert not sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_b.predicate_iri, b.instance_iri)
