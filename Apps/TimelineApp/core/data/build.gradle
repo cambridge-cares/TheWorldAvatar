@@ -1,0 +1,14 @@
+apply plugin: 'com.android.library'
+apply from: "${project.rootDir}/common.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.data'
+}
+
+dependencies {
+    implementation 'androidx.datastore:datastore-rxjava2:1.0.0'
+    implementation 'com.android.volley:volley:1.2.1'
+
+    implementation project(path: ':core:network')
+    implementation project(path: ':core:model')
+}

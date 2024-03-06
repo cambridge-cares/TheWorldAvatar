@@ -1,0 +1,7 @@
+apply plugin: 'com.android.library'
+apply from: "${project.rootDir}/common.gradle"
+apply from: "${project.rootDir}/ui.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.utils'
+}

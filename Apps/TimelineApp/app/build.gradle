@@ -1,0 +1,20 @@
+apply plugin: 'com.android.application'
+apply from: "${project.rootDir}/common.gradle"
+apply from: "${project.rootDir}/ui.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.timeline'
+
+    defaultConfig {
+        applicationId "uk.ac.cam.cares.jps.timeline"
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    implementation project(path: ':core:ui')
+//    implementation project(path: ':feature:locationtracking')
+//    implementation project(path: ':feature:routing')
+    implementation project(path: ':feature:timeline')
+}

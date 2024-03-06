@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/timeline_map"
+    app:startDestination="@id/timeline_fragment">
+
+    <fragment
+        android:id="@+id/timeline_fragment"
+        android:name="uk.ac.cam.cares.jps.timeline.TimelineFragment"
+        tools:layout="@layout/fragment_timeline">
+    </fragment>
+
+</navigation>
