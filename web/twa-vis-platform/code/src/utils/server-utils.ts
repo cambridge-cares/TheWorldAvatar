@@ -29,10 +29,7 @@ export const featureInfoAgentApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: '' }),
     endpoints: (builder) => ({
         getMetadata: builder.query<any, ApiParams>({
-            query: ({ iri, stack, scenarioID }) => {
-                let url: string = `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenarioID}?iri=${iri}`;
-                return encodeURI(url);
-            },
+            query: ({ iri, stack, scenarioID }) => `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenarioID}?iri=${encodeURIComponent(iri)}`,
         }),
     }),
     refetchOnMountOrArgChange: true,
