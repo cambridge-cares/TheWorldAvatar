@@ -621,8 +621,16 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BlueBattery">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Battery"/>
     </owl:Class>
-    
 
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NickelMetalHydrideBattery -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NickelMetalHydrideBattery">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Battery"/>
+    </owl:Class>
+
+    
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Building -->
 
@@ -1636,6 +1644,96 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentConverter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentConverter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasFlowDirection"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#FlowDirection"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasInputCurrentType"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#InputCurrentType"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasInputRatedCurrent"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#InputRatedCurrent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasInputRatedFrequency"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#InputRatedFrequency"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasInputRatedVoltage"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#InputRatedVoltage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasOutputCurrentType"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#OutputCurrentType"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasOutputRatedCurrent"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#OutputRatedCurrent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasOutputRatedFrequency"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#OutputRatedFrequency"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasOutputRatedVoltage"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#OutputRatedVoltage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedEfficiency"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedEfficiency"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedPower"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedPower"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedPowerFactor"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedPowerFactor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A device that converts electric current from one form to another.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentTransformer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentTransformer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentConverter"/>
+	<rdfs:comment>A type of instrument transformer designed to measure alternating current (AC) in power systems.</rdfs:comment>
+    </owl:Class>
+
+
+
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerConverter -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerConverter">
@@ -1714,7 +1812,7 @@
         </rdfs:subClassOf>
         <rdfs:comment>a device that converts electric energy from one form to another</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator -->
@@ -2332,6 +2430,90 @@
         <rdfs:comment>electronic circuit that provides a stable DC voltage independent of the load current, temperature and AC line voltage variations</rdfs:comment>
     </owl:Class>
     
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentBooster -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentBooster">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasCurrentType"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentType"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedCurrent"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedCurrent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedFrequency"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedFrequency"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedPower"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedPower"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedVoltage"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedVoltage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A device or system designed to increase the current flowing through a circuit.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerQualityAnalyzer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerQualityAnalyzer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment"/>
+        <rdfs:comment>A specialized device used to monitor and analyze the quality of electrical power in a given system.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ACPowerQualityAnalyzer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ACPowerQualityAnalyzer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerQualityAnalyzer"/>
+        <rdfs:comment>A specialized device used to monitor and analyze the quality of electrical power for an AC system or power line.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#DCPowerQualityAnalyzer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#DCPowerQualityAnalyzer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerQualityAnalyzer"/>
+        <rdfs:comment>A specialized device used to monitor and analyze the quality of electrical power for a DC system or power line.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhasorMeasurementUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhasorMeasurementUnit">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment"/>
+        <rdfs:comment>A device used in power systems to measure and provide synchronized phasor information, particularly voltage and current phasors.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#microPhasorMeasurementUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#microPhasorMeasurementUnit">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhasorMeasurementUnit"/>
+        <rdfs:comment>A type of advanced measurement device used in power systems to provide precise and time-synchronized measurements of electrical quantities.</rdfs:comment>
+    </owl:Class>
+
 
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#WeakIrradiationLosses -->
