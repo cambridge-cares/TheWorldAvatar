@@ -4,14 +4,9 @@ from typing import Annotated, List
 from fastapi import Depends
 import numpy as np
 
+from services.utils.numerical import cosine_similarity
 from services.embed import IEmbedder, get_embedder
 from services.cache import ICache, RedisCache
-
-
-def cos_sim(a: np.ndarray, b: np.ndarray):
-    a = a / np.linalg.norm(a, axis=1)[:, None]
-    b = b / np.linalg.norm(b, axis=1)[:, None]
-    return a @ b.T
 
 
 # TODO: use a dedicated vector database and k-NN search engine
@@ -31,15 +26,15 @@ class NNRetriever:
             for doc, embed in zip(new_docs, new_embeds):
                 self.cache.set(doc, embed)
 
-        return [self.cache.get(doc) for doc in documents]
+        return np.array([self.cache.get(doc) for doc in documents])
 
     def retrieve(self, documents: List[str], queries: List[str]):
         # TODO: handle when `documents` or `queries` is an empty List
         # TODO: enable top-k retrieval
-        doc_embeds = np.array(self._retrieve_embeddings(documents))
-        query_embeds = np.array(self._retrieve_embeddings(queries))
+        doc_embeds = self._retrieve_embeddings(documents)
+        query_embeds = self._retrieve_embeddings(queries)
 
-        cosine_scores = cos_sim(doc_embeds, query_embeds)
+        cosine_scores = cosine_similarity(doc_embeds, query_embeds)
 
         closest_idxes: List[int] = cosine_scores.argmax(axis=0)
         return [documents[idx] for idx in closest_idxes]
