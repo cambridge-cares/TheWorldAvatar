@@ -42,8 +42,6 @@ if __name__ == '__main__':
         # Extract object (GPS trajectory) information from the CSV file
         gps_object = {
             'object': csv_file.split('/')[-1].replace('.csv', ''),  # Use file name as object name
-            'lat': str(df['LATITUDE'].iloc[0]),  # Use first latitude value as example
-            'lon': str(df['LONGITUDE'].iloc[0]),  # Adjust to match your CSV structure if necessary
             'times': [f"{row['UTC DATE']} {row['UTC TIME']}" for _, row in df.iterrows()],
             'timeseries': {
                 'Speed': df['SPEED'].tolist() if 'SPEED' in df.columns else [],
@@ -55,38 +53,49 @@ if __name__ == '__main__':
                 'Speed': 'km/h',
                 'Distance': 'M',
                 'Height': 'M',
-                'Heading': None  # No unit for Heading
+                'Heading': None  # No unit for Heading in the raw dataset
             }
         }
 
         # Generate uuid and IRI for the GPS object
-        objectIRI = utils.PREFIXES['ex'] + 'Object_' + str(uuid.uuid4())
+        objectIRI = utils.PREFIXES['ontodevice'] + 'Object_' + str(uuid.uuid4())
+
+        # Initialise list of dataIRIs, which will be represented as time series
         dataIRIs = []
 
         # Create and execute SPARQL queries for RDF data insertion
         for ts, values in gps_object['timeseries'].items():
-            dataIRI = utils.PREFIXES['ex'] + ts + '_' + str(uuid.uuid4())
+            dataIRI = utils.PREFIXES['ontodevice'] + ts + '_' + str(uuid.uuid4())
             dataIRIs.append(dataIRI)
 
             # Prepare SPARQL query, assigning units where applicable
             unit = gps_object['units'][ts] if gps_object['units'][ts] else ""
-
+            
+             # 1) Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
             query = utils.create_sparql_prefix('ex') + \
                     utils.create_sparql_prefix('rdf') + \
                     utils.create_sparql_prefix('rdfs') + \
+                    utils.create_sparql_prefix('ontodevice') + \
+                    utils.create_sparql_prefix('geolit') + \
                     f'''INSERT DATA {{
-                    <{objectIRI}> rdf:type ex:Object ;
+                    <{objectIRI}> rdf:type ontodevice:Object ;
                          rdfs:label "{gps_object['object']}" ;
-                         ex:hasTrajectory <{dataIRI}> ;
-                         ex:hasLocation "{gps_object['lat']}#{gps_object['lon']}"^^geolit:lat-lon ;
-                    <{dataIRI}> rdf:type ex:Trajectory ;
-                         rdfs:label "{ts} trajectory" ;
+                         ontodevice:has{ts} <{dataIRI}> .
+                    <{dataIRI}> rdf:type ontodevice:{ts} ;
+                         rdfs:label "{ts} data for {gps_object['object']}" ;
                          ex:unit "{unit}" . }}'''
             KGClient.executeUpdate(query)
-
+            
+        
+        # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
+        # Initialise time series in both KG and RDB using TimeSeriesClass
         TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, utils.PROPERTIES_FILE)
         TSClient.initTimeSeries(dataIRIs, [double_class] * len(dataIRIs), 'yyyy/MM/dd HH:mm:ss')
 
+        print("Triples independent of Java TimeSeriesClient successfully instantiated.")
+
+        # 3) Add actual time series data
+        # Create Java TimeSeries object with data to attach
         times = gps_object['times']
         variables = dataIRIs
         values = [gps_object['timeseries'][ts] for ts in gps_object['timeseries']]
@@ -95,6 +104,6 @@ if __name__ == '__main__':
 
         print(f"GPS trajectory data for {gps_object['object']} successfully added.")
 
-    print("All CSV files processed.")
+    print("All GPS trajectory files have been processed.")
 
     
