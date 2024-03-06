@@ -52,7 +52,6 @@ export default function InfoTree(props: InfoTreeProps) {
       // Retrieving constants 
       let stackEndpoint: string = props.dataStore.getStackEndpoint(selectedSourceLayer);
       setStack(stackEndpoint);
-      console.log(isFetching)
     }
   }, [selectedFeatureProperties]);
 
