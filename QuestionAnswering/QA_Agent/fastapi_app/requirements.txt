@@ -3,6 +3,7 @@ uvicorn[standard]
 redis
 SPARQLWrapper
 openai
+tritonclient[grpc]
 numpy
 unit_parse
 Pint
