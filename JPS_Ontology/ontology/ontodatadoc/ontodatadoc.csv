@@ -23,20 +23,20 @@ Qualitative,Class,Characteristics,IS-A,,,,"The qualitative concept denotes data 
 Quantitative,Class,Characteristics,IS-A,,,,The quantitative concept signifies data content that is numerical or measurable,,Quantitative
 Unit,Class,,,,,,"A unit specifies a measurement unit associated with quantitative data, ensuring proper interpretation and analysis",,Unit
 DataRange,Class,,,,,,"A data range defines the allowable values or scope for data points, that is, an acceptable range of variations",,Data Range
-ContentRelation,Class,,,,,,,,Content Relation
-IndependentContent,Class,ContentRelation,IS-A,,,,,,Independent Content
-DependentContent,Class,ContentRelation,IS-A,,,,,,Dependent Content
-ControlledContent,Class,ContentRelation,IS-A,,,,,,Controlled Content
-DataValidation,Class,,,,,,,,Data Validation
-MissingData,Class,,,,,,,,Missing Data
-Versioning,Class,,,,,,,,Versioning
-ConsistencyCheck,Class,,,,,,,,Consistency Check
-UsabilityTesting,Class,,,,,,,,Usability Testing
-UserReview,Class,,,,,,,,User Review
-UsageGuideline,Class,,,,,,,,Usage Guideline
-AccessRights,Class,,,,,,,,Access Rights
-TermsAndConditions,Class,,,,,,,,Terms and Conditions
-Copyright,Class,,,,,,,,Copyright
+ContentRelation,Class,,,,,,A content relation establishes connections or relationships between different components within the dataset,,Content Relation
+IndependentContent,Class,ContentRelation,IS-A,,,,An independent content represents data points that stand alone and are not influenced by others,,Independent Content
+DependentContent,Class,ContentRelation,IS-A,,,,A dependent content signifies data points that rely on or are influenced by others,,Dependent Content
+ControlledContent,Class,ContentRelation,IS-A,,,,A controlled content indicates data that is subject to specific constraints or regulations,,Controlled Content
+DataValidation,Class,,,,,,The data validation encompasses processes or mechanisms used to ensure the accuracy and integrity of the dataset,,Data Validation
+MissingData,Class,,,,,,The missing data identifies instances where data points are absent or incomplete,,Missing Data
+Versioning,Class,,,,,,A versioning instance tracks different versions or iterations of the dataset,,Versioning
+ConsistencyCheck,Class,,,,,,The consistency check refers to a process or procedure implemented to ensure uniformity and coherence within the dataset,,Consistency Check
+UsabilityTesting,Class,,,,,,The usability testing assesses the dataset's user-friendliness and ease of use,,Usability Testing
+UserReview,Class,,,,,,The user review captures feedback and reviews from users to increase the trust nd reliability,,User Review
+UsageGuideline,Class,,,,,,"The usage guideline instance outlines recommendations, terms and conditions, rights permission, etc. for effectively utilizing the dataset",,Usage Guideline
+AccessRights,Class,,,,,,The access rights specify the permissions and restrictions based on user roles and requirements associated with accessing the dataset,,Access Rights
+TermsAndConditions,Class,,,,,,"The terms and conditions outline the legal and contractual terms such as  licensing, usage restrictions, and obligations associated with the dataset's usage",,Terms and Conditions
+Copyright,Class,,,,,,The copyright indicates the ownership and intellectual property rights associated with the dataset so that the data can be used and shared within legal boundaries,,Copyright
 hasPublication,Object Property,,,Dataset,Publication,,,,has Publication
 hasPublisher,Object Property,,,Publication,Publisher,,,,has Publisher
 hasCreator,Object Property,,,Dataset,Creator,,,,has Creator
