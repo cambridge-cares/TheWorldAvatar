@@ -89,6 +89,16 @@ export class DataStore {
     }
 
     /**
+     * Get the stack endpoint from the input source layer ID.
+     * 
+     * @param sourceId The source layer ID of interest.
+     */
+    public getStackEndpoint(sourceId: string): string {
+        let source: DataSource= this.getSourceList().find(source => source.id.trim() === sourceId.trim());
+        return source ? source.stackEndpoint : undefined;
+    }
+
+    /**
      * Gets a flattened list of all DataLayer instances defined across the entire
      * group hierarchy.
      */

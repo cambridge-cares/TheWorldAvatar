@@ -3,8 +3,14 @@ import React, { useEffect, useState } from "react";
 import SVG from "react-inlinesvg";
 import { Icon } from "@mui/material";
 import { useSelector } from "react-redux";
+import { DataStore } from "../../io/data/data-store";
 import { getLatLng } from "../../state/floating-panel-click-slice";
 import PanelHandler from "../../state/panel-handler-slice";
+
+// type definition for incoming properties
+type InfoTreeProps = {
+  dataStore: DataStore;
+};
 
 /**
  * InfoTree component responsible for displaying information about the selected
@@ -13,28 +19,25 @@ import PanelHandler from "../../state/panel-handler-slice";
  * longitude of the clicked location. It also fetches and displays additional
  * feature information from an external data source via PanelHandler.
  */
-export default function InfoTree() {
+export default function InfoTree(props: InfoTreeProps) {
   // State to store the latitude and longitude of the clicked location
   const latLng = useSelector(getLatLng);
   // State to store the currently selected feature's information
   const selectedFeatureProperties = useSelector((state) => state.mapFeature.properties);
   // State to store the modified stack URL
   const [stack, setStack] = useState("");
+  // State to store the currently selected source layer
+  const selectedSourceLayer = useSelector((state) => state.mapFeature.sourceLayerId);
   // State to store fetched additional information about the selected feature
   const [featureInfo, setFeatureInfo] = useState(null);
-
-  // Effect to fetch and set the stack information on component mount
-  useEffect(() => {
-    PanelHandler.fetchStack()
-      .then(setStack)
-      .catch((error) => console.error(error));
-  }, []);
 
   // Effect to fetch additional feature information when a new feature is selected
   useEffect(() => {
     if (selectedFeatureProperties && selectedFeatureProperties.iri) {
       const scenarioID = "sFCkEoNC"; // Placeholder scenario ID
-      PanelHandler.addSupportingData(selectedFeatureProperties, scenarioID)
+      let stackEndpoint: string = props.dataStore.getStackEndpoint(selectedSourceLayer);
+      setStack(stackEndpoint);
+      PanelHandler.addSupportingData(selectedFeatureProperties, scenarioID, stack)
         .then((data) => {
           if (data) {
             setFeatureInfo(data); // Update state with fetched data
