@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -90,22 +91,21 @@ public class CarparkAgent extends JPSAgent {
         JSONObject msg = new JSONObject();
         String route = requestParams.get("requestUrl").toString();
         route = route.substring(route.lastIndexOf("/") + 1);
+        String[] args = new String[]{CARPARK_AGENT_PROPERTIES_KEY, CARPARK_CLIENT_PROPERTIES_KEY, CARPARK_API_PROPERTIES_KEY};
         switch (route) {
             case "status":
                 msg = statusRoute();
+                break;
+            case "create":
+                LOGGER.info("Executing create route ...");
+                createRoute(args);
                 break;
             case "retrieve":
                 int delay = requestParams.getInt("delay");
                 int interval = requestParams.getInt("interval");
                 String timeunit = requestParams.getString("timeunit");
-                String[] args = new String[]{CARPARK_AGENT_PROPERTIES_KEY, CARPARK_CLIENT_PROPERTIES_KEY, CARPARK_API_PROPERTIES_KEY};
                 LOGGER.info("Executing retrieve route ...");
                 setSchedulerForRetrievedRoute(args, delay, interval, timeunit);
-                break;
-            case "create":
-                args = new String[]{CARPARK_AGENT_PROPERTIES_KEY, CARPARK_CLIENT_PROPERTIES_KEY, CARPARK_API_PROPERTIES_KEY};
-                LOGGER.info("Executing create route ...");
-                createRoute(args);
                 break;
             default:
                 LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
@@ -124,9 +124,12 @@ public class CarparkAgent extends JPSAgent {
     private void setSchedulerForRetrievedRoute(String[] args, int delay, int interval, String timeunit) {
         // Create a ScheduledExecutorService with a single thread
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        
         // Define the task to be scheduled
-        Runnable task = () -> {
-            retrieveRoute(args);
+        Runnable task = new Runnable() {
+            public void run() {
+                retrieveRoute(args);
+            }
         };
         TimeUnit timeUnit = null;
         switch (timeunit) {
