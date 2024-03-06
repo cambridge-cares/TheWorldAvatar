@@ -213,16 +213,15 @@ public class FHAgentDerivation {
                 throw new JPSRuntimeException("Failed to retrieve IRI map from mapping file: " + e);
             }
         }
-        else {
-            try{
-                createIRI(agentPropFile, outputToIRIMap);
-                saveIRIMapping(mappingFile);
-            }
-            catch (Exception e){
-                throw new JPSRuntimeException("Failed to create IRI mapping: " + e);
-            }
-            
+        //Only creates IRI if the mapping does not exist
+        try{
+            createIRI(agentPropFile, outputToIRIMap);
+            saveIRIMapping(mappingFile);
         }
+        catch (Exception e){
+            throw new JPSRuntimeException("Failed to create IRI mapping: " + e);
+        }
+
     }
 
     /*
