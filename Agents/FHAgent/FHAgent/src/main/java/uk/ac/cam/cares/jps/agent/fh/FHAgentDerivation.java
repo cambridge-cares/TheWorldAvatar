@@ -16,6 +16,9 @@ import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
 /*Class for instantiating Derivation instances for the fumehood occupancy case
  * 
@@ -259,7 +262,11 @@ public class FHAgentDerivation {
                         throw  new JPSRuntimeException("Failed to instantiate derivation instances", e);
                     }
                 }
-                
+
+                ModifyQuery update = Queries.INSERT();
+                update.insert(iri(inputIRI).isA(iri(lengthTypeIRI)));
+                update.insert(iri(outputIRI).isA(iri(occupiedStateTypeIRI)));
+                storeClient.executeUpdate(update.getQueryString());
             }
         }
         
