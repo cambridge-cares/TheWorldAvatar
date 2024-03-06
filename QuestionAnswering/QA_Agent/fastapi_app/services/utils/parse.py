@@ -1,94 +1,93 @@
-import json
-
+from services.func_call import IFuncCaller
 from model.constraint import (
     AtomicNumericalConstraint,
     CompoundNumericalConstraint,
     LogicalOperator,
 )
-from services.openai_client import get_openai_client
 
 
-def parse_unstructured(text: str, schema: dict):
-    response = get_openai_client().chat.completions.create(
-        model="gpt-3.5-turbo-0125",
-        messages=[{"role": "user", "content": "Find entities where " + text}],
-        tools=[
-            {
-                "type": "function",
-                "function": {
+class SchemaParser:
+    def __init__(self, func_call_predictor: IFuncCaller):
+        self.func_call_predictor = func_call_predictor
+
+    def parse(self, text: str, schema: dict) -> dict:
+        _, args = self.func_call_predictor.predict(
+            funcs=[
+                {
                     "name": "find",
                     "description": "Find entities given some constraints",
                     "parameters": schema,
-                },
-            }
-        ],
-        tool_choice="auto",
-    )
-    # TODO: handle potential parsing error by OpenAI
-    return json.loads(response.choices[0].message.tool_calls[0].function.arguments)
+                }
+            ],
+            query="Find entities where " + text,
+        )
+        return args
 
 
-def parse_constraint(text: str):
-    args = parse_unstructured(
-        text=text,
-        schema={
-            "type": "object",
-            "properties": {
-                "key": {
-                    "type": "string",
-                    "description": "Property name e.g. boiling point, heat of vaporization",
-                },
-                "logical_operator": {
-                    "type": "string",
-                    "enum": ["AND", "OR"],
-                },
-                "constraints": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "operator": {
-                                "type": "string",
-                                "enum": ["=", "<", "<=", ">", ">="],
-                                "description": "The numerical operator of the constraint",
-                            },
-                            "operand": {
-                                "type": "number",
-                                "description": "The reference value of the constraint operator",
-                            },
-                            "unit": {
-                                "type": "string",
-                                "description": "Unit of the physical property e.g. Kelvin, meter",
-                            },
+class ConstraintParser:
+    SCHEMA = {
+        "type": "object",
+        "properties": {
+            "key": {
+                "type": "string",
+                "description": "Property name e.g. boiling point, heat of vaporization",
+            },
+            "logical_operator": {
+                "type": "string",
+                "enum": ["AND", "OR"],
+            },
+            "constraints": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "operator": {
+                            "type": "string",
+                            "enum": ["=", "<", "<=", ">", ">="],
+                            "description": "The numerical operator of the constraint",
+                        },
+                        "operand": {
+                            "type": "number",
+                            "description": "The reference value of the constraint operator",
+                        },
+                        "unit": {
+                            "type": "string",
+                            "description": "Unit of the physical property e.g. Kelvin, meter",
                         },
                     },
                 },
             },
         },
-    )
-    # TODO: handle error
-    key: str = args["key"]
+    }
 
-    if "logical_operator" not in args:
-        logical_operator = None
-    if args.get("logical_operator") == "AND":
-        logical_operator = LogicalOperator.AND
-    elif args.get("logical_operator") == "OR":
-        logical_operator = LogicalOperator.OR
-    else:
-        logical_operator = None
+    def __init__(self, schema_parser: SchemaParser):
+        self.schema_parser = schema_parser
 
-    constraints = [
-        AtomicNumericalConstraint(
-            operator=constraint["operator"],
-            operand=constraint["operand"],
-            unit=constraint.get("unit"),
+    def parse(self, text: str):
+        args = self.schema_parser.parse(text, self.SCHEMA)
+        # TODO: handle error
+        key: str = args["key"]
+
+        if "logical_operator" not in args:
+            logical_operator = None
+        if args.get("logical_operator") == "AND":
+            logical_operator = LogicalOperator.AND
+        elif args.get("logical_operator") == "OR":
+            logical_operator = LogicalOperator.OR
+        else:
+            logical_operator = None
+
+        constraints = [
+            AtomicNumericalConstraint(
+                operator=constraint["operator"],
+                operand=constraint["operand"],
+                unit=constraint.get("unit"),
+            )
+            for constraint in args["constraints"]
+        ]
+
+        constraint = CompoundNumericalConstraint(
+            logical_operator=logical_operator,
+            constraints=constraints,
         )
-        for constraint in args["constraints"]
-    ]
-
-    constraint = CompoundNumericalConstraint(
-        logical_operator=logical_operator,
-        constraints=constraints,
-    )
-    return key, constraint
+        return key, constraint

@@ -1,12 +1,12 @@
 from abc import abstractclassmethod, abstractmethod
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple
 
 from model.qa import QAData, QAStep
 
 
 class IAgent:
     @abstractclassmethod
-    def get_tools(cls) -> List[Dict[str, str]]:
+    def get_funcs(cls) -> List[Dict[str, str]]:
         pass
 
     @abstractmethod
