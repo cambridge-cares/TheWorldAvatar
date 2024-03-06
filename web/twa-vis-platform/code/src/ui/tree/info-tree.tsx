@@ -4,6 +4,7 @@ import SVG from "react-inlinesvg";
 import { Icon } from "@mui/material";
 import { useSelector } from "react-redux";
 import { DataStore } from "../../io/data/data-store";
+import { getProperties, getSourceLayerId } from "../../state/map-feature-slice";
 import { getLatLng } from "../../state/floating-panel-click-slice";
 import PanelHandler from "../../state/panel-handler-slice";
 
@@ -23,11 +24,11 @@ export default function InfoTree(props: InfoTreeProps) {
   // State to store the latitude and longitude of the clicked location
   const latLng = useSelector(getLatLng);
   // State to store the currently selected feature's information
-  const selectedFeatureProperties = useSelector((state) => state.mapFeature.properties);
+  const selectedFeatureProperties = useSelector(getProperties);
   // State to store the modified stack URL
   const [stack, setStack] = useState("");
   // State to store the currently selected source layer
-  const selectedSourceLayer = useSelector((state) => state.mapFeature.sourceLayerId);
+  const selectedSourceLayer = useSelector(getSourceLayerId);
   // State to store fetched additional information about the selected feature
   const [featureInfo, setFeatureInfo] = useState(null);
 
