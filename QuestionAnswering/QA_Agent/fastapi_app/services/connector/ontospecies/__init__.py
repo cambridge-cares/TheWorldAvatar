@@ -5,9 +5,11 @@ from typing import Dict, List, Tuple, Type
 
 import unit_parse
 
+
 from model.qa import QAData, QAStep
 from services.utils.functools import expiring_cache
-from services.utils.parse import parse_constraint
+from services.func_call import get_func_caller
+from services.utils.parse import ConstraintParser, SchemaParser
 from services.nearest_neighbor import NNRetriever
 from services.kg_client import KgClient
 from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
@@ -36,6 +38,9 @@ class OntoSpeciesAgent(IAgent):
     def __init__(self, nn_retriever: NNRetriever):
         self.kg_client = KgClient(os.getenv("KG_ENDPOINT_ONTOSPECIES"))
         self.nn_retriever = nn_retriever
+        self.constraint_parser = ConstraintParser(
+            schema_parser=SchemaParser(func_call_predictor=get_func_caller())
+        )
 
     @expiring_cache()
     def _get_chemical_classes(self):
@@ -64,59 +69,53 @@ SELECT DISTINCT ?Label WHERE {
         ]
 
     @classmethod
-    def get_tools(cls):
+    def get_funcs(cls):
         return [
             {
-                "type": "function",
-                "function": {
-                    "name": "lookup_chemicalSpecies_attributes",
-                    "description": "Given a chemical species or chemical class, retrieve its requested attributes e.g. chemical class, application, boiling point, molecular formula",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "species": {
+                "name": "lookup_chemicalSpecies_attributes",
+                "description": "Given a chemical species or chemical class, retrieve its requested attributes e.g. chemical class, application, boiling point, molecular formula",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "species": {
+                            "type": "string",
+                            "description": "A common name, molecular formula, or chemical class e.g. benzene, H2O, alcohol",
+                        },
+                        "attributes": {
+                            "type": "array",
+                            "items": {
                                 "type": "string",
-                                "description": "A common name, molecular formula, or chemical class e.g. benzene, H2O, alcohol",
-                            },
-                            "attributes": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "description": "Attribute to retrieve e.g. charge, usage, InChI",
-                                },
+                                "description": "Attribute to retrieve e.g. charge, usage, InChI",
                             },
                         },
                     },
                 },
             },
             {
-                "type": "function",
-                "function": {
-                    "name": "find_chemicalSpecies",
-                    "description": "Find chemical species given some criteria",
-                    "parameters": {
-                        "type": "object",
+                "name": "find_chemicalSpecies",
+                "description": "Find chemical species given some criteria",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "chemical_classes": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Name of the desired chemical class e.g. aldehyde",
+                            },
+                        },
+                        "uses": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Usage or application of the chemical species e.g. metabolite",
+                            },
+                        },
                         "properties": {
-                            "chemical_classes": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "description": "Name of the desired chemical class e.g. aldehyde",
-                                },
-                            },
-                            "uses": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "description": "Usage or application of the chemical species e.g. metabolite",
-                                },
-                            },
-                            "properties": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "description": "Criterion of a numerical property e.g. boiling point > 100°C",
-                                },
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Criterion of a numerical property e.g. boiling point > 100°C",
                             },
                         },
                     },
@@ -361,7 +360,7 @@ SELECT DISTINCT ?Label WHERE {{
             logger.info("Aligned uses: " + str(uses))
 
         logger.info("Parsing property constraints...")
-        property_constraints = [parse_constraint(x) for x in properties]
+        property_constraints = [self.constraint_parser.parse(x) for x in properties]
 
         property_constraints_unit_converted = []
         for _, compound_constraint in property_constraints:

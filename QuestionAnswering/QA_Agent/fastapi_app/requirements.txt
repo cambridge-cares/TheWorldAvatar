@@ -8,3 +8,4 @@ numpy
 unit_parse
 Pint
 jinja2
+pydantic-settings

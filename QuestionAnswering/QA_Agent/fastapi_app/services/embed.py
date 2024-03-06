@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from functools import cache
-from typing import Annotated, List, Literal
+from typing import Annotated, List, Literal, Optional
+from fastapi import Depends
 
 import numpy as np
 import numpy.typing as npt
@@ -8,7 +8,8 @@ from openai import OpenAI
 from tritonclient.grpc import InferenceServerClient, InferInput
 from transformers import AutoTokenizer
 
-from .openai_client import get_openai_client
+
+from config import Settings, get_settings
 
 
 class IEmbedder(ABC):
@@ -22,11 +23,11 @@ class IEmbedder(ABC):
 class OpenAIEmbedder(IEmbedder):
     def __init__(
         self,
-        client: OpenAI,
+        url: Optional[str] = None,
         model: str = "text-embedding-3-small",
         chunk_size: int = 1000,
     ):
-        self.client = client
+        self.client = OpenAI(base_url=url)
         self.model = model
         self.chunk_size = chunk_size
 
@@ -47,11 +48,11 @@ class OpenAIEmbedder(IEmbedder):
 class TritonMPNetEmbedder(IEmbedder):
     def __init__(
         self,
-        client: InferenceServerClient,
+        url: str,
         triton_model: str = "mpnet",
         tokenizer_model: str = "sentence-transformers/all-mpnet-base-v2",
     ):
-        self.client = client
+        self.client = InferenceServerClient(url)
         self.triton_model = triton_model
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_model)
 
@@ -69,6 +70,8 @@ class TritonMPNetEmbedder(IEmbedder):
         return response.as_numpy("sentence_embedding")
 
 
-@cache
-def get_embedder():
-    return OpenAIEmbedder(client=get_openai_client())
+def get_embedder(settings: Annotated[Settings, Depends(get_settings)]):
+    if settings.embedding_service == "openai":
+        return OpenAIEmbedder()
+    else:
+        return TritonMPNetEmbedder()
