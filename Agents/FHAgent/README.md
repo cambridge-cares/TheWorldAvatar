@@ -26,11 +26,11 @@ The occupancy result will then be calculated and instantiated.
 The agent will be packaged to a .war file for the deployment. As the agent will instantiate timeseries data and derivation instances, a connection to a POSTgresql database and a knowledge graph is required.
 
 ## Pre-requisites
+### Relation with DevInstAgent
 
-This agent is used in tandem with the [DevInstAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DevInstAgent). The DevInstAgent is first used to instantiate the ABoxes for the Devices (Sensors, microcontrollers etc) and any measured or observed variables (length, occupancy status etc). An example of the request to instantiate the ABoxes for the proximity sensor, microcontroller, length and occupancy status can be found below:
-```
-<PlaceHolder>
-```
+This agent is used in tandem with the [DevInstAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DevInstAgent). The DevInstAgent is used to instantiate the ABoxes for the Devices (Sensors, microcontrollers etc) and any measured or observed variables (length, etc). On the other hand FHAgent will calculate the occupancy status and instantiate the derivation and timeseries instances. The order of which agent is called first to instantiate does not matter, as the instances whose instantiation intersects between the two agents should have a consistent IRI, assuming the right steps are taken. 
+
+#### If DevInstAgent instantiates first:
 The DevInstAgent will generate the IRIs for length and occupancy status accordingly. Note down the IRIs for the variables and insert them into the following:
 1) Under the `config/mapping` folder, create a properties file similar to the examples files located there and add in the occupancy status IRI, for example:
 ```
@@ -41,6 +41,10 @@ occupiedState_FH-03=https://www.theworldavatar.com/kg/ontotimeseries/fh_occupied
 ```
 avgDist_FH:fh_occupiedState_FH-03
 ```
+
+#### If FHAgent is used before DevInstAgent:
+FHAgent could be called normally as is. But, instantiating with DevInstAgent will require the use of the "find" keyword (for detail please refer to the DevInstAgent documentation) for the following variables:
+- Input variables: Length instance from the sensor's reading
 
 ### Using the stack
 The agent can function with and without using the stack. A config file is provided in `./stack-manager-input-config-service/`
