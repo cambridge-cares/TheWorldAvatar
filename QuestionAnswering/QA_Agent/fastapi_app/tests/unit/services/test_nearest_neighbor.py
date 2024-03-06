@@ -28,16 +28,21 @@ class DoNotCallEmbedder(IEmbedder):
 
 class TestNNRetriever:
     def test_retrieve_cacheMissAll(self):
+        # Arrange
         embedder = MockEmbedder()
         cache: DictCache[str, List[str]] = DictCache()
         nn_retriever = NNRetriever(embedder=embedder, cache=cache)
+
+        # Act
         neighbors = nn_retriever.retrieve(
             documents=["0", "1", "2", "3"], queries=["00", "10"]
         )
 
+        # Assert
         assert neighbors == ["0", "1"]
 
     def test_retrieve_cacheHitSome(self):
+        # Arrange
         embedder = MockEmbedder()
 
         cache: DictCache[str, List[str]] = DictCache()
@@ -45,13 +50,17 @@ class TestNNRetriever:
         cache.set("1", [1, 1])
 
         nn_retriever = NNRetriever(embedder=embedder, cache=cache)
+
+        # Act
         neighbors = nn_retriever.retrieve(
             documents=["0", "1", "2", "3"], queries=["00", "10"]
         )
 
+        # Assert
         assert neighbors == ["1", "0"]
 
     def test_retrieve_cacheHitAll(self):
+        # Arrange
         embedder = DoNotCallEmbedder()
 
         cache: DictCache[str, List[str]] = DictCache()
@@ -59,6 +68,9 @@ class TestNNRetriever:
         cache.set("1", [1, 1])
 
         nn_retriever = NNRetriever(embedder=embedder, cache=cache)
+
+        # Act
         neighbors = nn_retriever.retrieve(documents=["0", "1"], queries=["0"])
 
+        # Assert
         assert neighbors == ["0"]
