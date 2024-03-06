@@ -3,79 +3,79 @@ OntoDataDoc,TBox,http://www.theworldavatar.com/kg/ontodatadoc/,https://www.w3.or
 OntoDataDoc,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoDataDoc,TBox,OntoDataDoc is an ontology developed for representing data documentation.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoDataDoc,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
-Dataset,Class,,,,,,,,
-Creator,Class,,,,,,,,
-Contributor,Class,,,,,,,,
-DataFormat,Class,,,,,,,,
-DataCategory,Class,,,,,,,,
-Coverage,Class,,,,,,,,
-ProductCoverage,Class,Coverage,IS-A,,,,,,
-IndustryCoverage,Class,Coverage,IS-A,,,,,,
-Language,Class,,,,,,,,
-Subject,Class,,,,,,,,
-DataSource,Class,,,,,,,,
-Publication,Class,,,,,,,,
-Publisher,Class,,,,,,,,
-DataContent,Class,,,,,,,,
-Element,Class,,,,,,,,
-Characteristics,Class,,,,,,,,
-Qualitative,Class,Characteristics,IS-A,,,,,,
-Quantitative,Class,Characteristics,IS-A,,,,,,
-Unit,Class,,,,,,,,
-DataRange,Class,,,,,,,,
-ContentRelation,Class,,,,,,,,
-IndependentContent,Class,ContentRelation,IS-A,,,,,,
-DependentContent,Class,ContentRelation,IS-A,,,,,,
-ControlledContent,Class,ContentRelation,IS-A,,,,,,
-DataValidation,Class,,,,,,,,
-MissingData,Class,,,,,,,,
-Versioning,Class,,,,,,,,
-ConsistencyCheck,Class,,,,,,,,
-UsabilityTesting,Class,,,,,,,,
-UserReview,Class,,,,,,,,
-UsageGuideline,Class,,,,,,,,
-AccessRights,Class,,,,,,,,
-TermsAndConditions,Class,,,,,,,,
-Copyright,Class,,,,,,,,
-hasPublication,Object Property,,,Dataset,Publication,,,,
-hasPublisher,Object Property,,,Publication,Publisher,,,,
-hasCreator,Object Property,,,Dataset,Creator,,,,
-hasContributor,Object Property,,,Dataset,Contributor,,,,
-hasDataFormat,Object Property,,,Dataset,DataFormat,,,,
-hasDataCategory,Object Property,,,Dataset,DataCategory,,,,
-has Coverage,Object Property,,,Dataset,Coverage,,,,
-hasLanguage,Object Property,,,Dataset,Language,,,,
-hasSubject,Object Property,,,Dataset,Subject,,,,
-extractedFrom,Object Property,,,Dataset,DataSource,,,,
-hasDataValidation,Object Property,,,QC,DataValidation,,,,
-hasMissingData,Object Property,,,QC,MissingData,,,,
-hasVersion,Object Property,,,QC,Versioning,,,,
-hasConsistencyCheck,Object Property,,,QC,ConsistencyCheck,,,,
-hasUsabilityTesting,Object Property,,,QC,UsabilityTesting,,,,
-hasUserReview,Object Property,,,QC,UserReview,,,,
-hasRelation,Object Property,,,Dataset,Dataset,,,,
-hasContent,Object Property,,,Dataset,DataContent,,,,
-hasElement,Object Property,,,DataContent,Element,,,,
-hasCharacteristics,Object Property,,,DataContent,Characteristics,exactly 1,,,
-hasUnit,Object Property,,,Quantitative,Unit,,,,
-hasContentRelation,Object Property,,,DataContent,ContentRelation,exactly 1,,,
-hasAccessrestriction,Object Property,,,UsageGuideline,AccessRestriction,some,,,
-hasTnC,Object Property,,,UsageGuideline,TermsAndConditions,,,,
-hasCopyright,Object Property,,,UsageGuideline,Copyright,,,,
-hasQCPass,Object Property,,,Dataset,QC,,,,
-hasUsageGuideline,Object Property,,,Dataset,UsageGuideline,,,,
-hasId,Data Property,,,Dataset,string,,,,
-hasLastupdateDate,Data Property,,,Dataset,date,,,,
-hasCreationDate,Data Property,,,Dataset,date,,,,
-hasPurpose,Data Property,,,Dataset,string,,,,
-hasDescription,Data Property,,,Dataset,string,,,,
-hasObjective,Data Property,,,Dataset,string,,,,
-hasTitle,Data Property,,,Dataset,string,,,,
-hasPublicationDate,Data Property,,,Publication,Date,,,,
-hasSampleSize,Data Property,,,QC,number,,,,
-hasName,Data Property,,,DataContent,string,,,,
-hasIllustration,Data Property,,,DataContent,string,,,,
-hasMax,Data Property,,,DataRange,number,,,,
-hasMin,Data Property,,,DataRange,number,,,,
-hasCitation,Data Property,,,UsageGuideline,string,,,,
-hasContact,Data Property,,,UsageGuideline,string,,,,
+Dataset,Class,,,,,,"The fundamental unit of data, encapsulating a collection of related information for organizing and referencing specific sets of data.",,Dataset
+Creator,Class,,,,,,A creator identifies the individual or entity responsible for producing or originating the dataset,,Creator
+Contributor,Class,,,,,,A contributor outlines individuals or entities that have contributed to the dataset beyond its initial creation,,Contributor
+DataFormat,Class,,,,,,The data format specifies the format of the dataset in which the data is presented or stored,,Data Format
+DataCategory,Class,,,,,,A data category categorizes the dataset into broader thematic groups or domains,,Data Category
+Coverage,Class,,,,,,The coverage represents the product and/or industrial coverage within which the dataset is applicable.,,Coverage
+ProductCoverage,Class,Coverage,IS-A,,,,"A product coverage narrows down the coverage to specific products, enabling a more detailed understanding of the dataset's relevance to particular items or commodities.",,Product Coverage
+IndustryCoverage,Class,Coverage,IS-A,,,,An industry coverage focuses on specifying the dataset's relevance to particular industries,,Industry Coverage
+Language,Class,,,,,,A language indicates the linguistic context in which the dataset is presented,,Language
+Subject,Class,,,,,,A subject captures the main topic or theme or concise description of the dataset,,Subject
+DataSource,Class,,,,,,A data source identifies the origin of the data,,Data Source
+Publication,Class,,,,,,The publication documents the details related to the release or dissemination of the dataset,,Publication
+Publisher,Class,,,,,,The publisher specifies the entity or organisation responsible for making the dataset publicly available,,Publisher
+DataContent,Class,,,,,,"A data content describes the content and relations, characteristics, and fundamental elements within the dataset",,Data Content
+Element,Class,,,,,,An element identifies the basic building blocks or components of a data content,,Element
+Characteristics,Class,,,,,,The characteristics outlines the distinctive features such as quantitative or qualitative nature of a data content,,Characteristics
+Qualitative,Class,Characteristics,IS-A,,,,"The qualitative concept denotes data that is descriptive, non-numeric attributed, or categorical in nature",,Qualitative
+Quantitative,Class,Characteristics,IS-A,,,,The quantitative concept signifies data content that is numerical or measurable,,Quantitative
+Unit,Class,,,,,,"A unit specifies a measurement unit associated with quantitative data, ensuring proper interpretation and analysis",,Unit
+DataRange,Class,,,,,,"A data range defines the allowable values or scope for data points, that is, an acceptable range of variations",,Data Range
+ContentRelation,Class,,,,,,,,Content Relation
+IndependentContent,Class,ContentRelation,IS-A,,,,,,Independent Content
+DependentContent,Class,ContentRelation,IS-A,,,,,,Dependent Content
+ControlledContent,Class,ContentRelation,IS-A,,,,,,Controlled Content
+DataValidation,Class,,,,,,,,Data Validation
+MissingData,Class,,,,,,,,Missing Data
+Versioning,Class,,,,,,,,Versioning
+ConsistencyCheck,Class,,,,,,,,Consistency Check
+UsabilityTesting,Class,,,,,,,,Usability Testing
+UserReview,Class,,,,,,,,User Review
+UsageGuideline,Class,,,,,,,,Usage Guideline
+AccessRights,Class,,,,,,,,Access Rights
+TermsAndConditions,Class,,,,,,,,Terms and Conditions
+Copyright,Class,,,,,,,,Copyright
+hasPublication,Object Property,,,Dataset,Publication,,,,has Publication
+hasPublisher,Object Property,,,Publication,Publisher,,,,has Publisher
+hasCreator,Object Property,,,Dataset,Creator,,,,has Creator
+hasContributor,Object Property,,,Dataset,Contributor,,,,has Contributor
+hasDataFormat,Object Property,,,Dataset,DataFormat,,,,has Data Format
+hasDataCategory,Object Property,,,Dataset,DataCategory,,,,has Data Category
+has Coverage,Object Property,,,Dataset,Coverage,,,,has Coverage
+hasLanguage,Object Property,,,Dataset,Language,,,,has Language
+hasSubject,Object Property,,,Dataset,Subject,,,,has Subject
+extractedFrom,Object Property,,,Dataset,DataSource,,,,extracted From
+hasDataValidation,Object Property,,,QC,DataValidation,,,,has Data Validation
+hasMissingData,Object Property,,,QC,MissingData,,,,has Missing Data
+hasVersion,Object Property,,,QC,Versioning,,,,has Version
+hasConsistencyCheck,Object Property,,,QC,ConsistencyCheck,,,,has Consistency Check
+hasUsabilityTesting,Object Property,,,QC,UsabilityTesting,,,,has Usability Testing
+hasUserReview,Object Property,,,QC,UserReview,,,,has User Review
+hasRelation,Object Property,,,Dataset,Dataset,,,,has Relation
+hasContent,Object Property,,,Dataset,DataContent,,,,has Content
+hasElement,Object Property,,,DataContent,Element,,,,has Element
+hasCharacteristics,Object Property,,,DataContent,Characteristics,exactly 1,,,has Characteristics
+hasUnit,Object Property,,,Quantitative,Unit,,,,has Unit
+hasContentRelation,Object Property,,,DataContent,ContentRelation,exactly 1,,,has Content Relation
+hasAccessrestriction,Object Property,,,UsageGuideline,AccessRestriction,some,,,has Access restriction
+hasTnC,Object Property,,,UsageGuideline,TermsAndConditions,,,,has Terms and Conditions
+hasCopyright,Object Property,,,UsageGuideline,Copyright,,,,has Copyright
+hasQCPass,Object Property,,,Dataset,QC,,,,has Quality Check Pass
+hasUsageGuideline,Object Property,,,Dataset,UsageGuideline,,,,has Usage Guideline
+hasId,Data Property,,,Dataset,string,,,,has Identification
+hasLastupdateDate,Data Property,,,Dataset,date,,,,has Lastupdate Date
+hasCreationDate,Data Property,,,Dataset,date,,,,has Creation Date
+hasPurpose,Data Property,,,Dataset,string,,,,has Purpose
+hasDescription,Data Property,,,Dataset,string,,,,has Description
+hasObjective,Data Property,,,Dataset,string,,,,has Objective
+hasTitle,Data Property,,,Dataset,string,,,,has Title
+hasPublicationDate,Data Property,,,Publication,Date,,,,has Publication Date
+hasSampleSize,Data Property,,,QC,number,,,,has Sample Size
+hasName,Data Property,,,DataContent,string,,,,has Name
+hasIllustration,Data Property,,,DataContent,string,,,,has Illustration
+hasMax,Data Property,,,DataRange,number,,,,has Maximum Value
+hasMin,Data Property,,,DataRange,number,,,,has Minimum Value
+hasCitation,Data Property,,,UsageGuideline,string,,,,has Citation
+hasContact,Data Property,,,UsageGuideline,string,,,,has Contact
