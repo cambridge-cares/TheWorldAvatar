@@ -32,15 +32,11 @@ export default function InfoTree(props: InfoTreeProps) {
   const [scenarioID, setScenarioID] = useState("sFCkEoNC");
   // State to store fetched additional information about the selected feature
   const [featureInfo, setFeatureInfo] = useState(null);
+  // Execute API call
   const { data, error, isFetching } = useGetMetadataQuery(getApiParams() ?? skipToken);
 
   function getApiParams(): ApiParams {
-    if (!selectedFeatureProperties || !selectedFeatureProperties.iri) {
-      console.error("Feature is missing required information (IRI).");
-      return undefined;
-    }
-    if (stack === undefined) {
-      console.error("Feature does not have a defined stack.");
+    if (!selectedFeatureProperties || !selectedFeatureProperties.iri || !stack) {
       return undefined;
     }
     return { iri: selectedFeatureProperties.iri, stack: stack, scenarioID: scenarioID };
@@ -63,7 +59,13 @@ export default function InfoTree(props: InfoTreeProps) {
       if (data) {
         setFeatureInfo(data); // Update state with fetched data
       } else if (error) {
-        console.error("Error fetching data:", error);
+        if (!selectedFeatureProperties || !selectedFeatureProperties.iri) {
+          console.warn("IRI is missing. Data fetching will be skipped.");
+        } else if (!stack) {
+          console.warn("Feature does not have a defined stack. Data fetching will be skipped.");
+        } else {
+          console.error("Error fetching data:", error);
+        }
       }
     }
   }, [isFetching]);
