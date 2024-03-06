@@ -4,8 +4,7 @@ import SVG from "react-inlinesvg";
 import { Icon } from "@mui/material";
 import { useSelector } from "react-redux";
 import { DataStore } from "../../io/data/data-store";
-import { getProperties, getSourceLayerId } from "../../state/map-feature-slice";
-import { getLatLng } from "../../state/floating-panel-click-slice";
+import { getProperties, getSourceLayerId, getLatLng } from "../../state/map-feature-slice";
 import PanelHandler from "../../state/panel-handler-slice";
 
 // type definition for incoming properties

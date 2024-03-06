@@ -31,7 +31,7 @@ import { addAllLayers } from "./mapbox-layer-utils";
 import { addIcons } from "./mapbox-icon-loader";
 
 import { useDispatch } from "react-redux";
-import { setLatLng } from "../../state/floating-panel-click-slice";
+import { setLatLng } from "../../state/map-feature-slice";
 
 // Type definition of incoming properties
 interface MapProperties {
