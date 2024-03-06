@@ -32,7 +32,7 @@ export default function InfoTree(props: InfoTreeProps) {
   const [scenarioID, setScenarioID] = useState("sFCkEoNC");
   // State to store fetched additional information about the selected feature
   const [featureInfo, setFeatureInfo] = useState(null);
-  const { data, error, isLoading } = useGetMetadataQuery(getApiParams() ?? skipToken);
+  const { data, error, isFetching } = useGetMetadataQuery(getApiParams() ?? skipToken);
 
   function getApiParams(): ApiParams {
     if (!selectedFeatureProperties || !selectedFeatureProperties.iri) {
@@ -52,12 +52,13 @@ export default function InfoTree(props: InfoTreeProps) {
       // Retrieving constants 
       let stackEndpoint: string = props.dataStore.getStackEndpoint(selectedSourceLayer);
       setStack(stackEndpoint);
+      console.log(isFetching)
     }
   }, [selectedFeatureProperties]);
 
   // Effect to display additional feature information retrieved from an agent only once it has been loaded
   useEffect(() => {
-    if (isLoading) {
+    if (isFetching) {
       // WIP: Add required functionality while data is still being fetched
     } else {
       if (data) {
@@ -66,7 +67,7 @@ export default function InfoTree(props: InfoTreeProps) {
         console.error("Error fetching data:", error);
       }
     }
-  }, [isLoading]);
+  }, [isFetching]);
 
   return (
     <div className={styles.infoPanelContainer}>
