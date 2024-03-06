@@ -1,0 +1,27 @@
+name: "mpnet"
+backend: "onnxruntime"
+max_batch_size : 256
+input [
+  {
+    name: "input_ids"
+    data_type: TYPE_INT64
+    dims: [ -1 ]
+  },
+  {
+    name: "attention_mask"
+    data_type: TYPE_INT64
+    dims: [ -1 ]
+  }
+]
+output [
+  {
+    name: "token_embeddings"
+    data_type: TYPE_FP32
+    dims: [ -1, 768 ]
+  },
+  {
+    name: "sentence_embedding"
+    data_type: TYPE_FP32
+    dims: [ 768 ]
+  }
+]
