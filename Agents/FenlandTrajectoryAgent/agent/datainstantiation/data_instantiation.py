@@ -9,6 +9,14 @@ import random
 import uuid
 from jpsSingletons import jpsBaseLibView
 import utils
+from datetime import datetime
+
+# Added transform function to make the UTC DATE Aand UTC TIME columns suitable as the input of TSClient 
+def transform_datetime(date_str, time_str):
+    """Transforms separate date and time strings into a single datetime string in ISO 8601 format."""
+    combined_str = date_str.strip() + " " + time_str.strip()  # Ensure no leading/trailing spaces
+    datetime_obj = datetime.strptime(combined_str, "%Y/%m/%d %H:%M:%S")
+    return datetime_obj.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 # Create database and RDF store, and the name and url for database is set in resources/.properties file
 if __name__ == '__main__':
@@ -42,7 +50,8 @@ if __name__ == '__main__':
         # Extract object (GPS trajectory) information from the CSV file
         gps_object = {
             'object': csv_file.split('/')[-1].replace('.csv', ''),  # Use file name as object name
-            'times': [f"{row['UTC DATE']} {row['UTC TIME']}" for _, row in df.iterrows()],
+            # 'times': [f"{row['UTC DATE']} {row['UTC TIME']}" for _, row in df.iterrows()],
+            'times': [transform_datetime(row['UTC DATE'], row['UTC TIME']) for _, row in df.iterrows()],  # Transform dates and times
             'timeseries': {
                 'Speed': df['SPEED'].tolist() if 'SPEED' in df.columns else [],
                 'Distance': df['DISTANCE'].tolist() if 'DISTANCE' in df.columns else [],
@@ -71,7 +80,7 @@ if __name__ == '__main__':
             # Prepare SPARQL query, assigning units where applicable
             unit = gps_object['units'][ts] if gps_object['units'][ts] else ""
             
-             # 1) Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
+             # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
             query = utils.create_sparql_prefix('ex') + \
                     utils.create_sparql_prefix('rdf') + \
                     utils.create_sparql_prefix('rdfs') + \
@@ -87,14 +96,14 @@ if __name__ == '__main__':
             KGClient.executeUpdate(query)
             
         
-        # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
+        # Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
         # Initialise time series in both KG and RDB using TimeSeriesClass
         TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, utils.PROPERTIES_FILE)
-        TSClient.initTimeSeries(dataIRIs, [double_class] * len(dataIRIs), 'yyyy/MM/dd HH:mm:ss')
+        TSClient.initTimeSeries(dataIRIs, [double_class] * len(dataIRIs), utils.FORMAT)  # Using utils.FORMAT if it's correctly defined
 
         print("Triples independent of Java TimeSeriesClient successfully instantiated.")
 
-        # 3) Add actual time series data
+        # Add actual time series data
         # Create Java TimeSeries object with data to attach
         times = gps_object['times']
         variables = dataIRIs
