@@ -36,7 +36,7 @@ class TestOZCompact2VerboseConverter:
                         ]
                     ),
                 ),
-                # SELECT ?UnitCell ?a ?b ?c ?LengthsUnitLabel ?alpha ?beta ?gamma ?AnglesUnitLabel ?VolumeNumericalValue ?VolumeUnitLabel ?LatticeSystem ?SymmetryNumber WHERE {
+                # SELECT ?UnitCell ?a ?b ?c ?LengthsUnitLabel ?alpha ?beta ?gamma ?AnglesUnitLabel ?VolumeNumericalValue ?VolumeUnitLabel ?LatticeSystem ?SpaceGroupNumber_ITCr WHERE {
                 #   ?Framework zeo:hasFrameworkCode "ABW" .
                 #   ?Framework ocr:hasCrystalInformation/ocr:hasUnitCell ?UnitCell .
                 #   ?UnitCell
@@ -60,7 +60,7 @@ class TestOZCompact2VerboseConverter:
                 #       ?UnitCell ocr:hasLatticeSystem ?LatticeSystem .
                 #   }
                 #   OPTIONAL {
-                #       ?UnitCell ocr:hasSymmetryNumber ?SymmetryNumber .
+                #       ?UnitCell ocr:hasSymmetryNumber ?SpaceGroupNumber_ITCr .
                 #   }
                 # }
                 SparqlQuery(
@@ -78,7 +78,7 @@ class TestOZCompact2VerboseConverter:
                             "?VolumeNumericalValue",
                             "?VolumeUnitLabel",
                             "?LatticeSystem",
-                            "?SymmetryNumber",
+                            "?SpaceGroupNumber_ITCr",
                         ],
                         solution_modifier="DISTINCT",
                     ),
@@ -123,7 +123,7 @@ class TestOZCompact2VerboseConverter:
                                     TriplePattern.from_triple(
                                         "?UnitCell",
                                         "ocr:hasSymmetryNumber",
-                                        "?SymmetryNumber",
+                                        "?SpaceGroupNumber_ITCr",
                                     )
                                 ]
                             ),

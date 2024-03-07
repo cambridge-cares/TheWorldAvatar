@@ -101,7 +101,7 @@ class OZCompact2VerboseConverter:
             ?UnitCell ocr:hasLatticeSystem ?LatticeSystem .
         }
         OPTIONAL {
-            ?UnitCell ocr:hasSymmetryNumber ?SymmetryNumber .
+            ?UnitCell ocr:hasSymmetryNumber ?SpaceGroupNumber_ITCr .
         }
         """
         patterns = [
@@ -133,7 +133,7 @@ class OZCompact2VerboseConverter:
             OptionalClause(
                 [
                     TriplePattern.from_triple(
-                        obj, "ocr:hasSymmetryNumber", "?SymmetryNumber"
+                        obj, "ocr:hasSymmetryNumber", "?SpaceGroupNumber_ITCr"
                     )
                 ]
             ),
@@ -150,7 +150,7 @@ class OZCompact2VerboseConverter:
             "?VolumeNumericalValue",
             "?VolumeUnitLabel",
             "?LatticeSystem",
-            "?SymmetryNumber",
+            "?SpaceGroupNumber_ITCr",
         ]
         return vars, patterns
 
