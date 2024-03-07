@@ -45,5 +45,7 @@ SELECT DISTINCT ?Species WHERE {{
             self.redis_client.hset(
                 self.INVERTED_INDEX_KEYNAME, species, json.dumps(iris)
             )
+            return iris
+
         iris = self.redis_client.hget(self.INVERTED_INDEX_KEYNAME, species)
         return json.loads(iris)
