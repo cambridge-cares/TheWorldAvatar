@@ -37,33 +37,34 @@ UsageGuideline,Class,,,,,,"The usage guideline instance outlines recommendations
 AccessRights,Class,,,,,,The access rights specify the permissions and restrictions based on user roles and requirements associated with accessing the dataset,,Access Rights
 TermsAndConditions,Class,,,,,,"The terms and conditions outline the legal and contractual terms such as  licensing, usage restrictions, and obligations associated with the dataset's usage",,Terms and Conditions
 Copyright,Class,,,,,,The copyright indicates the ownership and intellectual property rights associated with the dataset so that the data can be used and shared within legal boundaries,,Copyright
-hasPublication,Object Property,,,Dataset,Publication,,,,has Publication
-hasPublisher,Object Property,,,Publication,Publisher,,,,has Publisher
-hasCreator,Object Property,,,Dataset,Creator,,,,has Creator
-hasContributor,Object Property,,,Dataset,Contributor,,,,has Contributor
-hasDataFormat,Object Property,,,Dataset,DataFormat,,,,has Data Format
-hasDataCategory,Object Property,,,Dataset,DataCategory,,,,has Data Category
-has Coverage,Object Property,,,Dataset,Coverage,,,,has Coverage
-hasLanguage,Object Property,,,Dataset,Language,,,,has Language
-hasSubject,Object Property,,,Dataset,Subject,,,,has Subject
-extractedFrom,Object Property,,,Dataset,DataSource,,,,extracted From
-hasDataValidation,Object Property,,,QC,DataValidation,,,,has Data Validation
-hasMissingData,Object Property,,,QC,MissingData,,,,has Missing Data
-hasVersion,Object Property,,,QC,Versioning,,,,has Version
-hasConsistencyCheck,Object Property,,,QC,ConsistencyCheck,,,,has Consistency Check
-hasUsabilityTesting,Object Property,,,QC,UsabilityTesting,,,,has Usability Testing
-hasUserReview,Object Property,,,QC,UserReview,,,,has User Review
-hasRelation,Object Property,,,Dataset,Dataset,,,,has Relation
-hasContent,Object Property,,,Dataset,DataContent,,,,has Content
-hasElement,Object Property,,,DataContent,Element,,,,has Element
-hasCharacteristics,Object Property,,,DataContent,Characteristics,exactly 1,,,has Characteristics
-hasUnit,Object Property,,,Quantitative,Unit,,,,has Unit
-hasContentRelation,Object Property,,,DataContent,ContentRelation,exactly 1,,,has Content Relation
-hasAccessrestriction,Object Property,,,UsageGuideline,AccessRestriction,some,,,has Access restriction
-hasTnC,Object Property,,,UsageGuideline,TermsAndConditions,,,,has Terms and Conditions
-hasCopyright,Object Property,,,UsageGuideline,Copyright,,,,has Copyright
-hasQCPass,Object Property,,,Dataset,QC,,,,has Quality Check Pass
-hasUsageGuideline,Object Property,,,Dataset,UsageGuideline,,,,has Usage Guideline
+hasPublication,Object Property,,,Dataset,Publication,,"A relation between a dataset and its publication, indicating when and where the dataset was officially released or made public",,has Publication
+hasPublisher,Object Property,,,Publication,Publisher,,A relation that specifies an entity or an organization responsible for publishing or making the dataset publicly available,,has Publisher
+hasCreator,Object Property,,,Dataset,Creator,,"A relation between a dataset and its creator, identifying the individual or entity responsible for the initial development or generation of the data",,has Creator
+hasContributor,Object Property,,,Dataset,Contributor,,"A relation that establishes a link between a dataset and its contributors, recognizing individuals or entities who have contributed to the dataset beyond its creation",,has Contributor
+hasDataFormat,Object Property,,,Dataset,DataFormat,,A relation that indicates a format or data structure in which the dataset is presented or stored,,has Data Format
+hasDataCategory,Object Property,,,Dataset,DataCategory,,Specifies the category or classification to which the dataset belongs,,has Data Category
+has Coverage,Object Property,,,Dataset,Coverage,,"Defines the product, or industry within which the dataset is applicable, offering context regarding the extent or range of the data",,has Coverage
+hasLanguage,Object Property,,,Dataset,Language,,Establishes the linguistic context or the language of the dataset,,has Language
+hasSubject,Object Property,,,Dataset,Subject,,"Identifies the main topic or theme of the dataset, providing a concise description of the primary focus or purpose of the data",,has Subject
+extractedFrom,Object Property,,,Dataset,DataSource,,"Specifies the source or origin from which the dataset was extracted, offering insights into the data's provenance",,extracted From
+hasDataValidation,Object Property,,,QC,DataValidation,,A relation between a dataset and its validation processes to ensure the accuracy and reliability of the data,,has Data Validation
+hasMissingData,Object Property,,,QC,MissingData,,Establishes a connection between a dataset and its missing data information to indicate the absence or incompleteness of data,,has Missing Data
+hasVersion,Object Property,,,QC,Versioning,,"Specifies the version or iteration of the dataset, offering insights into the evolution and changes made over time",,has Version
+hasConsistencyCheck,Object Property,,,QC,ConsistencyCheck,,A relation between a dataset and its consistency checking processes used to maintain uniformity within the data,,has Consistency Check
+hasUsabilityTesting,Object Property,,,QC,UsabilityTesting,,"A relation between a dataset and usability testing, indicating efforts to assess the dataset's user-friendliness and accessibility",,has Usability Testing
+hasUserReview,Object Property,,,QC,UserReview,,"A relation between a dataset and user reviews, capturing feedback and insights from individuals who have interacted with the data",,has User Review
+hasRelation,Object Property,,,Dataset,Dataset,,Specifies related datasets or data entities,,has Relation
+hasContent,Object Property,,,Dataset,DataContent,,A relation between a dataset and its content or variable,,has Content
+hasElement,Object Property,,,DataContent,Element,,A relation between a data content and its basic building blocks or components,,has Element
+hasCharacteristics,Object Property,,,DataContent,Characteristics,exactly 1,A relation between a data content and its distinctive qualitative or quantitative characteristics,,has Characteristics
+hasUnit,Object Property,,,Quantitative,Unit,,A relation between a data content and its measurement units for quantitative data,,has Unit
+hasContentRelation,Object Property,,,DataContent,ContentRelation,exactly 1,Indicates interdependencies between data content,,has Content Relation
+dependOn,Object Property,,,DependentContent,DataContent,,Specifies dependency on a data content,,
+hasAccessrestriction,Object Property,,,UsageGuideline,AccessRestriction,some,Establishes the access restrictions to indicate permissions and limitations on who can access the data,,has Access restriction
+hasTnC,Object Property,,,UsageGuideline,TermsAndConditions,,Establishes a relation to outline the legal and contractual obligations associated with the data,,has Terms and Conditions
+hasCopyright,Object Property,,,UsageGuideline,Copyright,,Specifies the copyright information to the dataset to indicate ownership and intellectual property rights,,has Copyright
+hasQCPass,Object Property,,,Dataset,QC,,A relation between a dataset and its quality check or control pass,,has Quality Check Pass
+hasUsageGuideline,Object Property,,,Dataset,UsageGuideline,,"Establishes a relation between a dataset and its usage guidelines, providing recommendations and best practices for utilizing the data",,has Usage Guideline
 hasId,Data Property,,,Dataset,string,,,,has Identification
 hasLastupdateDate,Data Property,,,Dataset,date,,,,has Lastupdate Date
 hasCreationDate,Data Property,,,Dataset,date,,,,has Creation Date
