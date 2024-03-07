@@ -89,23 +89,14 @@ export default function InfoTree(props: InfoTreeProps) {
 
   return (
     <div className={styles.infoPanelContainer}>
-      <h2>Information</h2>
-      {latLng && (
-        <div className={styles.infoHeadSection}>
-          <h3>Clicked Location</h3>
-          <p>
-            Latitude: {latLng.lat.toFixed(2)} Longitude: {latLng.lng.toFixed(2)}
-          </p>
-        </div>
-      )}
+      <h2>Feature Information</h2>
       {isFetching ? (
-        <div className={styles.loadingSection}>
-          <p>Loading feature information...</p>
+        <div className={styles.spinner}>
+          <p></p>
           {/* Playholder for adding a loading spinner */}
         </div>
       ) : featureInfo ? (
         <div className={styles.infoSection}>
-          <h3>Selected Feature Information</h3>
           {featureInfo.meta && (
             <>
               {featureInfo.meta.Properties.display_order.map((key) => {
@@ -146,7 +137,7 @@ export default function InfoTree(props: InfoTreeProps) {
         </div>
       ) : (
         <div className={styles.errorSection}>
-          <p>Error fetching feature information.</p>
+          <p>Click to fetch feature information.</p>
         </div>
       )}
     </div>
