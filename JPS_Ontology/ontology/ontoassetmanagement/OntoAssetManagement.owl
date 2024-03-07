@@ -240,6 +240,7 @@
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Booking"/>
         <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty"/>
+        <rdfs:comment>A relationship that describes the person or organization that made a certain booking</rdfs:comment>
         <rdfs:isDefinedBy>https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label>has booker</rdfs:label>
     </owl:ObjectProperty>
@@ -253,6 +254,7 @@
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/BookingSystem"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Booking"/>
+        <rdfs:comment>A relationship that describes a single booking within a booking system</rdfs:comment>
         <rdfs:isDefinedBy>https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label>has booking</rdfs:label>
     </owl:ObjectProperty>
@@ -262,10 +264,12 @@
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasBookingPeriod -->
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasBookingPeriod">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Booking"/>
         <rdfs:range rdf:resource="http://www.w3.org/2006/time#Interval"/>
+        <rdfs:comment>A relationship that describes the affected time interval of a certain booking</rdfs:comment>
         <rdfs:isDefinedBy>https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label>has booking period</rdfs:label>
     </owl:ObjectProperty>
@@ -275,6 +279,7 @@
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasBookingSystem -->
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasBookingSystem">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
         <rdfs:domain>
