@@ -91,7 +91,7 @@ public class OSMAgent extends JPSAgent {
             // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
             // buildings
             shareCalculator.updateUsageShare(usageTable);
-            shareCalculator.addMaterializedView(usageTable);
+            shareCalculator.addMaterializedView(usageTable, osmSchema);
 
             //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
@@ -100,7 +100,7 @@ public class OSMAgent extends JPSAgent {
             geoServerClient.createWorkspace(workspaceName);
             UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
             GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-            virtualTable.setSql(String.format(buildingSQLQuery, pointTable, polygonTable));
+            virtualTable.setSql(buildingSQLQuery);
             virtualTable.setEscapeSql(true);
             virtualTable.setName("building_usage");
             virtualTable.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
@@ -125,10 +125,5 @@ public class OSMAgent extends JPSAgent {
     }
 
 
-    private static final String buildingSQLQuery = "WITH \"uuid_table\" AS ( SELECT \"strval\" AS \"uuid\", \"cityobject_id\" FROM citydb.\"cityobject_genericattrib\" WHERE \"attrname\" = 'uuid' ), \"iri_table\" AS ( SELECT \"urival\" AS \"iri\", \"cityobject_id\" FROM citydb.\"cityobject_genericattrib\" WHERE \"attrname\" = 'iri' ), \"usageTable\" AS ( SELECT \"building_iri\" AS \"iri\", \"propertyusage_iri\", \"ontobuilt\", \"usageshare\" FROM usage.usage ), \"pointsTable\" AS ( SELECT \"building_iri\" AS \"iri\", \"name\" FROM %s ), \"polygonsTable\" AS ( SELECT \"building_iri\" AS \"iri\", \"name\" FROM %s ) SELECT DISTINCT b.\"id\" AS \"building_id\",   CASE\n" +
-            "    WHEN COALESCE(\"pointsTable\".name, \"polygonsTable\".name) IS NOT NULL\n" +
-            "    THEN COALESCE(\"pointsTable\".name, \"polygonsTable\".name)\n" +
-            "    ELSE CONCAT('Building ',\"uuid_table\".\"cityobject_id\") \n" +
-            "  END AS name, COALESCE(\"measured_height\", 100.0) AS \"building_height\", public.ST_Transform(\"geometry\", 4326), \"uuid\", \"iri_table\".\"iri\", \"propertyusage_iri\", \"ontobuilt\", \"usageshare\" " +
-            "FROM citydb.\"building\" b JOIN citydb.\"surface_geometry\" sg ON sg.\"root_id\" = b.\"lod0_footprint_id\" JOIN \"uuid_table\" ON b.\"id\" = \"uuid_table\".\"cityobject_id\" JOIN \"iri_table\" ON b.\"id\" = \"iri_table\".\"cityobject_id\" LEFT JOIN \"pointsTable\" ON \"uuid_table\".\"uuid\" = \"pointsTable\".\"iri\" LEFT JOIN \"polygonsTable\" ON \"uuid_table\".\"uuid\" = \"polygonsTable\".\"iri\" LEFT JOIN \"usageTable\" ON \"uuid_table\".\"uuid\" = \"usageTable\".\"iri\" WHERE sg.\"geometry\" IS NOT NULL AND COALESCE(\"measured_height\", 100.0) != '0'";
+    private static final String buildingSQLQuery = "SELECT building_id, name, building_height, geom, uuid, iri, propertyusage_iri, ontobuilt, usageshare FROM usage.buildingusage_geoserver";
 }
