@@ -48,7 +48,7 @@ class OpenAIEmbedder(IEmbedder):
 class TritonMPNetEmbedder(IEmbedder):
     def __init__(
         self,
-        url: str,
+        url: str = "localhost:8001",
         triton_model: str = "mpnet",
         tokenizer_model: str = "sentence-transformers/all-mpnet-base-v2",
     ):
