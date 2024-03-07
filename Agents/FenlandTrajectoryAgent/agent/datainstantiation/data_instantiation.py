@@ -11,7 +11,13 @@ from jpsSingletons import jpsBaseLibView
 import utils
 from datetime import datetime
 
-# Added transform function to make the UTC DATE Aand UTC TIME columns suitable as the input of TSClient 
+# ===============================================================================
+# Data Preparation
+# ===============================================================================
+
+# Added transform function to make the UTC DATE Aand UTC TIME columns suitable as the input of TSClient
+# The transform_datetime function merges separate date and time strings into a unified datetime string in ISO 8601 format. 
+# It also cleans the input strings of any leading or trailing spaces, combines them, and then formats the result as an internationally recognized datetime string
 def transform_datetime(date_str, time_str):
     """Transforms separate date and time strings into a single datetime string in ISO 8601 format."""
     combined_str = date_str.strip() + " " + time_str.strip()  # Ensure no leading/trailing spaces
@@ -33,9 +39,10 @@ if __name__ == '__main__':
     double_class = jpsBaseLibView.java.lang.Double.TYPE
 
     # Set the target folder
-    # read all the csv file stored in the target folder
-    # find each csv file containing gps data, launch a loop to instantiate utilities
-    target_folder_path = '/home/caresuser/TWA_Healthcare/TheWorldAvatar/Agents/FenlandTrajectoryAgent/agent/raw_data/gps_target_folder/*.csv'  # Please adjust this path as necessary
+    # Access all the csv file stored in the target folder
+    # target each csv file containing gps data one by one, launch a loop to instantiate utilities
+    target_folder_path = '/home/caresuser/TWA_Healthcare/TheWorldAvatar/Agents/FenlandTrajectoryAgent/agent/raw_data/gps_target_folder/*.csv'  
+    # Please adjust the path above as necessary
     csv_files = glob.glob(target_folder_path)
     
     for csv_file in csv_files:
@@ -57,14 +64,22 @@ if __name__ == '__main__':
                 'Distance': df['DISTANCE'].tolist() if 'DISTANCE' in df.columns else [],
                 'Height': df['HEIGHT'].tolist() if 'HEIGHT' in df.columns else [],
                 'Heading': df['HEADING'].tolist() if 'HEADING' in df.columns else [],
+                'Latitude': df['LATITUDE'].tolist() if 'LATITUDE' in df.columns else [],
+                'Longitude': df['LONGITUDE'].tolist() if 'LONGITUDE' in df.columns else [],
             },
             'units': {
                 'Speed': 'km/h',
                 'Distance': 'M',
                 'Height': 'M',
-                'Heading': None  # No unit for Heading in the raw dataset
+                'Heading': None,  # No unit for Heading in the raw dataset
+                'Latitude': None,  # No actual unit needed, but for consistency
+                'Longitude': None
             }
         }
+
+# ===============================================================================
+# Start to instantiate GPS trajectory data
+# ===============================================================================
 
         # Generate uuid and IRI for the GPS object
         objectIRI = utils.PREFIXES['ontodevice'] + 'Object_' + str(uuid.uuid4())
@@ -73,6 +88,10 @@ if __name__ == '__main__':
         dataIRIs = []
 
         # Create and execute SPARQL queries for RDF data insertion
+        # This design utilizes the .items() method insead of .key for iterating over a dictionary of GPS trajectory attributes and their corresponding numerical time series data. 
+        # It allows for simultaneous access to attribute names (keys) and their values, facilitating efficient preparation and execution of SPARQL updates for RDF data insertion. 
+        # By directly pairing each attribute with its numerical values within the loop, it streamlines the process of mapping and storing time series data
+
         for ts, values in gps_object['timeseries'].items():
             dataIRI = utils.PREFIXES['ontodevice'] + ts + '_' + str(uuid.uuid4())
             dataIRIs.append(dataIRI)
