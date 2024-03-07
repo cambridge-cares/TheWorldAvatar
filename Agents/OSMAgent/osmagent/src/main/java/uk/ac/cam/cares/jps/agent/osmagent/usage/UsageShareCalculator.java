@@ -207,7 +207,8 @@ public class UsageShareCalculator {
                         "WHERE\n" +
                         "    sg.geometry IS NOT NULL\n" +
                         "    AND COALESCE(measured_height, 100.0) != '0';\n" +
-                        "CREATE INDEX usage_index ON usage.buildingusage_geoserver (ontobuilt,geom);";
+                        "CREATE INDEX usage_index ON usage.buildingusage_geoserver (ontobuilt);\n" + 
+                        "CREATE INDEX geometry_index ON usage.buildingusage_geoserver USING GIST (geom);";
 
 
                 rdbStoreClient.executeUpdate(materializedView);
