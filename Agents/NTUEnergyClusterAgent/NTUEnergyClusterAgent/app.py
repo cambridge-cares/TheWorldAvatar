@@ -4,11 +4,13 @@ from .error_handling.exceptions import KGException, TSException
 from .kg_utils.tsClientForUpdate import TSClientForUpdate
 from .cluster_model import ClusterModel
 from NTUEnergyClusterAgent.data_retrieval.query_data import QueryData
-from NTUEnergyClusterAgent.data_retrieval.query_timeseries import query_latest_timeseries, query_all_timeseries
+from NTUEnergyClusterAgent.data_retrieval.query_timeseries import query_latest_timeseries
 from NTUEnergyClusterAgent.data_instantiation.timeseries_instantiation import timeseries_instantiation
 
 from NTUEnergyClusterAgent.kg_utils.utils import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from NTUEnergyClusterAgent.kg_utils.utils import DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD
+
+from NTUEnergyClusterAgent.models.buses import BUSES
 
 from pathlib import Path
 import os
@@ -53,11 +55,13 @@ def default():
 
     all_P_values = []
 
-    ##1. query all iris of bus nodes
-    BUSNODE_IRIS = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+    #iterate over controllable buses
+    for bus_number in BUSES:
 
-    for busNode_iri in BUSNODE_IRIS:
+        busNode_iri = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT, bus_number)
+
         busNode_iri = busNode_iri['busNode']
+
         logging.info("running for busnode:" + busNode_iri)
         try:
             P_iri = QueryData.query_P_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
@@ -86,29 +90,33 @@ def default():
         all_P_values.append(P_values)
 
     ## parse these
-    predicted_probabilities = model.run_neural_net(input_data)
+    predicted_probabilities = model.run_neural_net(all_P_values)
 
-## update KG with probability blue, green, red
-    for i, busNode_iri in enumerate(BUSNODE_IRIS):
-        busNode_iri = busNode_iri['busNode']
+    print(predicted_probabilities)
 
-## get pr pb pg iris 
+    ## update KG with probability blue, green, red
+#    for i, busNode_iri in enumerate(BUSNODE_IRIS):
+#        busNode_iri = busNode_iri['busNode']
+
+    ## get pr pb pg iris  
         #get vm iri via bus node
-        vm_iri = QueryData.query_Vm_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
+#        vm_iri = QueryData.query_Vm_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
         #get va iri via bus node
-        va_iri = QueryData.query_Va_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
-        result_iri_list = [vm_iri, va_iri]
+#        va_iri = QueryData.query_Va_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
+#        result_iri_list = [vm_iri, va_iri]
 
-        timestamp_list = P_dates
-        result_value_list = [predicted_Vm[:, i].tolist(), predicted_Va[:, i].tolist()]
-        logging.info("timestamp_list: " + str(len(timestamp_list)))
-        logging.info("result_iri_list: " + str(len(result_iri_list)))
-        logging.info("result_value_list: " + str(len(result_value_list)))
-        logging.info("result_value_list length of each: " + str(len(result_value_list[0])))
-        logging.info("timestamp_list string: " + str(timestamp_list))
-        logging.info("result_iri_list string: " + str(result_iri_list))
-        logging.info("result_value_list string: " + str(result_value_list))
-        timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, result_iri_list, result_value_list)
-        timeseries_instantiation.add_timeseries_data(timeseries_object, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
+#        timestamp_list = P_dates
+#        result_value_list = [predicted_Vm[:, i].tolist(), predicted_Va[:, i].tolist()]
+#        logging.info("timestamp_list: " + str(len(timestamp_list)))
+#        logging.info("result_iri_list: " + str(len(result_iri_list)))
+#        logging.info("result_value_list: " + str(len(result_value_list)))
+#        logging.info("result_value_list length of each: " + str(len(result_value_list[0])))
+#        logging.info("timestamp_list string: " + str(timestamp_list))
+#        logging.info("result_iri_list string: " + str(result_iri_list))
+#        logging.info("result_value_list string: " + str(result_value_list))
+#        timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, result_iri_list, result_value_list)
+#        timeseries_instantiation.add_timeseries_data(timeseries_object, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
+
+##    return heatmap values
 
     return 'Successfully calculated probabilities.'
