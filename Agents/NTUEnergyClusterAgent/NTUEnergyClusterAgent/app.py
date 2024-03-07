@@ -15,6 +15,7 @@ from NTUEnergyClusterAgent.models.buses import BUSES
 from pathlib import Path
 import os
 import logging
+import numpy as np
 
 # Create the Flask app object
 app = Flask(__name__)
@@ -89,34 +90,14 @@ def default():
 
         all_P_values.append(P_values)
 
-    ## parse these
-    predicted_probabilities = model.run_neural_net(all_P_values)
+    probabilities = model.run_neural_net(all_P_values)
 
-    print(predicted_probabilities)
+    #assign cluster membership
+    membership = []
+    size = probabilities.shape      
+    for i in range(0, size[0]):
+        bus_probabilities = probabilities[i,:]
+        cluster = np.argmax(bus_probabilities)
+        membership.append(cluster)
 
-    ## update KG with probability blue, green, red
-#    for i, busNode_iri in enumerate(BUSNODE_IRIS):
-#        busNode_iri = busNode_iri['busNode']
-
-    ## get pr pb pg iris  
-        #get vm iri via bus node
-#        vm_iri = QueryData.query_Vm_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
-        #get va iri via bus node
-#        va_iri = QueryData.query_Va_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
-#        result_iri_list = [vm_iri, va_iri]
-
-#        timestamp_list = P_dates
-#        result_value_list = [predicted_Vm[:, i].tolist(), predicted_Va[:, i].tolist()]
-#        logging.info("timestamp_list: " + str(len(timestamp_list)))
-#        logging.info("result_iri_list: " + str(len(result_iri_list)))
-#        logging.info("result_value_list: " + str(len(result_value_list)))
-#        logging.info("result_value_list length of each: " + str(len(result_value_list[0])))
-#        logging.info("timestamp_list string: " + str(timestamp_list))
-#        logging.info("result_iri_list string: " + str(result_iri_list))
-#        logging.info("result_value_list string: " + str(result_value_list))
-#        timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, result_iri_list, result_value_list)
-#        timeseries_instantiation.add_timeseries_data(timeseries_object, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
-
-##    return heatmap values
-
-    return 'Successfully calculated probabilities.'
+    return membership
