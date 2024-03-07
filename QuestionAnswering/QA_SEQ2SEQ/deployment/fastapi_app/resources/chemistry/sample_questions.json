@@ -50,7 +50,7 @@
         "label": "Zeolites",
         "description": "Queries related to zeolite properties",
         "questions": [
-            "what are the zeolites with specific accessible area is not greater than 100",
+            "what are the zeolites with specific accessible area is between 1000 and 1200",
             "What is the unit cell information of zeolite ABW",
             "what's the tile information of zeolite MOZ",
             "Give me a list of all materials linked to framework LTA",
