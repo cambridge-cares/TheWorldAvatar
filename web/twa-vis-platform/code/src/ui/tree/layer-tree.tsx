@@ -19,13 +19,14 @@ type TreeGroup = {
   subGroups?: TreeGroup[];
   icon?: string;
   layers?: TreeLayer[];
-  isOpen?: boolean; // Add a property to track open/closed state
+  isOpen?: boolean; // track open/closed state
 };
 type TreeLayer = {
   name: string;
   address: string;
   ids: string;
   icon?: string;
+  isVisible: boolean; // track visibility
 };
 
 /**
@@ -98,6 +99,7 @@ function recurseParseTreeStructure(
       address: dataGroup.name + "." + key,
       ids: collectIDs(layers),
       icon: findFirstIcon(layers),
+      isVisible: true, // Initialise visibility state
     };
     treeGroup.layers.push(treeLayer);
   }
@@ -141,6 +143,21 @@ function collectIDs(layers: DataLayer[]): string {
   return ids.join(" ");
 }
 
+function toggleLayerVisibility(layerIds: string) {
+  // Split layer IDs in case there are multiple
+  const ids = layerIds.split(" ");
+  ids.forEach((id) => {
+    const visibility = window.map.getLayoutProperty(id, "visibility");
+
+    // Toggle visibility based on current state
+    if (visibility === "visible") {
+      window.map.setLayoutProperty(id, "visibility", "none");
+    } else {
+      window.map.setLayoutProperty(id, "visibility", "visible");
+    }
+  });
+}
+
 function buildLayers(group: TreeGroup, depth: number): React.ReactElement[] {
   const elements: React.ReactElement[] = [];
 
@@ -173,8 +190,13 @@ function buildLayers(group: TreeGroup, depth: number): React.ReactElement[] {
           </div>
 
           {/* Visibility state */}
-          <div className={styles.icon}>
-            <Icon className="material-symbols-outlined">visibility</Icon>
+          <div
+            className={styles.icon}
+            onClick={() => toggleLayerVisibility(layer.ids, layer.name)}
+          >
+            <Icon className="material-symbols-outlined">
+              {layer.isVisible ? "visibility" : "visibility_off"}
+            </Icon>
           </div>
         </div>
       </div>
@@ -204,11 +226,6 @@ function buildGroup(item: TreeGroup, depth: number): React.ReactElement {
     const target = event.target as unknown as HTMLCollection;
 
     console.log(target);
-    //console.log(target.item(0));
-    // const contents = target.getElementsByClassName(styles.treeEntryContent);
-
-    // console.log("=== Contents ===");
-    // console.log(contents);
   };
 
   const [isExpanded, setIsExpanded] = useState<boolean>(false); // Default to collapsed
