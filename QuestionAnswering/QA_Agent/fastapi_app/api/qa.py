@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from model.qa import QAData, QAStep
-from services.connector import AgentConnector, get_agent_connector
+from services.connector import AgentConnectorMediator, get_agent_connector_mediator
 
 
 class QARequest(BaseModel):
@@ -31,7 +31,7 @@ router = APIRouter()
 @router.post("")
 def qa(
     req: QARequest,
-    agent_connector: Annotated[AgentConnector, Depends(get_agent_connector)],
+    agent_connector: Annotated[AgentConnectorMediator, Depends(get_agent_connector_mediator)],
 ):
     logger.info("Received request to QA endpoint with the following request body")
     logger.info(req)

@@ -4,7 +4,7 @@ from typing import Callable, Dict, List, Tuple
 from model.qa import QAData, QAStep
 
 
-class IAgent:
+class IAgentConnector:
     @abstractclassmethod
     def get_funcs(cls) -> List[Dict[str, str]]:
         pass
