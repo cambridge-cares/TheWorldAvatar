@@ -25,7 +25,7 @@ logger = agentlogging.get_logger('dev')
 class EquipmentBookingSparqlClient(PySparqlClient):
 
     def get_all_bookable_equipment_iri(self):
-        query = f"""SELECT ?eq WHERE {{ ?eq a <{OAM_HASBOOKINGSYSTEM}> ?bs . }}"""
+        query = f"""SELECT ?eq WHERE {{ ?eq <{OAM_HASBOOKINGSYSTEM}> ?bs . }}"""
         response = self.performQuery(query)
         return [list(res.values())[0] for res in response]
     

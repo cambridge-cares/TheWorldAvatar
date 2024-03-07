@@ -8,30 +8,30 @@
         <h1>TWA Equipment Booking</h1>
         <form action="/goal_reactivate" method="post">
 
-            <!-- goal set -->
-            <fieldset class="goal-set">
+            <!-- booker -->
+            <fieldset class="user-def">
                 <legend>User</legend>
-                <span class="chem-rxn">Please specify the user making the booking:</span><br><br>
+                <span class="user-def">Please specify the user making the booking:</span><br><br>
 
-                <select name="goal_set" id="goal_set" class="Input">
+                <select name="user_def" id="user_def" class="Input">
                     <option value="" disabled selected>Please select user</option>
-                    {% for g in goal_set_iri %}
-                    <option value="{{ g.iri }}">{{ g.display }}</option>
+                    {% for u in lab_user_iri %}
+                    <option value="{{ u.iri }}">{{ u.display }}</option>
                     {% endfor %}
                 </select>
             </fieldset><br><br>
 
             <br><br>
 
-            <!-- goal set -->
-            <fieldset class="goal-set">
+            <!-- equipment -->
+            <fieldset class="equipment-def">
                 <legend>Equipment</legend>
-                <span class="chem-rxn">Please equipment to be booked:</span><br><br>
+                <span class="equipment-def">Please equipment to be booked:</span><br><br>
 
-                <select name="goal_set" id="goal_set" class="Input">
+                <select name="equipment_def" id="equipment_def" class="Input">
                     <option value="" disabled selected>Please select asset</option>
-                    {% for g in goal_set_iri %}
-                    <option value="{{ g.iri }}">{{ g.display }}</option>
+                    {% for a in bookable_assets_iri %}
+                    <option value="{{ a.iri }}">{{ a.display }}</option>
                     {% endfor %}
                 </select>
             </fieldset><br><br>
