@@ -4,7 +4,11 @@ import { useSelector } from 'react-redux';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 
 import { DataStore } from 'io/data/data-store';
-import { getProperties, getSourceLayerId, getLatLng } from 'state/map-feature-slice';
+import {
+  getProperties,
+  getSourceLayerId,
+  getLatLng,
+} from 'state/map-feature-slice';
 import { useGetMetadataQuery, ApiParams } from 'utils/server-utils';
 
 // type definition for incoming properties
@@ -33,20 +37,31 @@ export default function InfoTree(props: InfoTreeProps) {
   // State to store fetched additional information about the selected feature
   const [featureInfo, setFeatureInfo] = useState(null);
   // Execute API call
-  const { data, error, isFetching } = useGetMetadataQuery(getApiParams() ?? skipToken);
+  const { data, error, isFetching } = useGetMetadataQuery(
+    getApiParams() ?? skipToken
+  );
 
   function getApiParams(): ApiParams {
-    if (!selectedFeatureProperties || !selectedFeatureProperties.iri || !stack) {
+    if (
+      !selectedFeatureProperties ||
+      !selectedFeatureProperties.iri ||
+      !stack
+    ) {
       return undefined;
     }
-    return { iri: selectedFeatureProperties.iri, stack: stack, scenarioID: scenarioID };
+    return {
+      iri: selectedFeatureProperties.iri,
+      stack: stack,
+      scenarioID: scenarioID,
+    };
   }
 
   // Effect to update selected feature's stack endpoint each time a new feature is selected
   useEffect(() => {
     if (selectedFeatureProperties && selectedFeatureProperties.iri) {
-      // Retrieving constants 
-      let stackEndpoint: string = props.dataStore.getStackEndpoint(selectedSourceLayer);
+      // Retrieving constants
+      let stackEndpoint: string =
+        props.dataStore.getStackEndpoint(selectedSourceLayer);
       setStack(stackEndpoint);
     }
   }, [selectedFeatureProperties]);
@@ -62,7 +77,9 @@ export default function InfoTree(props: InfoTreeProps) {
         if (!selectedFeatureProperties || !selectedFeatureProperties.iri) {
           console.warn("IRI is missing. Data fetching will be skipped.");
         } else if (!stack) {
-          console.warn("Feature does not have a defined stack. Data fetching will be skipped.");
+          console.warn(
+            "Feature does not have a defined stack. Data fetching will be skipped."
+          );
         } else {
           console.error("Error fetching data:", error);
         }
@@ -81,31 +98,55 @@ export default function InfoTree(props: InfoTreeProps) {
           </p>
         </div>
       )}
-      {selectedFeatureProperties && (
-        <div className={styles.infoSection}>
-          <h3>Feature Information</h3>
-          <p>Name: {selectedFeatureProperties.name}</p>
-          <p>Description: {selectedFeatureProperties.description}</p>
-          <p>IRI: {selectedFeatureProperties.iri}</p>
+      {isFetching ? (
+        <div className={styles.loadingSection}>
+          <p>Loading feature information...</p>
+          {/* Playholder for adding a loading spinner */}
         </div>
-      )}
-      {stack && (
+      ) : featureInfo ? (
         <div className={styles.infoSection}>
-          <h3>Stack Information</h3>
-          <p>{stack}</p>
+          <h3>Selected Feature Information</h3>
+          {featureInfo.meta && (
+            <>
+              {featureInfo.meta.Properties.display_order.map((key) => {
+                if (key in featureInfo.meta.Properties) {
+                  const value = featureInfo.meta.Properties[key];
+                  return (
+                    <p key={key}>
+                      {key}:{" "}
+                      <span className={styles.infoValue}>
+                        {value.toString()}
+                      </span>
+                    </p>
+                  );
+                }
+                return null;
+              })}
+              {Object.entries(featureInfo.meta.Properties).map(
+                ([key, value]) => {
+                  // Skip if key is 'display_order' or already displayed according to 'display_order'
+                  if (
+                    !featureInfo.meta.Properties.display_order.includes(key) &&
+                    key !== "display_order"
+                  ) {
+                    return (
+                      <p key={key}>
+                        {key}:{" "}
+                        <span className={styles.infoValue}>
+                          {value.toString()}
+                        </span>
+                      </p>
+                    );
+                  }
+                  return null;
+                }
+              )}
+            </>
+          )}
         </div>
-      )}
-      {featureInfo && (
-        <div className={styles.infoSection}>
-          <h3>Additional Feature Information</h3>
-          {featureInfo.meta &&
-            Object.entries(featureInfo.meta.Properties).map(([key, value]) => (
-              <p key={key}>
-                {key}:{" "}
-                <span className={styles.infoValue}>{value.toString()}</span>
-              </p>
-            ))}
-          {/* Iterate over and display other parts of featureInfo as needed */}
+      ) : (
+        <div className={styles.errorSection}>
+          <p>Error fetching feature information.</p>
         </div>
       )}
     </div>
