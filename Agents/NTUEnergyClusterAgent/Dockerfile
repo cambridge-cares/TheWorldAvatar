@@ -35,10 +35,6 @@ ADD NTUEnergyClusterAgent /app/NTUEnergyClusterAgent
 # Copy in properties files
 COPY ./resources/ts_client.properties /app/NTUEnergyClusterAgent/kg_utils/resources/ts_client.properties
 
-# Copy in model files
-COPY ./NTUEnergyClusterAgent/models/kmeans_model.pkl /app/NTUEnergyClusterAgent/models/kmeas_model.pkl
-COPY ./NTUEnergyClusterAgent/models/nn_model.h5 /app/NTUEnergyClusterAgent/models/nn_model.h5
-
 # Install StackClients py4jps resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
     jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
