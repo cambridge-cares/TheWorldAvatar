@@ -1,28 +1,20 @@
+import json
 from typing import List
 
-from .store import get_ontospecies_literal_store
+from redis import Redis
+
 from .kg_client import get_ontospecies_kg_client
 
 
 class SpeciesLinker:
+    INVERTED_INDEX_KEYNAME = "ontospecies:inverted.index"
+
     def __init__(self):
         self.kg_client = get_ontospecies_kg_client()
-        self.literal_store = get_ontospecies_literal_store()
+        self.redis_client = Redis()
 
-    def link(self, species: str) -> List[str]:
-        # TODO: look-up an in-memory cache of label to IRI mappings
-        # TODO: use fuzzy matching
-        if species in self.literal_store.get_chemical_classes():
-            query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-
-SELECT DISTINCT ?Species WHERE {{
-    ?Species (a|!a)+ [ a os:ChemicalClass ; rdfs:label "{chemical_class}" ]
-}}""".format(
-                chemical_class=species
-            )
-        else:
-            query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    def _link(self, species: str) -> List[str]:
+        query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
@@ -35,11 +27,23 @@ SELECT DISTINCT ?Species WHERE {{
         ?Species skos:altLabel ?Label
     }} UNION {{
         ?Species ?hasIdentifier [ a/rdfs:subClassOf os:Identifier ; os:value ?Label ]
+    }} UNION {{
+        ?Species (a|!a)+ [ a os:ChemicalClass ; rdfs:label ?Label ]
     }}
 }}""".format(
-                label=species
-            )
+            label=species
+        )
         return [
             x["Species"]["value"]
             for x in self.kg_client.query(query)["results"]["bindings"]
         ]
+
+    def link(self, species: str) -> List[str]:
+        # TODO: use fuzzy matching
+        if not self.redis_client.hexists(self.INVERTED_INDEX_KEYNAME, species):
+            iris = self._link(species)
+            self.redis_client.hset(
+                self.INVERTED_INDEX_KEYNAME, species, json.dumps(iris)
+            )
+        iris = self.redis_client.hget(self.INVERTED_INDEX_KEYNAME, species)
+        return json.loads(iris)
