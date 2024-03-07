@@ -30,7 +30,7 @@ class ClusterModel:
             
             predictions = self.predict(input_data)
 
-            reshaped_predications = np.reshape(predictions, self.output_shape)
+            reshaped_predications = np.reshape(predictions, self.output_shape, 'F')
             return reshaped_predications
         
         except:
@@ -46,4 +46,4 @@ class ClusterModel:
     def sigmoid(self, x):
         s = np.reciprocal(1.0+np.exp(-1.0*x))
         return s
-		
+        
