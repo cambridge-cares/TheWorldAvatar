@@ -65,18 +65,18 @@ hasTnC,Object Property,,,UsageGuideline,TermsAndConditions,,Establishes a relati
 hasCopyright,Object Property,,,UsageGuideline,Copyright,,Specifies the copyright information to the dataset to indicate ownership and intellectual property rights,,has Copyright
 hasQCPass,Object Property,,,Dataset,QC,,A relation between a dataset and its quality check or control pass,,has Quality Check Pass
 hasUsageGuideline,Object Property,,,Dataset,UsageGuideline,,"Establishes a relation between a dataset and its usage guidelines, providing recommendations and best practices for utilizing the data",,has Usage Guideline
-hasId,Data Property,,,Dataset,string,,,,has Identification
-hasLastupdateDate,Data Property,,,Dataset,date,,,,has Lastupdate Date
-hasCreationDate,Data Property,,,Dataset,date,,,,has Creation Date
-hasPurpose,Data Property,,,Dataset,string,,,,has Purpose
-hasDescription,Data Property,,,Dataset,string,,,,has Description
-hasObjective,Data Property,,,Dataset,string,,,,has Objective
-hasTitle,Data Property,,,Dataset,string,,,,has Title
-hasPublicationDate,Data Property,,,Publication,Date,,,,has Publication Date
-hasSampleSize,Data Property,,,QC,number,,,,has Sample Size
-hasName,Data Property,,,DataContent,string,,,,has Name
-hasIllustration,Data Property,,,DataContent,string,,,,has Illustration
-hasMax,Data Property,,,DataRange,number,,,,has Maximum Value
-hasMin,Data Property,,,DataRange,number,,,,has Minimum Value
-hasCitation,Data Property,,,UsageGuideline,string,,,,has Citation
-hasContact,Data Property,,,UsageGuideline,string,,,,has Contact
+hasId,Data Property,,,Dataset,string,,dataset has a unique identifier for unambiguous referencing and identification,,has Identification
+hasLastupdateDate,Data Property,,,Dataset,date,,indicates a date when the most recent modifications or changes made to the dataset,,has Lastupdate Date
+hasCreationDate,Data Property,,,Dataset,date,,Specifies a date when the dataset was originally created,,has Creation Date
+hasPurpose,Data Property,,,Dataset,string,,Describes the purpose or intended use of the dataset,,has Purpose
+hasDescription,Data Property,,,Dataset,string,,Provides a textual description of the dataset,,has Description
+hasObjective,Data Property,,,Dataset,string,,Specifies objectives or goals associated with the dataset,,has Objective
+hasTitle,Data Property,,,Dataset,string,,Represents a title or name or concise and recognizable label associated with the dataset,,has Title
+hasPublicationDate,Data Property,,,Publication,Date,,"Indicates a date when the dataset was officially published, released or made publicly available",,has Publication Date
+hasSampleSize,Data Property,,,QC,number,,Specifies the size of the dataset,,has Sample Size
+hasName,Data Property,,,DataContent,string,,Represents a name to the data content or variable,,has Name
+hasIllustration,Data Property,,,DataContent,string,,Indicates an illustrations of data content or variable within the dataset,,has Illustration
+hasMax,Data Property,,,DataRange,number,,Specifies the maximum value,,has Maximum Value
+hasMin,Data Property,,,DataRange,number,,Specifies the minimum value,,has Minimum Value
+hasCitation,Data Property,,,UsageGuideline,string,,Specifies how the dataset should be cited,,has Citation
+hasContact,Data Property,,,UsageGuideline,string,,Specifies the contact details for individuals or entities responsible for inquiries or further information related to the dataset usage,,has Contact
