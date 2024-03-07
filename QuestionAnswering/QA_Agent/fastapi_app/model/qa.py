@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class QAStep(BaseModel):
     action: str
-    arguments: List[dict] = []
+    arguments: Any = None
     latency: float
 
 class QAData(BaseModel):
