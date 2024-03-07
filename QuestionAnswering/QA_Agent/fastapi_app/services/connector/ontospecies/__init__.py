@@ -9,7 +9,7 @@ from services.func_call import get_func_caller
 from services.utils.parse import ConstraintParser, SchemaParser
 from services.nearest_neighbor import NNRetriever
 from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
-from fastapi_app.services.connector.agent_connector import IAgentConnector
+from services.connector.agent_connector import IAgentConnector
 from .constants import (
     SpeciesAttrKey,
     SpeciesChemicalClassAttrKey,
@@ -20,6 +20,7 @@ from .constants import (
 from .kg_client import get_ontospecies_kg_client
 from .store import get_ontospecies_literal_store
 from .agent import OntoSpeciesAgent
+from .align import OntoSpeciesAligner
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +91,8 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         self.kg_client = get_ontospecies_kg_client()
         self.literal_store = get_ontospecies_literal_store()
         self.agent = OntoSpeciesAgent()
-        self.nn_retriever = nn_retriever
+        self.aligner = OntoSpeciesAligner()
+        # self.nn_retriever = nn_retriever
         self.constraint_parser = ConstraintParser(
             schema_parser=SchemaParser(func_call_predictor=get_func_caller())
         )
@@ -104,19 +106,6 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             "lookup_chemicalSpecies_attributes": self.lookup_chemicalSpecies_attributes,
             "find_chemicalSpecies": self.find_chemicalSpecies,
         }
-
-    def _align_attribute_keys(self, attributes: List[str]):
-        attr_keys: List[SpeciesAttrKey] = []
-        for key in self.nn_retriever.retrieve(
-            documents=self._SPECIES_ATTR_KEYS, queries=attributes
-        ):
-            for cls in self._SPECIES_ATTR_CLSES:
-                try:
-                    attr_key = cls(key)
-                    attr_keys.append(attr_key)
-                except ValueError:
-                    pass
-        return attr_keys
 
     def lookup_chemicalSpecies_attributes(self, species: str, attributes: List[str]):
         steps: List[QAStep] = []
@@ -144,20 +133,6 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         )
 
         return steps, QAData(vars=list(bindings[0].keys()), bindings=bindings)
-
-    def _align_chemical_classes(self, chemical_classes: List[str]):
-        # TODO: instead of align each chemical_class to its closest neighbour, retrieve top-k
-        # and match to any one of these top-k labels
-        abox_chemical_classes = self.literal_store.get_chemical_classes()
-        return self.nn_retriever.retrieve(
-            abox_chemical_classes, chemical_classes
-        )
-    
-    def _align_uses(self, uses: List[str]):
-        # TODO: instead of align each use to its closest neighbour, retrieve top-k
-        # and match to any one of these top-k labels
-        abox_uses = self.literal_store.get_uses()
-        return self.nn_retriever.retrieve(abox_uses, uses)
 
     def _parse_property_constraints(self, properties: List[str]):
         property_constraints = [self.constraint_parser.parse(x) for x in properties]

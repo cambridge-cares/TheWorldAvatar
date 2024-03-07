@@ -5,7 +5,7 @@ from typing import Annotated, List
 from fastapi import Depends
 from services.nearest_neighbor import NNRetriever, get_nn_retriever
 from services.connector.ontospecies import OntoSpeciesAgentConnector
-from fastapi_app.services.connector.agent_connector import IAgentConnector
+from services.connector.agent_connector import IAgentConnector
 from services.func_call import IFuncCaller, get_func_caller
 
 

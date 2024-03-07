@@ -9,8 +9,7 @@ class TestEmbedder:
     def test_tritonMpnetEmbedder_semantic(self):
         # Arrange
         documents = ["pH regulator", "pH regulation", "pesticide"]
-        triton_client = InferenceServerClient(url="localhost:8001")
-        embedder = TritonMPNetEmbedder(triton_client)
+        embedder = TritonMPNetEmbedder(url="localhost:8001")
         
         # Act
         embeddings = embedder(documents)
