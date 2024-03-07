@@ -4,6 +4,7 @@ from services.translate.data_processing.ontozeolite.compact2verbose import (
     OZCompact2VerboseConverter,
 )
 from services.translate.sparql.graph_pattern import (
+    FilterClause,
     OptionalClause,
     TriplePattern,
 )
@@ -126,6 +127,72 @@ class TestOZCompact2VerboseConverter:
                                         "?SpaceGroupNumber_ITCr",
                                     )
                                 ]
+                            ),
+                        ]
+                    ),
+                ),
+            ),
+            (
+                # SELECT ?Framework WHERE {
+                #   ?Framework zeo:hasTopologicalProperties/zeo:hasSpecificAccessibleArea/om:hasNumericalValue ?SpecificAccessibleAreaNumericalValue.
+                #   FILTER ( ?SpecificAccessibleAreaNumericalValue <= 100 )
+                # }
+                SparqlQuery(
+                    select_clause=SelectClause(vars=["?Framework"]),
+                    where_clause=WhereClause(
+                        [
+                            TriplePattern.from_triple(
+                                "?Framework",
+                                "zeo:hasTopologicalProperties/zeo:hasSpecificAccessibleArea/om:hasNumericalValue",
+                                "?SpecificAccessibleAreaNumericalValue",
+                            ),
+                            FilterClause(
+                                "?SpecificAccessibleAreaNumericalValue <= 100"
+                            ),
+                        ]
+                    ),
+                ),
+                # SELECT DISTINCT ?Framework ?FrameworkCode ?SpecificAccessibleAreaNumericalValue ?SpecificAccessibleAreaUnitLabel WHERE {
+                #   ?Framework zeo:hasFrameworkCode ?FrameworkCode .
+                #   ?Framework zeo:hasTopologicalProperties/zeo:hasSpecificAccessibleArea ?SpecificAccessibleArea .
+                #   ?SpecificAccessibleArea om:hasNumericalValue ?SpecificAccessibleAreaNumericalValue ; om:hasUnit/rdfs:label ?SpecificAccessibleAreaUnitLabel .
+                #   FILTER ( ?SpecificAccessibleAreaNumericalValue <= 100 )
+                # }
+                SparqlQuery(
+                    select_clause=SelectClause(
+                        vars=[
+                            "?Framework",
+                            "?FrameworkCode",
+                            "?SpecificAccessibleAreaNumericalValue",
+                            "?SpecificAccessibleAreaUnitLabel",
+                        ],
+                        solution_modifier="DISTINCT"
+                    ),
+                    where_clause=WhereClause(
+                        [
+                            TriplePattern.from_triple(
+                                "?Framework", "zeo:hasFrameworkCode", "?FrameworkCode"
+                            ),
+                            TriplePattern.from_triple(
+                                "?Framework",
+                                "zeo:hasTopologicalProperties/zeo:hasSpecificAccessibleArea",
+                                "?SpecificAccessibleArea",
+                            ),
+                            TriplePattern(
+                                subj="?SpecificAccessibleArea",
+                                tails=[
+                                    (
+                                        "om:hasNumericalValue",
+                                        "?SpecificAccessibleAreaNumericalValue",
+                                    ),
+                                    (
+                                        "om:hasUnit/rdfs:label",
+                                        "?SpecificAccessibleAreaUnitLabel",
+                                    ),
+                                ],
+                            ),
+                            FilterClause(
+                                "?SpecificAccessibleAreaNumericalValue <= 100"
                             ),
                         ]
                     ),

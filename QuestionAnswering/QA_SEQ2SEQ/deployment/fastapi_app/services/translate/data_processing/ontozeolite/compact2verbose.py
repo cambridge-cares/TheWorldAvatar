@@ -289,12 +289,16 @@ class OZCompact2VerboseConverter:
 
     def _try_convert_hasZeoTopoScalar_triple(self, subj: str, pred: str, obj: str):
         """
-        ?Zeolite zeo:hasFrameworkTopology/zeo:has{key} ?{key}
+        ?Zeolite zeo:hasTopologicalProperties/zeo:has{key} ?{key} . 
+        OR
+        ?Zeolite zeo:hasTopologicalProperties/zeo:has{key}/om:hasNumericalValue ?{key}NumericalValue
         """
-        if not (pred.startswith("zeo:hasFrameworkTopology/zeo:has")):
+        if not (pred.startswith("zeo:hasTopologicalProperties/zeo:has")):
             return None
 
-        key = pred[len("zeo:hasFrameworkTopology/zeo:has") :]
+        key = pred[len("zeo:hasTopologicalProperties/zeo:has") :]
+        if key.endswith("/om:hasNumericalValue"):
+            key = key[:-len("/om:hasNumericalValue")]
         if not (
             key
             in [
@@ -315,16 +319,20 @@ class OZCompact2VerboseConverter:
             return None
 
         """
-        ?Zeolite zeo:hasFrameworkTopology/zeo:has{key} ?{key}
+        ?Zeolite zeo:hasTopologicalProperties/zeo:has{key} ?{key}
         ?{key} om:hasNumericalValue ?{key}NumericalValue ;
                om:hasUnit/rdfs:label ?{key}UnitLabel
         """
-        numval = obj + "NumericalValue"
-        unitlabel = obj + "UnitLabel"
+        if pred.endswith("/om:hasNumericalValue"):
+            numval = obj
+            unitlabel = "?" + key + "UnitLabel"
+        else:
+            numval = obj + "NumericalValue"
+            unitlabel = obj + "UnitLabel"
         patterns = [
-            TriplePattern.from_triple(subj, pred, obj),
+            TriplePattern.from_triple(subj, "zeo:hasTopologicalProperties/zeo:has" + key, "?" + key),
             TriplePattern(
-                obj,
+                "?" + key,
                 tails=[
                     ("om:hasNumericalValue", numval),
                     ("om:hasUnit/rdfs:label", unitlabel),
