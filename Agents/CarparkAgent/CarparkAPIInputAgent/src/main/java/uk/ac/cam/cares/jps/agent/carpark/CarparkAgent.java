@@ -98,7 +98,7 @@ public class CarparkAgent extends JPSAgent {
                 break;
             case "create":
                 LOGGER.info("Executing create route ...");
-                createRoute(args);
+                msg = createRoute(args);
                 break;
             case "retrieve":
                 int delay = requestParams.getInt("delay");
@@ -106,6 +106,7 @@ public class CarparkAgent extends JPSAgent {
                 String timeunit = requestParams.getString("timeunit");
                 LOGGER.info("Executing retrieve route ...");
                 setSchedulerForRetrievedRoute(args, delay, interval, timeunit);
+                msg.put("result", "Retrieve route will be executed at the following intervals:" + interval + " " + timeunit);
                 break;
             default:
                 LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
