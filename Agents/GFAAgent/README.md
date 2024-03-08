@@ -1,9 +1,8 @@
 # GFAAgent
 ## 1. Description
-The GFAAgent aims to calculate gross floor area of buildings. It includes three parts: 
-1) to integrate floors data of building from data files (csv)
-2) to calculate GFA and store in the citydb
-3) to query Gross Plot Ratio (GPR) and calculate reference GFA from land plot data for visualisation
+This agent has been developed to support and compute the Gross Floor Area (GFA) of buildings. Presently, the agent performs the following two tasks:
+1) Instantiate the number of storeys within a building from other data sources (OSM, csv) into the citydb schema
+2) Calculate the Gross Floor Area of buildings through multiplying the area of the building footprint with the number of storeys
 
 ### 1.1 Requirements
 1) The agent works with 3D buildings uploaded from CityGML data, follow the instructions in the [stack-data-uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#citydb-data)'s README.
@@ -25,8 +24,8 @@ You'll need to provide your credentials in a single-word text files located like
 repo_username.txt should contain your Github username. repo_password.txt should contain your Github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-### 2.2 Docker Deployment
-In gfaagen.json, specify the database name and csv file path in environment variable, an example in the following:
+### 2.2 Raw data for floors data integration
+In gfaagen.json, specify the database name and csv file path in environment variable. Currently it only support HDB properties data from [Data.gov.sg](https://beta.data.gov.sg/collections/150/datasets/d_17f5382f26140b1fdae0ba2ef6239d2f/view), which include building address and floors data. An example in the following:
 ```
 "Env": [
     "DATABASE=postgres",
@@ -54,9 +53,3 @@ curl -X POST localhost:3838/gfaagent/floors
 curl -X POST localhost:3838/gfaagent/calculation
 ```
 
-## 3. TWA-VF Visualization
-
-### 3.1 GeoSever layer query setting
-place [mapbox-footprint.sql](stack-data-uploader-input-config/mapbox-footprints.sql) in the [stack-data-uploader config directory]. It aims to query GFA and reference GFA for visualisation.
-### 3.2 Setting up TWA-VF
-1) Place [`data.json`](stack-manager-input-config/data/webspace/data.json) inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation) in the stack-manager.
