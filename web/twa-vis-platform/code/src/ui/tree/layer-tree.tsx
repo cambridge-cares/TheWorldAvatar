@@ -165,6 +165,16 @@ function buildLayers(group: TreeGroup, depth: number): React.ReactElement[] {
   const spacing: string = depth * 16 + "px";
 
   group.layers.forEach((layer) => {
+    // Initialise the visibility state based on the layer's current state
+    const [isVisible, setIsVisible] = useState(layer.isVisible);
+
+    const handleVisibilityToggle = () => {
+      // Toggle visibility on the map
+      toggleLayerVisibility(layer.ids);
+      // Update the state
+      setIsVisible(!isVisible);
+    };
+
     elements.push(
       <div className={styles.treeEntry} key={layer.name}>
         <div className={styles.treeEntryHeader}>
@@ -178,7 +188,7 @@ function buildLayers(group: TreeGroup, depth: number): React.ReactElement[] {
           </div>
 
           {/* Tree icon, if present */}
-          {layer.icon != null && (
+          {layer.icon && (
             <div className={styles.icon}>
               <SVG src={layer.icon} />
             </div>
@@ -189,13 +199,10 @@ function buildLayers(group: TreeGroup, depth: number): React.ReactElement[] {
             <span>{layer.name}</span>
           </div>
 
-          {/* Visibility state */}
-          <div
-            className={styles.icon}
-            onClick={() => toggleLayerVisibility(layer.ids, layer.name)}
-          >
+          {/* Toggle visibility state */}
+          <div className={styles.icon} onClick={handleVisibilityToggle}>
             <Icon className="material-symbols-outlined">
-              {layer.isVisible ? "visibility" : "visibility_off"}
+              {isVisible ? "visibility" : "visibility_off"}
             </Icon>
           </div>
         </div>
@@ -228,7 +235,7 @@ function buildGroup(item: TreeGroup, depth: number): React.ReactElement {
     console.log(target);
   };
 
-  const [isExpanded, setIsExpanded] = useState<boolean>(false); // Default to collapsed
+  const [isExpanded, setIsExpanded] = useState<boolean>(true); // Default to expanded
 
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
