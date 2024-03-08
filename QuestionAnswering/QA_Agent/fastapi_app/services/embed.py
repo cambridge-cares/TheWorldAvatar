@@ -51,23 +51,29 @@ class TritonMPNetEmbedder(IEmbedder):
         url: str = "localhost:8001",
         triton_model: str = "mpnet",
         tokenizer_model: str = "sentence-transformers/all-mpnet-base-v2",
+        batch_size: int=256
     ):
         self.client = InferenceServerClient(url)
         self.triton_model = triton_model
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_model)
+        self.batch_size=batch_size
 
     def __call__(self, documents: List[str]):
-        encoded = self.tokenizer(documents, padding=True, return_tensors="np")
-        input_tensors = [
-            InferInput(
-                "input_ids", encoded.input_ids.shape, datatype="INT64"
-            ).set_data_from_numpy(encoded.input_ids),
-            InferInput(
-                "attention_mask", encoded.attention_mask.shape, datatype="INT64"
-            ).set_data_from_numpy(encoded.attention_mask),
-        ]
-        response = self.client.infer(model_name=self.triton_model, inputs=input_tensors)
-        return response.as_numpy("sentence_embedding")
+        arrs = []
+        for i in range(0, len(documents), self.batch_size):
+            batch = documents[i: i + self.batch_size]
+            encoded = self.tokenizer(batch, padding=True, return_tensors="np")
+            input_tensors = [
+                InferInput(
+                    "input_ids", encoded.input_ids.shape, datatype="INT64"
+                ).set_data_from_numpy(encoded.input_ids),
+                InferInput(
+                    "attention_mask", encoded.attention_mask.shape, datatype="INT64"
+                ).set_data_from_numpy(encoded.attention_mask),
+            ]
+            response = self.client.infer(model_name=self.triton_model, inputs=input_tensors)
+            arrs.append(response.as_numpy("sentence_embedding"))
+        return np.vstack(arrs)
 
 
 def get_embedder(settings: Annotated[Settings, Depends(get_settings)]):
