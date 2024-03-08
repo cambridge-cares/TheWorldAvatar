@@ -36,20 +36,20 @@ disp:noxPolId rdf:type disp:NOx .
 disp:noxDensity rdf:type om:Density ;
                 om:hasValue disp:noxDensityMeasure .
 disp:noxDensityMeasure rdf:type om:Measure ;
-                       om:hasNumericalValue 123 ;
+                       om:hasNumericalValue 1.29 ;
 					   om:hasUnit om:kilogramPerCubicmetre .
 					   
 disp:noxMassFlow rdf:type om:MassFlow ;
                  om:hasValue disp:noxMassFlowMeasure .
 disp:noxMassFlowMeasure rdf:type om:Measure ;
-                        om:hasNumericalValue 123 ;
+                        om:hasNumericalValue 10 ;
 						om:hasUnit om:kilogramPerSecond-Time .
 						
 disp:noxTemperature rdf:type om:Temperature ;
                     om:hasValue disp:tempMeasure .
 disp:tempMeasure rdf:type om:Measure ;
-                 om:hasNumericalValue 123 ;
-				 om:hasUnit om:Kelvin .
+                 om:hasNumericalValue 500 ;
+				 om:hasUnit om:kelvin .
 ```
 
 An instance can emit multiple pollutants, the class of pollutant ID needs to be one of the following:
