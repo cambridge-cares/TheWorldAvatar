@@ -1,34 +1,37 @@
 import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, HeatmapLayer, LineLayer, RasterLayer, SymbolLayer } from 'mapbox-gl';
-import { reduxStore } from 'app/store';
+import { Dispatch } from 'redux';
+
+import { addMapboxLayerEventListeners } from '../event-listeners';
 import { DataLayer } from 'io/data/data-layer';
 import { DataStore } from 'io/data/data-store';
-import { setProperties, setSourceLayerId } from 'state/map-feature-slice';
 import { JsonArray, JsonObject } from 'types/json';
 import { ImageryOption, MapSettings } from 'types/map-settings';
 import { getMapSettings } from 'utils/client-utils';
 import { getCurrentImageryOption } from './mapbox-imagery-utils';
-
 /**
  * Given a DataStore instance housing parsed DataLayer instances,
  * this function adds them all to the Mapbox map object.
  * 
- * @param dataStore Store containing parsed DataLayer instances.
+ * @param {dataStore} dataStore Store containing parsed DataLayer instances.
+ * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
  */
-export async function addAllLayers(dataStore: DataStore) {
+export async function addAllLayers(dataStore: DataStore, dispatch: Dispatch<any>) {
     const mapSettings = await getMapSettings();
     const currentStyle = getCurrentImageryOption(mapSettings);
 
     const layerArray: DataLayer[] = dataStore.getLayerList();
-    layerArray.forEach((layer) => addLayer(layer, currentStyle));
+    layerArray.forEach((layer) => addLayer(layer, currentStyle, dispatch));
     console.log("Added all registered layers to the map object.");
 }
 
 /**
  * Adds the input DataLayer to the Mapbox map object.
  * 
- * @param source data source to add.
+ * @param {DataLayer} layer - The input DataLayer.
+ * @param {ImageryOption} currentStyle - The current imagery style.
+ * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
  */
-export function addLayer(layer: DataLayer, currentStyle: ImageryOption) {
+export function addLayer(layer: DataLayer, currentStyle: ImageryOption, dispatch: Dispatch<any>) {
     const collision = window.map.getLayer(layer.id);
 
     if(collision != null) {
@@ -107,18 +110,6 @@ export function addLayer(layer: DataLayer, currentStyle: ImageryOption) {
     window.map.addLayer(mapboxObj);
     console.info("Pushed data layer to map '" + layer.id + "'.");
 
-    // Attach a click event listener specific to this layer
-    window.map.on('click', layer.id, (e) => {
-        // Accessing the first feature in the array of features under the click point
-        const feature = e.features && e.features[0];
-
-        if (feature) {
-            // Here you can access the metadata of the clicked feature
-            console.log(`Clicked on ${layer.id}:`, feature.properties);
-            // Stores the feature properties and layer source id in a global state
-            reduxStore.dispatch(setProperties(feature.properties));
-            reduxStore.dispatch(setSourceLayerId(feature.source));
-        }
-    });
-
+    // Attach all layer-specific event listeners for this layer
+    addMapboxLayerEventListeners(window.map, layer.id, dispatch);
 }

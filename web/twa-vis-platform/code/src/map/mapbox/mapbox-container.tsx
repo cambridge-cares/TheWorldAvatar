@@ -21,13 +21,13 @@ import React, { useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { MapSettings } from 'types/map-settings';
-import { setLatLng } from 'state/map-feature-slice';
 import { DataStore } from 'io/data/data-store';
 import { getDefaultCameraPosition } from './mapbox-camera-utils';
 import { getCurrentImageryOption, getDefaultImageryOption, getImageryOption } from './mapbox-imagery-utils';
 import { addAllSources } from './mapbox-source-utils';
 import { addAllLayers } from './mapbox-layer-utils';
 import { addIcons } from './mapbox-icon-loader';
+import { addMapboxEventListeners } from '../event-listeners';
 
 
 // Type definition of incoming properties
@@ -71,23 +71,6 @@ export default function MapboxMapComponent(props: MapProperties) {
     initialiseMap();
   }, []);
 
-  useEffect(() => {
-    // Type the event parameter as CustomEvent<any> to access the detail property
-    const mapClickHandler = (event: CustomEvent<any>) => {
-      const lngLat = event.detail;
-      dispatch(setLatLng({ lat: lngLat.lat, lng: lngLat.lng }));
-    };
-
-    // Convert the handler function to match the EventListener interface
-    const eventListener = (e: Event) => mapClickHandler(e as CustomEvent<any>);
-
-    window.addEventListener("mapClickEvent", eventListener);
-
-    return () => {
-      window.removeEventListener("mapClickEvent", eventListener);
-    };
-  }, [dispatch]);
-
   // Initialise the map object
   const initialiseMap = async () => {
     if (map.current) return;
@@ -116,14 +99,8 @@ export default function MapboxMapComponent(props: MapProperties) {
     window.map = map.current;
     console.info("Initialised a new Mapbox map object.");
 
-    // Adding the click event listener here
-    window.map.on("click", function (e) {
-      // Create a custom event with the clicked coordinates
-      const customEvent = new CustomEvent("mapClickEvent", {
-        detail: e.lngLat,
-      });
-      window.dispatchEvent(customEvent);
-    });
+    // Add all map event listeners
+    addMapboxEventListeners(map.current, dispatch);
 
     window.map.on("style.load", function () {
       // Update time if using new v3 standard style
@@ -148,7 +125,7 @@ export default function MapboxMapComponent(props: MapProperties) {
 
         // Plot data
         addAllSources(dataStore);
-        addAllLayers(dataStore);
+        addAllLayers(dataStore, dispatch);
       });
     });
   };
