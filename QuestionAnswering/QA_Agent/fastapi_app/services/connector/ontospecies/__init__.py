@@ -1,18 +1,25 @@
 import logging
 import time
-from typing import Annotated, List
+from typing import Annotated, List, Type
 from fastapi import Depends
 
 import unit_parse
 
 from model.qa import QAData, QAStep
 from services.kg_client import KgClient
+from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from services.utils.parse import ConstraintParser, get_constraint_parser
 from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
 from services.connector.agent_connector import IAgentConnector
+from .constants import (
+    SpeciesAttrKey,
+    SpeciesChemicalClassAttrKey,
+    SpeciesIdentifierAttrKey,
+    SpeciesPropertyAttrKey,
+    SpeciesUseAttrKey,
+)
 from .kg_client import get_ontospecies_kg_client
 from .agent import OntoSpeciesAgent, get_ontospecies_agent
-from .align import OntoSpeciesAligner, get_ontospecies_aligner
 
 logger = logging.getLogger(__name__)
 
@@ -71,16 +78,24 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         },
     ]
 
+    _SPECIES_ATTR_CLSES: List[Type[SpeciesAttrKey]] = [
+        SpeciesChemicalClassAttrKey,
+        SpeciesUseAttrKey,
+        SpeciesIdentifierAttrKey,
+        SpeciesPropertyAttrKey,
+    ]
+    _SPECIES_ATTR_KEYS = [x.value for cls in _SPECIES_ATTR_CLSES for x in cls]
+
     def __init__(
         self,
         kg_client: KgClient,
         ontospecies_agent: OntoSpeciesAgent,
-        ontospecies_aligner: OntoSpeciesAligner,
-        constraint_parser: Annotated[ConstraintParser, Depends(get_constraint_parser)],
+        docs_retriever: DocsRetriever,
+        constraint_parser: ConstraintParser,
     ):
         self.kg_client = kg_client
         self.agent = ontospecies_agent
-        self.aligner = ontospecies_aligner
+        self.docs_retriever = docs_retriever
         self.constraint_parser = constraint_parser
 
     @classmethod
@@ -93,12 +108,26 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             "find_chemicalSpecies": self.find_chemicalSpecies,
         }
 
+    def _align_attribute_keys(self, attributes: List[str]):
+        queries = [
+            "".join([w.capitalize() for w in attr.split()]) for attr in attributes
+        ]
+        docs_scores_lst = self.docs_retriever.retrieve(
+            queries=queries,
+            key="ontospecies:attribute_keys",
+            docs_getter=lambda: self._SPECIES_ATTR_KEYS,
+            k=1,
+        )
+        return [
+            SpeciesPropertyAttrKey(docs_scores[0][0]) for docs_scores in docs_scores_lst
+        ]
+
     def lookup_chemicalSpecies_attributes(self, species: str, attributes: List[str]):
         steps: List[QAStep] = []
 
         logger.info("Aligning attribute keys: " + str(attributes))
         timestamp = time.time()
-        attr_keys = self.aligner.align_attribute_keys(attributes)
+        attr_keys = self._align_attribute_keys(attributes)
         latency = time.time() - timestamp
         logger.info("Aligned attribute keys: " + str(attr_keys))
         steps.append(
@@ -141,6 +170,20 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             operator=constraint.operator, operand=operand, unit=unit
         )
 
+    def _align_property_keys(self, properties: List[str]):
+        queries = [
+            "".join([w.capitalize() for w in prop.split()]) for prop in properties
+        ]
+        docs_scores_lst = self.docs_retriever.retrieve(
+            queries=queries,
+            key="ontospecies:property_keys",
+            docs_getter=lambda: [x.value for x in SpeciesPropertyAttrKey],
+            k=1,
+        )
+        return [
+            SpeciesPropertyAttrKey(docs_scores[0][0]) for docs_scores in docs_scores_lst
+        ]
+
     def _parse_property_constraints(self, properties: List[str]):
         property_constraints = [self.constraint_parser.parse(x) for x in properties]
 
@@ -154,7 +197,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             )
             for _, compound_constraint in property_constraints
         ]
-        aligned_keys = self.aligner.align_property_keys(
+        aligned_keys = self._align_property_keys(
             [key for key, _ in property_constraints]
         )
 
@@ -219,14 +262,12 @@ class OntoSpeciesAgentConnector(IAgentConnector):
 def get_ontospecies_agent_connector_getter(
     kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
     ontospecies_agent: Annotated[OntoSpeciesAgent, Depends(get_ontospecies_agent)],
-    ontospecies_aligner: Annotated[
-        OntoSpeciesAligner, Depends(get_ontospecies_aligner)
-    ],
+    docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
     constraint_parser: Annotated[ConstraintParser, Depends(get_constraint_parser)],
 ):
     return lambda: OntoSpeciesAgentConnector(
         kg_client=kg_client,
         ontospecies_agent=ontospecies_agent,
-        ontospecies_aligner=ontospecies_aligner,
+        docs_retriever=docs_retriever,
         constraint_parser=constraint_parser,
     )
