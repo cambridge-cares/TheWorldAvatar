@@ -1,7 +1,6 @@
 import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, HeatmapLayer, LineLayer, RasterLayer, SymbolLayer } from 'mapbox-gl';
 import { Dispatch } from 'redux';
 
-import { addMapboxLayerEventListeners } from '../event-listeners';
 import { DataLayer } from 'io/data/data-layer';
 import { DataStore } from 'io/data/data-store';
 import { JsonArray, JsonObject } from 'types/json';
@@ -109,7 +108,4 @@ export function addLayer(layer: DataLayer, currentStyle: ImageryOption, dispatch
     // Add to the map
     window.map.addLayer(mapboxObj);
     console.info("Pushed data layer to map '" + layer.id + "'.");
-
-    // Attach all layer-specific event listeners for this layer
-    addMapboxLayerEventListeners(window.map, layer.id, dispatch);
 }
