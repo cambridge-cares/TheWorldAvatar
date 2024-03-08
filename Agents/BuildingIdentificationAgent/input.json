@@ -1,5 +1,5 @@
 {
-    "maxDistance": "100.0",
+    "maxDistance": "250.0",
     "coordinates": [
         [
             103.67455581177452,
@@ -11,9 +11,9 @@
         ]
     ],
     "srid": "4326",
-    "table": "points",
-    "column": "geometryProperty",
-    "overlapFraction": "0.60",
+    "table": "company",
+    "column": "wkb_geometry",
+    "overlapFraction": "0.70",
     "oneToMany": "false",
     "newTable": "matched_buildings",
     "filterColumns": [
