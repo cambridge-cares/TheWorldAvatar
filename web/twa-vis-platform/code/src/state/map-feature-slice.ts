@@ -10,11 +10,15 @@ interface LatLngPayload {
 export const mapFeatureSlice = createSlice({
     name: 'mapFeature',
     initialState: {
+        name: null,
         properties: null,
         sourceLayerId: null,
         latLng: null as LatLngPayload | null
     },
     reducers: {
+        setName: (state, action) => {
+            state.name = action.payload;
+        },
         setLatLng: (state, action: PayloadAction<LatLngPayload>) => {
             state.latLng = action.payload; // Update state with new coordinates
         },
@@ -30,10 +34,11 @@ export const mapFeatureSlice = createSlice({
 // Export selectors 
 export const getLatLng = (state: ReduxState) => state.mapFeature.latLng;
 export const getProperties = (state: ReduxState) => state.mapFeature.properties;
+export const getName = (state: ReduxState) => state.mapFeature.name;
 export const getSourceLayerId = (state: ReduxState) => state.mapFeature.sourceLayerId;
 
 // Export the actions
-export const { setLatLng, setProperties, setSourceLayerId } = mapFeatureSlice.actions;
+export const { setLatLng, setName, setProperties, setSourceLayerId } = mapFeatureSlice.actions;
 
 // Export the reducer
 export default mapFeatureSlice.reducer;

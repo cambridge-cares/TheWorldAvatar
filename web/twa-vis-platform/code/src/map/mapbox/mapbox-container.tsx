@@ -18,8 +18,9 @@ import './mapbox.css';
 
 import mapboxgl from 'mapbox-gl';
 import React, { useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { getLatLng, getName } from 'state/map-feature-slice';
 import { MapSettings } from 'types/map-settings';
 import { DataStore } from 'io/data/data-store';
 import { getDefaultCameraPosition } from './mapbox-camera-utils';
@@ -65,11 +66,27 @@ export default function MapboxMapComponent(props: MapProperties) {
   const settings = props.settings;
   const mapContainer = useRef(null);
   const map = useRef(null);
+  const toolTip = useRef(null);
   const dispatch = useDispatch();
+  const coordinates = useSelector(getLatLng);
+  const name = useSelector(getName);
+
   // Run when component loaded
   useEffect(() => {
     initialiseMap();
   }, []);
+
+  // Run whenever coordinates are changed from moving across the map
+  useEffect(() => {
+    // Remove the tool tip if it is currently open
+    if (toolTip.current.isOpen()) {
+      toolTip.current.remove();
+    }
+    // If there is a name, add the tool tip with the name to the map
+    if (name != null) {
+      toolTip.current.setLngLat(coordinates).setHTML(name).addTo(window.map)
+    }
+  }, [coordinates]);
 
   // Initialise the map object
   const initialiseMap = async () => {
@@ -101,6 +118,17 @@ export default function MapboxMapComponent(props: MapProperties) {
 
     // Add all map event listeners
     addMapboxEventListeners(map.current, dispatch);
+
+    // Create a new pop up and assign it to the reference to keep track
+    toolTip.current = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false
+    });
+
+    // Removes the tool tip once the mouse pointer is outside the map container
+    window.map.on("mouseout", function () {
+      toolTip.current.remove();
+    });
 
     window.map.on("style.load", function () {
       // Update time if using new v3 standard style

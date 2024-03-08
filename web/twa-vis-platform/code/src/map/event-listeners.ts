@@ -2,7 +2,7 @@
 import mapboxgl from 'mapbox-gl';
 import { Dispatch } from 'redux';
 
-import { setLatLng, setProperties, setSourceLayerId } from 'state/map-feature-slice';
+import { setLatLng, setName, setProperties, setSourceLayerId } from 'state/map-feature-slice';
 
 /**
  * Function to add event listeners for the specified Mapbox map.
@@ -11,10 +11,15 @@ import { setLatLng, setProperties, setSourceLayerId } from 'state/map-feature-sl
  * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
  */
 export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch<any>): void {
-  // For click events
-  map.on("click", function (e) {
-    // Stores the latitude and longitude of the clicked location in a global state
-    dispatch(setLatLng({ lat: e.lngLat.lat, lng: e.lngLat.lng }));
+  // For any movement within the map
+  map.on("mousemove", function (e) {
+    // Access the first feature under the mouse pointer
+    const feature = map.queryRenderedFeatures(e.point)[0];
+    const name = feature?.properties.name ?? null;
+    const lngLat: mapboxgl.LngLat = e.lngLat;
+    // Store the current mouse position coordinates and feature name in a global state
+    dispatch(setLatLng({ lat: lngLat.lat, lng: lngLat.lng }));
+    dispatch(setName(name));
   });
 }
 
@@ -27,7 +32,7 @@ export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch<an
  */
 export function addMapboxLayerEventListeners(map: mapboxgl.Map, layerId: string, dispatch: Dispatch<any>): void {
   // For click events
-  map.on('click', layerId, (e) => {
+  map.on("click", layerId, (e) => {
     // Accessing the first feature in the array of features under the click point
     const feature = e.features && e.features[0];
 
