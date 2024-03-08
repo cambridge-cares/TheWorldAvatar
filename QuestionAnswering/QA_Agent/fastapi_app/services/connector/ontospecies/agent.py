@@ -5,6 +5,7 @@ from fastapi import Depends
 
 from model.constraint import CompoundNumericalConstraint
 from services.kg_client import KgClient
+from .align import OntoSpeciesAligner, get_ontospecies_aligner
 from .kg_client import get_ontospecies_kg_client
 from .constants import (
     SpeciesAttrKey,
@@ -19,9 +20,15 @@ logger = logging.getLogger(__name__)
 
 
 class OntoSpeciesAgent:
-    def __init__(self, kg_client: KgClient, species_linker: SpeciesLinker):
+    def __init__(
+        self,
+        kg_client: KgClient,
+        species_linker: SpeciesLinker,
+        ontospecies_aligner: OntoSpeciesAligner,
+    ):
         self.kg_client = kg_client
         self.species_linker = species_linker
+        self.aligner = ontospecies_aligner
 
     def lookup_iri_attribute(
         self, species_iri: str, attr_key: SpeciesAttrKey
@@ -89,6 +96,16 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
 
         return bindings
 
+    def lookup_iri_label(self, species_iri: str):
+        query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        
+SELECT ?Label WHERE {{
+    <{IRI}> rdfs:label ?Label .
+}}""".format(
+            IRI=species_iri
+        )
+        return self.kg_client.query(query)["results"]["bindings"][0]["Label"]["value"]
+
     def find_chemicalSpecies(
         self,
         chemical_classes: List[str] = [],
@@ -99,17 +116,45 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
     ) -> List[str]:
         patterns = []
 
-        for chemical_class in chemical_classes:
-            patterns.append(
-                '?Species (a|!a)+ [ a os:ChemicalClass ; rdfs:label "{label}" ] .'.format(
-                    label=chemical_class
-                )
+        if chemical_classes:
+            logger.info("Aligning chemical class labels...")
+            aligned_chemical_classes = self.aligner.align_chemical_classes(
+                chemical_classes
             )
+            logger.info("Aligned chemical classes: " + str(aligned_chemical_classes))
 
-        for use in uses:
-            patterns.append(
-                '?Species os:hasUse/rdfs:label "{label}" .'.format(label=use)
-            )
+            for i, chemclass_options in enumerate(aligned_chemical_classes):
+                varnode = "?ChemicalClassLabel" + str(i)
+                values = ['"{val}"'.format(val=val) for val in chemclass_options]
+                patterns.extend(
+                    [
+                        "VALUES {varnode} {{ {values} }}".format(
+                            varnode=varnode, values=" ".join(values)
+                        ),
+                        "?Species (a|!a)+ [ a os:ChemicalClass ; rdfs:label {varnode} ] .".format(
+                            varnode=varnode
+                        ),
+                    ]
+                )
+
+        if uses:
+            logger.info("Aligning use labels...")
+            aligned_uses = self.aligner.align_uses(uses)
+            logger.info("Aligned uses: " + str(aligned_uses))
+
+            for i, use_options in enumerate(aligned_uses):
+                varnode = "?UseLabel" + str(i)
+                values = ['"{val}"'.format(val=val) for val in use_options]
+                patterns.extend(
+                    [
+                        "VALUES {varnode} {{ {values} }}".format(
+                            varnode=varnode, values=" ".join(values)
+                        ),
+                        "?Species os:hasUse/rdfs:label {varnode} .".format(
+                            varnode=varnode
+                        ),
+                    ]
+                )
 
         for key, compound_constraint in properties:
             patterns.append(
@@ -139,14 +184,23 @@ SELECT DISTINCT ?Species WHERE {{
 
         logger.info("SPARQL query: " + query)
 
-        return [
+        iris = [
             x["Species"]["value"]
             for x in self.kg_client.query(query)["results"]["bindings"]
         ]
+        labels = [self.lookup_iri_label(iri) for iri in iris]
+        return [dict(IRI=iri, label=label) for iri, label in zip(iris, labels)]
 
 
 def get_ontospecies_agent(
     kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
     species_linker: Annotated[SpeciesLinker, Depends(get_species_linker)],
+    ontospecies_aligner: Annotated[
+        OntoSpeciesAligner, Depends(get_ontospecies_aligner)
+    ],
 ):
-    return OntoSpeciesAgent(kg_client=kg_client, species_linker=species_linker)
+    return OntoSpeciesAgent(
+        kg_client=kg_client,
+        species_linker=species_linker,
+        ontospecies_aligner=ontospecies_aligner,
+    )

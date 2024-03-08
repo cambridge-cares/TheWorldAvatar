@@ -173,34 +173,6 @@ class OntoSpeciesAgentConnector(IAgentConnector):
     ):
         steps = []
 
-        if chemical_classes:
-            logger.info("Aligning chemical class labels...")
-            timestamp = time.time()
-            aligned_chemical_classes = self.aligner.align_chemical_classes(
-                chemical_classes
-            )
-            latency = time.time() - timestamp
-            logger.info("Aligned chemical classes: " + str(aligned_chemical_classes))
-            steps.append(
-                QAStep(
-                    action="align_chemical_classes",
-                    arguments=chemical_classes,
-                    latency=latency,
-                )
-            )
-        else:
-            aligned_chemical_classes = []
-
-        if uses:
-            logger.info("Aligning use labels...")
-            timestamp = time.time()
-            aligned_uses = self.aligner.align_uses(uses)
-            latency = time.time() - timestamp
-            logger.info("Aligned uses: " + str(aligned_uses))
-            steps.append(QAStep(action="align_uses", arguments=uses, latency=latency))
-        else:
-            aligned_uses = []
-
         if properties:
             logger.info("Parsing property constraints...")
             timestamp = time.time()
@@ -218,13 +190,9 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             property_constraints = []
 
         timestamp = time.time()
-        species_iris = self.agent.find_chemicalSpecies(
-            aligned_chemical_classes, aligned_uses, property_constraints
+        bindings = self.agent.find_chemicalSpecies(
+            chemical_classes, uses, property_constraints
         )
-        bindings = [
-            dict(IRI=iri, label=self.literal_store.get_label(iri))
-            for iri in species_iris
-        ]
         latency = time.time() - timestamp
         arguments = dict()
         if chemical_classes:
