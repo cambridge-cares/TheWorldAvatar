@@ -6,9 +6,11 @@ PREFIX carpark: <https://www.theworldavatar.com/kg/ontocarpark/>
 PREFIX building: <https://www.theworldavatar.com/kg/Building/>
 PREFIX bot: <https://w3id.org/bot#>
 PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
-SELECT DISTINCT ?Measurement ?Name ?Unit WHERE {
+PREFIX time:    <https://www.theworldavatar.com/kg/ontotimeseries/>
+SELECT DISTINCT ?Measurement ?TimeSeries ?Name ?Unit WHERE {
   [IRI] carpark:hasLotType ?lotType .
   ?lotType carpark:hasLots ?Measurement .
+  ?Measurable time:hasTimeSeries ?TimeSeries .
   ?Measurement rdfs:label ?Name .
   BIND ("-" as ?Unit).
 }

@@ -20,5 +20,5 @@ SELECT ?Property ?Value ?Unit WHERE {
       }
     }
   }
-  FILTER (STRLEN(?Property) != 0)
+  FILTER (STRLEN(?Value) != 0)
 }
