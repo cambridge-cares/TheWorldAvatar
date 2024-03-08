@@ -1,8 +1,6 @@
-import pytest
 import numpy as np
-from tritonclient.grpc import InferenceServerClient
 
-from services.nearest_neighbor import cosine_similarity
+from services.utils.numerical import cosine_similarity
 from services.embed import TritonMPNetEmbedder
 
 class TestEmbedder:

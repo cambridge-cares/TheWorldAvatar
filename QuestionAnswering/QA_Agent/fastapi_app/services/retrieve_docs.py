@@ -3,6 +3,7 @@ from typing import Annotated, Callable, List
 
 from fastapi import Depends
 import numpy as np
+from redis import Redis
 from redis.commands.search.field import (
     TextField,
     VectorField,
@@ -18,9 +19,9 @@ class DocsRetriever:
     INDEX_NAME_TEMPLATE = "idx:{key}_vss"
     KEY_PREFIX_TEMPLATE = "{key}:"
 
-    def __init__(self, embedder: IEmbedder):
-        self.redis_client = get_redis_client()
+    def __init__(self, embedder: IEmbedder, redis_client: Redis):
         self.embedder = embedder
+        self.redis_client = redis_client
 
     @cache
     def does_index_exist(self, index_name: str):
@@ -94,5 +95,8 @@ class DocsRetriever:
         ]
 
 
-def get_docs_retriever(embedder: Annotated[IEmbedder, Depends(get_embedder)]):
-    return DocsRetriever(embedder)
+def get_docs_retriever(
+    embedder: Annotated[IEmbedder, Depends(get_embedder)],
+    redis_client: Annotated[Redis, Depends(get_redis_client)],
+):
+    return DocsRetriever(embedder, redis_client)
