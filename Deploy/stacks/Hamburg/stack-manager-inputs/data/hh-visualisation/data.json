@@ -1,0 +1,81 @@
+{
+    "name": "Hamburg",
+    "stack": "http://localhost:3838",
+    "groups": [
+        {
+            "name": "Schulen",
+            "expanded": true,
+            "sources": [
+                {
+                    "id": "nicht-staatliche-schulen-source",
+                    "type": "geojson",
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Anichtstaatlicheschulen&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "staatliche-schulen-source",
+                    "type": "geojson",
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Astaatlicheschulen&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "nicht-staatliche-schulen-layer",
+                    "name": "Nicht-staatliche Schulen",
+                    "source": "nicht-staatliche-schulen-source",
+                    "order": 1001,
+                    "type": "symbol",
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "education",
+                        "icon-size": 0.5,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+		},
+                {
+                    "id": "staatliche-schulen-layer",
+                    "name": "Staatliche Schulen",
+                    "source": "staatliche-schulen-source",
+                    "order": 1001,
+                    "type": "symbol",
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "education",
+                        "icon-size": 0.5,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+		}
+            ]
+        },
+        {
+            "name": "Verwaltung",
+            "expanded": true,
+            "sources": [
+                {
+                    "id": "verwaltungsgrenzen-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Averwaltungsgrenzen&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+	    ],
+            "layers": [
+                {
+                    "id": "verwaltungsgrenzen-layer",
+                    "name": "Verwaltungsgrenzen",
+                    "source": "verwaltungsgrenzen-source",
+                    "source-layer": "verwaltungsgrenzen",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "line-color": "#00ff00",
+                        "line-width": 3
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "services": {
+        "includes": [
+            "visualisation"
+        ],
+        "excludes": [
+            "citydbimpexp",
+            "citytiler"
+        ]
+    },
+    "volumes": {
+        "vis-files": "hh-visualisation"
+    }
+}

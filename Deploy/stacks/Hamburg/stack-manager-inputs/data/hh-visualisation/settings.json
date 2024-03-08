@@ -1,0 +1,16 @@
+{
+    "start": {
+        "center": [9.98, 53.55],
+        "zoom": 14,
+        "bearing": 0,
+        "pitch": 45
+    },
+    "imagery": {
+        "Hell": "mapbox://styles/mapbox/light-v11",
+        "Dunkel": "mapbox://styles/mapbox/dark-v11",
+        "Wanderkarte": "mapbox://styles/mapbox/outdoors-v12",
+        "Satellit (beschriftet)": "mapbox://styles/mapbox/satellite-streets-v12",
+        "default": "Satellit (beschriftet)"
+    },
+    "attribution": "<div style='padding: 10px; text-align: left;'>Building footprint data taken from <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> under the Open Database License.<br><br>All sample other data has been generated specifically for this visualisation.</div>"
+}

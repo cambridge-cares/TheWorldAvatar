@@ -1,0 +1,22 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "verwaltung",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "verwaltungsgrenzen",
+            "subdirectory": "verwaltungsgrenzen",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:25832",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "EMPTY_STRING_AS_NULL": "YES"
+                }
+            }
+        }
+    ]
+}
