@@ -84,7 +84,7 @@ Copy `stack-manager-input-config-service/carpark-agent.json` to the services fol
 
 ### Run the agent
 
-The agent has three routes, a status route, a create route and a retrieve route. 
+The agent has three routes, a status route, a create route and a retrieve route. A description for each route is provided below.
 
 #### Status route
 
@@ -95,12 +95,6 @@ curl -X GET http://localhost:3838/carpark-agent/status
 and it should return:
 
 {"Result":"Agent is ready to receive requests."}
-
-#### Create route
-This request instantiates the ABoxes for the carparks based on [ontoCarpark](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontocarpark/OntoCarpark.owl) and matches each carpark to the closest building (within 100m) via the [Building Identification Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/BuildingIdentificationAgent). The carparks meta data are stored in the sparql endpoints indicated in the [client.properties](#client-properties) while the carpark's geolocation and matched buildings data are stored based on the locations indicated in the `Dockerfile` ([Geolocation data configurations](#geolocation-data-configurations)). The request has the following format:
-```
-curl -X POST http://localhost:3838/carpark-agent/create
-```
 
 #### Retrieve route
 
@@ -113,3 +107,14 @@ An example of the request in curl syntax is shown below:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"interval\":\"180\",\"timeunit\":\"seconds\"}" http://localhost:3838/carpark-agent/retrieve
 ```
+
+#### Create route
+This request instantiates the ABoxes for the carparks based on [ontoCarpark](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontocarpark/OntoCarpark.owl) and matches each carpark to the closest building (within 100m) via the [Building Identification Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/BuildingIdentificationAgent). The carparks meta data are stored in the sparql endpoints indicated in the [client.properties](#client-properties) while the carpark's geolocation and matched buildings data are stored based on the locations indicated in the `Dockerfile` ([Geolocation data configurations](#geolocation-data-configurations)). The request has the following format:
+```
+curl -X POST http://localhost:3838/carpark-agent/create
+```
+
+#### Recommended execution sequence
+To fully instantiate the carparks data (geolocation, Aboxes, timeseries etc) into the knowledge graph, it is recommended to follow the sequence below when executing the routes:
+1) Retrieve Route - instantiate the timeseries and start the scheduler to periodically retrieve and upload the latest timeseries to the knowledge graph
+2) Create Route - instantiate the ABoxes and geolocation data (lat, long, matched buildings etc) for the carparks in the knowledge graph
