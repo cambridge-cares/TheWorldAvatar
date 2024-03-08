@@ -4,36 +4,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.mapbox.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        <com.mapbox.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:mapbox_cameraTargetLat="49.199696"
+            app:mapbox_cameraTargetLng="7.608785"
+            app:mapbox_cameraZoom="13.0"/>
+
+    <com.google.android.material.appbar.AppBarLayout
         app:layout_constraintTop_toTopOf="parent"
-        app:mapbox_cameraTargetLat="49.199696"
-        app:mapbox_cameraTargetLng="7.608785"
-        app:mapbox_cameraZoom="13.0">
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        style="@style/Widget.GradientToolBar"
+        >
 
-    </com.mapbox.maps.MapView>
+        <com.google.android.material.appbar.MaterialToolbar
+            android:background="@android:color/transparent"
+            android:id="@+id/map_top_appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            app:title="long test title"
+            app:titleCentered="true"
+            />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/imageView"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="257dp"-->
-<!--        android:src="@drawable/detail"-->
-<!--        android:visibility="invisible"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent" />-->
+    </com.google.android.material.appbar.AppBarLayout>
 
-<!--    <include-->
-<!--        android:id="@+id/bottom_sheet"-->
-<!--        layout="@layout/toilet_bottom_sheet"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent" />-->
+
+
+    <include
+        android:id="@+id/bottom_sheet"
+        layout="@layout/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+         />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
