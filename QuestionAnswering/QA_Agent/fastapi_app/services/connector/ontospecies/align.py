@@ -1,40 +1,26 @@
 from functools import cache
-from typing import Annotated, List
+from typing import Annotated, List, Tuple
 
 from fastapi import Depends
-import numpy as np
-from redis.commands.search.field import (
-    TextField,
-    VectorField,
-)
-from redis.commands.search.indexDefinition import IndexDefinition, IndexType
-from redis.commands.search.query import Query
 
+from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from services.kg_client import KgClient
-from services.embed import IEmbedder, get_embedder
-from services.redis_client import get_redis_client
 from .kg_client import get_ontospecies_kg_client
 
 
 class OntoSpeciesAligner:
-    CHEMICAL_CLASS_KEY_PREFIX = "ontospecies:chemical_classes:"
-    CHEMICAL_CLASS_INDEX_NAME = "idx:chemical_classes_vss"
-    KNN_QUERY = (
-        Query("(*)=>[KNN 3 @vector $query_vector AS vector_score]")
-        .sort_by("vector_score")
-        .return_fields("vector_score", "label")
-        .dialect(2)
-    )
+    CHEMICAL_CLASSES_KEY = "ontospecies:chemical_classes"
+    USES_KEY = "ontospecies:uses"
 
     def __init__(
         self,
-        kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
-        embedder: Annotated[IEmbedder, Depends(get_embedder)],
+        kg_client: KgClient,
+        docs_retriever: DocsRetriever,
         cosine_similarity_threshold: float = 0.5,
     ):
-        self.redis_client = get_redis_client()
+
         self.kg_client = kg_client
-        self.embedder = embedder
+        self.docs_retriever = docs_retriever
         self.cosine_similarity_threshold = cosine_similarity_threshold
 
     def _get_chemical_classes(self):
@@ -49,65 +35,47 @@ SELECT DISTINCT ?Label WHERE {
             for x in self.kg_client.query(query)["results"]["bindings"]
         ]
 
-    def embed_chemical_classes(self):
-        chemical_classes = self._get_chemical_classes()
-        embeddings = self.embedder(chemical_classes).astype(np.float32).tolist()
-        vector_dim = len(embeddings[0])
+    def _get_uses(self):
+        query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
-        pipeline = self.redis_client.pipeline()
-        for i, (chemclass, embedding) in enumerate(zip(chemical_classes, embeddings)):
-            redis_key = self.CHEMICAL_CLASS_KEY_PREFIX + str(i)
-            pipeline.json().set(
-                redis_key, "$", dict(label=chemclass, label_embedding=embedding)
-            )
-        pipeline.execute()
-
-        schema = (
-            TextField("$.label", no_stem=True, as_name="label"),
-            VectorField(
-                "$.label_embedding",
-                "FLAT",
-                {"TYPE": "FLOAT32", "DIM": vector_dim, "DISTANCE_METRIC": "COSINE"},
-                as_name="vector",
-            ),
-        )
-        definition = IndexDefinition(
-            prefix=[self.CHEMICAL_CLASS_KEY_PREFIX], index_type=IndexType.JSON
-        )
-        self.redis_client.ft(self.CHEMICAL_CLASS_INDEX_NAME).create_index(
-            fields=schema, definition=definition
-        )
-
-    @cache
-    def does_index_exist(self, index_name: str):
-        if self.redis_client.ft(index_name).info():
-            return True
-        return False
+SELECT DISTINCT ?Label WHERE {
+    ?s a os:Use ; rdfs:label ?Label .
+}"""
+        return [
+            x["Label"]["value"]
+            for x in self.kg_client.query(query)["results"]["bindings"]
+        ]
+    
+    def _filter(self, docs_scores: List[Tuple[str, float]]):
+        """Filters for docs below cosine similarity threshold. 
+        If all docs are below the threshold, return the first doc."""
+        docs = [doc for doc, score in docs_scores if score < self.cosine_similarity_threshold]
+        if not docs:
+            docs = [docs_scores[0][0]]
+        return docs
 
     def align_chemical_classes(self, chemical_classes: List[str]):
-        if not self.does_index_exist(self.CHEMICAL_CLASS_INDEX_NAME):
-            self.embed_chemical_classes()
+        docs_scores_lst = self.docs_retriever.retrieve(
+            queries=chemical_classes,
+            key=self.CHEMICAL_CLASSES_KEY,
+            docs_getter=self._get_chemical_classes,
+        )
+        return [self._filter(docs_scores) for docs_scores in docs_scores_lst]
+        
 
-        encoded_queries = self.embedder(chemical_classes).astype(np.float32)
+    def align_uses(self, uses: List[str]):
+        docs_scores_lst = self.docs_retriever.retrieve(
+            queries=uses,
+            key=self.USES_KEY,
+            docs_getter=self._get_uses,
+        )
+        return [self._filter(docs_scores) for docs_scores in docs_scores_lst]
 
-        aligned_lst: List[List[str]] = []
-        for encoded_query in encoded_queries:
-            docs = (
-                self.redis_client.ft(self.CHEMICAL_CLASS_INDEX_NAME)
-                .search(
-                    self.KNN_QUERY, {"query_vector": encoded_query.tobytes()}
-                )
-                .docs
-            )
-            filtered_docs = [
-                doc
-                for doc in docs
-                if float(doc.vector_score) < self.cosine_similarity_threshold
-            ]
-            if not filtered_docs:
-                aligned = [docs[0].label]
-            else:
-                aligned = [doc.label for doc in filtered_docs]
-            aligned_lst.append(aligned)
 
-        return aligned_lst
+@cache
+def get_ontospecies_aligner(
+    kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
+    docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
+):
+    return OntoSpeciesAligner(kg_client, docs_retriever)

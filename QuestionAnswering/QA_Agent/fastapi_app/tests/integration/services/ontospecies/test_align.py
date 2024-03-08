@@ -1,3 +1,4 @@
+from services.retrieve_docs import DocsRetriever
 from services.embed import TritonMPNetEmbedder
 from services.kg_client import KgClient
 from services.connector.ontospecies.align import OntoSpeciesAligner
@@ -25,7 +26,8 @@ class TestOntoSpeciesAligner:
             }
         )
         embedder = TritonMPNetEmbedder(url="localhost:8001")
-        aligner = OntoSpeciesAligner(kg_client=kg_client, embedder=embedder)
+        docs_retriever = DocsRetriever(embedder)
+        aligner = OntoSpeciesAligner(kg_client=kg_client, docs_retriever=docs_retriever)
 
         chemical_classes = ["Dithiane", "alcohol compound"]
 
