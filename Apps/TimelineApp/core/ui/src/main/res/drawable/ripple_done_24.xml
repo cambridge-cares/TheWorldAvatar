@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-android:color="@color/dark_grey">
+android:color="?attr/colorSurface">
 <item class="@class/mask" android:drawable="@drawable/round_mask"/>
 <item class="@class/background">
     <vector android:height="24dp" android:tint="#FFFFFF"
