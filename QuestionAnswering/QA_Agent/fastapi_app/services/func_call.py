@@ -23,6 +23,7 @@ class OpenAIFuncCaller(IFuncCaller):
             messages=[{"role": "user", "content": query}],
             tools=[{"type": "function", "function": func} for func in funcs],
             tool_choice="auto",
+            temperature=0
         )
         func = response.choices[0].message.tool_calls[0].function
         # TODO: type-check and handle error at json.loads

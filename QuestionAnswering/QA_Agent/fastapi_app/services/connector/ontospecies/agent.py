@@ -3,6 +3,7 @@ from typing import Annotated, Dict, List, Tuple
 
 from fastapi import Depends
 
+from model.qa import QAData
 from model.constraint import CompoundNumericalConstraint
 from services.kg_client import KgClient
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
@@ -89,6 +90,7 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
     ):
         species_iris = self.species_linker.link(species)
 
+        vars = ["IRI"] + [key.value for key in attr_keys]
         bindings: List[dict] = []
         for iri in species_iris:
             datum = dict(IRI=iri)
@@ -96,7 +98,7 @@ SELECT DISTINCT ?Value ?Unit ?ReferenceStateValue ?ReferenceStateUnit WHERE {{{{
                 datum[key.value] = self.lookup_iri_attribute(iri, key)
             bindings.append(datum)
 
-        return bindings
+        return QAData(vars=vars, bindings=bindings)
 
     def lookup_iri_label(self, species_iri: str):
         query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -167,7 +169,8 @@ SELECT DISTINCT ?Label WHERE {
         properties: List[
             Tuple[SpeciesPropertyAttrKey, CompoundNumericalConstraint]
         ] = [],
-    ) -> List[str]:
+    ):
+        vars = []
         patterns = []
 
         if chemical_classes:
@@ -177,13 +180,14 @@ SELECT DISTINCT ?Label WHERE {
 
             for i, chemclass_options in enumerate(aligned_chemical_classes):
                 varnode = "?ChemicalClassLabel" + str(i)
+                vars.append(varnode)
                 values = ['"{val}"'.format(val=val) for val in chemclass_options]
                 patterns.extend(
                     [
                         "VALUES {varnode} {{ {values} }}".format(
                             varnode=varnode, values=" ".join(values)
                         ),
-                        "?Species (a|!a)+ [ a os:ChemicalClass ; rdfs:label {varnode} ] .".format(
+                        "?IRI (a|!a)+ [ a os:ChemicalClass ; rdfs:label {varnode} ] .".format(
                             varnode=varnode
                         ),
                     ]
@@ -196,21 +200,20 @@ SELECT DISTINCT ?Label WHERE {
 
             for i, use_options in enumerate(aligned_uses):
                 varnode = "?UseLabel" + str(i)
+                vars.append(varnode)
                 values = ['"{val}"'.format(val=val) for val in use_options]
                 patterns.extend(
                     [
                         "VALUES {varnode} {{ {values} }}".format(
                             varnode=varnode, values=" ".join(values)
                         ),
-                        "?Species os:hasUse/rdfs:label {varnode} .".format(
-                            varnode=varnode
-                        ),
+                        "?IRI os:hasUse/rdfs:label {varnode} .".format(varnode=varnode),
                     ]
                 )
 
         for key, compound_constraint in properties:
             patterns.append(
-                "?Species os:has{key}/os:value ?{key}Value .".format(key=key.value)
+                "?IRI os:has{key}/os:value ?{key}Value .".format(key=key.value)
             )
             atomic_constraints = [
                 "?{key}Value {operator} {operand}".format(
@@ -228,20 +231,52 @@ SELECT DISTINCT ?Label WHERE {
         query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
-SELECT DISTINCT ?Species WHERE {{
+SELECT DISTINCT ?IRI (MIN(?Label) AS ?label) {vars} WHERE {{
+?IRI rdfs:label ?Label .
 {patterns}
-}}""".format(
-            patterns="\n".join(patterns)
+}}
+GROUP BY ?IRI""".format(
+            vars=" ".join(
+                [
+                    '(GROUP_CONCAT(DISTINCT {var}; SEPARATOR=", ") AS {var}Group)'.format(
+                        var=var
+                    )
+                    for var in vars
+                ]
+            ),
+            patterns="\n".join(patterns),
         )
 
         logger.info("SPARQL query: " + query)
+        response = self.kg_client.query(query)
 
-        iris = [
-            x["Species"]["value"]
-            for x in self.kg_client.query(query)["results"]["bindings"]
-        ]
-        labels = [self.lookup_iri_label(iri) for iri in iris]
-        return [dict(IRI=iri, label=label) for iri, label in zip(iris, labels)]
+        # Combine use and chemical class values into a single field each
+        vars = response["head"]["vars"]
+        chemclass_vars = [x for x in vars if x.startswith("ChemicalClass")]
+        use_vars = [x for x in vars if x.startswith("Use")]
+        other_vars = [x for x in vars if x not in chemclass_vars and x not in use_vars]
+
+        vars = list(other_vars)
+        if chemclass_vars:
+            vars.append("chemical_classes")
+        if use_vars:
+            vars.append("uses")
+
+        bindings = []
+        for binding in response["results"]["bindings"]:
+            binding = {k: v["value"] for k, v in binding.items()}
+            datum = {k: v for k, v in binding.items() if k in other_vars}
+            if chemclass_vars:
+                datum["chemical_classes"] = ", ".join(
+                    [v for k, v in binding.items() if k in chemclass_vars]
+                )
+            if use_vars:
+                datum["uses"] = ", ".join(
+                    [v for k, v in binding.items() if k in use_vars]
+                )
+            bindings.append(datum)
+
+        return QAData(vars=vars, bindings=bindings)
 
 
 def get_ontospecies_agent(
