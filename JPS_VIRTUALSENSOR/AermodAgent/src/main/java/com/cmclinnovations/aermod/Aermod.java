@@ -105,7 +105,7 @@ public class Aermod {
             String inputLine = "\'Build" + i + "\' " + "1 " + build.getElevation();
             sb.append(inputLine).append(System.lineSeparator());
             LinearRing base = build.getFootprint();
-            String originalSrid = "EPSG:" + base.getSRID();
+            String originalSrid = build.getSrid();
             inputLine = base.getNumPoints() + " " + build.getHeight();
             sb.append(inputLine).append(System.lineSeparator());
 

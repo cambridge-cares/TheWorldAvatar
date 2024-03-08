@@ -37,8 +37,9 @@ public class Building {
         return height;
     }
 
+    // all polygons queried via ontop is in 4326
     public String getSrid() {
-        return "EPSG:" + footPrint.getSRID();
+        return "EPSG:4326";
     }
 
     public void setElevation(double elevation) {
