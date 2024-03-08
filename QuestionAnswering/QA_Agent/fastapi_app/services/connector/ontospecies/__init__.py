@@ -1,26 +1,18 @@
 import logging
 import time
-from typing import List, Type
+from typing import Annotated, List
+from fastapi import Depends
 
 import unit_parse
 
 from model.qa import QAData, QAStep
-from services.func_call import get_func_caller
-from services.utils.parse import ConstraintParser, SchemaParser
-from services.nearest_neighbor import NNRetriever
+from services.kg_client import KgClient
+from services.utils.parse import ConstraintParser, get_constraint_parser
 from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
 from services.connector.agent_connector import IAgentConnector
-from .constants import (
-    SpeciesAttrKey,
-    SpeciesChemicalClassAttrKey,
-    SpeciesUseAttrKey,
-    SpeciesIdentifierAttrKey,
-    SpeciesPropertyAttrKey,
-)
 from .kg_client import get_ontospecies_kg_client
-from .store import get_ontospecies_literal_store
-from .agent import OntoSpeciesAgent
-from .align import OntoSpeciesAligner
+from .agent import OntoSpeciesAgent, get_ontospecies_agent
+from .align import OntoSpeciesAligner, get_ontospecies_aligner
 
 logger = logging.getLogger(__name__)
 
@@ -79,23 +71,17 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         },
     ]
 
-    _SPECIES_ATTR_CLSES: List[Type[SpeciesAttrKey]] = [
-        SpeciesChemicalClassAttrKey,
-        SpeciesUseAttrKey,
-        SpeciesIdentifierAttrKey,
-        SpeciesPropertyAttrKey,
-    ]
-    _SPECIES_ATTR_KEYS = [x.value for cls in _SPECIES_ATTR_CLSES for x in cls]
-
-    def __init__(self, nn_retriever: NNRetriever):
-        self.kg_client = get_ontospecies_kg_client()
-        self.literal_store = get_ontospecies_literal_store()
-        self.agent = OntoSpeciesAgent()
-        self.aligner = OntoSpeciesAligner()
-        # self.nn_retriever = nn_retriever
-        self.constraint_parser = ConstraintParser(
-            schema_parser=SchemaParser(func_call_predictor=get_func_caller())
-        )
+    def __init__(
+        self,
+        kg_client: KgClient,
+        ontospecies_agent: OntoSpeciesAgent,
+        ontospecies_aligner: OntoSpeciesAligner,
+        constraint_parser: Annotated[ConstraintParser, Depends(get_constraint_parser)],
+    ):
+        self.kg_client = kg_client
+        self.agent = ontospecies_agent
+        self.aligner = ontospecies_aligner
+        self.constraint_parser = constraint_parser
 
     @classmethod
     def get_funcs(cls):
@@ -112,7 +98,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
 
         logger.info("Aligning attribute keys: " + str(attributes))
         timestamp = time.time()
-        attr_keys = self._align_attribute_keys(attributes)
+        attr_keys = self.aligner.align_attribute_keys(attributes)
         latency = time.time() - timestamp
         logger.info("Aligned attribute keys: " + str(attr_keys))
         steps.append(
@@ -134,50 +120,44 @@ class OntoSpeciesAgentConnector(IAgentConnector):
 
         return steps, QAData(vars=list(bindings[0].keys()), bindings=bindings)
 
+    def _convert_units(self, constraint: AtomicNumericalConstraint):
+        operand = constraint.operand
+        unit = constraint.unit
+        if constraint.unit:
+            try:
+                quantity = unit_parse.parser(
+                    " ".join([str(constraint.operand), constraint.unit])
+                )
+                while isinstance(quantity, list):
+                    quantity = quantity[0]
+                quantity = quantity.to_base_units()  # meter/kg/second
+                if str(quantity.units) == "kg / mol":
+                    quantity = quantity.to_root_units()  # meter/gram/second
+                unit = str(quantity.units)
+                operand = quantity.magnitude
+            except:
+                pass
+        return AtomicNumericalConstraint(
+            operator=constraint.operator, operand=operand, unit=unit
+        )
+
     def _parse_property_constraints(self, properties: List[str]):
         property_constraints = [self.constraint_parser.parse(x) for x in properties]
 
-        property_constraints_unit_converted = []
-        for _, compound_constraint in property_constraints:
-            atomic_constraints = []
-            for constraint in compound_constraint.constraints:
-                operand = constraint.operand
-                unit = constraint.unit
-                if constraint.unit:
-                    try:
-                        quantity = unit_parse.parser(
-                            " ".join([str(constraint.operand), constraint.unit])
-                        )
-                        while isinstance(quantity, list):
-                            quantity = quantity[0]
-                        quantity = quantity.to_base_units()  # meter/kg/second
-                        if str(quantity.units) == "kg / mol":
-                            quantity = quantity.to_root_units()  # meter/gram/second
-                        unit = str(quantity.units)
-                        operand = quantity.magnitude
-                    except:
-                        pass
-                atomic_constraints.append(
-                    AtomicNumericalConstraint(
-                        operator=constraint.operator, operand=operand, unit=unit
-                    )
-                )
-            property_constraints_unit_converted.append(
-                CompoundNumericalConstraint(
-                    logical_operator=compound_constraint.logical_operator,
-                    constraints=atomic_constraints,
-                )
+        property_constraints_unit_converted = [
+            CompoundNumericalConstraint(
+                logical_operator=compound_constraint.logical_operator,
+                constraints=[
+                    self._convert_units(constraint)
+                    for constraint in compound_constraint.constraints
+                ],
             )
-
-        aligned_keys = [
-            SpeciesPropertyAttrKey(
-                self.nn_retriever.retrieve(
-                    documents=[x.value for x in SpeciesPropertyAttrKey],
-                    queries=["".join([x.capitalize() for x in key.split()])],
-                )[0]
-            )
-            for key, _ in property_constraints
+            for _, compound_constraint in property_constraints
         ]
+        aligned_keys = self.aligner.align_property_keys(
+            [key for key, _ in property_constraints]
+        )
+
         return [
             (aligned_key, constraint)
             for aligned_key, constraint in zip(
@@ -196,29 +176,50 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         if chemical_classes:
             logger.info("Aligning chemical class labels...")
             timestamp = time.time()
-            chemical_classes = self._align_chemical_classes(chemical_classes)
+            aligned_chemical_classes = self.aligner.align_chemical_classes(
+                chemical_classes
+            )
             latency = time.time() - timestamp
-            logger.info("Aligned chemical classes: " + str(chemical_classes))
-            steps.append(QAStep(action="align_chemical_classes", arguments=chemical_classes, latency=latency))
+            logger.info("Aligned chemical classes: " + str(aligned_chemical_classes))
+            steps.append(
+                QAStep(
+                    action="align_chemical_classes",
+                    arguments=chemical_classes,
+                    latency=latency,
+                )
+            )
+        else:
+            aligned_chemical_classes = []
 
         if uses:
             logger.info("Aligning use labels...")
             timestamp = time.time()
-            uses = self._align_uses(uses)
+            aligned_uses = self.aligner.align_uses(uses)
             latency = time.time() - timestamp
-            logger.info("Aligned uses: " + str(uses))
+            logger.info("Aligned uses: " + str(aligned_uses))
             steps.append(QAStep(action="align_uses", arguments=uses, latency=latency))
+        else:
+            aligned_uses = []
 
         if properties:
             logger.info("Parsing property constraints...")
+            timestamp = time.time()
             property_constraints = self._parse_property_constraints(properties)
+            latency = time.time() - timestamp
             logger.info("Parsed property constraints: " + str(property_constraints))
+            steps.append(
+                QAStep(
+                    action="align_property_constraints",
+                    arguments=properties,
+                    latency=latency,
+                )
+            )
         else:
             property_constraints = []
 
         timestamp = time.time()
         species_iris = self.agent.find_chemicalSpecies(
-            chemical_classes, uses, property_constraints
+            aligned_chemical_classes, aligned_uses, property_constraints
         )
         bindings = [
             dict(IRI=iri, label=self.literal_store.get_label(iri))
@@ -245,3 +246,19 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             vars=["IRI", "label"],
             bindings=bindings,
         )
+
+
+def get_ontospecies_agent_connector_getter(
+    kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
+    ontospecies_agent: Annotated[OntoSpeciesAgent, Depends(get_ontospecies_agent)],
+    ontospecies_aligner: Annotated[
+        OntoSpeciesAligner, Depends(get_ontospecies_aligner)
+    ],
+    constraint_parser: Annotated[ConstraintParser, Depends(get_constraint_parser)],
+):
+    return lambda: OntoSpeciesAgentConnector(
+        kg_client=kg_client,
+        ontospecies_agent=ontospecies_agent,
+        ontospecies_aligner=ontospecies_aligner,
+        constraint_parser=constraint_parser,
+    )

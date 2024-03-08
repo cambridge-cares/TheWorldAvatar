@@ -1,7 +1,10 @@
 import logging
-from typing import Dict, List, Tuple
+from typing import Annotated, Dict, List, Tuple
+
+from fastapi import Depends
 
 from model.constraint import CompoundNumericalConstraint
+from services.kg_client import KgClient
 from .kg_client import get_ontospecies_kg_client
 from .constants import (
     SpeciesAttrKey,
@@ -10,15 +13,15 @@ from .constants import (
     SpeciesPropertyAttrKey,
     SpeciesUseAttrKey,
 )
-from .link_entity import SpeciesLinker
+from .link_entity import SpeciesLinker, get_species_linker
 
 logger = logging.getLogger(__name__)
 
 
 class OntoSpeciesAgent:
-    def __init__(self):
-        self.kg_client = get_ontospecies_kg_client()
-        self.species_linker = SpeciesLinker()
+    def __init__(self, kg_client: KgClient, species_linker: SpeciesLinker):
+        self.kg_client = kg_client
+        self.species_linker = species_linker
 
     def lookup_iri_attribute(
         self, species_iri: str, attr_key: SpeciesAttrKey
@@ -140,3 +143,10 @@ SELECT DISTINCT ?Species WHERE {{
             x["Species"]["value"]
             for x in self.kg_client.query(query)["results"]["bindings"]
         ]
+
+
+def get_ontospecies_agent(
+    kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
+    species_linker: Annotated[SpeciesLinker, Depends(get_species_linker)],
+):
+    return OntoSpeciesAgent(kg_client=kg_client, species_linker=species_linker)

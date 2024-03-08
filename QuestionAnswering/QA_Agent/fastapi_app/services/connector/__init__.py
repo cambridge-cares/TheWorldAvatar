@@ -1,10 +1,12 @@
 from functools import cache
 import logging
-from typing import Annotated, List
+from typing import Annotated, Callable, List
 
 from fastapi import Depends
-from services.nearest_neighbor import NNRetriever, get_nn_retriever
-from services.connector.ontospecies import OntoSpeciesAgentConnector
+from services.connector.ontospecies import (
+    OntoSpeciesAgentConnector,
+    get_ontospecies_agent_connector_getter,
+)
 from services.connector.agent_connector import IAgentConnector
 from services.func_call import IFuncCaller, get_func_caller
 
@@ -36,11 +38,15 @@ class AgentConnectorMediator:
 
 
 @cache
-def get_agents(nn_retriever: Annotated[NNRetriever, Depends(get_nn_retriever)]):
-    return tuple([OntoSpeciesAgentConnector(nn_retriever)])
+def get_agents(
+    ontospecies_agent_connector_getter: Annotated[
+        Callable[[], OntoSpeciesAgentConnector],
+        Depends(get_ontospecies_agent_connector_getter),
+    ]
+):
+    return [ontospecies_agent_connector_getter()]
 
 
-@cache
 def get_agent_connector_mediator(
     func_call_predictor: Annotated[IFuncCaller, Depends(get_func_caller)],
     agents: Annotated[List[IAgentConnector], Depends(get_agents)],

@@ -1,16 +1,28 @@
 from functools import cache
-from typing import Annotated, List, Tuple
+from typing import Annotated, List, Tuple, Type
 
 from fastapi import Depends
 
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from services.kg_client import KgClient
+from .constants import (
+    SpeciesAttrKey,
+    SpeciesChemicalClassAttrKey,
+    SpeciesIdentifierAttrKey,
+    SpeciesPropertyAttrKey,
+    SpeciesUseAttrKey,
+)
 from .kg_client import get_ontospecies_kg_client
 
 
 class OntoSpeciesAligner:
-    CHEMICAL_CLASSES_KEY = "ontospecies:chemical_classes"
-    USES_KEY = "ontospecies:uses"
+    _SPECIES_ATTR_CLSES: List[Type[SpeciesAttrKey]] = [
+        SpeciesChemicalClassAttrKey,
+        SpeciesUseAttrKey,
+        SpeciesIdentifierAttrKey,
+        SpeciesPropertyAttrKey,
+    ]
+    _SPECIES_ATTR_KEYS = [x.value for cls in _SPECIES_ATTR_CLSES for x in cls]
 
     def __init__(
         self,
@@ -46,11 +58,15 @@ SELECT DISTINCT ?Label WHERE {
             x["Label"]["value"]
             for x in self.kg_client.query(query)["results"]["bindings"]
         ]
-    
+
     def _filter(self, docs_scores: List[Tuple[str, float]]):
-        """Filters for docs below cosine similarity threshold. 
+        """Filters for docs below cosine similarity threshold.
         If all docs are below the threshold, return the first doc."""
-        docs = [doc for doc, score in docs_scores if score < self.cosine_similarity_threshold]
+        docs = [
+            doc
+            for doc, score in docs_scores
+            if score < self.cosine_similarity_threshold
+        ]
         if not docs:
             docs = [docs_scores[0][0]]
         return docs
@@ -58,19 +74,46 @@ SELECT DISTINCT ?Label WHERE {
     def align_chemical_classes(self, chemical_classes: List[str]):
         docs_scores_lst = self.docs_retriever.retrieve(
             queries=chemical_classes,
-            key=self.CHEMICAL_CLASSES_KEY,
+            key="ontospecies:chemical_classes",
             docs_getter=self._get_chemical_classes,
         )
         return [self._filter(docs_scores) for docs_scores in docs_scores_lst]
-        
 
     def align_uses(self, uses: List[str]):
         docs_scores_lst = self.docs_retriever.retrieve(
             queries=uses,
-            key=self.USES_KEY,
+            key="ontospecies:uses",
             docs_getter=self._get_uses,
         )
         return [self._filter(docs_scores) for docs_scores in docs_scores_lst]
+
+    def align_property_keys(self, properties: List[str]):
+        queries = [
+            "".join([w.capitalize() for w in prop.split()]) for prop in properties
+        ]
+        docs_scores_lst = self.docs_retriever.retrieve(
+            queries=queries,
+            key="ontospecies:property_keys",
+            docs_getter=lambda: [x.value for x in SpeciesPropertyAttrKey],
+            k=1,
+        )
+        return [
+            SpeciesPropertyAttrKey(docs_scores[0][0]) for docs_scores in docs_scores_lst
+        ]
+
+    def align_attribute_keys(self, attributes: List[str]):
+        queries = [
+            "".join([w.capitalize() for w in attr.split()]) for attr in attributes
+        ]
+        docs_scores_lst = self.docs_retriever.retrieve(
+            queries=queries,
+            key="ontospecies:property_keys",
+            docs_getter=lambda: self._SPECIES_ATTR_KEYS,
+            k=1,
+        )
+        return [
+            SpeciesPropertyAttrKey(docs_scores[0][0]) for docs_scores in docs_scores_lst
+        ]
 
 
 @cache

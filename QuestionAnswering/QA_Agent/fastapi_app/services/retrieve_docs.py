@@ -18,13 +18,6 @@ class DocsRetriever:
     INDEX_NAME_TEMPLATE = "idx:{key}_vss"
     KEY_PREFIX_TEMPLATE = "{key}:"
 
-    KNN_QUERY = (
-        Query("(*)=>[KNN 3 @vector $query_vector AS vector_score]")
-        .sort_by("vector_score")
-        .return_fields("vector_score", "label")
-        .dialect(2)
-    )
-
     def __init__(self, embedder: IEmbedder):
         self.redis_client = get_redis_client()
         self.embedder = embedder
@@ -37,6 +30,14 @@ class DocsRetriever:
             return False
         except:
             return False
+
+    def _make_knn_query(self, k: int):
+        return (
+            Query("(*)=>[KNN {k} @vector $query_vector AS vector_score]".format(k=k))
+            .sort_by("vector_score")
+            .return_fields("vector_score", "label")
+            .dialect(2)
+        )
 
     def _embed(self, docs: List[str], doc_key_prefix: str, index_name: str):
         embeddings = self.embedder(docs).astype(np.float32).tolist()
@@ -64,16 +65,12 @@ class DocsRetriever:
             fields=schema, definition=definition
         )
 
-    def _retrieve(self, encoded_query: np.ndarray, index_name: str):
-        return [
-            (doc.label, float(doc.vector_score))
-            for doc in self.redis_client.ft(index_name)
-            .search(self.KNN_QUERY, {"query_vector": encoded_query.tobytes()})
-            .docs
-        ]
-
     def retrieve(
-        self, queries: List[str], key: str, docs_getter: Callable[[], List[str]]
+        self,
+        queries: List[str],
+        key: str,
+        docs_getter: Callable[[], List[str]],
+        k: int = 3,
     ):
         index_name = self.INDEX_NAME_TEMPLATE.format(key=key)
         if not self.does_index_exist(index_name):
@@ -85,13 +82,17 @@ class DocsRetriever:
             )
 
         encoded_queries = self.embedder(queries).astype(np.float32)
-
+        knn_query = self._make_knn_query(k)
         return [
-            self._retrieve(encoded_query, index_name)
+            [
+                (doc.label, float(doc.vector_score))
+                for doc in self.redis_client.ft(index_name)
+                .search(knn_query, {"query_vector": encoded_query.tobytes()})
+                .docs
+            ]
             for encoded_query in encoded_queries
         ]
 
 
-@cache
 def get_docs_retriever(embedder: Annotated[IEmbedder, Depends(get_embedder)]):
     return DocsRetriever(embedder)
