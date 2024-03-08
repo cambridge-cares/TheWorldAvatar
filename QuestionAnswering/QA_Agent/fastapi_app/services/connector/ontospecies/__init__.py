@@ -56,21 +56,21 @@ class OntoSpeciesAgentConnector(IAgentConnector):
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "description": "Name of the desired chemical class e.g. aldehyde",
+                            "description": "Name of chemical class e.g. aldehyde, alcohol",
                         },
                     },
                     "uses": {
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "description": "Usage or application of the chemical species e.g. metabolite",
+                            "description": "Usage or application e.g. solvent",
                         },
                     },
                     "properties": {
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "description": "Criterion of a numerical property e.g. boiling point > 100°C",
+                            "description": "Physical quantity e.g. boiling point below 100°C or 120°C",
                         },
                     },
                 },
@@ -135,7 +135,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         )
 
         timestamp = time.time()
-        bindings = self.agent.lookup_chemicalSpecies_attributes(species, attr_keys)
+        data = self.agent.lookup_chemicalSpecies_attributes(species, attr_keys)
         latency = time.time() - timestamp
         steps.append(
             QAStep(
@@ -147,7 +147,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             )
         )
 
-        return steps, QAData(vars=list(bindings[0].keys()), bindings=bindings)
+        return steps, data
 
     def _convert_units(self, constraint: AtomicNumericalConstraint):
         operand = constraint.operand
@@ -233,7 +233,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             property_constraints = []
 
         timestamp = time.time()
-        bindings = self.agent.find_chemicalSpecies(
+        data = self.agent.find_chemicalSpecies(
             chemical_classes, uses, property_constraints
         )
         latency = time.time() - timestamp
@@ -253,10 +253,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             )
         )
 
-        return steps, QAData(
-            vars=["IRI", "label"],
-            bindings=bindings,
-        )
+        return steps, data
 
 
 def get_ontospecies_agent_connector_getter(
