@@ -39,7 +39,7 @@ public class CarparkGeospatialClient {
                 geometry.put("coordinates", new JSONArray().put(lon).put(lat));
                 properties.put("iri", carparkIRI);
                 properties.put("carpark_uuid", carparkIRI.split("/ontocarpark/")[1]);
-                properties.put("carpark_name", carparkName);
+                properties.put("name", carparkName);
                 properties.put("geom_uuid", geomUuid);
                 properties.put("type", "carpark");
 
