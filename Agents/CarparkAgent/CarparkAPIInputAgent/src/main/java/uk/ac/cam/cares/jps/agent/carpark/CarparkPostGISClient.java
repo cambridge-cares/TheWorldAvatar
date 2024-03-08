@@ -67,7 +67,7 @@ public class CarparkPostGISClient extends ContainerClient {
 	 * @return True or False
 	 */
 	public boolean checkCarparkExists(String carparkIRI, Connection conn) {
-		String condition = String.format("carpark_iri = '%s'", carparkIRI);
+		String condition = String.format("iri = '%s'", carparkIRI);
             return getContext(conn).select(DSL.count()).from(CarparkAgent.LAYERNAME).where(condition).fetchOne(0, int.class) > 0;
 	}
 
