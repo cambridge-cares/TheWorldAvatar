@@ -89,7 +89,7 @@ class QueryData:
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
             			
-			query = create_sparql_prefix('powreal') + \
+            query = create_sparql_prefix('powreal') + \
                     create_sparql_prefix('rdf') + \
 					create_sparql_prefix('xsd') + \
 					create_sparql_prefix('ontocape') + \

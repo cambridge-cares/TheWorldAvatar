@@ -4,7 +4,7 @@ from .error_handling.exceptions import KGException, TSException
 from .kg_utils.tsClientForUpdate import TSClientForUpdate
 from .cluster_model import ClusterModel
 from NTUEnergyClusterAgent.data_retrieval.query_data import QueryData
-from NTUEnergyClusterAgent.data_retrieval.query_timeseries import query_latest_timeseries
+from NTUEnergyClusterAgent.data_retrieval.query_timeseries import query_latest_timeseries, query_all_timeseries
 from NTUEnergyClusterAgent.data_instantiation.timeseries_instantiation import timeseries_instantiation
 
 from NTUEnergyClusterAgent.kg_utils.utils import QUERY_ENDPOINT, UPDATE_ENDPOINT
@@ -39,6 +39,7 @@ def check_stack_status():
                 DB_UPDATE_PASSWORD = DB_UPDATE_PASSWORD_STACK
                 QUERY_ENDPOINT = QUERY_ENDPOINT_STACK
                 UPDATE_ENDPOINT = UPDATE_ENDPOINT_STACK
+                logging.info("QUERY ENDPOINT: "+QUERY_ENDPOINT+" UPDATE_ENDPOINT: "+UPDATE_ENDPOINT)
             else:
                 logging.info("The stack parameter was set to false. Looking for local blazegraph and RDB. ")
         except ValueError:
@@ -52,18 +53,18 @@ def default():
     check_stack_status()
 
     logging.info(os.getcwd())
-    model = ClusterModel(NN_model_filepath="/app/NTUEnergyClusterAgent/models/BNN_model.xlsx")
+    model = ClusterModel("/app/NTUEnergyClusterAgent/models/BNN_model.xlsx")
 
     all_P_values = []
 
     #iterate over controllable buses
     for bus_number in BUSES:
 
-        busNode_iri = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT, bus_number)
+        busNode_iri_response = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT, bus_number)
 
-        busNode_iri = busNode_iri['busNode']
+        busNode_iri = busNode_iri_response[0]['busNode']
 
-        logging.info("running for busnode:" + busNode_iri)
+        logging.info("Getting busnode:" + busNode_iri)
         try:
             P_iri = QueryData.query_P_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
             
@@ -74,7 +75,7 @@ def default():
         try:
             # get latest
             P_ts = query_latest_timeseries(P_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
-
+            
         except Exception as ex:
             logging.error("SPARQL query for P timeseries not successful.")
             raise KGException("SPARQL query for P timeseries not successful.") from ex
@@ -90,14 +91,21 @@ def default():
 
         all_P_values.append(P_values)
 
-    probabilities = model.run_neural_net(all_P_values)
+    try:
+        probabilities = model.run_neural_net(all_P_values)
+    except Exception as ex:
+        raise Exception("Unable to run BNN") from ex
 
     #assign cluster membership
     membership = []
-    size = probabilities.shape      
+    size = np.shape(probabilities)
+
     for i in range(0, size[0]):
         bus_probabilities = probabilities[i,:]
         cluster = np.argmax(bus_probabilities)
-        membership.append(cluster)
+        membership.append(int(cluster))
 
-    return membership
+    logging.info("BNN successful. Membership: ")
+    logging.info(membership)
+
+    return jsonify(membership)

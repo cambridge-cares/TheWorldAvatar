@@ -18,8 +18,12 @@ class ClusterModel:
 
     def run_neural_net(self, input_data):
 
+        logging.info("Running BNN")
+
         try:
-            size = input_data.shape           
+            data = np.asarray(input_data)
+            size = data.shape           
+            
             if size[0] != self.input_size:
                 logging.error("input size:",size[0])
                 raise Exception("Input size does not match expected size")
@@ -28,7 +32,7 @@ class ClusterModel:
                 logging.error("input length:",size[1])
                 raise Exception("Input length exceeds 1")
             
-            predictions = self.predict(input_data)
+            predictions = self.predict(data)
 
             reshaped_predications = np.reshape(predictions, self.output_shape, 'F')
             return reshaped_predications
