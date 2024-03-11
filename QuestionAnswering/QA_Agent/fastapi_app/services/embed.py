@@ -9,7 +9,10 @@ from tritonclient.grpc import InferenceServerClient, InferInput
 from transformers import AutoTokenizer
 
 
-from config import Settings, get_settings
+from config import (
+    TextEmbeddingSettings,
+    get_text_embedding_settings,
+)
 
 
 class IEmbedder(ABC):
@@ -51,17 +54,17 @@ class TritonMPNetEmbedder(IEmbedder):
         url: str = "localhost:8001",
         triton_model: str = "mpnet",
         tokenizer_model: str = "sentence-transformers/all-mpnet-base-v2",
-        batch_size: int=256
+        batch_size: int = 256,
     ):
         self.client = InferenceServerClient(url)
         self.triton_model = triton_model
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_model)
-        self.batch_size=batch_size
+        self.batch_size = batch_size
 
     def __call__(self, documents: List[str]):
         arrs = []
         for i in range(0, len(documents), self.batch_size):
-            batch = documents[i: i + self.batch_size]
+            batch = documents[i : i + self.batch_size]
             encoded = self.tokenizer(batch, padding=True, return_tensors="np")
             input_tensors = [
                 InferInput(
@@ -71,13 +74,20 @@ class TritonMPNetEmbedder(IEmbedder):
                     "attention_mask", encoded.attention_mask.shape, datatype="INT64"
                 ).set_data_from_numpy(encoded.attention_mask),
             ]
-            response = self.client.infer(model_name=self.triton_model, inputs=input_tensors)
+            response = self.client.infer(
+                model_name=self.triton_model, inputs=input_tensors
+            )
             arrs.append(response.as_numpy("sentence_embedding"))
         return np.vstack(arrs)
 
 
-def get_embedder(settings: Annotated[Settings, Depends(get_settings)]):
-    if settings.embedding_service == "openai":
-        return OpenAIEmbedder()
+def get_embedder(
+    settings: Annotated[TextEmbeddingSettings, Depends(get_text_embedding_settings)]
+):
+    args = {k: getattr(settings, k) for k in ["url", "model"]}
+    args = {k: v for k, v in args.items() if v}
+
+    if settings.server == "openai":
+        return OpenAIEmbedder(**args)
     else:
-        return TritonMPNetEmbedder()
+        return TritonMPNetEmbedder(**args)
