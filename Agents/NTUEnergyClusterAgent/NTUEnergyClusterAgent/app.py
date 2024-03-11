@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, json
+from flask_cors import CORS
 
 from .error_handling.exceptions import KGException, TSException
 from .kg_utils.tsClientForUpdate import TSClientForUpdate
@@ -19,7 +20,7 @@ import numpy as np
 
 # Create the Flask app object
 app = Flask(__name__)
-
+CORS(app)
 
 # Check whether it is running in a stack
 def check_stack_status():
