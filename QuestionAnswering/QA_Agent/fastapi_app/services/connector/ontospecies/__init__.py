@@ -5,7 +5,7 @@ from fastapi import Depends
 
 import unit_parse
 
-from model.qa import QAData, QAStep
+from model.qa import QAStep
 from services.kg_client import KgClient
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from services.utils.parse import ConstraintParser, get_constraint_parser
@@ -70,11 +70,12 @@ class OntoSpeciesAgentConnector(IAgentConnector):
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "description": "Physical quantity e.g. boiling point below 100°C or 120°C",
+                            "description": "Physical quantity e.g. boiling point between 100°C and 120°C",
                         },
                     },
                 },
             },
+            "required": ["chemical_classes", "uses", "numerical_properties"]
         },
     ]
 
