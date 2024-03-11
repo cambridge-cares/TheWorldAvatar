@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
 from functools import cache
 import json
-from typing import List, Optional, Tuple
+from typing import Annotated, List, Optional, Tuple
+from fastapi import Depends
 
 from openai import OpenAI
+
+from config import FunctionCallingSettings, get_function_calling_settings
 
 
 class IFuncCaller(ABC):
@@ -30,6 +33,7 @@ class OpenAIFuncCaller(IFuncCaller):
         return func.name, json.loads(func.arguments)
 
 
-@cache
-def get_func_caller():
-    return OpenAIFuncCaller()
+def get_func_caller(settings: Annotated[FunctionCallingSettings, Depends(get_function_calling_settings)]):
+    args = {k: getattr(settings, k) for k in ["url", "model"]}
+    args = {k: v for k, v in args.items() if v}
+    return OpenAIFuncCaller(**args)
