@@ -649,7 +649,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontochemplant/GeneratedHeat">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#DataCentreProperty"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#FactoryProperty"/>
         <rdfs:comment>Calculated value of annual heat emission for a company&apos;s main emitting sources.</rdfs:comment>
@@ -741,10 +740,8 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#DesignCapacity">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#FactoryProperty"/>
         <rdfs:comment>Design capacity of a factory.</rdfs:comment>
-        <rdfs:comment>Design capacity of a factory. It can have units of mass, number of items or sales revenue achieved within a specific time period.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
         <rdfs:label>Design Capacity</rdfs:label>
     </owl:Class>
@@ -793,7 +790,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#FloorArea">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#DataCentreProperty"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#FactoryProperty"/>
         <rdfs:comment>The total floor area of an industrial facility</rdfs:comment>
@@ -852,7 +848,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#ITLoad">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#DataCentreProperty"/>
         <rdfs:comment>The total IT load power of a data centre at its typical utilisation rate.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
@@ -883,6 +878,7 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#IndustrialFacilityProperty">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment>A property of an industrial facility.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
         <rdfs:label>industrial facility property</rdfs:label>
@@ -959,7 +955,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#PlantCO2Emission">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#FactoryProperty"/>
         <rdfs:comment>Estimated value of annual CO2 emission for the entire factory.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
@@ -1056,7 +1051,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#SpecificEnergyConsumption">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#FactoryProperty"/>
         <rdfs:comment>Specific energy consumption of a factory. It refers to the quantity of energy used per unit mass of product or unit of sales revenue.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
