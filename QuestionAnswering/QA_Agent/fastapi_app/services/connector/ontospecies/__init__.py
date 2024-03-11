@@ -75,7 +75,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
                     },
                 },
             },
-            "required": ["chemical_classes", "uses", "numerical_properties"]
+            "required": ["chemical_classes", "uses", "numerical_properties"],
         },
     ]
 
@@ -132,7 +132,12 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         latency = time.time() - timestamp
         logger.info("Aligned attribute keys: " + str(attr_keys))
         steps.append(
-            QAStep(action="align_attribute_keys", arguments=attributes, latency=latency)
+            QAStep(
+                action="align_attribute_keys",
+                arguments=attributes,
+                results=[x.value for x in attr_keys],
+                latency=latency,
+            )
         )
 
         timestamp = time.time()
@@ -140,11 +145,11 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         latency = time.time() - timestamp
         steps.append(
             QAStep(
-                latency=latency,
                 action="lookup_attributes",
                 arguments=dict(
                     species=species, attributes=[key.value for key in attr_keys]
                 ),
+                latency=latency,
             )
         )
 
@@ -227,6 +232,10 @@ class OntoSpeciesAgentConnector(IAgentConnector):
                 QAStep(
                     action="align_property_constraints",
                     arguments=properties,
+                    results=[
+                        dict(key=key, constraint=str(constraint))
+                        for key, constraint in property_constraints
+                    ],
                     latency=latency,
                 )
             )
@@ -250,7 +259,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             ]
         steps.append(
             QAStep(
-                action="find_chemicalSpecies", arguments=[arguments], latency=latency
+                action="find_chemicalSpecies", arguments=arguments, latency=latency
             )
         )
 

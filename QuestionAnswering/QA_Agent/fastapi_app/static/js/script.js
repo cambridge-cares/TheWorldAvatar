@@ -167,7 +167,7 @@ const qaMetadataContainer = (function () {
     const tableContainer = document.getElementById("qa-steps-container")
 
     function displayQaSteps(steps) {
-        renderBootstrapTable(vars = ["action", "arguments", "latency"], bindings = steps, id = "qa-steps-table", containerElem = tableContainer)
+        renderBootstrapTable(vars = ["action", "arguments", "results", "latency"], bindings = steps, id = "qa-steps-table", containerElem = tableContainer)
         elem.style.display = "block"
     }
 
