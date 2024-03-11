@@ -81,7 +81,7 @@
         <rdfs:range rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
         <rdfs:comment>A relationship between a spatial entity and its address.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl"/>
-        <rdfs:label>has address</rdfs:label>
+        <rdfs:label>address</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -100,7 +100,7 @@
             </owl:Class>
         </rdfs:range>
         <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
-        <rdfs:label>has unit</rdfs:label>
+        <rdfs:label>unit</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -131,7 +131,7 @@
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
-        <rdfs:label>has value</rdfs:label>
+        <rdfs:label>value</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -144,7 +144,7 @@
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#Revenue"/>
         <rdfs:comment>A relationship between a company and its annual revenue</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsperformance/economicperformance/"/>
-        <rdfs:label>has revenue</rdfs:label>
+        <rdfs:label>revenue</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -177,7 +177,7 @@
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#DesignCapacity"/>
         <rdfs:comment>A relationship between a factory and its design capacity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has design capacity</rdfs:label>
+        <rdfs:label>design capacity</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -190,7 +190,7 @@
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#FloorArea"/>
         <rdfs:comment>A relation between an industrial facility and its gross floor area.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has floor area</rdfs:label>
+        <rdfs:label>floor area</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -210,7 +210,7 @@
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#GeneratedHeat"/>
         <rdfs:comment>A relationship between an entity and its annual heat emission.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has generated heat</rdfs:label>
+        <rdfs:label>generated heat</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -223,7 +223,7 @@
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#ITLoad"/>
         <rdfs:comment>A relation between a data centre and its IT load at the typical utilisation rate.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has IT load</rdfs:label>
+        <rdfs:label>IT load</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -236,7 +236,7 @@
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#IndustrialFacilityProperty"/>
         <rdfs:comment>A property assigned to an industrial facility.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has industrial facility property</rdfs:label>
+        <rdfs:label>industrial facility property</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -249,7 +249,7 @@
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#LandLotDetails"/>
         <rdfs:comment>A relationship between an address and land lot details.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has land lot details</rdfs:label>
+        <rdfs:label>land lot details</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -262,7 +262,7 @@
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
         <rdfs:comment>A relationship between a land lot and its area.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has lot area</rdfs:label>
+        <rdfs:label>lot area</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -275,7 +275,7 @@
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#PlantCO2Emission"/>
         <rdfs:comment>A relationship between a factory and its overall annual CO2 emission.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has plant CO2 emission</rdfs:label>
+        <rdfs:label>plant CO2 emission</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -288,7 +288,7 @@
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#PowerConsumption"/>
         <rdfs:comment>A relationship between an entity and its annual power consumption.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has power consumption</rdfs:label>
+        <rdfs:label>power consumption</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -301,7 +301,7 @@
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#SpecificEnergyConsumption"/>
         <rdfs:comment>A relationship between a chemical plant and its design capacity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has specific energy consumption</rdfs:label>
+        <rdfs:label>specific energy consumption</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -341,7 +341,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
         <rdfs:comment>A relationship between a building and its corresponding instance IRI in OntoCityGml.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
-        <rdfs:label>has OntoCityGML representation</rdfs:label>
+        <rdfs:label>OntoCityGML representation</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -367,7 +367,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment>A relationship between an address and its associated postal code.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl"/>
-        <rdfs:label>has postal code</rdfs:label>
+        <rdfs:label>postal code</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -379,7 +379,7 @@
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
         <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
-        <rdfs:label>has numerical value</rdfs:label>
+        <rdfs:label>numerical value</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -405,7 +405,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment>A relationship between a company and its main business activity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has business activity</rdfs:label>
+        <rdfs:label>business activity</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -417,7 +417,7 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany#Company"/>
         <rdfs:comment>An attribute of a Company.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has company property</rdfs:label>
+        <rdfs:label>company property</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -431,7 +431,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment>A relationship between a land lot and its associated ID.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has land lot number</rdfs:label>
+        <rdfs:label>land lot number</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -443,7 +443,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
         <rdfs:comment>A relationship between an entity and its latitude in EPSG24500.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has latitude in EPSG24500</rdfs:label>
+        <rdfs:label>latitude in EPSG24500</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -455,7 +455,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
         <rdfs:comment>A relationship between an entity and its longitude in EPSG24500.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has longitude in EPSG24500</rdfs:label>
+        <rdfs:label>longitude in EPSG24500</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -469,7 +469,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:comment>A relationship between a company and its number of employees.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has number of employees</rdfs:label>
+        <rdfs:label>number of employees</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -483,7 +483,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment>A relationship between a company and the production technology/process it uses.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has production technology</rdfs:label>
+        <rdfs:label>production technology</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -497,7 +497,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:comment>A relationship between a company and its SSIC code corresponding to sectoral description (Singapore specific).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has SSIC code</rdfs:label>
+        <rdfs:label>SSIC code</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -511,7 +511,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment>A relationship between a company and its sectoral description.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has sectoral description</rdfs:label>
+        <rdfs:label>sectoral description</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -526,7 +526,7 @@
         <rdfs:range rdf:resource="https://www.w3.org/TR/xmlschema11-2/#gYear"/>
         <rdfs:comment>A relationship between a company and its year of formation.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>has year of establishment</rdfs:label>
+        <rdfs:label>year of establishment</rdfs:label>
     </owl:DatatypeProperty>
     
 
