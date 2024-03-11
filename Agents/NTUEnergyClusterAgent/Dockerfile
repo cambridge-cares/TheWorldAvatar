@@ -1,6 +1,6 @@
 # This Dockerfile has been adapted from the VS Code example at https://code.visualstudio.com/docs/containers/quickstart-python
 # Reference published Docker image for Stack-Client resources to use
-FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM ghcr.io/cambridge-cares/stack-client:1.23.5 as stackclients
 
 # Base image is a lightweight version of Python
 FROM python:3.7.11-slim-buster
