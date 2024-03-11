@@ -106,6 +106,7 @@ PanelHandler.prototype.prepareMetaContainers = function(e, t) {
           blur: 0.9,
           gradient: {  // the gradient used if not given in the heatmap options object
         '.3': '#d9e7fc',
+		'.5': '#00ff00',
         '.65': '#2a7aed',
         '.8': '#fbd801',
         '.95': '#c91212'
@@ -113,24 +114,24 @@ PanelHandler.prototype.prepareMetaContainers = function(e, t) {
         },
         );
         let data = [
-        { x: 103.6818572460, y: 1.3419334155, value: 100 },   // School of Physical and Mathematical Sciences
-        { x: 103.6800064641, y: 1.3442181323, value: 100 },  // Nanyang Auditorium
-        { x: 103.6791746564, y: 1.3450496383, value: 100 },   // School of Biological Sciences
+        { x: 103.6818572460, y: 1.3419334155, value: 50 },   // School of Physical and Mathematical Sciences
+        //{ x: 103.6800064641, y: 1.3442181323, value: 50 },  // Nanyang Auditorium
+        //{ x: 103.6791746564, y: 1.3450496383, value: 100 },   // School of Biological Sciences
         { x: 103.6800881613, y: 1.3454565079, value: 100 },     // Block N1.3
         { x: 103.6796595995, y: 1.3467408413, value: 100 },     // Block N2
-        { x: 103.6800130775, y: 1.3473157834, value: 41 },     // Block N2.1
-        { x: 103.6757490809, y: 1.3445919035, value: 75 },     // Experimental Medicine Building
-        { x: 103.6854021333, y: 1.3442537009, value: 76 },     // Hall of Residence 4
+        { x: 103.6800130775, y: 1.3473157834, value: 100 },     // Block N2.1
+        { x: 103.6757490809, y: 1.3445919035, value: 100 },     // Experimental Medicine Building
+        { x: 103.6854021333, y: 1.3442537009, value: 100 },     // Hall of Residence 4
         { x: 103.6883786891, y: 1.3458209704, value: 100 },    // Pioneer Hall
-        { x: 103.6853405644, y: 1.3483400219, value: 80 },     // Canteen 2
-        { x: 103.6877703643, y: 1.3494060864, value: 40 },      // The Wave
-        { x: 103.6881162008, y: 1.3514382803, value: 21 },     // Nanyang Executive Centre
-        { x: 103.6859452065, y: 1.3539692593, value: 30 },      // Hall 10
-        { x: 103.6811869703, y: 1.3508321630, value: 30 }      // Hall 16
+        { x: 103.6853405644, y: 1.3483400219, value: 100 },     // Canteen 2
+        { x: 103.6877703643, y: 1.3494060864, value: 100 },      // The Wave
+        { x: 103.6881162008, y: 1.3514382803, value: 100 },     // Nanyang Executive Centre
+        { x: 103.6859452065, y: 1.3539692593, value: 100 },      // Hall 10
+        { x: 103.6811869703, y: 1.3508321630, value: 100 }      // Hall 16
         ];
         let valueMin = 0;
-        let valueMax = 50;
-        heatMap.setWGS84Data(valueMin, valueMax, data);
+        let valueMax = 100;
+        heatMap.setWGS84Data(valueMin, valueMax, data)
         });
 }
 

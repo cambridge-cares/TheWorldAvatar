@@ -220,64 +220,63 @@
                 // ===== CUSTOMISABLE =====
                 document.getElementById('getClassScheduleButton').addEventListener('click', function () {
 
-                alert('Getting class schedule data...');
-                var iframe = document.createElement("iframe");
+                    alert('Getting class schedule data...');
+                    var iframe = document.createElement("iframe");
 
-                // Set attributes for the iframe
-                iframe.src = "http://128.199.151.149:3838/analytics/d-solo/b56f5515-ef78-4feb-b712-7e5cddb4ba25/ntu-classschedule?orgId=1&from=1672731037713&to=1672787129841&theme=light&panelId=1";
-                iframe.width = "450";
-                iframe.height = "800";
-                iframe.frameBorder = "0"; // Note: It's frameBorder, not frameborder
+                    // Set attributes for the iframe
+                    iframe.src = "http://128.199.151.149:3838/analytics/d-solo/b56f5515-ef78-4feb-b712-7e5cddb4ba25/ntu-classschedule?orgId=1&from=1672731037713&to=1672787129841&theme=light&panelId=1";
+                    iframe.width = "450";
+                    iframe.height = "800";
+                    iframe.frameBorder = "0"; // Note: It's frameBorder, not frameborder
 
-                // Get the "metaTabs" container and replace its content with the iframe
-                var metaTabsContainer = document.getElementById("metaTabs");
-                metaTabsContainer.innerHTML = '';
-                metaTabsContainer.appendChild(iframe);
+                    // Get the "metaTabs" container and replace its content with the iframe
+                    var metaTabsContainer = document.getElementById("metaTabs");
+                    metaTabsContainer.innerHTML = '';
+                    metaTabsContainer.appendChild(iframe);
 
-                // Get the "metaContainer" div and clear its content
-                var metaContainer = document.getElementById("metaContainer");
-                metaContainer.innerHTML = '';
+                    // Get the "metaContainer" div and clear its content
+                    var metaContainer = document.getElementById("metaContainer");
+                    metaContainer.innerHTML = '';
                 });
 
                 document.getElementById('getWeatherDataButton').addEventListener('click', function () {
 
+                    alert('Getting weather data...');
 
-                alert('Getting weather data...');
+                    // Create first iframe and its header
+                    var iframe1 = document.createElement("iframe");
+                    var header1 = document.createElement("b");
+                    header1.textContent = "Weather dashboard";
+                    iframe1.src = "http://128.199.151.149:3838/analytics/d-solo/ba4fb953-c3c7-47f0-8869-df2ceb036343/ntu-weather?orgId=1&from=1672531200000&to=1673046000000&theme=light&panelId=2";
+                    iframe1.width = "450";
+                    iframe1.height = "270";
+                    iframe1.frameBorder = "0";
 
-                // Create first iframe and its header
-                var iframe1 = document.createElement("iframe");
-                var header1 = document.createElement("b");
-                header1.textContent = "Weather dashboard";
-                iframe1.src = "http://128.199.151.149:3838/analytics/d-solo/ba4fb953-c3c7-47f0-8869-df2ceb036343/ntu-weather?orgId=1&from=1672531200000&to=1673046000000&theme=light&panelId=2";
-                iframe1.width = "450";
-                iframe1.height = "270";
-                iframe1.frameBorder = "0";
+                    // Get the container and clear its content
+                    var container = document.getElementById("metaTabs");
+                    container.innerHTML = '';
 
-                // Get the container and clear its content
-                var container = document.getElementById("metaTabs");
-                container.innerHTML = '';
+                    // Append the first iframe and its header to the container
+                    container.appendChild(header1);
+                    container.appendChild(iframe1);
 
-                // Append the first iframe and its header to the container
-                container.appendChild(header1);
-                container.appendChild(iframe1);
+                    // Create second iframe and its header (assuming you want to append it to the same container)
+                    var iframe2 = document.createElement("iframe");
+                    var header2 = document.createElement("b");
+                    header2.textContent = "Weather forecast";
+                                
+                    iframe2.src = "http://128.199.151.149:3838/analytics/d-solo/ba4fb953-c3c7-47f0-8869-df2ceb036343/ntu-weather?orgId=1&from=1672531200000&to=1672588799000&theme=light&panelId=1";
+                    iframe2.width = "450";
+                    iframe2.height = "280";
+                    iframe2.frameBorder = "0";
 
-                // Create second iframe and its header (assuming you want to append it to the same container)
-                var iframe2 = document.createElement("iframe");
-                var header2 = document.createElement("b");
-                header2.textContent = "Weather forecast";
-                            
-                iframe2.src = "http://128.199.151.149:3838/analytics/d-solo/ba4fb953-c3c7-47f0-8869-df2ceb036343/ntu-weather?orgId=1&from=1672531200000&to=1672588799000&theme=light&panelId=1";
-                iframe2.width = "450";
-                iframe2.height = "280";
-                iframe2.frameBorder = "0";
+                    // Append the second iframe and its header to the container
+                    container.appendChild(header2);
+                    container.appendChild(iframe2);
 
-                // Append the second iframe and its header to the container
-                container.appendChild(header2);
-                container.appendChild(iframe2);
-
-                // Append the iframe to the container
-                metaContainer = document.getElementById("metaContainer");
-                metaContainer.innerHTML = '';
+                    // Append the iframe to the container
+                    metaContainer = document.getElementById("metaContainer");
+                    metaContainer.innerHTML = '';
 
                 });
 
@@ -285,55 +284,60 @@
                 // for Heatmap button
                 document.getElementById('getShowHeatmapButton').addEventListener('click', function () {
 
-                console.log("viewer? ", MapHandler.MAP instanceof Cesium.Viewer);
-                let bounds = {
-                west: 103.6687938762,
-                east: 103.6963979333,
-                south: 1.3372667367,
-                north: 1.3605829566,
-                };
-                let heatMap = CesiumHeatmap.create(
-                MapHandler.MAP, // your cesium viewer
-                bounds, // bounds for heatmap layer
-                {
-                // heatmap.js options go here
-                //minOpacity: 0.2,
-                maxOpacity: 0.4,
-                //useEntitiesIfAvailable: false,
-                radius: 200,
-                blur: 0.9,
-                gradient: {  // the gradient used if not given in the heatmap options object
-                '.3': '#d9e7fc',
-                '.65': '#2a7aed',
-                '.8': '#fbd801',
-                '.95': '#c91212'
-                },
-                },
-                );
-                let data = [
-                { x: 103.6818572460, y: 1.3419334155, value: 100 },   // School of Physical and Mathematical Sciences
-                { x: 103.6800064641, y: 1.3442181323, value: 100 },  // Nanyang Auditorium
-                { x: 103.6791746564, y: 1.3450496383, value: 100 },   // School of Biological Sciences
-                { x: 103.6800881613, y: 1.3454565079, value: 100 },     // Block N1.3
-                { x: 103.6796595995, y: 1.3467408413, value: 100 },     // Block N2
-                { x: 103.6800130775, y: 1.3473157834, value: 41 },     // Block N2.1
-                { x: 103.6757490809, y: 1.3445919035, value: 75 },     // Experimental Medicine Building
-                { x: 103.6854021333, y: 1.3442537009, value: 76 },     // Hall of Residence 4
-                { x: 103.6883786891, y: 1.3458209704, value: 100 },    // Pioneer Hall
-                { x: 103.6853405644, y: 1.3483400219, value: 80 },     // Canteen 2
-                { x: 103.6877703643, y: 1.3494060864, value: 40 },      // The Wave
-                { x: 103.6881162008, y: 1.3514382803, value: 21 },     // Nanyang Executive Centre
-                { x: 103.6859452065, y: 1.3539692593, value: 30 },      // Hall 10
-                { x: 103.6811869703, y: 1.3508321630, value: 30 }      // Hall 16
-                ];
-                let valueMin = 0;
-                let valueMax = 50;
-                heatMap.setWGS84Data(valueMin, valueMax, data);
+                    $.getJSON("http://localhost:3838/ntuenergycluster-agent/?stack=true",function(testdata){
+				
+                        console.log(testdata)
+        
+                        let scale = 50;
+                        let valueMin = 0;
+                        let valueMax = 100;
+                        let data = [
+                            { x: 103.6818572460, y: 1.3419334155, value: testdata[0]*scale },   // School of Physical and Mathematical Sciences
+                            { x: 103.6800064641, y: 1.3442181323, value: testdata[1]*scale },  // Nanyang Auditorium
+                            { x: 103.6791746564, y: 1.3450496383, value: testdata[2]*scale },   // School of Biological Sciences
+                            { x: 103.6800881613, y: 1.3454565079, value: testdata[3]*scale },     // Block N1.3
+                            { x: 103.6796595995, y: 1.3467408413, value: testdata[4]*scale },     // Block N2
+                            { x: 103.6800130775, y: 1.3473157834, value: testdata[5]*scale },     // Block N2.1
+                            { x: 103.6757490809, y: 1.3445919035, value: testdata[6]*scale },     // Experimental Medicine Building
+                            { x: 103.6854021333, y: 1.3442537009, value: testdata[7]*scale },     // Hall of Residence 4
+                            { x: 103.6883786891, y: 1.3458209704, value: testdata[8]*scale },    // Pioneer Hall
+                            { x: 103.6853405644, y: 1.3483400219, value: testdata[9]*scale },     // Canteen 2
+                            { x: 103.6877703643, y: 1.3494060864, value: testdata[10]*scale },      // The Wave
+                            { x: 103.6881162008, y: 1.3514382803, value: testdata[11]*scale },     // Nanyang Executive Centre
+                            { x: 103.6859452065, y: 1.3539692593, value: testdata[12]*scale },      // Hall 10
+                            { x: 103.6811869703, y: 1.3508321630, value: testdata[13]*scale }      // Hall 16
+                        ];
+
+                        console.log("viewer? ", MapHandler.MAP instanceof Cesium.Viewer);
+                        let bounds = {
+                            west: 103.6687938762,
+                            east: 103.6963979333,
+                            south: 1.3372667367,
+                            north: 1.3605829566,
+                        };
+                        let heatMap = CesiumHeatmap.create(
+                            MapHandler.MAP, // your cesium viewer
+                            bounds, // bounds for heatmap layer
+                            {
+                                // heatmap.js options go here
+                                //minOpacity: 0.2,
+                                maxOpacity: 0.4,
+                                //useEntitiesIfAvailable: false,
+                                radius: 200,
+                                blur: 0.9,
+                                gradient: {  // the gradient used if not given in the heatmap options object
+                                    '.3': '#d9e7fc',
+                                    '.65': '#2a7aed',
+                                    '.8': '#fbd801',
+                                    '.95': '#c91212'
+                                },
+                            },
+                        );
+                        
+                        
+                        heatMap.setWGS84Data(valueMin, valueMax, data);
+                    });
                 });
-
-
-
-
 
                 // Save general tab state as default
                 manager.getPanelHandler().storeDefault();
