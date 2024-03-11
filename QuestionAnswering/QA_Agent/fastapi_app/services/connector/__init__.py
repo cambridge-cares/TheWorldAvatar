@@ -1,8 +1,11 @@
 from functools import cache
 import logging
+import time
 from typing import Annotated, Callable, List
 
 from fastapi import Depends
+
+from model.qa import QAStep
 from services.connector.ontospecies import (
     OntoSpeciesAgentConnector,
     get_ontospecies_agent_connector_getter,
@@ -25,16 +28,31 @@ class AgentConnectorMediator:
         }
 
     def query(self, query: str):
+        steps: List[QAStep] = []
+
         logger.info("Predicting function to call...")
+        timestamp = time.time()
         func_name, func_args = self.func_call_predictor.predict(
             funcs=self.funcs, query=query
         )
+        latency = time.time() - timestamp
         logger.info(
             "Predicted function: {name}({args})".format(name=func_name, args=func_args)
         )
-        return self.funcname2agent[func_name].exec(
+        steps.append(
+            QAStep(
+                action="predict_func_call",
+                arguments=query,
+                results=dict(func_name=func_name, args=func_args),
+                latency=latency,
+            )
+        )
+
+        connector_steps, data = self.funcname2agent[func_name].exec(
             method_name=func_name, args=func_args
         )
+
+        return steps + connector_steps, data
 
 
 @cache
