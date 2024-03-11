@@ -6,7 +6,16 @@ This directory contains resources to serve ML models with Triton Inference Serve
 
 ### Running
 
-Place onnx checkpoints into respective directories.
+Place onnx checkpoints into respective directories, then execute the following.
+
+```
+docker build -t triton:0.1.0 .
+docker run -d -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=256m --name inference_server_m triton:0.1.0
+```
+
+## Development
+
+### Development with Triton image
 
 ```
 # Launch container for model serving
@@ -15,8 +24,6 @@ docker run -it --shm-size=256m --rm -p 8000:8000 -p 8001:8001 -p 8002:8002 -v ${
 # Launch the server
 tritonserver --model-repository=/models
 ```
-
-## Development
 
 ### ONNX backend
 
