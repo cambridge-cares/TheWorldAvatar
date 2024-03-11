@@ -23,7 +23,7 @@ The agent takes in the latest 600 average distance reading from TB server and ca
 
 The occupancy result will then be calculated and instantiated. 
 
-The agent will be packaged to a .war file for the deployment. As the agent will instantiate timeseries data and derivation instances, a connection to a POSTgresql database and a knowledge graph is required.
+The agent will be packaged to a .war file for the deployment. As the agent will instantiate timeseries data and derivation instances, a connection to a PostgreSQL database and a knowledge graph is required.
 
 ## Pre-requisites
 ### Relation with DevInstAgent
@@ -50,11 +50,11 @@ FHAgent could be called normally as is. But, instantiating with DevInstAgent wil
 The agent can function with and without using the stack. A config file is provided in `./stack-manager-input-config-service/`
 
 ### Requirements
-It is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine 
+It is required to have access to a knowledge graph SPARQL endpoint and PostgreSQL database. These can run on the same machine 
 or need to be accessible from the host machine via a fixed URL.
 
 This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README
-to explain the set-up of a knowledge graph triple store or Postgres database.
+to explain the set-up of a knowledge graph triple store or PostgreSQL database.
 
 ### Config Files
 The agent requires 3 configuration file to configure, with an optional IRI map text file.
@@ -84,9 +84,9 @@ Contains the parameters for Thingsboard API
 #### client.properties
 Contains parameter for timeseries client and knowledge graph endpoints.
 
-- `db.url` the [JDBC URL](https://www.postgresql.org/docs/7.4/jdbc-use.html) for the Postgres database
-- `db.user` the username to access the Postgres database
-- `db.password` the password to access the Postgres database
+- `db.url` the [JDBC URL](https://www.postgresql.org/docs/7.4/jdbc-use.html) for the PostgreSQL database
+- `db.user` the username to access the PostgreSQL database
+- `db.password` the password to access the PostgreSQL database
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
 - `sparql.username` Username to be used when accessing the knowledge graph. Optional. 
