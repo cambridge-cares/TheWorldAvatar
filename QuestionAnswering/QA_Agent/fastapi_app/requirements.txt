@@ -9,3 +9,5 @@ unit_parse
 Pint
 jinja2
 pydantic-settings
+transformers
+tiktoken
