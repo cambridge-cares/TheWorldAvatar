@@ -3,7 +3,7 @@
         "Name": "volume-populator",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "busybox",
+                "Image": "busybox:latest",
                 "Env": [
                     "HOST_DIR=/hostDirs/.",
                     "VOLUME_DIR=/volumes"

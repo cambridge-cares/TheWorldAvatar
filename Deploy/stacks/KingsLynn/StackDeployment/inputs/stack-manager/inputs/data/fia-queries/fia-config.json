@@ -1,0 +1,30 @@
+{
+    "queries": [
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
+            "metaFile": "ReportingStations.sparql",
+            "timeFile": "ReportingStations_time.sparql",
+            "databaseName": "postgres",
+            "timeLimit": 168
+        },
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation",
+            "metaFile": "ReportingStations.sparql",
+            "timeFile": "ReportingStations_time.sparql",
+            "databaseName": "postgres",
+            "timeLimit": 168
+        },
+        {
+            "class": "https://www.theworldavatar.com/kg/ontobuiltenv/Flat",
+            "metaFile": "OntoBuiltEnvProperties.sparql"
+        },
+        {
+            "class": "http://www.purl.org/oema/infrastructure/Building",
+            "metaFile": "OntoBuiltEnvProperties.sparql"
+        },
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoflood/ArealExtentPolygon",
+            "metaFile": "FloodWarnings.sparql"
+        }
+    ]
+}

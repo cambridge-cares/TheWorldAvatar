@@ -1,0 +1,37 @@
+@prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix disp:	    <https://www.theworldavatar.com/kg/ontodispersion/> .
+@prefix obe:        <https://www.theworldavatar.com/kg/ontobuiltenv/> .
+@prefix icontact:   <http://ontology.eil.utoronto.ca/icontact.owl#> .
+@prefix temp:       <https://www.theworldavatar.com/kg/> .
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix :           <[prefix]> .
+
+# This file contains triples to instantiate Static Point Source instances
+# required for the Aermod Agent to retrieve emission rates with their 
+# respective locations
+# ([prefix] will be replace with actual KB prefix within agent logic)
+
+:StaticPointSource_MunicipalUtility rdf:type disp:StaticPointSource ;
+                                    disp:hasOntoCityGMLCityObject <https://www.theworldavatar.com/kg/Building/31281a81-3c8d-4301-b839-47ddb86c7587> .
+
+:StaticPointSource_EfWPlant rdf:type disp:StaticPointSource ;
+                            disp:hasOntoCityGMLCityObject <https://www.theworldavatar.com/kg/Building/312b0407-4b95-43f3-b1b5-9f002311d925> .
+
+# It also includes further meta-data for visualisation purposes, i.e., to be 
+# retrieved via Feature Info Agent (partially without proper ontology representation)
+
+:StaticPointSource_EfWPlant rdfs:label "MHKW Pirmasens"^^xsd:string ;
+                            temp:hasOperator "EEW Energy from Waste Saarbrücken GmbH"^^xsd:string ;
+                            obe:hasAddress :Address_EfWPlant .
+:Address_EfWPlant obe:hasPostalCode :PostalCode_EfWPlant ;
+                  icontact:hasStreet "Staffelberg"^^xsd:string ;
+                  icontact:hasStreetNumber "2-4"^^xsd:string .
+:PostalCode_EfWPlant rdfs:label "66954"^^xsd:string .
+
+:StaticPointSource_MunicipalUtility rdfs:label "Heizkraftwerk  Pirmasens"^^xsd:string ;
+                                    temp:hasOperator "Stadtwerke Pirmasens Versorgungs GmbH"^^xsd:string ;
+                                    obe:hasAddress :Address_MunicipalUtility .
+:Address_MunicipalUtility obe:hasPostalCode :PostalCode_MunicipalUtility ;
+                          icontact:hasStreet "Pettenkoferstraße"^^xsd:string .
+:PostalCode_MunicipalUtility rdfs:label "66955"^^xsd:string .

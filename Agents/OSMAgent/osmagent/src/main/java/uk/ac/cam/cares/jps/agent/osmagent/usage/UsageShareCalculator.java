@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.agent.osmagent.usage;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import uk.ac.cam.cares.jps.agent.osmagent.FileReader;
-import uk.ac.cam.cares.jps.agent.osmagent.geometry.object.GeoObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
@@ -26,6 +25,12 @@ import java.io.*;
 public class UsageShareCalculator {
         private static final String RESOURCES_PATH = "/resources";
 
+        private static final String citydb = "SELECT cga.strval AS urival, ST_Collect(sg.geometry) as geometry, ST_AsText(ST_Collect(sg.geometry)) AS geostring, ST_SRID(ST_Collect(sg.geometry)) AS srid \n" +
+                "FROM citydb.building b \n" +
+                "INNER JOIN citydb.cityobject_genericattrib cga ON b.id = cga.cityobject_id \n" +
+                "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.parent_id \n" +
+                "WHERE cga.attrname = 'uuid' AND sg.geometry IS NOT NULL \n" +
+                "GROUP BY strval";
         private RemoteRDBStoreClient rdbStoreClient;
 
         /**
@@ -110,7 +115,7 @@ public class UsageShareCalculator {
                                 String updateLandUse = "INSERT INTO " + usageTable + " (building_iri, ontobuilt) \n" +
                                         "SELECT q2.iri, \'" + ontobuilt + "\' FROM \n" +
                                         "(SELECT q.urival AS iri, q.geometry AS geo, q.srid AS srid FROM \n" +
-                                        "(" + GeoObject.getQuery() + ") AS q \n" +
+                                        "(" + citydb + ") AS q \n" +
                                         "LEFT JOIN " + usageTable + " u ON q.urival = u.building_iri \n" +
                                         "WHERE u.building_iri IS NULL) AS q2 \n" +
                                         "WHERE ST_Intersects(q2.geo, ST_Transform(\n" +

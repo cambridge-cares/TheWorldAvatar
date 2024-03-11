@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName} around {value}.
+Provide a roster of chemical species exhibiting {PropertyName} approximately at {value}.
+List molecules that possess {PropertyName} around {value}.
+Enumerate compounds demonstrating {PropertyName} roughly at {value}.
+Could you enlist chemical species with {PropertyName} around {value}?
+I'm interested in a catalog of molecules displaying {PropertyName} approximately at {value}.
+Please compile a record of compounds showcasing {PropertyName} around {value}.
+Share a list of species manifesting {PropertyName} around {value}, be they chemical species, molecules, or compounds.
+What are some chemical species with {PropertyName} around {value}?
+I'm curious about molecules that have {PropertyName} around {value}. Could you provide a list?
+Could you prepare a roster of compounds with {PropertyName} around {value}?
+I'm looking for chemical species that demonstrate {PropertyName} at around {value}.
+Provide a compilation of molecules showcasing {PropertyName} at approximately {value}.
+List compounds that exhibit {PropertyName} around {value}, please.
+Can you give me a rundown of chemical species with {PropertyName} approximately at {value}?
+I'd like to see a list of molecules with {PropertyName} around {value}, if possible.
+I'm inquiring about compounds that have {PropertyName} around {value}. Could you assist me?
+Could you gather a list of chemical species showcasing {PropertyName} roughly at {value}?
+What are some molecules with {PropertyName} around {value}?
+Prepare a catalog of compounds displaying {PropertyName} around {value}.
+Point out molecules demonstrating {PropertyName} around {value}.

@@ -106,12 +106,12 @@ public class AnnualValueHelperTest {
 
                 ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
                 accessAgentCallerMock.verify(
-                        times(2), () -> AccessAgentCaller.updateStore(anyString(), argumentCaptor.capture()));
+                        times(5), () -> AccessAgentCaller.updateStore(anyString(), argumentCaptor.capture()));
 
                 List<String> allCaptures = argumentCaptor.getAllValues();
 
                 assertTrue(allCaptures.get(0).contains("DELETE"));
-                assertTrue(allCaptures.get(1).contains("INSERT"));
+                assertTrue(allCaptures.get(4).contains("INSERT"));
             }
         }
     }

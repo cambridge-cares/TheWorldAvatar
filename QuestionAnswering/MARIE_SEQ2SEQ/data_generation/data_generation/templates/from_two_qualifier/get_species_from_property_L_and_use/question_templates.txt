@@ -1,0 +1,21 @@
+Give me a list of species that have {PropertyName} lower than {value} and used as {Use}
+Provide a catalog of chemical species with {PropertyName} below {value}, utilized as {Use}.
+List molecules having {PropertyName} less than {value} and employed for {Use}.
+Enumerate compounds with {PropertyName} lower than {value} and applied in {Use}.
+Present a compilation of chemical species exhibiting {PropertyName} beneath {value} and serving the purpose of {Use}.
+Outline various molecules that demonstrate {PropertyName} below {value} and find application as {Use}.
+Detail a roster of compounds showcasing {PropertyName} lesser than {value} and utilized for {Use}.
+Offer an inventory of chemical species manifesting {PropertyName} under {value} and used for {Use}.
+Enlist molecules characterized by {PropertyName} not exceeding {value} and employed in {Use}.
+Provide a rundown of compounds displaying {PropertyName} lower than {value} and finding use as {Use}.
+List chemical species with {PropertyName} beneath {value}, known for their role in {Use}.
+Enumerate molecules that possess {PropertyName} less than {value} and find their application as {Use}.
+Present a catalog of compounds having {PropertyName} below {value} and utilized for {Use}.
+Outline chemical species exhibiting {PropertyName} lower than {value}, often used in {Use}.
+Detail molecules showcasing {PropertyName} beneath {value} and finding utility as {Use}.
+Offer a comprehensive list of compounds demonstrating {PropertyName} not exceeding {value} and applied for {Use}.
+Provide an extensive roster of chemical species with {PropertyName} lesser than {value} and known for {Use}.
+List molecules that display {PropertyName} under {value} and are recognized for their {Use}.
+Enumerate compounds exhibiting {PropertyName} below {value} and playing a role in {Use}.
+Present a varied selection of chemical species with {PropertyName} less than {value}, commonly utilized as {Use}.
+Outline the molecules characterized by {PropertyName} lower than {value} and employed for {Use}.

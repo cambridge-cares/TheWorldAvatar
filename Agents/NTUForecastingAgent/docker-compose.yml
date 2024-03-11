@@ -1,0 +1,12 @@
+version: '1.0'
+
+services:
+  example:
+    build:
+      context: .
+      target: production
+      dockerfile: Dockerfile
+    image: ntu_forecasting_agent:1.0.0
+    container_name: ntu_forecasting_agent
+    ports:
+      - 1020:6000

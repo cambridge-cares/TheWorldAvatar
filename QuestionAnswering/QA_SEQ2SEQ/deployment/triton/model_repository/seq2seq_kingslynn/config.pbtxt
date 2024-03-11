@@ -1,0 +1,2 @@
+name: "seq2seq_kingslynn"
+backend: "python_seq2seq_backend"
