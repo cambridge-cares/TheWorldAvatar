@@ -551,6 +551,7 @@
         },
         {
             "name": "Usages",
+            "expanded": false,
             "sources": [
                 {
                     "id": "usage",  
