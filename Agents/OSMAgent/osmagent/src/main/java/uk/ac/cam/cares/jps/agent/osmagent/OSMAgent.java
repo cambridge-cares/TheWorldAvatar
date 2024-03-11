@@ -38,6 +38,7 @@ public class OSMAgent extends JPSAgent {
     public String pointTable;
     public String polygonTable;
     public String landUseTable;
+    public String landGeometry;
     public String landUseCsv;
     public static final String usageTable = "usage.usage";
 
@@ -57,6 +58,7 @@ public class OSMAgent extends JPSAgent {
             this.dbName = prop.getProperty("db.name");
             this.osmSchema = prop.getProperty("osm.schema");
             this.landUseTable = prop.getProperty("landuse.table");
+            this.landGeometry = prop.getProperty("landuse.geometry");
             this.landUseCsv = prop.getProperty("landuse.csv");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -85,7 +87,7 @@ public class OSMAgent extends JPSAgent {
 
             // match buildings without OSM usage with land use
             if (!landUseTable.isEmpty()) {
-                shareCalculator.updateLandUse(usageTable, landUseTable, landUseCsv);
+                shareCalculator.updateLandUse(usageTable, landUseTable, landGeometry, landUseCsv);
             }
 
             // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage

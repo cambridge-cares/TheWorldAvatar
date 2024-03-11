@@ -2,11 +2,16 @@ package uk.ac.cam.cares.jps.agent.osmagent.usage;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import org.json.JSONArray;
 import uk.ac.cam.cares.jps.agent.osmagent.FileReader;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.UUID;
 
 /**
  * UsageShareCalculator contains 3 parts that run using SQL query
@@ -25,7 +30,7 @@ import java.io.*;
 public class UsageShareCalculator {
         private static final String RESOURCES_PATH = "/resources";
 
-        private static final String citydb = "SELECT cga.strval AS urival, ST_Collect(sg.geometry) as geometry, ST_AsText(ST_Collect(sg.geometry)) AS geostring, ST_SRID(ST_Collect(sg.geometry)) AS srid \n" +
+        private static final String citydb = "SELECT cga.strval AS urival, public.ST_Collect(sg.geometry) as geometry, public.ST_AsText(public.ST_Collect(sg.geometry)) AS geostring, public.ST_SRID(public.ST_Collect(sg.geometry)) AS srid \n" +
                 "FROM citydb.building b \n" +
                 "INNER JOIN citydb.cityobject_genericattrib cga ON b.id = cga.cityobject_id \n" +
                 "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.parent_id \n" +
@@ -101,7 +106,7 @@ public class UsageShareCalculator {
          * @param usageTable centralised table to store usage information
          * @param landUseTable table containing DLM land use data
          */
-        public void updateLandUse(String usageTable, String landUseTable, String csv) {
+        public void updateLandUse(String usageTable, String landUseTable, String geometryColumn, String csv) {
                 try (InputStream input = FileReader.getStream(RESOURCES_PATH + "/" + csv)) {
                         InputStreamReader inputStreamReader = new InputStreamReader(input);
                         CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
@@ -118,11 +123,12 @@ public class UsageShareCalculator {
                                         "(" + citydb + ") AS q \n" +
                                         "LEFT JOIN " + usageTable + " u ON q.urival = u.building_iri \n" +
                                         "WHERE u.building_iri IS NULL) AS q2 \n" +
-                                        "WHERE ST_Intersects(q2.geo, ST_Transform(\n" +
-                                        "(SELECT ST_Collect(wkb_geometry) AS g FROM " + landUseTable + " \n" +
+                                        "WHERE public.ST_Intersects(q2.geo, public.ST_Transform(\n" +
+                                        "(SELECT CASE WHEN public.ST_IsValid(public.ST_Collect(%s)) THEN public.ST_Collect(%s)\n" +
+                                        "ELSE public.ST_MakeValid(public.ST_Collect(%s)) END AS g FROM " + landUseTable + " \n" +
                                         "WHERE \"" + key + "\" = \'" + value + "\'), q2.srid))";
 
-                                rdbStoreClient.executeUpdate(updateLandUse);
+                                rdbStoreClient.executeUpdate(String.format(updateLandUse, geometryColumn, geometryColumn, geometryColumn));
                                 System.out.println(
                                         "Untagged buildings with building_iri are assigned for " + key + " with value:"
                                                 + value + " under the ontobuiltenv:" + ontobuilt
@@ -143,7 +149,7 @@ public class UsageShareCalculator {
                 }
         }
 
-        public void addMaterializedView(String usageTable, String osmSchema){
+        public void addMaterializedView(String usageTable, String osmSchema) {
                 String materializedView ="-- Drop the materialized view if it exists\n" +
                         "DROP MATERIALIZED VIEW IF EXISTS usage.buildingusage_osm;\n" +
                         "\n" +
