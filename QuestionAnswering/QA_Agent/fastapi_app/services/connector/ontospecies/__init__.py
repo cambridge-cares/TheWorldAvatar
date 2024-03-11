@@ -66,7 +66,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
                             "description": "Usage or application e.g. solvent",
                         },
                     },
-                    "properties": {
+                    "numerical_properties": {
                         "type": "array",
                         "items": {
                             "type": "string",
@@ -218,20 +218,20 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         self,
         chemical_classes: List[str] = [],
         uses: List[str] = [],
-        properties: List[str] = [],
+        numerical_properties: List[str] = [],
     ):
         steps = []
 
-        if properties:
+        if numerical_properties:
             logger.info("Parsing property constraints...")
             timestamp = time.time()
-            property_constraints = self._parse_property_constraints(properties)
+            property_constraints = self._parse_property_constraints(numerical_properties)
             latency = time.time() - timestamp
             logger.info("Parsed property constraints: " + str(property_constraints))
             steps.append(
                 QAStep(
                     action="align_property_constraints",
-                    arguments=properties,
+                    arguments=numerical_properties,
                     results=[
                         dict(key=key, constraint=str(constraint))
                         for key, constraint in property_constraints
