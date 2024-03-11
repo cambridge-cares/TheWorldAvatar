@@ -33,13 +33,20 @@ def binary_search(low: int, high: int, fn: Callable[[int], int], target: int):
 
 
 class ChatbotClient:
-    PROMPT_TEMPLATE = """Context information is below.
+    PROMPT_TEMPLATE = """You will be provided with an input query and retrieved structured data. Generate a response that adheres to the following guidelines:
+1. Information Accuracy: Your response must contain information drawn exclusively from the retrieved data. Do not include any additional information or knowledge that is not explicitly present in the provided data.
+2. Data Completeness: Your response should include all the relevant information contained in the retrieved data, except for any repeated or redundant details.
+3. Response Relevance: Tailor your response to directly address the user's input query, focusing on the aspects highlighted or implied by the query.
+
+Query: {query_str}
+
+Data: 
 ---------------------
 {context_str}
 ---------------------
-Given the context information and not prior knowledge, answer the query.
-Query: {query_str}
-Answer: """
+
+Answer: 
+"""
 
     def __init__(
         self,

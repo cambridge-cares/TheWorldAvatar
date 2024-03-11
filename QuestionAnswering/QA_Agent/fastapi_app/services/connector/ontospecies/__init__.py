@@ -119,9 +119,16 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             docs_getter=lambda: self._SPECIES_ATTR_KEYS,
             k=1,
         )
-        return [
-            SpeciesPropertyAttrKey(docs_scores[0][0]) for docs_scores in docs_scores_lst
-        ]
+        closest_neighs = [docs_scores[0][0] for docs_scores in docs_scores_lst]
+        results: List[SpeciesAttrKey] = []
+        for k in closest_neighs:
+            for cls in self._SPECIES_ATTR_CLSES:
+                try:
+                    results.append(cls(k))
+                    break
+                except:
+                    pass
+        return results
 
     def lookup_chemicalSpecies_attributes(self, species: str, attributes: List[str]):
         steps: List[QAStep] = []
