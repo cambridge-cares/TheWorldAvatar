@@ -7,7 +7,7 @@ from redis import Redis
 
 from services.kg_client import KgClient
 from services.redis_client import get_redis_client
-from .kg_client import get_ontospecies_kg_client
+from ..kg_client import get_ontospecies_kg_client
 
 
 class SpeciesLinker:
