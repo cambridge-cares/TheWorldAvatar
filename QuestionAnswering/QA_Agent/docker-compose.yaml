@@ -3,8 +3,13 @@ services:
     image: redis/redis-stack:7.2.0-v9
     ports:
       - 6379:6379
+  triton:
+    build:
+      context: triton_inference_server
+    shm_size: 256m
+    ports:
       - 8001:8001
-  fastapi-experimental:
+  fastapi:
     build:
       context: fastapi_app
     env_file:
