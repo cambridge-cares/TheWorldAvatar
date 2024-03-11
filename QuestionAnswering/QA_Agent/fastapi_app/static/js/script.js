@@ -270,6 +270,112 @@ const inputField = (function () {
     }
 })()
 
+
+const chatbotResponseCard = (function () {
+    const elem = document.getElementById("chatbot-response-card")
+    const chatbotResponsePara = document.getElementById("chatbot-response")
+    const chatbotSpinnerSpan = document.getElementById("chatbot-spinner")
+    const chatbotStopAnchor = document.getElementById("chatbot-stop")
+
+    let abortController = new AbortController()
+    let streamInterrupted = false
+
+    async function streamChatbotResponseBodyReader(reader) {
+        globalState.set("chatbotLatency", null)
+
+        function pump({ done, value }) {
+            if (done) {
+                // Do something with last chunk of data then exit reader
+                chatbotStopAnchor.style.display = "none"
+                return;
+            }
+            // Otherwise do something here to process current chunk
+            // format:
+            // data: {"content": "abc", "latency": 123}
+            // data: {"content": "def", "latency": 456}
+            value.split("\n").forEach(line => {
+                line = line.trim();
+                if (line.startsWith("data: ")) {
+                    const msg = line.substring("data: ".length)
+                    let datum = null
+                    try {
+                        datum = JSON.parse(msg)
+                    } catch (err) {
+                        console.log("Unexpected data received from streaming server:\n".concat(msg))
+                    }
+
+                    if (datum !== null) {
+                        chatbotResponsePara.innerHTML += datum["content"]
+                        if (/\s/.test(chatbotResponsePara.innerHTML.charAt(0))) {
+                            chatbotResponsePara.innerHTML = chatbotResponsePara.innerHTML.trimStart()
+                        }
+                        globalState.set("chatbotLatency", datum["latency"])
+                    }
+                }
+            })
+
+            if (streamInterrupted) {
+                return reader.cancel()
+            } else {
+                return reader.read().then(pump)
+            }
+        }
+
+        return reader.read().then(pump);
+    }
+
+    // API calls
+    async function fetchChatbotResponseReader(question, data) {
+        const vars = data["vars"]
+        const bindings = data["bindings"].map(binding => vars.reduce((obj, k) => {
+            if ((typeof binding[k] !== "string") || TWA_ABOX_IRI_PREFIXES.every(prefix => !binding[k].startsWith(prefix))) {
+                obj[k] = binding[k]
+            }
+            return obj
+        }, {}))
+
+        return fetch("./chat", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ question, data: JSON.stringify(bindings) }),
+            signal: abortController.signal
+        })
+            .then(throwErrorIfNotOk)
+            .then(res => res.body.pipeThrough(new TextDecoderStream()).getReader())
+    }
+
+    return {
+        reset() {
+            elem.style.display = "none"
+            chatbotResponsePara.innerHTML = ""
+            chatbotSpinnerSpan.style.display = "inline-block"
+            chatbotStopAnchor.style.display = "inline"
+
+            abortController = new AbortController()
+            streamInterrupted = false
+        },
+
+        async render(question, data) {
+            elem.style.display = "block"
+            return fetchChatbotResponseReader(question, data).then(streamChatbotResponseBodyReader)
+        },
+
+        // On-click callbaks
+        interruptChatbotStream() {
+            streamInterrupted = true
+            abortController.abort()
+            chatbotSpinnerSpan.style.display = "none"
+        },
+
+        hideChatbotSpinner() {
+            chatbotSpinnerSpan.style.display = "none"
+        }
+    }
+})()
+
 globalState.registerWatcher("isProcessing", (oldVal, newVal) => {
     if (newVal === oldVal) {
         return
@@ -299,12 +405,14 @@ async function askQuestion() {
     errorContainer.reset()
     qaMetadataContainer.reset()
     qaDataContainer.reset()
+    chatbotResponseCard.reset()
 
     try {
         const results = await fetchQa(question)
         qaMetadataContainer.render(results["metadata"])
         document.getElementById("result-section").style.display = "block"
         qaDataContainer.render(results["data"])
+        chatbotResponseCard.render(question, results["data"])
     } catch (error) {
         console.log(error)
         if ((error instanceof HttpError) && (error.statusCode == 500)) {

@@ -56,9 +56,9 @@ SELECT DISTINCT ?ChemicalClass WHERE {{
             template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?{key} WHERE {{{{
-    OPTIONAL {{
+    OPTIONAL {{{{
         <{{IRI}}> os:has{key}/os:value ?{key} .
-    }}
+    }}}}
 }}}}""".format(
                 key=attr_key.value
             )
@@ -160,9 +160,13 @@ SELECT ?Label WHERE {{
                 )
 
         for key, compound_constraint in properties:
-            patterns.append(
-                "?IRI os:has{key}/os:value ?{key}Value .".format(key=key.value)
+            patterns.extend(
+                [
+                    "?IRI os:has{key} ?{key} .".format(key=key.value),
+                    "?{key} os:value ?{key}Value .".format(key=key.value),
+                ]
             )
+            vars.append("?" + key.value)
             atomic_constraints = [
                 "?{key}Value {operator} {operand}".format(
                     key=key.value, operator=x.operator.value, operand=x.operand
@@ -185,12 +189,7 @@ SELECT DISTINCT ?IRI (MIN(?Label) AS ?label) {vars} WHERE {{
 }}
 GROUP BY ?IRI""".format(
             vars=" ".join(
-                [
-                    '(GROUP_CONCAT(DISTINCT {var}; SEPARATOR=", ") AS {var}Group)'.format(
-                        var=var
-                    )
-                    for var in vars
-                ]
+                ["(SAMPLE({var}) AS {var}Sample)".format(var=var) for var in vars]
             ),
             patterns="\n".join(patterns),
         )
@@ -202,26 +201,65 @@ GROUP BY ?IRI""".format(
         vars = response["head"]["vars"]
         chemclass_vars = [x for x in vars if x.startswith("ChemicalClass")]
         use_vars = [x for x in vars if x.startswith("Use")]
-        other_vars = [x for x in vars if x not in chemclass_vars and x not in use_vars]
+        property_vars = [
+            x
+            for x in vars
+            if any(x.startswith(k.value) for k in SpeciesPropertyAttrKey)
+        ]
+        property_keys = [
+            next(k for k in SpeciesPropertyAttrKey if x.startswith(k.value))
+            for x in property_vars
+        ]
+        other_vars = [
+            x
+            for x in vars
+            if x not in chemclass_vars and x not in use_vars and x not in property_vars
+        ]
 
         vars = list(other_vars)
         if chemclass_vars:
-            vars.append("chemical_classes")
+            vars.append("ChemicalClass")
         if use_vars:
-            vars.append("uses")
+            vars.append("Use")
+        vars.extend([x.value for x in property_keys])
 
         bindings = []
         for binding in response["results"]["bindings"]:
             binding = {k: v["value"] for k, v in binding.items()}
             datum = {k: v for k, v in binding.items() if k in other_vars}
             if chemclass_vars:
-                datum["chemical_classes"] = ", ".join(
+                datum["ChemicalClass"] = ", ".join(
                     [v for k, v in binding.items() if k in chemclass_vars]
                 )
             if use_vars:
-                datum["uses"] = ", ".join(
+                datum["Use"] = ", ".join(
                     [v for k, v in binding.items() if k in use_vars]
                 )
+            for pkey, pvar in zip(property_keys, property_vars):
+                # query for value, unit, ref value, ref unit
+                query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
+SELECT ?Value ?Unit ?RefStateValue ?RefStateUnit WHERE {{
+    <{IRI}> os:value ?Value ; os:unit/rdfs:label ?Unit .
+    OPTIONAL {{
+        <{IRI}> os:hasReferenceState [ os:value ?RefStateValue ; os:unit/rdfs:label ?RefStateUnit ]
+    }}
+}}
+LIMIT 1""".format(
+                    IRI=binding[pvar]
+                )
+                _bindings = self.kg_client.query(query)["results"]["bindings"]
+                if not _bindings:
+                    continue
+                _binding = {k: v["value"] for k, v in _bindings[0].items()}
+                datum[pkey.value] = dict(
+                    value=_binding["Value"],
+                    unit=_binding["Unit"],
+                    ref_state_value=_binding["RefStateValue"],
+                    ref_state_unit=_binding["RefStateUnit"],
+                )
+
             bindings.append(datum)
 
         return QAData(vars=vars, bindings=bindings)
