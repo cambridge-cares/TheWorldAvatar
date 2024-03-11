@@ -53,8 +53,10 @@ hasLongitudeEPSG24500,Data Property,,,,float,,A relationship between an entity a
 hasLandLotNumber,"Data Property, Functional Property",,,LandLotDetails,string,,A relationship between a land lot and its associated ID.,http://www.theworldavatar.com/kg/ontocompany,land lot number
 http://ontology.eil.utoronto.ca/icontact.owl#hasPostalCode,"Data Property, Functional Property",,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,,A relationship between an address and its associated postal code.,http://ontology.eil.utoronto.ca/icontact.owl,postal code
 DataCentreProperty,Class,IndustrialFacilityProperty,IS-A,,,,A property of a data centre.,http://www.theworldavatar.com/kg/ontocompany,Data Centre property
-ITLoad,Class,DataCentreProperty,IS-A,,,,The total IT load power of a data centre at its typical utilisation rate.,http://www.theworldavatar.com/kg/ontocompany,it load power
-hasITLoad,Object Property,,,DataCentre,ITLoad,,A relation between a data centre and its IT load at the typical utilisation rate.,http://www.theworldavatar.com/kg/ontocompany,IT load
+MaximumITCapacity,Class,DataCentreProperty,IS-A,,,,The maximum IT capacity of a data centre.,http://www.theworldavatar.com/kg/ontocompany,Maximum IT Capacity
+hasMaximumITCapacity,Object Property,,,DataCentre,ITLoad,,A relation between a data centre and its maximum IT capacity.,http://www.theworldavatar.com/kg/ontocompany,Maximum IT Capacity
+UtilizationRate,Class,DataCentreProperty,IS-A,,,,The typical utilization rate of a data centre.,http://www.theworldavatar.com/kg/ontocompany,Utilization Rate
+hasUtilizationRate,Object Property,,,DataCentre,UtilizationRate,,A relation between a data centre and its typical utilization rate.,http://www.theworldavatar.com/kg/ontocompany,Utilization Rate
 FloorArea,Class,DataCentreProperty,IS-A,,,,The total floor area of an industrial facility,http://www.theworldavatar.com/kg/ontocompany,floor area
 FloorArea,Class,FactoryProperty,IS-A,,,,The total floor area of an industrial facility,http://www.theworldavatar.com/kg/ontocompany,floor area
 hasFloorArea,Object Property,,,IndustrialFacility,FloorArea,,A relation between an industrial facility and its gross floor area.,http://www.theworldavatar.com/kg/ontocompany,floor area
@@ -65,6 +67,8 @@ SpecificEnergyConsumption,Class,FactoryProperty,IS-A,,,,Specific energy consumpt
 hasSpecificEnergyConsumption,Object Property,,,Factory,SpecificEnergyConsumption,exactly 1,A relationship between a chemical plant and its design capacity.,http://www.theworldavatar.com/kg/ontocompany,specific energy consumption
 PlantCO2Emission,Class,FactoryProperty,IS-A,,,,Estimated value of annual CO2 emission for the entire factory.,http://www.theworldavatar.com/kg/ontocompany,Plant CO2 emission
 hasPlantCO2Emission,Object Property,,,Factory,PlantCO2Emission,,A relationship between a factory and its overall annual CO2 emission.,http://www.theworldavatar.com/kg/ontocompany,plant CO2 emission
+ThermalEfficiency,Class,FactoryProperty,IS-A,,,,The proportion of input energy converted to useful work.,http://www.theworldavatar.com/kg/ontocompany,Thermal Efficiency
+hasThermalEfficiency,Object Property,,,Factory,ThermalEfficiency,,A relationship between a factory and its thermal efficiency.,http://www.theworldavatar.com/kg/ontocompany,Thermal Efficiency
 http://www.theworldavatar.com/kg/ontochemplant/GeneratedHeat,Class,DataCentreProperty,IS-A,,,,Calculated value of annual heat emission for a company's main emitting sources.,http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl,Generated Heat
 http://www.theworldavatar.com/kg/ontochemplant/GeneratedHeat,Class,FactoryProperty,IS-A,,,,Calculated value of annual heat emission for a company's main emitting sources.,http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl,Generated Heat
 hasGeneratedHeat,Object Property,,,http://www.purl.org/oema/infrastructure/Building UNION http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsrealization/plant/PlantItem,GeneratedHeat,,A relationship between an entity and its annual heat emission.,http://www.theworldavatar.com/kg/ontocompany,generated heat

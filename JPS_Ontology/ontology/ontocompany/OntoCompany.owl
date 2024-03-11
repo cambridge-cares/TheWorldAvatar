@@ -215,19 +215,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontocompany#hasITLoad -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompany#hasITLoad">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany#DataCentre"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#ITLoad"/>
-        <rdfs:comment>A relation between a data centre and its IT load at the typical utilisation rate.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>IT load</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://www.theworldavatar.com/kg/ontocompany#hasIndustrialFacilityProperty -->
 
 
@@ -267,6 +254,19 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontocompany#hasMaximumITCapacity -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompany#hasMaximumITCapacity">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany#DataCentre"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#ITLoad"/>
+        <rdfs:comment>A relation between a data centre and its maximum IT capacity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
+        <rdfs:label>Maximum IT Capacity</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontocompany#hasPlantCO2Emission -->
 
 
@@ -302,6 +302,32 @@
         <rdfs:comment>A relationship between a chemical plant and its design capacity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
         <rdfs:label>specific energy consumption</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocompany#hasThermalEfficiency -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompany#hasThermalEfficiency">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany#Factory"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#ThermalEfficiency"/>
+        <rdfs:comment>A relationship between a factory and its thermal efficiency.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
+        <rdfs:label>Thermal Efficiency</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocompany#hasUtilizationRate -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompany#hasUtilizationRate">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany#DataCentre"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany#UtilizationRate"/>
+        <rdfs:comment>A relation between a data centre and its typical utilization rate.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
+        <rdfs:label>Utilization Rate</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -847,12 +873,7 @@
     <!-- http://www.theworldavatar.com/kg/ontocompany#ITLoad -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#ITLoad">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#DataCentreProperty"/>
-        <rdfs:comment>The total IT load power of a data centre at its typical utilisation rate.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
-        <rdfs:label>it load power</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#ITLoad"/>
     
 
 
@@ -923,6 +944,18 @@
         <rdfs:comment>Details about the land lot associated with the address of an entity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
         <rdfs:label>Land Lot Details</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocompany#MaximumITCapacity -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#MaximumITCapacity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#DataCentreProperty"/>
+        <rdfs:comment>The maximum IT capacity of a data centre.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
+        <rdfs:label>Maximum IT Capacity</rdfs:label>
     </owl:Class>
     
 
@@ -1063,6 +1096,30 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#StorageCapacity"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocompany#ThermalEfficiency -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#ThermalEfficiency">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#FactoryProperty"/>
+        <rdfs:comment>The proportion of input energy converted to useful work.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
+        <rdfs:label>Thermal Efficiency</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocompany#UtilizationRate -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany#UtilizationRate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany#DataCentreProperty"/>
+        <rdfs:comment>The typical utilization rate of a data centre.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany"/>
+        <rdfs:label>Utilization Rate</rdfs:label>
+    </owl:Class>
     
 
 
