@@ -548,6 +548,251 @@
                     "minzoom": 4
                 }
             ]
+        },
+        {
+            "name": "Usages",
+            "sources": [
+                {
+                    "id": "usage",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=building%3Abuilding_usage&outputFormat=application%2Fjson"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "Multi-Residential",
+                    "name": "Multi-Residential",
+                    "source": "usage",
+                    "filter": ["in", "MultiResidential", ["get", "ontobuilt"]],
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4169E1",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["get", "building_height"],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "School",
+                    "name": "School",
+                    "source": "usage",
+                    "filter": ["in", "School", ["get", "ontobuilt"]],
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4682B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["get", "building_height"],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Eating Establishment",
+                    "name": "Eating Establishment",
+                    "source": "usage",
+                    "filter": ["in", "EatingEstablishment", ["get", "ontobuilt"]],
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFD700",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["get", "building_height"],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "University Facility",
+                    "name": "University Facility",
+                    "source": "usage",
+                    "filter": ["in", "UniversityFacility", ["get", "ontobuilt"]],
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#9932CC",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["get", "building_height"],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Cultural Facility",
+                    "name": "Cultural Facility",
+                    "source": "usage",
+                    "filter": ["in", "CulturalFacility", ["get", "ontobuilt"]],
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF69B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["get", "building_height"],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Clinic",
+                    "name": "Clinic",
+                    "source": "usage",
+                    "filter": ["in", "Clinic", ["get", "ontobuilt"]],
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["get", "building_height"],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Single Residential",
+                    "name": "Single Residential",
+                    "source": "usage",
+                    "filter": ["in", "SingleResidential", ["get", "ontobuilt"]],
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#6495ED",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["get", "building_height"],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Bank",
+                    "name": "Bank",
+                    "source": "usage",
+                    "filter": ["in", "Bank", ["get", "ontobuilt"]],
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF8C00",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["get", "building_height"],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Drinking Establishment",
+                    "name": "Drinking Establishment",
+                    "source": "usage",
+                    "filter": ["in", "DrinkingEstablishment", ["get", "ontobuilt"]],
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#008000",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["get", "building_height"],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Sports Facility",
+                    "name": "Sports Facility",
+                    "source": "usage",
+                    "filter": ["in", "SportsFacility", ["get", "ontobuilt"]],
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color":  "#FF69B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["get", "building_height"],
+                            8
+                        ]
+                    }
+                }
+            ]
         }
     ]
 }
