@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.fh;
 
-import org.apache.jena.base.Sys;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.*;
@@ -9,16 +8,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.*;
 
-import com.bigdata.service.ndx.pipeline.IndexWriteTask.M;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import wiremock.org.eclipse.jetty.util.ajax.JSON;
-
 import java.io.*;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
