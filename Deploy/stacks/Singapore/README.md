@@ -19,7 +19,6 @@ Important note: Instances where 'sg' is committed - [access-agent.json], [sg.jso
 	- mapbox_api_key
 2) Visualisation settings: 
     - Replace all instances of `localhost` in [index.html], [data.json (MapBox)] and [data.json (Cesium)] with digital ocean IP.
-    - Replace [dispersion-interactor.json] `localhost` in `STACK_URL` with digital ocean IP.
 3) To generate dispersion data, two additional API keys are needed, one from https://aisstream.io/ and another one from https://openweathermap.org/ with OneCall enabled. Insert API key from aisstream in [ship-input-agent.json] and API key from openweather in [weather-agent.json].
 4) Run the following command in [stack-manager]:
 ```
@@ -37,9 +36,6 @@ Important note: Instances where 'sg' is committed - [access-agent.json], [sg.jso
 ### Company data
 The "buildings" and "company" datasets need to be uploaded for this step. 
 1) Execute [company.http] to match building IRIs to respective companies, this will add a column in the company table:
-```
-curl -X POST "http://localhost:3838/buildingidentificationagent/postgis?table=company&column=wkb_geometry"
-```
 2) Once the building IRIs have been appended, please go to the `mainland` geoserver layer and update the query as below:
     ```
     WITH "uuid_table" AS 
