@@ -79,7 +79,8 @@ export default function InfoTree(props: InfoTreeProps) {
       // WIP: Add required functionality while data is still being fetched
     } else {
       if (data) {
-        setElement(parseIntoElements(data));
+        const rootGroup: AttributeGroup = recurseParseAttributeGroup(data, rootKey);
+        setElement(renderGroup(rootGroup));
       } else if (error) {
         if (!selectedFeatureProperties?.iri) {
           console.warn("IRI is missing. Data fetching will be skipped.");
@@ -114,18 +115,7 @@ export default function InfoTree(props: InfoTreeProps) {
     </div>
   );
 }
-/**
- * Parse the JSON data returned from the Feature Info Agent into an attribute group data model.
- * This structure will be used to populate the layer tree.
- *
- * @param {JsonObject} dataResponse JSON data returned from query.
- * @returns {AttributeGroup} The attribute group data model.
- */
 
-function parseIntoElements(dataResponse: JsonObject): React.ReactElement {
-  const rootGroup: AttributeGroup = recurseParseAttributeGroup(dataResponse, rootKey);
-  return renderGroup(rootGroup, 0);
-}
 /**
  * Recursively parse the data returned from the Feature Info Agent into the attribute group data model.
  *
@@ -195,35 +185,56 @@ function parseAttribute(property: string, value: string, unit: string = ""): Att
  * Renders the group with its possible elements. This is a recursive function that can render subGroups as well.
  *
  * @param {AttributeGroup} item The attribute group to render.
+ * @returns {React.ReactElement} The HTML DOM element for rendering.
+ */
+function renderGroup(item: AttributeGroup): React.ReactElement {
+  // Get root attributes.
+  const attributes = renderAttribute(item.attributes, "0");
+  // Get subgroup components
+  const childGroups: React.ReactElement[] = [];
+  item.subGroups.map((subGroup) => {
+    childGroups.push(renderSubGroups(subGroup, 0));
+  });
+  // For root element
+  return (
+    <>
+      {attributes}
+      {childGroups}
+    </>
+  );
+
+}
+
+/**
+ * Renders the group with its possible elements. This is a recursive function that can render subGroups as well.
+ *
+ * @param {AttributeGroup} item The attribute group to render.
  * @param {number} depth The current depth to this group tree.
  * @returns {React.ReactElement} The HTML DOM element for rendering.
  */
-function renderGroup(item: AttributeGroup, depth: number): React.ReactElement {
+function renderSubGroups(item: AttributeGroup, depth: number): React.ReactElement {
   // Size of left hand indentation
-  const spacing: string = Math.max(depth - 1, 0) * 0.5 + "rem"; // Root should not be indented
+  const spacing: string = Math.max(depth, 0) * 0.5 + "rem"; // Root should not be indented
   // Get attributes.
   const attributes = renderAttribute(item.attributes, depth + 1);
   // Get subgroup components
   const childGroups: React.ReactElement[] = [];
   item.subGroups.map((subGroup) => {
-    childGroups.push(renderGroup(subGroup, depth + 1));
+    childGroups.push(renderSubGroups(subGroup, depth + 1));
   });
-  // For non-root elements ie meta
-  if (item.name != rootKey) {
+  // For root element
+  if (depth === 0) {
     return (
       <div className={styles.treeEntry} key={item.name}>
-        <div className={styles.treeEntryHeader}>
-          {/* Spacer */}
-          <span style={{ width: spacing }} />
+        <div style={{ paddingLeft: spacing }} className={styles.treeEntryHeader}>
+          {/* Header Name */}
+          <div className={styles.treeHeaderName}>
+            {item.name}
+          </div>
 
           {/* Expand/collapse icon */}
           <div className={styles.icon}>
             <Icon className="material-symbols-outlined">keyboard_arrow_up</Icon>&nbsp;
-          </div>
-
-          {/* Header Name */}
-          <div className={styles.treeHeaderName}>
-            {item.name}
           </div>
         </div>
 
@@ -233,12 +244,24 @@ function renderGroup(item: AttributeGroup, depth: number): React.ReactElement {
       </div>
     );
   } else {
-    // For root element
+    // For non-root elements
     return (
-      <>
+      <div className={styles.treeEntry} key={item.name}>
+        <div className={styles.treeEntryNonPrimaryHeader} style={{ paddingLeft: spacing }}>
+          {/* Header Name */}
+          <div className={styles.treeEntryNonPrimaryHeaderName}>
+            {item.name}
+          </div>
+          {/* Expand/collapse icon */}
+          <div className={styles.icon}>
+            <Icon className="material-symbols-outlined">keyboard_arrow_up</Icon>&nbsp;
+          </div>
+        </div>
+        {/* Elements */}
         {attributes}
         {childGroups}
-      </>
+
+      </div>
     );
   }
 }
@@ -252,15 +275,13 @@ function renderGroup(item: AttributeGroup, depth: number): React.ReactElement {
  */
 function renderAttribute(attributes: Attribute[], depth: number): React.ReactElement[] {
   const elements: React.ReactElement[] = [];
-
-  // Size of left hand indentation
-  const spacing: string = (depth + 1) * 0.5 + "rem";
+  const spacing: string = Math.max(depth, 0) * 0.5 + "rem"; // Root should not be indented
 
   attributes.map((attribute) => {
     elements.push(
-      <p className={styles.treeAttributeEntry} style={{ marginLeft: spacing }} key={attribute.name}>
+      <p className={styles.treeAttributeEntry} style={{ paddingLeft: spacing }} key={attribute.name}>
         {/* Attribute: Value */}
-        {attribute.name}:&nbsp;
+        <span className={styles.treeAttributeKey}>{attribute.name}:&nbsp;</span>
         <span className={styles.treeAttributeValue}>
           {attribute.value}&nbsp;{attribute.unit}
         </span>
