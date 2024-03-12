@@ -34,8 +34,6 @@ const unitKey: string = "unit";
  * feature information from an external data source via PanelHandler.
  */
 export default function InfoTree(props: InfoTreeProps) {
-  // State to store the latitude and longitude of the clicked location
-  const latLng = useSelector(getLatLng);
   // State to store the currently selected feature's information
   const selectedFeatureProperties = useSelector(getProperties);
   // State to store the modified stack URL
@@ -53,8 +51,7 @@ export default function InfoTree(props: InfoTreeProps) {
 
   function getApiParams(): ApiParams {
     if (
-      !selectedFeatureProperties ||
-      !selectedFeatureProperties.iri ||
+      !selectedFeatureProperties?.iri ||
       !stack
     ) {
       return undefined;
@@ -68,7 +65,7 @@ export default function InfoTree(props: InfoTreeProps) {
 
   // Effect to update selected feature's stack endpoint each time a new feature is selected
   useEffect(() => {
-    if (selectedFeatureProperties && selectedFeatureProperties.iri) {
+    if (selectedFeatureProperties?.iri) {
       // Retrieving constants
       let stackEndpoint: string =
         props.dataStore.getStackEndpoint(selectedSourceLayer);
@@ -84,7 +81,7 @@ export default function InfoTree(props: InfoTreeProps) {
       if (data) {
         setElement(parseIntoElements(data));
       } else if (error) {
-        if (!selectedFeatureProperties || !selectedFeatureProperties.iri) {
+        if (!selectedFeatureProperties?.iri) {
           console.warn("IRI is missing. Data fetching will be skipped.");
         } else if (!stack) {
           console.warn(
@@ -108,9 +105,7 @@ export default function InfoTree(props: InfoTreeProps) {
           {/* Playholder for adding a loading spinner */}
         </div>
       ) : element ?
-        (
-          <div className={styles.infoSection}>{element}</div>
-        ) : (
+        (<div className={styles.infoSection}>{element}</div>) : (
           <div className={styles.infoSection}>
             <p>Click to fetch feature information.</p>
           </div>

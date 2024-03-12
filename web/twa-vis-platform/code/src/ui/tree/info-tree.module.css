@@ -19,19 +19,13 @@
 .infoSection {
   width: 100%;
   box-sizing: border-box;
-  flex-grow: 1;
-  /* Allow sections to adjust their height if needed */
+  flex-grow: 1; /* Allow sections to adjust their height if needed */
   margin-top: 0.5rem;
   padding: 0 0.5rem 1rem;
   border-style: solid;
   border-color: var(--border-secondary);
   border-width: 0px 0px 1px 0px;
-  overflow-y: auto;
-  /* Enable vertical scrolling for the info section */
-}
-
-.infoSection:hover {
-  background-color: var(--background-secondary);
+  overflow-y: auto; /* Enable vertical scrolling for the info section */
 }
 
 .treeEntry {
@@ -48,6 +42,10 @@
 .treeEntryHeader {
   display: flex;
   flex-direction: row;
+}
+
+.treeEntryHeader:hover {
+  background-color: var(--background-secondary);
 }
 
 .treeHeaderName {
