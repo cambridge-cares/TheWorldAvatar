@@ -475,6 +475,7 @@ public class QueryClient {
         // get dispersion output at lowest height
         double minHeight = heightToDispOutputMap.keySet().stream().mapToDouble(d -> d).min().getAsDouble();
         List<String> inputs = heightToDispOutputMap.get(minHeight);
+        String name = String.format("Virtual sensor at %.2f m", minHeight);
 
         // output (OntoEMS reporting station)
         String mainUuid = "virtualsensor_" + UUID.randomUUID();
@@ -482,7 +483,7 @@ public class QueryClient {
         Iri station = iri(stationIri);
 
         // Update triples for station in blazegraph
-        modify.insert(station.isA(REPORTING_STATION));
+        modify.insert(station.isA(REPORTING_STATION).andHas(iri(RDFS.LABEL), name));
 
         List<String> dataListForTimeSeries = new ArrayList<>();
 
@@ -513,7 +514,7 @@ public class QueryClient {
         feature.put("geometry", geometry);
         feature.put("iri", stationIri);
         feature.put("main_uuid", mainUuid);
-        feature.put("name", String.format("Virtual sensor at %.2f m", minHeight));
+        feature.put("name", name);
         feature.put("endpoint", sparqlEndpoint);
         feature.put("geom_uuid", UUID.randomUUID());
 
