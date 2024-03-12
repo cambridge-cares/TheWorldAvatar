@@ -10,7 +10,7 @@ This is the first scene user will see when open up the application. User can nav
 
 ### Floor Plan Scene
 
-In the floor plan scene, user can click on each room to check the real time room temperature and humidity. The user can also click on the models in the open lab area to view the reasize models and their real time status in the model scene. There are three types of model available, fumehood, PIPS robot and chemical cabinet. Each type is labeled with different colors and the color representation can be found from the legend.
+In the floor plan scene, user can click on each room to check the real time room temperature and humidity. The user can also click on the models in the open lab area to view the real size models and their real time status in the model scene. There are three types of model available, fumehood, PIPS robot and chemical cabinet. Each type is labeled with different colors and the color representation can be found from the legend.
 
 ### Model Scene
 
