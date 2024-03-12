@@ -33,8 +33,8 @@ class LogicalOperator(Enum):
 
 @dataclass
 class CompoundNumericalConstraint:
-    logical_operator: Optional[LogicalOperator]
-    constraints: Tuple[AtomicNumericalConstraint, ...]
+    logical_operator: Optional[LogicalOperator] = None
+    constraints: Tuple[AtomicNumericalConstraint, ...] = tuple()
 
     def __str__(self):
         if not self.constraints:
