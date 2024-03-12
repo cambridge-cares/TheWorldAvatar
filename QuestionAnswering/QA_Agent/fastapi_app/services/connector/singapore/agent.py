@@ -194,10 +194,10 @@ SELECT {vars} WHERE {{
 
     def compute_aggregate_plot_attributes(
         self,
-        plot_args: PlotConstraints,
+        plot_constraints: PlotConstraints,
         attr_aggs: List[Tuple[PlotAttrKey, AggregateOperator]] = [],
     ):
-        iris = self.find_plot_iris(plot_args)
+        iris = self.find_plot_iris(plot_constraints)
         vars = []
         patterns = [
             "VALUES ?IRI {{ {values} }}".format(

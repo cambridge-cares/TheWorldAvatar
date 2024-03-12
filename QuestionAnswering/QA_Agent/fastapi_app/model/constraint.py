@@ -53,4 +53,8 @@ class ExtremeValueConstraint(Enum):
     MIN = "MIN"
     MAX = "MAX"
 
+    def __str__(self):
+        return self.value.lower()
+
+
 NumericalArgConstraint = Union[CompoundNumericalConstraint, ExtremeValueConstraint]
