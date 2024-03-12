@@ -1,0 +1,1 @@
+This script is used to generate the color codes and colorbar for visualising heat emissions of buildings
