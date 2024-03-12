@@ -273,13 +273,13 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         return steps, data
 
 
-def get_ontospecies_agent_connector_getter(
+def get_ontospecies_agent_connector(
     kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
     ontospecies_agent: Annotated[OntoSpeciesAgent, Depends(get_ontospecies_agent)],
     docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
     constraint_parser: Annotated[ConstraintParser, Depends(get_constraint_parser)],
 ):
-    return lambda: OntoSpeciesAgentConnector(
+    return OntoSpeciesAgentConnector(
         kg_client=kg_client,
         ontospecies_agent=ontospecies_agent,
         docs_retriever=docs_retriever,

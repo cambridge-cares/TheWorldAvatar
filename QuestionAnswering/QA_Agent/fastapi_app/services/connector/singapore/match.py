@@ -1,3 +1,5 @@
+from typing import Annotated
+from fastapi import Depends
 import numpy as np
 from redis import Redis
 from redis.commands.search.field import (
@@ -8,8 +10,10 @@ from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 
 from services.kg_client import KgClient
-from services.embed import IEmbedder
+from services.redis_client import get_redis_client
+from services.embed import IEmbedder, get_embedder
 from .constants import LAND_USE_TYPES
+from .kg_client import get_singapore_kg_client
 
 
 class LandUseTypeMatcher:
@@ -56,7 +60,10 @@ SELECT ?IRI ?label ?comment WHERE {{
         labels = self.redis_client.json().mget(keys, "$.label")
         labels = [item for sublist in labels for item in sublist]
 
-        texts = ["label: {label}; comment: {comment}.".format(label=label, comment=comment) for label, comment in zip(labels, comments)]
+        texts = [
+            "label: {label}; comment: {comment}.".format(label=label, comment=comment)
+            for label, comment in zip(labels, comments)
+        ]
         embeddings = self.embedder(texts).astype(np.float32).tolist()
         vector_dimension = len(embeddings[0])
 
@@ -106,3 +113,13 @@ SELECT ?IRI ?label ?comment WHERE {{
             .docs[0]
         )
         return (doc.IRI, doc.label, doc.comment, doc.vector_score)
+
+
+def get_land_use_type_matcher(
+    kg_client: Annotated[KgClient, Depends(get_singapore_kg_client)],
+    embedder: Annotated[IEmbedder, Depends(get_embedder)],
+    redis_client: Annotated[Redis, Depends(get_redis_client)],
+):
+    return LandUseTypeMatcher(
+        kg_client=kg_client, embedder=embedder, redis_client=redis_client
+    )

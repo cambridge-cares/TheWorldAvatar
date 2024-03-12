@@ -1,3 +1,6 @@
+from typing import Annotated
+
+from fastapi import Depends
 from model.aggregate import AggregateOperator
 from services.connector.singapore.constants import PlotAttrKey
 from model.constraint import (
@@ -6,9 +9,9 @@ from model.constraint import (
     ExtremeValueConstraint,
     LogicalOperator,
 )
-from services.utils.parse import SchemaParser
+from services.utils.parse import SchemaParser, get_schema_parser
 from services.connector.singapore.agent import PlotConstraints
-from .match import LandUseTypeMatcher
+from .match import LandUseTypeMatcher, get_land_use_type_matcher
 
 
 class NumericalArgConstraintParser:
@@ -174,3 +177,25 @@ class AttributeAggregateParser:
             return None
 
         return PlotAttrKey(args.get("key")), AggregateOperator(args.get("aggregate"))
+
+
+def get_numerical_arg_constraint_parser(
+    schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)]
+):
+    return NumericalArgConstraintParser(schema_parser)
+
+
+def get_plot_constraint_parser(
+    schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)],
+    constraint_parser: Annotated[
+        NumericalArgConstraintParser, Depends(get_numerical_arg_constraint_parser)
+    ],
+    land_use_type_matcher: Annotated[
+        LandUseTypeMatcher, Depends(get_land_use_type_matcher)
+    ],
+):
+    return PlotConstraintsParser(
+        schema_parser=schema_parser,
+        constraint_parser=constraint_parser,
+        land_use_type_matcher=land_use_type_matcher,
+    )
