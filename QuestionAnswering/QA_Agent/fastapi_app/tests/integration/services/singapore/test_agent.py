@@ -3,6 +3,7 @@ import os
 from model.constraint import (
     AtomicNumericalConstraint,
     CompoundNumericalConstraint,
+    ExtremeValueConstraint,
     LogicalOperator,
     NumericalOperator,
 )
@@ -52,6 +53,25 @@ class TestSingporeLandLotAgent:
 
         # Assert
         assert "https://www.theworldavatar.com/kg/landplot/94739" in iris
+
+    def test_findPlotIri_greatestPlotArea(self):
+        # Arrange
+        ontop_client = KgClient(os.getenv("KG_ENDPOINT_SINGAPORE_ONTOP"))
+        bg_endpoint = os.getenv("KG_ENDPOINT_SINGAPORE")
+        agent = SingporeLandLotAgent(ontop_client=ontop_client, bg_endpoint=bg_endpoint)
+
+        plot_args = PlotArgs(
+            land_use_type=LandUseType.BUSINESS1,
+            plot_area=ExtremeValueConstraint.MAX,
+            num=2
+        )
+
+        # Act
+        iris = agent.find_plot_iris(plot_args)
+
+        # Assert
+        assert len(iris) == 2
+        print(iris)
 
     def test_lookupPlotAttributes(self):
         # Arrange
