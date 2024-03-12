@@ -1,7 +1,8 @@
 from enum import Enum
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 from pydantic.dataclasses import dataclass
+
 
 class NumericalOperator(Enum):
     EQ = "="
@@ -44,5 +45,12 @@ class CompoundNumericalConstraint:
             delimiter = " or "
         else:
             delimiter = " and "
-            
+
         return delimiter.join([str(x) for x in self.constraints])
+
+
+class ExtremeValueConstraint(Enum):
+    MIN = "MIN"
+    MAX = "MAX"
+
+NumericalArgConstraint = Union[CompoundNumericalConstraint, ExtremeValueConstraint]

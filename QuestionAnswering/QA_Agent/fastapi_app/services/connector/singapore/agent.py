@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic.dataclasses import dataclass
 
 from services.kg_client import KgClient
-from model.constraint import CompoundNumericalConstraint
+from model.constraint import CompoundNumericalConstraint, NumericalArgConstraint, ExtremeValueConstraint
 from model.qa import QAData
 from .constants import LAND_USE_CLS2INSTANCE, LandUseType, PlotAttrKey
 
@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 @dataclass
 class PlotArgs:
     land_use_type: Optional[LandUseType] = None
-    gross_plot_ratio: Optional[CompoundNumericalConstraint] = None
-    plot_area: Optional[CompoundNumericalConstraint] = None
-    gross_floor_area: Optional[CompoundNumericalConstraint] = None
-
+    gross_plot_ratio: Optional[NumericalArgConstraint] = None
+    plot_area: Optional[NumericalArgConstraint] = None
+    gross_floor_area: Optional[NumericalArgConstraint] = None
+    num: Optional[int] = None
 
 class SingporeLandLotAgent:
     _ATTRKEY2PRED = {
@@ -31,30 +31,40 @@ class SingporeLandLotAgent:
         self.ontop_client = ontop_client
         self.bg_endpoint = bg_endpoint
 
-    def _make_patterns_for_constraint(
-        self, key: PlotAttrKey, constraint: CompoundNumericalConstraint
-    ):
-        triple = "?IRI {pred}/om:hasNumericalValue ?{key} .".format(
-            pred=self._ATTRKEY2PRED[key], key=key.value
-        )
+    def _make_clauses_for_constraint(self, key: PlotAttrKey, constraint: NumericalArgConstraint):
+        where_patterns = []
+        orderby = None
 
-        atomic_constraints = [
-            "?{key} {operator} {operand}".format(
-                key=key.value, operator=x.operator.value, operand=x.operand
-            )
-            for x in constraint.constraints
-        ]
-        if constraint.logical_operator:
-            delimiter = constraint.logical_operator.value
+        valuenode = "?{key}NumericalValue".format(key=key.value)
+        where_patterns.append("?IRI {pred}/om:hasNumericalValue {valuenode} .".format(
+            pred=self._ATTRKEY2PRED[key], valuenode=valuenode
+        ))
+
+        if isinstance(constraint, CompoundNumericalConstraint):
+            atomic_constraints = [
+                "{valuenode} {operator} {operand}".format(
+                    valuenode=valuenode, operator=x.operator.value, operand=x.operand
+                )
+                for x in constraint.constraints
+            ]
+            if constraint.logical_operator:
+                delimiter = constraint.logical_operator.value
+            else:
+                delimiter = "&&"
+            exprn = delimiter.join(atomic_constraints)
+            filter_pattern = "FILTER ( {exprn} )".format(exprn=exprn)
+            where_patterns.append(filter_pattern)
         else:
-            delimiter = "&&"
-        exprn = delimiter.join(atomic_constraints)
-        filter_pattern = "FILTER ( {exprn} )".format(exprn=exprn)
+            if constraint is ExtremeValueConstraint.MAX:
+                orderby = "DESC({var})".format(var=valuenode)
+            else:
+                orderby = valuenode
 
-        return [triple, filter_pattern]
+        return where_patterns, orderby
 
     def find_plot_iris(self, plot_args: PlotArgs):
         patterns = []
+        orderbys = []
 
         if plot_args.land_use_type:
             patterns.append(
@@ -69,10 +79,12 @@ class SingporeLandLotAgent:
             ("gross_floor_area", PlotAttrKey.GROSS_FLOOR_AREA),
         ]:
             field = getattr(plot_args, fieldname)
-            if isinstance(field, CompoundNumericalConstraint):
-                _patterns = self._make_patterns_for_constraint(key, field)
-                patterns.extend(_patterns)
-
+            where_patterns, orderby = self._make_clauses_for_constraint(key, field)
+            patterns.extend(where_patterns)
+            if orderby:
+                orderbys.append(orderby)
+            else:
+                pass
         query = """PREFIX ontoplot:<https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX opr: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
 PREFIX ontozoning:<https://www.theworldavatar.com/kg/ontozoning/>
@@ -85,6 +97,12 @@ SELECT ?IRI WHERE {{
 }}""".format(
             patterns="\n".join(patterns)
         )
+
+        if orderbys:
+            query += "\nORDER BY " + " ".join(orderbys)
+
+        if plot_args.num:
+            query += "\nLIMIT " + str(plot_args.num)
 
         logger.info("SPARQL query:\n" + query)
 
