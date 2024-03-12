@@ -1,11 +1,16 @@
 import logging
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from pydantic.dataclasses import dataclass
 
-from services.kg_client import KgClient
-from model.constraint import CompoundNumericalConstraint, NumericalArgConstraint, ExtremeValueConstraint
+from model.aggregate import AggregateOperator
+from model.constraint import (
+    CompoundNumericalConstraint,
+    NumericalArgConstraint,
+    ExtremeValueConstraint,
+)
 from model.qa import QAData
+from services.kg_client import KgClient
 from .constants import LAND_USE_CLS2INSTANCE, LandUseType, PlotAttrKey
 
 logger = logging.getLogger(__name__)
@@ -19,6 +24,7 @@ class PlotArgs:
     gross_floor_area: Optional[NumericalArgConstraint] = None
     num: Optional[int] = None
 
+
 class SingporeLandLotAgent:
     _ATTRKEY2PRED = {
         PlotAttrKey.LAND_USE_TYPE: "ontozoning:hasLandUseType",
@@ -31,14 +37,18 @@ class SingporeLandLotAgent:
         self.ontop_client = ontop_client
         self.bg_endpoint = bg_endpoint
 
-    def _make_clauses_for_constraint(self, key: PlotAttrKey, constraint: NumericalArgConstraint):
+    def _make_clauses_for_constraint(
+        self, key: PlotAttrKey, constraint: NumericalArgConstraint
+    ):
         where_patterns = []
         orderby = None
 
         valuenode = "?{key}NumericalValue".format(key=key.value)
-        where_patterns.append("?IRI {pred}/om:hasNumericalValue {valuenode} .".format(
-            pred=self._ATTRKEY2PRED[key], valuenode=valuenode
-        ))
+        where_patterns.append(
+            "?IRI {pred}/om:hasNumericalValue {valuenode} .".format(
+                pred=self._ATTRKEY2PRED[key], valuenode=valuenode
+            )
+        )
 
         if isinstance(constraint, CompoundNumericalConstraint):
             atomic_constraints = [
@@ -115,7 +125,7 @@ SELECT ?IRI WHERE {{
         iris = self.find_plot_iris(plot_args)
         if not iris:
             return QAData()
-        
+
         patterns = [
             "VALUES ?IRI {{ {values} }}".format(
                 values=" ".join(["<{iri}>".format(iri=iri) for iri in iris])
@@ -178,6 +188,55 @@ SELECT {vars} WHERE {{
         ]
         return QAData(vars=vars, bindings=bindings)
 
-    def compute_plot_statistics(self, plot_args: PlotArgs):
-        # numercal arguments: either a range, or argmin/argmax
-        pass
+    def count_plots(self, plot_args: PlotArgs):
+        iris = self.find_plot_iris(plot_args)
+        return QAData(vars=["count"], bindings=[dict(count=len(iris))])
+
+    def compute_aggregate_plot_attributes(
+        self,
+        plot_args: PlotArgs,
+        attr_aggs: List[Tuple[PlotAttrKey, AggregateOperator]] = [],
+    ):
+        iris = self.find_plot_iris(plot_args)
+        vars = []
+        patterns = [
+            "VALUES ?IRI {{ {values} }}".format(
+                values=" ".join(["<{iri}>".format(iri=iri) for iri in iris])
+            )
+        ]
+        for key, agg in attr_aggs:
+            func = agg.value
+            valuenode = "?{key}NumericalValue".format(key=key.value)
+
+            vars.append(
+                "({func}({valuenode}) AS {valuenode}{func})".format(
+                    func=func, valuenode=valuenode
+                )
+            )
+            patterns.append(
+                "?IRI {pred}/om:hasNumericalValue {valuenode} .".format(
+                    pred=self._ATTRKEY2PRED[key], valuenode=valuenode
+                )
+            )
+
+        query = """PREFIX ontoplot:<https://www.theworldavatar.com/kg/ontoplot/>
+PREFIX opr: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
+PREFIX ontozoning:<https://www.theworldavatar.com/kg/ontozoning/>
+PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT {vars} WHERE {{
+{patterns} 
+}}""".format(
+            vars=" ".join(vars), patterns="\n".join(patterns)
+        )
+
+        res = self.ontop_client.query(query)
+        vars = res["head"]["vars"]
+        bindings = [
+            {k: v["value"] for k, v in binding.items()}
+            for binding in res["results"]["bindings"]
+        ]
+
+        return QAData(vars=vars, bindings=bindings)
