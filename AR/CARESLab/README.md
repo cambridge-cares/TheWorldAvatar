@@ -26,14 +26,16 @@ Similar to the fumehood, user can check the status of the canopy hood on top of 
 
 #### Chemical Cabinet
 
-User can experiecne the process of unlocking the cabinet, opening the door and check the chemical bottle's status. 
+User can experience the process of unlocking the cabinet, opening the door and check the chemical bottle's status. 
 
 ## Project Setup
 
 ### Prerequisites
 
-- [Unity Hub](https://unity.com/download) with Unity 2021.3 LTS installed
-- [Visual Studio](https://visualstudio.microsoft.com/vs/older-downloads/) with the [reaquired workloads](https://learn.microsoft.com/en-us/windows/mixed-reality/develop/install-the-tools?tabs=unity)
+- [Unity Hub](https://unity.com/download) with Unity 2021.3 LTS editor installed
+    - Tick platforms `Universal Windows Platform Build Support` and `Windows Build Support (IL2CPP)` when installing the editor
+    - Unity Editor configuration steps can be found at [here](https://learn.microsoft.com/en-us/windows/mixed-reality/develop/unity/choosing-unity-version)
+- [Visual Studio](https://visualstudio.microsoft.com/vs/older-downloads/) with the [required workloads](https://learn.microsoft.com/en-us/windows/mixed-reality/develop/install-the-tools?tabs=unity)
 - Hololens2 device or Hololens2 Emulator
 - Windows 10 or 11
 - [Microsoft Mixed Reality Feature Tool](https://learn.microsoft.com/en-us/windows/mixed-reality/develop/unity/welcome-to-mr-feature-tool#2-selecting-your-unity-project)
@@ -96,11 +98,11 @@ A complete guide of setting up **new** MRTK3 project can be found at [here](http
 
 6. If TMP Importer is prompt, choose to import TMP Essentials.
 
-7. Replace `<STACK-ADDR>` and `<ONTOLOGY-ADDR>` in `endpoints.properties`.
+7. Replace `<STACK-ADDR>` and `<ONTOLOGY-ADDR>` in [Assets/StreamingAssets/endpoints.properties](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/AR/CARESLab/Assets/StreamingAssets/endpoints.properties).
 
 ### Run in Unity
 
-Run in Unity is the most easy and convinient way to test during development. Check [here](https://learn.microsoft.com/en-us/windows/mixed-reality/mrtk-unity/mrtk3-input/packages/input/input-simulation#how-to-use-mrtk3-input-simulation-mrtk3-input-simulator-default-controls) for keys to control.
+Run in Unity is the most easy and convenient way to test during development. Check [here](https://learn.microsoft.com/en-us/windows/mixed-reality/mrtk-unity/mrtk3-input/packages/input/input-simulation#how-to-use-mrtk3-input-simulation-mrtk3-input-simulator-default-controls) for keys to control.
 
 Other resources:
 - [Debug C# code in Unity](https://docs.unity3d.com/Manual/ManagedCodeDebugging.html)
