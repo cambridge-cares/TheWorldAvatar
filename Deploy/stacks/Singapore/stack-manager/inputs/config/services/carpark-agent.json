@@ -1,0 +1,45 @@
+{
+    "ServiceSpec": {
+        "Name": "carpark-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/carpark-agent:1.0.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../carpark_config",
+                        "Target": "/usr/local/tomcat/config"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "blazegraph_password"
+                    },
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8080/carpark-agent/",
+            "externalPath": "/carpark-agent/"
+        }
+    }
+}
