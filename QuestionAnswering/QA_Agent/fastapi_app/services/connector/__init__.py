@@ -1,14 +1,19 @@
 from functools import cache
 import logging
+import os
 import time
-from typing import Annotated, Callable, List
+from typing import Annotated, List
 
 from fastapi import Depends
 
 from model.qa import QAStep
 from services.connector.ontospecies import (
     OntoSpeciesAgentConnector,
-    get_ontospecies_agent_connector_getter,
+    get_ontospecies_agent_connector,
+)
+from services.connector.singapore import (
+    SingaporeLandPlotsAgentConnector,
+    get_singapore_land_plots_agent_connector,
 )
 from services.connector.agent_connector import IAgentConnector
 from services.func_call import IFuncCaller, get_func_caller
@@ -56,13 +61,39 @@ class AgentConnectorMediator:
 
 
 @cache
-def get_agents(
-    ontospecies_agent_connector_getter: Annotated[
-        Callable[[], OntoSpeciesAgentConnector],
-        Depends(get_ontospecies_agent_connector_getter),
+def get_chemistry_agents(
+    ontospecies_agent_connector: Annotated[
+        OntoSpeciesAgentConnector,
+        Depends(get_ontospecies_agent_connector),
     ]
 ):
-    return [ontospecies_agent_connector_getter()]
+    return [ontospecies_agent_connector]
+
+
+@cache
+def get_cities_agents(
+    singapore_land_plots_agent_connector: Annotated[
+        SingaporeLandPlotsAgentConnector,
+        Depends(get_singapore_land_plots_agent_connector),
+    ]
+):
+    return [singapore_land_plots_agent_connector]
+
+
+@cache
+def get_superdomain():
+    return os.getenv("QA_SUPERDOMAIN", "chemistry")
+
+
+@cache
+def get_agents(
+    superdomain: Annotated[str, Depends(get_superdomain)],
+    chemistry_agents: Annotated[List[IAgentConnector], Depends(get_chemistry_agents)],
+    cities_agents: Annotated[List[IAgentConnector], Depends(get_cities_agents)],
+):
+    if superdomain == "cities":
+        return cities_agents
+    return chemistry_agents
 
 
 def get_agent_connector_mediator(
