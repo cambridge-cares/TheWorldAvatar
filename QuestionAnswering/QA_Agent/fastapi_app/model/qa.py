@@ -10,5 +10,5 @@ class QAStep(BaseModel):
     latency: float
 
 class QAData(BaseModel):
-    vars: List[str]
-    bindings: List[Dict[str, Any]]
+    vars: List[str] = []
+    bindings: List[Dict[str, Any]] = []
