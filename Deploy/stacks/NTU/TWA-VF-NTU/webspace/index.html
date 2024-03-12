@@ -284,29 +284,28 @@
                 // for Heatmap button
                 document.getElementById('getShowHeatmapButton').addEventListener('click', function () {
 
-                    $.getJSON("http://localhost:3838/ntuenergycluster-agent/?stack=true",function(testdata){
-				
-                        console.log(testdata)
-        
-                        let scale = 50;
+                    // Change this URL to where the NTUEnergyClusterAgent is located
+                    $.getJSON("http://localhost:3838/ntuenergycluster-agent/?stack=true",function(data){
+				        
+                        // 0 low voltage, 1 nominal voltage, 2 high voltage
                         let valueMin = 0;
-                        let valueMax = 100;
-                        let data = [
-                            { x: 103.6818572460, y: 1.3419334155, value: testdata[10]*scale }, // 11 School of Physical and Mathematical Sciences
-                            { x: 103.6800064641, y: 1.3442181323, value: testdata[2]*scale },  // 3 Nanyang Auditorium
-                            { x: 103.6791746564, y: 1.3450496383, value: testdata[5]*scale },  // 6 School of Biological Sciences
-                            { x: 103.6800881613, y: 1.3454565079, value: testdata[1]*scale },  // 2 Block N1.3
-                            { x: 103.6796595995, y: 1.3467408413, value: testdata[8]*scale },  // 9 Block N2
-                            { x: 103.6800130775, y: 1.3473157834, value: testdata[9]*scale },  // 10 Block N2.1
-                            { x: 103.6757490809, y: 1.3445919035, value: testdata[6]*scale },  // 7 Experimental Medicine Building
-                            { x: 103.6854021333, y: 1.3442537009, value: testdata[11]*scale }, // 12 Hall of Residence 4
-                            { x: 103.6883786891, y: 1.3458209704, value: testdata[12]*scale }, // 13 Pioneer Hall
-                            { x: 103.6853405644, y: 1.3483400219, value: testdata[3]*scale },  // 4 Canteen 2
-                            { x: 103.6877703643, y: 1.3494060864, value: testdata[14]*scale }, // 15 The Wave
-                            { x: 103.6881162008, y: 1.3514382803, value: testdata[13]*scale }, // 14 Nanyang Executive Centre
-                            { x: 103.37643,      y: 1.34366,      value: testdata[7]*scale },  // 8 RTP
-                            { x: 103.693812,     y: 1.353296,     value: testdata[4]*scale },  // 5
-                            { x: 103.675338,     y: 1.345447,     value: testdata[0]*scale }   // 1
+                        let valueMax = 2;
+                        let mappedData = [ // maps bus data (buses 1-15, indexed 0-15) to coordinates
+                            { x: 103.6818572460, y: 1.3419334155, value: data[10] }, // 11 School of Physical and Mathematical Sciences
+                            { x: 103.6800064641, y: 1.3442181323, value: data[2] },  // 3 Nanyang Auditorium
+                            { x: 103.6791746564, y: 1.3450496383, value: data[5] },  // 6 School of Biological Sciences
+                            { x: 103.6800881613, y: 1.3454565079, value: data[1] },  // 2 Block N1.3
+                            { x: 103.6796595995, y: 1.3467408413, value: data[8] },  // 9 Block N2
+                            { x: 103.6800130775, y: 1.3473157834, value: data[9] },  // 10 Block N2.1
+                            { x: 103.67898,      y: 1.34488,      value: data[6] },  // 7 Experimental Medicine Building
+                            { x: 103.6854021333, y: 1.3442537009, value: data[11] }, // 12 Hall of Residence 4
+                            { x: 103.6883786891, y: 1.3458209704, value: data[12] }, // 13 Pioneer Hall
+                            { x: 103.6853405644, y: 1.3483400219, value: data[3] },  // 4 Canteen 2
+                            { x: 103.6877703643, y: 1.3494060864, value: data[14] }, // 15 The Wave
+                            { x: 103.6881162008, y: 1.3514382803, value: data[13] }, // 14 Nanyang Executive Centre
+                            { x: 103.67943,      y: 1.34366,      value: data[7] },  // 8 RTP
+                            { x: 103.693812,     y: 1.353296,     value: data[4] },  // 5
+                            { x: 103.675338,     y: 1.345447,     value: data[0] }   // 1
                         ];
 
                         console.log("viewer? ", MapHandler.MAP instanceof Cesium.Viewer);
@@ -322,21 +321,21 @@
                             {
                                 // heatmap.js options go here
                                 //minOpacity: 0.2,
-                                maxOpacity: 0.4,
+                                maxOpacity: 0.75,
                                 //useEntitiesIfAvailable: false,
-                                radius: 200,
-                                blur: 0.9,
+                                radius: 75,
+                                blur: 0.5,
                                 gradient: {  // the gradient used if not given in the heatmap options object
-                                    '.3': '#d9e7fc',
+                                    '.05': '#2a37ed',
+                                    '.3': '#2a7aed',
                                     '.5': '#00ff00',
-                                    '.65': '#2a7aed',
-                                    '.8': '#fbd801',
+                                    '.8': '#70fb01',
                                     '.95': '#c91212'
                                 },
                             },
                         );
                         
-                        heatMap.setWGS84Data(valueMin, valueMax, data);
+                        heatMap.setWGS84Data(valueMin, valueMax, mappedData);
                     });
                 });
 
