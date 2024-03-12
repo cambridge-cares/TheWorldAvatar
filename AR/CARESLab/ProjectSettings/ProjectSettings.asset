@@ -750,9 +750,9 @@ PlayerSettings:
   metroPackageVersion: 1.0.0.0
   metroCertificatePath: Assets\WSATestCertificate.pfx
   metroCertificatePassword: 
-  metroCertificateSubject: DefaultCompany
-  metroCertificateIssuer: DefaultCompany
-  metroCertificateNotAfter: 808c81cf8a1cdb01
+  metroCertificateSubject: Cambridge CARES
+  metroCertificateIssuer: Cambridge CARES
+  metroCertificateNotAfter: 00317cbb1964db01
   metroApplicationDescription: Template_3D
   wsaImages: {}
   metroTileShortName: MRTK_tutorial
