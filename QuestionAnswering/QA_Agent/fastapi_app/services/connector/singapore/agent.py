@@ -11,14 +11,14 @@ from model.constraint import (
 )
 from model.qa import QAData
 from services.kg_client import KgClient
-from .constants import LAND_USE_CLS2INSTANCE, LandUseType, PlotAttrKey
+from .constants import PlotAttrKey
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class PlotArgs:
-    land_use_type: Optional[LandUseType] = None
+class PlotConstraints:
+    land_use_type_iri: Optional[str] = None
     gross_plot_ratio: Optional[NumericalArgConstraint] = None
     plot_area: Optional[NumericalArgConstraint] = None
     gross_floor_area: Optional[NumericalArgConstraint] = None
@@ -72,15 +72,15 @@ class SingporeLandLotAgent:
 
         return where_patterns, orderby
 
-    def find_plot_iris(self, plot_args: PlotArgs):
-        patterns = []
+    def find_plot_iris(self, plot_constraints: PlotConstraints):
+        patterns = ["?IRI rdf:type ontoplot:Plot ."]
         orderbys = []
 
-        if plot_args.land_use_type:
+        if plot_constraints.land_use_type_iri:
             patterns.append(
                 "?IRI {pred} <{land_use}> .".format(
                     pred=self._ATTRKEY2PRED[PlotAttrKey.LAND_USE_TYPE],
-                    land_use=LAND_USE_CLS2INSTANCE[plot_args.land_use_type],
+                    land_use=plot_constraints.land_use_type_iri,
                 )
             )
         for fieldname, key in [
@@ -88,7 +88,7 @@ class SingporeLandLotAgent:
             ("plot_area", PlotAttrKey.PLOT_AREA),
             ("gross_floor_area", PlotAttrKey.GROSS_FLOOR_AREA),
         ]:
-            field = getattr(plot_args, fieldname)
+            field = getattr(plot_constraints, fieldname)
             where_patterns, orderby = self._make_clauses_for_constraint(key, field)
             patterns.extend(where_patterns)
             if orderby:
@@ -111,8 +111,8 @@ SELECT ?IRI WHERE {{
         if orderbys:
             query += "\nORDER BY " + " ".join(orderbys)
 
-        if plot_args.num:
-            query += "\nLIMIT " + str(plot_args.num)
+        if plot_constraints.num:
+            query += "\nLIMIT " + str(plot_constraints.num)
 
         logger.info("SPARQL query:\n" + query)
 
@@ -121,8 +121,8 @@ SELECT ?IRI WHERE {{
             for x in self.ontop_client.query(query)["results"]["bindings"]
         ]
 
-    def lookup_plot_attributes(self, plot_args: PlotArgs, attr_keys: List[PlotAttrKey]):
-        iris = self.find_plot_iris(plot_args)
+    def lookup_plot_attributes(self, plot_constraints: PlotConstraints, attr_keys: List[PlotAttrKey]):
+        iris = self.find_plot_iris(plot_constraints)
         if not iris:
             return QAData()
 
@@ -188,13 +188,13 @@ SELECT {vars} WHERE {{
         ]
         return QAData(vars=vars, bindings=bindings)
 
-    def count_plots(self, plot_args: PlotArgs):
+    def count_plots(self, plot_args: PlotConstraints):
         iris = self.find_plot_iris(plot_args)
         return QAData(vars=["count"], bindings=[dict(count=len(iris))])
 
     def compute_aggregate_plot_attributes(
         self,
-        plot_args: PlotArgs,
+        plot_args: PlotConstraints,
         attr_aggs: List[Tuple[PlotAttrKey, AggregateOperator]] = [],
     ):
         iris = self.find_plot_iris(plot_args)

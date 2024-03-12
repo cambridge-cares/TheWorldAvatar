@@ -23,7 +23,6 @@ class DocsRetriever:
         self.embedder = embedder
         self.redis_client = redis_client
 
-    @cache
     def does_index_exist(self, index_name: str):
         try:
             if self.redis_client.ft(index_name).info():
