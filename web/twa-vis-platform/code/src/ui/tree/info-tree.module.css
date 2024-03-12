@@ -1,56 +1,76 @@
 .infoPanelContainer {
   width: 100%;
-  height: 100%; 
+  height: 600px;
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* Enable vertical scrolling for the entire panel container */
   padding: 1rem;
 }
 
-.infoHeadSection { 
-  width: 400px;
-  height: 100px;
-  min-width: 100px;
-  min-height: 100px;
-
-  position: relative;
-  top: 10px;
-  left: 20px;
-
+.infoHeadSection {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  pointer-events: all;
 }
 
-.infoSection { 
-  width: 100%;  
+.infoHeadSection h2 {
+  font-size: 1.1rem;
+}
+
+.infoSection {
+  width: 100%;
   box-sizing: border-box;
-  flex-grow: 1; /* Allow sections to adjust their height if needed */
-  padding: 10px; 
+  flex-grow: 1;
+  /* Allow sections to adjust their height if needed */
+  margin-top: 0.5rem;
+  padding: 0 0.5rem 1rem;
   border-style: solid;
   border-color: var(--border-secondary);
   border-width: 0px 0px 1px 0px;
-  overflow-y: auto; /* Enable vertical scrolling for each info section */
+  overflow-y: auto;
+  /* Enable vertical scrolling for the info section */
 }
 
 .infoSection:hover {
   background-color: var(--background-secondary);
 }
 
-.infoSection h3 {
-  font-size: 14pt; /* Larger than layer tree items */
-  color: var(--text-color-primary);
+.treeEntry {
+  margin: 0.2rem 0 0.4rem;
 }
 
-/*
-Value text styling
-*/
-.infoValue {
-  color: deepskyblue; /* A more vibrant blue */
-  background-color: #f0f0f0; /* Light grey background */
-  padding: 2px 4px; /* Adds some padding around the text */
-  border-radius: 4px; /* Rounds the corners of the background */
-  font-family: Arial, sans-serif; /* Changes the font */
+.icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.treeEntryHeader {
+  display: flex;
+  flex-direction: row;
+}
+
+.treeHeaderName {
+  width: 100%;
+  font-size: 0.95rem;
+  border-style: solid;
+  border-color: var(--border-secondary);
+  border-width: 0px 0px 1px 0px;
+}
+
+/* Attribute Styling */
+.treeAttributeEntry {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  overflow-wrap: break-word;
+  margin: 0.2rem 0;
+}
+
+.treeAttributeValue {
+  color: var(--text-color-secondary);
+  margin-left: auto;
 }
 
 /*
@@ -60,6 +80,7 @@ Loading
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -77,4 +98,3 @@ Loading
   top: 50%;
   transform: translate(-50%, -50%);
 }
-

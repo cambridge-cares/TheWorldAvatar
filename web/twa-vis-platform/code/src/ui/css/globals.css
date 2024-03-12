@@ -14,6 +14,7 @@
 
         /* Text colors */
         --text-color-primary: #30363d;
+        --text-color-secondary: #228aa2;
         --text-color-links: #146a7d;
         --text-color-links-hover: #20aac9;
         
@@ -43,6 +44,7 @@
 
         /* Text colors */
         --text-color-primary: #dde9ff;
+        --text-color-secondary: deepskyblue;
         --text-color-links: #146a7d;
         --text-color-links-hover: #20aac9;
         
