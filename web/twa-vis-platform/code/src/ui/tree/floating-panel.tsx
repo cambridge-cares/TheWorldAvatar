@@ -47,19 +47,6 @@ export default function FloatingPanelContainer(
   return (
     <div className={styles.floatingPanelContainer}>
       <div className={styles.floatingPanelHead}>
-        {/* Toggle visibility button */}
-        <button onClick={() => setIsPanelVisible(!isPanelVisible)}>
-          <Tooltip
-            title={isPanelVisible ? "Hide Panel" : "Show Panel"}
-            enterDelay={500}
-            leaveDelay={200}
-          >
-            <Icon className="material-symbols-outlined">
-              {isPanelVisible ? "visibility_off" : "visibility"}
-            </Icon>
-          </Tooltip>
-        </button>
-
         {/* Layer tree button */}
         <button
           className={activeIndex == 0 ? buttonClassActive : buttonClass}
@@ -108,6 +95,19 @@ export default function FloatingPanelContainer(
             </Tooltip>
           </button>
         )}
+
+        {/* Toggle visibility button */}
+        <button onClick={() => setIsPanelVisible(!isPanelVisible)}>
+          <Tooltip
+            title={isPanelVisible ? "Collapse Panel" : "Expand Panel"}
+            enterDelay={500}
+            leaveDelay={200}
+          >
+            <Icon className="material-symbols-outlined">
+              {isPanelVisible ? "arrow_drop_up" : "arrow_drop_down"}
+            </Icon>
+          </Tooltip>
+        </button>
       </div>
 
       {/* Conditionally render the panel's body */}
