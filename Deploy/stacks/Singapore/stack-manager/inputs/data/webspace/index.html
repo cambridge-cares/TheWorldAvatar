@@ -266,25 +266,21 @@
                 }).then(() => dispersionHandler.plotData());
 
                 // Set customised legend in panel
-                var htmlContent =
-                    "<div id='legend-container'> " +
-                    "<h2>Legend</h2><br/>" +
-                    "<div class='legend-colorbar-label'><p>Heat Emissions (MW)</p></div>" +
-                    "<div class='legend-colorbar-container'>" +
-                    "<div class='legend-colorbar green-red-gradient'>" +
-                    "<span class='legend-color-label'>0</span>" +
-                    "<span class='legend-color-label'>30</span>" +
-                    "</div>" +
-                    "</div><br><br>" +
-                    "<div class='legend-colorbar-label'><p>Population density</p></div>" +
-                    "<div class='legend-colorbar-container'>" +
-                    "<div class='legend-colorbar white-red-gradient'>" +
-                    "<span class='legend-color-label'>0</span>" +
-                    "<span class='legend-color-label'>50</span>" +
-                    "</div>" +
-                    "</div>" +
-                    "</div>";
-                manager.getPanelHandler().setLegend(htmlContent);
+                manager.getPanelHandler().setLegend(`
+                    <div id='legend-container'>
+                        <h2>Legend</h2><br/>
+                        <div style="display: flex; justify-content: center;">
+                            <img src="./img/heat_emissions_colorbar.png" width="=450px"/>
+                        </div>
+                        <div class='legend-colorbar-label'><p>Population density</p></div>
+                        <div class='legend-colorbar-container'>
+                            <div class='legend-colorbar white-red-gradient'>
+                                <span class='legend-color-label'>0</span>
+                                <span class='legend-color-label'>50</span>
+                            </div>
+                        </div>
+                    </div>
+                `);
                 // Retrieve the sibling container where you wish to insert the new component before it
                 let beforeSiblingContainer = document.getElementById("helpandsearch");
                 // Create a new custom component
