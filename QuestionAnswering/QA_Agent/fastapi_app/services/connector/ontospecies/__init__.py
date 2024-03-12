@@ -8,7 +8,6 @@ import unit_parse
 from model.qa import QAStep
 from services.kg_client import KgClient
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
-from services.utils.parse import ConstraintParser, get_constraint_parser
 from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
 from services.connector.agent_connector import IAgentConnector
 from .constants import (
@@ -19,13 +18,14 @@ from .constants import (
     SpeciesUseAttrKey,
 )
 from .kg_client import get_ontospecies_kg_client
+from .parse import ConstraintParser, get_constraint_parser
 from .agent import OntoSpeciesAgent, get_ontospecies_agent
 
 logger = logging.getLogger(__name__)
 
 
 class OntoSpeciesAgentConnector(IAgentConnector):
-    FUNCS = [
+    _FUNCS = [
         {
             "name": "lookup_chemicalSpecies_attributes",
             "description": "Given a chemical species or chemical class, retrieve its requested attributes e.g. chemical class, application, boiling point, molecular formula",
@@ -101,7 +101,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
 
     @classmethod
     def get_funcs(cls):
-        return cls.FUNCS
+        return cls._FUNCS
 
     def get_name2method(self):
         return {
