@@ -20,7 +20,6 @@ public class GeometryMatcher {
         int pointSRID;
         int polygonSRID;
 
-        int partitions = 10;
         int pointMin;
         int polygonMin;
         int pointMax;
@@ -74,27 +73,27 @@ public class GeometryMatcher {
             throw new JPSRuntimeException("fail");
         }
 
-        int pointStep = (pointMax - pointMin) / partitions;
-        int polygonStep = (polygonMax - polygonMin) / partitions;
-
-        // match point geometries that have building tag with CityDB building footprints
-        for (int i = pointMin; i <= pointMax; i+= pointStep+1) {
-            rdbStoreClient.executeUpdate(pointSQL(pointTable, citydbPoint, i, i+pointStep));
+        // matching osm point geometries with CityDB building footprints
+        try (Connection connection = rdbStoreClient.getConnection();
+        Statement statement = connection.createStatement()) {
+            for (int i = pointMin; i <= pointMax; i++) {
+                statement.execute(pointSQL(pointTable, citydbPoint, i));
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
         }
 
-        // match polygon geometries that have building tag with CityDB building footprints
-        for (int i = polygonMin; i <= polygonMax; i+= polygonStep+1) {
-            rdbStoreClient.executeUpdate(polygonSQL(polygonTable, citydbPolygon, threshold, i, i+polygonStep));
+        try (Connection connection = rdbStoreClient.getConnection();
+            Statement statement = connection.createStatement()) {
+            for (int i = polygonMin; i <= polygonMax; i++) {
+                statement.execute(polygonSQL(pointTable, citydbPoint, threshold, i));
+            }
         }
-
-        // match point geometries that have do not have building IRI assigned with CityDB building footprints
-        for (int i = pointMin; i <= pointMax; i+= pointStep+1) {
-            rdbStoreClient.executeUpdate(pointSQL2(pointTable, citydbPoint, i, i+pointStep));
-        }
-
-        // match polygon geometries that have do not have building IRI assigned with CityDB building footprints
-        for (int i = polygonMin; i <= polygonMax; i+= polygonStep+1) {
-            rdbStoreClient.executeUpdate(polygonSQL2(polygonTable, citydbPolygon, threshold, i, i+polygonStep));
+        catch (SQLException e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
         }
 
         // delete temporary tables
@@ -211,77 +210,34 @@ public class GeometryMatcher {
      * SQL query to match OSM point geometries with not null building tag to CityDB building footprints, and assign the building IRI accordingly
      * @param table OSM points table
      * @param cityTable table storing CityDB building IRI and footprints, transformed to same SRID as table
-     * @param start start of chunking
-     * @param end end of chuncking
      * @return SQL query
      */
-    private static String pointSQL(String table, String cityTable, int start, int end) {
+    private static String pointSQL(String table, String cityTable, int id) {
         String update = "UPDATE %s AS p\n" +
                 "SET building_iri = g.urival\n" +
                 "FROM %s AS g\n" +
-                "WHERE building IS NOT NULL AND building_iri IS NULL AND\n" +
-                "ogc_fid BETWEEN %d AND %d AND\n" +
+                "WHERE building_iri IS NULL AND\n" +
+                "ogc_fid = %s AND\n" +
                 "public.ST_Intersects(p.\"geometryProperty\", g.geometry)";
 
-        return String.format(update, table, cityTable, start, end);
-    }
-
-    /**
-     * SQL query to match OSM point geometries with no building IRI assigned to CityDB building footprints, and assign the building IRI accordingly
-     * @param table OSM points table
-     * @param cityTable table storing CityDB building IRI and footprints, transformed to same SRID as table
-     * @param start start of chunking
-     * @param end end of chuncking
-     * @return SQL query
-     */
-    private static String pointSQL2(String table, String cityTable, int start, int end) {
-        String update = "UPDATE %s AS p\n" +
-                "SET building_iri = g.urival\n" +
-                "FROM %s AS g\n" +
-                "WHERE building IS NULL AND building_iri IS NULL AND\n" +
-                "ogc_fid BETWEEN %d AND %d AND\n" +
-                "public.ST_Intersects(p.\"geometryProperty\", g.geometry)";
-
-        return String.format(update, table, cityTable, start, end);
+        return String.format(update, table, cityTable, id);
     }
 
     /**
      * SQL query to match OSM polygon geometries with not null building tag to CityDB building footprints, and assign the building IRI accordingly
      * @param table OSM polygons table
      * @param cityTable table storing CityDB building IRI and footprints, transformed to same SRID as table
-     * @param start start of chunking
-     * @param end end of chuncking
      * @return SQL query
      */
-    private static String polygonSQL(String table, String cityTable, Double threshold, int start, int end) {
+    private static String polygonSQL(String table, String cityTable, double threshold, int id) {
         String update = "UPDATE %s AS p\n" +
                 "SET building_iri = g.urival\n" +
                 "FROM %s AS g\n" +
-                "WHERE building IS NOT NULL AND building_iri IS NULL AND landuse IS NULL AND \n" +
-                "ogc_fid BETWEEN %d AND %d AND\n" +
+                "WHERE building_iri IS NULL AND landuse IS NULL AND \n" +
+                "ogc_fid = %d AND\n" +
                 "public.ST_Area(public.ST_Intersection(p.\"geometryProperty\", g.geometry))" +
                 ">= %f*LEAST(public.ST_Area(p.\"geometryProperty\"), public.ST_Area(g.geometry))";
 
-        return String.format(update, table, cityTable, start, end, threshold);
-    }
-
-    /**
-     * SQL query to match OSM polygon geometries with no building IRI assigned to CityDB building footprints, and assign the building IRI accordingly
-     * @param table OSM polygons table
-     * @param cityTable table storing CityDB building IRI and footprints, transformed to same SRID as table
-     * @param start start of chunking
-     * @param end end of chuncking
-     * @return SQL query
-     */
-    private static String polygonSQL2(String table, String cityTable, Double threshold, int start, int end) {
-        String update = "UPDATE %s AS p\n" +
-                "SET building_iri = g.urival\n" +
-                "FROM %s AS g\n" +
-                "WHERE building IS NULL AND building_iri IS NULL AND landuse IS NULL AND \n" +
-                "ogc_fid BETWEEN %d AND %d AND\n" +
-                "public.ST_Area(public.ST_Intersection(p.\"geometryProperty\", g.geometry))" +
-                ">= %f*public.ST_Area(p.\"geometryProperty\")";
-
-        return String.format(update, table, cityTable, start, end, threshold);
+        return String.format(update, table, cityTable, id, threshold);
     }
 }
