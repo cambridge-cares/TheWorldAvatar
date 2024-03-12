@@ -10,9 +10,9 @@ from model.constraint import (
     LogicalOperator,
     NumericalOperator,
 )
-from services.connector.singapore.constants import LandUseType, PlotAttrKey
+from services.connector.singapore.constants import PlotAttrKey
 from services.kg_client import KgClient
-from services.connector.singapore.agent import PlotArgs, SingporeLandLotAgent
+from services.connector.singapore.agent import PlotConstraints, SingporeLandLotAgent
 
 @pytest.fixture
 def agent():
@@ -23,8 +23,8 @@ def agent():
 class TestSingporeLandLotAgent:
     def test_findPlotIri(self, agent: SingporeLandLotAgent):
         # Arrange
-        plot_args = PlotArgs(
-            land_use_type=LandUseType.BUSINESS1,
+        plot_args = PlotConstraints(
+            land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
             gross_plot_ratio=CompoundNumericalConstraint(
                 logical_operator=LogicalOperator.AND,
                 constraints=[
@@ -60,8 +60,8 @@ class TestSingporeLandLotAgent:
 
     def test_findPlotIri_greatestPlotArea(self, agent: SingporeLandLotAgent):
         # Arrange
-        plot_args = PlotArgs(
-            land_use_type=LandUseType.BUSINESS1,
+        plot_args = PlotConstraints(
+            land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
             plot_area=ExtremeValueConstraint.MAX,
             num=2
         )
@@ -75,8 +75,8 @@ class TestSingporeLandLotAgent:
 
     def test_lookupPlotAttributes(self, agent: SingporeLandLotAgent):
         # Arrange
-        plot_args = PlotArgs(
-            land_use_type=LandUseType.BUSINESS1,
+        plot_args = PlotConstraints(
+            land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
             gross_floor_area=CompoundNumericalConstraint(
                 constraints=[
                     AtomicNumericalConstraint(
@@ -95,13 +95,13 @@ class TestSingporeLandLotAgent:
 
     def test_computeAggregatePlotAttributes(self, agent: SingporeLandLotAgent):
         # Arrange
-        plot_args = PlotArgs(
-            land_use_type=LandUseType.BUSINESS1
+        plot_args = PlotConstraints(
+            land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075"
         )
         attr_aggs = [(PlotAttrKey.PLOT_AREA, AggregateOperator.AVG), (PlotAttrKey.GROSS_PLOT_RATIO, AggregateOperator.MIN)]
         
         # Act
-        data = agent.compute_aggregate_plot_attributes(plot_args=plot_args, attr_aggs=attr_aggs)
+        data = agent.compute_aggregate_plot_attributes(plot_constraints=plot_args, attr_aggs=attr_aggs)
 
         # Assert
         assert data.vars == ["PlotAreaNumericalValueAVG", "GrossPlotRatioNumericalValueMIN"]

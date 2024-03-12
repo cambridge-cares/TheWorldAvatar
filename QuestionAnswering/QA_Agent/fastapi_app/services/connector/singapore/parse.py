@@ -1,3 +1,5 @@
+from model.aggregate import AggregateOperator
+from services.connector.singapore.constants import PlotAttrKey
 from model.constraint import (
     AtomicNumericalConstraint,
     CompoundNumericalConstraint,
@@ -147,3 +149,28 @@ class PlotConstraintsParser:
                 else None
             ),
         )
+
+
+class AttributeAggregateParser:
+    def __init__(self, schema_parser: SchemaParser):
+        self.schema_parser = schema_parser
+
+    def parse(self, text: str):
+        args = self.schema_parser.parse(
+            text=text,
+            schema={
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "enum": ["GrossPlotRatio", "PlotArea", "GrossFloorArea"],
+                    },
+                    "aggregate": {"type": "string", "enum": ["MIN", "MAX", "AVG"]},
+                },
+            },
+        )
+
+        if not args.get("key") or not args.get("aggregate"):
+            return None
+
+        return PlotAttrKey(args.get("key")), AggregateOperator(args.get("aggregate"))
