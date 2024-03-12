@@ -1,4 +1,4 @@
-# Cross-domain representation of Chilean (Instructions)
+# Cross-domain representation of Chilean energy-related information
 
 UPDATED ON 29 February 2024. Reproduced by Feroz on Tuesday 16 of January, 2024. (from Dropbox)
 Note: You need to have Windows, WSL and Ubuntu, Visual Studio Code, Docker, Java 11 all installed in the computer, 
