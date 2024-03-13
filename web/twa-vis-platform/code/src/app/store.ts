@@ -3,7 +3,6 @@ import { configureStore } from '@reduxjs/toolkit';
 import contextMenuReducer from 'state/context-menu-slice';
 import ribbonComponentReducer from 'state/ribbon-component-slice';
 import floatingPanelReducer from 'state/floating-panel-slice';
-import layerTreeReducer from 'state/layer-tree-slice';
 import mapFeatureReducer from 'state/map-feature-slice';
 import { featureInfoAgentApi } from 'utils/server-utils';
 
@@ -13,7 +12,6 @@ export const reduxStore = configureStore({
         contextMenu: contextMenuReducer,
         ribbonComponents: ribbonComponentReducer,
         floatingPanel: floatingPanelReducer,
-        layerTree: layerTreeReducer,
         mapFeature: mapFeatureReducer,
         [featureInfoAgentApi.reducerPath]: featureInfoAgentApi.reducer,
     },
