@@ -1,7 +1,7 @@
 import json
 import requests
 from datetime import datetime
-from typing import Tuple, Dict, Any, List
+from typing import Tuple, Dict, Any, Set
 from rdflib import Graph, Literal
 
 from py4jps.kg_operations.gateway import jpsBaseLibGW
@@ -140,6 +140,7 @@ class PySparqlClient:
                      INSERT {{ {g_to_insert.serialize(format='nt')} }}
                      WHERE {{ {g_to_delete.serialize(format='nt')} }}"""
         self.perform_update(update)
+        # print(update)
 
     def check_if_triple_exist(self, s, p, o, data_type: str = None) -> bool:
         s = "?s" if s is None else f"<{utils.trim_iri(s)}>"
@@ -149,9 +150,11 @@ class PySparqlClient:
         response = self.perform_query(query)
         return response[0]['ASK']
 
-    def get_outgoing_and_attributes(self, node_iris: List[str]) -> Dict[str, Any]:
+    def get_outgoing_and_attributes(self, node_iris: Set[str]) -> Dict[str, Any]:
         if isinstance(node_iris, str):
             node_iris = [node_iris]
+        if isinstance(node_iris, list):
+            node_iris = set(node_iris)
         query = f"""SELECT ?s ?p ?o WHERE {{VALUES ?s {{ {' '.join([f'<{utils.trim_iri(iri)}>' for iri in node_iris])} }} ?s ?p ?o.}}"""
         response = self.perform_query(query)
         result = {}
@@ -159,6 +162,6 @@ class PySparqlClient:
             if r['s'] not in result:
                 result[r['s']] = {}
             if r['p'] not in result[r['s']]:
-                result[r['s']][r['p']] = []
-            result[r['s']][r['p']].append(r['o'])
+                result[r['s']][r['p']] = set()
+            result[r['s']][r['p']].add(r['o'])
         return result
