@@ -7,11 +7,6 @@ from services.embed import TritonMPNetEmbedder
 from services.kg_client import KgClient
 from services.connector.singapore.match import LandUseTypeMatcher
 
-@pytest.fixture
-def redis_client():
-    client = Redis()
-    yield client
-    client.flushdb()
     
 class TestLandUseTypeMatcher:
     @pytest.mark.parametrize(
@@ -21,11 +16,10 @@ class TestLandUseTypeMatcher:
                 ("religious buildings", "https://www.theworldavatar.com/kg/landplot/LandUseType_de2f9725-4360-4b0d-b237-fb71b7f09201")
             ]
     )
-    def test_match(self, redis_client, query, expected):
+    def test_match(self, docs_retriever, query, expected):
         # Arrange
         kg_client = KgClient(os.getenv("KG_ENDPOINT_SINGAPORE"))
-        embedder = TritonMPNetEmbedder()
-        matcher = LandUseTypeMatcher(kg_client=kg_client, embedder=embedder, redis_client=redis_client)
+        matcher = LandUseTypeMatcher(kg_client=kg_client, docs_retriever=docs_retriever)
 
         # Act
         actual = matcher.match(query)

@@ -32,17 +32,11 @@ def numerical_arg_constraint_parser(schema_parser):
 
 
 @pytest.fixture
-def land_use_type_matcher():
-    redis_client = Redis()
+def land_use_type_matcher(docs_retriever):
     kg_client = KgClient(os.getenv("KG_ENDPOINT_SINGAPORE"))
-    embedder = TritonMPNetEmbedder()
-    matcher = LandUseTypeMatcher(
-        kg_client=kg_client, embedder=embedder, redis_client=redis_client
-    )
+    matcher = LandUseTypeMatcher(kg_client=kg_client, docs_retriever=docs_retriever)
 
     yield matcher
-
-    redis_client.flushdb()
 
 
 class TestPlotConstraintsParser:

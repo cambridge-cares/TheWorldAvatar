@@ -10,7 +10,7 @@ from model.constraint import (
     LogicalOperator,
 )
 from services.utils.parse import SchemaParser, get_schema_parser
-from services.connector.singapore.agent import PlotConstraints
+from .agent import PlotConstraints
 from .match import LandUseTypeMatcher, get_land_use_type_matcher
 
 
@@ -132,7 +132,7 @@ class PlotConstraintsParser:
 
         return PlotConstraints(
             land_use_type_iri=(
-                self.land_use_type_matcher.match(args["land_use_type"])[0]
+                self.land_use_type_matcher.match(args["land_use_type"])
                 if args.get("land_use_type")
                 else None
             ),

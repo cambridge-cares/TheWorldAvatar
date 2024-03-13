@@ -4,10 +4,9 @@ from services.utils.numerical import cosine_similarity
 from services.embed import TritonMPNetEmbedder
 
 class TestEmbedder:
-    def test_tritonMpnetEmbedder_semantic(self):
+    def test_tritonMpnetEmbedder_semantic(self, embedder):
         # Arrange
         documents = ["pH regulator", "pH regulation", "pesticide"]
-        embedder = TritonMPNetEmbedder(url="localhost:8001")
         
         # Act
         embeddings = embedder(documents)
