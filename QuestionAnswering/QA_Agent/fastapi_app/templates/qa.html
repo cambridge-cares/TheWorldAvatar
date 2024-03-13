@@ -32,7 +32,7 @@
         <span class="special-char" onclick="inputField.addToInputText('°F')"><u>°F</u></span>
     </div>
     {% endif %}
-    
+
     <div class="input-group">
         <input id="input-field" type="search" autocomplete="off" placeholder="Type your query..."
             onkeydown="if (event.keyCode == 13) askQuestion()">
@@ -48,7 +48,7 @@
                 <button id="toggle-steps" type="submit" class="accordion" onclick="">Click to view reasoning
                     steps</button>
                 <div class="accordion-panel">
-                    <div id="qa-steps-container"></div>
+                    <div id="qa-steps-container" class="table-responsive"></div>
                 </div>
             </div>
         </div>

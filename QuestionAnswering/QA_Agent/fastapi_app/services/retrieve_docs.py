@@ -52,9 +52,9 @@ class DocsRetriever:
         vector_dim = len(embeddings[0])
 
         pipeline = self.redis_client.pipeline()
-        for i, (doc, embedding) in enumerate(zip(docs, embeddings)):
+        for i, (doc, text, embedding) in enumerate(zip(docs, texts, embeddings)):
             redis_key = doc_key_prefix + str(i)
-            datum = dict(doc=doc, embedding=embedding)
+            datum = dict(doc=doc, linearized_doc=text, embedding=embedding)
             pipeline.json().set(redis_key, "$", datum)
         pipeline.execute()
 
@@ -62,7 +62,7 @@ class DocsRetriever:
             VectorField(
                 "$.embedding",
                 "FLAT",
-                {"TYPE": "FLOAT32", "DIM": vector_dim, "DISTANCE_METRIC": "COSINE"},
+                {"TYPE": "FLOAT32", "DIM": vector_dim, "DISTANCE_METRIC": "IP"},
                 as_name="vector",
             ),
         )
