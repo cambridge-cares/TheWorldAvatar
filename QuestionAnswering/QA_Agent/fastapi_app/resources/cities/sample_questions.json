@@ -1,0 +1,13 @@
+[
+    {
+        "domain": "singapore",
+        "label": "Singapore's Land Plots",
+        "description": "Data about Singapore's master plan zoning",
+        "questions": [
+            "How many land plots are designated for commercial use?",
+            "what is the area of the largest residential lot?",
+            "what is the minimum gross plot ratio of lots designated for health and medical care facilities",
+            "average gross floor area allowed for lots for business activities"
+        ]
+    }
+]
