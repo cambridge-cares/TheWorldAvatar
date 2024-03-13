@@ -55,13 +55,27 @@
             "meta": {
                 "queryFile": "ship_meta.sparql"
             },
-			"time": {
-				"queryFile": "ship_time.sparql",
+            "time": {
+                "queryFile": "ship_time.sparql",
                 "limit": 24,
-			    "unit": "hours",
-			    "reference": "latest",
+                "unit": "hours",
+                "reference": "latest",
                 "database": "postgres"
-			}
+            }
+        },
+        {
+            "id": "Carpark",
+            "class": "https://www.theworldavatar.com/kg/ontocarpark/Carpark",
+            "meta": {
+                "queryFile": "carpark_meta.sparql"
+            },
+            "time": {
+                "queryFile": "carpark_time.sparql",
+                "database": "carpark",
+                "limit": 1,
+                "unit": "hours",
+                "reference": "latest"
+            }
         }
     ]
 }
