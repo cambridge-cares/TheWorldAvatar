@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.heat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -210,18 +211,27 @@ public class JurongIsland {
 
         }
 
+        // This function ignores the z-coordinates and returns a 2D polygon.
         Geometry convertStringToGeometry(String geomString) {
                 String[] geomSplit = geomString.split("#");
                 int nc = geomSplit.length / 3;
-                Coordinate[] coordinates = new Coordinate[nc];
+                // Coordinate[] coordinates = new Coordinate[nc];
+                List<Coordinate> coordList = new ArrayList<>();
 
                 for (int i = 0; i < geomSplit.length; i += 3) {
                         Double xc = Double.parseDouble(geomSplit[i]);
                         Double yc = Double.parseDouble(geomSplit[i + 1]);
                         Double zc = Double.parseDouble(geomSplit[i + 1]);
-                        int index = i / 3;
-                        coordinates[index] = new Coordinate(xc, yc, zc);
+                        // int index = i / 3;
+                        // coordinates[index] = new Coordinate(xc, yc, zc);
+                        coordList.add(new Coordinate(xc, yc, zc));
                 }
+
+                // Close the polygon if it is not closed.
+                // if (!coordList.get(nc - 1).equals(coordList.get(0)))
+                // coordList.add(coordList.get(0));
+
+                Coordinate[] coordinates = coordList.toArray(new Coordinate[0]);
 
                 Geometry buildingFootprint = new GeometryFactory().createPolygon(coordinates);
                 buildingFootprint.setSRID(24500);
@@ -241,23 +251,29 @@ public class JurongIsland {
                 Map<String, HeatSource> iriToBuilding = new HashMap<>();
 
                 heatSources.stream().filter(hs -> hs.sourceType == HeatSourceType.Building)
-                                .forEach(hs -> iriToBuilding.put(hs.iri, hs));
+                                .forEach(hs -> iriToBuilding.put(hs.ontoCityGmlIri, hs));
 
                 List<String> buildingIris = new ArrayList<>(iriToBuilding.keySet());
                 numberBuildings = buildingIris.size();
+
+                // Directly using the XSDDatatype.XSDinteger type when creating the WhereBuilder
+                // object doesn't work. Hence, the
+                // datatype is
+                // replaced using string manipulation before executing the query.
 
                 WhereBuilder wb = new WhereBuilder().addPrefix("ocgml", ontoCityGmlPrefix)
                                 .addWhere("?surface", "ocgml:GeometryType", "?polygon")
                                 .addWhere("?geom", "ocgml:lod2MultiSurfaceId", "?surface")
                                 .addWhere("?geom", "ocgml:objectClassId",
                                                 NodeFactory.createLiteral(String.valueOf(35), XSDDatatype.XSDint))
-                                .addWhere("?surface", "ocgml:buildingId", "?building_iri")
+                                .addWhere("?geom", "ocgml:buildingId", "?building_iri")
                                 .addFilter(expr);
-                buildingIris.stream().forEach(bi -> wb.addValueVar("building_iri", bi));
+                buildingIris.stream().forEach(bi -> wb.addWhereValueVar("?building_iri", NodeFactory.createURI(bi)));
 
-                SelectBuilder sb = new SelectBuilder().addVar("building_iri").addVar("polygon").addWhere(wb);
+                SelectBuilder sb = new SelectBuilder().addVar("?building_iri").addVar("?polygon").addWhere(wb);
 
-                JSONArray queryResult = storeClientOcgml.executeQuery(sb.buildString());
+                JSONArray queryResult = storeClientOcgml
+                                .executeQuery(sb.buildString().replace("XMLSchema#int", "XMLSchema#integer"));
 
                 for (int i = 0; i < queryResult.length(); i++) {
                         String footPrintString = queryResult.getJSONObject(i).getString("polygon");
@@ -268,42 +284,20 @@ public class JurongIsland {
 
         }
 
-        private Map<String, List<Geometry>> cityFurnitureQuery(Map<String, HeatSource> iriToCityFurniture) {
+        public boolean checkBasePolygon(String polygonString) {
 
-                ExprFactory exprFactory = new ExprFactory();
-                Expr expr = exprFactory.not(exprFactory.isBlank("polygon"));
-
-                List<String> cityFurnitureIris = new ArrayList<>(iriToCityFurniture.keySet());
-
-                WhereBuilder wb = new WhereBuilder().addPrefix("ocgml", ontoCityGmlPrefix)
-                                .addWhere("?geom", "ocgml:GeometryType", "?polygon")
-                                .addWhere("?geom", "ocgml:cityObjectId", "?city_furniture_iri")
-                                .addFilter(expr);
-                cityFurnitureIris.stream().forEach(cfi -> wb.addValueVar("city_furniture_iri", cfi));
-
-                SelectBuilder sb = new SelectBuilder().addVar("city_furniture_iri").addVar("polygon").addWhere(wb);
-
-                JSONArray queryResult = storeClientOcgml.executeQuery(sb.buildString());
-
-                Map<String, List<Geometry>> iriToPolygonMap = new HashMap<>();
-
-                for (int i = 0; i < queryResult.length(); i++) {
-                        String cityFurnitureIri = queryResult.getJSONObject(i)
-                                        .getString("city_furniture_iri");
-                        String polygonString = queryResult.getJSONObject(i)
-                                        .getString("polygon");
-                        if (iriToPolygonMap.containsKey(cityFurnitureIri)) {
-                                List<Geometry> polyList = iriToPolygonMap.get(cityFurnitureIri);
-                                polyList.add(convertStringToGeometry(polygonString));
-                                iriToPolygonMap.put(cityFurnitureIri, polyList);
-                        } else {
-                                List<Geometry> polyList = new ArrayList<>();
-                                polyList.add(convertStringToGeometry(polygonString));
-                                iriToPolygonMap.put(cityFurnitureIri, polyList);
-                        }
+                if (!polygonString.contains("#"))
+                        return false;
+                String[] polygonSplit = polygonString.split("#");
+                int nc = polygonSplit.length / 3;
+                List<Double> zcoords = new ArrayList<>();
+                for (int i = 2; i < nc; i += 3) {
+                        zcoords.add(Double.parseDouble(polygonSplit[i]));
                 }
-
-                return iriToPolygonMap;
+                Double zMin = Collections.min(zcoords);
+                Double zMax = Collections.max(zcoords);
+                Double diff = zMax - zMin;
+                return (diff < Double.MIN_VALUE) && (zMin < Double.MIN_VALUE);
 
         }
 
@@ -312,48 +306,34 @@ public class JurongIsland {
                 Map<String, HeatSource> iriToCityFurniture = new HashMap<>();
 
                 heatSources.stream().filter(hs -> hs.sourceType == HeatSourceType.PlantItem)
-                                .forEach(hs -> iriToCityFurniture.put(hs.iri, hs));
+                                .forEach(hs -> iriToCityFurniture.put(hs.ontoCityGmlIri, hs));
 
-                Map<String, List<Geometry>> iriToPolygonMap = cityFurnitureQuery(iriToCityFurniture);
-                List<String> cityFurnitureIriList = new ArrayList<>(iriToPolygonMap.keySet());
+                List<String> cityFurnitureIris = new ArrayList<>(iriToCityFurniture.keySet());
 
-                numberPlantItems = cityFurnitureIriList.size();
+                ExprFactory exprFactory = new ExprFactory();
+                Expr expr = exprFactory.not(exprFactory.isBlank("polygon"));
 
-                for (String ocgmlIRI : cityFurnitureIriList) {
-                        List<Geometry> polygonData = iriToPolygonMap.get(ocgmlIRI);
-                        // Go through the set of polygons to retrieve the following:
-                        // 1. maximum and minimum z-coordinates of all vertices across all polygons
-                        // (minZ & maxZ).
-                        // 2. base polygon
+                WhereBuilder wb = new WhereBuilder().addPrefix("ocgml", ontoCityGmlPrefix)
+                                .addWhere("?geom", "ocgml:GeometryType", "?polygon")
+                                .addWhere("?geom", "ocgml:cityObjectId", "?city_furniture_iri")
+                                .addFilter(expr);
+                cityFurnitureIris.stream()
+                                .forEach(cfi -> wb.addWhereValueVar("?city_furniture_iri", NodeFactory.createURI(cfi)));
 
-                        Geometry basePolygon = null;
-                        final double minZ = polygonData.stream()
-                                        .flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
-                                        .mapToDouble(Coordinate::getZ).min().orElse(0.0);
-                        final double maxZ = polygonData.stream()
-                                        .flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
-                                        .mapToDouble(Coordinate::getZ).max().orElse(0.0);
+                SelectBuilder sb = new SelectBuilder().addVar("?city_furniture_iri").addVar("?polygon").addWhere(wb);
 
-                        List<Geometry> basePolygons = polygonData.stream().filter(polygon -> {
-                                double polyMinZ = Arrays.stream(polygon.getCoordinates()).mapToDouble(Coordinate::getZ)
-                                                .min()
-                                                .orElse(minZ);
-                                double polyMaxZ = Arrays.stream(polygon.getCoordinates()).mapToDouble(Coordinate::getZ)
-                                                .max()
-                                                .orElse(maxZ);
-                                return (polyMinZ == polyMaxZ) && (minZ == polyMinZ);
-                        }).collect(Collectors.toList());
+                JSONArray queryResult = storeClientOcgml.executeQuery(sb.buildString());
 
-                        if (basePolygons.size() == 1)
-                                basePolygon = basePolygons.get(0);
-                        else {
-                                LOGGER.error("Could not identify base polygon for city furniture object with OCGML IRI {}",
-                                                ocgmlIRI);
-                                throw new JPSRuntimeException("Error in BuildingsData class.");
-                        }
+                for (int i = 0; i < queryResult.length(); i++) {
+                        String cityFurnitureIri = queryResult.getJSONObject(i)
+                                        .getString("city_furniture_iri");
+                        String polygonString = queryResult.getJSONObject(i)
+                                        .getString("polygon");
 
-                        iriToCityFurniture.get(ocgmlIRI).footPrint = basePolygon;
+                        if (!checkBasePolygon(polygonString))
+                                continue;
 
+                        iriToCityFurniture.get(cityFurnitureIri).footPrint = convertStringToGeometry(polygonString);
                 }
 
         }
@@ -368,7 +348,9 @@ public class JurongIsland {
                 String hasLongitudeEPSG4326 = ontoCompanyPrefix + "hasLongitudeEPSG4326";
                 String hasLatitudeEPSG4326 = ontoCompanyPrefix + "hasLatitudeEPSG4326";
 
-                heatSources.stream().forEach(hs -> {
+                heatSources.stream().filter(hs -> {
+                        return hs.footPrint != null;
+                }).forEach(hs -> {
                         ub.addInsert(NodeFactory.createURI(hs.iri), NodeFactory.createURI(hasLongitudeEPSG24500),
                                         NodeFactory.createLiteral(Double.toString(hs.location.getX()),
                                                         XSDDatatype.XSDdouble));
@@ -391,10 +373,25 @@ public class JurongIsland {
         }
 
         private void setHeatSourceLocations() {
-                heatSources.stream().forEach(hs -> {
+                heatSources.stream().filter(hs -> {
+                        return hs.footPrint != null;
+                }).forEach(hs -> {
                         hs.location = hs.footPrint.getCentroid();
                         hs.location.setSRID(hs.footPrint.getSRID());
                 });
+        }
+
+        private List<String> checkHeatSourceLocations() {
+                List<String> missingFootprints = new ArrayList<>();
+
+                heatSources.stream().filter(hs -> {
+                        return hs.footPrint == null;
+                }).forEach(hs -> {
+                        missingFootprints.add(hs.ontoCityGmlIri);
+                });
+
+                return missingFootprints;
+
         }
 
         public JSONObject calculateHeat() {
@@ -406,14 +403,14 @@ public class JurongIsland {
                 getHeatSourceProperties();
                 deleteHeat();
                 updateHeat();
-                /*
-                 * Buildings coordinates already exist.
-                 * deleteLocations();
-                 * setBuildingFootprints();
-                 * setCityFurnitureFootprints();
-                 * setHeatSourceLocations();
-                 * updateLocations();
-                 */
+
+                // Buildings coordinates already exist.
+                deleteLocations();
+                setBuildingFootprints();
+                setCityFurnitureFootprints();
+                // List<String> missingFootprints = checkHeatSourceLocations();
+                setHeatSourceLocations();
+                updateLocations();
 
                 JSONObject result = new JSONObject();
                 result.put("number_plant_items", numberPlantItems);
