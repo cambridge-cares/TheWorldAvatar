@@ -11,7 +11,7 @@ At the moment, a working understanding of these two tools will suffice for the d
 ### Stack manager
 Recommended stack name: sg
 
-Important note: Instances where 'sg' is committed - [access-agent.json], [sg.json (manager)], [sg.json (uploader)]
+Important note: Instances where 'sg' is committed - [access-agent.json], [sg.json (manager)], [sg.json (uploader)], [client.properties]
 1) Add four secret files in [stack-manager-secrets]
     - geoserver_password
 	- postgis_password
@@ -73,6 +73,16 @@ To generate dispersion data, make sure the weather agent and ship input agent ar
 
 3) To stop either live updates or scheduled simulations, change the request from POST to DELETE.
 
+### Carpark
+Add postgis password to db.password in [client.properties].
+Run the following requests:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"interval\":\"180\",\"timeunit\":\"seconds\"}" http://localhost:3838/carpark-agent/retrieve
+```
+
+```
+curl -X POST http://localhost:3838/carpark-agent/create
+```
 ## 3. Miscellaneous Functions
 ### Legend
 The mapbox visualisation can currently generate legends for different parameters manually. Please  check out the `manager.getPanelHandler().setLegend(htmlContent);` line at the `./stack-manager/inputs/data/webspace/index.html`.
@@ -94,3 +104,4 @@ New sets of gradient bars can be generated in the `./stack-manager/inputs/data/w
 [jurong-live.http]: <./HTTP requests for dispersion/jurong-live.http>
 [mbs-live.http]: <./HTTP requests for dispersion/mbs-live.http>
 [dispersion-interactor.json]: ./stack-manager/inputs/config/services/dispersion-interactor.json
+[client.properties]: ./carpark_config/client.properties
