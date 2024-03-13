@@ -1,7 +1,7 @@
 import json
 import logging
 import time
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
@@ -13,6 +13,7 @@ from services.chatbot import ChatbotClient
 class ChatRequest(BaseModel):
     question: str
     data: str
+    mode: Literal["RAG", "2NL"]
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,7 @@ async def chat(
 
     def generate():
         start = time.time()
-        for chunk in chatbot_client.request_stream(req.question, req.data):
+        for chunk in chatbot_client.request_stream(req.question, req.data, req.mode):
             content = chunk.choices[0].delta.content
             if content is not None:
                 yield "data: {data}\n\n".format(

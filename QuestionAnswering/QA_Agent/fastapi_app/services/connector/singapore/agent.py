@@ -11,7 +11,7 @@ from model.constraint import (
     ExtremeValueConstraint,
 )
 from model.qa import QAData
-from services.utils.rdf import linearize_node
+from services.utils.rdf import extract_name
 from services.kg_client import KgClient
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from .constants import PlotAttrKey
@@ -270,7 +270,7 @@ SELECT {vars} WHERE {{
             (binding["p"]["value"], binding["o"]["value"])
             for binding in self.bg_client.query(query)["results"]["bindings"]
         ]
-        return dict(IRI=iri, attributes=[dict(predicate=p, object=o) for p, o in tails])
+        return dict(IRI=iri, attributes=["{p}: {o}".format(p=extract_name(p), o=extract_name(o)) for p, o in tails])
 
     def _get_nodes_data(self):
         query = "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
@@ -284,17 +284,14 @@ SELECT {vars} WHERE {{
             key="singapore:concepts",
             queries=concepts,
             docs_getter=self._get_nodes_data,
-            linearize_func=lambda x: linearize_node(
-                subj=x["IRI"],
-                tails=[(y["predicate"], y["object"]) for y in x["attributes"]],
-            ),
+            linearize_func=lambda x: "{IRI}\n{attributes}".format(IRI=x["IRI"], attributes="\n".join(x["attributes"])),
             k=3,
         )
         retrieved = [[dict(obj) for obj, _ in lst] for lst in retrieved]
         return QAData(
-            vars=["concept", "node_data"],
+            vars=["concept", "retrieved_data"],
             bindings=[
-                dict(concept=concept, node_data=node_data)
+                dict(concept=concept, retrieved_data=node_data)
                 for concept, node_data in zip(concepts, retrieved)
             ],
         )

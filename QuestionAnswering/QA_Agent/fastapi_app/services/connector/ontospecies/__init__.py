@@ -160,7 +160,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             )
         )
 
-        return steps, data
+        return "QA", steps, data
 
     def _convert_units(self, constraint: AtomicNumericalConstraint):
         operand = constraint.operand
@@ -270,7 +270,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
             )
         )
 
-        return steps, data
+        return "QA", steps, data
 
 
 def get_ontospecies_agent_connector(

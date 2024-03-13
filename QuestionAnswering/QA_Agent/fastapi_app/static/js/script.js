@@ -325,7 +325,7 @@ const chatbotResponseCard = (function () {
     }
 
     // API calls
-    async function fetchChatbotResponseReader(question, data) {
+    async function fetchChatbotResponseReader(question, data, qaMode) {
         const vars = data["vars"]
         const bindings = data["bindings"].map(binding => vars.reduce((obj, k) => {
             if ((typeof binding[k] !== "string") || TWA_ABOX_IRI_PREFIXES.every(prefix => !binding[k].startsWith(prefix))) {
@@ -334,13 +334,15 @@ const chatbotResponseCard = (function () {
             return obj
         }, {}))
 
+        const mode = qaMode === "QA" ? "2NL" : qaMode === "IR" ? "RAG" : ""
+
         return fetch("./chat", {
             method: "POST",
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ question, data: JSON.stringify(bindings) }),
+            body: JSON.stringify({ question, data: JSON.stringify(bindings), mode }),
             signal: abortController.signal
         })
             .then(throwErrorIfNotOk)
@@ -358,9 +360,9 @@ const chatbotResponseCard = (function () {
             streamInterrupted = false
         },
 
-        async render(question, data) {
+        async render(question, data, qaMode) {
             elem.style.display = "block"
-            return fetchChatbotResponseReader(question, data).then(streamChatbotResponseBodyReader)
+            return fetchChatbotResponseReader(question, data, qaMode).then(streamChatbotResponseBodyReader)
         },
 
         // On-click callbaks
@@ -412,7 +414,7 @@ async function askQuestion() {
         qaMetadataContainer.render(results["metadata"])
         document.getElementById("result-section").style.display = "block"
         qaDataContainer.render(results["data"])
-        chatbotResponseCard.render(question, results["data"])
+        chatbotResponseCard.render(question, results["data"], results["metadata"]["mode"])
     } catch (error) {
         console.log(error)
         if ((error instanceof HttpError) && (error.statusCode == 500)) {
