@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  example:
+    image: python_agent_eg:1.0.0
+    build: .
+    container_name: python_agent_eg
+    ports:
+      - 55002:5000
