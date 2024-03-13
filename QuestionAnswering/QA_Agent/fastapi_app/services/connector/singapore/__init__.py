@@ -33,7 +33,7 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
                     },
                     "attributes": {
                         "type": "array",
-                        "item": {
+                        "items": {
                             "type": "string",
                             "description": "Attribute to query e.g. land use type, gross plot ratio, plot area, gross floor area",
                         },
@@ -67,7 +67,7 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
                     },
                     "attribute_aggregates": {
                         "type": "array",
-                        "item": {
+                        "items": {
                             "type": "string",
                             "description": "Aggregate of an attribute value e.g. average plot area, largest gross plot ratio",
                         },
@@ -146,10 +146,17 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
 
         attr_keys, step = self._align_attributes(attributes)
         steps.append(step)
-
+        
+        timestamp = time.time()
         data = self.agent.lookup_plot_attributes(
             plot_constraints=constraints, attr_keys=attr_keys
         )
+        latency = time.time() - timestamp
+        steps.append(
+            QAStep(action="lookup_plot_attributes", arguments=str(constraints), latency=latency)
+        )
+
+        return steps, data
 
     def count_plots(self, plot_constraints: str):
         steps: List[QAStep] = []
@@ -161,7 +168,7 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
         data = self.agent.count_plots(constraints)
         latency = time.time() - timestamp
         steps.append(
-            QAStep(action="count_plots", arguments=constraints, latency=latency)
+            QAStep(action="count_plots", arguments=str(constraints), latency=latency)
         )
 
         return steps, data

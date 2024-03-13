@@ -85,7 +85,6 @@ def get_superdomain():
     return os.getenv("QA_SUPERDOMAIN", "chemistry")
 
 
-@cache
 def get_agents(
     superdomain: Annotated[str, Depends(get_superdomain)],
     chemistry_agents: Annotated[List[IAgentConnector], Depends(get_chemistry_agents)],
