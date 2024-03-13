@@ -1,6 +1,6 @@
 
 
-import styles from '../info-tree.module.css';
+import styles from './info-tree.module.css';
 
 import { Icon } from '@mui/material';
 import { useState } from 'react';

@@ -5,9 +5,9 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getIndex, setIndex } from 'state/floating-panel-slice';
 import { DataStore } from 'io/data/data-store';
-import LayerTree from './layer-tree';
-import LegendTree from './legend-tree';
-import InfoTree from './info-tree';
+import LayerTree from './layer/layer-tree';
+import LegendTree from './legend/legend-tree';
+import InfoTree from './info/info-tree';
 
 // Incoming parameters for component.
 type FloatingPanelContainerProps = {

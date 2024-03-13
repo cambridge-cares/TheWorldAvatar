@@ -229,12 +229,6 @@ function buildGroup(item: TreeGroup, depth: number): React.ReactElement {
     childGroups.push(buildGroup(subGroup, depth + 1));
   });
 
-  const clickAction = (event: React.MouseEvent) => {
-    const target = event.target as unknown as HTMLCollection;
-
-    console.log(target);
-  };
-
   const [isExpanded, setIsExpanded] = useState<boolean>(true); // Default to expanded
 
   const toggleExpansion = () => {

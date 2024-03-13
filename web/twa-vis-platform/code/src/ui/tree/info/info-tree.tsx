@@ -7,7 +7,7 @@ import { getQueryTrigger, getUrl, setQueryTrigger } from 'state/map-feature-slic
 import { Attribute, AttributeGroup } from 'types/attribute';
 import { useGetMetadataQuery } from 'utils/server-utils';
 import { JsonObject } from "types/json";
-import InfoTreeNode from './info-tree/info-tree-node';
+import InfoTreeNode from './info-tree-node';
 
 const rootKey: string = "meta";
 const displayOrderKey: string = "display_order";
