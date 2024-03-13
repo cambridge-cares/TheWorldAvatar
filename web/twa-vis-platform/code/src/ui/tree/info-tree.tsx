@@ -3,17 +3,16 @@ import styles from './info-tree.module.css';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { skipToken } from '@reduxjs/toolkit/query/react';
-import { Icon } from '@mui/material';
 
 import { DataStore } from 'io/data/data-store';
 import {
   getProperties,
   getSourceLayerId,
-  getLatLng,
 } from 'state/map-feature-slice';
 import { Attribute, AttributeGroup } from 'types/attribute';
 import { useGetMetadataQuery, ApiParams } from 'utils/server-utils';
 import { JsonObject } from "types/json";
+import InfoTreeNode from './info-tree/info-tree-node';
 
 // type definition for incoming properties
 type InfoTreeProps = {
@@ -43,7 +42,7 @@ export default function InfoTree(props: InfoTreeProps) {
   // State to store the scenario ID
   const [scenarioID, setScenarioID] = useState("sFCkEoNC");
   // State to store fetched additional information about the selected feature
-  const [element, setElement] = useState(null);
+  const [attributeGroup, setAttributeGroup] = useState(null);
   // Execute API call
   const { data, error, isFetching } = useGetMetadataQuery(
     getApiParams() ?? skipToken
@@ -80,7 +79,7 @@ export default function InfoTree(props: InfoTreeProps) {
     } else {
       if (data) {
         const rootGroup: AttributeGroup = recurseParseAttributeGroup(data, rootKey);
-        setElement(renderGroup(rootGroup));
+        setAttributeGroup(rootGroup);
       } else if (error) {
         if (!selectedFeatureProperties?.iri) {
           console.warn("IRI is missing. Data fetching will be skipped.");
@@ -101,12 +100,9 @@ export default function InfoTree(props: InfoTreeProps) {
         <h2>Feature Information</h2>
       </div>
       {isFetching ? (
-        <div className={styles.spinner}>
-          <p></p>
-          {/* Playholder for adding a loading spinner */}
-        </div>
-      ) : element ?
-        (<div className={styles.infoSection}>{element}</div>) : (
+        <div className={styles.spinner}></div>
+      ) : attributeGroup ?
+        (<div className={styles.infoSection}><InfoTreeNode attribute={attributeGroup} /></div>) : (
           <div className={styles.infoSection}>
             <p>Click to fetch feature information.</p>
           </div>
@@ -179,114 +175,4 @@ function parseAttribute(property: string, value: string, unit: string = ""): Att
     value: value,
     unit: unit,
   };
-}
-
-/**
- * Renders the group with its possible elements. This is a recursive function that can render subGroups as well.
- *
- * @param {AttributeGroup} item The attribute group to render.
- * @returns {React.ReactElement} The HTML DOM element for rendering.
- */
-function renderGroup(item: AttributeGroup): React.ReactElement {
-  // Get root attributes.
-  const attributes = renderAttribute(item.attributes, "0");
-  // Get subgroup components
-  const childGroups: React.ReactElement[] = [];
-  item.subGroups.map((subGroup) => {
-    childGroups.push(renderSubGroups(subGroup, 0));
-  });
-  // For root element
-  return (
-    <>
-      {attributes}
-      {childGroups}
-    </>
-  );
-
-}
-
-/**
- * Renders the group with its possible elements. This is a recursive function that can render subGroups as well.
- *
- * @param {AttributeGroup} item The attribute group to render.
- * @param {number} depth The current depth to this group tree.
- * @returns {React.ReactElement} The HTML DOM element for rendering.
- */
-function renderSubGroups(item: AttributeGroup, depth: number): React.ReactElement {
-  // Size of left hand indentation
-  const spacing: string = Math.max(depth, 0) * 0.5 + "rem"; // Root should not be indented
-  // Get attributes.
-  const attributes = renderAttribute(item.attributes, depth + 1);
-  // Get subgroup components
-  const childGroups: React.ReactElement[] = [];
-  item.subGroups.map((subGroup) => {
-    childGroups.push(renderSubGroups(subGroup, depth + 1));
-  });
-  // For root element
-  if (depth === 0) {
-    return (
-      <div className={styles.treeEntry} key={item.name}>
-        <div style={{ paddingLeft: spacing }} className={styles.treeEntryHeader}>
-          {/* Header Name */}
-          <div className={styles.treeHeaderName}>
-            {item.name}
-          </div>
-
-          {/* Expand/collapse icon */}
-          <div className={styles.icon}>
-            <Icon className="material-symbols-outlined">keyboard_arrow_up</Icon>&nbsp;
-          </div>
-        </div>
-
-        {/* Elements */}
-        {attributes}
-        {childGroups}
-      </div>
-    );
-  } else {
-    // For non-root elements
-    return (
-      <div className={styles.treeEntry} key={item.name}>
-        <div className={styles.treeEntryNonPrimaryHeader} style={{ paddingLeft: spacing }}>
-          {/* Header Name */}
-          <div className={styles.treeEntryNonPrimaryHeaderName}>
-            {item.name}
-          </div>
-          {/* Expand/collapse icon */}
-          <div className={styles.icon}>
-            <Icon className="material-symbols-outlined">keyboard_arrow_up</Icon>&nbsp;
-          </div>
-        </div>
-        {/* Elements */}
-        {attributes}
-        {childGroups}
-
-      </div>
-    );
-  }
-}
-
-/**
- * Renders the attributes into each entry.
- *
- * @param {Attribute[]} attributes The list of attributes that should be rendered.
- * @param {number} depth The current depth to this group tree.
- * @returns {React.ReactElement[]} The list of HTML DOM element for rendering.
- */
-function renderAttribute(attributes: Attribute[], depth: number): React.ReactElement[] {
-  const elements: React.ReactElement[] = [];
-  const spacing: string = Math.max(depth, 0) * 0.5 + "rem"; // Root should not be indented
-
-  attributes.map((attribute) => {
-    elements.push(
-      <p className={styles.treeAttributeEntry} style={{ paddingLeft: spacing }} key={attribute.name}>
-        {/* Attribute: Value */}
-        <span className={styles.treeAttributeKey}>{attribute.name}:&nbsp;</span>
-        <span className={styles.treeAttributeValue}>
-          {attribute.value}&nbsp;{attribute.unit}
-        </span>
-      </p>
-    );
-  });
-  return elements;
 }
