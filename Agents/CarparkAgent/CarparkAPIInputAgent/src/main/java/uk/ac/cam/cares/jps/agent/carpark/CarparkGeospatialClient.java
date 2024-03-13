@@ -28,7 +28,7 @@ public class CarparkGeospatialClient {
          * @param carparkName name of carpark
          * @param carparkIRI carpark IRI
          */
-	public void createGeospatialInformation(double lat, double lon, String carparkName, String carparkIRI) {
+	public void createGeospatialInformation(double lat, double lon, String carparkName, String carparkIRI, String sparqlEndpoint) {
 	        String geomUuid = "geometry_" + UUID.randomUUID();
 
                 // create geojson object for PostGIS
@@ -42,6 +42,7 @@ public class CarparkGeospatialClient {
                 properties.put("name", carparkName);
                 properties.put("geom_uuid", geomUuid);
                 properties.put("type", "carpark");
+                properties.put("endpoint", sparqlEndpoint);
 
                 geojson.put("type", "Feature").put("properties", properties).put("geometry", geometry);
 

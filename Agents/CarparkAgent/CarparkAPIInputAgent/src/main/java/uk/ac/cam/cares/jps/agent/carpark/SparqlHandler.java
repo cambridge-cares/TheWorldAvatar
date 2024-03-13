@@ -350,7 +350,6 @@ public class SparqlHandler {
     private void instantiateGeoSpatialInfoIfNotExist(String carparkIRI, Double latitude, Double longitude, String carparkName) {
         //postgisClient is used to interact with the stack's database that will store the geolocation information
         CarparkPostGISClient postgisClient = new CarparkPostGISClient();
-
         try (Connection conn = postgisClient.getConnection()) {
             JSONObject response = new JSONObject();
             CarparkGeospatialClient geospatialClient = new CarparkGeospatialClient();
@@ -361,14 +360,14 @@ public class SparqlHandler {
                 OntopClient ontopClient = OntopClient.getInstance();
 			    ontopClient.updateOBDA(obda_file);
                 
-                geospatialClient.createGeospatialInformation(latitude, longitude, carparkName, carparkIRI);
+                geospatialClient.createGeospatialInformation(latitude, longitude, carparkName, carparkIRI, kbClient.getQueryEndpoint());
 				response.put("message", "Geospatial information instantiated for the following: " + carparkName);
 			} else {
 				// table exists, check table contents for an equivalent point or carpark
                 LOGGER.info("Checking for existing carparks to prevent duplicates...");
 				if (!postgisClient.checkCarparkExists(carparkIRI, conn)) {
                     LOGGER.info("No existing carpark instance found for " + carparkIRI);
-                    geospatialClient.createGeospatialInformation(latitude, longitude, carparkName, carparkIRI);
+                    geospatialClient.createGeospatialInformation(latitude, longitude, carparkName, carparkIRI, kbClient.getQueryEndpoint());
 					response.put("message", "Geospatial information instantiated for the following: " + carparkName);
 				} else {
 					response.put("message", "A carpark already exist for the following: " + carparkIRI);
