@@ -7,7 +7,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "../../../../carpark_config",
+                        "Source": "../../../carpark_config/",
                         "Target": "/usr/local/tomcat/config"
                     }
                 ],
