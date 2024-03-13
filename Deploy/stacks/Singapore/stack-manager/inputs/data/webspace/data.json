@@ -22,6 +22,13 @@
             "tiles": [
                 "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
             ]
+        },
+        {
+            "id": "CarPark-source",
+            "type": "vector",
+            "tiles": [
+                "http://localhost:3838/geoserver/carparks/wms?service=WMS&version=1.1.0&request=GetMap&layers=carparks%3Acarparks&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            ]
         }
     ],
     "layers": [
@@ -223,6 +230,30 @@
             "order": 4,
             "layout": {
                 "visibility": "none"
+            }
+        },
+        {
+            "id": "CarPark-layer",
+            "name": "Carparks",
+            "source": "CarPark-source",
+            "source-layer": "carparks",
+            "type": "symbol",
+            "order": 50,
+            "layout": {
+                "visibility": "none",
+                "icon-image": "carpark_image",
+                "icon-size": [
+                    "interpolate",
+                    [
+                        "linear"
+                    ],
+                    [
+                        "zoom"
+                    ],
+                    12,
+                    0.1
+                ],
+                "icon-anchor": "bottom"
             }
         }
     ],
