@@ -1,11 +1,9 @@
 import os
 
 import pytest
-from redis import Redis
 
 from services.connector.singapore.agent import PlotConstraints
 from services.connector.singapore.match import LandUseTypeMatcher
-from services.embed import TritonMPNetEmbedder
 from services.kg_client import KgClient
 from model.constraint import (
     AtomicNumericalConstraint,
