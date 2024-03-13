@@ -57,7 +57,7 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
         },
         {
             "name": "compute_aggregate_plot_attributes",
-            "description": "For a given subset of plots, compute statistics of plot attributes e.g. smallest plot area, average gross floor area",
+            "description": "For a given subset of plots, compute statistics of plot attributes e.g. smallest plot area, average gross floor area, maximum gross plot ratio",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -121,9 +121,9 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
         logger.info("Aligning attribute keys...")
         timestamp = time.time()
         retrieved = self.docs_retriever.retrieve(
-            queries=["".join([x.capitalize() for x in attr]) for attr in attributes],
             key="singapore:attribute_keys",
             docs_getter=lambda: [x.value for x in PlotAttrKey],
+            queries=["".join([x.capitalize() for x in attr]) for attr in attributes],
             k=1,
         )
         attr_keys = [PlotAttrKey(x[0][0]) for x in retrieved]
@@ -146,14 +146,18 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
 
         attr_keys, step = self._align_attributes(attributes)
         steps.append(step)
-        
+
         timestamp = time.time()
         data = self.agent.lookup_plot_attributes(
             plot_constraints=constraints, attr_keys=attr_keys
         )
         latency = time.time() - timestamp
         steps.append(
-            QAStep(action="lookup_plot_attributes", arguments=str(constraints), latency=latency)
+            QAStep(
+                action="lookup_plot_attributes",
+                arguments=str(constraints),
+                latency=latency,
+            )
         )
 
         return steps, data

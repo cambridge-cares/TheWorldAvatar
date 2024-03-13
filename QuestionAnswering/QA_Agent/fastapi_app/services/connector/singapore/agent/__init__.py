@@ -14,7 +14,7 @@ from model.constraint import (
 )
 from model.qa import QAData
 from services.kg_client import KgClient
-from .constants import PlotAttrKey
+from ..constants import PlotAttrKey
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +27,14 @@ class PlotConstraints:
     gross_floor_area: Optional[NumericalArgConstraint] = None
     num: Optional[int] = None
 
+    def __str__(self):
+        agg = []
+        if self.land_use_type_iri:
+            agg.append("land_use_type_iri='{iri}'".format(iri=self.land_use_type_iri))
+        for field in ["gross_plot_ratio", "plot_area", "gross_floor_area"]:
+            if getattr(self, field):
+                agg.append(str(getattr(self, field)))
+        return ", ".join(agg)    
 
 class SingaporeLandLotsAgent:
     _ATTRKEY2PRED = {
@@ -246,6 +254,8 @@ SELECT {vars} WHERE {{
 
         return QAData(vars=vars, bindings=bindings)
 
+    def retrieve_concepts(self, concepts: List[str]):
+        pass
 
 def get_singapore_land_lots_agent(
     ontop_client: Annotated[KgClient, Depends(get_singapore_ontop_client)]
