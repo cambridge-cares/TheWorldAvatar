@@ -13,7 +13,6 @@
             "virtual-sensor-agent",
             "ship-input-agent",
             "buildingidentificationagent",
-            "cea-agent",
             "access-agent",
             "carpark-agent"
         ],
