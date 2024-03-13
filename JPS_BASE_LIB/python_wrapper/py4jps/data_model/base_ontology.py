@@ -104,7 +104,14 @@ class BaseProperty(BaseModel, validate_assignment=True):
     def get_predicate_iri(cls) -> str:
         return construct_rdf_type(cls.model_fields['base_prefix'].default, cls.model_fields['namespace'].default, cls.__name__)
 
-    def collect_range_diff_to_graph(self, subject: str, g: Graph, to_add_range: bool = False, to_remove_range: bool = False):
+    def collect_range_diff_to_graph(
+        self,
+        subject: str,
+        cache: BaseProperty,
+        g_to_remove: Graph,
+        g_to_add: Graph,
+        recursive_depth: int = 0
+    ):
         raise NotImplementedError("This is an abstract method.")
 
     def _exclude_keys_for_compare_(self, *keys_to_exclude):
