@@ -56,10 +56,8 @@ def as_range_of_object_property(t: T, min_cardinality: int = 0, max_cardinality:
     return Annotated[Set[Union[t, str]], Len(min_cardinality, max_cardinality)]
 
 
-def as_range_of_data_property(t: T) -> Set[T]:
-    # NOTE the cardinality for data property is to have at most one value
-    # TODO add support for multiple values
-    return Annotated[Set[t], Len(0, 1)]
+def as_range_of_data_property(t: T, min_cardinality: int = 0, max_cardinality: int = None) -> Set[T]:
+    return Annotated[Set[t], Len(min_cardinality, max_cardinality)]
 
 
 def reveal_object_property_range(t: Set[Union[T, str]]) -> T:
@@ -248,6 +246,8 @@ class BaseOntology(BaseModel, validate_assignment=True):
                         ).pull_from_kg(
                             set(inst.get_object_property_range_iris(op_dct['field'])) - set(props.get(op_iri, [])),
                             sparql_client, recursive_depth)
+                inst._latest_cache = {k: create_cache(v) for k, v in {**object_properties_dict, **data_properties_dict}.items()}
+                inst._timestamp_of_latest_cache = time.time()
             else:
                 inst = cls(
                     instance_iri=iri,
@@ -255,10 +255,11 @@ class BaseOntology(BaseModel, validate_assignment=True):
                     **object_properties_dict,
                     **data_properties_dict,
                 )
+                inst._latest_cache = {f: create_cache(getattr(inst, f)) for f in inst.model_fields}
+                inst._timestamp_of_latest_cache = time.time()
+
             inst._exist_in_kg = True # TODO remove this?
             # update cache here
-            inst._latest_cache = {f: create_cache(getattr(inst, f)) for f in inst.model_fields}
-            inst._timestamp_of_latest_cache = time.time()
             instance_lst.append(inst)
             # set new instance to the global look up table, so that we can avoid creating the same instance multiple times
             # also, existing objects will be skipped as the modification should already be done to the objects themselves

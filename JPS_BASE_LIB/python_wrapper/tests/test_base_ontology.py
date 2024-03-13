@@ -215,7 +215,7 @@ def test_push_to_kg_update(initialise_sparql_client):
     # d --> a1, b, 'd changed'
     d.object_property_d_b.range.add(b) # +1
     d.object_property_d_c.range.remove(c) # -1
-    d_new_str = 'd changed' + str(uuid.uuid4())
+    d_new_str = 'd changed ' + str(uuid.uuid4())
     d.data_property_d.range.add(d_new_str) # +1
     # c --> a2
     c.object_property_c_b.range.remove(b) # -1
@@ -254,3 +254,74 @@ def test_push_to_kg_update(initialise_sparql_client):
     assert not sparql_client.check_if_triple_exist(b.instance_iri, b.object_property_b_a.predicate_iri, a1.instance_iri)
     assert not sparql_client.check_if_triple_exist(b.instance_iri, b.object_property_b_a.predicate_iri, a2.instance_iri)
     assert sparql_client.check_if_triple_exist(b.instance_iri, b.object_property_b_a.predicate_iri, a3.instance_iri)
+
+    # now change the python objects back:
+    # c --> a2, a3, b
+    c.object_property_c_a.range.add(a3) # +1
+    c.object_property_c_b.range.add(b) # +1
+    # b --> a1, a2
+    b.object_property_b_a.range.add(a1) # +1
+    b.object_property_b_a.range.add(a2) # +1
+    b.object_property_b_a.range.remove(a3) # -1
+    # d --> a1, c, 'd changed', 'd changed again'
+    new_str = 'd changed again ' + str(uuid.uuid4())
+    d.object_property_d_b.range.remove(b) # -1
+    d.object_property_d_c.range.add(c) # +1
+    d.data_property_d.range.add(new_str) # +1
+    d.data_property_d.range.remove(d_new_str) # -1
+    # update the cache
+    D.pull_from_kg(d.instance_iri, sparql_client, -1)
+    # print the diff
+    g_to_remove = Graph()
+    g_to_add = Graph()
+    g_to_remove, g_to_add = d.collect_diff_to_graph(g_to_remove, g_to_add, -1) # recursive push -1
+    print("g_to_remove:")
+    print(g_to_remove.serialize(format='turtle'))
+    print("g_to_add:")
+    print(g_to_add.serialize(format='turtle'))
+    # push the changes to the KG
+    d.push_to_kg(sparql_client, -1)
+    assert sparql_client.get_amount_of_triples() == 19
+    assert not sparql_client.check_if_triple_exist(d.instance_iri, d.object_property_d_b.predicate_iri, b.instance_iri)
+    assert sparql_client.check_if_triple_exist(d.instance_iri, d.object_property_d_c.predicate_iri, c.instance_iri)
+    assert sparql_client.check_if_triple_exist(d.instance_iri, d.data_property_d.predicate_iri, new_str, XSD.string.toPython())
+    assert not sparql_client.check_if_triple_exist(d.instance_iri, d.data_property_d.predicate_iri, d_new_str, XSD.string.toPython())
+    assert sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a2.instance_iri)
+    assert sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a3.instance_iri)
+    assert sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_b.predicate_iri, b.instance_iri)
+    assert sparql_client.check_if_triple_exist(b.instance_iri, b.object_property_b_a.predicate_iri, a1.instance_iri)
+    assert sparql_client.check_if_triple_exist(b.instance_iri, b.object_property_b_a.predicate_iri, a2.instance_iri)
+    assert not sparql_client.check_if_triple_exist(b.instance_iri, b.object_property_b_a.predicate_iri, a3.instance_iri)
+
+    # now if we keep the connection between d and c unchanged
+    # but change the connection between c and b, and b and a, and c and a
+    b.object_property_b_a.range.remove(a1) # -1
+    b.object_property_b_a.range.remove(a2) # -1
+    c.object_property_c_a.range.remove(a2) # -1
+    c.object_property_c_a.range.remove(a3) # -1
+    c.object_property_c_b.range.remove(b) # -1
+    second_d_new_str = 'd has more than one data property ' + str(uuid.uuid4())
+    d.data_property_d.range.add(second_d_new_str) # +1
+    # update the cache
+    D.pull_from_kg(d.instance_iri, sparql_client, -1)
+    # print the diff
+    g_to_remove = Graph()
+    g_to_add = Graph()
+    g_to_remove, g_to_add = d.collect_diff_to_graph(g_to_remove, g_to_add, -1) # recursive push -1
+    print("g_to_remove:")
+    print(g_to_remove.serialize(format='turtle'))
+    print("g_to_add:")
+    print(g_to_add.serialize(format='turtle'))
+    # push the changes to the KG
+    d.push_to_kg(sparql_client, -1)
+    assert sparql_client.get_amount_of_triples() == 15
+    assert not sparql_client.check_if_triple_exist(d.instance_iri, d.object_property_d_b.predicate_iri, b.instance_iri)
+    assert sparql_client.check_if_triple_exist(d.instance_iri, d.object_property_d_c.predicate_iri, c.instance_iri)
+    assert sparql_client.check_if_triple_exist(d.instance_iri, d.data_property_d.predicate_iri, new_str, XSD.string.toPython())
+    assert not sparql_client.check_if_triple_exist(d.instance_iri, d.data_property_d.predicate_iri, d_new_str, XSD.string.toPython())
+    assert sparql_client.check_if_triple_exist(d.instance_iri, d.data_property_d.predicate_iri, second_d_new_str, XSD.string.toPython())
+    assert not sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a2.instance_iri)
+    assert not sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a3.instance_iri)
+    assert not sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_b.predicate_iri, b.instance_iri)
+    assert not sparql_client.check_if_triple_exist(b.instance_iri, b.object_property_b_a.predicate_iri, a1.instance_iri)
+    assert not sparql_client.check_if_triple_exist(b.instance_iri, b.object_property_b_a.predicate_iri, a2.instance_iri)
