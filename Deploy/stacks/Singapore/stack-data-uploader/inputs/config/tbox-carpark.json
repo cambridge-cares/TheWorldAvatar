@@ -1,23 +1,17 @@
 {
     "datasetDirectory": "tbox",
     "namespace": {
-		"name": "kb",
+		"name": "carpark",
         "properties": {
             "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true,
             "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass": "com.bigdata.rdf.axioms.NoAxioms"
         }
     },
     "dataSubsets": [
-        {
-			"name": "kb",
-            "type": "rdf",
-			"subdirectory": "building",
-            "skip": false
-        },
 		{
 			"name": "kb",
             "type": "rdf",
-			"subdirectory": "dispersion",
+			"subdirectory": "carpark",
             "skip": false
         }
     ]
