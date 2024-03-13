@@ -282,7 +282,7 @@ public class GDALClient extends ContainerClient {
         } else {
             for (int index = 0; index < timeArray.length(); index++) {
                 String timeStringUnFormatted = timeArray.getString(index);
-                String timeStringFormatted = DateStringFormatter.customDateStringFormatter(timeStringUnFormatted);
+                String timeStringFormatted = DateStringFormatter.customDateStringFormatter(timeStringUnFormatted, mdimSettings.getTimeOptions().getArrayName());
                 dateTimes.add(timeStringFormatted);
             }
             timeSqlType = "TEXT";

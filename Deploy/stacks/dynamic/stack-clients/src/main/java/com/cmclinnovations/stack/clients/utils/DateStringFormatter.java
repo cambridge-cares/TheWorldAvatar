@@ -22,24 +22,23 @@ public class DateStringFormatter {
     }
 
     /**
-     * @param timeStringUnFormatted example: "yyyyddmm" or "yyyymm"
+     * @param template is the actual template in the config file of the data uploader
+     * @param unormatted example: "yyyyddmm" or "yyyymm"
      * @return "yyyy/dd/mm" or "yyyy/mm"
      */
-    public static String customDateStringFormatter(String unformatted) {
+    public static String customDateStringFormatter(String unformatted, String template) {
 
         String timeStringFormatted;
 
-        // return the string without any delimiters if all characters are the same
-        if (unformatted.chars().distinct().count() == 1) {
+        if (template.chars().distinct().count() == 1) {
             timeStringFormatted = unformatted;
-        } // add delimiters between different letters (assumed to be different time markers) based on length of input
-        else {
+        } else {
 
-            int firstPart = getCount(unformatted);
-            int secondPart = getCount(unformatted.substring(firstPart));
-
+            int firstPart = getCount(template);
+            int secondPart = getCount(template.substring(firstPart));
+            
             if (unformatted.length() > 8) {
-                int thirdPart = getCount(unformatted.substring(firstPart + secondPart));
+                int thirdPart = getCount(template.substring(firstPart + secondPart));
 
                 timeStringFormatted = unformatted.substring(0, firstPart) + '/'
                         + unformatted.substring(firstPart, firstPart + secondPart) + '/'
