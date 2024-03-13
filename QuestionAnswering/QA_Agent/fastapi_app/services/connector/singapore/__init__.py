@@ -178,7 +178,7 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
             )
         )
 
-        return steps, data
+        return "QA", steps, data
 
     def count_plots(self, plot_constraints: str):
         steps: List[QAStep] = []
@@ -193,7 +193,7 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
             QAStep(action="count_plots", arguments=str(constraints), latency=latency)
         )
 
-        return steps, data
+        return "QA", steps, data
 
     def compute_aggregate_plot_attributes(
         self, plot_constraints: str, attribute_aggregates: List[str]
@@ -233,7 +233,7 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
             )
         )
 
-        return steps, data
+        return "QA", steps, data
 
     def explain_concepts(self, concepts: List[str]):
         steps: List[QAStep] = []
@@ -249,7 +249,7 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
             )
         )
 
-        return steps, data
+        return 'IR', steps, data
 
 
 def get_singapore_land_lots_agent_connector(
