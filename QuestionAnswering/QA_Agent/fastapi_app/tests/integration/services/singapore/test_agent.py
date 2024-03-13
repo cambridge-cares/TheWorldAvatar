@@ -12,16 +12,16 @@ from model.constraint import (
 )
 from services.connector.singapore.constants import PlotAttrKey
 from services.kg_client import KgClient
-from services.connector.singapore.agent import PlotConstraints, SingporeLandLotAgent
+from services.connector.singapore.agent import PlotConstraints, SingaporeLandLotsAgent
 
 @pytest.fixture
 def agent():
     ontop_client = KgClient(os.getenv("KG_ENDPOINT_SINGAPORE_ONTOP"))
     bg_endpoint = os.getenv("KG_ENDPOINT_SINGAPORE")
-    yield SingporeLandLotAgent(ontop_client=ontop_client, bg_endpoint=bg_endpoint)
+    yield SingaporeLandLotsAgent(ontop_client=ontop_client, bg_endpoint=bg_endpoint)
 
 class TestSingporeLandLotAgent:
-    def test_findPlotIri(self, agent: SingporeLandLotAgent):
+    def test_findPlotIri(self, agent: SingaporeLandLotsAgent):
         # Arrange
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
@@ -58,7 +58,7 @@ class TestSingporeLandLotAgent:
         # Assert
         assert "https://www.theworldavatar.com/kg/landplot/94739" in iris
 
-    def test_findPlotIri_greatestPlotArea(self, agent: SingporeLandLotAgent):
+    def test_findPlotIri_greatestPlotArea(self, agent: SingaporeLandLotsAgent):
         # Arrange
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
@@ -73,7 +73,7 @@ class TestSingporeLandLotAgent:
         assert len(iris) == 2
         print(iris)
 
-    def test_lookupPlotAttributes(self, agent: SingporeLandLotAgent):
+    def test_lookupPlotAttributes(self, agent: SingaporeLandLotsAgent):
         # Arrange
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
@@ -93,7 +93,7 @@ class TestSingporeLandLotAgent:
         assert data.vars == ["IRI", "PlotArea"]
         assert all("IRI" in binding and "PlotArea" in binding for binding in data.bindings)
 
-    def test_computeAggregatePlotAttributes(self, agent: SingporeLandLotAgent):
+    def test_computeAggregatePlotAttributes(self, agent: SingaporeLandLotsAgent):
         # Arrange
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075"

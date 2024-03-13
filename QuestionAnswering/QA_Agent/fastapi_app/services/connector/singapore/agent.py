@@ -1,7 +1,10 @@
 import logging
-from typing import List, Optional, Tuple
+import os
+from typing import Annotated, List, Optional, Tuple
+from fastapi import Depends
 
 from pydantic.dataclasses import dataclass
+from services.connector.singapore.kg_client import get_singapore_ontop_client
 
 from model.aggregate import AggregateOperator
 from model.constraint import (
@@ -25,7 +28,7 @@ class PlotConstraints:
     num: Optional[int] = None
 
 
-class SingporeLandLotAgent:
+class SingaporeLandLotsAgent:
     _ATTRKEY2PRED = {
         PlotAttrKey.LAND_USE_TYPE: "ontozoning:hasLandUseType",
         PlotAttrKey.GROSS_PLOT_RATIO: "^opr:appliesTo/opr:allowsGrossPlotRatio/om:hasValue",
@@ -121,7 +124,9 @@ SELECT ?IRI WHERE {{
             for x in self.ontop_client.query(query)["results"]["bindings"]
         ]
 
-    def lookup_plot_attributes(self, plot_constraints: PlotConstraints, attr_keys: List[PlotAttrKey]):
+    def lookup_plot_attributes(
+        self, plot_constraints: PlotConstraints, attr_keys: List[PlotAttrKey]
+    ):
         iris = self.find_plot_iris(plot_constraints)
         if not iris:
             return QAData()
@@ -240,3 +245,12 @@ SELECT {vars} WHERE {{
         ]
 
         return QAData(vars=vars, bindings=bindings)
+
+
+def get_singapore_land_lots_agent(
+    ontop_client: Annotated[KgClient, Depends(get_singapore_ontop_client)]
+):
+    return SingaporeLandLotsAgent(
+        ontop_client=ontop_client,
+        bg_endpoint=os.getenv("KG_ENDPOINT_SINGAPORE", "localhost"),
+    )

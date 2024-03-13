@@ -1,18 +1,25 @@
 import logging
 import time
-from typing import List
+from typing import Annotated, List
+
+from fastapi import Depends
 
 from model.qa import QAStep
-from services.retrieve_docs import DocsRetriever
+from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from services.connector.agent_connector import IAgentConnector
 from .constants import PlotAttrKey
-from .agent import SingporeLandLotAgent
-from .parse import AttributeAggregateParser, PlotConstraintsParser
+from .agent import SingaporeLandLotsAgent, get_singapore_land_lots_agent
+from .parse import (
+    AttributeAggregateParser,
+    PlotConstraintsParser,
+    get_attribute_aggregate_parser,
+    get_plot_constraint_parser,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class OntoSpeciesAgentConnector(IAgentConnector):
+class SingaporeLandLotsAgentConnector(IAgentConnector):
     _FUNCS = [
         {
             "name": "lookup_plot_attributes",
@@ -78,7 +85,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
     def __init__(
         self,
         plot_constraints_parser: PlotConstraintsParser,
-        singapore_land_plots_agent: SingporeLandLotAgent,
+        singapore_land_plots_agent: SingaporeLandLotsAgent,
         docs_retriever: DocsRetriever,
         attr_agg_parser: AttributeAggregateParser,
     ):
@@ -198,3 +205,23 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         )
 
         return steps, data
+
+
+def get_singapore_land_lots_agent_connector(
+    plot_constraints_parser: Annotated[
+        PlotConstraintsParser, Depends(get_plot_constraint_parser)
+    ],
+    singapore_land_lots_agent: Annotated[
+        SingaporeLandLotsAgent, Depends(get_singapore_land_lots_agent)
+    ],
+    docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
+    attr_agg_parser: Annotated[
+        AttributeAggregateParser, Depends(get_attribute_aggregate_parser)
+    ],
+):
+    return SingaporeLandLotsAgentConnector(
+        plot_constraints_parser=plot_constraints_parser,
+        singapore_land_plots_agent=singapore_land_lots_agent,
+        docs_retriever=docs_retriever,
+        attr_agg_parser=attr_agg_parser,
+    )

@@ -12,8 +12,8 @@ from services.connector.ontospecies import (
     get_ontospecies_agent_connector,
 )
 from services.connector.singapore import (
-    SingaporeLandPlotsAgentConnector,
-    get_singapore_land_plots_agent_connector,
+    SingaporeLandLotsAgentConnector,
+    get_singapore_land_lots_agent_connector,
 )
 from services.connector.agent_connector import IAgentConnector
 from services.func_call import IFuncCaller, get_func_caller
@@ -72,12 +72,12 @@ def get_chemistry_agents(
 
 @cache
 def get_cities_agents(
-    singapore_land_plots_agent_connector: Annotated[
-        SingaporeLandPlotsAgentConnector,
-        Depends(get_singapore_land_plots_agent_connector),
+    singapore_land_lots_agent_connector: Annotated[
+        SingaporeLandLotsAgentConnector,
+        Depends(get_singapore_land_lots_agent_connector),
     ]
 ):
-    return [singapore_land_plots_agent_connector]
+    return [singapore_land_lots_agent_connector]
 
 
 @cache

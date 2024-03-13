@@ -13,7 +13,7 @@ from services.kg_client import KgClient
 from services.redis_client import get_redis_client
 from services.embed import IEmbedder, get_embedder
 from .constants import LAND_USE_TYPES
-from .kg_client import get_singapore_kg_client
+from .kg_client import get_singapore_bg_client
 
 
 class LandUseTypeMatcher:
@@ -116,7 +116,7 @@ SELECT ?IRI ?label ?comment WHERE {{
 
 
 def get_land_use_type_matcher(
-    kg_client: Annotated[KgClient, Depends(get_singapore_kg_client)],
+    kg_client: Annotated[KgClient, Depends(get_singapore_bg_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     redis_client: Annotated[Redis, Depends(get_redis_client)],
 ):

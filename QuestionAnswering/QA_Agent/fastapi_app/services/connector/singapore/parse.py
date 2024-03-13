@@ -199,3 +199,9 @@ def get_plot_constraint_parser(
         constraint_parser=constraint_parser,
         land_use_type_matcher=land_use_type_matcher,
     )
+
+
+def get_attribute_aggregate_parser(
+    schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)],
+):
+    return AttributeAggregateParser(schema_parser=schema_parser)
