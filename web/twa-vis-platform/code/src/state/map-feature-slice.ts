@@ -11,9 +11,9 @@ export const mapFeatureSlice = createSlice({
     name: 'mapFeature',
     initialState: {
         name: null,
-        properties: null,
-        sourceLayerId: null,
-        latLng: null as LatLngPayload | null
+        latLng: null as LatLngPayload | null,
+        url: null,
+        queryTrigger: false,
     },
     reducers: {
         setName: (state, action) => {
@@ -22,23 +22,23 @@ export const mapFeatureSlice = createSlice({
         setLatLng: (state, action: PayloadAction<LatLngPayload>) => {
             state.latLng = action.payload; // Update state with new coordinates
         },
-        setProperties: (state, action) => {
-            state.properties = action.payload;
+        setUrl: (state, action) => {
+            state.url = action.payload;
         },
-        setSourceLayerId: (state, action) => {
-            state.sourceLayerId = action.payload;
+        setQueryTrigger: (state, action) => {
+            state.queryTrigger = action.payload;
         },
     },
 });
 
 // Export selectors 
 export const getLatLng = (state: ReduxState) => state.mapFeature.latLng;
-export const getProperties = (state: ReduxState) => state.mapFeature.properties;
 export const getName = (state: ReduxState) => state.mapFeature.name;
-export const getSourceLayerId = (state: ReduxState) => state.mapFeature.sourceLayerId;
+export const getUrl = (state: ReduxState) => state.mapFeature.url;
+export const getQueryTrigger = (state: ReduxState) => state.mapFeature.queryTrigger;
 
 // Export the actions
-export const { setLatLng, setName, setProperties, setSourceLayerId } = mapFeatureSlice.actions;
+export const { setLatLng, setName, setUrl, setQueryTrigger } = mapFeatureSlice.actions;
 
 // Export the reducer
 export default mapFeatureSlice.reducer;

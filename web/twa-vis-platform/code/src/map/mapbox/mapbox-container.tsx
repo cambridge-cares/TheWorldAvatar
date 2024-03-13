@@ -117,7 +117,7 @@ export default function MapboxMapComponent(props: MapProperties) {
     console.info("Initialised a new Mapbox map object.");
 
     // Add all map event listeners
-    addMapboxEventListeners(map.current, dispatch);
+    addMapboxEventListeners(map.current, dispatch, props.dataStore);
 
     // Create a new pop up and assign it to the reference to keep track
     toolTip.current = new mapboxgl.Popup({

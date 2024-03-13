@@ -115,7 +115,7 @@ export default function FloatingPanelContainer(
         <div className={styles.floatingPanelBody}>
           {activeIndex === 0 && <LayerTree dataStore={props.dataStore} />}
           {activeIndex === 1 && <LegendTree />}
-          {activeIndex === 2 && <InfoTree dataStore={props.dataStore} />}
+          {activeIndex === 2 && <InfoTree />}
         </div>
       )}
     </div>

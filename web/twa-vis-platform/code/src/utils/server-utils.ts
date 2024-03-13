@@ -3,13 +3,6 @@
  */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-// Defines the Api parameter interface for the API call
-export interface ApiParams {
-    iri: string | undefined;
-    stack: string | undefined;
-    scenarioID: string;
-}
-
 /**
  * Returns the server/client state of the current process.
  * 
@@ -28,9 +21,8 @@ export const featureInfoAgentApi = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({ baseUrl: '' }),
     endpoints: (builder) => ({
-        getMetadata: builder.query<any, ApiParams>({
-            query: ({ iri, stack, scenarioID }) => `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenarioID}?iri=${encodeURIComponent(iri)}`,
-            keepUnusedDataFor: 0,
+        getMetadata: builder.query<any, string>({
+            query: (url) => `${url}`,
         }),
     }),
     refetchOnMountOrArgChange: true,

@@ -1,23 +1,13 @@
 import styles from './info-tree.module.css';
 
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { skipToken } from '@reduxjs/toolkit/query/react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { DataStore } from 'io/data/data-store';
-import {
-  getProperties,
-  getSourceLayerId,
-} from 'state/map-feature-slice';
+import { getQueryTrigger, getUrl, setQueryTrigger } from 'state/map-feature-slice';
 import { Attribute, AttributeGroup } from 'types/attribute';
-import { useGetMetadataQuery, ApiParams } from 'utils/server-utils';
+import { useGetMetadataQuery } from 'utils/server-utils';
 import { JsonObject } from "types/json";
 import InfoTreeNode from './info-tree/info-tree-node';
-
-// type definition for incoming properties
-type InfoTreeProps = {
-  dataStore: DataStore;
-};
 
 const rootKey: string = "meta";
 const displayOrderKey: string = "display_order";
@@ -32,66 +22,30 @@ const unitKey: string = "unit";
  * longitude of the clicked location. It also fetches and displays additional
  * feature information from an external data source via PanelHandler.
  */
-export default function InfoTree(props: InfoTreeProps) {
-  // State to store the currently selected feature's information
-  const selectedFeatureProperties = useSelector(getProperties);
-  // State to store the modified stack URL
-  const [stack, setStack] = useState("");
-  // State to store the currently selected source layer
-  const selectedSourceLayer = useSelector(getSourceLayerId);
-  // State to store the scenario ID
-  const [scenarioID, setScenarioID] = useState("sFCkEoNC");
+export default function InfoTree() {
+  // State to store the currently selected feature's endpoint holding their attributes
+  const selectedUrl = useSelector(getUrl);
   // State to store fetched additional information about the selected feature
   const [attributeGroup, setAttributeGroup] = useState(null);
+  // State to store fetched additional information about the selected feature
+  const trigger = useSelector(getQueryTrigger);
   // Execute API call
-  const { data, error, isFetching } = useGetMetadataQuery(
-    getApiParams() ?? skipToken
-  );
-
-  function getApiParams(): ApiParams {
-    if (
-      !selectedFeatureProperties?.iri ||
-      !stack
-    ) {
-      return undefined;
-    }
-    return {
-      iri: selectedFeatureProperties.iri,
-      stack: stack,
-      scenarioID: scenarioID,
-    };
-  }
-
-  // Effect to update selected feature's stack endpoint each time a new feature is selected
-  useEffect(() => {
-    if (selectedFeatureProperties?.iri) {
-      // Retrieving constants
-      let stackEndpoint: string =
-        props.dataStore.getStackEndpoint(selectedSourceLayer);
-      setStack(stackEndpoint);
-    }
-  }, [selectedFeatureProperties]);
+  const { data, error, isFetching } = useGetMetadataQuery(selectedUrl, { skip: !trigger });
+  const dispatch = useDispatch();
 
   // Effect to display additional feature information retrieved from an agent only once it has been loaded
   useEffect(() => {
     if (isFetching) {
       // WIP: Add required functionality while data is still being fetched
+    } else if (error) {
+      console.error("Error fetching data:", error);
     } else {
       if (data) {
         const rootGroup: AttributeGroup = recurseParseAttributeGroup(data, rootKey);
         setAttributeGroup(rootGroup);
-      } else if (error) {
-        if (!selectedFeatureProperties?.iri) {
-          console.warn("IRI is missing. Data fetching will be skipped.");
-        } else if (!stack) {
-          console.warn(
-            "Feature does not have a defined stack. Data fetching will be skipped."
-          );
-        } else {
-          console.error("Error fetching data:", error);
-        }
-      }
-    }
+        dispatch(setQueryTrigger(false));
+      };
+    };
   }, [isFetching]);
 
   return (
