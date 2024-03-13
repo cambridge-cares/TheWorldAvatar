@@ -240,6 +240,8 @@ function buildGroup(item: TreeGroup, depth: number): React.ReactElement {
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
   };
+  const expandedIcon: string = isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down";
+
   return (
     <div className={styles.treeEntry} key={item.name}>
       <div className={styles.treeEntryHeader} onClick={toggleExpansion}>
@@ -248,7 +250,7 @@ function buildGroup(item: TreeGroup, depth: number): React.ReactElement {
 
         {/* Expand/collapse icon */}
         <div className={styles.icon}>
-          <Icon className="material-symbols-outlined">keyboard_arrow_up</Icon>
+          <Icon className="material-symbols-outlined">{expandedIcon}</Icon>
         </div>
 
         {/* Tree icon, if present */}

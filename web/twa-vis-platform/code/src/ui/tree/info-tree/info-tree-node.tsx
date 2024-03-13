@@ -40,6 +40,7 @@ export default function InfoTreeNode(props: InfoTreeNodeProps) {
           <InfoTreeSubNode
             group={subGroup}
             depth={0}
+            key={subGroup.name + "_" + 0}
           />)
       })}
     </>
@@ -63,11 +64,12 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
   const toggleExpansion = () => {
     setIsCollapsed(!isCollapsed);
   };
+  const collapsedIcon: string = isCollapsed ? "keyboard_arrow_down" : "keyboard_arrow_up";
 
   // For root element
   if (depth === 0) {
     return (
-      <div className={styles.treeEntry} key={group.name}>
+      <div className={styles.treeEntry}>
         <div style={{ paddingLeft: spacing }} className={styles.treeEntryHeader} onClick={toggleExpansion}>
           {/* Header Name */}
           <div className={styles.treeHeaderName}>
@@ -76,7 +78,7 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
 
           {/* Expand/collapse icon */}
           <div className={styles.icon}>
-            <Icon className="material-symbols-outlined">keyboard_arrow_up</Icon>
+            <Icon className="material-symbols-outlined">{collapsedIcon}</Icon>
           </div>
         </div>
 
@@ -90,6 +92,7 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
             return (<InfoTreeSubNode
               group={subGroup}
               depth={depth + 1}
+              key={subGroup.name + "_" + (depth + 1)}
             />)
           })} </>
         )}
@@ -98,7 +101,7 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
   } else {
     // For non-root elements
     return (
-      <div className={styles.treeEntry} key={group.name}>
+      <div className={styles.treeEntry}>
         <div className={styles.treeEntryNonPrimaryHeader} style={{ paddingLeft: spacing }} onClick={toggleExpansion}>
           {/* Header Name */}
           <div className={styles.treeEntryNonPrimaryHeaderName}>
@@ -106,7 +109,7 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
           </div>
           {/* Expand/collapse icon */}
           <div className={styles.icon}>
-            <Icon className="material-symbols-outlined">keyboard_arrow_up</Icon>
+            <Icon className="material-symbols-outlined">{collapsedIcon}</Icon>
           </div>
         </div>
         {/* Elements */}
@@ -120,6 +123,7 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
               <InfoTreeSubNode
                 group={subGroup}
                 depth={depth + 1}
+                key={subGroup.name + "_" + (depth + 1)}
               />)
           })}
         </>
@@ -141,7 +145,7 @@ function InfoTreeAttributeNode(props: InfoTreeAttributeNodeProps) {
 
   props.attributes.map((attribute) => {
     elements.push(
-      <p className={styles.treeAttributeEntry} style={{ paddingLeft: spacing }} key={attribute.name}>
+      <p className={styles.treeAttributeEntry} style={{ paddingLeft: spacing }} key={attribute.name + "_" + props.depth}>
         {/* Attribute: Value */}
         <span className={styles.treeAttributeKey}>{attribute.name}:&nbsp;</span>
         <span className={styles.treeAttributeValue}>
