@@ -1000,6 +1000,54 @@
                             8
                         ]
                     }
+                },
+                {
+                    "id": "without-usage",
+                    "source-layer": "building_usage",
+                    "name": "Other",
+                    "source": "usage",
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            [
+                                "get",
+                                "ontobuilt"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "objectclass"
+                            ],
+                            "Building"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#8D99AE",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
                 }
             ]
         }
