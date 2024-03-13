@@ -1,11 +1,8 @@
 from typing import Annotated
 from fastapi import Depends
-from redis import Redis
-from services.retrieve_docs import DocsRetriever
 
+from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from services.kg_client import KgClient
-from services.redis_client import get_redis_client
-from services.embed import IEmbedder, get_embedder
 from .constants import LAND_USE_TYPES
 from .kg_client import get_singapore_bg_client
 
@@ -50,9 +47,8 @@ SELECT ?IRI ?label ?comment WHERE {{
 
 def get_land_use_type_matcher(
     kg_client: Annotated[KgClient, Depends(get_singapore_bg_client)],
-    embedder: Annotated[IEmbedder, Depends(get_embedder)],
-    redis_client: Annotated[Redis, Depends(get_redis_client)],
+    docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)]
 ):
     return LandUseTypeMatcher(
-        kg_client=kg_client, embedder=embedder, redis_client=redis_client
+        kg_client=kg_client, docs_retriever=docs_retriever
     )

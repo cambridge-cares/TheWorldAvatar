@@ -1,10 +1,8 @@
 import logging
-import os
 from typing import Annotated, List, Optional, Tuple
-from fastapi import Depends
 
+from fastapi import Depends
 from pydantic.dataclasses import dataclass
-from services.connector.singapore.kg_client import get_singapore_ontop_client
 
 from model.aggregate import AggregateOperator
 from model.constraint import (
@@ -13,8 +11,14 @@ from model.constraint import (
     ExtremeValueConstraint,
 )
 from model.qa import QAData
+from services.utils.rdf import linearize_node
 from services.kg_client import KgClient
-from ..constants import PlotAttrKey
+from services.retrieve_docs import DocsRetriever, get_docs_retriever
+from .constants import PlotAttrKey
+from .kg_client import (
+    get_singapore_bg_client,
+    get_singapore_ontop_client,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +38,8 @@ class PlotConstraints:
         for field in ["gross_plot_ratio", "plot_area", "gross_floor_area"]:
             if getattr(self, field):
                 agg.append(str(getattr(self, field)))
-        return ", ".join(agg)    
+        return ", ".join(agg)
+
 
 class SingaporeLandLotsAgent:
     _ATTRKEY2PRED = {
@@ -44,9 +49,12 @@ class SingaporeLandLotsAgent:
         PlotAttrKey.GROSS_FLOOR_AREA: "ontoplot:hasMaximumPermittedGPR/om:hasValue",
     }
 
-    def __init__(self, ontop_client: KgClient, bg_endpoint: str):
+    def __init__(
+        self, bg_client: KgClient, ontop_client: KgClient, docs_retriever: DocsRetriever
+    ):
+        self.bg_client = bg_client
         self.ontop_client = ontop_client
-        self.bg_endpoint = bg_endpoint
+        self.docs_retriever = docs_retriever
 
     def _make_clauses_for_constraint(
         self, key: PlotAttrKey, constraint: NumericalArgConstraint
@@ -150,7 +158,7 @@ SELECT ?IRI WHERE {{
                 patterns.append("?IRI ontozoning:hasLandUseType ?LandUseType .")
                 patterns.append(
                     "SERVICE <{bg}> {{ ?LandUseType rdfs:label ?LandUseTypeLabel }} ".format(
-                        bg=self.bg_endpoint
+                        bg=self.bg_client.sparql.endpoint
                     )
                 )
                 vars.append("?LandUseTypeLabel")
@@ -254,13 +262,49 @@ SELECT {vars} WHERE {{
 
         return QAData(vars=vars, bindings=bindings)
 
+    def _get_node_datum(self, iri: str):
+        query = "SELECT DISTINCT ?p ?o WHERE {{ <{subj}> ?p ?o . FILTER isLiteral(?o) }}".format(
+            subj=iri
+        )
+        tails = [
+            (binding["p"]["value"], binding["o"]["value"])
+            for binding in self.bg_client.query(query)["results"]["bindings"]
+        ]
+        return dict(IRI=iri, attributes=[dict(predicate=p, object=o) for p, o in tails])
+
+    def _get_nodes_data(self):
+        query = "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
+        subjs = [
+            x["s"]["value"] for x in self.bg_client.query(query)["results"]["bindings"]
+        ]
+        return [self._get_node_datum(iri) for iri in subjs]
+
     def retrieve_concepts(self, concepts: List[str]):
-        pass
+        retrieved = self.docs_retriever.retrieve(
+            key="singapore:concepts",
+            queries=concepts,
+            docs_getter=self._get_nodes_data,
+            linearize_func=lambda x: linearize_node(
+                subj=x["IRI"],
+                tails=[(y["predicate"], y["object"]) for y in x["attributes"]],
+            ),
+            k=3,
+        )
+        retrieved = [[dict(obj) for obj, _ in lst] for lst in retrieved]
+        return QAData(
+            vars=["concept", "node_data"],
+            bindings=[
+                dict(concept=concept, node_data=node_data)
+                for concept, node_data in zip(concepts, retrieved)
+            ],
+        )
+
 
 def get_singapore_land_lots_agent(
-    ontop_client: Annotated[KgClient, Depends(get_singapore_ontop_client)]
+    bg_client: Annotated[KgClient, Depends(get_singapore_bg_client)],
+    ontop_client: Annotated[KgClient, Depends(get_singapore_ontop_client)],
+    docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
 ):
     return SingaporeLandLotsAgent(
-        ontop_client=ontop_client,
-        bg_endpoint=os.getenv("KG_ENDPOINT_SINGAPORE", "localhost"),
+        bg_client=bg_client, ontop_client=ontop_client, docs_retriever=docs_retriever
     )

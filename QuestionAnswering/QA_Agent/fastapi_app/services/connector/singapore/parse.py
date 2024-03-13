@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends
+
 from model.aggregate import AggregateOperator
 from services.connector.singapore.constants import PlotAttrKey
 from model.constraint import (
