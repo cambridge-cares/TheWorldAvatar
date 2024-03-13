@@ -88,7 +88,7 @@ public class GeometryMatcher {
         try (Connection connection = rdbStoreClient.getConnection();
             Statement statement = connection.createStatement()) {
             for (int i = polygonMin; i <= polygonMax; i++) {
-                statement.execute(polygonSQL(pointTable, citydbPoint, threshold, i));
+                statement.execute(polygonSQL(polygonTable, citydbPoint, threshold, i));
             }
         }
         catch (SQLException e) {
