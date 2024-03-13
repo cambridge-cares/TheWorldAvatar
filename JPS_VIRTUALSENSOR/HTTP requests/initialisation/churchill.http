@@ -1,4 +1,6 @@
-# Contains both municipal district heating plant
+# Initialises a dispersion simulation of emissions from some buildings of Churchill College
+# This request will return a derivation IRI. Save this IRI somewhere so that you can use it
+# as a parameter in the trigger update HTTP request.
 POST http://localhost:3838/dispersion-interactor/InitialiseSimulation
 ?ewkt=SRID=27700;POLYGON((538205 254108, 549146 254425, 548845 264434, 537926 264117, 538205 254108))
 &nx=100
