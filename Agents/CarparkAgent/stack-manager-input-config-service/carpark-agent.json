@@ -3,7 +3,17 @@
     "Name": "carpark-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "carpark-agent:1.0.0",
+        "Image": "ghcr.io/cambridge-cares/carpark-agent:1.0.0",
+        "Env": [
+					"CARPARK_AGENTPROPERTIES=/usr/local/tomcat/config/agent.properties",
+          "CARPARK_APIPROPERTIES=/usr/local/tomcat/config/api.properties",
+          "CARPARK_CLIENTPROPERTIES=/usr/local/tomcat/config/client.properties",
+          "CARPARK_AGENT_MAPPINGS=/usr/local/tomcat/config/mappings",
+          "LAYERNAME=carparks",
+          "DATABASE=postgres",
+          "GEOSERVER_WORKSPACE=carparks"
+
+				],
         "Mounts": [
           {
             "Type": "bind",

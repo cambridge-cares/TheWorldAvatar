@@ -17,47 +17,10 @@ RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked m
 
 #==================================================================================================
 
-# Test build stage: create an image for unit testing based on common build stage
-#==================================================================================================
-
-FROM builder as test
-
-# Set the required environment variables for testing
-ENV CARPARK_AGENTPROPERTIES="/usr/local/tomcat/config/agent.properties"
-ENV CARPARK_APIPROPERTIES="/usr/local/tomcat/config/api.properties"
-ENV CARPARK_CLIENTPROPERTIES="/usr/local/tomcat/config/client.properties"
-ENV CARPARK_AGENT_MAPPINGS="/usr/local/tomcat/config/mappings"
-
-# Create the required mapping folder for ease of testing
-RUN mkdir -p /usr/local/tomcat/config/mappings
-
-RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
-
-COPY /CarparkAPIInputAgent/src/test ./src/test
-
-# Execute test
-CMD mvn test
-
-#==================================================================================================
-
 # Second build stage for production: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
 FROM tomcat:9.0 as agent
 WORKDIR /app
-
-# Set the required environment variables
-ENV CARPARK_AGENTPROPERTIES="/usr/local/tomcat/config/agent.properties"
-ENV CARPARK_APIPROPERTIES="/usr/local/tomcat/config/api.properties"
-ENV CARPARK_CLIENTPROPERTIES="/usr/local/tomcat/config/client.properties"
-ENV CARPARK_AGENT_MAPPINGS="/usr/local/tomcat/config/mappings"
-
-# also name of the table in PostGIS
-ENV LAYERNAME="carparks"
-
-# currently ontop reads from the default database
-ENV DATABASE="postgres"
-
-ENV GEOSERVER_WORKSPACE="carparks"
 
 COPY --from=builder /root/CarparkAPIInputAgent/output/carpark-agent##1.0.0.war $CATALINA_HOME/webapps/
 

@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   carpark-agent:
-    image: carpark-agent:1.0.0
+    image: ghcr.io/cambridge-cares/carpark-agent:1.0.0
     container_name: carpark-agent
     build:
       context: .
