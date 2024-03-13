@@ -633,6 +633,7 @@
             "layers": [
                 {
                     "id": "Multi-Residential",
+                    "source-layer": "building_usage",
                     "name": "Multi-Residential",
                     "source": "usage",
                     "filter": [
@@ -669,6 +670,7 @@
                 },
                 {
                     "id": "School",
+                    "source-layer": "building_usage",
                     "name": "School",
                     "source": "usage",
                     "filter": [
@@ -705,6 +707,7 @@
                 },
                 {
                     "id": "Eating Establishment",
+                    "source-layer": "building_usage",
                     "name": "Eating Establishment",
                     "source": "usage",
                     "filter": [
@@ -741,6 +744,7 @@
                 },
                 {
                     "id": "University Facility",
+                    "source-layer": "building_usage",
                     "name": "University Facility",
                     "source": "usage",
                     "filter": [
@@ -777,6 +781,7 @@
                 },
                 {
                     "id": "Cultural Facility",
+                    "source-layer": "building_usage",
                     "name": "Cultural Facility",
                     "source": "usage",
                     "filter": [
@@ -813,6 +818,7 @@
                 },
                 {
                     "id": "Clinic",
+                    "source-layer": "building_usage",
                     "name": "Clinic",
                     "source": "usage",
                     "filter": [
@@ -849,6 +855,7 @@
                 },
                 {
                     "id": "Single Residential",
+                    "source-layer": "building_usage",
                     "name": "Single Residential",
                     "source": "usage",
                     "filter": [
@@ -885,6 +892,7 @@
                 },
                 {
                     "id": "Bank",
+                    "source-layer": "building_usage",
                     "name": "Bank",
                     "source": "usage",
                     "filter": [
@@ -921,6 +929,7 @@
                 },
                 {
                     "id": "Drinking Establishment",
+                    "source-layer": "building_usage",
                     "name": "Drinking Establishment",
                     "source": "usage",
                     "filter": [
@@ -957,6 +966,7 @@
                 },
                 {
                     "id": "Sports Facility",
+                    "source-layer": "building_usage",
                     "name": "Sports Facility",
                     "source": "usage",
                     "filter": [
