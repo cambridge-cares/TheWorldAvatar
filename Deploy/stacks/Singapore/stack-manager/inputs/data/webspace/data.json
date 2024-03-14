@@ -1,26 +1,26 @@
 {
     "name": "Augmented Singapore",
-    "stack": "http://localhost:3838",
+    "stack": "https://theworldavatar.io/demos/singapore",
     "sources": [
         {
             "id": "plot",
             "type": "vector",
             "tiles": [
-                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:landplot&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/singapore/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:landplot&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
             ]
         },
         {
             "id": "population",
             "type": "raster",
             "tiles": [
-                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                "https://theworldavatar.io/demos/singapore/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
             ]
         },
         {
             "id": "CarPark-source",
             "type": "vector",
             "tiles": [
-                "http://localhost:3838/geoserver/carparks/wms?service=WMS&version=1.1.0&request=GetMap&layers=carparks%3Acarparks&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/singapore/geoserver/carparks/wms?service=WMS&version=1.1.0&request=GetMap&layers=carparks%3Acarparks&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
             ]
         }
     ],
@@ -159,14 +159,14 @@
                     "id": "tree",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:tree&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "https://theworldavatar.io/demos/singapore/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:tree&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "heritagetree",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:heritage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "https://theworldavatar.io/demos/singapore/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:heritage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
@@ -211,7 +211,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson"
+                    "data": "https://theworldavatar.io/demos/singapore/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson"
                 }
             ],
             "layers": [
@@ -418,28 +418,28 @@
             "sources": [
                 {
                     "tiles": [
-                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
+                        "https://theworldavatar.io/demos/singapore/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
                     ],
                     "id": "dispersion-source",
                     "type": "vector"
                 },
                 {
                     "tiles": [
-                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
+                        "https://theworldavatar.io/demos/singapore/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
                     ],
                     "id": "weather-source",
                     "type": "vector"
                 },
                 {
                     "tiles": [
-                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
+                        "https://theworldavatar.io/demos/singapore/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
                     ],
                     "id": "ship-source",
                     "type": "vector"
                 },
                 {
                     "tiles": [
-                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
+                        "https://theworldavatar.io/demos/singapore/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
                     ],
                     "id": "sensor-source",
                     "type": "vector"
@@ -518,7 +518,7 @@
                 {
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "https://theworldavatar.io/demos/singapore/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ],
                     "id": "usage"
                 }
@@ -988,7 +988,7 @@
                 {
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "https://theworldavatar.io/demos/singapore/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ],
                     "id": "usage"
                 }
