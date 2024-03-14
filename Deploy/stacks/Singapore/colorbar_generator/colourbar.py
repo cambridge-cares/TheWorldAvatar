@@ -37,7 +37,7 @@ def create_colors():
                                     norm=norm,
                                     spacing='proportional',
                                     orientation='horizontal')
-    cb2.set_label('Population density')
+    cb2.set_label('Population density (#/km$^2$)')
     fig2.show()
 
     x = 2
