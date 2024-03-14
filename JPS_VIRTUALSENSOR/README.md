@@ -64,9 +64,9 @@ An instance can emit multiple pollutants, the class of pollutant ID needs to be 
 - <https://www.theworldavatar.com/kg/ontodispersion/CO2>
 
 ## Important for visualisation if not deployed locally
-Modify the `STACK_URL` parameter in `./stack-manager/inputs/config/services/dispersion-interactor.json` to the URL where the stack is deployed, this is used to construct the WMS endpoints and the URL for feature info agent queries. In other words, in that file, in "STACK_URL=http://localhost:3838", replace "localhost" with the IP address and "3838" with the port number you have deployed your stack.
+Modify the `STACK_URL` parameter in `./stack-manager/inputs/config/services/dispersion-interactor.json` to the URL where the stack is deployed, this is used to construct the WMS endpoints and the URL for feature info agent queries. In other words, in that file, in "STACK_URL=http://localhost:3838", replace "localhost" with the IP address and "3838" with the port number where you have deployed your stack.
 
-Modify the diespersionHandler variable in `./stack-manager/inputs/data/visualisation/index.html` to the URL where the stack is deployed. In other words, in that file, in `var dispersionHandler = new DispersionHandler("http://localhost:3838", manager)`, replace "localhost" with the IP address and "3838" with the port number you have deployed your stack.
+Modify the diespersionHandler variable in `./stack-manager/inputs/data/visualisation/index.html` to the URL where the stack is deployed. In other words, in that file, in `var dispersionHandler = new DispersionHandler("http://localhost:3838", manager)`, replace "localhost" with the IP address and "3838" with the port number you where have deployed your stack.
 
 ## Start up the stack
 
@@ -74,13 +74,26 @@ To start up the stack, execute
 ```
 ./startup.sh
 ```
-in this folder to spin up pull docker images, spin up containers (using stack manager) and copy files into container volumes.
+in this folder to pull docker images, spin up containers (using stack manager) and copy files into container volumes.
 
 Make sure you have access to the CMCL Docker registry. You can test your access by runing 
     ```console
     docker login docker.cmclinnovations.com
     ```
 If you are not already logged in then, when prompted, enter the username and password you were given.
+
+Wait until the data uploader container stops. Following this, go to the next section.
+
+## Emission data upload
+If you are running the agent to simulate emission dispersion from Churchill College buildings, run Blazegraph on a web browser by opening the following URL:
+
+http://<IP Address>:<Port>/blazegraph/ui
+
+Here, the <IP Address> is the address and <Port> is the port where the stack runs. If the <IP Address> is 127.0.0.1 and the <Port> is 3838, the Blazegraph URL will be the following:
+
+http://127.0.0.1:3838/blazegraph/ui
+
+On the Blzegraph interface, click on the `Update` tab, then click on `Choose file` button and select `emission.owl` file from the following path of the `CoMo shared` Dropbox: CoMo shared\_CoMo_Developments\data\churchill_plume_visualisation\emission.owl. In the `Type` dropdown menu, which is just below the `Choose file` button, select `RDF Data` and in the `Format` dropdown menu, select `Turtle`. Finally, click on the `Update button`.
 
 ## HTTP requests 
 A number of examples are prepared in the `HTTP requests` folder. Note that you need to install the humao.rest-client extension in VS code to run these files.
