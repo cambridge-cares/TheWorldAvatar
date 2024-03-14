@@ -2,101 +2,84 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 import scipy.sparse as sp
+import logging
 
-class PolyModel():
+class Buyer():
     # Set model coefficients on construction
-    def __init__(self,order):
-        if order < 0 or order > 2:
-            raise ValueError("order must be between 0 and 2")
-        all_coeffs = [2,-1,3]
-        self.coeffs = all_coeffs[:order+1]
+    def __init__(self):
+       logging.info("instantiate")
     
     # Evaluate the model at a particular value
-    def evaluate(self,x):
+    def optimize(self, info, phi_0, GUP, fix_E, rho, nodal_p):
     
-         # Create a new model
-        m = gp.Model("matrix1")
+    ################ some vars
+        
+        
+        Pmax = info[:,1] 
+        Pmin = info[:,2]
+        quad_cost=info[:,3]
+        lin_cost=info[:,4]
 
+        n_buyers = 1
+        n_sellers = 6
+
+        ################
+
+
+        # Create a new model
+        m = gp.Model("buyer")
+       
         # Create variables
-        x = m.addMVar(shape=3, vtype=GRB.BINARY, name="x")
 
-        # Set objective
-        obj = np.array([1.0, 1.0, 2.0])
-        m.setObjective(obj @ x, GRB.MAXIMIZE)
+        lower_bound = np.concatenate((np.array([Pmin], ndmin=2), np.zeros((n_sellers,1))), axis=0)
+        upper_bound = np.concatenate((np.array([Pmax], ndmin=2), np.ones((n_sellers,1))*np.inf), axis=0)
+    
+        x = m.addMVar(shape=np.shape(lower_bound), vtype=GRB.CONTINUOUS, lb=lower_bound , ub=upper_bound, name="x")
 
-        # Build (sparse) constraint matrix
-        val = np.array([1.0, 2.0, 3.0, -1.0, -1.0])
-        row = np.array([0, 0, 0, 1, 1])
-        col = np.array([0, 1, 2, 0, 1])
+        #Constraint
+        data = np.concatenate((np.array([1]),  np.ones((n_sellers))*-1.0))
+        row = np.zeros((n_buyers+n_sellers))
+        col = np.arange(0,n_sellers+n_buyers)
+        A=sp.coo_matrix((data, (row, col)), shape=(1, n_buyers+n_sellers))
+        
+        rhs = 0
 
-        A = sp.csr_matrix((val, (row, col)), shape=(2, 3))
+        m.addConstr(A @ x == rhs, name="c") #constraint sense
 
-        # Build rhs vector
-        rhs = np.array([4.0, -1.0])
+        #Linear objective
+        obj = np.concatenate((np.add(-lin_cost, nodal_p), np.add(phi_0, np.add(0.5*GUP, -np.multiply(rho, fix_E)))), axis=0)
+    #    m.setObjective(np.transpose(obj) @ x, GRB.MINIMIZE) #objective, modelsense
 
-        # Add constraints
-        m.addConstr(A @ x <= rhs, name="c")
+        #Quadratic objective
+        rowQ = np.arange(0,n_buyers+n_sellers)
+        colQ = np.arange(0,n_buyers+n_sellers)
+        dataQ = np.concatenate((-quad_cost, np.add(0.5*np.squeeze(rho), 0.25*np.ones((n_sellers)))))
+        Q=sp.coo_matrix((dataQ, (rowQ, colQ)), shape=(n_buyers+n_sellers, n_buyers+n_sellers))
 
-#######
-        #model Q, obj, A, rhs, sense, ub, lb
-
-        m.setObjective(obj @ x, GRB.MINIMIZE) #objective, modelsense
-
-        m.setAttr(GRB.Attr.VType, "C")
-
+        #Set objectives
+        m.setMObjective(Q, np.squeeze(obj), GRB.MINIMIZE) #quadratic objective, linear objective, modelsense
+       
+        #params
         m.setParam(GRB.param.QCPDual, 1.0)
         m.setParam(GRB.param.OutputFlag, 0)
 
-######
         # Optimize model
         m.optimize()
-
-
-        return "something"
-
-
-#####################
-## from MATLAB
-
-function [OpCost, consumption, power_buying, error, dual_var]=p2p_buyer_v1(info, phi_0, GUP, fix_E, rho, nodal_p)
-    ##%% extracting seller and buyer data
-    Pmax=info(:,2); Pmin=info(:,3);
-    quad_cost=info(:,4); lin_cost=info(:,5);
-
-    Ns=length(phi_0); # sellers
-    # forming the optimization problem
-    num_var=1+Ns; # consumption+trading_amounts
-
-    cons=sparse(1,1:num_var,[1, -ones(1,Ns)],1,num_var,num_var);
-    # cons=[1, -ones(1,Ns)];
-    rhs_cons=0;
-
-    Vt=strcat(repmat('C',1,num_var));
-    It=strcat('=');
-
-
-    # calling 'gurobi'
-
-    model.Q=sparse(1:num_var, 1:num_var, [-quad_cost; 0.5*rho++0.25*ones(Ns,1)]', num_var, num_var, num_var);
-    model.obj=[-lin_cost+nodal_p; phi_0+0.5*GUP-rho.*fix_E];
-    model.A=cons; model.rhs=rhs_cons; model.sense=It';
-    model.ub=[Pmax; inf(Ns,1)]; 
-    model.lb=[Pmin; zeros(Ns,1)]; model.vtype=Vt;
-    model.modelsense='min';
+        
+        return x.X  #numpy.ndarray
     
-    params.QCPDual=1;
-    params.OutputFlag=0;
+#######################################
+### Test 
 
-    result=gurobi(model,params);
-
-    #parse results
-
-    consumption=result.x(1);
-    power_buying=result.x(1+(1:Ns));
-    error=power_buying-fix_E;
-
-    OpCost=result.objval +fix_E'*sparse(1:Ns,1:Ns,0.5*rho,Ns,Ns,Ns)*fix_E;
-    dual_var=result.pi;
+info = np.array([4,	2.20000000000000,	0.,	-0.100000000000000,	4.50000000000000], ndmin=2)
+phi_0 = np.array([[-16.8], [-16.0],	[-17.0],	[-15.5],	[-16.8], [-16.2]], ndmin=2)
+GUP = np.array([[0],[0],[0],[0],[0],[0]], ndmin=2)
+fix_E = np.array([[0],[0],[0],[0],[0],[0]], ndmin=2)
+rho = np.array([[0.5],[0.5],[0.5],[0.5],[0.5],[0.5]], ndmin=2)
+nodal_p = np.array([20], ndmin=2 )
 
 
-end
+buyer = Buyer()
+result = buyer.optimize(info, phi_0, GUP, fix_E, rho, nodal_p)
+print("result:")
+print(result)
