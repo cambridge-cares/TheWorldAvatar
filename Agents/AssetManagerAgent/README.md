@@ -116,6 +116,7 @@ Takes in asset data in the request parameter. **If any data is missing please us
 | BudgetCat        |                                         |
 | ServiceCode      |                                         |
 | price            |                                         |
+| existingIRIs     |                                         |
 
 The parameters:
 - Prefix (DEPRECATED): 
@@ -168,6 +169,7 @@ If field is to be left empty, please use `""`.
 - BudgetCat : The budget source category used for purchasing the asset
 - ServiceCode : The service code of the budget category
 - price : asset price on purchase
+- existingIRIs : Uses provided existing IRIs instead of generating a new one. Can be left empty or not included if all IRIs are to be generated. As it is a hotfix, it is currently only implemented for the follwoing: device IRI, item IRI,  workspace IRI.
 
 The example request and successful result:
 - Request:

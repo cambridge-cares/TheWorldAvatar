@@ -43,8 +43,23 @@ public class AssetExistenceChecker {
     }
     public JSONObject getPersonTriples(String name, Boolean generate){
         JSONObject result = new JSONObject();
-        JSONArray reqResult = getIRIbyLiteral (name, hasPersonName, storeClientAsset);
+        //JSONArray reqResult = getIRIbyLiteral (name, hasPersonName, storeClientAsset);
+        SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
+            Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE,
+            Pref_TIME
+        );
+        
+        Variable PersonIRIVar = SparqlBuilder.var("personIRI");
+        Variable personNameIRI = SparqlBuilder.var("personNameIRI");
+        Variable deviceOwnerLiteral = SparqlBuilder.var("assignedTo");
+        query.where(PersonIRIVar.isA(Person));
+        query.where(personNameIRI.isA(PersonName));
+        query.where(PersonIRIVar.has(hasName, personNameIRI));
+        query.where(personNameIRI.has(RDFS.LABEL, deviceOwnerLiteral));
 
+        JSONArray reqResult = storeClientAsset.executeQuery(query.getQueryString());
         switch (reqResult.length()) {
             case 0:
                 if (generate) {
@@ -59,10 +74,11 @@ public class AssetExistenceChecker {
                 
             case 1:
                 //Add the existing IRI to result
-                String personNameIRIString = reqResult.getJSONObject(0).getString("Subject");
+                String personNameIRIString = reqResult.getJSONObject(0).getString("personNameIRI");
                 result.put("PersonNameIRI", personNameIRIString);
                 //Query Person instance from person name
-                result.put("PersonIRI", getIRIStringbyIRIObject(iri(personNameIRIString), hasName, storeClientAsset));
+                //result.put("PersonIRI", getIRIStringbyIRIObject(iri(personNameIRIString), hasName, storeClientAsset));
+                result.put("PersonIRI", reqResult.getJSONObject(0).getString("personIRI"));
                 return result;
             default:
                 throw new JPSRuntimeException("A person have more than 1 instance: " + name + ". Check the knowledge graph for duplicates.", null);

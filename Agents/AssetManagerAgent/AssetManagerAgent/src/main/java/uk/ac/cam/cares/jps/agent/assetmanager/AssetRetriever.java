@@ -148,7 +148,7 @@ public class AssetRetriever {
         //Device owner from asset list
         query.where(deviceIRIVar.has(assignedTo, PersonIRI));
         query.where(PersonIRI.has(hasName, personNameIRI));
-        query.where(personNameIRI.has(hasPersonName, deviceOwnerLiteral));
+        query.where(personNameIRI.has(RDFS.LABEL, deviceOwnerLiteral));
         //Optional IRIs
         //Workspace
         query.where(GraphPatterns.optional(deviceIRIVar.has(isLocatedAt, WorkspaceIRI),
@@ -576,7 +576,7 @@ public class AssetRetriever {
         Variable PersonNameIRI = SparqlBuilder.var("PersonNameIRI");
         Variable PersonNameLiteral = SparqlBuilder.var("PersonName");
         query.where(PersonIRI.has(hasName, PersonNameIRI));
-        query.where(PersonNameIRI.has(hasPersonName, PersonNameLiteral));
+        query.where(PersonNameIRI.has(RDFS.LABEL, PersonNameLiteral));
 
         return storeClientAsset.executeQuery(query.getQueryString());
     }
@@ -819,7 +819,7 @@ public class AssetRetriever {
             ));
         query.where(GraphPatterns.optional(
             performerIRI.has(hasName, personNameIRI),
-            personNameIRI.has(hasPersonName, performerName)
+            personNameIRI.has(RDFS.LABEL, performerName)
             ));
         query.where(GraphPatterns.optional(
             performerIRI.has(RDFS.LABEL, performerName)

@@ -612,7 +612,7 @@ public class AssetKGInterface {
         query.insert(personNameIRI.isA(PersonName));
         query.insert(deviceIRIVar.has(assignedTo, PersonIRI));
         query.insert(PersonIRI.has(hasName, personNameIRI));
-        query.insert(personNameIRI.has(hasPersonName, Rdf.literalOf(deviceOwnerLiteral)));
+        query.insert(personNameIRI.has(RDFS.LABEL, Rdf.literalOf(deviceOwnerLiteral)));
         //Optional IRIs
         //Workspace
         if(!WorkspaceIDLiteral.isBlank() && !WorkspaceOwnerIRIString.isBlank()){
@@ -1017,7 +1017,7 @@ public class AssetKGInterface {
             query.insert(iri(serviceProviderIRI).isA(Person));
             query.insert(serviceProviderNameIRI.isA(PersonName));
             query.insert(iri(serviceProviderIRI).has(hasName, serviceProviderNameIRI));
-            query.insert(serviceProviderNameIRI.has(hasPersonName, Rdf.literalOf(serviceProvider)));
+            query.insert(serviceProviderNameIRI.has(RDFS.LABEL, Rdf.literalOf(serviceProvider)));
         }
         else{
             query.insert(iri(serviceProviderIRI).isA(serviceProviderTypeIRI));
