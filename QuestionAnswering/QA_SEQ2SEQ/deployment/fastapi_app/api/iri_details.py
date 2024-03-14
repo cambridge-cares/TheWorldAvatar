@@ -106,7 +106,7 @@ def iri_info_query(iri):
 
 def makeCifFile(iri):
         
-        sparql_service = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/ontozeolite3/sparql")
+        sparql_service = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/ontozeolite/sparql")
        
         # SPARQL query to retrieve unit cell parameters and atom coordinates
         query = f"""
