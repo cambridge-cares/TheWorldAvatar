@@ -12,7 +12,7 @@ from .ontospecies import (
     OntoSpeciesAgentConnector,
     get_ontospecies_agent_connector,
 )
-from .singapore import (
+from .singapore_land_lots import (
     SingaporeLandLotsAgentConnector,
     get_singapore_land_lots_agent_connector,
 )
