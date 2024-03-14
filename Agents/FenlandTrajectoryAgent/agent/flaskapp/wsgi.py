@@ -18,9 +18,9 @@ from agent.datainstantiation.data_instantiation import main as instantiate_gps_d
 # Initialise background scheduler and add a recurring background task
 # Here, you can define how often you want your data instantiation process to run
 # For example, setting it to run daily at midnight
-sched = BackgroundScheduler(daemon=True)
-sched.add_job(instantiate_gps_data, trigger='cron', hour=0, minute=0, second=0, timezone=utc)
-sched.start()
+# sched = BackgroundScheduler(daemon=True)
+# sched.add_job(instantiate_gps_data, trigger='cron', hour=0, minute=0, second=0, timezone=utc)
+# sched.start()
 
 app = create_app()
 
