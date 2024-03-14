@@ -7,6 +7,7 @@ import logging
 class Buyer():
     # Set model coefficients on construction
     def __init__(self):
+       logging.info("Creating buyer")
        self.consumption =  None
        self.power_buying = None
        self.error = None
@@ -77,6 +78,8 @@ class Buyer():
         self.op_cost = m.getAttr(GRB.attr.ObjVal) +  np.matmul(np.matmul( np.transpose(fix_E),  rho_sparse.todense()) , fix_E)              
 
         self.dual_var= m.getAttr(GRB.attr.Pi)
+
+        print("Buyer optimisation complete")
 
         return x.X  #numpy.ndarray
     

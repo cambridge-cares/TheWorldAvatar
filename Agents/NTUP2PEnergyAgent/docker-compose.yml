@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   example:
-    image: python_agent_eg:1.0.0
+    image: ntu-p2p-energy-agent:1.0.0
     build: .
-    container_name: python_agent_eg
+    container_name: ntu-p2p-energy-agent
     ports:
-      - 55002:5000
+      - 1031:5000

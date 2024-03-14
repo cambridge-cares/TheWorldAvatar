@@ -7,6 +7,7 @@ import logging
 class Seller():
     # Set model coefficients on construction
     def __init__(self):
+       logging.info("Creating seller")
        self.production =  None
        self.power_selling = None
        self.error = None
@@ -80,6 +81,8 @@ class Seller():
         self.dual_var= m.getAttr(GRB.attr.Pi)
         self.phi = phi_0 - np.multiply(rho,self.error)
         
+        print("Seller optimisation complete")
+
         return x.X  #numpy.ndarray
     
 #######################################
