@@ -57,8 +57,8 @@
     flex-grow: 1;
     display: flex;
     align-items: center;
-    pointer-events: none;
 }
+
 .textContainer span {
     font-size: 11pt;
 }

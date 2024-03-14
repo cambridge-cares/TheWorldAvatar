@@ -1,32 +1,16 @@
 import styles from './layer-tree.module.css';
 
-import React, { useState } from 'react';
-import SVG from 'react-inlinesvg';
-import { Icon } from '@mui/material';
+import React from 'react';
 
 import { DataGroup } from 'io/data/data-group';
 import { DataLayer } from 'io/data/data-layer';
 import { DataStore } from 'io/data/data-store';
+import { MapLayerGroup, MapLayer } from 'types/map-layer';
+import LayerTreeHeader from './layer-tree-content';
 
 // type definition for incoming properties
 type LayerTreeProps = {
   dataStore: DataStore;
-};
-
-type TreeGroup = {
-  name: string;
-  address: string;
-  subGroups?: TreeGroup[];
-  icon?: string;
-  layers?: TreeLayer[];
-  isOpen?: boolean; // track open/closed state
-};
-type TreeLayer = {
-  name: string;
-  address: string;
-  ids: string;
-  icon?: string;
-  isVisible: boolean; // track visibility
 };
 
 /**
@@ -34,14 +18,18 @@ type TreeLayer = {
  * with optional icons, in a LayerTree component.
  */
 export default function LayerTree(props: LayerTreeProps) {
-  const structure = parseIntoTreeStucture(props.dataStore);
-
-  const elements: React.ReactElement[] = [];
-  structure.forEach((treeGroup) => {
-    elements.push(buildGroup(treeGroup, 0));
-  });
-
-  return <div className={styles.layerTreeContainer}>{elements}</div>;
+  const structure: MapLayerGroup[] = parseIntoTreeStucture(props.dataStore);
+  return <div className={styles.layerTreeContainer}>
+    {structure.map((mapLayerGroup) => {
+      return (
+        <LayerTreeHeader
+          group={mapLayerGroup}
+          depth={0}
+          parentShowChildren={mapLayerGroup.showChildren}
+          key={mapLayerGroup.name}
+        />)
+    })}
+  </div>;
 }
 
 /**
@@ -52,8 +40,8 @@ export default function LayerTree(props: LayerTreeProps) {
  *
  * @param dataStore DataStore containing groups.
  */
-function parseIntoTreeStucture(dataStore: DataStore) {
-  const root: TreeGroup[] = [];
+function parseIntoTreeStucture(dataStore: DataStore): MapLayerGroup[] {
+  const root: MapLayerGroup[] = [];
   dataStore.getGroups().forEach((group) => {
     recurseParseTreeStructure(root, group, null);
   });
@@ -68,11 +56,11 @@ function parseIntoTreeStucture(dataStore: DataStore) {
  * @param parentGroup parent tree group.
  */
 function recurseParseTreeStructure(
-  results: TreeGroup[],
+  results: MapLayerGroup[],
   dataGroup: DataGroup,
-  parentGroup: TreeGroup
-) {
-  const treeGroup: TreeGroup = {
+  parentGroup: MapLayerGroup
+): void {
+  const mapLayerGroup: MapLayerGroup = {
     name: dataGroup.name,
     address:
       parentGroup == null
@@ -81,6 +69,7 @@ function recurseParseTreeStructure(
     icon: dataGroup.treeIcon,
     layers: [],
     subGroups: [],
+    showChildren: true,
   };
 
   // Group layers by user facing name
@@ -94,40 +83,26 @@ function recurseParseTreeStructure(
 
   // Construct TreeLayer instances
   for (const [key, layers] of Object.entries(layersByName)) {
-    const treeLayer: TreeLayer = {
+    const mapLayer: MapLayer = {
       name: key,
       address: dataGroup.name + "." + key,
       ids: collectIDs(layers),
-      icon: findFirstIcon(layers),
-      isVisible: true, // Initialise visibility state
+      icon: layers.find(layer => layer.definition["tree-icon"] !== null)?.definition["tree-icon"] as string,
+      isVisible: layers.find(layer => layer.cachedVisibility !== null)?.cachedVisibility,
     };
-    treeGroup.layers.push(treeLayer);
+    mapLayerGroup.layers.push(mapLayer);
   }
 
   // Recurse down
   for (const subGroup of dataGroup.subGroups) {
-    recurseParseTreeStructure(results, subGroup, treeGroup);
+    recurseParseTreeStructure(results, subGroup, mapLayerGroup);
   }
 
   if (parentGroup == null) {
-    results.push(treeGroup);
+    results.push(mapLayerGroup);
   } else {
-    parentGroup.subGroups.push(treeGroup);
+    parentGroup.subGroups.push(mapLayerGroup);
   }
-}
-
-/**
- *
- * @param layers
- * @returns
- */
-function findFirstIcon(layers: DataLayer[]): string {
-  for (const layer of layers) {
-    if (layer.definition["tree-icon"] != null) {
-      return layer.definition["tree-icon"] as string;
-    }
-  }
-  return null;
 }
 
 /**
@@ -141,137 +116,4 @@ function collectIDs(layers: DataLayer[]): string {
     ids.push(layer.id);
   }
   return ids.join(" ");
-}
-
-function toggleLayerVisibility(layerIds: string) {
-  // Split layer IDs in case there are multiple
-  const ids = layerIds.split(" ");
-  ids.forEach((id) => {
-    const visibility = window.map.getLayoutProperty(id, "visibility");
-
-    // Toggle visibility based on current state
-    if (visibility === "visible") {
-      window.map.setLayoutProperty(id, "visibility", "none");
-    } else {
-      window.map.setLayoutProperty(id, "visibility", "visible");
-    }
-  });
-}
-
-function buildLayers(group: TreeGroup, depth: number): React.ReactElement[] {
-  const elements: React.ReactElement[] = [];
-
-  // Size of left hand indentation
-  const spacing: string = depth * 16 + "px";
-
-  group.layers.forEach((layer) => {
-    // Initialise the visibility state based on the layer's current state
-    const [isVisible, setIsVisible] = useState(layer.isVisible);
-
-    const handleVisibilityToggle = () => {
-      // Toggle visibility on the map
-      toggleLayerVisibility(layer.ids);
-      // Update the state
-      setIsVisible(!isVisible);
-    };
-
-    elements.push(
-      <div className={styles.treeEntry} key={layer.name}>
-        <div className={styles.treeEntryHeader}>
-          {/* Spacer */}
-          <span style={{ width: spacing }} />
-
-          <div className={styles.icon + " " + styles.small}>
-            <Icon className="material-symbols-outlined">
-              subdirectory_arrow_right
-            </Icon>
-          </div>
-
-          {/* Tree icon, if present */}
-          {layer.icon && (
-            <div className={styles.icon}>
-              <SVG src={layer.icon} />
-            </div>
-          )}
-
-          {/* Name of group */}
-          <div className={styles.textContainer}>
-            <span>{layer.name}</span>
-          </div>
-
-          {/* Toggle visibility state */}
-          <div className={styles.icon} onClick={handleVisibilityToggle}>
-            <Icon className="material-symbols-outlined">
-              {isVisible ? "visibility" : "visibility_off"}
-            </Icon>
-          </div>
-        </div>
-      </div>
-    );
-  });
-  return elements;
-}
-
-/**
- *
- * @param item
- */
-function buildGroup(item: TreeGroup, depth: number): React.ReactElement {
-  // Size of left hand indentation
-  const spacing: string = depth * 16 + "px";
-
-  // Get layer components.
-  const childLayers = buildLayers(item, depth + 1);
-
-  // Get subgroup components
-  const childGroups: React.ReactElement[] = [];
-  item.subGroups.forEach((subGroup) => {
-    childGroups.push(buildGroup(subGroup, depth + 1));
-  });
-
-  const [isExpanded, setIsExpanded] = useState<boolean>(true); // Default to expanded
-
-  const toggleExpansion = () => {
-    setIsExpanded(!isExpanded);
-  };
-  const expandedIcon: string = isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down";
-
-  return (
-    <div className={styles.treeEntry} key={item.name}>
-      <div className={styles.treeEntryHeader} onClick={toggleExpansion}>
-        {/* Spacer */}
-        <span style={{ width: spacing }} />
-
-        {/* Expand/collapse icon */}
-        <div className={styles.icon}>
-          <Icon className="material-symbols-outlined">{expandedIcon}</Icon>
-        </div>
-
-        {/* Tree icon, if present */}
-        {item.icon != null && (
-          <div className={styles.icon + " " + styles.treeIcon}>
-            <SVG src={item.icon} />
-          </div>
-        )}
-
-        {/* Name of group */}
-        <div className={styles.textContainer}>
-          <span>{item.name}</span>
-        </div>
-
-        {/* Visibility state */}
-        <div className={styles.icon}>
-          <Icon className="material-symbols-outlined">visibility</Icon>
-        </div>
-      </div>
-
-      {/* Conditionally show subgroups when expanded */}
-      {isExpanded && (
-        <div className={styles.treeEntryContent}>
-          {childLayers}
-          {childGroups}
-        </div>
-      )}
-    </div>
-  );
 }

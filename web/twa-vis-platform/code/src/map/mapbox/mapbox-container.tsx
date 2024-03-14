@@ -29,6 +29,7 @@ import { addAllSources } from './mapbox-source-utils';
 import { addAllLayers } from './mapbox-layer-utils';
 import { addIcons } from './mapbox-icon-loader';
 import { addMapboxEventListeners } from '../event-listeners';
+import { setIsStyleLoaded } from 'state/floating-panel-slice';
 
 
 // Type definition of incoming properties
@@ -141,6 +142,8 @@ export default function MapboxMapComponent(props: MapProperties) {
           styleObject.time
         );
       }
+
+      dispatch(setIsStyleLoaded(true))
 
       // Parse data configuration and load icons
       const iconPromise = addIcons(settings.icons);
