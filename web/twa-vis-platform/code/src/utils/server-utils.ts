@@ -25,7 +25,6 @@ export const featureInfoAgentApi = createApi({
             query: (url) => `${url}`,
         }),
     }),
-    refetchOnMountOrArgChange: true,
 });
 
 // Export hooks for usage in functional components, which are auto-generated based on the defined endpoints

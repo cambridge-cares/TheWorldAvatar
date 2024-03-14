@@ -1,9 +1,12 @@
 import { Icon, Tooltip } from '@mui/material';
 import styles from './floating-panel.module.css';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { getIndex, setIndex } from 'state/floating-panel-slice';
+import { getQueryTrigger, getUrl, setQueryTrigger } from 'state/map-feature-slice';
+import { useGetMetadataQuery } from 'utils/server-utils';
 import { DataStore } from 'io/data/data-store';
 import LayerTree from './layer/layer-tree';
 import LegendTree from './legend/legend-tree';
@@ -23,18 +26,35 @@ export default function FloatingPanelContainer(
   props: FloatingPanelContainerProps
 ) {
   const [isPanelVisible, setIsPanelVisible] = useState(true);
-  const togglePanelVisibility = () => {
-    setIsPanelVisible(!isPanelVisible);
-  };
+  const [queriedData, setQueriedData] = useState(null);
 
   const showLegend = props.hideLegend == null || !props.hideLegend;
   const showInfo = props.hideInfo == null || !props.hideInfo;
 
-  const activeIndex = useSelector(getIndex);
   const dispatch = useDispatch();
+  const activeIndex = useSelector(getIndex);
+  const selectedUrl = useSelector(getUrl);
+  const trigger = useSelector(getQueryTrigger);
 
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
+
+  // Execute API call
+  const { data, error, isFetching } = useGetMetadataQuery(selectedUrl, { skip: !trigger });
+
+  // Effect to display additional feature information retrieved from an agent only once it has been loaded
+  useEffect(() => {
+    if (isFetching) {
+      // WIP: Add required functionality while data is still being fetched
+    } else if (error) {
+      console.error("Error fetching data:", error);
+    } else {
+      if (data) {
+        setQueriedData(data);
+        dispatch(setQueryTrigger(false));
+      };
+    };
+  }, [isFetching]);
 
   const clickAction = (index: number) => {
     dispatch(
@@ -115,7 +135,11 @@ export default function FloatingPanelContainer(
         <div className={styles.floatingPanelBody}>
           {activeIndex === 0 && <LayerTree dataStore={props.dataStore} />}
           {activeIndex === 1 && <LegendTree />}
-          {activeIndex === 2 && <InfoTree />}
+          {activeIndex === 2 &&
+            <InfoTree
+              data={queriedData}
+              isFetching={isFetching}
+            />}
         </div>
       )}
     </div>

@@ -1,11 +1,8 @@
 import styles from './info-tree.module.css';
 
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 
-import { getQueryTrigger, getUrl, setQueryTrigger } from 'state/map-feature-slice';
 import { Attribute, AttributeGroup } from 'types/attribute';
-import { useGetMetadataQuery } from 'utils/server-utils';
 import { JsonObject } from "types/json";
 import InfoTreeNode from './info-tree-node';
 
@@ -15,48 +12,29 @@ const collapseKey: string = "collapse";
 const valueKey: string = "value";
 const unitKey: string = "unit";
 
+type InfoTreeProps = {
+  data: JsonObject;
+  isFetching: boolean
+};
+
 /**
- * InfoTree component responsible for displaying information about the selected
- * geographic feature and its location. It renders the selected feature's
- * details, such as name, description, and IRI, along with the latitude and
- * longitude of the clicked location. It also fetches and displays additional
- * feature information from an external data source via PanelHandler.
+ * This component is responsible for displaying information about the selected geographic feature 
+ * such as name, description, and IRI. Data is passed from the parent component so that 
+ * the existing state is persisted even if this component is removed.
+ * 
+ * @param {JsonObject} data The queried data that will be processed for display.
+ * @param {boolean} isFetching An indicator if the query is still running.
  */
-export default function InfoTree() {
-  // State to store the currently selected feature's endpoint holding their attributes
-  const selectedUrl = useSelector(getUrl);
-  // State to store fetched additional information about the selected feature
-  const [attributeGroup, setAttributeGroup] = useState(null);
-  // State to store fetched additional information about the selected feature
-  const trigger = useSelector(getQueryTrigger);
-  // Execute API call
-  const { data, error, isFetching } = useGetMetadataQuery(selectedUrl, { skip: !trigger });
-  const dispatch = useDispatch();
-
-  // Effect to display additional feature information retrieved from an agent only once it has been loaded
-  useEffect(() => {
-    if (isFetching) {
-      // WIP: Add required functionality while data is still being fetched
-    } else if (error) {
-      console.error("Error fetching data:", error);
-    } else {
-      if (data) {
-        const rootGroup: AttributeGroup = recurseParseAttributeGroup(data, rootKey);
-        setAttributeGroup(rootGroup);
-        dispatch(setQueryTrigger(false));
-      };
-    };
-  }, [isFetching]);
-
+export default function InfoTree(props: InfoTreeProps) {
   return (
     <div className={styles.infoPanelContainer}>
       <div className={styles.infoHeadSection}>
         <h2>Feature Information</h2>
       </div>
-      {isFetching ? (
+      {props.isFetching ? (
         <div className={styles.spinner}></div>
-      ) : attributeGroup ?
-        (<div className={styles.infoSection}><InfoTreeNode attribute={attributeGroup} /></div>) : (
+      ) : props.data ?
+        (<div className={styles.infoSection}><InfoTreeNode attribute={recurseParseAttributeGroup(props.data, rootKey)} /></div>) : (
           <div className={styles.infoSection}>
             <p>Click to fetch feature information.</p>
           </div>
