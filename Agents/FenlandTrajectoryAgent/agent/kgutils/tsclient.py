@@ -1,18 +1,17 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #
-# Date: 20 Jul 2022                            #
+# Authors: Jiying Chen (jc2341@cam.ac.uk) #
+# Date: 11 March 2024                            #
 ################################################
-
-# The purpose of this module is to provide functionality to use
-# the TimeSeriesClient from the JPS_BASE_LIB
+# The purpose of this module is to provide functionality to use the TimeSeriesClient from the JPS_BASE_LIB
 
 from contextlib import contextmanager
 
 from py4jps import agentlogging
 
-from agent.errorhandling.exceptions import TSException
 from agent.utils.baselib_gateway import jpsBaseLibGW
 from agent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
+from agent.errorhandling.exceptions import TSException
+from agent.datamodel.data_class import FORMAT, TIMECLASS, DATACLASS
 
 
 # Initialise logger instance (ensure consistent logger level`)
@@ -172,3 +171,13 @@ class TSClient:
         times = [t.toString() for t in times]
         
         return times, values
+    
+    def delete_timeseries(self, dataIRI:str):
+        try:
+            with self.connect() as conn:
+                # Initialise time series in Blazegraph and PostgreSQL
+                self.tsclient.deleteIndividualTimeSeries(dataIRI, conn)
+
+        except Exception as ex:
+            logger.error('Error deleting GPS trajectory time series')
+            raise TSException('Error deleting GPS trajectory time series') from ex
