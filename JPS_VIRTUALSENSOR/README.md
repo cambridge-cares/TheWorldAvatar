@@ -87,13 +87,13 @@ Wait until the data uploader container stops. Following this, go to the next sec
 ## Emission data upload
 If you are running the agent to simulate emission dispersion from Churchill College buildings, run Blazegraph on a web browser by opening the following URL:
 
-http://<IP Address>:<Port>/blazegraph/ui
+`http://<IP Address>:<Port>/blazegraph/ui`
 
-Here, the <IP Address> is the address and <Port> is the port where the stack runs. If the <IP Address> is 127.0.0.1 and the <Port> is 3838, the Blazegraph URL will be the following:
+Here, the `<IP Address>` is the address and `<Port>` is the port where the stack runs. If the `<IP Address>` is 127.0.0.1 and the `<Port>` is 3838, the Blazegraph URL will be the following:
 
 http://127.0.0.1:3838/blazegraph/ui
 
-On the Blzegraph interface, click on the `Update` tab, then click on `Choose file` button and select `emission.owl` file from the following path of the `CoMo shared` Dropbox: CoMo shared\_CoMo_Developments\data\churchill_plume_visualisation\emission.owl. In the `Type` dropdown menu, which is just below the `Choose file` button, select `RDF Data` and in the `Format` dropdown menu, select `Turtle`. Finally, click on the `Update button`.
+On the Blzegraph interface, click on the `Update` tab, then click on `Choose file` button and select `emission.owl` file from the following path of the `CoMo shared` Dropbox: `CoMo shared\_CoMo_Developments\data\churchill_plume_visualisation\emission.owl`. In the `Type` dropdown menu, which is just below the `Choose file` button, select `RDF Data` and in the `Format` dropdown menu, select `Turtle`. Finally, click on the `Update button`.
 
 ## HTTP requests 
 Note that you need to install the humao.rest-client extension in VS code to run these files. If you are running the agent for Churchill college or Pirmasens, go to the examples in [With static point sources](#with-static-point-sources). A number of examples are prepared in the `HTTP requests` folder.
