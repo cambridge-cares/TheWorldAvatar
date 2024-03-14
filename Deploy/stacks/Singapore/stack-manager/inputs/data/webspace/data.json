@@ -27,7 +27,7 @@
     "layers": [
         {
             "id": "sglandplot",
-            "name": "Land Plots",
+            "name": "Land plots",
             "source": "plot",
             "source-layer": "landplot",
             "type": "fill",
@@ -187,7 +187,7 @@
                 },
                 {
                     "id": "heritagetree",
-                    "name": "Heritage Trees",
+                    "name": "Heritage trees",
                     "source": "heritagetree",
                     "source-layer": "heritage",
                     "type": "circle",
@@ -202,7 +202,7 @@
             ]
         },
         {
-            "name": "Park Accessibility",
+            "name": "Park accessibility",
             "expanded": false,
             "sources": [
                 {
@@ -525,9 +525,9 @@
             ],
             "layers": [
                 {
-                    "id": "City Furniture",
+                    "id": "City furniture",
                     "source-layer": "building_usage",
-                    "name": "City Furniture",
+                    "name": "City furniture",
                     "source": "usage",
                     "filter": [
                         "==",
@@ -562,9 +562,9 @@
                     }
                 },
                 {
-                    "id": "Multi-Residential",
+                    "id": "Multi-residential",
                     "source-layer": "building_usage",
-                    "name": "Multi-Residential",
+                    "name": "Multi-residential",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -636,9 +636,9 @@
                     }
                 },
                 {
-                    "id": "Eating Establishment",
+                    "id": "Eating establishment",
                     "source-layer": "building_usage",
-                    "name": "Eating Establishment",
+                    "name": "Eating establishment",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -673,9 +673,9 @@
                     }
                 },
                 {
-                    "id": "University Facility",
+                    "id": "University facility",
                     "source-layer": "building_usage",
-                    "name": "University Facility",
+                    "name": "University facility",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -710,9 +710,9 @@
                     }
                 },
                 {
-                    "id": "Cultural Facility",
+                    "id": "Cultural facility",
                     "source-layer": "building_usage",
-                    "name": "Cultural Facility",
+                    "name": "Cultural facility",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -784,9 +784,9 @@
                     }
                 },
                 {
-                    "id": "Single Residential",
+                    "id": "Single residential",
                     "source-layer": "building_usage",
-                    "name": "Single Residential",
+                    "name": "Single residential",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -858,9 +858,9 @@
                     }
                 },
                 {
-                    "id": "Drinking Establishment",
+                    "id": "Drinking establishment",
                     "source-layer": "building_usage",
-                    "name": "Drinking Establishment",
+                    "name": "Drinking establishment",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -895,9 +895,9 @@
                     }
                 },
                 {
-                    "id": "Sports Facility",
+                    "id": "Sports facility",
                     "source-layer": "building_usage",
-                    "name": "Sports Facility",
+                    "name": "Sports facility",
                     "source": "usage",
                     "filter": [
                         "in",
