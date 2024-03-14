@@ -11,7 +11,7 @@
 6) Elevation data (optional):
 AERMOD agent will try to query elevation data from a table named `elevation` in the default database. AERMOD agent can query the data stored in any SRID, but the table needs to contain data in one SRID only, hence it's recommended to convert any elevation data to a uniform SRID, e.g. 4326. An example is provided in `stack-data-uploader/inputs/config/elevation.json`. Note that this config file is written for data in SRID=32632 and it needs to be changed according to your source data. The raw data files should be stored in `stack-data-uploader/inputs/data/elevation`, any format supported by gdal should work, see https://gdal.org/drivers/raster/index.html for more info.
 7) Buildings data (optional for ships, compulsory for static point source use cases):
-If the agent is being run to simulate emission dispersion from Churchill College buildings, copy all folders and files from the folder CoMo shared/_CoMo_Developments/data/churchill_plume_visualisation/churchill_gml of the CoMo shared dropbox to stack-data-uploader/inputs/data/churchill_gml and go to the Section [Important for Visualization if Not Deployed Locally](#important-for-visualisation-if-not-deployed-locally).
+If the agent is being run to simulate emission dispersion from Churchill College buildings, copy all folders and files from the folder CoMo shared/_CoMo_Developments/data/churchill_plume_visualisation/churchill_gml of the CoMo shared dropbox to stack-data-uploader/inputs/data/churchill_gml and go to the Section [Important for visualization if not deployed locally](#important-for-visualisation-if-not-deployed-locally).
 An example config file is given in `stack-data-uploader/inputs/config/building-pirmasens.json`, corresponding raw data should be populated in `stack-data-uploader/inputs/data/pirmasens_final_citygml`
 
 ## Static point source instantiation
@@ -64,7 +64,9 @@ An instance can emit multiple pollutants, the class of pollutant ID needs to be 
 - <https://www.theworldavatar.com/kg/ontodispersion/CO2>
 
 ## Important for visualisation if not deployed locally
-Modify the `STACK_URL` parameter in `./stack-manager/inputs/config/services/dispersion-interactor.json` to the URL where the stack is deployed, this is used to construct the WMS endpoints and the URL for feature info agent queries.
+Modify the `STACK_URL` parameter in `./stack-manager/inputs/config/services/dispersion-interactor.json` to the URL where the stack is deployed, this is used to construct the WMS endpoints and the URL for feature info agent queries. In other words, in that file, in "STACK_URL=http://localhost:3838", replace "localhost" with the IP address and "3838" with the port number you have deployed your stack.
+
+Modify the diespersionHandler variable in `./stack-manager/inputs/data/visualisation/index.html` to the URL where the stack is deployed. In other words, in that file, in `var dispersionHandler = new DispersionHandler("http://localhost:3838", manager)`, replace "localhost" with the IP address and "3838" with the port number you have deployed your stack.
 
 ## Start up the stack
 
