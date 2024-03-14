@@ -7,7 +7,7 @@ from fastapi import Depends
 
 from model.qa import QAStep
 from services.func_call import IFuncCaller, get_func_caller
-from .agent_connector import IAgentConnector
+from .agent_connector import AgentConnectorBase
 from .ontospecies import (
     OntoSpeciesAgentConnector,
     get_ontospecies_agent_connector,
@@ -25,14 +25,14 @@ class AgentConnectorMediator:
     def __init__(
         self,
         func_call_predictor: IFuncCaller,
-        domain2connector: Dict[str, IAgentConnector],
+        domain2connector: Dict[str, AgentConnectorBase],
     ):
         self.func_call_predictor = func_call_predictor
         self.domain2connector = domain2connector
         self.funcname2connector = {
             methodname: connector
             for connector in domain2connector.values()
-            for methodname in connector.get_name2method().keys()
+            for methodname in connector.name2method.keys()
         }
 
     @cache
@@ -41,9 +41,9 @@ class AgentConnectorMediator:
             return [
                 func
                 for agent in self.domain2connector.values()
-                for func in agent.get_funcs()
+                for func in agent.funcs
             ]
-        return self.domain2connector[domain].get_funcs()
+        return self.domain2connector[domain].funcs
 
     def query(self, query: str, domain: Optional[str] = None):
         steps: List[QAStep] = []
