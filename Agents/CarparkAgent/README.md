@@ -49,12 +49,12 @@ The API property file contains the API endpoints and tokens required to access a
 More information can be found in the example property file `api.properties` in the `config` folder.
 
 ## Geolocation data configurations
-In the `Dockerfile`, there are three variables that affects where the geolocation information will be uploaded to in postGIS and the Geoserver:
+In the `./stack-manager-input-config-service/carpark-agent.json`, there are three variables that affects where the geolocation information will be uploaded to in postGIS and the Geoserver:
 - `LAYERNAME` the name of the layer in Geoserver, this will also be the name of the table in the postGIS database that will be used to store the geolocation information
 - `DATABASE` the name of the database in postGIS to store the geolocation information
 - `GEOSERVER_WORKSPACE` the name of the workspace in Geoserver to store the geolocation information
 
-More information can be found in the `Dockerfile` located in the same directory as this README.
+More information can be found in the `./stack-manager-input-config-service/carpark-agent.json`.
 
 Modify `ontop.obda` located at `/CarparkAPIInputAgent/src/main/resources` accordingly if `LAYERNAME` has been modified.
 
@@ -72,13 +72,13 @@ The agent is designed to function as part of the stack.
 
 ### Stack Deployment
 
-Modify [api.properties](#api-properties) and [client.properties](#client-properties) in the `config` folder accordingly. The sparql endpoints and postGIS database indicated in the [client.properties](#client-properties) needs to be created manually beforehand. Modify the variables in the `Dockerfile` accordingly ([Geolocation data configurations](#geolocation-data-configurations)).
+Modify [api.properties](#api-properties) and [client.properties](#client-properties) in the `config` folder accordingly. The sparql endpoints and postGIS database indicated in the [client.properties](#client-properties) needs to be created manually beforehand. 
 
 Open up the command prompt in the same directory as this README, run the command below to build the docker image:
 ```
 docker compose build
 ```
-Open `stack-manager-input-config-service/carpark-agent.json` and under the `Mounts` section, modify the `Source` and insert the filepath of where the `config` folder is located at (For Windows users using WSL on Docker, the file path should start with `/mnt/c/`, which is equivalent to `C://`).
+Open `stack-manager-input-config-service/carpark-agent.json` and under the `Mounts` section, modify the `Source` and insert the filepath of where the `config` folder is located at (For Windows users using WSL on Docker, the file path should start with `/mnt/c/`, which is equivalent to `C://`). Under the `Env` section, modify the variables listed in [Geolocation data configurations](#geolocation-data-configurations) accordingly.
 
 Copy `stack-manager-input-config-service/carpark-agent.json` to the services folder under your stack-manager directory (By default it should be `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`) and start up the stack.
 
@@ -109,7 +109,7 @@ curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"in
 ```
 
 #### Create route
-This request instantiates the ABoxes for the carparks based on [ontoCarpark](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontocarpark/OntoCarpark.owl) and matches each carpark to the closest building (within 100m) via the [Building Identification Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/BuildingIdentificationAgent). The carparks meta data are stored in the sparql endpoints indicated in the [client.properties](#client-properties) while the carpark's geolocation and matched buildings data are stored based on the locations indicated in the `Dockerfile` ([Geolocation data configurations](#geolocation-data-configurations)). The request has the following format:
+This request instantiates the ABoxes for the carparks based on [ontoCarpark](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontocarpark/OntoCarpark.owl) and matches each carpark to the closest building (within 100m) via the [Building Identification Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/BuildingIdentificationAgent). The carparks meta data are stored in the sparql endpoints indicated in the [client.properties](#client-properties) while the carpark's geolocation and matched buildings data are stored based on the locations indicated in the `stack-manager-input-config-service/carpark-agent.json` ([Geolocation data configurations](#geolocation-data-configurations)). The request has the following format:
 ```
 curl -X POST http://localhost:3838/carpark-agent/create
 ```
