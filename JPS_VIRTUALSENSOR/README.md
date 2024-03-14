@@ -96,7 +96,7 @@ http://127.0.0.1:3838/blazegraph/ui
 On the Blzegraph interface, click on the `Update` tab, then click on `Choose file` button and select `emission.owl` file from the following path of the `CoMo shared` Dropbox: CoMo shared\_CoMo_Developments\data\churchill_plume_visualisation\emission.owl. In the `Type` dropdown menu, which is just below the `Choose file` button, select `RDF Data` and in the `Format` dropdown menu, select `Turtle`. Finally, click on the `Update button`.
 
 ## HTTP requests 
-A number of examples are prepared in the `HTTP requests` folder. Note that you need to install the humao.rest-client extension in VS code to run these files.
+Note that you need to install the humao.rest-client extension in VS code to run these files. If you are running the agent for Churchill college or Pirmasens, go to the examples in [With static point sources](#with-static-point-sources). A number of examples are prepared in the `HTTP requests` folder.
 
 ## Example 
 ### With ships 
@@ -109,10 +109,9 @@ This workflow calls the ShipInputAgent to add 1 timestep worth of data before tr
 record this derivation IRI.
 3) To trigger an AERMOD simulation, execute `HTTP requests/trigger update/GenerateDataWithShips.http`, be sure to replace the derivation IRI in the request from the response from the previous step.
 
-### Without ships (only static point source)
-1) Initialise a simulation, e.g. `HTTP requests/initialisation/pirmasens1.http`, record derivation IRI in the response.
-2) Make sure there is at least one static point source instantiated before triggering an AERMOD simulation and the representative building object is also present.
-3) Execute `HTTP requests/trigger update/GenerateDataWithoutShips.http`, be sure to enter derivation IRI in the request.
+### With static point sources
+1) This step initialises a simulation. You will now run a HTTP POST request. Do not foget to save the derivation IRI from the response. For Churchill College, open `./HTTP requests/initialisation/churchill.http` on VS Code and click on the `Send Request` link, which appears just above the POST command. For Pirmasens, open `./HTTP requests/initialisation/pirmasens1.http` on VS Code and click on the `Send Request` link, which appears just above the POST command.
+2) For Churchill College or Pirmasens enter the derivation IRI you saved in the step above in `HTTP requests/trigger update/GenerateDataWithoutShips.http` at the designated place. Now execute `HTTP requests/trigger update/GenerateDataWithoutShips.http` by clicking on the `Send Request` link, which appears just above the POST command.
 
 ## Visualisation
 Visualisation can be viewed at http://localhost:3838/visualisation (replace localhost if deployed elsewhere). Note that if buildings data is present in ontop, the visualisation may take a while to load because the first query takes time. 
