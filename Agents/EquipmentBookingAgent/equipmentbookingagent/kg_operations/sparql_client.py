@@ -40,6 +40,22 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         response = self.performQuery(query)
         return [list(res.values())[0] for res in response]
 
+    def create_booking_system_for_equipment (self, equipment_iri: str, booking_system_label: str):
+        g=Graph()
+        equipment_iri = trimIRI(equipment_iri)
+        namespace_iri = getNameSpace(equipment_iri)
+
+        booking_system_iri = initialiseInstanceIRI(namespace_iri, OAM_BOOKINGSYSTEM)
+        g.add((URIRef(booking_system_iri), RDF.type, URIRef(OAM_BOOKINGSYSTEM)))
+
+        update = f"""{PREFIX_RDF} {PREFIX_RDFS} INSERT DATA {{
+            <{booking_system_iri}> rdf:type <{OAM_BOOKINGSYSTEM}> ;
+                rdfs:label "{booking_system_label}" .
+            <{equipment_iri}> <{OAM_HASBOOKINGSYSTEM}> <{booking_system_iri}> .
+        }}"""
+        self.performUpdate(update)
+        logger.info(f"Booking system {booking_system_iri} to equipment {equipment_iri}.")
+        return g
 
     def create_booking_within_system(self, booking_system_iri: str, booker_person_iri: str, booking_start: datetime, booking_end: datetime):
         g = Graph()
@@ -86,6 +102,7 @@ class EquipmentBookingSparqlClient(PySparqlClient):
                 <{OAM_HASBOOKINGPERIOD}> <{period_iri}> .
             <{booking_system_iri} <{OAM_HASBOOKING}> <{booking_iri}> .}}"""
         self.performUpdate(update)
+        logger.info(f"Booking {booking_iri} was added to booking system {booking_system_iri}.")
         return g
     
 
@@ -126,3 +143,6 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         }}"""
         self.performUpdate(update)
         logger.info(f"Booking {booking_iri} was updated.")
+        
+
+    

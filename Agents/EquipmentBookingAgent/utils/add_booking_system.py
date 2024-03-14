@@ -8,9 +8,15 @@ from pyderivationagent.kg_operations import PySparqlClient
 
 equipment_booking_agent_config = config_equipment_booking_agent()
 
-sparql_client = PySparqlClient(
+sparql_client = EquipmentBookingSparqlClient(
             query_endpoint=equipment_booking_agent_config.SPARQL_QUERY_ENDPOINT, 
             update_endpoint=equipment_booking_agent_config.SPARQL_UPDATE_ENDPOINT,
             kg_user=equipment_booking_agent_config.KG_USERNAME, 
             kg_password=equipment_booking_agent_config.KG_PASSWORD
         )
+
+
+equipment_iri : str
+booking_system_label: str
+
+sparql_client.create_booking_system_for_equipment("<" + equipment_iri + ">",booking_system_label)

@@ -12,10 +12,10 @@ class EquipmentBookingAgentConfig(Config):
       - KG_USERNAME: The username to access the SPARQL endpoint.
       - KG_PASSWORD: The password to access the SPARQL endpoint.
     """
-    SPARQL_QUERY_ENDPOINT: str = 'https://www.theworldavatar.com:1010/careslab/blazegraph/namespace/caresAsset/sparql'
-    SPARQL_UPDATE_ENDPOINT: str = 'http://10.25.188.58:3838/blazegraph/namespace/test/sparql'
-    KG_USERNAME: str = 'bg_user'
-    KG_PASSWORD: str = 'admin'
+    SPARQL_QUERY_ENDPOINT: str
+    SPARQL_UPDATE_ENDPOINT: str
+    KG_USERNAME: str
+    KG_PASSWORD: str
 
 def config_equipment_booking_agent(env_file: str = None) -> EquipmentBookingAgentConfig:
     """Return configurations from either environment variables or env_file."""
