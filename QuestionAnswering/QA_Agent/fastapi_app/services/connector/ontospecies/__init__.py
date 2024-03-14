@@ -1,3 +1,4 @@
+from functools import cached_property
 import logging
 import time
 from typing import Annotated, List, Type
@@ -9,7 +10,7 @@ from model.qa import QAStep
 from services.kg_client import KgClient
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
-from services.connector.agent_connector import IAgentConnector
+from services.connector.agent_connector import AgentConnectorBase
 from .constants import (
     SpeciesAttrKey,
     SpeciesChemicalClassAttrKey,
@@ -24,61 +25,7 @@ from .agent import OntoSpeciesAgent, get_ontospecies_agent
 logger = logging.getLogger(__name__)
 
 
-class OntoSpeciesAgentConnector(IAgentConnector):
-    _FUNCS = [
-        {
-            "name": "lookup_chemicalSpecies_attributes",
-            "description": "Given a chemical species or chemical class, retrieve its requested attributes e.g. chemical class, application, boiling point, molecular formula",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "species": {
-                        "type": "string",
-                        "description": "A common name, molecular formula, or chemical class e.g. benzene, H2O, alcohol",
-                    },
-                    "attributes": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "Attribute to retrieve e.g. charge, usage, InChI",
-                        },
-                    },
-                },
-            },
-        },
-        {
-            "name": "find_chemicalSpecies",
-            "description": "Find chemical species given some criteria",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "chemical_classes": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "Name of chemical class e.g. aldehyde, alcohol",
-                        },
-                    },
-                    "uses": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "Usage or application e.g. solvent",
-                        },
-                    },
-                    "numerical_properties": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "Physical quantity e.g. boiling point between 100°C and 120°C",
-                        },
-                    },
-                },
-            },
-            "required": ["chemical_classes", "uses", "numerical_properties"],
-        },
-    ]
-
+class OntoSpeciesAgentConnector(AgentConnectorBase):
     _SPECIES_ATTR_CLSES: List[Type[SpeciesAttrKey]] = [
         SpeciesChemicalClassAttrKey,
         SpeciesUseAttrKey,
@@ -99,11 +46,64 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         self.docs_retriever = docs_retriever
         self.constraint_parser = constraint_parser
 
-    @classmethod
-    def get_funcs(cls):
-        return cls._FUNCS
+    @cached_property
+    def funcs(self):
+        return [
+            {
+                "name": "lookup_chemicalSpecies_attributes",
+                "description": "Given a chemical species or chemical class, retrieve its requested attributes e.g. chemical class, application, boiling point, molecular formula",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "species": {
+                            "type": "string",
+                            "description": "A common name, molecular formula, or chemical class e.g. benzene, H2O, alcohol",
+                        },
+                        "attributes": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Attribute to retrieve e.g. charge, usage, InChI",
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                "name": "find_chemicalSpecies",
+                "description": "Find chemical species given some criteria",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "chemical_classes": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Name of chemical class e.g. aldehyde, alcohol",
+                            },
+                        },
+                        "uses": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Usage or application e.g. solvent",
+                            },
+                        },
+                        "numerical_properties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Physical quantity e.g. boiling point between 100°C and 120°C",
+                            },
+                        },
+                    },
+                },
+                "required": ["chemical_classes", "uses", "numerical_properties"],
+            },
+        ]
 
-    def get_name2method(self):
+    @cached_property
+    def name2method(self):
         return {
             "lookup_chemicalSpecies_attributes": self.lookup_chemicalSpecies_attributes,
             "find_chemicalSpecies": self.find_chemicalSpecies,
@@ -232,7 +232,9 @@ class OntoSpeciesAgentConnector(IAgentConnector):
         if numerical_properties:
             logger.info("Parsing property constraints...")
             timestamp = time.time()
-            property_constraints = self._parse_property_constraints(numerical_properties)
+            property_constraints = self._parse_property_constraints(
+                numerical_properties
+            )
             latency = time.time() - timestamp
             logger.info("Parsed property constraints: " + str(property_constraints))
             steps.append(
@@ -265,9 +267,7 @@ class OntoSpeciesAgentConnector(IAgentConnector):
                 for key, constraint in property_constraints
             ]
         steps.append(
-            QAStep(
-                action="find_chemicalSpecies", arguments=arguments, latency=latency
-            )
+            QAStep(action="find_chemicalSpecies", arguments=arguments, latency=latency)
         )
 
         return "QA", steps, data

@@ -1,19 +1,21 @@
-from abc import abstractclassmethod, abstractmethod
+from abc import abstractmethod
 from typing import Callable, Dict, List, Tuple
 
 from model.qa import QAData, QAMode, QAStep
 
 
-class IAgentConnector:
-    @abstractclassmethod
-    def get_funcs(cls) -> List[Dict[str, str]]:
+class AgentConnectorBase:
+    @property
+    @abstractmethod
+    def funcs(self) -> List[Dict[str, str]]:
         pass
 
+    @property
     @abstractmethod
-    def get_name2method(
+    def name2method(
         self,
     ) -> Dict[str, Callable[..., Tuple[QAMode, List[QAStep], QAData]]]:
         pass
 
     def exec(self, method_name: str, args: dict):
-        return self.get_name2method()[method_name](**args)
+        return self.name2method[method_name](**args)

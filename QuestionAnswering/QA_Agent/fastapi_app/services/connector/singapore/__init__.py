@@ -1,3 +1,4 @@
+from functools import cached_property
 import logging
 import time
 from typing import Annotated, List
@@ -6,7 +7,7 @@ from fastapi import Depends
 
 from model.qa import QAStep
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
-from services.connector.agent_connector import IAgentConnector
+from services.connector.agent_connector import AgentConnectorBase
 from .constants import PlotAttrKey
 from .agent import SingaporeLandLotsAgent, get_singapore_land_lots_agent
 from .parse import (
@@ -19,86 +20,7 @@ from .parse import (
 logger = logging.getLogger(__name__)
 
 
-class SingaporeLandLotsAgentConnector(IAgentConnector):
-    _FUNCS = [
-        {
-            "name": "lookup_plot_attributes",
-            "description": "Look up attributes of a subset of plots satisfying some constraints",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "plot_constraints": {
-                        "type": "string",
-                        "description": "Conditions that define the plots of interest e.g. plots for commercial usage with gross floor area less than 1000sqm",
-                    },
-                    "attributes": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "Attribute to query e.g. land use type, gross plot ratio, plot area, gross floor area",
-                        },
-                    },
-                },
-            },
-            "required": ["attributes"],
-        },
-        {
-            "name": "count_plots",
-            "description": "Count the number of plots satisfying some constraints",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "plot_constraints": {
-                        "type": "string",
-                        "description": "Conditions that define the plots of interest e.g. plots for commercial usage with gross floor area less than 1000sqm",
-                    }
-                },
-            },
-        },
-        {
-            "name": "compute_aggregate_plot_attributes",
-            "description": "For a given subset of plots, compute statistics of plot attributes e.g. smallest plot area, average gross floor area, maximum gross plot ratio",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "plot_constraints": {
-                        "type": "string",
-                        "description": "Conditions that define the plots of interest e.g. plots for commercial usage with gross floor area less than 1000sqm",
-                    },
-                    "attribute_aggregates": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "Aggregate of an attribute value e.g. average plot area, largest gross plot ratio",
-                        },
-                    },
-                },
-            },
-            "required": ["attribute_aggregates"],
-        },
-        {
-            "name": "explain_concepts",
-            "description": "Provide explainations for concepts related to land lots",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "concepts": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "Concept e.g. commercial plot, Business 1 land use, Residential/Institution",
-                        },
-                    }
-                }
-            },
-            "required": ["concepts"],
-        },
-    ]
-
-    @classmethod
-    def get_funcs(cls):
-        return cls._FUNCS
-
+class SingaporeLandLotsAgentConnector(AgentConnectorBase):
     def __init__(
         self,
         plot_constraints_parser: PlotConstraintsParser,
@@ -111,7 +33,85 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
         self.docs_retriever = docs_retriever
         self.attr_agg_parser = attr_agg_parser
 
-    def get_name2method(self):
+    @cached_property
+    def funcs(self):
+        return [
+            {
+                "name": "lookup_plot_attributes",
+                "description": "Look up attributes of a subset of plots satisfying some constraints",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "plot_constraints": {
+                            "type": "string",
+                            "description": "Conditions that define the plots of interest e.g. plots for commercial usage with gross floor area less than 1000sqm",
+                        },
+                        "attributes": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Attribute to query e.g. land use type, gross plot ratio, plot area, gross floor area",
+                            },
+                        },
+                    },
+                },
+                "required": ["attributes"],
+            },
+            {
+                "name": "count_plots",
+                "description": "Count the number of plots satisfying some constraints",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "plot_constraints": {
+                            "type": "string",
+                            "description": "Conditions that define the plots of interest e.g. plots for commercial usage with gross floor area less than 1000sqm",
+                        }
+                    },
+                },
+            },
+            {
+                "name": "compute_aggregate_plot_attributes",
+                "description": "For a given subset of plots, compute statistics of plot attributes e.g. smallest plot area, average gross floor area, maximum gross plot ratio",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "plot_constraints": {
+                            "type": "string",
+                            "description": "Conditions that define the plots of interest e.g. plots for commercial usage with gross floor area less than 1000sqm",
+                        },
+                        "attribute_aggregates": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Aggregate of an attribute value e.g. average plot area, largest gross plot ratio",
+                            },
+                        },
+                    },
+                },
+                "required": ["attribute_aggregates"],
+            },
+            {
+                "name": "explain_concepts",
+                "description": "Provide explainations for concepts related to land lots",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "concepts": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "Concept e.g. commercial plot, Business 1 land use, Residential/Institution",
+                            },
+                        }
+                    },
+                },
+                "required": ["concepts"],
+            },
+        ]
+
+    @cached_property
+    def name2method(self):
         return {
             "lookup_plot_attributes": self.lookup_plot_attributes,
             "count_plots": self.count_plots,
@@ -249,7 +249,7 @@ class SingaporeLandLotsAgentConnector(IAgentConnector):
             )
         )
 
-        return 'IR', steps, data
+        return "IR", steps, data
 
 
 def get_singapore_land_lots_agent_connector(
