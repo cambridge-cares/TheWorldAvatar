@@ -66,7 +66,7 @@ An instance can emit multiple pollutants, the class of pollutant ID needs to be 
 ## Important for visualisation if not deployed locally
 Modify the `STACK_URL` parameter in `./stack-manager/inputs/config/services/dispersion-interactor.json` to the URL where the stack is deployed, this is used to construct the WMS endpoints and the URL for feature info agent queries. In other words, in that file, in "STACK_URL=http://localhost:3838", replace "localhost" with the IP address and "3838" with the port number where you have deployed your stack.
 
-Modify the diespersionHandler variable in `./stack-manager/inputs/data/visualisation/index.html` to the URL where the stack is deployed. In other words, in that file, in `var dispersionHandler = new DispersionHandler("http://localhost:3838", manager)`, replace "localhost" with the IP address and "3838" with the port number you where have deployed your stack.
+Modify the diespersionHandler variable in `./stack-manager/inputs/data/visualisation/index.html` to the URL where the stack is deployed. In other words, in that file, in `var dispersionHandler = new DispersionHandler("http://localhost:3838", manager)`, replace "localhost" with the IP address and "3838" with the port number where you have deployed your stack.
 
 ## Start up the stack
 
