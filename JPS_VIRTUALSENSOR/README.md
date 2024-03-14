@@ -110,7 +110,7 @@ record this derivation IRI.
 3) To trigger an AERMOD simulation, execute `HTTP requests/trigger update/GenerateDataWithShips.http`, be sure to replace the derivation IRI in the request from the response from the previous step.
 
 ### With static point sources
-1) This step initialises an AERMOD (https://www.epa.gov/scram/air-quality-dispersion-modeling-preferred-and-recommended-models) simulation. You will now run a HTTP POST request. Do not foget to save the derivation IRI from the response. For Churchill College, open `./HTTP requests/initialisation/churchill.http` on VS Code and click on the `Send Request` link, which appears just above the POST command. For Pirmasens, open `./HTTP requests/initialisation/pirmasens1.http` on VS Code and click on the `Send Request` link, which appears just above the POST command.
+1) This step initialises an AERMOD (https://www.epa.gov/scram/air-quality-dispersion-modeling-preferred-and-recommended-models) simulation. You will now run a HTTP POST request. Do not foget to save the derivation IRI from the response of the HTTP request. For Churchill College, open `./HTTP requests/initialisation/churchill.http` on VS Code and click on the `Send Request` link, which appears just above the POST command. For Pirmasens, open `./HTTP requests/initialisation/pirmasens1.http` on VS Code and click on the `Send Request` link, which appears just above the POST command.
 2) For Churchill College or Pirmasens enter the derivation IRI you saved in the step above in `HTTP requests/trigger update/GenerateDataWithoutShips.http` at the designated place. Now execute `HTTP requests/trigger update/GenerateDataWithoutShips.http` by clicking on the `Send Request` link, which appears just above the POST command.
 
 ## Visualisation
