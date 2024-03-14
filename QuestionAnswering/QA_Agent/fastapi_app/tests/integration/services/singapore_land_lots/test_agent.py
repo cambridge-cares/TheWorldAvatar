@@ -10,9 +10,9 @@ from model.constraint import (
     LogicalOperator,
     NumericalOperator,
 )
-from services.connector.singapore.constants import PlotAttrKey
+from services.connector.singapore_land_lots.constants import PlotAttrKey
 from services.kg_client import KgClient
-from services.connector.singapore.agent import PlotConstraints, SingaporeLandLotsAgent
+from services.connector.singapore_land_lots.agent import PlotConstraints, SingaporeLandLotsAgent
 
 @pytest.fixture
 def agent():

@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from services.connector.singapore.agent import PlotConstraints
-from services.connector.singapore.match import LandUseTypeMatcher
+from services.connector.singapore_land_lots.agent import PlotConstraints
+from services.connector.singapore_land_lots.match import LandUseTypeMatcher
 from services.kg_client import KgClient
 from model.constraint import (
     AtomicNumericalConstraint,
@@ -12,7 +12,7 @@ from model.constraint import (
 )
 from services.func_call import OpenAIFuncCaller
 from services.utils.parse import SchemaParser
-from services.connector.singapore.parse import (
+from services.connector.singapore_land_lots.parse import (
     NumericalArgConstraintParser,
     PlotConstraintsParser,
 )

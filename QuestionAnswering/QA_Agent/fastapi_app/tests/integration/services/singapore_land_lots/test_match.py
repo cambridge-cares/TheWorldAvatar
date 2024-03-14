@@ -5,7 +5,7 @@ from redis import Redis
 
 from services.embed import TritonMPNetEmbedder
 from services.kg_client import KgClient
-from services.connector.singapore.match import LandUseTypeMatcher
+from services.connector.singapore_land_lots.match import LandUseTypeMatcher
 
     
 class TestLandUseTypeMatcher:
