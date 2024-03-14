@@ -1,36 +1,33 @@
-from functools import cache
+import logging
 import os
 from typing import Literal, Optional
 from pydantic_settings import BaseSettings
 
 
-QA_SUPERDOMAIN = os.getenv("QA_SUPERDOMAIN", "chemistry")
+logger = logging.getLogger()
+
 
 class TextEmbeddingSettings(BaseSettings):
-    server: Literal["openai", "triton"]
+    server: Literal["openai", "triton"] = "triton"
     url: Optional[str] = None
     model: Optional[str] = None
 
-
-@cache
-def get_text_embedding_settings():
-    return TextEmbeddingSettings(
-        server=os.getenv("TEXT_EMBEDDING_SERVER"),
-        url=os.getenv("TEXT_EMBEDDING_URL"),
-        model=os.getenv("TEXT_EMBEDDING_MODEL"),
-    )
+    class Config:
+        env_prefix = "TEXT_EMBEDDING_"
 
 
 class FunctionCallingSettings(BaseSettings):
-    server: Literal["openai"] = "openai"
     url: Optional[str] = None
     model: Optional[str] = None
 
+    class Config:
+        env_prefix = "FUNCTION_CALLING_"
 
-@cache
-def get_function_calling_settings():
-    return FunctionCallingSettings(
-        server=os.getenv("FUNCTION_CALLING_SERVER", "openai"),
-        url=os.getenv("FUNCTION_CALLING_URL"),
-        model=os.getenv("FUNCTION_CALLING_MODEL"),
-    )
+
+QA_SUPERDOMAIN = os.getenv("QA_SUPERDOMAIN", "chemistry")
+TEXT_EMBEDDING_SETTINGS = TextEmbeddingSettings()
+FUNCTION_CALLING_SETTINGS = FunctionCallingSettings()
+
+logger.info("QA_SUPERDOMAIN: " + QA_SUPERDOMAIN)
+logger.info("TEXT_EMBEDDING_SETTINGS: " + str(TEXT_EMBEDDING_SETTINGS))
+logger.info("FUNCTION_CALLING_SETTINGS: " + str(FUNCTION_CALLING_SETTINGS))
