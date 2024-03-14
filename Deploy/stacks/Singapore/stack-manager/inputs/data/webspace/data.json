@@ -3,13 +3,6 @@
     "stack": "http://localhost:3838",
     "sources": [
         {
-            "id": "buildings",
-            "type": "vector",
-            "tiles": [
-                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:mainland&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-            ]
-        },
-        {
             "id": "plot",
             "type": "vector",
             "tiles": [
@@ -32,106 +25,6 @@
         }
     ],
     "layers": [
-        {
-            "id": "buildings",
-            "name": "All Buildings",
-            "source": "buildings",
-            "source-layer": "mainland",
-            "type": "fill-extrusion",
-            "order": 7,
-            "layout": {
-                "visibility": "none"
-            },
-            "paint": {
-                "fill-extrusion-color": [
-                    "case",
-                    [
-                        "==",
-                        [
-                            "get",
-                            "heat_emissions"
-                        ],
-                        null
-                    ],
-                    "#8D99AE",
-                    [
-                        "<=",
-                        [
-                            "get",
-                            "heat_emissions"
-                        ],
-                        5
-                    ],
-                    "#00ffff",
-                    [
-                        "<=",
-                        [
-                            "get",
-                            "heat_emissions"
-                        ],
-                        10
-                    ],
-                    "#2ad5ff",
-                    [
-                        "<=",
-                        [
-                            "get",
-                            "heat_emissions"
-                        ],
-                        15
-                    ],
-                    "#55aaff",
-                    [
-                        "<=",
-                        [
-                            "get",
-                            "heat_emissions"
-                        ],
-                        20
-                    ],
-                    "#807fff",
-                    [
-                        "<=",
-                        [
-                            "get",
-                            "heat_emissions"
-                        ],
-                        25
-                    ],
-                    "#aa55ff",
-                    [
-                        "<=",
-                        [
-                            "get",
-                            "heat_emissions"
-                        ],
-                        30
-                    ],
-                    "#d52aff",
-                    "#8D99AE"
-                ],
-                "fill-extrusion-base": 0,
-                "fill-extrusion-height": [
-                    "case",
-                    [
-                        "has",
-                        "building_height"
-                    ],
-                    [
-                        "*",
-                        1.4,
-                        [
-                            "to-number",
-                            [
-                                "get",
-                                "building_height"
-                            ]
-                        ]
-                    ],
-                    2
-                ]
-            }
-        },
         {
             "id": "sglandplot",
             "name": "Land Plots",
@@ -619,7 +512,7 @@
             ]
         },
         {
-            "name": "Building grouped by usage",
+            "name": "Buildings",
             "expanded": false,
             "sources": [
                 {
@@ -1071,6 +964,148 @@
                     "paint": {
                         "fill-extrusion-color": "#8D99AE",
                         "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Heat emissions",
+            "expanded": false,
+            "sources": [
+                {
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ],
+                    "id": "usage"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "with-heat",
+                    "name": "Buildings with heat emissions",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "!=",
+                        [
+                            "get",
+                            "heat_emissions"
+                        ],
+                        null
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                5
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#2ad5ff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                15
+                            ],
+                            "#55aaff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                25
+                            ],
+                            "#aa55ff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#d52aff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "without-heat",
+                    "name": "Buildings without heat emissions",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "==",
+                        [
+                            "get",
+                            "heat_emissions"
+                        ],
+                        null
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#8D99AE",
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
