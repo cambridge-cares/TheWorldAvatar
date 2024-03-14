@@ -93,10 +93,32 @@ Here, the `<IP Address>` is the address and `<Port>` is the port where the stack
 
 http://127.0.0.1:3838/blazegraph/ui
 
-On the Blzegraph interface, click on the `Update` tab, then click on `Choose file` button and select `emission.owl` file from the following path of the `CoMo shared` Dropbox: `CoMo shared\_CoMo_Developments\data\churchill_plume_visualisation\emission.owl`. In the `Type` dropdown menu, which is just below the `Choose file` button, select `RDF Data` and in the `Format` dropdown menu, select `Turtle`. Finally, click on the `Update button`.
+On the Blzegraph interface, click on the `Update` tab, then click on the `Choose file` button and select `emission.owl` file from the following path of the `CoMo shared` Dropbox: `CoMo shared/_CoMo_Developments/data/churchill_plume_visualisation/emission.owl`.
+
+Now run Ontop on a web browser by opening the following URL:
+
+`http://<IP Address>:<Port>/ontop/ui`. Do not forget to set the `<IP Address>` and `<Port>`.
+
+On the Ontop interface, run the following query.
+
+```sparql
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX disp: <https://www.theworldavatar.com/kg/ontodispersion/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+SELECT * WHERE {
+  ?building ?pred <http://www.opengis.net/citygml/building/2.0/Building> .
+} 
+LIMIT 2
+```
+
+Copy the first building IRI of the syntax `https://www.theworldavatar.com/kg/Building/UUID` and replace the first building IRI of the same syntax on the Blazegraph `Update` interface. Again from the Ontop interface, copy the second building IRI of the syntax `https://www.theworldavatar.com/kg/Building/UUID` and replace the second building IRI of the same syntax on the Blazegraph `Update` interface. 
+
+In the `Type` dropdown menu, which is just below the `Choose file` button, select `RDF Data` and in the `Format` dropdown menu, select `Turtle`. Finally, click on the `Update` button.
 
 ## HTTP requests 
-Note that you need to install the humao.rest-client extension in VS code to run these files. If you are running the agent for Churchill college or Pirmasens, go to the examples in [With static point sources](#with-static-point-sources). A number of examples are prepared in the `HTTP requests` folder.
+Note that you need to install the humao.rest-client extension in VS code to run these files. If you are running the agent for Churchill College or Pirmasens, go to the examples in [With static point sources](#with-static-point-sources). A number of examples are prepared in the `HTTP requests` folder.
 
 ## Example 
 ### With ships 
@@ -114,6 +136,6 @@ record this derivation IRI.
 2) For Churchill College or Pirmasens enter the derivation IRI you saved in the step above in `HTTP requests/trigger update/GenerateDataWithoutShips.http` at the designated place. Now execute `HTTP requests/trigger update/GenerateDataWithoutShips.http` by clicking on the `Send Request` link, which appears just above the POST command.
 
 ## Visualisation
-Visualisation can be viewed at http://localhost:3838/visualisation (replace localhost if deployed elsewhere). Note that if buildings data is present in ontop, the visualisation may take a while to load because the first query takes time. 
+Visualisation can be viewed at http://localhost:3838/visualisation (replace localhost and port if deployed elsewhere). Note that if buildings data is present in ontop, the visualisation may take a while to load because the first query takes time. 
 
 
