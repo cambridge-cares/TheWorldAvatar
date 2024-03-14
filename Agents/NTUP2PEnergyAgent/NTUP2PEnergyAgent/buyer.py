@@ -7,13 +7,12 @@ import logging
 class Buyer():
     # Set model coefficients on construction
     def __init__(self):
-       logging.info("instantiate")
+       logging.info("instantiate buyer")
     
     # Evaluate the model at a particular value
     def optimize(self, info, phi_0, GUP, fix_E, rho, nodal_p):
     
     ################ some vars
-        
         
         Pmax = info[:,1] 
         Pmin = info[:,2]
@@ -21,16 +20,14 @@ class Buyer():
         lin_cost=info[:,4]
 
         n_buyers = 1
-        n_sellers = 6
+        n_sellers = len(phi_0)
 
         ################
-
 
         # Create a new model
         m = gp.Model("buyer")
        
         # Create variables
-
         lower_bound = np.concatenate((np.array([Pmin], ndmin=2), np.zeros((n_sellers,1))), axis=0)
         upper_bound = np.concatenate((np.array([Pmax], ndmin=2), np.ones((n_sellers,1))*np.inf), axis=0)
     
