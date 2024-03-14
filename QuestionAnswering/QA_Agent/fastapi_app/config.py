@@ -4,6 +4,8 @@ from typing import Literal, Optional
 from pydantic_settings import BaseSettings
 
 
+QA_SUPERDOMAIN = os.getenv("QA_SUPERDOMAIN", "chemistry")
+
 class TextEmbeddingSettings(BaseSettings):
     server: Literal["openai", "triton"]
     url: Optional[str] = None

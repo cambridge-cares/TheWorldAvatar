@@ -1,7 +1,7 @@
 [
     {
-        "domain": "singapore",
-        "label": "Singapore's Land Plots",
+        "domain": "singapore_land_lots",
+        "label": "Singapore's Land Lots",
         "description": "Data about Singapore's master plan zoning",
         "questions": [
             "What is a commercial plot?",

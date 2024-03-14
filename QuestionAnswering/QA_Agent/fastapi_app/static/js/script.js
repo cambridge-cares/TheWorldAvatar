@@ -73,7 +73,7 @@ async function fetchQa(question) {
             "Accept": "application/json",
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ question })
+        body: JSON.stringify({ question, domain: globalState.get("domain") })
     })
         .then(throwErrorIfNotOk)
         .then(res => res.json())
