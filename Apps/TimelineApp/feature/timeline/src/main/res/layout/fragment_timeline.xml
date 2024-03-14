@@ -4,19 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <com.mapbox.maps.MapView
-            android:id="@+id/mapView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:mapbox_cameraTargetLat="49.199696"
-            app:mapbox_cameraTargetLng="7.608785"
-            app:mapbox_cameraZoom="13.0"/>
+    <com.mapbox.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:mapbox_cameraTargetLat="1.2966"
+        app:mapbox_cameraTargetLng="103.7764"
+        app:mapbox_cameraZoom="13.0"/>
 
     <com.google.android.material.appbar.AppBarLayout
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
+        android:layout_height="wrap_content"
         style="@style/Widget.GradientToolBar"
+        android:id="@+id/app_bar_layout"
         >
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -25,20 +26,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
-            app:title="long test title"
+            app:title="TWA Timeline"
             app:titleCentered="true"
             />
 
     </com.google.android.material.appbar.AppBarLayout>
 
 
-
     <include
-        android:id="@+id/bottom_sheet"
-        layout="@layout/bottom_sheet"
+        android:id="@+id/bottom_sheet_widget"
+        layout="@layout/bottom_sheet_widget"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
          />
 
 

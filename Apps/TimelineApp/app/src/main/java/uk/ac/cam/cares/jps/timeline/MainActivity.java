@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.timeline;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
     private static ActivityMainBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());

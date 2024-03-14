@@ -8,6 +8,8 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.data.RouteRepository;
 import uk.ac.cam.cares.jps.data.ToiletRepository;
+import uk.ac.cam.cares.jps.data.TrajectoryRepository;
+import uk.ac.cam.cares.jps.network.TrajectoryNetworkSource;
 import uk.ac.cam.cares.jps.network.toilet.ToiletBuildingInfoNetworkSource;
 import uk.ac.cam.cares.jps.network.toilet.ToiletInfoNetworkSource;
 import uk.ac.cam.cares.jps.network.toilet.ToiletNetworkSource;
@@ -30,5 +32,11 @@ public class DataModule {
                                                     ToiletInfoNetworkSource toiletInfoNetworkSource,
                                                     ToiletBuildingInfoNetworkSource toiletBuildingInfoNetworkSource) {
         return new ToiletRepository(toiletNetworkSource, toiletInfoNetworkSource, toiletBuildingInfoNetworkSource);
+    }
+
+    @Provides
+    @Singleton
+    public TrajectoryRepository provideTrajectoryRepository(TrajectoryNetworkSource trajectoryNetworkSource) {
+        return new TrajectoryRepository(trajectoryNetworkSource);
     }
 }

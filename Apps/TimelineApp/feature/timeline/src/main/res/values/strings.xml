@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="last_date_button">Last date button</string>
+    <string name="next_date_button">Next date button</string>
+    <string name="date_picker_button">Date picker button</string>
+</resources>

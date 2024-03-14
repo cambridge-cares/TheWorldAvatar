@@ -4,4 +4,6 @@
         <item name="android:background">@drawable/gradient_app_bar_background_night</item>
         <item name="titleTextColor">?attr/colorOnSurface</item>
     </style>
+
+    <item name="rippleColor" type="color">@color/md_theme_dark_outline</item>
 </resources>

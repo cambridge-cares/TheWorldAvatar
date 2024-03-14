@@ -4,4 +4,6 @@
         <item name="android:background">@drawable/gradient_app_bar_background_light</item>
         <item name="titleTextColor">?attr/colorOnPrimary</item>
     </style>
+
+    <item name="rippleColor" type="color">@color/md_theme_light_inverseOnSurface</item>
 </resources>
