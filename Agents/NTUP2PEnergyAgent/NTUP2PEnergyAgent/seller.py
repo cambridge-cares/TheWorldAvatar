@@ -7,7 +7,12 @@ import logging
 class Seller():
     # Set model coefficients on construction
     def __init__(self):
-       logging.info("instantiate seller")
+       self.production =  None
+       self.power_selling = None
+       self.error = None
+       self.op_cost = None
+       self.dual_var = None
+       self.phi = None
 
     # Evaluate the model at a particular value
     def optimize(self, info, phi_0, GUP, fix_E, rho, nodal_p):
@@ -65,20 +70,29 @@ class Seller():
         # Optimize model
         m.optimize()
         
+        self.production = x.X[0]
+        self.power_selling= x.X[range(1,n_buyers+1)]
+        self.error = self.power_selling - fix_E
+
+        rho_sparse = sp.coo_matrix((0.5*np.squeeze(rho), (np.arange(0,n_buyers), np.arange(0,n_buyers))), shape=(n_buyers, n_buyers))
+        self.op_cost = m.getAttr(GRB.attr.ObjVal) +  np.matmul(np.matmul( np.transpose(fix_E),  rho_sparse.todense()) , fix_E)              
+        
+        self.dual_var= m.getAttr(GRB.attr.Pi)
+        self.phi = phi_0 - np.multiply(rho,self.error)
+        
         return x.X  #numpy.ndarray
     
 #######################################
 ### Test 
 
-info = np.array([18,	1.6,	0.,	0.03,	3.2], ndmin=2)
-phi_0 = np.array([[-16.8], [-16.8],	[-16.8], [-16.8], [-16.8], [-16.8], [-16.8]], ndmin=2)
-GUP = np.array([[0],[0],[0],[0],[0],[0],[0]], ndmin=2)
-fix_E = np.array([[0.325],[0.1833],[0.2333],[0.25],[0.2167],[0.3625],[0.35]], ndmin=2)
-rho = np.array([[0.5],[0.5],[0.5],[0.5],[0.5],[0.5],[0.5]], ndmin=2)
-nodal_p = np.array([20], ndmin=2 )
+#info = np.array([18,	1.6,	0.,	0.03,	3.2], ndmin=2)
+#phi_0 = np.array([[-16.8], [-16.8],	[-16.8], [-16.8], [-16.8], [-16.8], [-16.8]], ndmin=2)
+#GUP = np.array([[0],[0],[0],[0],[0],[0],[0]], ndmin=2)
+#fix_E = np.array([[0.325],[0.1833],[0.2333],[0.25],[0.2167],[0.3625],[0.35]], ndmin=2)
+#rho = np.array([[0.5],[0.5],[0.5],[0.5],[0.5],[0.5],[0.5]], ndmin=2)
+#nodal_p = np.array([20], ndmin=2 )
 
-
-seller = Seller()
-result = seller.optimize(info, phi_0, GUP, fix_E, rho, nodal_p)
-print("result:")
-print(result)
+#seller = Seller()
+#result = seller.optimize(info, phi_0, GUP, fix_E, rho, nodal_p)
+#print("result:")
+#print(result)

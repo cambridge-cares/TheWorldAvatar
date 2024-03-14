@@ -7,7 +7,12 @@ import logging
 class Buyer():
     # Set model coefficients on construction
     def __init__(self):
-       logging.info("instantiate buyer")
+       self.consumption =  None
+       self.power_buying = None
+       self.error = None
+       self.op_cost = None
+       self.dual_var = None
+       
     
     # Evaluate the model at a particular value
     def optimize(self, info, phi_0, GUP, fix_E, rho, nodal_p):
@@ -63,20 +68,29 @@ class Buyer():
         # Optimize model
         m.optimize()
         
+        #results
+        self.consumption = x.X[0]
+        self.power_buying= x.X[range(1,n_sellers+1)]
+        self.error = self.power_buying - fix_E
+
+        rho_sparse = sp.coo_matrix((0.5*np.squeeze(rho), (np.arange(0,n_sellers), np.arange(0,n_sellers))), shape=(n_sellers, n_sellers))
+        self.op_cost = m.getAttr(GRB.attr.ObjVal) +  np.matmul(np.matmul( np.transpose(fix_E),  rho_sparse.todense()) , fix_E)              
+
+        self.dual_var= m.getAttr(GRB.attr.Pi)
+
         return x.X  #numpy.ndarray
     
 #######################################
 ### Test 
 
-info = np.array([4,	2.20000000000000,	0.,	-0.100000000000000,	4.50000000000000], ndmin=2)
-phi_0 = np.array([[-16.8], [-16.0],	[-17.0],	[-15.5],	[-16.8], [-16.2]], ndmin=2)
-GUP = np.array([[0],[0],[0],[0],[0],[0]], ndmin=2)
-fix_E = np.array([[0],[0],[0],[0],[0],[0]], ndmin=2)
-rho = np.array([[0.5],[0.5],[0.5],[0.5],[0.5],[0.5]], ndmin=2)
-nodal_p = np.array([20], ndmin=2 )
+#info = np.array([4,	2.20000000000000,	0.,	-0.100000000000000,	4.50000000000000], ndmin=2)
+#phi_0 = np.array([[-16.8], [-16.0],	[-17.0],	[-15.5],	[-16.8], [-16.2]], ndmin=2)
+#GUP = np.array([[0],[0],[0],[0],[0],[0]], ndmin=2)
+#fix_E = np.array([[0],[0],[0],[0],[0],[0]], ndmin=2)
+#rho = np.array([[0.5],[0.5],[0.5],[0.5],[0.5],[0.5]], ndmin=2)
+#nodal_p = np.array([20], ndmin=2 )
 
-
-buyer = Buyer()
-result = buyer.optimize(info, phi_0, GUP, fix_E, rho, nodal_p)
-print("result:")
-print(result)
+#buyer = Buyer()
+#result = buyer.optimize(info, phi_0, GUP, fix_E, rho, nodal_p)
+#print("result:")
+#print(result)
