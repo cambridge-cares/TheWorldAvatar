@@ -1,0 +1,32 @@
+{
+    "ServiceSpec": {
+        "Name": "geosegment-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "geo-segment-agent:1.0.0",
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/geosegment-agent/"
+        }
+    }
+}

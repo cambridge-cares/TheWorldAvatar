@@ -3,7 +3,7 @@
         "Name": "osmagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/osmagent:1.4.0",
+                "Image": "ghcr.io/cambridge-cares/osmagent:1.6.0",
                 "Env": [
                     "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
                 ],

@@ -35,11 +35,10 @@ public class GeometryMatcherTest {
            GeometryMatcher.matchGeometry("","","","","");
 
            verify(rdbStoreClientMock.constructed().get(0), times(4)).executeQuery(anyString());
-           verify(rdbStoreClientMock.constructed().get(0), times(2)).getConnection();
-           verify(rdbStoreClientMock.constructed().get(0), times(40)).executeUpdate(anyString());
+           verify(rdbStoreClientMock.constructed().get(0), times(4)).getConnection();
 
-           verify(connMock, times(2)).createStatement();
-           verify(statementMock, times(3)).execute(anyString());
+           verify(connMock, times(4)).createStatement();
+           verify(statementMock, times(205)).execute(anyString());
         }
     }
 }
