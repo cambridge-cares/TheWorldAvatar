@@ -190,9 +190,14 @@
 
         // Create a new manager instance
         var manager = new Manager(MapProvider.MAPBOX);
-        window.manager = manager;
+        var relativePath;
+        if (window.location.href.includes("visualisation")) {
+            relativePath = "..";
+        } else {
+            relativePath = ".";
+        }
 
-        var dispersionHandler = new DispersionHandler(".", manager);
+        var dispersionHandler = new DispersionHandler(relativePath, manager);
         var dispersionPromise = dispersionHandler.setDispersions(dispersionHandler);
 
         // Read credentials
@@ -281,7 +286,7 @@
                 let beforeSiblingContainer = document.getElementById("helpandsearch");
                 // Create a new custom component
                 let custom_component = new SeachEntityComponent("Search Land Plot", MapHandler.MAP, {
-                    stackUrl: ".", plotNamespace: "plot", layerId: "0.sglandplot"
+                    stackUrl: relativePath, plotNamespace: "plot", layerId: "0.sglandplot"
                 });
                 // Render the custom component before the sibling container
                 custom_component.render(beforeSiblingContainer);
