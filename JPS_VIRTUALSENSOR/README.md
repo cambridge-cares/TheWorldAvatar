@@ -62,6 +62,9 @@ An instance can emit multiple pollutants, the class of pollutant ID needs to be 
 - <https://www.theworldavatar.com/kg/ontodispersion/CO2>
 
 ## Important for visualisation if not deployed locally
+Modify instances of `http://localhost:3838` in [data.json] to the external URL of where the stack is going to be deployed.
+
+*DEPRECATED*
 Modify the `STACK_URL` parameter in `./stack-manager/inputs/config/services/dispersion-interactor.json` to the URL where the stack is deployed, this is used to construct the WMS endpoints and the URL for feature info agent queries.
 
 ## Start up the stack
@@ -132,3 +135,4 @@ Visualisation can be viewed at http://localhost:3838/visualisation (replace loca
 [citydb.obda]: <./stack-data-uploader/inputs/data/pirmasens_final_citygml/citydb.obda>
 [building-pirmasens.json]: ./stack-data-uploader/inputs/config/building-pirmasens.json
 [elevation.json]: ./stack-data-uploader/inputs/config/elevation.json
+[data.json]: ./stack-manager/inputs/data/visualisation/data.json
