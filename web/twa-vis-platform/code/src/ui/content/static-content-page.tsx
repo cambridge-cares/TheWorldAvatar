@@ -6,6 +6,7 @@
 "use client";
 
 import styles from './static-content-page.module.css';
+import iconStyles from 'ui/buttons/icon-button.module.css';
 import 'github-markdown-css/github-markdown.css';
 
 import Link from 'next/link';
@@ -35,12 +36,16 @@ export default function StaticContentPage({ childNodes, childString }: Readonly<
     const returnButton = (
         <Link href="/" className={styles.button}>
             <MaterialIconButton
+                classStyles={{
+                    container: [iconStyles["elongated-icon-button-container"]],
+                    icon: [iconStyles["large-icon"]],
+                }}
                 iconName="arrow_circle_left"
             />
         </Link>
     );
 
-    if(childNodes != null) {
+    if (childNodes != null) {
         return (
             <div className={styles.container} key="static-content-page">
                 {returnButton}
@@ -51,14 +56,14 @@ export default function StaticContentPage({ childNodes, childString }: Readonly<
                 </div>
             </div>
         );
-    } else if(childString != null) {
+    } else if (childString != null) {
         return (
             <div className={styles.container} key="static-content-page">
                 {returnButton}
                 <div className={styles.contentOuter}>
                     <div
                         className={classNames}
-                        dangerouslySetInnerHTML={{__html: childString}}
+                        dangerouslySetInnerHTML={{ __html: childString }}
                     />
                 </div>
             </div>

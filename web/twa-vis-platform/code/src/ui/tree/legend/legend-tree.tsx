@@ -1,7 +1,7 @@
 import styles from './legend-tree.module.css'; // Assuming you have a CSS module for styling
 import React from 'react';
 import SVG from 'react-inlinesvg';
-import { Icon } from '@mui/material';
+import MaterialIconButton from 'ui/buttons/icon-button';
 
 /**
  * Displays a static dummy legend component
@@ -27,11 +27,16 @@ export default function LegendTree() {
         ></div>
         <span className={styles.legendText}>Data Category A</span>
       </div>
-
-      <div className={styles.legendItem}>
-        <Icon className="material-symbols-outlined">timeline</Icon>
-        <span className={styles.legendText}>Timeline Representation</span>
-      </div>
+      <MaterialIconButton
+        iconName="timeline"
+        classStyles={{
+          container: [styles.legendItem],
+        }}
+        text={{
+          styles: [styles.legendText],
+          content: "Timeline Representation",
+        }}
+      />
     </div>
   );
 }

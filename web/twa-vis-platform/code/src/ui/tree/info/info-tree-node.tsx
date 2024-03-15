@@ -1,11 +1,12 @@
 
 
 import styles from './info-tree.module.css';
+import iconStyles from 'ui/buttons/icon-button.module.css';
 
-import { Icon } from '@mui/material';
 import { useState } from 'react';
 
 import { Attribute, AttributeGroup } from 'types/attribute';
+import MaterialIconButton from 'ui/buttons/icon-button';
 
 // type definition for incoming properties
 type InfoTreeNodeProps = {
@@ -77,9 +78,12 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
           </div>
 
           {/* Expand/collapse icon */}
-          <div className={styles.icon}>
-            <Icon className="material-symbols-outlined">{collapsedIcon}</Icon>
-          </div>
+          <MaterialIconButton
+            iconName={collapsedIcon}
+            classStyles={{
+              container: [iconStyles["push-right"]]
+            }}
+          />
         </div>
 
         {/* Elements */}
@@ -108,9 +112,12 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
             {group.name}
           </div>
           {/* Expand/collapse icon */}
-          <div className={styles.icon}>
-            <Icon className="material-symbols-outlined">{collapsedIcon}</Icon>
-          </div>
+          <MaterialIconButton
+            iconName={collapsedIcon}
+            classStyles={{
+              container: [iconStyles["push-right"]]
+            }}
+          />
         </div>
         {/* Elements */}
         {!isCollapsed && (<>
