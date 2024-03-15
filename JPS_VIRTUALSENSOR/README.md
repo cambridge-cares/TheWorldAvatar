@@ -69,7 +69,7 @@ Modify the `STACK_URL` parameter in `./stack-manager/inputs/config/services/disp
 Modify the diespersionHandler variable in `./stack-manager/inputs/data/visualisation/index.html` to the URL where the stack is deployed. In other words, in that file, in `var dispersionHandler = new DispersionHandler("http://localhost:3838", manager)`, replace "localhost" with the IP address and "3838" with the port number where you will deploy your stack.
 
 ## Start up the stack
-
+If you are going to run the stack on a port other than 3838, e.g., 3851, replace every instance of `:3838` with `:3851`.
 To start up the stack, execute
 ```
 ./startup.sh
@@ -77,7 +77,7 @@ To start up the stack, execute
 in this folder to pull docker images, spin up containers (using stack manager) and copy files into container volumes.
 
 Make sure you have access to the CMCL Docker registry. You can test your access by runing 
-    ```console
+    ```
     docker login docker.cmclinnovations.com
     ```
 If you are not already logged in then, when prompted, enter the username and password you were given.
