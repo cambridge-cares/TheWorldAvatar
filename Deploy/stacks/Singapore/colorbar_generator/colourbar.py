@@ -23,7 +23,7 @@ def create_colors():
     cb2.set_label('Heat emissions (MW)')
     fig.show()
 
-    bounds = range(0, 51, 5)
+    bounds = range(0, 51000, 5000)
     fig2, ax = plt.subplots(figsize=(6, 1))
     fig2.subplots_adjust(bottom=0.5)
     color1 = mcp.gen_color(cmap="Reds", n=len(bounds))
