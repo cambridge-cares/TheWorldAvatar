@@ -5,7 +5,7 @@ prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
 SELECT ?Property ?Value ?Unit
 WHERE {
 
-    BIND ("Location" AS ?Property)
-    [IRI] ems:hasObservationLocation ?Value.
+    BIND ("Name" AS ?Property)
+    [IRI] rdfs:label ?Value.
 
 }
