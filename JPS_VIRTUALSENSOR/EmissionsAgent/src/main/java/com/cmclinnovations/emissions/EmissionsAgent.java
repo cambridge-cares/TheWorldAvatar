@@ -67,6 +67,15 @@ public class EmissionsAgent extends DerivationAgent {
         }
         JSONObject emissions = getSurogateValues(speedRpm, 250);
         Chimney chimney = new Chimney(emissions);
+
+        double scalingFactor;
+        if (EnvConfig.SCALING_FACTOR != null) {
+            scalingFactor = Double.parseDouble(EnvConfig.SCALING_FACTOR);
+        } else {
+            scalingFactor = 100;
+        }
+        chimney.rescaleEmissions(scalingFactor);
+
         addEmissionTriples(chimney, derivationOutputs, shipIri);
     }
 
