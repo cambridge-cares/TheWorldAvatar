@@ -29,9 +29,7 @@ export default function LegendTree() {
       </div>
       <MaterialIconButton
         iconName="timeline"
-        classStyles={{
-          container: [styles.legendItem],
-        }}
+        className = {styles.legendItem}
         text={{
           styles: [styles.legendText],
           content: "Timeline Representation",

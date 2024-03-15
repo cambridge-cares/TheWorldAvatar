@@ -36,11 +36,9 @@ export default function StaticContentPage({ childNodes, childString }: Readonly<
     const returnButton = (
         <Link href="/" className={styles.button}>
             <MaterialIconButton
-                classStyles={{
-                    container: [iconStyles["elongated-icon-button-container"]],
-                    icon: [iconStyles["large-icon"]],
-                }}
                 iconName="arrow_circle_left"
+                iconStyles= {[iconStyles["large-icon"]]}
+                className = {iconStyles["elongated-icon-button-container"]}
             />
         </Link>
     );

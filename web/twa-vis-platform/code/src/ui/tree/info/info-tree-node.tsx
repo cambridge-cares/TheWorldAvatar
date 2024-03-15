@@ -80,9 +80,7 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
           {/* Expand/collapse icon */}
           <MaterialIconButton
             iconName={collapsedIcon}
-            classStyles={{
-              container: [iconStyles["push-right"]]
-            }}
+            className={iconStyles["push-right"]}
           />
         </div>
 
@@ -114,9 +112,7 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
           {/* Expand/collapse icon */}
           <MaterialIconButton
             iconName={collapsedIcon}
-            classStyles={{
-              container: [iconStyles["push-right"]]
-            }}
+            className={iconStyles["push-right"]}
           />
         </div>
         {/* Elements */}
