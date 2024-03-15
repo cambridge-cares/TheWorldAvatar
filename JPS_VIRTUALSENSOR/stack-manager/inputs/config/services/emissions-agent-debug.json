@@ -7,9 +7,10 @@
                 "Env": [
                     "DATABASE=postgres",
                     "PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000",
-					"JPDA_ADDRESS=0.0.0.0:5005",
-					"JPDA_TRANSPORT=dt_socket",
-					"DEBUG=ON"
+                    "SCALING_FACTOR=100",
+                    "JPDA_ADDRESS=0.0.0.0:5005",
+                    "JPDA_TRANSPORT=dt_socket",
+                    "DEBUG=ON"
                 ],
                 "Configs": [
                     {
