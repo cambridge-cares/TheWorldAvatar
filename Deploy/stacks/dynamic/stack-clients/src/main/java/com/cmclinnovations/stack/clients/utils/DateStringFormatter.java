@@ -54,6 +54,8 @@ public class DateStringFormatter {
                         + unformatted.substring(firstPart);
             }
         }
+        // Find: ([0-9]{4})([0-9]{2})([0-9]{2})  Replace: $1-$2-$3     "20240203" -> "2024-02-03"
+
         return timeStringFormatted;
     }
 }
