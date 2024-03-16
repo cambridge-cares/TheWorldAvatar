@@ -7,6 +7,7 @@ from redis.commands.search.field import VectorField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 
+from services.utils.redis import does_index_exist
 from services.redis_client import get_redis_client
 from services.embed import IEmbedder, get_embedder
 
@@ -23,14 +24,6 @@ class DocsRetriever:
     ):
         self.embedder = embedder
         self.redis_client = redis_client
-
-    def does_index_exist(self, index_name: str):
-        try:
-            if self.redis_client.ft(index_name).info():
-                return True
-            return False
-        except:
-            return False
 
     def _make_knn_query(self, k: int):
         return (
@@ -92,7 +85,7 @@ class DocsRetriever:
         k: int = 3,
     ):
         index_name = self._INDEX_NAME_TEMPLATE.format(key=key)
-        if not self.does_index_exist(index_name):
+        if not does_index_exist(self.redis_client, index_name):
             docs = docs_getter()
             doc_key_prefix = self._KEY_PREFIX_TEMPLATE.format(key=key)
             self._embed(
