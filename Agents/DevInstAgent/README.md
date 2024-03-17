@@ -29,7 +29,7 @@ The file can be sparated into 3 different main keys, namely:
     - label: The rdfs:Label of the microcontroller 
     - MainSensorMap: The map of the sensor modules connected to the microcontroller.  Composed of a JSONObject that maps the sensor names and their respective information. Each sensor map is composed of (relevant to the device instantiation agent): sensor type, output, output datatype and unit, Thingsboard field name.
 
-- IRIMapper: Map of all IRIs. An IRI can be readily provided by the user. However, in case a new IRI is to be generated, the user can provide a keyword `gen`. This will create a new IRI for the given ID in the device descrpitor, with default prefix of ontodevice. The IRI will also have a UUID v4 attached in the pattern of `prefix:ID_UUID`. If the IRI already exist containing a unique string pattern, the keyword `find` can be used. THe agent will search the graph for instance containing the ID. If more than one is found, an error will be thrown and the IRI need to be provided manually or to be generated instead. 
+- IRIMapper: Map of all IRIs. An IRI can be readily provided by the user. However, in case a new IRI is to be generated, the user can provide a keyword `gen`. This will create a new IRI for the given ID in the device descrpitor, with default prefix of ontodevice. The IRI will also have a UUID v4 attached in the pattern of `prefix:ID_UUID`. If the IRI already exist containing a unique string pattern, the keyword `find` can be used. The agent will search the graph for instance containing the ID. If more than one or none is found, an error will be thrown and the IRI need to be provided manually or to be generated instead. 
 
 At the moment, the sensor type IRIs are checked against ontodevice and SAREF to ensure that the concept exist. If the concept does not exist, an error will be thrown and the device will not be instantiated. 
 
@@ -150,9 +150,22 @@ Content-Type: application/json
           "IRIMapper=find;ProximitySensor_FH-02 https://www.theworldavatar.com/kg/ontodevice/isAttachedTo http://example.com/prefix/WFH"
       ],
     "Task":["Get occupancy of a fumehood"],
-    "Command":[]
+    "Command":["/send"]
   }
 }
 
 ```
+
+The instantiation result are the following instances:
+![Instantiation with the provided query](./readme_img/instantiation_example1.png)
+
+Since the `gen` keyword is provided in the IRIMapper, this request will cause the generation of the following IRI:
+- ESP32_UUID
+- ProximitySensor_FH-02_UUID
+- HCSR04_UUID
+- HCSR04_ProximitySensor_UUID
+
+The IRI for AvgDistFH_02 will be searched in the KG for a match since the `find` keyword is generated. If the IRI does not exist/ multiple exist, an error will be thrown.
+
+The agent will then instantiate this set of triples and checks for the triples in the AdditionalQuery. 
 
