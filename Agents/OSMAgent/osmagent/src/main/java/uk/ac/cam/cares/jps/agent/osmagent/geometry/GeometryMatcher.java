@@ -44,7 +44,7 @@ public class GeometryMatcher {
             pointSRID = result.getJSONObject(0).getInt("srid");
         }
         else {
-            throw new JPSRuntimeException("fail");
+            throw new JPSRuntimeException("Failed to get OSM points SRID.");
         }
 
         // get SRID of OSM polygon geometries
@@ -54,7 +54,7 @@ public class GeometryMatcher {
             polygonSRID = result.getJSONObject(0).getInt("srid");
         }
         else {
-            throw new JPSRuntimeException("fail");
+            throw new JPSRuntimeException("Failed to get OSM polygons SRID.");
         }
 
         // create temporary tables of CityDB building footprints, transformed to the same SRIDs of OSM point and polygon geometries
@@ -290,10 +290,10 @@ public class GeometryMatcher {
             landSRID = result.getJSONObject(0).getInt("srid");
         }
         else {
-            throw new JPSRuntimeException("fail");
+            throw new JPSRuntimeException("Failed to get landuse table SRID.");
         }
 
-        String citydbTable = createTable( bound, boundSRID, landSRID);
+        String citydbTable = createTable(bound, boundSRID, landSRID);
 
         try (InputStream input = FileReader.getStream(RESOURCES_PATH + "/" + csv)) {
             InputStreamReader inputStreamReader = new InputStreamReader(input);
@@ -328,7 +328,7 @@ public class GeometryMatcher {
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
-            throw new JPSRuntimeException("dlm_landuse.csv file not found");
+            throw new JPSRuntimeException(String.format("%s file not found", csv));
         }
         catch (IOException e) {
             e.printStackTrace();

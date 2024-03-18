@@ -63,7 +63,7 @@ public class OSMAgent extends JPSAgent {
             this.landUseCsv = prop.getProperty("landuse.csv");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            throw new JPSRuntimeException("config.properties file not found");
+            throw new JPSRuntimeException("config.properties file not found.");
         } catch (IOException e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
