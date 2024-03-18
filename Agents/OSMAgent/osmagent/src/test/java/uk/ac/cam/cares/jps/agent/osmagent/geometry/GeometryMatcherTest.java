@@ -7,7 +7,6 @@ import org.mockito.MockedConstruction;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
-import org.locationtech.jts.io.ParseException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,7 +31,7 @@ public class GeometryMatcherTest {
                         when(mock.executeQuery(anyString())).thenReturn(sridJSON)
                             .thenReturn(sridJSON).thenReturn(idJSON).thenReturn(idJSON);
                 })) {
-           GeometryMatcher.matchGeometry("","","","","");
+           new GeometryMatcher("","","").matchGeometry("", "", null, null);
 
            verify(rdbStoreClientMock.constructed().get(0), times(4)).executeQuery(anyString());
            verify(rdbStoreClientMock.constructed().get(0), times(4)).getConnection();

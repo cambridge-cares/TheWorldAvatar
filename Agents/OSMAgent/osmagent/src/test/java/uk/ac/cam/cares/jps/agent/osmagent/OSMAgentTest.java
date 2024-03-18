@@ -35,7 +35,7 @@ public class OSMAgentTest {
                         doReturn("test").when(mock).getDbPassword();
                     })) {
                 try (MockedConstruction<UsageMatcher> usageMatcherMock = mockConstruction(UsageMatcher.class)) {
-                    try (MockedStatic<GeometryMatcher> geometryMatcherMock = mockStatic(GeometryMatcher.class)) {
+                    try (MockedConstruction<GeometryMatcher> geometryMatcherMock = mockConstruction(GeometryMatcher.class)) {
                         try (MockedConstruction<UsageShareCalculator> usageShareCalculatorMock = mockConstruction(UsageShareCalculator.class)) {
                             try (MockedConstruction<GeoServerClient> geoServerClientMocke = mockConstruction(GeoServerClient.class)) {
                                 try (MockedConstruction<UpdatedGSVirtualTableEncoder> updatedGSVirtualTableEncoderMock = mockConstruction(UpdatedGSVirtualTableEncoder.class)) {
@@ -48,15 +48,11 @@ public class OSMAgentTest {
                                             verify(endpointConfigMock.constructed().get(0), times(1)).getDbUrl(anyString());
                                             verify(endpointConfigMock.constructed().get(0), times(1)).getDbUser();
                                             verify(endpointConfigMock.constructed().get(0), times(1)).getDbPassword();
-                                            geometryMatcherMock.verify(times(1), () -> GeometryMatcher.matchGeometry(anyString(), anyString(), anyString(), anyString(), anyString()));
+                                            verify(geometryMatcherMock.constructed().get(0), times(1)).matchGeometry(anyString(), anyString(), eq(null), eq(null));
                                             verify(usageMatcherMock.constructed().get(0), times(1)).checkAndAddColumns(anyString(), anyString());
                                             verify(usageMatcherMock.constructed().get(0), times(1)).updateOntoBuilt(anyString(), anyString());
                                             verify(usageMatcherMock.constructed().get(0), times(1)).copyFromOSM(anyString(), anyString(), anyString());
-                                            if (agent.landUseTable.isEmpty()) {
-                                                verify(usageShareCalculatorMock.constructed().get(0), times(0)).updateLandUse(anyString(), anyString(), anyString(), anyString());
-                                            } else {
-                                                verify(usageShareCalculatorMock.constructed().get(0), times(1)).updateLandUse(anyString(), anyString(), anyString(),anyString());
-                                            }
+
                                             verify(usageShareCalculatorMock.constructed().get(0), times(1)).updateUsageShare(anyString());
                                         }
                                     }
