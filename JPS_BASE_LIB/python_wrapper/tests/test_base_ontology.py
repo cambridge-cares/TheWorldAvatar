@@ -2,87 +2,92 @@ import uuid
 
 from rdflib import Graph, RDF, Literal, XSD
 from pydantic import Field
+from typing import ClassVar
 
-from py4jps.data_model.base_ontology import BaseOntology, DataProperty, ObjectProperty
+from py4jps.data_model.base_ontology import BaseOntology, BaseClass, DataProperty, ObjectProperty
 from py4jps.data_model.base_ontology import as_range_of_data_property, as_range_of_object_property
-from py4jps.data_model.base_ontology import clear_ontology_object_lookup
+from py4jps.data_model.base_ontology import KnowledgeGraph
 
 
-EXAMPLE_BASE_PREFIX = 'https://example.org/'
+EXAMPLE_BASE_URL = 'https://example.org/'
 EXAMPLE_NAMESPACE = 'example'
 
 
 class ExampleOntology(BaseOntology):
-    base_prefix: str = EXAMPLE_BASE_PREFIX
-    namespace: str = EXAMPLE_NAMESPACE
+    base_url: str = EXAMPLE_BASE_URL
+    prefix: str = EXAMPLE_NAMESPACE
 
 
-class ExampleDataProperty(DataProperty):
-    base_prefix: str = EXAMPLE_BASE_PREFIX
-    namespace: str = EXAMPLE_NAMESPACE
-
-
-class ExampleObjectProperty(ObjectProperty):
-    base_prefix: str = EXAMPLE_BASE_PREFIX
-    namespace: str = EXAMPLE_NAMESPACE
-
-
-class DataProperty_A(ExampleDataProperty):
+class DataProperty_A(DataProperty):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     range: as_range_of_data_property(str)
 
 
-class DataProperty_B(ExampleDataProperty):
+class DataProperty_B(DataProperty):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     range: as_range_of_data_property(int)
 
 
-class Data_Property_C(ExampleDataProperty):
+class Data_Property_C(DataProperty):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     range: as_range_of_data_property(str)
 
 
-class A(ExampleOntology):
+class A(BaseClass):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     data_property_a: DataProperty_A = Field(default_factory=DataProperty_A)
 
 
-class ObjectProperty_B_A(ExampleObjectProperty):
+class ObjectProperty_B_A(ObjectProperty):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     range: as_range_of_object_property(A)
 
 
-class ObjectProperty_C_A(ExampleObjectProperty):
+class ObjectProperty_C_A(ObjectProperty):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     range: as_range_of_object_property(A)
 
 
-class B(ExampleOntology):
+class B(BaseClass):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     object_property_b_a: ObjectProperty_B_A = Field(default_factory=ObjectProperty_B_A)
     data_property_b: DataProperty_B = Field(default_factory=DataProperty_B)
 
 
-class ObjectProperty_C_B(ExampleObjectProperty):
+class ObjectProperty_C_B(ObjectProperty):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     range: as_range_of_object_property(B)
 
 
-class C(ExampleOntology):
+class C(BaseClass):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     object_property_c_a: ObjectProperty_C_A = Field(default_factory=ObjectProperty_C_A)
     object_property_c_b: ObjectProperty_C_B = Field(default_factory=ObjectProperty_C_B)
     data_property_c: Data_Property_C = Field(default_factory=Data_Property_C)
 
 
-class ObjectProperty_D_C(ExampleObjectProperty):
+class ObjectProperty_D_C(ObjectProperty):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     range: as_range_of_object_property(C)
 
 
-class ObjectProperty_D_B(ExampleObjectProperty):
+class ObjectProperty_D_B(ObjectProperty):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     range: as_range_of_object_property(B)
 
 
-class ObjectProperty_D_A(ExampleObjectProperty):
+class ObjectProperty_D_A(ObjectProperty):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     range: as_range_of_object_property(A)
 
 
-class Data_Property_D(ExampleDataProperty):
+class Data_Property_D(DataProperty):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     range: as_range_of_data_property(str)
 
 
-class D(ExampleOntology):
+class D(BaseClass):
+    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
     object_property_d_c: ObjectProperty_D_C = Field(default_factory=ObjectProperty_D_C)
     object_property_d_b: ObjectProperty_D_B = Field(default_factory=ObjectProperty_D_B)
     object_property_d_a: ObjectProperty_D_A = Field(default_factory=ObjectProperty_D_A)
@@ -90,7 +95,7 @@ class D(ExampleOntology):
 
 
 def init():
-    clear_ontology_object_lookup()
+    KnowledgeGraph.clear_object_lookup()
     # 1 triple: a1 --> 'a1'
     a1 = A(data_property_a=DataProperty_A(range='a1'))
     # 1 triple: a2 --> 'a2'
@@ -112,10 +117,34 @@ def init():
     return a1, a2, a3, b, c, d
 
 
+def test_register_and_clear():
+    # class registration
+    for cls in [A, B, C, D]:
+        assert cls == KnowledgeGraph.class_lookup[cls.get_rdf_type()]
+
+    # property registration
+    for prop in [DataProperty_A, DataProperty_B, Data_Property_C, Data_Property_D,
+                ObjectProperty_B_A, ObjectProperty_C_A, ObjectProperty_C_B,
+                ObjectProperty_D_A, ObjectProperty_D_B, ObjectProperty_D_C]:
+        assert prop == KnowledgeGraph.property_lookup[prop.get_predicate_iri()]
+
+    # object registration
+    assert not bool(KnowledgeGraph.get_object_lookup())
+    init()
+    for cls in [A, B, C, D]:
+        for obj_iri, obj in cls.object_lookup.items():
+            assert obj_iri in KnowledgeGraph.get_object_lookup()
+            assert obj == KnowledgeGraph.get_object_lookup()[obj_iri]
+
+    # clear object lookup
+    KnowledgeGraph.clear_object_lookup()
+    assert not bool(KnowledgeGraph.get_object_lookup())
+
+
 def test_rdf_type():
-    a = BaseOntology()
-    assert a.rdf_type is not None
-    assert BaseOntology.get_rdf_type() == a.rdf_type
+    a_exp = A()
+    assert a_exp.rdf_type is not None
+    assert A.get_rdf_type() == a_exp.rdf_type
 
 
 def test_collect_diff_to_graph_fresh():
@@ -176,7 +205,7 @@ def test_pull_from_kg(initialise_sparql_client):
     assert id(C.pull_from_kg(c.instance_iri, sparql_client, -1)[0]) == id(c)
     # after clearing the ontology object lookup, the object should be pulled from the KG again
     # therefore the id of the object should be different
-    clear_ontology_object_lookup()
+    KnowledgeGraph.clear_object_lookup()
     assert A.pull_from_kg(a1.instance_iri, sparql_client)[0] == a1
     assert A.pull_from_kg(a2.instance_iri, sparql_client)[0] == a2
     assert A.pull_from_kg(a3.instance_iri, sparql_client)[0] == a3

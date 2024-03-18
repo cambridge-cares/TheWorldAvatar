@@ -1,7 +1,7 @@
-###--- TheWorldAvatar Base Prefix ---###
+###--- TheWorldAvatar Base URL ---###
 # To be used by attaching specific namespace and class name to it
 # e.g. https://www.theworldavatar.com/kg/namespace/ClassName
-TWA_BASE_PREFIX = 'https://www.theworldavatar.com/kg/'
+TWA_BASE_URL = 'https://www.theworldavatar.com/kg/'
 
 ###--- Common Base URL ---###
 RDFS_BASE_URL = 'http://www.w3.org/2000/01/rdf-schema#'
@@ -26,13 +26,13 @@ PREFIX_OM = 'PREFIX om:     <' + UNITS_OF_MEASURE + '> '
 OWL = 'http://www.w3.org/2002/07/owl#'
 OWL_VERSION = OWL + 'versionInfo'
 
-ONTODOE = TWA_BASE_PREFIX + 'ontodoe/'
-ONTOREACTION = TWA_BASE_PREFIX + 'ontoreaction/'
-ONTOGOAL = TWA_BASE_PREFIX + 'ontogoal/'
+ONTODOE = TWA_BASE_URL + 'ontodoe/'
+ONTOREACTION = TWA_BASE_URL + 'ontoreaction/'
+ONTOGOAL = TWA_BASE_URL + 'ontogoal/'
 ONTOKIN = 'http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#'
 ONTOSPECIES = 'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#'
-ONTOLAB = TWA_BASE_PREFIX + 'ontolab/'
-ONTOVAPOURTEC = TWA_BASE_PREFIX + 'ontovapourtec/'
-ONTOHPLC = TWA_BASE_PREFIX + 'ontohplc/'
+ONTOLAB = TWA_BASE_URL + 'ontolab/'
+ONTOVAPOURTEC = TWA_BASE_URL + 'ontovapourtec/'
+ONTOHPLC = TWA_BASE_URL + 'ontohplc/'
 ONTOAGENT = 'http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#'
-ONTODERIVATION = TWA_BASE_PREFIX + 'ontoderivation/'
+ONTODERIVATION = TWA_BASE_URL + 'ontoderivation/'

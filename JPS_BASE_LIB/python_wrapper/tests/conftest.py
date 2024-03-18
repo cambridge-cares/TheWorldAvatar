@@ -44,6 +44,7 @@ def initialise_triple_store():
 @pytest.fixture(scope="function")
 def initialise_sparql_client(initialise_triple_store):
     sparql_endpoint = initialise_triple_store
+    # sparql_endpoint = 'http://localhost:48082/blazegraph/namespace/pydantic/sparql'
     sparql_client = PySparqlClient(sparql_endpoint, sparql_endpoint)
     sparql_client.perform_update('delete where { ?s ?p ?o }')
     yield sparql_client

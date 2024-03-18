@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Set, Tuple, Union, TypeVar
+from typing import Any, Dict, List, Set, Tuple, Union, TypeVar, ClassVar
 from typing_extensions import Annotated
 from annotated_types import Len
 
@@ -13,38 +13,49 @@ import base64
 import copy
 import time
 
-from py4jps.data_model.utils import construct_rdf_type, init_instance_iri
-from py4jps.data_model.iris import TWA_BASE_PREFIX
+from py4jps.data_model.utils import construct_namespace_iri, construct_rdf_type, init_instance_iri
+from py4jps.data_model.iris import TWA_BASE_URL
 from py4jps.kg_operations import PySparqlClient
 
 
 T = TypeVar('T')
 
 
-GLOBAL_OBJECT_LOOKUP = {}
+class KnowledgeGraph(BaseModel):
+    ontology_lookup: ClassVar[Dict[str, BaseOntology]] = {}
+    class_lookup: ClassVar[Dict[str, BaseClass]] = {}
+    property_lookup: ClassVar[Dict[str, BaseProperty]] = {}
 
+    @classmethod
+    def get_object_lookup(cls) -> Dict[str, BaseClass]:
+        return {i: o for clz in cls.class_lookup.values() for i, o in clz.object_lookup.items()}
 
-def get_ontology_object_from_lookup(iri: str) -> Union[BaseOntology, None]:
-    global GLOBAL_OBJECT_LOOKUP
-    return GLOBAL_OBJECT_LOOKUP.get(iri, None)
+    @classmethod
+    def get_object_from_lookup(cls, iri: str) -> Union[BaseClass, None]:
+        return cls.get_object_lookup().get(iri, None)
 
+    @classmethod
+    def clear_object_lookup(cls):
+        for cls in cls.class_lookup.values():
+            cls.clear_object_lookup()
 
-def set_new_ontology_object(iri: str, obj: BaseOntology):
-    global GLOBAL_OBJECT_LOOKUP
-    # NOTE this is to make sure the object is not overwritten
-    if iri not in GLOBAL_OBJECT_LOOKUP:
-        GLOBAL_OBJECT_LOOKUP[iri] = obj
+    @classmethod
+    def register_ontology(cls, ontology: BaseOntology):
+        cls.ontology_lookup[ontology.get_namespace_iri()] = ontology
 
+    @classmethod
+    def register_class(cls, ontolgy_class: BaseClass):
+        cls.class_lookup[ontolgy_class.get_rdf_type()] = ontolgy_class
 
-def clear_ontology_object_lookup():
-    global GLOBAL_OBJECT_LOOKUP
-    GLOBAL_OBJECT_LOOKUP = {}
+    @classmethod
+    def register_property(cls, prop: BaseProperty):
+        cls.property_lookup[prop.get_predicate_iri()] = prop
 
 
 def create_cache(attr_value):
     if isinstance(attr_value, ObjectProperty):
         return attr_value.__class__(range=set([
-            o.instance_iri if isinstance(o, BaseOntology) else o for o in attr_value.range
+            o.instance_iri if isinstance(o, BaseClass) else o for o in attr_value.range
         ]))
     elif isinstance(attr_value, DataProperty):
         return attr_value.__class__(range=set(copy.deepcopy(attr_value.range)))
@@ -64,14 +75,48 @@ def reveal_object_property_range(t: Set[Union[T, str]]) -> T:
     return t.__args__[0].__args__[0]
 
 
+def reveal_data_property_range(t: Set[T]) -> T:
+    return t.__args__[0]
+
+
+class BaseOntology(BaseModel):
+    base_url: str = Field(default=TWA_BASE_URL, frozen=True)
+    namespace: str = Field(default=None, frozen=True)
+    class_lookup: ClassVar[Dict[str, BaseClass]] = {}
+    object_property_lookup: ClassVar[Dict[str, ObjectProperty]] = {}
+    data_property_lookup: ClassVar[Dict[str, DataProperty]] = {}
+
+    @classmethod
+    def get_namespace_iri(cls) -> str:
+        return construct_namespace_iri(
+            cls.model_fields['base_url'].default,
+            cls.model_fields['namespace'].default
+        )
+
+    @classmethod
+    def register_class(cls, ontolgy_class: BaseClass):
+        cls.class_lookup[ontolgy_class.get_rdf_type()] = ontolgy_class
+        KnowledgeGraph.register_class(ontolgy_class)
+
+    @classmethod
+    def register_object_property(cls, prop: BaseProperty):
+        cls.object_property_lookup[prop.get_predicate_iri()] = prop
+        KnowledgeGraph.register_property(prop)
+
+    @classmethod
+    def register_data_property(cls, prop: BaseProperty):
+        cls.data_property_lookup[prop.get_predicate_iri()] = prop
+        KnowledgeGraph.register_property(prop)
+
+
 class BaseProperty(BaseModel, validate_assignment=True):
     # NOTE validate_assignment=True is to make sure the validation is triggered when range is updated
 
-    base_prefix: str = Field(default=TWA_BASE_PREFIX, frozen=True)
-    namespace: str = Field(default=None, frozen=True)
+    is_defined_by_ontology: ClassVar[BaseOntology] = None
     predicate_iri: str = Field(default=None)
     # setting default_factory to set is safe here, i.e. it won't be shared between instances
     # see https://docs.pydantic.dev/latest/concepts/models/#fields-with-non-hashable-default-values
+    domain: Set = Field(default_factory=set)
     range: Set = Field(default_factory=set)
 
     # TODO [future] vanilla set operations don't trigger the validation as of pydantic 2.6.1
@@ -102,7 +147,8 @@ class BaseProperty(BaseModel, validate_assignment=True):
 
     @classmethod
     def get_predicate_iri(cls) -> str:
-        return construct_rdf_type(cls.model_fields['base_prefix'].default, cls.model_fields['namespace'].default, cls.__name__)
+        return construct_rdf_type(
+            cls.is_defined_by_ontology.get_namespace_iri(), cls.__name__)
 
     def collect_range_diff_to_graph(
         self,
@@ -119,12 +165,10 @@ class BaseProperty(BaseModel, validate_assignment=True):
             keys_to_exclude, list) else keys_to_exclude
         list_keys_to_exclude.append('instance_iri')
         list_keys_to_exclude.append('rdfs_comment')
-        list_keys_to_exclude.append('base_prefix')
-        list_keys_to_exclude.append('namespace')
         return set(tuple(list_keys_to_exclude))
 
 
-class BaseOntology(BaseModel, validate_assignment=True):
+class BaseClass(BaseModel, validate_assignment=True):
     """
     Example:
     class MyClass(BaseOntology):
@@ -137,21 +181,21 @@ class BaseOntology(BaseModel, validate_assignment=True):
     # NOTE validate_assignment=True is to make sure the validation is triggered when range is updated
 
     # The initialisation and validator sequence:
-    # (I) start to run BaseOntology.__init__(__pydantic_self__, **data) with **data as the raw input arguments;
-    # (II) run until super().__init__(**data), note data is updated within BaseOntology before sending to super().init(**data);
+    # (I) start to run BaseClass.__init__(__pydantic_self__, **data) with **data as the raw input arguments;
+    # (II) run until super().__init__(**data), note data is updated within BaseClass before sending to super().init(**data);
     # (III) now within BaseModel __init__:
     #     (i) run root_validator (for those pre=True), in order of how the root_validators are listed in codes;
     #     (ii) in order of how the fields are listed in codes:
     #         (1) run validator (for those pre=True) in order of how the validators (for the same field) are listed in codes;
     #         (2) run validator (for those pre=False) in order of how the validators (for the same field) are listed in codes;
-    #     (iii) (if we are instantiating a child class of BaseOntology) load default values in the child class (if they are provided)
+    #     (iii) (if we are instantiating a child class of BaseClass) load default values in the child class (if they are provided)
     #             and run root_validator (for those pre=False) in order of how the root_validators are listed in codes,
     #             e.g. clz='clz provided in the child class' will be added to 'values' of the input argument of root_validator;
     # (IV) end BaseModel __init__;
-    # (V) end BaseOntology __init__
+    # (V) end BaseClass __init__
 
-    base_prefix: str = Field(default=TWA_BASE_PREFIX, frozen=True)
-    namespace: str = Field(default=None, frozen=True)
+    is_defined_by_ontology: ClassVar[BaseOntology] = None
+    object_lookup: ClassVar[Dict[str, BaseClass]] = {}
     rdfs_comment: str = Field(default=None)
     rdf_type: str = Field(default=None)
     instance_iri: str = Field(default=None)
@@ -160,22 +204,37 @@ class BaseOntology(BaseModel, validate_assignment=True):
     _latest_cache: Dict[str, Any] = PrivateAttr(default_factory=dict)
     _exist_in_kg: bool = PrivateAttr(default=False)
 
-    @model_validator(mode='after')
-    def set_rdf_type(self):
+    @classmethod
+    def __pydantic_init_subclass__(cls):
+        cls.is_defined_by_ontology.register_class(cls)
+
+    def model_post_init(self, __context: Any) -> None:
         if not bool(self.rdf_type):
             self.rdf_type = self.__class__.get_rdf_type()
         if not bool(self.instance_iri):
             self.instance_iri = init_instance_iri(
-                self.base_prefix, self.__class__.__name__)
-        set_new_ontology_object(self.instance_iri, self)
-        return self
+                self.rdf_type, self.__class__.__name__)
+        self.register_object()
+        return super().model_post_init(__context)
+
+    def register_object(self):
+        if self.instance_iri in self.__class__.object_lookup:
+            raise ValueError(
+                f"An object with the same IRI {self.instance_iri} has already been registered.")
+        self.__class__.object_lookup[self.instance_iri] = self
+
+    @classmethod
+    def clear_object_lookup(cls):
+        iris = list(cls.object_lookup.keys())
+        for i in iris:
+            del cls.object_lookup[i]
 
     @classmethod
     def get_rdf_type(cls) -> str:
-        return construct_rdf_type(cls.model_fields['base_prefix'].default, cls.model_fields['namespace'].default, cls.__name__)
+        return construct_rdf_type(cls.is_defined_by_ontology.get_namespace_iri(), cls.__name__)
 
     @classmethod
-    def pull_from_kg(cls, iris: List[str], sparql_client: PySparqlClient, recursive_depth: int = 0) -> List[BaseOntology]:
+    def pull_from_kg(cls, iris: List[str], sparql_client: PySparqlClient, recursive_depth: int = 0) -> List[BaseClass]:
         # behaviour of recursive_depth: 0 means no recursion, -1 means infinite recursion, n means n-level recursion
         flag_pull = abs(recursive_depth) > 0
         recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
@@ -191,7 +250,7 @@ class BaseOntology(BaseModel, validate_assignment=True):
         dps = cls.get_data_properties()
 
         for iri, props in node_dct.items():
-            inst = get_ontology_object_from_lookup(iri)
+            inst = KnowledgeGraph.get_object_from_lookup(iri)
             # handle object properties (where the recursion happens)
             # TODO need to consider what to do when two instances pointing to each other
             object_properties_dict = {
@@ -233,12 +292,12 @@ class BaseOntology(BaseModel, validate_assignment=True):
             instance_lst.append(inst)
             # set new instance to the global look up table, so that we can avoid creating the same instance multiple times
             # also, existing objects will be skipped as the modification should already be done to the objects themselves
-            set_new_ontology_object(iri, inst)
+            # set_new_ontology_object(iri, inst) # TODO
         # TODO add check for rdf_type
         return instance_lst
 
     @classmethod
-    def pull_all_instances_from_kg(cls, sparql_client: PySparqlClient, recursive_depth: int = 0) -> Set[BaseOntology]:
+    def pull_all_instances_from_kg(cls, sparql_client: PySparqlClient, recursive_depth: int = 0) -> Set[BaseClass]:
         iris = sparql_client.get_all_instances_of_class(cls.get_rdf_type())
         return cls.pull_from_kg(iris, sparql_client, recursive_depth)
 
@@ -263,7 +322,7 @@ class BaseOntology(BaseModel, validate_assignment=True):
         }
 
     def get_object_property_range_iris(self, field_name: str):
-        return [o.instance_iri if isinstance(o, BaseOntology) else o for o in getattr(self, field_name).range]
+        return [o.instance_iri if isinstance(o, BaseClass) else o for o in getattr(self, field_name).range]
 
     def delete_in_kg(self, sparql_client: PySparqlClient):
         # TODO implement this method
@@ -302,8 +361,6 @@ class BaseOntology(BaseModel, validate_assignment=True):
             keys_to_exclude, list) else keys_to_exclude
         list_keys_to_exclude.append('instance_iri')
         list_keys_to_exclude.append('rdfs_comment')
-        list_keys_to_exclude.append('base_prefix')
-        list_keys_to_exclude.append('namespace')
         return set(tuple(list_keys_to_exclude))
 
     def __eq__(self, other: Any) -> bool:
@@ -347,6 +404,10 @@ class BaseOntology(BaseModel, validate_assignment=True):
 
 class ObjectProperty(BaseProperty):
 
+    @classmethod
+    def __pydantic_init_subclass__(cls):
+        cls.is_defined_by_ontology.register_object_property(cls)
+
     def collect_range_diff_to_graph(
         self,
         subject: str,
@@ -366,14 +427,14 @@ class ObjectProperty(BaseProperty):
 
         # iterate the differences and add them to the graph
         for o in diff_to_add:
-            if isinstance(o, BaseOntology):
+            if isinstance(o, BaseClass):
                 g_to_add.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o.instance_iri)))
                 if flag_collect:
                     g_to_remove, g_to_add = o.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
             elif isinstance(o, str):
                 g_to_add.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o)))
                 if flag_collect:
-                    o_py = get_ontology_object_from_lookup(o)
+                    o_py = KnowledgeGraph.get_object_from_lookup(o)
                     # only collect the diff if the object exists in the memory, otherwise it's not necessary
                     if o_py is not None:
                         g_to_remove, g_to_add = o_py.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
@@ -381,14 +442,14 @@ class ObjectProperty(BaseProperty):
                 raise TypeError(f"Type of {o} is not supported for range of {self}.")
 
         for o in diff_to_remove:
-            if isinstance(o, BaseOntology):
+            if isinstance(o, BaseClass):
                 g_to_remove.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o.instance_iri)))
                 if flag_collect:
                     g_to_remove, g_to_add = o.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
             elif isinstance(o, str):
                 g_to_remove.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o)))
                 if flag_collect:
-                    o_py = get_ontology_object_from_lookup(o)
+                    o_py = KnowledgeGraph.get_object_from_lookup(o)
                     # only collect the diff if the object exists in the memory, otherwise it's not necessary
                     if o_py is not None:
                         g_to_remove, g_to_add = o_py.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
@@ -399,10 +460,10 @@ class ObjectProperty(BaseProperty):
         # also need to consider the intersection of the range and its cache when recursive
         if flag_collect:
             for o in self.range.intersection(cache.range):
-                if isinstance(o, BaseOntology):
+                if isinstance(o, BaseClass):
                     g_to_remove, g_to_add = o.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
                 elif isinstance(o, str):
-                    o_py = get_ontology_object_from_lookup(o)
+                    o_py = KnowledgeGraph.get_object_from_lookup(o)
                     # only collect the diff if the object exists in the memory, otherwise it's not necessary
                     if o_py is not None:
                         g_to_remove, g_to_add = o_py.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
@@ -413,6 +474,10 @@ class ObjectProperty(BaseProperty):
 
 
 class DataProperty(BaseProperty):
+
+    @classmethod
+    def __pydantic_init_subclass__(cls):
+        cls.is_defined_by_ontology.register_data_property(cls)
 
     def collect_range_diff_to_graph(
         self,
