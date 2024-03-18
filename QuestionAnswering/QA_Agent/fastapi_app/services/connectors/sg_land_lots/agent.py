@@ -1,8 +1,9 @@
 import logging
-from typing import Annotated, List, Optional, Tuple
+from typing import Annotated, Iterator, List, Optional, Tuple
 
 from fastapi import Depends
 from pydantic.dataclasses import dataclass
+from redis import Redis
 
 from model.aggregate import AggregateOperator
 from model.constraint import (
@@ -12,8 +13,10 @@ from model.constraint import (
 )
 from model.qa import QAData
 from services.utils.rdf import extract_name
+from services.embed import IEmbedder, get_embedder
+from services.redis_client import get_redis_client
 from services.kg_client import KgClient
-from services.retrieve_docs import DocsRetriever, get_docs_retriever
+from services.retrieve_docs import DocsRetriever
 from .constants import PlotAttrKey
 from .kg_client import (
     get_sg_land_lots_bg_client,
@@ -49,12 +52,48 @@ class SGLandLotsAgent:
         PlotAttrKey.GROSS_FLOOR_AREA: "ontoplot:hasMaximumPermittedGPR/om:hasValue",
     }
 
+    @classmethod
+    def _get_plot_concepts(cls, kg_client: KgClient):
+        query = "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
+        subjs = [x["s"]["value"] for x in kg_client.query(query)["results"]["bindings"]]
+        for iri in subjs:
+            query = "SELECT DISTINCT ?p ?o WHERE {{ <{subj}> ?p ?o . FILTER isLiteral(?o) }}".format(
+                subj=iri
+            )
+            tails = [
+                (binding["p"]["value"], binding["o"]["value"])
+                for binding in kg_client.query(query)["results"]["bindings"]
+            ]
+            yield dict(
+                IRI=iri,
+                attributes=[
+                    "{p}: {o}".format(p=extract_name(p), o=extract_name(o))
+                    for p, o in tails
+                ],
+            )
+
+    @classmethod
+    def _linearize_plot_concept(cls, datum: dict):
+        return "{IRI}\n{attributes}".format(
+            IRI=datum["IRI"], attributes="\n".join(datum["attributes"])
+        )
+
     def __init__(
-        self, bg_client: KgClient, ontop_client: KgClient, docs_retriever: DocsRetriever
+        self,
+        embedder: IEmbedder,
+        redis_client: Redis,
+        bg_client: KgClient,
+        ontop_client: KgClient,
     ):
         self.bg_client = bg_client
         self.ontop_client = ontop_client
-        self.docs_retriever = docs_retriever
+        self.plot_concepts_retriever = DocsRetriever(
+            embedder=embedder,
+            redis_client=redis_client,
+            key="sg_land_lots:concepts",
+            docs=self._get_plot_concepts(bg_client),
+            linearize_func=self._linearize_plot_concept,
+        )
 
     def _make_clauses_for_constraint(
         self, key: PlotAttrKey, constraint: NumericalArgConstraint
@@ -262,29 +301,9 @@ SELECT {vars} WHERE {{
 
         return QAData(vars=vars, bindings=bindings)
 
-    def _get_node_datum(self, iri: str):
-        query = "SELECT DISTINCT ?p ?o WHERE {{ <{subj}> ?p ?o . FILTER isLiteral(?o) }}".format(
-            subj=iri
-        )
-        tails = [
-            (binding["p"]["value"], binding["o"]["value"])
-            for binding in self.bg_client.query(query)["results"]["bindings"]
-        ]
-        return dict(IRI=iri, attributes=["{p}: {o}".format(p=extract_name(p), o=extract_name(o)) for p, o in tails])
-
-    def _get_nodes_data(self):
-        query = "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
-        subjs = [
-            x["s"]["value"] for x in self.bg_client.query(query)["results"]["bindings"]
-        ]
-        return [self._get_node_datum(iri) for iri in subjs]
-
     def retrieve_concepts(self, concepts: List[str]):
-        retrieved = self.docs_retriever.retrieve(
-            key="sg_land_lots:concepts",
+        retrieved = self.plot_concepts_retriever.retrieve(
             queries=concepts,
-            docs_getter=self._get_nodes_data,
-            linearize_func=lambda x: "{IRI}\n{attributes}".format(IRI=x["IRI"], attributes="\n".join(x["attributes"])),
             k=3,
         )
         retrieved = [[dict(obj) for obj, _ in lst] for lst in retrieved]
@@ -298,10 +317,14 @@ SELECT {vars} WHERE {{
 
 
 def get_sg_land_lots_agent(
+    embedder: Annotated[IEmbedder, Depends(get_embedder)],
+    redis_client: Annotated[Redis, Depends(get_redis_client)],
     bg_client: Annotated[KgClient, Depends(get_sg_land_lots_bg_client)],
     ontop_client: Annotated[KgClient, Depends(get_sg_land_lots_ontop_client)],
-    docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
 ):
     return SGLandLotsAgent(
-        bg_client=bg_client, ontop_client=ontop_client, docs_retriever=docs_retriever
+        embedder=embedder,
+        redis_client=redis_client,
+        bg_client=bg_client,
+        ontop_client=ontop_client,
     )

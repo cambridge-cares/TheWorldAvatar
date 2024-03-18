@@ -1,4 +1,4 @@
-from functools import cache
+from functools import cached_property
 import json
 from typing import Iterable, List
 from dataclasses import asdict
@@ -35,7 +35,11 @@ class LabelsStore:
         self.redis_client = redis_client
         self.key_prefix = key_prefix
         self.index_name = index_name
-        self.bindings = bindings
+        self._bindings = bindings
+
+    @cached_property
+    def bindings(self):
+        return list(self._bindings)
 
     def _create_index(self):
         pipeline = self.redis_client.pipeline()

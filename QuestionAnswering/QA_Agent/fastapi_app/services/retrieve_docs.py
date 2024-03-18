@@ -1,17 +1,17 @@
-from typing import Annotated, Callable, List, TypeVar
+from functools import cached_property
+from typing import Callable, Iterable, List, TypeVar
 
-from fastapi import Depends
 import numpy as np
 from redis import Redis
 from redis.commands.search.field import VectorField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 
-from services.utils.redis import does_index_exist
-from services.redis_client import get_redis_client
-from services.embed import IEmbedder, get_embedder
+from .embed import IEmbedder
+from .utils.redis import does_index_exist
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class DocsRetriever:
     _INDEX_NAME_TEMPLATE = "idx:{key}_vss"
@@ -21,9 +21,20 @@ class DocsRetriever:
         self,
         embedder: IEmbedder,
         redis_client: Redis,
+        key: str,
+        docs: Iterable[T],
+        linearize_func: Callable[[T], str] = str,
     ):
         self.embedder = embedder
         self.redis_client = redis_client
+        self._docs = docs
+        self.linearize_func = linearize_func
+        self.doc_key_prefix = self._KEY_PREFIX_TEMPLATE.format(key=key)
+        self.index_name = self._INDEX_NAME_TEMPLATE.format(key=key)
+
+    @cached_property
+    def docs(self):
+        return list(self._docs)
 
     def _make_knn_query(self, k: int):
         return (
@@ -33,20 +44,14 @@ class DocsRetriever:
             .dialect(2)
         )
 
-    def _embed(
-        self,
-        docs: List[T],
-        linearize_func: Callable[[T], str],
-        doc_key_prefix: str,
-        index_name: str,
-    ):
-        texts = [linearize_func(doc) for doc in docs]
+    def _embed(self):
+        texts = [self.linearize_func(doc) for doc in self.docs]
         embeddings = self.embedder(texts).astype(np.float32).tolist()
         vector_dim = len(embeddings[0])
 
         pipeline = self.redis_client.pipeline()
-        for i, (doc, text, embedding) in enumerate(zip(docs, texts, embeddings)):
-            redis_key = doc_key_prefix + str(i)
+        for i, (doc, text, embedding) in enumerate(zip(self.docs, texts, embeddings)):
+            redis_key = self.doc_key_prefix + str(i)
             datum = dict(doc=doc, linearized_doc=text, embedding=embedding)
             pipeline.json().set(redis_key, "$", datum)
         pipeline.execute()
@@ -59,17 +64,17 @@ class DocsRetriever:
                 as_name="vector",
             ),
         )
-        definition = IndexDefinition(prefix=[doc_key_prefix], index_type=IndexType.JSON)
-        self.redis_client.ft(index_name).create_index(
+        definition = IndexDefinition(
+            prefix=[self.doc_key_prefix], index_type=IndexType.JSON
+        )
+        self.redis_client.ft(self.index_name).create_index(
             fields=schema, definition=definition
         )
 
-    def _retrieve(
-        self, encoded_query: np.ndarray[np.float32], knn_query: str, index_name: str
-    ):
+    def _retrieve(self, encoded_query: np.ndarray[np.float32], knn_query: str):
         ids_and_scores = [
             (doc.id, float(doc.vector_score))
-            for doc in self.redis_client.ft(index_name)
+            for doc in self.redis_client.ft(self.index_name)
             .search(knn_query, {"query_vector": encoded_query.tobytes()})
             .docs
         ]
@@ -78,35 +83,15 @@ class DocsRetriever:
 
     def retrieve(
         self,
-        key: str,
         queries: List[str],
-        docs_getter: Callable[[], List[T]],
-        linearize_func: Callable[[T], str] = str,
         k: int = 3,
     ):
-        index_name = self._INDEX_NAME_TEMPLATE.format(key=key)
-        if not does_index_exist(self.redis_client, index_name):
-            docs = docs_getter()
-            doc_key_prefix = self._KEY_PREFIX_TEMPLATE.format(key=key)
-            self._embed(
-                docs=docs,
-                linearize_func=linearize_func,
-                doc_key_prefix=doc_key_prefix,
-                index_name=index_name,
-            )
+        if not does_index_exist(self.redis_client, self.index_name):
+            self._embed()
 
         encoded_queries = self.embedder(queries).astype(np.float32)
         knn_query = self._make_knn_query(k)
         return [
-            self._retrieve(
-                encoded_query=encoded_query, knn_query=knn_query, index_name=index_name
-            )
+            self._retrieve(encoded_query=encoded_query, knn_query=knn_query)
             for encoded_query in encoded_queries
         ]
-
-
-def get_docs_retriever(
-    embedder: Annotated[IEmbedder, Depends(get_embedder)],
-    redis_client: Annotated[Redis, Depends(get_redis_client)],
-):
-    return DocsRetriever(embedder, redis_client)

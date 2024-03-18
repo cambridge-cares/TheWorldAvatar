@@ -1,21 +1,18 @@
 from typing import Annotated
 from fastapi import Depends
+from redis import Redis
 
-from services.retrieve_docs import DocsRetriever, get_docs_retriever
+from services.embed import IEmbedder, get_embedder
+from services.redis_client import get_redis_client
+from services.retrieve_docs import DocsRetriever
 from services.kg_client import KgClient
 from .constants import LAND_USE_TYPES
 from .kg_client import get_sg_land_lots_bg_client
 
 
 class LandUseTypeMatcher:
-    _REDIS_KEY_PREFIX = "sg_land_lots:land_use_types:"
-    _INDEX_NAME = "idx:sg_land_lots:land_use_types_vss"
-
-    def __init__(self, kg_client: KgClient, docs_retriever: DocsRetriever):
-        self.kg_client = kg_client
-        self.docs_retriever = docs_retriever
-
-    def _query_data(self):
+    @classmethod
+    def _get_land_use_type_data(cls, kg_client: KgClient):
         query = """
 SELECT ?IRI ?label ?comment WHERE {{
     VALUES ?IRI {{ {values} }}
@@ -24,32 +21,38 @@ SELECT ?IRI ?label ?comment WHERE {{
 }}""".format(
             values=" ".join(["<{iri}>".format(iri=iri) for iri in LAND_USE_TYPES])
         )
-        return [
-            {k: v["value"] for k, v in binding.items()}
-            for binding in self.kg_client.query(query)["results"]["bindings"]
-        ]
+        for binding in kg_client.query(query)["results"]["bindings"]:
+            yield {k: v["value"] for k, v in binding.items()}
 
-    def _linearize(self, datum: dict):
+    @classmethod
+    def _linearize_land_use_type_datum(cls, datum: dict):
         return "label: {label}; comment: {comment}.".format(
             label=datum["label"], comment=datum["comment"]
         )
 
-    def match(self, query):
-        retrieved, _ = self.docs_retriever.retrieve(
+    def __init__(self, embedder: IEmbedder, redis_client: Redis, kg_client: KgClient):
+        self.land_use_types_retriever = DocsRetriever(
+            embedder=embedder,
+            redis_client=redis_client,
             key="sg_land_lots:land_use_types",
-            docs_getter=self._query_data,
-            linearize_func=self._linearize,
+            docs=self._get_land_use_type_data(kg_client),
+            linearize_func=self._linearize_land_use_type_datum,
+        )
+
+    def match(self, query):
+        retrieved = self.land_use_types_retriever.retrieve(
             queries=[query],
             k=1,
-        )[0][0]
+        )
 
-        return retrieved["IRI"]
+        return retrieved[0][0][0]["IRI"]
 
 
 def get_land_use_type_matcher(
+    embedder: Annotated[IEmbedder, Depends(get_embedder)],
+    redis_client: Annotated[Redis, Depends(get_redis_client)],
     kg_client: Annotated[KgClient, Depends(get_sg_land_lots_bg_client)],
-    docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)]
 ):
     return LandUseTypeMatcher(
-        kg_client=kg_client, docs_retriever=docs_retriever
+        embedder=embedder, redis_client=redis_client, kg_client=kg_client
     )
