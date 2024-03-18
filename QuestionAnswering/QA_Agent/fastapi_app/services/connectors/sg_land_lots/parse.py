@@ -173,10 +173,6 @@ class AttributeAggregateParser:
                 },
             },
         )
-
-        if not args.get("key") or not args.get("aggregate"):
-            return None
-
         return PlotAttrKey(args.get("key")), AggregateOperator(args.get("aggregate"))
 
 

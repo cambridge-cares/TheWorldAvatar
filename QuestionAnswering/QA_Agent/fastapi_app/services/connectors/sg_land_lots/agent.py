@@ -179,8 +179,8 @@ SELECT ?IRI WHERE {{
             for x in self.ontop_client.query(query)["results"]["bindings"]
         ]
 
-    def lookup_plot_attributes(
-        self, plot_constraints: PlotConstraints, attr_keys: List[PlotAttrKey]
+    def lookup_plot_attribute(
+        self, plot_constraints: PlotConstraints, attr_key: PlotAttrKey
     ):
         iris = self.find_plot_iris(plot_constraints)
         if not iris:
@@ -192,18 +192,17 @@ SELECT ?IRI WHERE {{
             )
         ]
         vars = ["?IRI"]
-        for key in attr_keys:
-            if key is PlotAttrKey.LAND_USE_TYPE:
-                patterns.append("?IRI ontozoning:hasLandUseType ?LandUseType .")
-                patterns.append(
-                    "SERVICE <{bg}> {{ ?LandUseType rdfs:label ?LandUseTypeLabel }} ".format(
-                        bg=self.bg_client.sparql.endpoint
-                    )
+        if attr_key is PlotAttrKey.LAND_USE_TYPE:
+            patterns.append("?IRI ontozoning:hasLandUseType ?LandUseType .")
+            patterns.append(
+                "SERVICE <{bg}> {{ ?LandUseType rdfs:label ?LandUseTypeLabel }} ".format(
+                    bg=self.bg_client.sparql.endpoint
                 )
-                vars.append("?LandUseTypeLabel")
-            elif key is PlotAttrKey.GROSS_PLOT_RATIO:
-                patterns.append(
-                    """
+            )
+            vars.append("?LandUseTypeLabel")
+        elif attr_key is PlotAttrKey.GROSS_PLOT_RATIO:
+            patterns.append(
+                """
 OPTIONAL {{
     ?IRI {pred} ?gpr . 
 }}
@@ -211,19 +210,17 @@ OPTIONAL {{
     ?IRI opr:isAwaitingDetailedGPREvaluation ?awaiting_detailed_evaluation .
 }}
 BIND(IF(BOUND(?gpr), ?gpr, IF(?awaiting_detailed_evaluation = true, "Awaiting detailed evaluation", "")) AS ?{key})""".format(
-                        pred=self._ATTRKEY2PRED[key], key=key.value
+                        pred=self._ATTRKEY2PRED[attr_key], key=attr_key.value
                     )
                 )
-                vars.append("?" + key.value)
-            elif key is PlotAttrKey.PLOT_AREA or key is PlotAttrKey.GROSS_FLOOR_AREA:
-                patterns.append(
-                    "?IRI {pred} [ om:hasNumericalValue ?{key} ; om:hasUnit ?{key}Unit ] .".format(
-                        pred=self._ATTRKEY2PRED[key], key=key.value
-                    )
+            vars.append("?" + attr_key.value)
+        else:
+            patterns.append(
+                "?IRI {pred} [ om:hasNumericalValue ?{key} ; om:hasUnit ?{key}Unit ] .".format(
+                    pred=self._ATTRKEY2PRED[attr_key], key=attr_key.value
                 )
-                vars.append("?" + key.value)
-            else:
-                pass
+            )
+            vars.append("?" + attr_key.value)
 
         query = """PREFIX ontoplot:<https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX opr: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
@@ -238,7 +235,6 @@ SELECT {vars} WHERE {{
 """.format(
             vars=" ".join(vars), patterns="\n".join(patterns)
         )
-        print(query)
 
         res = self.ontop_client.query(query)
         vars = res["head"]["vars"]
@@ -252,10 +248,10 @@ SELECT {vars} WHERE {{
         iris = self.find_plot_iris(plot_args)
         return QAData(vars=["count"], bindings=[dict(count=len(iris))])
 
-    def compute_aggregate_plot_attributes(
+    def compute_aggregate_plot_attribute(
         self,
         plot_constraints: PlotConstraints,
-        attr_aggs: List[Tuple[PlotAttrKey, AggregateOperator]] = [],
+        attr_agg: Tuple[PlotAttrKey, AggregateOperator],
     ):
         iris = self.find_plot_iris(plot_constraints)
         vars = []
@@ -264,20 +260,20 @@ SELECT {vars} WHERE {{
                 values=" ".join(["<{iri}>".format(iri=iri) for iri in iris])
             )
         ]
-        for key, agg in attr_aggs:
-            func = agg.value
-            valuenode = "?{key}NumericalValue".format(key=key.value)
+        key, agg = attr_agg
+        func = agg.value
+        valuenode = "?{key}NumericalValue".format(key=key.value)
 
-            vars.append(
-                "({func}({valuenode}) AS {valuenode}{func})".format(
-                    func=func, valuenode=valuenode
-                )
+        vars.append(
+            "({func}({valuenode}) AS {valuenode}{func})".format(
+                func=func, valuenode=valuenode
             )
-            patterns.append(
-                "?IRI {pred}/om:hasNumericalValue {valuenode} .".format(
-                    pred=self._ATTRKEY2PRED[key], valuenode=valuenode
-                )
+        )
+        patterns.append(
+            "?IRI {pred}/om:hasNumericalValue {valuenode} .".format(
+                pred=self._ATTRKEY2PRED[key], valuenode=valuenode
             )
+        )
 
         query = """PREFIX ontoplot:<https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX opr: <https://www.theworldavatar.com/kg/ontoplanningregulation/>

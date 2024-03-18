@@ -94,8 +94,8 @@ class TestSingporeLandLotAgent:
         )
 
         # Act
-        data = agent.lookup_plot_attributes(
-            plot_args, attr_keys=[PlotAttrKey.PLOT_AREA]
+        data = agent.lookup_plot_attribute(
+            plot_args, attr_key=PlotAttrKey.PLOT_AREA
         )
 
         # Assert
@@ -109,23 +109,18 @@ class TestSingporeLandLotAgent:
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075"
         )
-        attr_aggs = [
-            (PlotAttrKey.PLOT_AREA, AggregateOperator.AVG),
-            (PlotAttrKey.GROSS_PLOT_RATIO, AggregateOperator.MIN),
-        ]
+        attr_agg = (PlotAttrKey.PLOT_AREA, AggregateOperator.AVG)
 
         # Act
-        data = agent.compute_aggregate_plot_attributes(
-            plot_constraints=plot_args, attr_aggs=attr_aggs
+        data = agent.compute_aggregate_plot_attribute(
+            plot_constraints=plot_args, attr_agg=attr_agg
         )
 
         # Assert
         assert data.vars == [
             "PlotAreaNumericalValueAVG",
-            "GrossPlotRatioNumericalValueMIN",
         ]
         assert all(
             "PlotAreaNumericalValueAVG" in binding
-            and "GrossPlotRatioNumericalValueMIN" in binding
             for binding in data.bindings
         )
