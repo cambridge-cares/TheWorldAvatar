@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import uuid
 
 from rdflib import Graph, RDF, Literal, XSD
 from pydantic import Field
-from typing import ClassVar
+from typing import ClassVar, Set
 
 from py4jps.data_model.base_ontology import BaseOntology, BaseClass, DataProperty, ObjectProperty
 from py4jps.data_model.base_ontology import as_range_of_data_property, as_range_of_object_property
@@ -15,7 +17,7 @@ EXAMPLE_NAMESPACE = 'example'
 
 class ExampleOntology(BaseOntology):
     base_url: str = EXAMPLE_BASE_URL
-    prefix: str = EXAMPLE_NAMESPACE
+    namespace: str = EXAMPLE_NAMESPACE
 
 
 class DataProperty_A(DataProperty):
@@ -125,16 +127,34 @@ def test_register_and_clear():
         assert prop == KnowledgeGraph.property_lookup[prop.get_predicate_iri()]
 
     # object registration
-    assert not bool(KnowledgeGraph.get_object_lookup())
+    assert not bool(KnowledgeGraph.construct_object_lookup())
     init()
     for cls in [A, B, C, D]:
         for obj_iri, obj in cls.object_lookup.items():
-            assert obj_iri in KnowledgeGraph.get_object_lookup()
-            assert obj == KnowledgeGraph.get_object_lookup()[obj_iri]
+            assert obj_iri in KnowledgeGraph.construct_object_lookup()
+            assert obj == KnowledgeGraph.construct_object_lookup()[obj_iri]
+    assert len(A.object_lookup) == 3
+    assert len(B.object_lookup) == 1
+    assert len(C.object_lookup) == 1
+    assert len(D.object_lookup) == 1
 
     # clear object lookup
     KnowledgeGraph.clear_object_lookup()
-    assert not bool(KnowledgeGraph.get_object_lookup())
+    assert not bool(KnowledgeGraph.construct_object_lookup())
+    for cls in [A, B, C, D]:
+        assert not bool(cls.object_lookup)
+
+
+def test_added_to_domain():
+    a1, a2, a3, b, c, d = init()
+    for p in [DataProperty_A]:
+        assert set([A.get_rdf_type()]) == p.domain
+    for p in [DataProperty_B, ObjectProperty_B_A]:
+        assert set([B.get_rdf_type()]) == p.domain
+    for p in [Data_Property_C, ObjectProperty_C_A, ObjectProperty_C_B]:
+        assert set([C.get_rdf_type()]) == p.domain
+    for p in [Data_Property_D, ObjectProperty_D_A, ObjectProperty_D_B, ObjectProperty_D_C]:
+        assert set([D.get_rdf_type()]) == p.domain
 
 
 def test_rdf_type():

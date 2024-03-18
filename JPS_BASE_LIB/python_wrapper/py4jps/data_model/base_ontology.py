@@ -22,17 +22,21 @@ T = TypeVar('T')
 
 
 class KnowledgeGraph(BaseModel):
-    ontology_lookup: ClassVar[Dict[str, BaseOntology]] = {}
-    class_lookup: ClassVar[Dict[str, BaseClass]] = {}
-    property_lookup: ClassVar[Dict[str, BaseProperty]] = {}
+    # NOTE the ClassVar is initialised as None and assigned as empty dict when it is first used
+    # this is to avoid the problem of mutable default arguments which is then shared across all subclasses
+    ontology_lookup: ClassVar[Dict[str, BaseOntology]] = None
+    class_lookup: ClassVar[Dict[str, BaseClass]] = None
+    property_lookup: ClassVar[Dict[str, BaseProperty]] = None
 
     @classmethod
-    def get_object_lookup(cls) -> Dict[str, BaseClass]:
-        return {i: o for clz in cls.class_lookup.values() for i, o in clz.object_lookup.items()}
+    def construct_object_lookup(cls) -> Dict[str, BaseClass]:
+        if cls.class_lookup is None:
+            return {}
+        return {i: o for clz in cls.class_lookup.values() if bool(clz.object_lookup) for i, o in clz.object_lookup.items()}
 
     @classmethod
     def get_object_from_lookup(cls, iri: str) -> Union[BaseClass, None]:
-        return cls.get_object_lookup().get(iri, None)
+        return cls.construct_object_lookup().get(iri, None)
 
     @classmethod
     def clear_object_lookup(cls):
@@ -41,14 +45,20 @@ class KnowledgeGraph(BaseModel):
 
     @classmethod
     def register_ontology(cls, ontology: BaseOntology):
+        if cls.ontology_lookup is None:
+            cls.ontology_lookup = {}
         cls.ontology_lookup[ontology.get_namespace_iri()] = ontology
 
     @classmethod
     def register_class(cls, ontolgy_class: BaseClass):
+        if cls.class_lookup is None:
+            cls.class_lookup = {}
         cls.class_lookup[ontolgy_class.get_rdf_type()] = ontolgy_class
 
     @classmethod
     def register_property(cls, prop: BaseProperty):
+        if cls.property_lookup is None:
+            cls.property_lookup = {}
         cls.property_lookup[prop.get_predicate_iri()] = prop
 
 
@@ -89,9 +99,9 @@ def reveal_possible_property_range(property: BaseProperty, t: Set) -> T:
 class BaseOntology(BaseModel):
     base_url: str = Field(default=TWA_BASE_URL, frozen=True)
     namespace: str = Field(default=None, frozen=True)
-    class_lookup: ClassVar[Dict[str, BaseClass]] = {}
-    object_property_lookup: ClassVar[Dict[str, ObjectProperty]] = {}
-    data_property_lookup: ClassVar[Dict[str, DataProperty]] = {}
+    class_lookup: ClassVar[Dict[str, BaseClass]] = None
+    object_property_lookup: ClassVar[Dict[str, ObjectProperty]] = None
+    data_property_lookup: ClassVar[Dict[str, DataProperty]] = None
 
     @classmethod
     def get_namespace_iri(cls) -> str:
@@ -102,16 +112,22 @@ class BaseOntology(BaseModel):
 
     @classmethod
     def register_class(cls, ontolgy_class: BaseClass):
+        if cls.class_lookup is None:
+            cls.class_lookup = {}
         cls.class_lookup[ontolgy_class.get_rdf_type()] = ontolgy_class
         KnowledgeGraph.register_class(ontolgy_class)
 
     @classmethod
     def register_object_property(cls, prop: BaseProperty):
+        if cls.object_property_lookup is None:
+            cls.object_property_lookup = {}
         cls.object_property_lookup[prop.get_predicate_iri()] = prop
         KnowledgeGraph.register_property(prop)
 
     @classmethod
     def register_data_property(cls, prop: BaseProperty):
+        if cls.data_property_lookup is None:
+            cls.data_property_lookup = {}
         cls.data_property_lookup[prop.get_predicate_iri()] = prop
         KnowledgeGraph.register_property(prop)
 
@@ -121,9 +137,9 @@ class BaseProperty(BaseModel, validate_assignment=True):
 
     is_defined_by_ontology: ClassVar[BaseOntology] = None
     predicate_iri: str = Field(default=None)
+    domain: ClassVar[Set] = None
     # setting default_factory to set is safe here, i.e. it won't be shared between instances
     # see https://docs.pydantic.dev/latest/concepts/models/#fields-with-non-hashable-default-values
-    domain: Set = Field(default_factory=set)
     range: Set = Field(default_factory=set)
 
     # TODO [future] vanilla set operations don't trigger the validation as of pydantic 2.6.1
@@ -156,6 +172,12 @@ class BaseProperty(BaseModel, validate_assignment=True):
     def get_predicate_iri(cls) -> str:
         return construct_rdf_type(
             cls.is_defined_by_ontology.get_namespace_iri(), cls.__name__)
+
+    @classmethod
+    def add_to_domain(cls, domain: BaseClass):
+        if cls.domain is None:
+            cls.domain = set()
+        cls.domain.add(domain.get_rdf_type())
 
     def collect_range_diff_to_graph(
         self,
@@ -200,7 +222,7 @@ class BaseClass(BaseModel, validate_assignment=True):
     # (V) end BaseClass __init__
 
     is_defined_by_ontology: ClassVar[BaseOntology] = None
-    object_lookup: ClassVar[Dict[str, BaseClass]] = {}
+    object_lookup: ClassVar[Dict[str, BaseClass]] = None
     rdfs_comment: str = Field(default=None)
     rdf_type: str = Field(default=None)
     instance_iri: str = Field(default=None)
@@ -210,7 +232,13 @@ class BaseClass(BaseModel, validate_assignment=True):
     _exist_in_kg: bool = PrivateAttr(default=False)
 
     @classmethod
-    def __pydantic_init_subclass__(cls):
+    def __pydantic_init_subclass__(cls, **kwargs):
+        # set the domain of all object/data properties
+        for f, field_info in cls.model_fields.items():
+            if issubclass(field_info.annotation, BaseProperty):
+                field_info.annotation.add_to_domain(cls)
+
+        # register the class to the ontology
         cls.is_defined_by_ontology.register_class(cls)
 
     def __init__(self, **data) -> None:
@@ -240,6 +268,8 @@ class BaseClass(BaseModel, validate_assignment=True):
         return super().model_post_init(__context)
 
     def register_object(self):
+        if self.__class__.object_lookup is None:
+            self.__class__.object_lookup = {}
         if self.instance_iri in self.__class__.object_lookup:
             raise ValueError(
                 f"An object with the same IRI {self.instance_iri} has already been registered.")
@@ -247,9 +277,10 @@ class BaseClass(BaseModel, validate_assignment=True):
 
     @classmethod
     def clear_object_lookup(cls):
-        iris = list(cls.object_lookup.keys())
-        for i in iris:
-            del cls.object_lookup[i]
+        if cls.object_lookup is not None:
+            iris = list(cls.object_lookup.keys())
+            for i in iris:
+                del cls.object_lookup[i]
 
     @classmethod
     def get_rdf_type(cls) -> str:
@@ -427,7 +458,7 @@ class BaseClass(BaseModel, validate_assignment=True):
 class ObjectProperty(BaseProperty):
 
     @classmethod
-    def __pydantic_init_subclass__(cls):
+    def __pydantic_init_subclass__(cls, **kwargs):
         cls.is_defined_by_ontology.register_object_property(cls)
 
     def collect_range_diff_to_graph(
@@ -498,7 +529,7 @@ class ObjectProperty(BaseProperty):
 class DataProperty(BaseProperty):
 
     @classmethod
-    def __pydantic_init_subclass__(cls):
+    def __pydantic_init_subclass__(cls, **kwargs):
         cls.is_defined_by_ontology.register_data_property(cls)
 
     def collect_range_diff_to_graph(
