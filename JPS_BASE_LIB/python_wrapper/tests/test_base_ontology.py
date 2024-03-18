@@ -97,21 +97,17 @@ class D(BaseClass):
 def init():
     KnowledgeGraph.clear_object_lookup()
     # 1 triple: a1 --> 'a1'
-    a1 = A(data_property_a=DataProperty_A(range='a1'))
+    a1 = A(data_property_a='a1')
     # 1 triple: a2 --> 'a2'
-    a2 = A(data_property_a=DataProperty_A(range='a2'))
+    a2 = A(data_property_a='a2')
     # 1 triple: a3 --> 'a3'
-    a3 = A(data_property_a=DataProperty_A(range='a3'))
+    a3 = A(data_property_a='a3')
     # 3 triples: b --> a1, a2, 3
-    b = B(object_property_b_a=ObjectProperty_B_A(range=[a1, a2]),
-          data_property_b=DataProperty_B(range=3))
+    b = B(object_property_b_a=[a1, a2], data_property_b=3)
     # 4 triples: c --> a2, a3, b, 'c'
-    c = C(object_property_c_a=ObjectProperty_C_A(range=[a2, a3]),
-          object_property_c_b=ObjectProperty_C_B(range=[b]),
-          data_property_c=Data_Property_C(range='c'))
+    c = C(object_property_c_a=[a2, a3], object_property_c_b=[b], data_property_c='c')
     # 2 triples: d --> a1, c
-    d = D(object_property_d_a=ObjectProperty_D_A(range=[a1]),
-          object_property_d_c=ObjectProperty_D_C(range=[c]))
+    d = D(object_property_d_a=[a1], object_property_d_c=[c])
     # and 6 rdf:type triples
     # in total 18 triples
     return a1, a2, a3, b, c, d

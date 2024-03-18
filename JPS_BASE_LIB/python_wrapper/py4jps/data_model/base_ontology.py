@@ -79,6 +79,13 @@ def reveal_data_property_range(t: Set[T]) -> T:
     return t.__args__[0]
 
 
+def reveal_possible_property_range(property: BaseProperty, t: Set) -> T:
+    if isinstance(property, ObjectProperty):
+        return t.__args__[0].__args__
+    else:
+        return t.__args__
+
+
 class BaseOntology(BaseModel):
     base_url: str = Field(default=TWA_BASE_URL, frozen=True)
     namespace: str = Field(default=None, frozen=True)
@@ -176,8 +183,6 @@ class BaseClass(BaseModel, validate_assignment=True):
         myDataProperty: MyDataProperty
     """
 
-    # TODO [future] think about how to make it easier to instantiate an instance by hand, especially the object properties (or should it be fully automated?)
-
     # NOTE validate_assignment=True is to make sure the validation is triggered when range is updated
 
     # The initialisation and validator sequence:
@@ -207,6 +212,23 @@ class BaseClass(BaseModel, validate_assignment=True):
     @classmethod
     def __pydantic_init_subclass__(cls):
         cls.is_defined_by_ontology.register_class(cls)
+
+    def __init__(self, **data) -> None:
+        for f, field_info in self.__class__.model_fields.items():
+            if issubclass(field_info.annotation, BaseProperty):
+                if f in data:
+                    possible_type = reveal_possible_property_range(field_info.annotation, field_info.annotation.model_fields['range'].annotation)
+                    if isinstance(data[f], list):
+                        if all(isinstance(i, possible_type) for i in data[f]):
+                            data[f] = field_info.annotation(range=set(data[f]))
+                    elif isinstance(data[f], set):
+                        if all(isinstance(i, possible_type) for i in data[f]):
+                            data[f] = field_info.annotation(range=data[f])
+                    elif isinstance(data[f], possible_type):
+                        data[f] = field_info.annotation(range=data[f])
+                    # for all the other cases, we will let the pydantic to validate the input
+
+        super().__init__(**data)
 
     def model_post_init(self, __context: Any) -> None:
         if not bool(self.rdf_type):
