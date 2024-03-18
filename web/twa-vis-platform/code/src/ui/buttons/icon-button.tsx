@@ -16,6 +16,11 @@ interface ButtonProps extends React.HTMLAttributes<HTMLDivElement> {
     callback?: () => void,
 };
 
+interface IndexedButtonProps extends ButtonProps {
+    index?: number,
+    onButtonClick: (index: number) => void;
+};
+
 /**
  * A material icon button with custom styling and icons.
  * 
@@ -29,7 +34,7 @@ export default function MaterialIconButton({ iconName, iconStyles, text, callbac
     // CSS classes
     const containerClassNames = `${rest.className || ''} ${styles["icon-button-container"]}`.trim();
     const iconClassNames = ["material-symbols-outlined", styles["icon-button"]].concat(iconStyles).join(" ");
-    const textClassNames = text?.styles.join(" ");
+    const textClassNames = text?.styles?.join(" ");
 
     return (
         <div {...rest} className={containerClassNames}>
@@ -44,5 +49,23 @@ export default function MaterialIconButton({ iconName, iconStyles, text, callbac
                 )
             }
         </div>
+    );
+}
+
+/**
+ * A material icon button that can interact with click events based on the their index.
+ * 
+ * @param {number} index An optional index for this component. Defaults to 0 if excluded.
+ * @param {Function} onButtonClick A function called on the index when clicking the button.
+ */
+export function MaterialIconButtonWithIndex({ index, onButtonClick, ...rest }: IndexedButtonProps) {
+    const [position] = React.useState(index ? index : 0);
+
+    const handleClick = () => {
+        onButtonClick(position);
+    };
+
+    return (
+        <MaterialIconButton {...rest} onClick={handleClick} />
     );
 }

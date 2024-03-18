@@ -5,6 +5,7 @@ import React from 'react';
 import { Attribute, AttributeGroup } from 'types/attribute';
 import { JsonObject } from "types/json";
 import InfoTreeNode from './info-tree-node';
+import InfoTabs from './info-tabs';
 
 const rootKey: string = "meta";
 const displayOrderKey: string = "display_order";
@@ -14,7 +15,11 @@ const unitKey: string = "unit";
 
 type InfoTreeProps = {
   data: JsonObject;
-  isFetching: boolean
+  isFetching: boolean;
+  activeTab: {
+    index: number;
+    setActiveTab: React.Dispatch<React.SetStateAction<number>>;
+  }
 };
 
 /**
@@ -30,11 +35,23 @@ export default function InfoTree(props: InfoTreeProps) {
     <div className={styles.infoPanelContainer}>
       <div className={styles.infoHeadSection}>
         <h2>Feature Information</h2>
+        {!props.isFetching && (
+          <InfoTabs
+            data={props.data}
+            activeTab={{
+              index: props.activeTab.index,
+              setActiveTab: props.activeTab.setActiveTab,
+            }}
+          />)}
       </div>
       {props.isFetching ? (
         <div className={styles.spinner}></div>
       ) : props.data ?
-        (<div className={styles.infoSection}><InfoTreeNode attribute={recurseParseAttributeGroup(props.data, rootKey)} /></div>) : (
+        // If active tab is 0, render the Metadata Tree
+        props.activeTab.index === 0 ? <div className={styles.infoSection}><InfoTreeNode attribute={recurseParseAttributeGroup(props.data, rootKey)} /></div>
+        // If active tab is not 0 ie 1, render the time series chart
+          : <p>Time series chart placeholder</p>
+        : (
           <div className={styles.infoSection}>
             <p>Click to fetch feature information.</p>
           </div>
@@ -42,7 +59,7 @@ export default function InfoTree(props: InfoTreeProps) {
       }
     </div>
   );
-}
+};
 
 /**
  * Recursively parse the data returned from the Feature Info Agent into the attribute group data model.

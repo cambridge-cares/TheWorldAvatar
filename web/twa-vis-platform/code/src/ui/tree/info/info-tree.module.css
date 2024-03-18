@@ -16,11 +16,45 @@
   font-size: 1.1rem;
 }
 
+.tab-container {
+  margin: 0.2rem 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.tab {
+  padding: 0.1rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-width: 0.1rem 0.1rem 0.2rem;
+  border-style: solid;
+  border-color: transparent;
+  transition: border-color 0.3s ease;
+}
+
+.tab:hover {
+  border-bottom-color: var(--text-color-links);
+}
+
+.active {
+  border-top-color: var(--text-color-secondary);
+  border-left-color: var(--text-color-secondary);
+  border-right-color: var(--text-color-secondary);
+  border-bottom-color: var(--text-color-links);
+  background-color: var(--background-secondary);
+}
+
+.tab-icon {
+  color: var(--text-color-secondary);
+  font-size: 1.5rem !important;
+}
+
 .infoSection {
   width: 100%;
   box-sizing: border-box;
   flex-grow: 1; /* Allow sections to adjust their height if needed */
-  margin-top: 0.5rem;
   padding: 0 0.5rem 1rem;
   overflow-y: auto; /* Enable vertical scrolling for the info section */
 }

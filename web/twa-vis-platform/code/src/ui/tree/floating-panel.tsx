@@ -27,6 +27,7 @@ export default function FloatingPanelContainer(
 ) {
   const [isPanelVisible, setIsPanelVisible] = useState(true);
   const [queriedData, setQueriedData] = useState(null);
+  const [activeInfoTab, setActiveInfoTab] = React.useState(0);
 
   const showLegend = props.hideLegend == null || !props.hideLegend;
   const showInfo = props.hideInfo == null || !props.hideInfo;
@@ -139,6 +140,10 @@ export default function FloatingPanelContainer(
             <InfoTree
               data={queriedData}
               isFetching={isFetching}
+              activeTab={{
+                index: activeInfoTab, 
+                setActiveTab: setActiveInfoTab,
+              }}
             />}
         </div>
       )}
