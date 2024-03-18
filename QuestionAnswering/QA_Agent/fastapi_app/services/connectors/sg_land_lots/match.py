@@ -35,14 +35,15 @@ SELECT ?IRI ?label ?comment WHERE {{
         )
 
     def match(self, query):
-        retrieved = self.docs_retriever.retrieve(
+        retrieved, _ = self.docs_retriever.retrieve(
             key="sg_land_lots:land_use_types",
             docs_getter=self._query_data,
             linearize_func=self._linearize,
             queries=[query],
             k=1,
-        )
-        return [x[0][0]["IRI"] for x in retrieved]
+        )[0][0]
+
+        return retrieved["IRI"]
 
 
 def get_land_use_type_matcher(

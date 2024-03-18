@@ -1,9 +1,7 @@
 import os
 
 import pytest
-from redis import Redis
 
-from services.embed import TritonMPNetEmbedder
 from services.kg_client import KgClient
 from services.connectors.sg_land_lots.match import LandUseTypeMatcher
 
@@ -35,4 +33,4 @@ class TestLandUseTypeMatcher:
         actual = matcher.match(query)
 
         # Assert
-        assert actual[0] == expected
+        assert actual == expected
