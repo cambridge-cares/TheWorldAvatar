@@ -1,46 +1,59 @@
-from typing import Annotated, List, Tuple
+from typing import Annotated, Iterable, List, Tuple
 
 from fastapi import Depends
+from redis import Redis
 
+from services.embed import IEmbedder, get_embedder
+from services.redis_client import get_redis_client
 from services.kg_client import KgClient
-from services.retrieve_docs import DocsRetriever, get_docs_retriever
+from services.retrieve_docs import DocsRetriever
 from ..kg_client import get_ontospecies_kg_client
 
 
 class OntoSpeciesLiteralAligner:
-    def __init__(
-        self,
-        kg_client: KgClient,
-        docs_retriever: DocsRetriever,
-        cosine_similarity_threshold: float = 0.5,
-    ):
-        self.kg_client = kg_client
-        self.docs_retriever = docs_retriever
-        self.cosine_similarity_threshold = cosine_similarity_threshold
-
-    def _get_chemical_classes(self):
+    @classmethod
+    def _get_chemical_classes(cls, kg_client: KgClient):
         query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?Label WHERE {
     ?s a os:ChemicalClass ; rdfs:label ?Label .
 }"""
-        return [
-            x["Label"]["value"]
-            for x in self.kg_client.query(query)["results"]["bindings"]
-        ]
+        for binding in kg_client.query(query)["results"]["bindings"]:
+            yield binding["Label"]["value"]
 
-    def _get_uses(self):
+    @classmethod
+    def _get_uses(cls, kg_client: KgClient):
         query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?Label WHERE {
     ?s a os:Use ; rdfs:label ?Label .
 }"""
-        return [
-            x["Label"]["value"]
-            for x in self.kg_client.query(query)["results"]["bindings"]
-        ]
+        for binding in kg_client.query(query)["results"]["bindings"]:
+            yield binding["Label"]["value"]
+
+    def __init__(
+        self,
+        embedder: IEmbedder,
+        redis_client: Redis,
+        kg_client: KgClient,
+        cosine_similarity_threshold: float = 0.5,
+    ):
+        self.kg_client = kg_client
+        self.chemical_classes_retriever = DocsRetriever(
+            embedder=embedder,
+            redis_client=redis_client,
+            key="ontospecies:chemical_classes",
+            docs=self._get_chemical_classes(kg_client),
+        )
+        self.uses_retriever = DocsRetriever(
+            embedder=embedder,
+            redis_client=redis_client,
+            key="ontospecies:uses",
+            docs=self._get_uses(kg_client),
+        )
+        self.cosine_similarity_threshold = cosine_similarity_threshold
 
     def _filter(self, docs_scores: List[Tuple[str, float]]):
         """Filters for docs below cosine similarity threshold.
@@ -55,24 +68,23 @@ SELECT DISTINCT ?Label WHERE {
         return docs
 
     def align_chemical_classes(self, chemical_classes: List[str]):
-        docs_scores_lst = self.docs_retriever.retrieve(
-            queries=chemical_classes,
-            key="ontospecies:chemical_classes",
-            docs_getter=self._get_chemical_classes,
+        docs_scores_lst = self.chemical_classes_retriever.retrieve(
+            queries=chemical_classes
         )
         return [self._filter(docs_scores) for docs_scores in docs_scores_lst]
 
     def align_uses(self, uses: List[str]):
-        docs_scores_lst = self.docs_retriever.retrieve(
-            queries=uses,
-            key="ontospecies:uses",
-            docs_getter=self._get_uses,
-        )
+        docs_scores_lst = self.uses_retriever.retrieve(queries=uses)
         return [self._filter(docs_scores) for docs_scores in docs_scores_lst]
 
 
 def get_ontospecies_literal_aligner(
+    embedder: Annotated[IEmbedder, Depends(get_embedder)],
+    redis_client: Annotated[Redis, Depends(get_redis_client)],
     kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
-    docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
 ):
-    return OntoSpeciesLiteralAligner(kg_client=kg_client, docs_retriever=docs_retriever)
+    return OntoSpeciesLiteralAligner(
+        embedder=embedder,
+        redis_client=redis_client,
+        kg_client=kg_client,
+    )

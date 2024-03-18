@@ -16,10 +16,15 @@ from services.connectors.sg_land_lots.agent import PlotConstraints, SGLandLotsAg
 
 
 @pytest.fixture
-def agent(docs_retriever):
+def agent(redis_client, embedder):
     ontop_client = KgClient(os.getenv("KG_ENDPOINT_SG_LAND_LOTS_ONTOP"))
     bg_client = KgClient(os.getenv("KG_ENDPOINT_SG_LAND_LOTS"))
-    yield SGLandLotsAgent(ontop_client=ontop_client, bg_client=bg_client, docs_retriever=docs_retriever)
+    yield SGLandLotsAgent(
+        ontop_client=ontop_client,
+        bg_client=bg_client,
+        redis_client=redis_client,
+        embedder=embedder,
+    )
 
 
 class TestSingporeLandLotAgent:

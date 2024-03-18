@@ -15,7 +15,3 @@ def redis_client():
 @pytest.fixture(scope="module")
 def embedder():
     yield TritonMPNetEmbedder()
-
-@pytest.fixture(scope="module")
-def docs_retriever(redis_client, embedder):
-    return DocsRetriever(embedder, redis_client)

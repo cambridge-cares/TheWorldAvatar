@@ -24,10 +24,12 @@ class TestLandUseTypeMatcher:
             ),
         ],
     )
-    def test_match(self, docs_retriever, query, expected):
+    def test_match(self, embedder, redis_client, query, expected):
         # Arrange
         kg_client = KgClient(os.getenv("KG_ENDPOINT_SG_LAND_LOTS"))
-        matcher = LandUseTypeMatcher(kg_client=kg_client, docs_retriever=docs_retriever)
+        matcher = LandUseTypeMatcher(
+            kg_client=kg_client, embedder=embedder, redis_client=redis_client
+        )
 
         # Act
         actual = matcher.match(query)

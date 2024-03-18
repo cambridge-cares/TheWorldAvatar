@@ -2,7 +2,7 @@ from services.retrieve_docs import DocsRetriever
 
 
 class TestDocsRetriever:
-    def test_retrieve(self, docs_retriever: DocsRetriever):
+    def test_retrieve(self, redis_client, embedder):
         # Arrange
         docs = [
             "happy",
@@ -11,18 +11,18 @@ class TestDocsRetriever:
             "melancholic",
             "joyful",
         ]
+        docs_retriever = DocsRetriever(
+            embedder=embedder, redis_client=redis_client, key="test", docs=iter(docs)
+        )
         queries = ["depressed", "contented"]
-        expected = [["sad", "melancholic"], ["happy", "joyful"]]
 
         # Act
-        retrieved = docs_retriever.retrieve(
-            key="test", docs_getter=lambda: docs,
-            queries=queries, k=2
-        )
+        retrieved = docs_retriever.retrieve(queries=queries, k=2)
 
         # Assert
-        assert len(retrieved) == 2
+        expected = [["sad", "melancholic"], ["happy", "joyful"]]
+        assert len(retrieved) == len(expected)
+
         actual = [[doc for doc, _ in lst] for lst in retrieved]
-        print(actual)
         assert set(actual[0]) == set(expected[0])
         assert set(actual[1]) == set(expected[1])

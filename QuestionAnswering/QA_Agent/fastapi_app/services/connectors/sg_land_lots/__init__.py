@@ -4,9 +4,12 @@ import time
 from typing import Annotated, List
 
 from fastapi import Depends
+from redis import Redis
 
 from model.qa import QAStep
-from services.retrieve_docs import DocsRetriever, get_docs_retriever
+from services.embed import IEmbedder, get_embedder
+from services.redis_client import get_redis_client
+from services.retrieve_docs import DocsRetriever
 from services.connectors.agent_connector import AgentConnectorBase
 from .constants import PlotAttrKey
 from .agent import SGLandLotsAgent, get_sg_land_lots_agent
@@ -23,14 +26,20 @@ logger = logging.getLogger(__name__)
 class SGLandLotsAgentConnector(AgentConnectorBase):
     def __init__(
         self,
+        embedder: IEmbedder,
+        redis_client: Redis,
         plot_constraints_parser: PlotConstraintsParser,
         sg_land_plots_agent: SGLandLotsAgent,
-        docs_retriever: DocsRetriever,
         attr_agg_parser: AttributeAggregateParser,
     ):
         self.plot_constraints_parser = plot_constraints_parser
         self.agent = sg_land_plots_agent
-        self.docs_retriever = docs_retriever
+        self.plot_attribute_keys_retriever = DocsRetriever(
+            embedder=embedder,
+            redis_client=redis_client,
+            key="sg_land_lots:attribute_keys",
+            docs=[x.value for x in PlotAttrKey],
+        )
         self.attr_agg_parser = attr_agg_parser
 
     @cached_property
@@ -138,9 +147,7 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
     def _align_attributes(self, attributes: List[str]):
         logger.info("Aligning attribute keys...")
         timestamp = time.time()
-        retrieved = self.docs_retriever.retrieve(
-            key="sg_land_lots:attribute_keys",
-            docs_getter=lambda: [x.value for x in PlotAttrKey],
+        retrieved = self.plot_attribute_keys_retriever.retrieve(
             queries=["".join([x.capitalize() for x in attr]) for attr in attributes],
             k=1,
         )
@@ -256,18 +263,20 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
 
 
 def get_sg_land_lots_agent_connector(
+    embedder: Annotated[IEmbedder, Depends(get_embedder)],
+    redis_client: Annotated[Redis, Depends(get_redis_client)],
     plot_constraints_parser: Annotated[
         PlotConstraintsParser, Depends(get_plot_constraint_parser)
     ],
     sg_land_lots_agent: Annotated[SGLandLotsAgent, Depends(get_sg_land_lots_agent)],
-    docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
     attr_agg_parser: Annotated[
         AttributeAggregateParser, Depends(get_attribute_aggregate_parser)
     ],
 ):
     return SGLandLotsAgentConnector(
+        embedder=embedder,
+        redis_client=redis_client,
         plot_constraints_parser=plot_constraints_parser,
         sg_land_plots_agent=sg_land_lots_agent,
-        docs_retriever=docs_retriever,
         attr_agg_parser=attr_agg_parser,
     )

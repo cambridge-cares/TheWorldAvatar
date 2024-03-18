@@ -1,14 +1,17 @@
 from functools import cached_property
 import logging
 import time
-from typing import Annotated, List, Type
+from typing import Annotated, List
 from fastapi import Depends
 
+from redis import Redis
 import unit_parse
 
+from services.redis_client import get_redis_client
+from services.embed import IEmbedder, get_embedder
 from model.qa import QAStep
 from services.kg_client import KgClient
-from services.retrieve_docs import DocsRetriever, get_docs_retriever
+from services.retrieve_docs import DocsRetriever
 from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
 from services.connectors.agent_connector import AgentConnectorBase
 from .constants import (
@@ -26,24 +29,38 @@ logger = logging.getLogger(__name__)
 
 
 class OntoSpeciesAgentConnector(AgentConnectorBase):
-    _SPECIES_ATTR_CLSES: List[Type[SpeciesAttrKey]] = [
-        SpeciesChemicalClassAttrKey,
-        SpeciesUseAttrKey,
-        SpeciesIdentifierAttrKey,
-        SpeciesPropertyAttrKey,
-    ]
-    _SPECIES_ATTR_KEYS = [x.value for cls in _SPECIES_ATTR_CLSES for x in cls]
-
     def __init__(
         self,
+        embedder: IEmbedder,
+        redis_client: Redis,
         kg_client: KgClient,
         ontospecies_agent: OntoSpeciesAgent,
-        docs_retriever: DocsRetriever,
         constraint_parser: ConstraintParser,
     ):
         self.kg_client = kg_client
         self.agent = ontospecies_agent
-        self.docs_retriever = docs_retriever
+        # TODO: Create a custom OntoSpeciesAttributeKeyRetriever class that indexes 'value' and 'superclass'
+        self.os_attribute_keys_retriever = DocsRetriever(
+            embedder=embedder,
+            redis_client=redis_client,
+            key="ontospecies:attribute_keys",
+            docs=[
+                x.value
+                for cls in (
+                    SpeciesChemicalClassAttrKey,
+                    SpeciesUseAttrKey,
+                    SpeciesIdentifierAttrKey,
+                    SpeciesPropertyAttrKey,
+                )
+                for x in cls
+            ],
+        )
+        self.os_property_keys_retriever = DocsRetriever(
+            embedder=embedder,
+            redis_client=redis_client,
+            key="ontospecies:property_keys",
+            docs=[x.value for x in SpeciesPropertyAttrKey],
+        )
         self.constraint_parser = constraint_parser
 
     @cached_property
@@ -113,10 +130,8 @@ class OntoSpeciesAgentConnector(AgentConnectorBase):
         queries = [
             "".join([w.capitalize() for w in attr.split()]) for attr in attributes
         ]
-        docs_scores_lst = self.docs_retriever.retrieve(
+        docs_scores_lst = self.os_attribute_keys_retriever.retrieve(
             queries=queries,
-            key="ontospecies:attribute_keys",
-            docs_getter=lambda: self._SPECIES_ATTR_KEYS,
             k=1,
         )
         closest_neighs = [docs_scores[0][0] for docs_scores in docs_scores_lst]
@@ -187,10 +202,8 @@ class OntoSpeciesAgentConnector(AgentConnectorBase):
         queries = [
             "".join([w.capitalize() for w in prop.split()]) for prop in properties
         ]
-        docs_scores_lst = self.docs_retriever.retrieve(
+        docs_scores_lst = self.os_property_key_retriever.retrieve(
             queries=queries,
-            key="ontospecies:property_keys",
-            docs_getter=lambda: [x.value for x in SpeciesPropertyAttrKey],
             k=1,
         )
         return [
@@ -274,14 +287,16 @@ class OntoSpeciesAgentConnector(AgentConnectorBase):
 
 
 def get_ontospecies_agent_connector(
+    embedder: Annotated[IEmbedder, Depends(get_embedder)],
+    redis_client: Annotated[Redis, Depends(get_redis_client)],
     kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
     ontospecies_agent: Annotated[OntoSpeciesAgent, Depends(get_ontospecies_agent)],
-    docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
     constraint_parser: Annotated[ConstraintParser, Depends(get_constraint_parser)],
 ):
     return OntoSpeciesAgentConnector(
+        embedder=embedder,
+        redis_client=redis_client,
         kg_client=kg_client,
         ontospecies_agent=ontospecies_agent,
-        docs_retriever=docs_retriever,
         constraint_parser=constraint_parser,
     )
