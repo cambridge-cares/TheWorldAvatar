@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import Literal, Optional
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 
@@ -8,20 +9,18 @@ logger = logging.getLogger()
 
 
 class TextEmbeddingSettings(BaseSettings):
+    model_config = ConfigDict(_env_prefix="TEXT_EMBEDDING_")
+
     server: Literal["openai", "triton"] = "triton"
     url: Optional[str] = None
     model: Optional[str] = None
 
-    class Config:
-        env_prefix = "TEXT_EMBEDDING_"
-
 
 class FunctionCallingSettings(BaseSettings):
+    model_config = ConfigDict(_env_prefix="FUNCTION_CALLING_")
+
     url: Optional[str] = None
     model: Optional[str] = None
-
-    class Config:
-        env_prefix = "FUNCTION_CALLING_"
 
 
 QA_SUPERDOMAIN = os.getenv("QA_SUPERDOMAIN", "chemistry")
