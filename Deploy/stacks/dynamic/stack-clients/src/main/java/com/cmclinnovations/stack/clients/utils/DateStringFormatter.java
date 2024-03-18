@@ -23,7 +23,7 @@ public class DateStringFormatter {
 
     /**
      * @param template is the actual template in the config file of the data uploader
-     * @param unormatted example: "yyyyddmm" or "yyyymm"
+     * @param unformatted example: "yyyyddmmz" or "yyyymm"    
      * @return "yyyy/dd/mm" or "yyyy/mm"
      */
     public static String customDateStringFormatter(String unformatted, String template) {
