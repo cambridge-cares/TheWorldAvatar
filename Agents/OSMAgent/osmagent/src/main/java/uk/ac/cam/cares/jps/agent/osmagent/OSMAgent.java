@@ -41,7 +41,8 @@ public class OSMAgent extends JPSAgent {
     public String landGeometry;
     public String landUseCsv;
     public static final String usageTable = "usage.usage";
-
+    public static final String KEY_BOUND = "bound_wkt";
+    public static final String KEY_BOUND_SRID = "bound_srid";
     public void init() {
         readConfig();
         this.pointTable = osmSchema + "." + "points";
@@ -72,22 +73,37 @@ public class OSMAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         try {
+            String bound = null;
+            Integer boundSRID = null;
+
+            if (requestParams.has(KEY_BOUND)) {
+                bound = requestParams.getString(KEY_BOUND);
+                if (requestParams.has(KEY_BOUND_SRID)) {
+                    boundSRID = requestParams.getInt(KEY_BOUND_SRID);
+                }
+                else {
+                    throw new JPSRuntimeException("bound_wkt was specified for running OSM agent for selected area, but its SRID was not specified.");
+                }
+
+            }
+
             UsageMatcher usageMatcher = new UsageMatcher(dbUrl, dbUser, dbPassword);
             UsageShareCalculator shareCalculator = new UsageShareCalculator(dbUrl, dbUser, dbPassword);
+            GeometryMatcher geometryMatcher = new GeometryMatcher(dbUrl, dbUser, dbPassword);
 
             // match OSM usage to OntoBuiltEnv:PropertyUsage classes
             usageMatcher.checkAndAddColumns(pointTable, polygonTable);
             usageMatcher.updateOntoBuilt(pointTable, polygonTable);
 
             // match OSM geometries with building IRI
-            GeometryMatcher.matchGeometry(dbUrl, dbUser, dbPassword, pointTable, polygonTable);
+            geometryMatcher.matchGeometry(pointTable, polygonTable, bound, boundSRID);
 
             // intialise usage table and copy building IRI that has OSM usage
             usageMatcher.copyFromOSM(pointTable, polygonTable, usageTable);
 
             // match buildings without OSM usage with land use
             if (!landUseTable.isEmpty()) {
-                shareCalculator.updateLandUse(usageTable, landUseTable, landGeometry, landUseCsv);
+                geometryMatcher.updateLandUse(usageTable, landUseTable, landGeometry, landUseCsv, bound, boundSRID);
             }
 
             // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
