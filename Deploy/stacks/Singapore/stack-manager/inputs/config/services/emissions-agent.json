@@ -6,7 +6,8 @@
                 "Image": "ghcr.io/cambridge-cares/emissions-agent:1.4-dev-live-ship-data-SNAPSHOT",
                 "Env": [
                     "DATABASE=postgres",
-                    "PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000"
+                    "PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000",
+                    "SCALING_FACTOR=100"
                 ],
                 "Configs": [
                     {
