@@ -335,8 +335,10 @@ public class GDALClient extends ContainerClient {
             String inputFormat = fileTypeEntry.getKey();
             for (String filePath : fileTypeEntry.getValue()) {
 
-                addCustomCRStoPostGis(geoserverContainerId, postGISContainerId, gdalContainerId, filePath, databaseName,
-                        options.getSridOut());
+                if (null != options.getSridIn()) {
+                    addCustomCRStoPostGis(geoserverContainerId, postGISContainerId, gdalContainerId, filePath,
+                            databaseName, options.getSridOut());
+                }
 
                 postgresFiles.add(processFile(gdalContainerId, inputFormat, filePath, databaseName, schemaName,
                         layerName, tempDir, options, mdimSettings, createdDirectories));
