@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from model.qa import QAData, QAMode, QAStep
-from services.connector import (
+from services.connectors import (
     AgentConnectorMediator,
     get_chemistry_mediator,
     get_cities_mediator,

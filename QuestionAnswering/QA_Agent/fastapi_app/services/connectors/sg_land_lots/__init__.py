@@ -7,9 +7,9 @@ from fastapi import Depends
 
 from model.qa import QAStep
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
-from services.connector.agent_connector import AgentConnectorBase
+from services.connectors.agent_connector import AgentConnectorBase
 from .constants import PlotAttrKey
-from .agent import SingaporeLandLotsAgent, get_singapore_land_lots_agent
+from .agent import SGLandLotsAgent, get_sg_land_lots_agent
 from .parse import (
     AttributeAggregateParser,
     PlotConstraintsParser,
@@ -20,16 +20,16 @@ from .parse import (
 logger = logging.getLogger(__name__)
 
 
-class SingaporeLandLotsAgentConnector(AgentConnectorBase):
+class SGLandLotsAgentConnector(AgentConnectorBase):
     def __init__(
         self,
         plot_constraints_parser: PlotConstraintsParser,
-        singapore_land_plots_agent: SingaporeLandLotsAgent,
+        sg_land_plots_agent: SGLandLotsAgent,
         docs_retriever: DocsRetriever,
         attr_agg_parser: AttributeAggregateParser,
     ):
         self.plot_constraints_parser = plot_constraints_parser
-        self.agent = singapore_land_plots_agent
+        self.agent = sg_land_plots_agent
         self.docs_retriever = docs_retriever
         self.attr_agg_parser = attr_agg_parser
 
@@ -139,7 +139,7 @@ class SingaporeLandLotsAgentConnector(AgentConnectorBase):
         logger.info("Aligning attribute keys...")
         timestamp = time.time()
         retrieved = self.docs_retriever.retrieve(
-            key="singapore:attribute_keys",
+            key="sg_land_lots:attribute_keys",
             docs_getter=lambda: [x.value for x in PlotAttrKey],
             queries=["".join([x.capitalize() for x in attr]) for attr in attributes],
             k=1,
@@ -252,21 +252,21 @@ class SingaporeLandLotsAgentConnector(AgentConnectorBase):
         return "IR", steps, data
 
 
-def get_singapore_land_lots_agent_connector(
+def get_sg_land_lots_agent_connector(
     plot_constraints_parser: Annotated[
         PlotConstraintsParser, Depends(get_plot_constraint_parser)
     ],
-    singapore_land_lots_agent: Annotated[
-        SingaporeLandLotsAgent, Depends(get_singapore_land_lots_agent)
+    sg_land_lots_agent: Annotated[
+        SGLandLotsAgent, Depends(get_sg_land_lots_agent)
     ],
     docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
     attr_agg_parser: Annotated[
         AttributeAggregateParser, Depends(get_attribute_aggregate_parser)
     ],
 ):
-    return SingaporeLandLotsAgentConnector(
+    return SGLandLotsAgentConnector(
         plot_constraints_parser=plot_constraints_parser,
-        singapore_land_plots_agent=singapore_land_lots_agent,
+        sg_land_plots_agent=sg_land_lots_agent,
         docs_retriever=docs_retriever,
         attr_agg_parser=attr_agg_parser,
     )

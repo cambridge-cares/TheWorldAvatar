@@ -10,18 +10,20 @@ from model.constraint import (
     LogicalOperator,
     NumericalOperator,
 )
-from services.connector.singapore_land_lots.constants import PlotAttrKey
+from services.connectors.sg_land_lots.constants import PlotAttrKey
 from services.kg_client import KgClient
-from services.connector.singapore_land_lots.agent import PlotConstraints, SingaporeLandLotsAgent
+from services.connectors.sg_land_lots.agent import PlotConstraints, SGLandLotsAgent
+
 
 @pytest.fixture
-def agent():
-    ontop_client = KgClient(os.getenv("KG_ENDPOINT_SINGAPORE_ONTOP"))
-    bg_endpoint = os.getenv("KG_ENDPOINT_SINGAPORE")
-    yield SingaporeLandLotsAgent(ontop_client=ontop_client, bg_endpoint=bg_endpoint)
+def agent(docs_retriever):
+    ontop_client = KgClient(os.getenv("KG_ENDPOINT_SG_LAND_LOTS_ONTOP"))
+    bg_client = KgClient(os.getenv("KG_ENDPOINT_SG_LAND_LOTS"))
+    yield SGLandLotsAgent(ontop_client=ontop_client, bg_client=bg_client, docs_retriever=docs_retriever)
+
 
 class TestSingporeLandLotAgent:
-    def test_findPlotIri(self, agent: SingaporeLandLotsAgent):
+    def test_findPlotIri(self, agent: SGLandLotsAgent):
         # Arrange
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
@@ -58,12 +60,12 @@ class TestSingporeLandLotAgent:
         # Assert
         assert "https://www.theworldavatar.com/kg/landplot/94739" in iris
 
-    def test_findPlotIri_greatestPlotArea(self, agent: SingaporeLandLotsAgent):
+    def test_findPlotIri_greatestPlotArea(self, agent: SGLandLotsAgent):
         # Arrange
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
             plot_area=ExtremeValueConstraint.MAX,
-            num=2
+            num=2,
         )
 
         # Act
@@ -73,7 +75,7 @@ class TestSingporeLandLotAgent:
         assert len(iris) == 2
         print(iris)
 
-    def test_lookupPlotAttributes(self, agent: SingaporeLandLotsAgent):
+    def test_lookupPlotAttributes(self, agent: SGLandLotsAgent):
         # Arrange
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
@@ -87,22 +89,38 @@ class TestSingporeLandLotAgent:
         )
 
         # Act
-        data = agent.lookup_plot_attributes(plot_args, attr_keys=[PlotAttrKey.PLOT_AREA])
+        data = agent.lookup_plot_attributes(
+            plot_args, attr_keys=[PlotAttrKey.PLOT_AREA]
+        )
 
         # Assert
         assert data.vars == ["IRI", "PlotArea"]
-        assert all("IRI" in binding and "PlotArea" in binding for binding in data.bindings)
+        assert all(
+            "IRI" in binding and "PlotArea" in binding for binding in data.bindings
+        )
 
-    def test_computeAggregatePlotAttributes(self, agent: SingaporeLandLotsAgent):
+    def test_computeAggregatePlotAttributes(self, agent: SGLandLotsAgent):
         # Arrange
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075"
         )
-        attr_aggs = [(PlotAttrKey.PLOT_AREA, AggregateOperator.AVG), (PlotAttrKey.GROSS_PLOT_RATIO, AggregateOperator.MIN)]
-        
+        attr_aggs = [
+            (PlotAttrKey.PLOT_AREA, AggregateOperator.AVG),
+            (PlotAttrKey.GROSS_PLOT_RATIO, AggregateOperator.MIN),
+        ]
+
         # Act
-        data = agent.compute_aggregate_plot_attributes(plot_constraints=plot_args, attr_aggs=attr_aggs)
+        data = agent.compute_aggregate_plot_attributes(
+            plot_constraints=plot_args, attr_aggs=attr_aggs
+        )
 
         # Assert
-        assert data.vars == ["PlotAreaNumericalValueAVG", "GrossPlotRatioNumericalValueMIN"]
-        assert all("PlotAreaNumericalValueAVG" in binding and "GrossPlotRatioNumericalValueMIN" in binding for binding in data.bindings)
+        assert data.vars == [
+            "PlotAreaNumericalValueAVG",
+            "GrossPlotRatioNumericalValueMIN",
+        ]
+        assert all(
+            "PlotAreaNumericalValueAVG" in binding
+            and "GrossPlotRatioNumericalValueMIN" in binding
+            for binding in data.bindings
+        )

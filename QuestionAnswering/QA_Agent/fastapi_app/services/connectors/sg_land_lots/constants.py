@@ -10,8 +10,8 @@ class PlotAttrKey(Enum):
 
 
 LAND_USE_TYPES = (
-    files("resources.cities.singapore_land_lots")
+    files("resources.cities.sg_land_lots")
     .joinpath("land_use_type_iris.txt")
     .read_text()
-    .split("/n")
+    .split()
 )

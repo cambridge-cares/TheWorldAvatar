@@ -16,8 +16,8 @@ from services.kg_client import KgClient
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from .constants import PlotAttrKey
 from .kg_client import (
-    get_singapore_bg_client,
-    get_singapore_ontop_client,
+    get_sg_land_lots_bg_client,
+    get_sg_land_lots_ontop_client,
 )
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class PlotConstraints:
         return ", ".join(agg)
 
 
-class SingaporeLandLotsAgent:
+class SGLandLotsAgent:
     _ATTRKEY2PRED = {
         PlotAttrKey.LAND_USE_TYPE: "ontozoning:hasLandUseType",
         PlotAttrKey.GROSS_PLOT_RATIO: "^opr:appliesTo/opr:allowsGrossPlotRatio/om:hasValue",
@@ -281,7 +281,7 @@ SELECT {vars} WHERE {{
 
     def retrieve_concepts(self, concepts: List[str]):
         retrieved = self.docs_retriever.retrieve(
-            key="singapore:concepts",
+            key="sg_land_lots:concepts",
             queries=concepts,
             docs_getter=self._get_nodes_data,
             linearize_func=lambda x: "{IRI}\n{attributes}".format(IRI=x["IRI"], attributes="\n".join(x["attributes"])),
@@ -297,11 +297,11 @@ SELECT {vars} WHERE {{
         )
 
 
-def get_singapore_land_lots_agent(
-    bg_client: Annotated[KgClient, Depends(get_singapore_bg_client)],
-    ontop_client: Annotated[KgClient, Depends(get_singapore_ontop_client)],
+def get_sg_land_lots_agent(
+    bg_client: Annotated[KgClient, Depends(get_sg_land_lots_bg_client)],
+    ontop_client: Annotated[KgClient, Depends(get_sg_land_lots_ontop_client)],
     docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
 ):
-    return SingaporeLandLotsAgent(
+    return SGLandLotsAgent(
         bg_client=bg_client, ontop_client=ontop_client, docs_retriever=docs_retriever
     )

@@ -1,6 +1,3 @@
-from typing import List, Tuple
-
-
 def extract_name(iri: str):
     if "#" in iri:
         iri = iri.rsplit("#", maxsplit=1)[-1]
