@@ -173,7 +173,10 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         steps.append(
             QAStep(
                 action="lookup_plot_attributes",
-                arguments=str(constraints),
+                arguments=dict(
+                    plot_constraints=str(constraints),
+                    attributes=[x.value for x in attr_keys],
+                ),
                 latency=latency,
             )
         )
@@ -256,9 +259,7 @@ def get_sg_land_lots_agent_connector(
     plot_constraints_parser: Annotated[
         PlotConstraintsParser, Depends(get_plot_constraint_parser)
     ],
-    sg_land_lots_agent: Annotated[
-        SGLandLotsAgent, Depends(get_sg_land_lots_agent)
-    ],
+    sg_land_lots_agent: Annotated[SGLandLotsAgent, Depends(get_sg_land_lots_agent)],
     docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)],
     attr_agg_parser: Annotated[
         AttributeAggregateParser, Depends(get_attribute_aggregate_parser)

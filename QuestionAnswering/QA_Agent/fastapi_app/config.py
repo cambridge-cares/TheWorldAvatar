@@ -9,7 +9,7 @@ logger = logging.getLogger()
 
 
 class TextEmbeddingSettings(BaseSettings):
-    model_config = ConfigDict(_env_prefix="TEXT_EMBEDDING_")
+    model_config = ConfigDict(env_prefix="TEXT_EMBEDDING_")
 
     server: Literal["openai", "triton"] = "triton"
     url: Optional[str] = None
@@ -17,7 +17,7 @@ class TextEmbeddingSettings(BaseSettings):
 
 
 class FunctionCallingSettings(BaseSettings):
-    model_config = ConfigDict(_env_prefix="FUNCTION_CALLING_")
+    model_config = ConfigDict(env_prefix="FUNCTION_CALLING_")
 
     url: Optional[str] = None
     model: Optional[str] = None
