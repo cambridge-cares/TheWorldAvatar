@@ -4,12 +4,12 @@ from fastapi import Depends
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from services.kg_client import KgClient
 from .constants import LAND_USE_TYPES
-from .kg_client import get_singapore_bg_client
+from .kg_client import get_sg_land_lots_bg_client
 
 
 class LandUseTypeMatcher:
-    _REDIS_KEY_PREFIX = "singapore:land_use_types:"
-    _INDEX_NAME = "idx:singapore:land_use_types_vss"
+    _REDIS_KEY_PREFIX = "sg_land_lots:land_use_types:"
+    _INDEX_NAME = "idx:sg_land_lots:land_use_types_vss"
 
     def __init__(self, kg_client: KgClient, docs_retriever: DocsRetriever):
         self.kg_client = kg_client
@@ -36,7 +36,7 @@ SELECT ?IRI ?label ?comment WHERE {{
 
     def match(self, query):
         retrieved = self.docs_retriever.retrieve(
-            key="singapore:land_use_types",
+            key="sg_land_lots:land_use_types",
             docs_getter=self._query_data,
             linearize_func=self._linearize,
             queries=[query],
@@ -46,7 +46,7 @@ SELECT ?IRI ?label ?comment WHERE {{
 
 
 def get_land_use_type_matcher(
-    kg_client: Annotated[KgClient, Depends(get_singapore_bg_client)],
+    kg_client: Annotated[KgClient, Depends(get_sg_land_lots_bg_client)],
     docs_retriever: Annotated[DocsRetriever, Depends(get_docs_retriever)]
 ):
     return LandUseTypeMatcher(

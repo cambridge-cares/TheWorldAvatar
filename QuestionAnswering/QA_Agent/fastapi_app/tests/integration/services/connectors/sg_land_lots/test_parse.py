@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from services.connector.singapore_land_lots.agent import PlotConstraints
-from services.connector.singapore_land_lots.match import LandUseTypeMatcher
+from services.connectors.sg_land_lots.agent import PlotConstraints
+from services.connectors.sg_land_lots.match import LandUseTypeMatcher
 from services.kg_client import KgClient
 from model.constraint import (
     AtomicNumericalConstraint,
@@ -12,7 +12,7 @@ from model.constraint import (
 )
 from services.func_call import OpenAIFuncCaller
 from services.utils.parse import SchemaParser
-from services.connector.singapore_land_lots.parse import (
+from services.connectors.sg_land_lots.parse import (
     NumericalArgConstraintParser,
     PlotConstraintsParser,
 )
@@ -31,7 +31,7 @@ def numerical_arg_constraint_parser(schema_parser):
 
 @pytest.fixture
 def land_use_type_matcher(docs_retriever):
-    kg_client = KgClient(os.getenv("KG_ENDPOINT_SINGAPORE"))
+    kg_client = KgClient(os.getenv("KG_ENDPOINT_SG_LAND_LOTS"))
     matcher = LandUseTypeMatcher(kg_client=kg_client, docs_retriever=docs_retriever)
 
     yield matcher

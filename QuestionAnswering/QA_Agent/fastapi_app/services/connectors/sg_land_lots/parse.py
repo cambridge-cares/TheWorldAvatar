@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from model.aggregate import AggregateOperator
-from services.connector.singapore_land_lots.constants import PlotAttrKey
+from services.connectors.sg_land_lots.constants import PlotAttrKey
 from model.constraint import (
     AtomicNumericalConstraint,
     CompoundNumericalConstraint,

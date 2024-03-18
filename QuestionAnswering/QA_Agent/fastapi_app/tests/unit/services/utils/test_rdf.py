@@ -1,5 +1,5 @@
 import pytest
-from services.utils.rdf import extract_name, linearize_node
+from services.utils.rdf import extract_name
 
 
 class TestRdf:

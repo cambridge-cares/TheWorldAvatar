@@ -12,9 +12,9 @@ from .ontospecies import (
     OntoSpeciesAgentConnector,
     get_ontospecies_agent_connector,
 )
-from .singapore_land_lots import (
-    SingaporeLandLotsAgentConnector,
-    get_singapore_land_lots_agent_connector,
+from .sg_land_lots import (
+    SGLandLotsAgentConnector,
+    get_sg_land_lots_agent_connector,
 )
 
 
@@ -90,12 +90,12 @@ def get_chemistry_mediator(
 @cache
 def get_cities_mediator(
     func_call_predictor: Annotated[IFuncCaller, Depends(get_func_caller)],
-    singapore_land_lots_agent_connector: Annotated[
-        SingaporeLandLotsAgentConnector,
-        Depends(get_singapore_land_lots_agent_connector),
+    sg_land_lots_agent_connector: Annotated[
+        SGLandLotsAgentConnector,
+        Depends(get_sg_land_lots_agent_connector),
     ],
 ):
     return AgentConnectorMediator(
         func_call_predictor=func_call_predictor,
-        domain2connector=dict(singapore_land_lots=singapore_land_lots_agent_connector),
+        domain2connector=dict(sg_land_lots=sg_land_lots_agent_connector),
     )

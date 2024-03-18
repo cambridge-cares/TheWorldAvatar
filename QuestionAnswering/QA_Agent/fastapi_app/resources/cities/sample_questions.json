@@ -1,6 +1,6 @@
 [
     {
-        "domain": "singapore_land_lots",
+        "domain": "sg_land_lots",
         "label": "Singapore's Land Lots",
         "description": "Data about Singapore's master plan zoning",
         "questions": [

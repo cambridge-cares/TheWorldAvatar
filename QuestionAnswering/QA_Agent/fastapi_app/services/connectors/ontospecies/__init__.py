@@ -10,7 +10,7 @@ from model.qa import QAStep
 from services.kg_client import KgClient
 from services.retrieve_docs import DocsRetriever, get_docs_retriever
 from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
-from services.connector.agent_connector import AgentConnectorBase
+from services.connectors.agent_connector import AgentConnectorBase
 from .constants import (
     SpeciesAttrKey,
     SpeciesChemicalClassAttrKey,
