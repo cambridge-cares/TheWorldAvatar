@@ -439,7 +439,7 @@ public class GDALClient extends ContainerClient {
         String execId = createComplexCommand(postGISContainerId, "bash", "-c",
                 "(which raster2pgsql || (apt update && apt install -y postgis && rm -rf /var/lib/apt/lists/*)) && " +
                 // https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
-                        "raster2pgsql " + mode + " -C -t auto -R -F -I -M -Y"
+                        "raster2pgsql " + mode + " -C -t auto -R -F -q -I -M -Y"
                         + geotiffFiles.stream().collect(Collectors.joining("' '", " '", "' "))
                         + layerName
                         + " | psql -U " + postgreSQLEndpoint.getUsername() + " -d " + database + " -w")
