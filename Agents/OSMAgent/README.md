@@ -85,11 +85,21 @@ The agent has been implemented to work in the stack. To do so, place [osmagent.j
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
 ### 4.3 Running the Agent
-The agent is reachable at the `/update` endpoint. No request parameters is needed.
+The agent is reachable at the `/update` endpoint. Two optional request parameters can be specified to run OSM agent for a selected area:
+- ```bound_wkt```: (optional) WKT string of the area for which the OSM agent is to be run for.
+- ```bound_srid```: (optional) EPSG SRID of ```bound_wkt``` specified as an integer, must be specified if ```bound_wkt``` is specified.
 
-To run the agent, run the following cURL command:
+To run the agent for the whole of the database and not just geometries in the selected area, send the request without specifying any parameters.
+
+To run the agent for the whole of the database, run the following cURL command:
 ```
 curl -X POST localhost:3838/osmagent/update
+```
+
+
+As an example, to run the agent for a selected area, run the following cURL command:
+```
+ curl -X POST -d "bound_wkt=Polygon ((7.59874554 49.20197125, 7.60999879 49.20420408, 7.61422963 49.19662298, 7.603001 49.19423612, 7.603001 49.19423612, 7.59874554 49.20197125))" -d "bound_srid=4326" localhost:3838/osmagent/update```
 ```
 
 ## 5. Debugging
@@ -102,7 +112,6 @@ To debug the agent, replace [`osmagent-debug.json`](stack-manager-config/inputs/
 Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager]'s main folder.
 The debugger port will be available at 5005.
 
-
 ## 6. TWA-VF Visualization
 The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. 
 
@@ -112,10 +121,6 @@ The result of OSMAgent - Building Usages is designed to be compatible with TWA-V
 
 #### Setting up TWA-VF
 1) Place [`data.json`](stack-manager-config/data/webspace/data.json) inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation) in the stack-manager.
-
-
-#### To-Do in the future
-Current approach of SPARQL query in [`building_usage.sparql`](stack-manager-config/data/fia-queries/queries/building_usage.sparql) involves processing an IRI string for visualisation purposes. This is done here as a work-around for performance reason as querying the same information semantically from the KG is dramatically slower. Note that extracting information from IRI strings is generally unacceptable and should not be copied or imitated. When performance issue is resolved, the semantically correct SPARQL query can be found [here](stack-manager-config/data/fia-queries/queries/native/).
 
 
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
