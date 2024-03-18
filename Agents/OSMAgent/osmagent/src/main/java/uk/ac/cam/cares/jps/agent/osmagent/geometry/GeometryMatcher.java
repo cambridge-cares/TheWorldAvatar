@@ -74,7 +74,7 @@ public class GeometryMatcher {
                 pointMin = result.getJSONObject(0).getInt("min");
                 pointMax = result.getJSONObject(0).getInt("max");
             } else {
-                throw new JPSRuntimeException("fail");
+                throw new JPSRuntimeException("Failed, no ogc_fid column in OSM points table.");
             }
 
             // get min and max IDs for polygons table
@@ -84,7 +84,7 @@ public class GeometryMatcher {
                 polygonMin = result.getJSONObject(0).getInt("min");
                 polygonMax = result.getJSONObject(0).getInt("max");
             } else {
-                throw new JPSRuntimeException("fail");
+                throw new JPSRuntimeException("Failed, no ogc_fid column in OSM points table.");
             }
 
             // matching osm point geometries with CityDB building footprints
@@ -99,6 +99,8 @@ public class GeometryMatcher {
                 throw new JPSRuntimeException(e);
             }
 
+            System.out.println("Finished OSM points matching.");
+
             try (Connection connection = rdbStoreClient.getConnection();
                  Statement statement = connection.createStatement()) {
                 for (int i = polygonMin; i <= polygonMax; i++) {
@@ -109,6 +111,8 @@ public class GeometryMatcher {
                 e.printStackTrace();
                 throw new JPSRuntimeException(e);
             }
+
+            System.out.println("Finished OSM polygons matching.");
         }
         else {
             result = rdbStoreClient.executeQuery(boundID(pointTable, bound, boundSRID, pointSRID));
@@ -124,6 +128,8 @@ public class GeometryMatcher {
                 throw new JPSRuntimeException(e);
             }
 
+            System.out.println("Finished OSM points matching.");
+
             result = rdbStoreClient.executeQuery(boundID(polygonTable, bound, boundSRID, polygonSRID));
 
             try (Connection connection = rdbStoreClient.getConnection();
@@ -136,6 +142,8 @@ public class GeometryMatcher {
                 e.printStackTrace();
                 throw new JPSRuntimeException(e);
             }
+
+            System.out.println("Finished OSM polygons matching.");
         }
 
         // delete temporary tables
