@@ -3,4 +3,5 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Class rdf:about="http://www.opengis.net/citygml/building/2.0/Building"/>
+    <owl:Class rdf:about="http://www.opengis.net/citygml/cityfurniture/2.0/CityFurniture"/>
 </rdf:RDF>
