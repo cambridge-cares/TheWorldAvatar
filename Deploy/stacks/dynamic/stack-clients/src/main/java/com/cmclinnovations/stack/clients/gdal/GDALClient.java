@@ -308,9 +308,9 @@ public class GDALClient extends ContainerClient {
             errorStream.reset();
         }
 
-        String hereDocument = "CREATE TABLE IF NOT EXISTS " + layername
-                + "_times (bands SERIAL, time " + timeSqlType + " PRIMARY KEY); " +
-                "INSERT INTO " + layername + "_times (time) VALUES " + dateTimes.toString() + ";";
+        String hereDocument = "CREATE TABLE IF NOT EXISTS \"" + layername
+                + "_times\" (bands SERIAL, time " + timeSqlType + " PRIMARY KEY); " +
+                "INSERT INTO \"" + layername + "_times\" (time) VALUES " + dateTimes.toString() + ";";
         String execId = createComplexCommand(postGISContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
                 .withHereDocument(hereDocument)
