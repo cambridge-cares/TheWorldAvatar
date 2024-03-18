@@ -64,7 +64,15 @@
 :root {
     /** Fonts **/
     --font-family-primary: "Dosis", sans-serif;
-    --font-size-primary: 14pt;
+    --font-size-root: 14pt;
+    --font-size-h1: 1.8rem;
+    --font-size-h2: 1.3rem;
+    --font-size-primary-text: 0.95rem;
+    --font-size-secondary-text: 0.8rem;
+    --font-size-tertiary-text: 0.7rem;
+    --large-icon-size: 2rem;
+    --icon-size: 1.5rem;
+    --small-icon-size: 1rem;
 }
 
 * {
@@ -73,7 +81,7 @@
     margin: 0;
   
     font-family: var(--font-family-primary);
-    font-size: var(--font-size-primary);
+    font-size: var(--font-size-root);
 }
 
 html,

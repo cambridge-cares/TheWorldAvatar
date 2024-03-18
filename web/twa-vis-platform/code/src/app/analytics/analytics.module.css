@@ -9,5 +9,5 @@
 }
 
 .dashContainer h1 {
-    font-size: 32pt;
+    font-size: var(--font-size-h1);
 }

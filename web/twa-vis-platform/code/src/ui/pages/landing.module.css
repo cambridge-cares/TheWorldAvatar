@@ -15,12 +15,6 @@
     .thumbnailContainer {
         flex: 2.5 !important;
     }
-    .introInner h2 {
-        font-size: 14pt !important;
-    }
-    .introInner p {
-        font-size: 11pt !important;
-    }
 }
 
 .introOuter {
@@ -50,22 +44,18 @@
     padding: 20px;
 }
 
-@media all and (max-width: 1200px) {
-    .introInner h2 {
-        font-size: 12pt !important;
-    }
-    .introInner p {
-        font-size: 11pt !important;
-    }
-    .buttonDescription {
-        font-size: 11pt !important;
-    }
-}
-
 .introInner {
     background-color: transparent !important;
     margin-bottom: 10px;
     overflow-y: auto;
+}
+
+.introInner h2 {
+    font-size: var(--font-size-h2) !important;
+}
+
+.introInner p {
+    font-size: var(--font-size-primary-text) !important;
 }
 
 .introLower {
@@ -131,7 +121,7 @@
 .buttonDescription {
     flex-grow: 0;
     width: 100%;
-    font-size: 12pt;
+    font-size: var(--font-size-secondary-text);
     text-align: center;
     margin-bottom: 4px;
 }

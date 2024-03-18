@@ -21,7 +21,7 @@
 
 .toolbarButton .image {
     width: 50px;
-    font-size: 30pt;
+    font-size: var(--large-icon-size);
     color: var(--border-tertiary);
 }
 .toolbarButton .image:hover {

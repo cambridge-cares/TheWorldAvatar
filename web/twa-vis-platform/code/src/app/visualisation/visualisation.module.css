@@ -20,7 +20,7 @@
 .loadingContainer h1 {
     width: 500px;
     text-align: center;
-    font-size: 20pt;
+    font-size: var(--font-size-h1);
 }
 
 .upperContainer {

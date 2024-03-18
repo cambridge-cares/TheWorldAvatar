@@ -21,7 +21,7 @@
 }
 
 .large-icon {
-    font-size: 30pt !important;
+    font-size: var(--icon-size) !important;
 }
 
 /** Alignments **/

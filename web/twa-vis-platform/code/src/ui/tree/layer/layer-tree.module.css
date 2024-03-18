@@ -40,14 +40,14 @@
     justify-content: center;
 }
 .icon span {
-    font-size: 18pt;
+    font-size: var(--icon-size);
     color: var(--text-color-primary);
 }
 .icon svg {
     padding: 2px;
 }
 .icon.small span {
-    font-size: 14pt;
+    font-size: var(--small-icon-size);
 }
 .treeIcon {
     pointer-events: none;
@@ -60,5 +60,5 @@
 }
 
 .textContainer span {
-    font-size: 11pt;
+    font-size: var(--font-size-secondary-text);
 }

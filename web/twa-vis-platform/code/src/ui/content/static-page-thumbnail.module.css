@@ -29,12 +29,9 @@
     border-width: 0px 0px 1px 0px;
     margin-bottom: 5px;
 }
-.title h1 {
-    font-size: 16pt;
-}
 
 .description {
-    font-size: 12pt;
+    font-size: var(--font-size-secondary-text);
 }
 
 .thumbnail {

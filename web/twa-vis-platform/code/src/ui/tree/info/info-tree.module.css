@@ -13,7 +13,7 @@
 }
 
 .infoHeadSection h2 {
-  font-size: 1.1rem;
+  font-size: var(--font-size-h2);
 }
 
 .tab-container {
@@ -48,7 +48,7 @@
 
 .tab-icon {
   color: var(--text-color-secondary);
-  font-size: 1.5rem !important;
+  font-size: var(--icon-size) !important;
 }
 
 .infoSection {
@@ -78,7 +78,7 @@
 
 .treeHeaderName {
   width: 100%;
-  font-size: 0.95rem;
+  font-size: var(--font-size-primary-text);
 }
 
 /* Non Primary Header Styling */
@@ -97,7 +97,7 @@
 
 .treeEntryNonPrimaryHeaderName {
   color: var(--text-color-primary);
-  font-size: 0.8rem;
+  font-size: var(--font-size-secondary-text);
 }
 
 /* Attribute Styling */
@@ -114,12 +114,12 @@
 
 .treeAttributeKey {
   color: var(--text-color-secondary);
-  font-size: 0.8rem;
+  font-size: var(--font-size-secondary-text);
 }
 
 .treeAttributeValue {
   margin-left: auto;
-  font-size: 0.8rem;
+  font-size: var(--font-size-secondary-text);
 }
 
 /*

@@ -23,7 +23,7 @@
 }
 .ribbonTab {
     font-family: inherit !important;
-    font-size: 10pt;
+    font-size: var(--font-size-secondary-text);
     font-weight: bold;
     color: var(--text-color-primary);
 }
@@ -32,7 +32,7 @@
 }
 .ribbonTabActive {
     font-family: inherit !important;
-    font-size: 10pt;
+    font-size: var(--font-size-secondary-text);
     font-weight: bold;
     background-color: var(--background-tertiary);
     color: inherit !important;

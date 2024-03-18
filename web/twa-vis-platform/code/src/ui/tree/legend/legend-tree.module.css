@@ -35,6 +35,6 @@
   }
   
   .legendText {
-    font-size: 11pt;  /* Matches your layer tree text size */
+    font-size: var(--font-size-secondary-text);
     color: var(--text-color-primary); 
   }
