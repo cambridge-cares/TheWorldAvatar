@@ -1,0 +1,42 @@
+{
+    "ServiceSpec": {
+        "Name": "osmagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/osmagent:1.7.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../osm_config",
+                        "Target": "/resources"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "osmagent": {
+          "url": "http://localhost:8080/osmagent/",
+          "externalPath": "/osmagent/"
+        }
+    }
+}

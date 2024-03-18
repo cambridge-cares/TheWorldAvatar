@@ -13,8 +13,8 @@
             "virtual-sensor-agent",
             "ship-input-agent",
             "buildingidentificationagent",
-            "access-agent",
-            "carpark-agent"
+            "carpark-agent",
+            "osmagent"
         ],
         "excludes": []
     },
