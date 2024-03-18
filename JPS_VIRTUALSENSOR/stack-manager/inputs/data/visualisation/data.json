@@ -40,6 +40,13 @@
                     ],
                     "id": "building-source",
                     "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:elevation_contours"
+                    ],
+                    "id": "elevation-source",
+                    "type": "vector"
                 }
             ],
             "layers": [
@@ -80,7 +87,7 @@
                 },
                 {
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "name": "Ships",
                     "paint": {
@@ -94,7 +101,7 @@
                 },
                 {
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "name": "Virtual sensors",
                     "paint": {
@@ -134,6 +141,28 @@
                             8
                         ]
                     }
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Elevation",
+                    "paint": {
+                        "fill-outline-color": [
+                            "get",
+                            "stroke"
+                        ],
+                        "fill-color": [
+                            "get",
+                            "fill"
+                        ],
+                        "fill-opacity": 0.3
+                    },
+                    "id": "elevation-layer",
+                    "source": "elevation-source",
+                    "source-layer": "elevation_contours",
+                    "type": "fill",
+                    "minzoom": 4
                 }
             ]
         }

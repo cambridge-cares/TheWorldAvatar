@@ -248,6 +248,10 @@ class DispersionHandler {
             ['==', ['string', ['get', 'derivation']], this.dispersions[this.selectedSimulation].derivationIri]
         ]);
 
+        MapHandler.MAP.setFilter('0.0.elevation-layer', ["all",
+            ['==', ['string', ['get', 'derivation']], this.dispersions[this.selectedSimulation].derivationIri]
+        ]);
+
         this.addColourBar();
     }
 
