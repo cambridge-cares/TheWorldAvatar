@@ -1,0 +1,18 @@
+#
+# Compose file for the example Cesium visualisation.
+#
+version: "3.8"
+
+# All Services
+services:
+
+  # Example Cesium visualisation. Based on the current version of the TWA-VF,
+  # may require the twa-vf to be built and pushed first.
+  example-cesium-vis:
+    image: ghcr.io/cambridge-cares/twa-vf:4.0.0
+    container_name: "latest-example-cesium-vis"
+    ports:
+      - "3939:80"
+    volumes:
+      - ./webspace:/var/www/html
+ 

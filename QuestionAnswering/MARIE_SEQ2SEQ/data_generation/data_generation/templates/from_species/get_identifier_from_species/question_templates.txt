@@ -1,0 +1,14 @@
+What is the {IdentifierName} of {species}?
+Can you provide the {IdentifierName} for {species}?
+Give me the {IdentifierName} that corresponds to {species}.
+What's the {IdentifierName} that defines {species}?
+What's the {IdentifierName} assigned to {species}?
+What's {species}'s {IdentifierName}?
+Tell me about the {IdentifierName} in relation to {species}.
+Provide information about the {IdentifierName} of {species}.
+I'm curious about the {IdentifierName} of {species}. what is it?
+What's the official term for {species}'s {IdentifierName}?
+I'd like to know the {IdentifierName} attributed to {species}.
+Can you enlighten me about {species}'s {IdentifierName}?
+What's the {IdentifierName} denoting {species}?
+Please elaborate on the {IdentifierName} of {species}.

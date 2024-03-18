@@ -80,9 +80,11 @@ public class ServiceConfig {
 
     public void setEnvironmentVariable(String key, String value) {
         removeEnvironmentVariable(key);
-
-        getEnvironment().put(key, value);
-        getContainerSpecEnv().add(key + "=" + value);
+        
+        if (null != value) {
+            getEnvironment().put(key, value);
+            getContainerSpecEnv().add(key + "=" + value);
+        }
     }
 
     public void removeEnvironmentVariable(String key) {

@@ -6,5 +6,9 @@ services:
     build: .
     container_name: fh-agent
     pull_policy: if_not_present
+
+    volumes:
+      - './config:/root/'
+
     ports:
       - "1010:8080"

@@ -21,14 +21,21 @@ import java.util.stream.Collectors;
 import java.util.TimeZone;
 
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.exception.DataAccessException;
 
 
 /**
- * Class to retrieve data from the ThingsBoard API and storing it with connection to The World Avatar (Knowledge Base).
- * @author  */
+ * Class to retrieve data from the ThingsBoard API and storing fumehood occupancy with connection to The World Avatar (Knowledge Base).
+ * @author  Michael Laksana*/
+
 public class FHAgent{
 
 
@@ -67,19 +74,24 @@ public class FHAgent{
      * Mapping between raw and derived variable
      */
     public JSONObject derivationMapping = new JSONObject();
+
     /**
      * Log messages
      */
     private static final String GETLATESTDATA_ERROR_MSG = "Unable to query for latest data!" ;
+
+    private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
+
     
     /*
      * Tally System variables
      */
-    public static final float tallyLim = 1;
-    public static final float tallyMax = 2;
-    public static final float tallyMin = 0;
-    public static final float decreaseFactor = 0.15f;
-    public static final float increaseFactor = 0.5f;
+
+    public static float tallyLim = 1;
+    public static float tallyMax = 2;
+    public static float tallyMin = 0;
+    public static float decreaseFactor = 0.15f;
+    public static float increaseFactor = 0.5f;
     public static Double Threshold; //cm
 
 
@@ -131,12 +143,22 @@ public class FHAgent{
 
             try{
                 Threshold = Double.parseDouble(prop.getProperty("threshold.tally"));
+
+                tallyLim = Float.parseFloat(prop.getProperty("tally.limit"));
+                tallyMax = Float.parseFloat(prop.getProperty("tally.max"));
+                tallyMin = Float.parseFloat(prop.getProperty("tally.min"));
+                decreaseFactor = Float.parseFloat(prop.getProperty("decrease.factor"));
+                increaseFactor = Float.parseFloat(prop.getProperty("increase.factor"));
+
             }
 
             catch(Exception e){
                 throw new JPSRuntimeException("Error parsing tally threshold in properties file:" + e);
             }
-            
+
+        }
+        catch (Exception e) {
+            throw new JPSRuntimeException("Failed to init FHAgent", e);
         }
     }
 
@@ -146,6 +168,23 @@ public class FHAgent{
      */
     public int getNumberOfTimeSeries() {
         return mappings.size();
+    }
+
+
+    /*
+     * Maps the variable strings to IRIMappers
+     * 
+     */
+    public Map<String, String> getTimeseriesIRI () {
+        Map<String, String> keyToIRIMap = new HashMap<>();
+        for (JSONKeyToIRIMapper mapping: mappings) {
+            List<String> keys = mapping.getAllJSONKeys();
+            for(String key : keys){
+                String iri = mapping.getIRI(key);
+                keyToIRIMap.put(key, iri);
+            }
+        }
+        return keyToIRIMap;
     }
 
     /**
@@ -239,10 +278,32 @@ public class FHAgent{
     }
 
     /**
-     * Updates the database with new readings.
-     * @param OccupiedState The readings received from the ThingsBoard API
+
+     * Updates the database with new readings or send the timeseries to the stack dependign  on the configuration.
+     * @param Distance The readings received from the ThingsBoard API
+     * @param keys List of variable keyname in Thingsboard server
      */
     public void updateData(JSONObject Distance, List<String> keys)throws IllegalArgumentException {
+            localUpdateData(Distance, keys);
+    }
+
+    /*
+     * Update timneseries outside the stack using the informations provided from the configuration files
+     * 
+     * @param Distance The readings received from the ThingsBoard API
+     * @param keys List of variable keyname in Thingsboard server
+     */
+
+     public void localUpdateData(JSONObject Distance, List<String> keys)throws IllegalArgumentException {
+                // Initialize time series'
+                try {
+                    initializeTimeSeriesIfNotExist();
+                }
+                catch (JPSRuntimeException e) {
+                    LOGGER.error(INITIALIZE_ERROR_MSG,e);
+                    throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
+                }
+
         // Transform readings in hashmap containing a list of objects for each JSON key,
         // will be empty if the JSON Object is empty
 
@@ -285,15 +346,6 @@ public class FHAgent{
                         // Only update if there actually is data
                         if (!ts.getTimes().isEmpty()) {
                             try {
-                                /*
-                                JSONObject lastOccState = getLastState (ts.getDataIRIs().get(0));
-                                if (latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value") != lastOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value")) {
-                                    toggleFH(latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value"));
-                                    tsClient.addTimeSeriesData(ts);
-                                    LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
-                                }
-                                */
-
                                 tsClient.addTimeSeriesData(ts);
                                 LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                                 for(String iri : ts.getDataIRIs()){
@@ -461,7 +513,8 @@ public class FHAgent{
 
     /**
      * Converts the readings in form of maps to time series' using the mappings from JSON key to IRI.
-     * @param Distance The readings as map.
+     * @param occupiedState The occupancy as map.
+
      * @param TimestampReadings The timestamps as map.
      * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
@@ -489,23 +542,6 @@ public class FHAgent{
                 throw new NoSuchElementException("The key " + key + " is not contained in the mapping!");
             }
         
-            
-
-            /*
-            for(String key: mapping.getAllJSONKeys()) {
-                // Add IRI
-                iris.add(mapping.getIRI(key));
-                if (occupiedState.containsKey(key)) {
-                    values.add(occupiedState.get(key));
-                }
-                // Will create a problem as length of iris and values do not match when creating the time series.
-                // Could add an empty list, but the length of the list needs to match length of times. So what values to
-                // fill it with?
-                else {
-                    throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
-                }
-            }
-            */
             List<OffsetDateTime> times = allTimestamps;
             // Create the time series object and add it to the list
             TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
@@ -584,6 +620,13 @@ public class FHAgent{
     }
 
 
+    /*
+     *Calculates the occupancy of the fumehood based on the distance received. 
+     * @param readings The distance readings received from Thingsboard
+     * @param key The distance readings key in Thingsboard
+     * @return A JSONObject of the calculated occupancy in the timeseries format
+     */
+
     private JSONObject TallyDist (JSONObject readings, String key) {
         float tally = 0;
         Boolean tallyLatest = false;
@@ -642,6 +685,11 @@ public class FHAgent{
         return result;
     }
 
+
+    /*@deprecated
+     * Get the timeseries based on the IRI
+     */
+
     public TimeSeries<OffsetDateTime> getTS(String dataIRI){
         try {
             occStateTS = tsClient.getLatestData(dataIRI);
@@ -651,6 +699,9 @@ public class FHAgent{
         return occStateTS;
     }
 
+    /*
+     * Returns the latest entry on the timeseries
+     */
     public JSONObject getLastState (String dataIRI) {
 
         JSONObject result = new JSONObject();
@@ -675,8 +726,46 @@ public class FHAgent{
         }
     }
 
-    private void toggleFH (Boolean latestOccState) {
-        //TODO Toggle fumehood here
+
+    public JSONObject createJSONRequest (JSONObject data, String timeClass){
+        JSONObject result = new JSONObject();
+        result.put("timeClass", timeClass);
+        JSONArray timestamps = new JSONArray();
+        JSONArray tsCol = data.getJSONArray(data.keys().next());
+        for (int i = 0; i < tsCol.length(); i++) {
+            JSONObject row = tsCol.getJSONObject(i);
+            Long ts = row.getLong("ts");
+
+            //convert unix timestamp in milliseconds to date time format
+                	
+            Date date = new java.util.Date(ts);
+            SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String tsString = sdf.format(date);
+            
+            timestamps.put(tsString);
+        }
+
+        JSONObject values = new JSONObject();
+        for(String key : data.keySet()) {
+            JSONKeyToIRIMapper mapping = varToMapping.get(key);
+            String iri = mapping.getIRI(key);
+
+            JSONArray col = data.getJSONArray(key);
+
+            JSONArray valArray = new JSONArray();
+            for (int i = 0; i < col.length(); i++){
+                JSONObject row = col.getJSONObject(i);
+                Double val = row.getDouble("value");
+                
+                valArray.put(val);
+            }
+            values.put(iri, valArray);
+        }
+        result.put("values", values);
+        result.put("timestamp", timestamps);
+
+        return result;
     }
 
 }

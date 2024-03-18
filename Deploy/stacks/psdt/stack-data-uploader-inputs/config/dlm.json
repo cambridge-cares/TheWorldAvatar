@@ -1,0 +1,252 @@
+{
+    "name": "dlm",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "dlm",
+    "dataSubsets": [
+        {
+            "type": "Vector",
+            "name": "dlmgew01f",
+            "skip": false,
+            "subdirectory": "gew01f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "water_bodies_with_names",
+                    "sql": "SELECT *, CASE\nWHEN \"OBJART_TXT\" = 'AX_StehendesGewaesser' THEN 'Stehendes Gewässer'\nELSE 'Anderes Gewässer'\nEND AS name\nFROM \"dlmgew01f\"\n",
+                    "escapeSql": true,
+                    "keyColumn": "ogc_fid",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Polygon",
+                        "srid": 25832
+                    }
+                },
+                "defaultStyle": "twa:bdlm_gew01f"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmgew01l",
+            "skip": false,
+            "subdirectory": "gew01l",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "water_body_lines_with_names",
+                    "sql": "SELECT *, \"NAM\" AS name\nFROM \"dlmgew01l\"\n",
+                    "escapeSql": true,
+                    "keyColumn": "ogc_fid",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "LineString",
+                        "srid": 25832
+                    }
+                },
+                "defaultStyle": "twa:bdlm_gew01l"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmsie02f",
+            "skip": false,
+            "subdirectory": "sie02f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "areas_construction_with_names",
+                    "sql": "SELECT *, CASE\nWHEN \"OBJART_TXT\" = 'AX_IndustrieUndGewerbeflaeche' THEN 'Industrie/Gewerbe'\nWHEN \"OBJART_TXT\" = 'AX_SportFreizeitUndErholungsflaeche' THEN 'Sport/Freizeit/Erholung'\nWHEN \"OBJART_TXT\" = 'AX_Wohnbauflaeche' THEN 'Wohnbau'\nWHEN \"OBJART_TXT\" = 'AX_FlaecheGemischterNutzung' THEN 'Gemischte Nutzung'\nWHEN \"OBJART_TXT\" = 'AX_FlaecheBesondererFunktionalerPraegung' THEN 'Besondere Funktion'\nWHEN \"OBJART_TXT\" = 'AX_Friedhof' THEN 'Friedhof'\nELSE 'Andere Nutzung'\nEND AS name\nFROM \"dlmsie02f\"\n",
+                    "escapeSql": true,
+                    "keyColumn": "ogc_fid",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Polygon",
+                        "srid": 25832
+                    }
+                }
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmsie03p",
+            "skip": false,
+            "subdirectory": "sie03p",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmveg01f",
+            "skip": false,
+            "subdirectory": "veg01f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "agricultural_areas_with_names",
+                    "sql": "SELECT *, CASE\nWHEN \"OBJART_TXT\" = 'AX_Landwirtschaft' THEN 'Landwirtschaft'\nELSE 'Andere Nutzung'\nEND AS name\nFROM \"dlmveg01f\"\n",
+                    "escapeSql": true,
+                    "keyColumn": "ogc_fid",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Polygon",
+                        "srid": 25832
+                    }
+                },
+                "defaultStyle": "twa:bdlm_veg01f"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmveg02f",
+            "skip": false,
+            "subdirectory": "veg02f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "forestry_areas_with_names",
+                    "sql": "SELECT *, CASE\nWHEN \"OBJART_TXT\" = 'AX_Wald' THEN 'Wald'\nELSE 'Andere Nutzung'\nEND AS name\nFROM \"dlmveg02f\"\n",
+                    "escapeSql": true,
+                    "keyColumn": "ogc_fid",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Polygon",
+                        "srid": 25832
+                    }
+                },
+                "defaultStyle": "twa:bdlm_veg02f"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmver01l",
+            "skip": false,
+            "subdirectory": "ver01l",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "streets_with_names",
+                    "sql": "SELECT *, \"NAM\" AS name\nFROM \"dlmver01l\"\n",
+                    "escapeSql": true,
+                    "keyColumn": "ogc_fid",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "LineString",
+                        "srid": 25832
+                    }
+                },
+                "defaultStyle": "twa:bdlm_ver01l"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmver02l",
+            "skip": false,
+            "subdirectory": "ver02l",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "paths_with_names",
+                    "sql": "SELECT *, CASE\nWHEN \"OBJART_TXT\" = 'AX_WegPfadSteig' THEN 'Weg/Pfad/Steig'\nWHEN \"OBJART_TXT\" = 'AX_Fahrwegachse' THEN 'Fahrwegachse'\nELSE 'Andere Nutzung'\nEND AS name\nFROM \"dlmver02l\"\n",
+                    "escapeSql": true,
+                    "keyColumn": "ogc_fid",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "LineString",
+                        "srid": 25832
+                    }
+                },
+                "defaultStyle": "twa:bdlm_ver02l"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmver03f",
+            "skip": false,
+            "subdirectory": "ver03f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmver03l",
+            "skip": false,
+            "subdirectory": "ver03l",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmver07p",
+            "skip": false,
+            "subdirectory": "ver07p",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "bdlm_gew01f",
+            "file": "bdlm_gew01f.sld"
+        },
+        {
+            "name": "bdlm_gew01l",
+            "file": "bdlm_gew01l.sld"
+        },
+        {
+            "name": "bdlm_veg01f",
+            "file": "bdlm_veg01f.sld"
+        },
+        {
+            "name": "bdlm_veg02f",
+            "file": "bdlm_veg02f.sld"
+        },
+        {
+            "name": "bdlm_ver01l",
+            "file": "bdlm_ver01l.sld"
+        },
+        {
+            "name": "bdlm_ver02l",
+            "file": "bdlm_ver02l.sld"
+        }
+    ]
+}

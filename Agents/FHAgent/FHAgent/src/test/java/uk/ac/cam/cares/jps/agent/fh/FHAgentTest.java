@@ -8,15 +8,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.*;
 
-import com.bigdata.service.ndx.pipeline.IndexWriteTask.M;
+
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import wiremock.org.eclipse.jetty.util.ajax.JSON;
-
 import java.io.*;
-import java.lang.reflect.Array;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
@@ -33,8 +32,12 @@ public class FHAgentTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    File mappingFolder;
+
     // The default instance used in the tests
     private FHAgent testAgent;
+    private FHAgent jsonReqTestAgent;
+
     // The mocking instance for the time series client
     @SuppressWarnings("unchecked")
     private final TimeSeriesClient<OffsetDateTime> mockTSClient = (TimeSeriesClient<OffsetDateTime>) Mockito.mock(TimeSeriesClient.class);
@@ -70,7 +73,8 @@ public class FHAgentTest {
         // Create a properties file that points to a dummy mapping folder //
         // Create an empty folder
         String folderName = "mappings";
-        File mappingFolder = folder.newFolder(folderName);
+
+        mappingFolder = folder.newFolder(folderName);
         // Add mapping file into the empty folder
         String mappingFile1 = Paths.get(mappingFolder.getAbsolutePath(), "example_mapping1.properties").toString();
         ArrayList<String> mappings1 = new ArrayList<>();
@@ -85,7 +89,18 @@ public class FHAgentTest {
         // Filepath for the properties file
         
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
-        writePropertyFile(propertiesFile, Arrays.asList(new String[]{"thingsboard.mappingfolder=TEST_MAPPINGS", "derivation.mapping=avgDist1:occupiedState1,avgDist2:occupiedState2", "threshold.tally = 170."}));
+
+        writePropertyFile(propertiesFile, Arrays.asList(new String[]{"thingsboard.mappingfolder=TEST_MAPPINGS", 
+        "derivation.mapping=avgDist1:occupiedState1,avgDist2:occupiedState2", 
+        "threshold.tally = 170.", 
+        "tally.limit = 1",
+        "tally.max = 2",
+        "tally.min = 0",
+        "decrease.factor = 0.15",
+        "increase.factor = 0.5",
+        "derivation.baseurl = http://derivationexample.com/triplestore/repository/"
+        }));
+
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
         // To mock the environment variable, a try catch need to be used
         try {
@@ -96,6 +111,9 @@ public class FHAgentTest {
         // There should not be any exception thrown as the agent is initiated correctly
         catch (Exception e) {
             System.out.println(e);
+
+            throw new JPSRuntimeException(e);
+
         }
         // Set the mocked time series client
         testAgent.setTsClient(mockTSClient);
@@ -206,8 +224,9 @@ public class FHAgentTest {
             Assert.fail();
         }
         
-        catch (IOException e) {
-            Assert.assertEquals("The key thingsboard.mappingfolder cannot be found in the properties file.", e.getMessage());
+
+        catch (Exception e) {
+            Assert.assertEquals("Failed to init FHAgent", e.getMessage());
         }
        
         // Create a property file with a mapping folder that does not exist
@@ -218,9 +237,10 @@ public class FHAgentTest {
             new FHAgent(propertiesFile);
             Assert.fail();
         }
-        catch (InvalidPropertiesFormatException e) {
-        	Assert.assertEquals("The properties file does not contain the key thingsboard.mappingfolder " +
-                    "with a path to the folder containing the required JSON key to IRI mappings.", e.getMessage());
+
+        catch (Exception e) {
+        	Assert.assertEquals("Failed to init FHAgent", e.getMessage());
+
         }
 
         // Create an empty folder
@@ -237,7 +257,10 @@ public class FHAgentTest {
         	 });
         }
         catch (Exception e) {
-        	Assert.assertTrue(e.getMessage().contains("No files in the folder:"));
+
+            System.out.println(e);
+        	Assert.assertTrue(e.getMessage().contains("Failed to init FHAgent"));
+
         }
 
         // Add mapping files into the empty folder
@@ -610,6 +633,88 @@ public class FHAgentTest {
             Assert.assertEquals(new ArrayList<>(), prunedTimeSeries.getValues(iri));
         }
 
+    }
+
+
+    @Test
+    public void testCreateJSONRequest() {
+        JSONObject expected = new JSONObject();
+        expected.put("timeClass", "INSTANTANEOUS");
+        JSONArray testTimestamps = new JSONArray(new String[]{"2009-02-13T21:20:00", "2009-02-13T21:20:01", "2009-02-13T21:20:02"});
+        expected.put("timestamp", testTimestamps);
+        JSONArray testValues = new JSONArray(new Double[]{1.,2.,3.});
+        String testIRI = "example:prefix/api_"+keys[0];
+        JSONObject testValPair = new JSONObject();
+        testValPair.put(testIRI, testValues);
+        expected.put("values", testValPair);
+
+        Long actualTime = 1234560000000L;
+        JSONObject input = new JSONObject();
+        JSONArray col = new JSONArray();
+        for(int i = 0; i < testTimestamps.length(); i++){
+            JSONObject row = new JSONObject();
+            row.put("ts", actualTime + 1000 * i);
+            row.put("value", testValues.getDouble(i));
+            col.put(row);
+        }
+        input.put(keys[0], col);
+
+        System.out.println(testAgent.createJSONRequest(input, "INSTANTANEOUS"));
+        System.out.println(expected);
+        JSONAssert.assertEquals(expected, testAgent.createJSONRequest(input, "INSTANTANEOUS"), true);
+    }
+
+    @Test
+    public void testCreateJSONRequestAddEndpoint() throws IOException{
+        //For CreateJSONRequestAddEndpoint 
+        String jsonReqPropertiesFile = Paths.get(folder.getRoot().toString(), "jsonReqAgent.properties").toString();
+        writePropertyFile(jsonReqPropertiesFile, Arrays.asList(new String[]{"thingsboard.mappingfolder=TEST_MAPPINGS", 
+        "derivation.mapping=avgDist1:occupiedState1,avgDist2:occupiedState2", 
+        "threshold.tally = 170.", 
+        "tally.limit = 1",
+        "tally.max = 2",
+        "tally.min = 0",
+        "decrease.factor = 0.15",
+        "increase.factor = 0.5",
+        "derivation.baseurl = http://derivationexample.com/triplestore/repository/"
+        }));
+        // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
+        // To mock the environment variable, a try catch need to be used
+        try {
+        	SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
+        		jsonReqTestAgent = new FHAgent(jsonReqPropertiesFile);
+        	 });
+        }
+        // There should not be any exception thrown as the agent is initiated correctly
+        catch (Exception e) {
+            System.out.println(e);
+            throw new JPSRuntimeException(e);
+        }
+        // Set the mocked time series client
+        jsonReqTestAgent.setTsClient(mockTSClient);
+
+        JSONObject expected = new JSONObject();
+        expected.put("timeClass", "INSTANTANEOUS");
+        JSONArray testTimestamps = new JSONArray(new String[]{"2009-02-13T21:20:00", "2009-02-13T21:20:01", "2009-02-13T21:20:02"});
+        expected.put("timestamp", testTimestamps);
+        JSONArray testValues = new JSONArray(new Double[]{1.,2.,3.});
+        String testIRI = "example:prefix/api_"+keys[0];
+        JSONObject testValPair = new JSONObject();
+        testValPair.put(testIRI, testValues);
+        expected.put("values", testValPair);
+
+        Long actualTime = 1234560000000L;
+        JSONObject input = new JSONObject();
+        JSONArray col = new JSONArray();
+        for(int i = 0; i < testTimestamps.length(); i++){
+            JSONObject row = new JSONObject();
+            row.put("ts", actualTime + 1000 * i);
+            row.put("value", testValues.getDouble(i));
+            col.put(row);
+        }
+        input.put(keys[0], col);
+
+        JSONAssert.assertEquals(expected, jsonReqTestAgent.createJSONRequest(input, "INSTANTANEOUS"), true);
     }
 
 

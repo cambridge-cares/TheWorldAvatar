@@ -1,0 +1,37 @@
+{
+  "ServiceSpec": {
+    "Name": "bms-update-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "bms-update-agent:1.2.0",
+        "Env": [
+          "SET_CLIENT_PROPERTIES=/app/config/setClient.properties",
+          "WRITE_CLIENT_PROPERTIES=/app/config/writeClient.properties",
+          "UPDATETRIPLES_CLIENT_PROPERTIES=/app/config/updateTriplesClient.properties",
+          "WACNET_API_PROPERTIES=/app/config/api.properties"
+        ],
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "<YOUR_WORK_DIR>/TheWorldAvatar/Agents/BMSUpdateAgent/config",
+            "Target": "/app/config"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "bms_update_agent_keycloak.json",
+            "File": {
+              "Name":"/app/BMSUpdateAgent/BMSUpdateAgent/src/main/webapp/WEB-INF/keycloak.json"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/bms-update-agent/",
+      "externalPath": "/bms-update-agent/"
+    }
+  }
+}

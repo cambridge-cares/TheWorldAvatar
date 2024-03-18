@@ -1,0 +1,46 @@
+{
+    "database": "postgres",
+    "name": "spacefinder",
+    "workspace": "twa",
+    "datasetDirectory": "spacefinder",
+    "skip": false,
+    "namespace": {
+        "name": "kb",
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true,
+            "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass": "com.bigdata.rdf.axioms.NoAxioms"
+        }
+    },
+    "dataSubsets": [
+        {
+            "type": "rdf",
+            "skip": false,
+            "subdirectory": "rdf"
+        },
+        {
+            "name": "plots",
+            "type": "vector",
+            "skip": false,
+            "subdirectory": "plots",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "plots",
+                    "sql": "SELECT CONCAT('https://www.theworldavatar.com/kg/ontoplot/postgres/plots/', ogc_fid) AS iri, 'http://dhstack-blazegraph:8080/blazegraph/namespace/kb/sparql' AS endpoint, CONCAT('FlST-Nr. ', id) AS name, wkb_geometry AS geom FROM plots",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        }
+    ],
+    "mappings": [
+        "spacefinder.obda"
+    ]
+}

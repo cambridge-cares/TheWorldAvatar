@@ -38,6 +38,7 @@ public class OSMAgent extends JPSAgent {
     public String pointTable;
     public String polygonTable;
     public String landUseTable;
+    public String landGeometry;
     public String landUseCsv;
     public static final String usageTable = "usage.usage";
 
@@ -57,6 +58,7 @@ public class OSMAgent extends JPSAgent {
             this.dbName = prop.getProperty("db.name");
             this.osmSchema = prop.getProperty("osm.schema");
             this.landUseTable = prop.getProperty("landuse.table");
+            this.landGeometry = prop.getProperty("landuse.geometry");
             this.landUseCsv = prop.getProperty("landuse.csv");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -71,7 +73,6 @@ public class OSMAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
         try {
             UsageMatcher usageMatcher = new UsageMatcher(dbUrl, dbUser, dbPassword);
-            GeometryMatcher geometryMatcher = new GeometryMatcher(dbUrl, dbUser, dbPassword);
             UsageShareCalculator shareCalculator = new UsageShareCalculator(dbUrl, dbUser, dbPassword);
 
             // match OSM usage to OntoBuiltEnv:PropertyUsage classes
@@ -79,21 +80,20 @@ public class OSMAgent extends JPSAgent {
             usageMatcher.updateOntoBuilt(pointTable, polygonTable);
 
             // match OSM geometries with building IRI
-            geometryMatcher.matchGeometry(pointTable);
-            geometryMatcher.matchGeometry(polygonTable);
+            GeometryMatcher.matchGeometry(dbUrl, dbUser, dbPassword, pointTable, polygonTable);
 
             // intialise usage table and copy building IRI that has OSM usage
             usageMatcher.copyFromOSM(pointTable, polygonTable, usageTable);
 
             // match buildings without OSM usage with land use
             if (!landUseTable.isEmpty()) {
-                shareCalculator.updateLandUse(usageTable, landUseTable, landUseCsv);
+                shareCalculator.updateLandUse(usageTable, landUseTable, landGeometry, landUseCsv);
             }
 
             // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
             // buildings
             shareCalculator.updateUsageShare(usageTable);
-            shareCalculator.addMaterializedView(usageTable);
+            shareCalculator.addMaterializedView(usageTable, osmSchema);
 
             //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
@@ -107,8 +107,8 @@ public class OSMAgent extends JPSAgent {
             virtualTable.setName("building_usage");
             virtualTable.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
             geoServerVectorSettings.setVirtualTable(virtualTable);
-            geoServerClient.createPostGISDataStore(workspaceName,"building_usage" , dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName,"building_usage" ,geoServerVectorSettings);
+            geoServerClient.createPostGISDataStore(workspaceName, "building_usage" , dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "building_usage" ,geoServerVectorSettings);
 
             //Upload Isochrone Ontop mapping
             try {
@@ -127,9 +127,5 @@ public class OSMAgent extends JPSAgent {
     }
 
 
-    private static final String buildingSQLQuery ="WITH \"uuid_table\" AS ( SELECT \"strval\" AS \"uuid\", \"cityobject_id\" FROM \"cityobject_genericattrib\" WHERE \"attrname\" = 'uuid' ), \"iri_table\" AS ( SELECT \"urival\" AS \"iri\", \"cityobject_id\" FROM \"cityobject_genericattrib\" WHERE \"attrname\" = 'iri' ), \"usageTable\" AS ( SELECT \"building_iri\" AS \"iri\", \"propertyusage_iri\", \"ontobuilt\", \"usageshare\" FROM usage.usage ), \"pointsTable\" AS ( SELECT \"building_iri\" AS \"iri\", \"name\" FROM public.points ), \"polygonsTable\" AS ( SELECT \"building_iri\" AS \"iri\", \"name\" FROM public.polygons ) SELECT DISTINCT \"building\".\"id\" AS \"building_id\",   CASE\n" +
-            "    WHEN COALESCE(\"pointsTable\".name, \"polygonsTable\".name) IS NOT NULL\n" +
-            "    THEN COALESCE(\"pointsTable\".name, \"polygonsTable\".name)\n" +
-            "    ELSE CONCAT('Building ',\"uuid_table\".\"cityobject_id\") \n" +
-            "  END AS name, COALESCE(\"measured_height\", 100.0) AS \"building_height\", public.ST_Transform(\"geometry\", 4326), \"uuid\", \"iri_table\".\"iri\", \"propertyusage_iri\", \"ontobuilt\", \"usageshare\" FROM \"building\" JOIN \"surface_geometry\" ON \"surface_geometry\".\"root_id\" = \"building\".\"lod0_footprint_id\" JOIN \"uuid_table\" ON \"building\".\"id\" = \"uuid_table\".\"cityobject_id\" JOIN \"iri_table\" ON \"building\".\"id\" = \"iri_table\".\"cityobject_id\" LEFT JOIN \"pointsTable\" ON \"uuid_table\".\"uuid\" = \"pointsTable\".\"iri\" LEFT JOIN \"polygonsTable\" ON \"uuid_table\".\"uuid\" = \"polygonsTable\".\"iri\" LEFT JOIN \"usageTable\" ON \"uuid_table\".\"uuid\" = \"usageTable\".\"iri\" WHERE \"surface_geometry\".\"geometry\" IS NOT NULL AND COALESCE(\"measured_height\", 100.0) != '0'";
+    private static final String buildingSQLQuery = "SELECT building_id, name, building_height, geom, uuid, iri, propertyusage_iri, ontobuilt, usageshare FROM usage.buildingusage_geoserver";
 }

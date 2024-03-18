@@ -1,0 +1,33 @@
+[
+    {
+        "domain": "kingslynn",
+        "label": "Buildings in King's Lynn",
+        "description": "Data about buildings in King's Kynn",
+        "questions": [
+            "How many buildings are there?",
+            "How many properties with previous sales transaction records and energy performance certificate (EPC) data are there?",
+            "How many schools are there?",
+            "What are the 3 dominant usage types?",
+            "How many buildings have an energy rating of B?",
+            "How many buildings have a floor area between 80 and 120 m2?",
+            "What's the average property value for buildings with a floor area between 80 and 120 m2?",
+            "What's the average property value for a 6 bedroom building?",
+            "Which buildings are located in postcode PE30 2DH?",
+
+            "Find me all hospitals in the area",
+            "Please give me buildings with mixed residential and office use, where at least 65% of the building is for residence",
+            "What are the 3 post codes with the lowest average building price?"
+        ]
+    },
+    {
+        "domain": "singapore",
+        "label": "Singapore's Land Plots",
+        "description": "Data about Singapore's master plan zoning",
+        "questions": [
+            "How many land plots are designated for commercial use?",
+            "what is the area of the largest residential lot?",
+            "what is the minimum gross plot ratio of lots designated for health and medical care facilities",
+            "average gross floor area allowed for lots for business activities"
+        ]
+    }
+]
