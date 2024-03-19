@@ -32,14 +32,8 @@ RUN python -m pip install -r requirements.txt
 WORKDIR /app
 ADD NTUP2PEnergyAgent /app/NTUP2PEnergyAgent
 
-# Switch to a non-root user before running the server, for security reasons
-# (See https://code.visualstudio.com/docs/containers/python-user-rights)
-RUN useradd appuser && chown -R appuser /app
-
-# Creating the user doesn't create their home directory for some reason, so create it now
-RUN mkdir /home/appuser
-RUN chown -R appuser:appuser /home/appuser
-RUN chmod -R 755 /home/appuser
+# Copy in config
+COPY ./config/buses.py /app/NTUP2PEnergyClusterAgent/config/buses.py
 
 # Install StackClients py4jps resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
@@ -48,5 +42,4 @@ RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_j
 
 # Start the gunicorn server on port 5000, using a Flask object called 'app' imported from the 'python_agent' module
 # Note that port 5000 is *inside the container*; this can be mapped to a port on the host when running the container on the command line or in docker-compose.yml
-USER appuser
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "NTUP2PEnergyAgent:app"]

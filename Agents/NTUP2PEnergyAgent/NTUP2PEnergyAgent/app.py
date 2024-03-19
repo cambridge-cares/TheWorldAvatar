@@ -3,6 +3,10 @@ from .trading import Trading
 import logging
 import numpy as np
 
+from NTUP2PEnergyAgent.config.buses import BUYERS, SELLERS
+from NTUP2PEnergyAgent.data_retrieval.query_data import QueryData
+from NTUP2PEnergyAgent.data_retrieval.query_timeseries import query_latest_timeseries
+
 # Create the Flask app object
 app = Flask(__name__)
 
@@ -39,7 +43,45 @@ def check_stack_status():
 def default():  
     check_stack_status()
     
-    
+    #iterate over buses, get load
+    for bus_number in BUYERS:
+
+        busNode_iri_response = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT, bus_number)
+
+        busNode_iri = busNode_iri_response[0]['busNode']
+
+        logging.info("Getting busnode:" + busNode_iri)
+
+        try:
+            P_iri = QueryData.query_P_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
+            
+        except Exception as ex:
+            logging.error("SPARQL query for P IRI for bus node ", busNode_iri," not successful.")
+            raise KGException("SPARQL query for P IRI for bus node ", busNode_iri," not successful.") from ex
+
+        try:
+            # get latest
+            P_ts = query_latest_timeseries(P_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
+            
+        except Exception as ex:
+            logging.error("SPARQL query for P timeseries not successful.")
+            raise KGException("SPARQL query for P timeseries not successful.") from ex
+        
+        P_values = [v for v in P_ts.getValues(P_iri)]
+
+# do something with value        all_P_values.append(P_values)
+
+
+    #iterate over sellers, get production
+    for bus_number in SELLERS:
+
+        busNode_iri_response = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT, bus_number)
+
+        busNode_iri = busNode_iri_response[0]['busNode']
+
+        logging.info("Getting busnode:" + busNode_iri)
+
+
     ################## some variables for testing
     max_iter=100
     nodal_price = 20
@@ -80,5 +122,3 @@ def default():
   #          return "Unable to interpret val ('%s') as a float." % request.args['val']
   #  else:
   #      return "Error: No 'val' parameter provided."
-
-   
