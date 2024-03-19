@@ -131,6 +131,7 @@ def test_retrieve_cardinality():
 
 
 def test_export_to_owl():
+    # TODO add more tests to the exported file
     ExampleOntology.export_to_owl('example_ontology.ttl')
 
 

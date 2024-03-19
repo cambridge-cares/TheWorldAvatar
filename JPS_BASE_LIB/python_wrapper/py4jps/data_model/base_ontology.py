@@ -65,11 +65,16 @@ class KnowledgeGraph(BaseModel):
         cls.property_lookup[prop.get_predicate_iri()] = prop
 
 
+# TODO optimise the way of spedifying range of object/data properties
 def as_range_of_object_property(t: T, min_cardinality: int = 0, max_cardinality: int = None) -> Set[Union[T, str]]:
+    if min_cardinality < 0 or max_cardinality is not None and max_cardinality < 0:
+        raise ValueError('min_cardinality and max_cardinality must be greater than or equal to 0')
     return Annotated[Set[Union[t, str]], Len(min_cardinality, max_cardinality)]
 
 
 def as_range_of_data_property(t: T, min_cardinality: int = 0, max_cardinality: int = None) -> Set[T]:
+    if min_cardinality < 0 or max_cardinality is not None and max_cardinality < 0:
+        raise ValueError('min_cardinality and max_cardinality must be greater than or equal to 0')
     return Annotated[Set[t], Len(min_cardinality, max_cardinality)]
 
 
@@ -239,16 +244,15 @@ class BaseProperty(BaseModel, validate_assignment=True):
             for d in cls.domain:
                 g.add((URIRef(property_iri), RDFS.domain, URIRef(d)))
         # add range
-        if is_object_property:
-            g.add((URIRef(property_iri), RDFS.range, URIRef(
-                cls.reveal_object_property_range().get_rdf_type())))
-        else:
-            g.add((URIRef(property_iri), RDFS.range, URIRef(
-                _castPythonToXSD(cls.reveal_data_property_range()))))
+        g.add((URIRef(property_iri), RDFS.range, URIRef(cls.reveal_property_range_iri())))
         return g
 
     @classmethod
     def reveal_possible_property_range(cls) -> T:
+        raise NotImplementedError("This is an abstract method.")
+
+    @classmethod
+    def reveal_property_range_iri(cls) -> str:
         raise NotImplementedError("This is an abstract method.")
 
     @classmethod
@@ -422,6 +426,10 @@ class BaseClass(BaseModel, validate_assignment=True):
         return cls.pull_from_kg(iris, sparql_client, recursive_depth)
 
     @classmethod
+    def get_object_and_data_properties(cls):
+        return {**cls.get_object_properties(), **cls.get_data_properties()}
+
+    @classmethod
     def get_object_properties(cls):
         # return {predicate_iri: {'field': field_name, 'type': field_clz}}
         # e.g. {'https://twa.com/myObjectProperty': {'field': 'myObjectProperty', 'type': MyObjectProperty}}
@@ -450,14 +458,23 @@ class BaseClass(BaseModel, validate_assignment=True):
         idx = cls.__mro__.index(BaseClass)
         for i in range(1, idx):
             g.add((URIRef(cls_iri), RDFS.subClassOf, URIRef(cls.__mro__[i].get_rdf_type())))
-        # TODO add cardinality for object properties
-        for prop_iri, prop_dct in cls.get_object_properties().items():
-            continue
-
-        # TODO add cardinality for data properties
-        for prop_iri, prop_dct in cls.get_data_properties().items():
-            continue
-
+        # add cardinality for object and data properties
+        for prop_iri, prop_dct in cls.get_object_and_data_properties().items():
+            prop = prop_dct['type']
+            min_car, max_car = prop.retrieve_cardinality()
+            if any([bool(min_car), bool(max_car)]):
+                restriction = BNode()
+                if bool(min_car):
+                    if min_car == max_car:
+                        g.add((restriction, OWL.qualifiedCardinality, Literal(min_car, datatype=XSD.nonNegativeInteger)))
+                    else:
+                        g.add((restriction, OWL.minQualifiedCardinality, Literal(min_car, datatype=XSD.nonNegativeInteger)))
+                if bool(max_car):
+                    g.add((restriction, OWL.maxQualifiedCardinality, Literal(max_car, datatype=XSD.nonNegativeInteger)))
+                g.add((restriction, RDF.type, OWL.Restriction))
+                g.add((restriction, OWL.onClass, URIRef(prop.reveal_property_range_iri())))
+                g.add((restriction, OWL.onProperty, URIRef(prop_iri)))
+                g.add((URIRef(cls_iri), RDFS.subClassOf, restriction))
         return g
 
     def create_cache(self):
@@ -628,6 +645,10 @@ class ObjectProperty(BaseProperty):
     def reveal_possible_property_range(cls) -> T:
         return cls.model_fields['range'].annotation.__args__[0].__args__
 
+    @classmethod
+    def reveal_property_range_iri(cls) -> str:
+        return cls.reveal_object_property_range().get_rdf_type()
+
     def create_cache(self):
         return self.__class__(range=set([
             o.instance_iri if isinstance(o, BaseClass) else o for o in self.range
@@ -678,6 +699,10 @@ class DataProperty(BaseProperty):
     @classmethod
     def reveal_possible_property_range(cls) -> T:
         return cls.model_fields['range'].annotation.__args__
+
+    @classmethod
+    def reveal_property_range_iri(cls) -> str:
+        return _castPythonToXSD(cls.reveal_data_property_range())
 
     def create_cache(self):
         return self.__class__(range=set(copy.deepcopy(self.range)))
