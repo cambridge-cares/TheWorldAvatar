@@ -1,6 +1,6 @@
 # Device Instantiation Agent
 
-This agent is responsible for instantiating sensors, microcontrollers and devices in a knowledge graph. The agent took in informations from a `.json` file (the device descriptor) and instantiates microcontroller modules with their respective sensor and readings instances. The agent is designed with the device instantiation framework in mind.
+This agent is responsible for instantiating sensors, microcontrollers and devices in a knowledge graph. The agent took in information from a `.json` file (the device descriptor) and instantiates microcontroller modules with their respective sensor and readings instances. The agent is designed with the device instantiation framework in mind.
 
 Instantiation is based on ontodevice ontology.
 
@@ -10,9 +10,9 @@ Instantiation is based on ontodevice ontology.
 The device instantiation framework is a framework to allow fast and consistent sensor instantiation on the knowledge graph to allow faster deployment and development. It can be summarised in the following figure:
 ![Device instantiation framework](./readme_img/framework.png)
 
-Sensors will be connected to a microcontroller and it will send data to an IoT database. For this agent, Thingsboard is used for the development of the agent. The Post-Processing agent will pull the data from the database and instantiate a timeseries of the data on the knowledge graph. This agent work with and without the use of the stack. If the stack is used, the agent will send the data to the [data bridge agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DataBridgeAgent) for instantiation. 
+Sensors will be connected to a microcontroller and it will send data to an IoT database. ThingsBoard is used as the IoT database for the development of this framework. The post-processing agent will pull the data from the database and instantiate the timeseries data in the knowledge graph. This agent work with and without the use of the stack. If the stack is used, the agent will send the data to the [data bridge agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DataBridgeAgent) for instantiation. 
 
-The post processing agent will also be responsible for instantiating agent and derivation instances when needed. THe post processing agent is also responsible for creating the timeseries instances. Hence, for different projects, different post processing agents may be needed. An example of this post-processing agent is the [FHAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FHAgent) which is responsible for handling fumehood occupancy timeseries data and derivation instances. 
+The post processing agent will also be responsible for instantiating agent and derivation instances when needed. The post-processing agent is also responsible for creating the timeseries instances. Hence, for different projects, different post-processing agents may be needed. An example of this post-processing agent is the [FHAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FHAgent) which is responsible for handling fumehood occupancy timeseries data and derivation instances. 
 
  The device instantiaion agent will be responsible for instantiating the sensors and devices in the knowledge graph using a device descriptor file written by the user.  
 
@@ -23,13 +23,13 @@ Each device will require 1 descriptor. A descriptor can be composed of 1 microco
 ![Sensor instantiation design](./readme_img/sensor_conn.png)
 
 The file can be sparated into 3 different main keys, namely: 
-- MicroController: The descriptor of the device. Contains informations of the sensors and readings.
+- MicroController: The descriptor of the device. Contains information of the sensors and readings.
     - type: The type of microcontroller used (ESP32, etc.).
     - name : The unique id of the microntroller
     - label: The rdfs:label of the microcontroller 
-    - MainSensorMap: The map of the sensor modules connected to the microcontroller.  Composed of a JSONObject that maps the sensor names and their respective information. Each sensor map is composed of (relevant to the device instantiation agent): sensor type, output, output datatype and unit, Thingsboard field name.
+    - MainSensorMap: The map of the sensor modules connected to the microcontroller.  Composed of a JSONObject that maps the sensor names and their respective information. Each sensor map is composed of (relevant to the device instantiation agent): sensor type, output, output datatype and unit, ThingsBoard field name.
 
-- IRIMapper: Map of all IRIs. An IRI can be readily provided by the user. However, in case a new IRI is to be generated, the user can provide a keyword `gen`. This will create a new IRI for the given ID in the device descriptor, with default prefix of ontodevice. The IRI will also have a UUID v4 attached in the pattern of `prefix:ID_UUID`. If the IRI already exist containing a unique string pattern, the keyword `find` can be used. The agent will search the graph for instance containing the ID. If more than one or none is found, an error will be thrown and the IRI need to be provided manually or to be generated instead. 
+- IRIMapper: Map of all IRIs. An IRI can be readily provided by the user. However, in case a new IRI is to be generated, the user can provide a keyword `gen`. This will create a new IRI for the given ID in the device descriptor, with default prefix of ontodevice. The IRI will also have a UUID v4 attached in the pattern of `prefix:ID_UUID`. If the IRI already exist containing a unique string pattern, the keyword `find` can be used. The agent will search the graph for instance containing the ID. If more than one or none is found, an error will be thrown and the IRI needs to be provided manually or to be generated instead. 
 
 At the moment, the sensor type IRIs are checked against ontodevice and SAREF to ensure that the concept exist. If the concept does not exist, an error will be thrown and the device will not be instantiated. 
 
@@ -61,10 +61,10 @@ IRIMapper:{
 ```
 The ESP32 instance will be generated by the agent first. The additional query triples will then be executed. To find the previously generated IRI, we use the `find` keyword.
 
-- Task : A JSONArray filled with the tasks the sensor is supposed to do. In accordance to [saref:Device requirement for all Device instance to have Task](https://saref.etsi.org/core/v3.1.1/#saref:Device). The task will be connected to any subcalss of Device: SmartSensor, Sensor and any of its subclass. Not mandatory, if not included or left empty, the task generted will be composed of `"NotProvided"`.
+- Task : A JSONArray filled with the tasks the sensor is supposed to do. In accordance to [saref:Device requirement for all Device instance to have Task](https://saref.etsi.org/core/v3.1.1/#saref:Device). The task will be connected to any subclass of Device: SmartSensor, Sensor and any of its subclasses. Not mandatory, if not included or left empty, the task generted will be composed of `"NotProvided"`.
 - Command : A JSONArray filled with the commands the sensor is capable of receiving. Based on [saref:Command](https://saref.etsi.org/core/v3.1.1/#saref:Command). Not mandatory, if not included or left blank, no commands will be instantiated.
 
-The file also contain informations such as the pin connections of the sensors and as the json file is also used in the template maker to make the arduino script for the microcontroller. However these informations are not vital to the device instantiation agent and can be ignored if the user does not plan to use the template maker for their microcontroller scripts. 
+The file also contain information such as the pin connections of the sensors and the json file is also used in the template maker to make the arduino script for the microcontroller. However these information are not vital to the device instantiation agent and can be ignored if the user does not plan to use the template maker for their microcontroller scripts. 
 
 ### Instantiation format
 
@@ -81,9 +81,9 @@ python ./bulk_inst.py url={AGENT ENDPOINT URL} folder={FOLDER CONTAINING DEVICE 
 ```
 
 ### Template Maker
-A template maker is provided in the `.\templatemaker` folder to ease the sensor development. The template maker uses the same device descriptors as the instantiation part of the agent. The script generates a .ino files and 3 headers: credentials, getter and setter, as per the template provided in `./templatemaker/templates`. The script was developed with ESP32 arduino and Thingsboard in mind. The getter.h produced need to be modified according to the usage of the sensor. Ideally the rest of the script shouldn't need any modifications and are ready to be used, however it is open to any modification as needed.
+A template maker is provided in the `.\templatemaker` folder to ease the sensor development. The template maker uses the same device descriptors as the instantiation part of the agent. The script generates a .ino files and 3 headers: credentials, getter and setter, as per the template provided in `./templatemaker/templates`. The script was developed with ESP32 arduino and ThingsBoard in mind. The getter.h produced need to be modified according to the usage of the sensor. Ideally the rest of the script shouldn't need any modifications and are ready to be used, however it is open to any modification as needed.
 
-The template could also be used separately from the template maker. In the template provided in `./templatemaker/templates`, several lines are marked by flags in the form of comments in all capital, for example: `//TEMPLATE PIN` or `"//TEMPLATE GET`. These flags are used by the template maker to change specific lines with informations provided in the descriptor. Any willing user could also provide such changes by paying attention to these flags if manual development of the arduino script is desired.
+The template could also be used separately from the template maker. In the template provided in `./templatemaker/templates`, several lines are marked by flags in the form of comments in all capital, for example: `//TEMPLATE PIN` or `"//TEMPLATE GET`. These flags are used by the template maker to change specific lines with information provided in the descriptor. Any willing user could also provide such changes by paying attention to these flags if manual development of the arduino script is desired.
 
 The template maker can be run by changing the `SENSOR_JSON` and `SENSOR_JSON_LOC` variable in the file to the name of the target descriptor and the folder it is located. a new folder in the `SENSOR_JSON_LOC` folder named `result` will contain the resulting script. To run the script, simply call:
 ```bash
@@ -92,6 +92,12 @@ python ./templatemaker/templatemaker.py
 
 ## Running the agent
 
+Modify the `client.properties` located in the `config` folder. This file contains the SPARQL endpoints of the KG. 
+- `sparql.query.endpoint` SPARQL query endpoint of triple store 
+- `sparql.update.endpoint` SPARQL update endpoint of triple store 
+- `ontodev.query.endpoint` SPARQL query endpoint for checking instance existence in ontodevice
+- `saref.query.endpoint` SPARQL query endpoint for checking instance existence in saref
+
 The agent could be build using the following command in the folder of the repo:
 ```
 docker-compose up -d
@@ -99,7 +105,7 @@ docker-compose up -d
 
 The agent will be available at port `1017/instantiate`. 
 The agent accepts a POST request containing:
-- `CLIENTPROPERTIES` : The location of the client properties file containing the SPARQL endpoint of the KG. File location is stored in an environment variable `CLIENTPROPERTIES`.
+- `CLIENTPROPERTIES` : The location of the client properties file containing the SPARQL endpoints of the KG. File location is stored in an environment variable `CLIENTPROPERTIES`.
 - `Descriptor`: The device descriptor.
 
 An example of the request:
