@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.TimeZone;
 
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -34,6 +35,7 @@ import org.jooq.exception.DataAccessException;
 /**
  * Class to retrieve data from the ThingsBoard API and storing fumehood occupancy with connection to The World Avatar (Knowledge Base).
  * @author  Michael Laksana*/
+
 public class FHAgent{
 
 
@@ -77,11 +79,14 @@ public class FHAgent{
      * Log messages
      */
     private static final String GETLATESTDATA_ERROR_MSG = "Unable to query for latest data!" ;
+
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
+
     
     /*
      * Tally System variables
      */
+
     public static float tallyLim = 1;
     public static float tallyMax = 2;
     public static float tallyMin = 0;
@@ -138,16 +143,19 @@ public class FHAgent{
 
             try{
                 Threshold = Double.parseDouble(prop.getProperty("threshold.tally"));
+
                 tallyLim = Float.parseFloat(prop.getProperty("tally.limit"));
                 tallyMax = Float.parseFloat(prop.getProperty("tally.max"));
                 tallyMin = Float.parseFloat(prop.getProperty("tally.min"));
                 decreaseFactor = Float.parseFloat(prop.getProperty("decrease.factor"));
                 increaseFactor = Float.parseFloat(prop.getProperty("increase.factor"));
+
             }
 
             catch(Exception e){
                 throw new JPSRuntimeException("Error parsing tally threshold in properties file:" + e);
             }
+
         }
         catch (Exception e) {
             throw new JPSRuntimeException("Failed to init FHAgent", e);
@@ -161,6 +169,7 @@ public class FHAgent{
     public int getNumberOfTimeSeries() {
         return mappings.size();
     }
+
 
     /*
      * Maps the variable strings to IRIMappers
@@ -177,7 +186,6 @@ public class FHAgent{
         }
         return keyToIRIMap;
     }
-
 
     /**
      * Setter for the time series client.
@@ -270,6 +278,7 @@ public class FHAgent{
     }
 
     /**
+
      * Updates the database with new readings or send the timeseries to the stack dependign  on the configuration.
      * @param Distance The readings received from the ThingsBoard API
      * @param keys List of variable keyname in Thingsboard server
@@ -505,6 +514,7 @@ public class FHAgent{
     /**
      * Converts the readings in form of maps to time series' using the mappings from JSON key to IRI.
      * @param occupiedState The occupancy as map.
+
      * @param TimestampReadings The timestamps as map.
      * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
@@ -609,12 +619,14 @@ public class FHAgent{
         }
     }
 
+
     /*
      *Calculates the occupancy of the fumehood based on the distance received. 
      * @param readings The distance readings received from Thingsboard
      * @param key The distance readings key in Thingsboard
      * @return A JSONObject of the calculated occupancy in the timeseries format
      */
+
     private JSONObject TallyDist (JSONObject readings, String key) {
         float tally = 0;
         Boolean tallyLatest = false;
@@ -673,9 +685,11 @@ public class FHAgent{
         return result;
     }
 
+
     /*@deprecated
      * Get the timeseries based on the IRI
      */
+
     public TimeSeries<OffsetDateTime> getTS(String dataIRI){
         try {
             occStateTS = tsClient.getLatestData(dataIRI);
@@ -711,6 +725,7 @@ public class FHAgent{
             throw new JPSRuntimeException("Unable to retrieve latest value and timestamp from timeseries object." + e);
         }
     }
+
 
     public JSONObject createJSONRequest (JSONObject data, String timeClass){
         JSONObject result = new JSONObject();

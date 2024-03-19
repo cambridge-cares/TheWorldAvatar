@@ -8,12 +8,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.*;
 
+
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import java.io.*;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
@@ -29,11 +31,13 @@ public class FHAgentTest {
     // Temporary folder to place a properties file
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
     File mappingFolder;
 
     // The default instance used in the tests
     private FHAgent testAgent;
     private FHAgent jsonReqTestAgent;
+
     // The mocking instance for the time series client
     @SuppressWarnings("unchecked")
     private final TimeSeriesClient<OffsetDateTime> mockTSClient = (TimeSeriesClient<OffsetDateTime>) Mockito.mock(TimeSeriesClient.class);
@@ -69,6 +73,7 @@ public class FHAgentTest {
         // Create a properties file that points to a dummy mapping folder //
         // Create an empty folder
         String folderName = "mappings";
+
         mappingFolder = folder.newFolder(folderName);
         // Add mapping file into the empty folder
         String mappingFile1 = Paths.get(mappingFolder.getAbsolutePath(), "example_mapping1.properties").toString();
@@ -84,6 +89,7 @@ public class FHAgentTest {
         // Filepath for the properties file
         
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
+
         writePropertyFile(propertiesFile, Arrays.asList(new String[]{"thingsboard.mappingfolder=TEST_MAPPINGS", 
         "derivation.mapping=avgDist1:occupiedState1,avgDist2:occupiedState2", 
         "threshold.tally = 170.", 
@@ -94,6 +100,7 @@ public class FHAgentTest {
         "increase.factor = 0.5",
         "derivation.baseurl = http://derivationexample.com/triplestore/repository/"
         }));
+
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
         // To mock the environment variable, a try catch need to be used
         try {
@@ -104,7 +111,9 @@ public class FHAgentTest {
         // There should not be any exception thrown as the agent is initiated correctly
         catch (Exception e) {
             System.out.println(e);
+
             throw new JPSRuntimeException(e);
+
         }
         // Set the mocked time series client
         testAgent.setTsClient(mockTSClient);
@@ -215,6 +224,7 @@ public class FHAgentTest {
             Assert.fail();
         }
         
+
         catch (Exception e) {
             Assert.assertEquals("Failed to init FHAgent", e.getMessage());
         }
@@ -227,8 +237,10 @@ public class FHAgentTest {
             new FHAgent(propertiesFile);
             Assert.fail();
         }
+
         catch (Exception e) {
         	Assert.assertEquals("Failed to init FHAgent", e.getMessage());
+
         }
 
         // Create an empty folder
@@ -245,8 +257,10 @@ public class FHAgentTest {
         	 });
         }
         catch (Exception e) {
+
             System.out.println(e);
         	Assert.assertTrue(e.getMessage().contains("Failed to init FHAgent"));
+
         }
 
         // Add mapping files into the empty folder
@@ -621,6 +635,7 @@ public class FHAgentTest {
 
     }
 
+
     @Test
     public void testCreateJSONRequest() {
         JSONObject expected = new JSONObject();
@@ -701,5 +716,6 @@ public class FHAgentTest {
 
         JSONAssert.assertEquals(expected, jsonReqTestAgent.createJSONRequest(input, "INSTANTANEOUS"), true);
     }
+
 
 }

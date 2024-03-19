@@ -12,10 +12,8 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
-WORKDIR /root/FHAgent
-
-RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn package
-
+WORKDIR /root/DevInstAgent
+RUN mvn package
 
 #==================================================================================================
 
@@ -26,34 +24,12 @@ FROM tomcat:9.0 as agent
 WORKDIR /app
 
 # Copy in the properties file
-COPY ./config/agent.properties /root/agent.properties
-
-# Set the required environment variable
-ENV THINGSBOARD_AGENTPROPERTIES="/root/agent.properties"
-
-# Copy in the properties file
-COPY ./config/api.properties /root/api.properties
-
-# Set the required environment variable
-ENV THINGSBOARD_APIPROPERTIES="/root/api.properties"
-
-# Copy in the properties file
 COPY ./config/client.properties /root/client.properties
 
 # Set the required environment variable
-ENV THINGSBOARD_CLIENTPROPERTIES="/root/client.properties"
+ENV CLIENTPROPERTIES="/root/client.properties"
 
-
-# Set the required environment variable
-ENV IRI_MAPPINGSTORE="/root/iriMapping.txt"
-
-# Copy in the mapping folder
-COPY ./config/mappings /root/mappings
-
-# Set the required environment variable
-ENV THINGSBOARD_AGENT_MAPPINGS="/root/mappings"
-
-COPY --from=builder /root/FHAgent/output/fh-agent##1.0.1.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/DevInstAgent/output/dev-inst-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

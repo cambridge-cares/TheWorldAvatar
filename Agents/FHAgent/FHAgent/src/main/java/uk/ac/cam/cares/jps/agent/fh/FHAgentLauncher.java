@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.fh;
 
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -11,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.time.OffsetDateTime;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,13 +27,16 @@ import java.util.*;
  * data from the API and write it into the database.
  * @author 
  */
+
 @WebServlet(urlPatterns = {"/retrieve", "/instantiate"})
+
 public class FHAgentLauncher extends JPSAgent {
 	
 	public static final String KEY_AGENTPROPERTIES = "agentProperties";
 	public static final String KEY_APIPROPERTIES = "apiProperties";
 	public static final String KEY_CLIENTPROPERTIES = "clientProperties";
-    public static final String KEY_IRIMAPFILE = "iriMapFile";
+
+  public static final String KEY_IRIMAPFILE = "iriMapFile";
 	
 	
 	String agentProperties;
@@ -46,6 +51,7 @@ public class FHAgentLauncher extends JPSAgent {
     private static String dbPassword;
 
     static String requestURL;
+
     /**
      * Logger for reporting info/errors.
      */
@@ -53,6 +59,7 @@ public class FHAgentLauncher extends JPSAgent {
     /**
      * Logging / error messages
      */
+
     private static final String ARGUMENT_MISMATCH_MSG = "Need 4 properties files in the following order: 1) input agent 2) time series client 3) API connector. 4) IRI map file";
     private static final String AGENT_ERROR_MSG = "The ThingsBoard input agent could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
@@ -69,6 +76,7 @@ public class FHAgentLauncher extends JPSAgent {
 
     
     public JSONObject getRequestParameters(JSONObject requestParams, String urlPath) {
+
     	JSONObject jsonMessage = new JSONObject();
       if (validateInput(requestParams)) {
         	LOGGER.info("Passing request to ThingsBoard Input Agent..");
@@ -84,6 +92,7 @@ public class FHAgentLauncher extends JPSAgent {
                 jsonMessage = instantiateDerivations(args);
             }
             
+
             jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
             requestParams = jsonMessage;
             }
@@ -111,6 +120,7 @@ public class FHAgentLauncher extends JPSAgent {
  		 if (validate == true) {
  		 validate = requestParams.has(KEY_APIPROPERTIES);
  		 }
+
         if (validate == true) {
         validate = requestParams.has(KEY_IRIMAPFILE);
         }
@@ -147,7 +157,9 @@ public class FHAgentLauncher extends JPSAgent {
     public static JSONObject initializeAgent(String[] args) {
 
         // Ensure that there are three properties files
+
         if (args.length != 4) {
+
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
@@ -164,10 +176,12 @@ public class FHAgentLauncher extends JPSAgent {
         LOGGER.info("Input agent object initialized.");
         JSONObject jsonMessage = new JSONObject();
 
+
         jsonMessage.accumulate("Result", "Input agent object initialized.");
 
         // Create and set the time series client
         TimeSeriesClient<OffsetDateTime> tsClient;
+
 
         try {
             loadTSClientConfigs(args[1]);
@@ -182,11 +196,13 @@ public class FHAgentLauncher extends JPSAgent {
             tsClient.setRDBClient(dbUrl, dbUser, dbPassword);
             agent.setTsClient(tsClient);
         } catch (JPSRuntimeException e) {
+
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
             throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
         }
         LOGGER.info("Time series client object initialized.");
         jsonMessage.accumulate("Result", "Time series client object initialized.");
+
 
         // Create the connector to interact with the ThingsBoard API
         FHAgentAPIConnector connector;

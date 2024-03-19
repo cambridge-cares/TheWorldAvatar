@@ -1,0 +1,36 @@
+{   "MicroController":{
+    "type": null,
+    "name": null,
+    "label" :null,
+
+    "MainSensorMap":{
+        "ProxSensor1":{
+            "HCSR04ProxSensor1": {
+                "name": "ProxSensor_FH01",
+                "type": "ProxSensor",
+                "ext_lib":[],
+                "description":"Template for testing template maker",
+                "pin":[
+                    {"pinnum":25, "pintype":"OUTPUT", "label": "tPin", "isIO": true},
+                    {"pinnum":27, "pintype":"INPUT", "label": "ePin", "isIO": true}
+                ],
+                "output" : {
+                    "datatype" :  "float",
+                    "fieldname" : "avgDist",
+                    "defval" :350,
+                    "type": null,
+                    "unit" : null
+                }
+            }
+        }
+    }
+},
+"IRIMapper":{
+    "id1":null,
+    "id2":null,
+    "id3":"iri1"
+},
+"AdditionalQuery":[],
+"Task":[],
+"Command":[]
+}
