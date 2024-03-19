@@ -199,6 +199,17 @@ class BaseProperty(BaseModel, validate_assignment=True):
             cls.domain = set()
         cls.domain.add(domain.get_rdf_type())
 
+    @classmethod
+    def is_inherited(cls, prop: Any):
+        # NOTE this method is used to replace issubclass() as pydantic has its own special logic
+        # most likely relates to how the abstract class is handled, e.g. issubclass(list[str], BaseProperty)
+        # throws TypeError: issubclass() arg 1 must be a class
+        # see https://github.com/pydantic/pydantic/discussions/5970
+        try:
+            return issubclass(prop, BaseProperty)
+        except TypeError:
+            return False
+
     def collect_range_diff_to_graph(
         self,
         subject: str,
@@ -309,7 +320,7 @@ class BaseClass(BaseModel, validate_assignment=True):
     def __pydantic_init_subclass__(cls, **kwargs):
         # set the domain of all object/data properties
         for f, field_info in cls.model_fields.items():
-            if issubclass(field_info.annotation, BaseProperty):
+            if BaseProperty.is_inherited(field_info.annotation):
                 field_info.annotation.add_to_domain(cls)
 
         # register the class to the ontology
@@ -317,7 +328,7 @@ class BaseClass(BaseModel, validate_assignment=True):
 
     def __init__(self, **data) -> None:
         for f, field_info in self.__class__.model_fields.items():
-            if issubclass(field_info.annotation, BaseProperty):
+            if BaseProperty.is_inherited(field_info.annotation):
                 if f in data:
                     possible_type = field_info.annotation.reveal_possible_property_range()
                     if isinstance(data[f], list):
@@ -435,7 +446,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         return {
             field_info.annotation.get_predicate_iri(): {
                 'field': f, 'type': field_info.annotation
-            } for f, field_info in cls.model_fields.items() if issubclass(field_info.annotation, ObjectProperty)
+            } for f, field_info in cls.model_fields.items() if ObjectProperty.is_inherited(field_info.annotation)
         }
 
     @classmethod
@@ -445,7 +456,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         return {
             field_info.annotation.get_predicate_iri(): {
                 'field': f, 'type': field_info.annotation
-            } for f, field_info in cls.model_fields.items() if issubclass(field_info.annotation, DataProperty)
+            } for f, field_info in cls.model_fields.items() if DataProperty.is_inherited(field_info.annotation)
         }
 
     @classmethod
@@ -478,7 +489,7 @@ class BaseClass(BaseModel, validate_assignment=True):
 
     def create_cache(self):
         self._latest_cache = {f: getattr(self, f).create_cache()
-                              if issubclass(field_info.annotation, BaseProperty) else getattr(self, f)
+                              if BaseProperty.is_inherited(field_info.annotation) else getattr(self, f)
                               for f, field_info in self.model_fields.items()}
 
     def get_object_property_range_iris(self, field_name: str):
@@ -499,7 +510,7 @@ class BaseClass(BaseModel, validate_assignment=True):
 
     def collect_diff_to_graph(self, g_to_remove: Graph, g_to_add: Graph, recursive_depth: int = 0) -> Tuple[Graph, Graph]:
         for f, field_info in self.model_fields.items():
-            if issubclass(field_info.annotation, BaseProperty):
+            if BaseProperty.is_inherited(field_info.annotation):
                 p_cache = self._latest_cache.get(f, field_info.annotation())
                 p_now = getattr(self, f)
                 p_now.collect_range_diff_to_graph(self.instance_iri, p_cache, g_to_remove, g_to_add, recursive_depth)
