@@ -6,11 +6,7 @@ isochrone_destination_file="../../Agents/IsochroneAgent/inputs/config.properties
 
 # Check if the source file exists
 if [ -e "$isochrone_source_file" ]; then
-    # Copy the source file to the destination
-    cp "$isochrone_source_file" "$isochrone_destination_file"
-    
-    # Check if the copy was successful
-    if [ $? -eq 0 ]; then
+    if cp "$isochrone_source_file" "$isochrone_destination_file"; then
         echo "File copied successfully."
     else
         echo "Error: Failed to copy the file."
@@ -18,7 +14,6 @@ if [ -e "$isochrone_source_file" ]; then
 else
     echo "Error: Source file not found."
 fi
-
 
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 2 ] || [ "$1" != "start" ]; then
@@ -34,11 +29,7 @@ tsp_destination_file="../../Agents/TravellingSalesmanAgent/inputs/UR/POIqueries/
 
 # Check if the source file exists
 if [ -e "$tsp_source_file" ]; then
-    # Replace ${STACK_NAME} with "routing" in the source file and save it to the destination
-    sed "s/\${STACK_NAME}/$STACK_NAME/g" "$tsp_source_file" > "$tsp_destination_file"
-
-    # Check if the sed command was successful
-    if [ $? -eq 0 ]; then
+    if sed "s/\${STACK_NAME}/$STACK_NAME/g" "$tsp_source_file" > "$tsp_destination_file"; then
         echo "File copied and placeholder replaced successfully."
     else
         echo "Error: Failed to replace the placeholder in the file."
