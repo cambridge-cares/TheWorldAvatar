@@ -251,6 +251,11 @@ class BaseProperty(BaseModel, validate_assignment=True):
     def reveal_possible_property_range(cls) -> T:
         raise NotImplementedError("This is an abstract method.")
 
+    @classmethod
+    def retrieve_cardinality(cls) -> Tuple[int, int]:
+        cardinality = cls.model_fields['range'].metadata[0]
+        return cardinality.min_length, cardinality.max_length
+
     def create_cache(self):
         return NotImplementedError("This is an abstract method.")
 

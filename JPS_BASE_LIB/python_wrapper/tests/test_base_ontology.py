@@ -24,17 +24,17 @@ class ExampleOntology(BaseOntology):
 
 class DataProperty_A(DataProperty):
     is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_data_property(str)
+    range: as_range_of_data_property(str, 0, None)
 
 
 class DataProperty_B(DataProperty):
     is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_data_property(int)
+    range: as_range_of_data_property(int, 0, 1)
 
 
 class Data_Property_C(DataProperty):
     is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_data_property(str)
+    range: as_range_of_data_property(str, 0, 5)
 
 
 class A(BaseClass):
@@ -44,12 +44,12 @@ class A(BaseClass):
 
 class ObjectProperty_B_A(ObjectProperty):
     is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_object_property(A)
+    range: as_range_of_object_property(A, 0, None)
 
 
 class ObjectProperty_C_A(ObjectProperty):
     is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_object_property(A)
+    range: as_range_of_object_property(A, 0, 3)
 
 
 class B(BaseClass):
@@ -60,7 +60,7 @@ class B(BaseClass):
 
 class ObjectProperty_C_B(ObjectProperty):
     is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_object_property(B)
+    range: as_range_of_object_property(B, 0, 1)
 
 
 class C(BaseClass):
@@ -100,6 +100,7 @@ class D(BaseClass):
 class E(D):
     pass
 
+
 def init():
     KnowledgeGraph.clear_object_lookup()
     # 1 triple: a1 --> 'a1'
@@ -119,8 +120,19 @@ def init():
     return a1, a2, a3, b, c, d
 
 
+def test_retrieve_cardinality():
+    assert DataProperty_A.retrieve_cardinality() == (0, None)
+    assert DataProperty_B.retrieve_cardinality() == (0, 1)
+    assert Data_Property_C.retrieve_cardinality() == (0, 5)
+    assert ObjectProperty_B_A.retrieve_cardinality() == (0, None)
+    assert ObjectProperty_C_A.retrieve_cardinality() == (0, 3)
+    assert ObjectProperty_C_B.retrieve_cardinality() == (0, 1)
+    # TODO handle min cardinality of 1
+
+
 def test_export_to_owl():
     ExampleOntology.export_to_owl('example_ontology.ttl')
+
 
 def test_register_and_clear():
     # class registration
