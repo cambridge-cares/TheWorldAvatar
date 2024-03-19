@@ -3,12 +3,14 @@
   "workspace": "twa",
   "skip": false,
   "datasetDirectory": "companies",
+  "namespace": "company",
   "dataSubsets": [
     {
       "type": "vector",
-      "table": "company",
+      "table": "data_centres",
       "skip": false,
-      "subdirectory": "tabular",
+      "subdirectory": "data_centres",
+      "sql": "@/inputs/config/data_centres.sql",
       "ogr2ogrOptions": {
         "sridIn": "EPSG:4326",
         "layerCreationOptions": {
@@ -21,6 +23,49 @@
           "Y_POSSIBLE_NAMES": "latitude"
         }
       }
+    },
+    {
+      "type": "vector",
+      "table": "factories",
+      "skip": false,
+      "subdirectory": "factories",
+      "sql": "@/inputs/config/factories.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "jurong_island_city_furniture",
+      "skip": false,
+      "subdirectory": "jurong_island_city_furniture",
+      "sql": "@/inputs/config/jurong_island_city_furniture.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:24500",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "lon_epsg_24500",
+          "Y_POSSIBLE_NAMES": "lat_epsg_24500"
+        }
+      }
+    },
+    {
+      "type": "rdf",
+      "skip": "false",
+      "subdirectory": "tbox"
     }
   ],
   "mappings": [

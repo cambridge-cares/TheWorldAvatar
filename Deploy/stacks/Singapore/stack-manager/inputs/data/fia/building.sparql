@@ -15,13 +15,16 @@ PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
+  # basic info
   {
     BIND ("Building Height" AS ?Property )
     BIND ("m" AS ?Unit)
     SERVICE [ONTOP] {
       [IRI] bldg:measuredHeight ?Value.
     }
-  } UNION {
+  } UNION 
+  # building usage
+  {
     SERVICE [ONTOP] {
       {
         [IRI] ontobuiltenv:hasPropertyUsage ?usage .
@@ -38,7 +41,9 @@ WHERE {
           BIND ("Building Name" AS ?Property )
       } 
     }
-  } UNION { 
+  } UNION 
+  # CEA
+  { 
     {
         [IRI] bs:hasFacade ?facade .
         ?facade rdf:type bs:RoofFacade ;
@@ -195,87 +200,30 @@ WHERE {
         BIND("West wall potential annual electricity generation from photovoltaic panels" AS ?Property) .
         BIND("kWh" AS ?Unit) .
     }
-  } UNION {
-    BIND ("Name of Chemical Plant Owner" AS ?Property)
-    SERVICE [ONTOP] {
-      [IRI] ontobim:hasFacility ?chemplant.
-      ?owner ontocompany:isOwnerOf ?chemplant;
-                 rdfs:label ?Value.
-    }
-  } UNION {
-    BIND ("Business Activity of Chemical Plant Owner" AS ?Property)
-        SERVICE [ONTOP] {
-      [IRI] ontobim:hasFacility ?chemplant.
-	  ?company ontocompany:isOwnerOf ?chemplant;
-             ontocompany:hasBusinessActivity ?Value.
-    }
-  } UNION {
-    BIND ("SSIC Code for Chemical Plant Owner" AS ?Property)
-    ?chemplant rdf:type ontochemplant:ChemicalPlant.
-    SERVICE [ONTOP] {
-      [IRI] ontobim:hasFacility ?chemplant.
-	  ?company ontocompany:isOwnerOf ?chemplant;
-             ontocompany:hasSSICCode ?Value.
-    }
-  } UNION {
-    BIND ("Year of Establishment for Chemical Plant Owner" AS ?Property)    
-    SERVICE [ONTOP] {
-      [IRI] ontobim:hasFacility ?chemplant.
-	  ?company ontocompany:isOwnerOf ?chemplant;
-             ontocompany:hasYearOfEstablishment ?Value.
-    }
-  } UNION {
-    BIND ("Chemical Plant Heat Emission" AS ?Property)
-    BIND ("MW" AS ?Unit)
-    SERVICE [ONTOP] {
-      [IRI] ontobim:hasFacility ?chemplant.
-	  ?chemplant ontocompany:hasGeneratedHeat/om:hasValue/om:hasNumericalValue ?Value.
-    }
-  } UNION {
-    BIND ("Chemical Plant Design Capacity" AS ?Property)
-    BIND ("tons/year" AS ?Unit)
-    SERVICE [ONTOP] {
-      [IRI] ontobim:hasFacility ?chemplant.
-	  ?chemplant ontocompany:hasDesignCapacity/om:hasValue/om:hasNumericalValue ?Value.
-    }
-  } UNION {
-    BIND ("Chemical Plant Energy Intensity" AS ?Property)
-    BIND ("MJ" AS ?Unit)
-    SERVICE [ONTOP] {
-      [IRI] ontobim:hasFacility ?chemplant.
-	  ?chemplant ontocompany:hasSpecificEnergyConsumption/om:hasValue/om:hasNumericalValue ?Value.
-    }
-  } UNION {
-    BIND ("Chemical Plant Thermal Efficiency" AS ?Property)
-    SERVICE [ONTOP] {
-      [IRI] ontobim:hasFacility ?chemplant.
-	  ?chemplant rdf:type ontochemplant:ChemicalPlant;
-               ontochemplant:hasThermalEfficiency ?Value.
-    }
-  } UNION {
-    BIND ("Car Park Facility" AS ?Property)
-    [IRI] ontobim:hasFacility ?carpark.
-    ?carpark rdf:type ontocarpark:Carpark;
-             rdfs:label ?Value.
-  } UNION {
-    BIND ("Car Park's Weekday Rates" AS ?Property)
-    [IRI] ontobim:hasFacility ?carpark.
-    ?carpark rdf:type ontocarpark:Carpark;
-             ontocarpark:hasWeekdayRates ?Value.
-  } UNION {
-    BIND ("Car Park's Saturday Rates" AS ?Property)
-    [IRI] ontobim:hasFacility ?carpark.
-    ?carpark rdf:type ontocarpark:Carpark;
-             ontocarpark:hasSaturdayRates ?Value.
-  } UNION {
-    BIND ("Car Park's Sunday and Public Holiday Rates" AS ?Property)
-    [IRI] ontobim:hasFacility ?carpark.
-    ?carpark rdf:type ontocarpark:Carpark;
-             ontocarpark:hasSundayAndPHRates ?Value.
-  } UNION {
-    BIND ("Car Park Manager" AS ?Property)
-    [IRI] ontobim:hasFacility ?carpark.
-    ?carpark rdf:type ontocarpark:Carpark;
-             ontocarpark:hasAgency ?Value.
   }
+  # company info
+    UNION {  
+        {SERVICE [ONTOP] {
+            SELECT ?type ?Value ?Unit  where {      
+            [IRI] obm:hasFacility ?facility.      
+            ?facility ?p ?target.      
+            ?target rdf:type ?type.      
+            ?target om:hasValue/om:hasNumericalValue ?Value.       
+            ?target om:hasValue/om:hasUnit ?unit_iri.        
+            ?unit_iri skos:notation ?Unit.       	
+        }
+    }
+    ?type rdfs:label ?Property.
+    } UNION {
+        SERVICE [ONTOP] {    
+            SELECT ?p ?Value where {      
+            [IRI] obm:hasFacility ?facility.      
+            ?company ontocompany:isOwnerOf ?facility.
+            ?company ?p ?Value.
+            }  
+        }
+        ?p rdfs:subPropertyOf ontocompany:hasCompanyProperty.
+        ?p rdfs:label ?Property.
+        }
+    }
 }

@@ -76,6 +76,20 @@
                 "unit": "hours",
                 "reference": "latest"
             }
-        }
+        },
+        {
+            "id": "city furniture",
+            "class": "http://www.opengis.net/citygml/cityfurniture/2.0/CityFurniture",
+            "meta": {
+                "queryFile": "city_furniture.sparql"
+            }
+        },
+        {
+            "id": "company",
+            "class": "http://www.theworldavatar.com/kg/ontocompany#Company",
+            "meta": {
+                "queryFile": "city_furniture.sparql"
+            }
+        },
     ]
 }
