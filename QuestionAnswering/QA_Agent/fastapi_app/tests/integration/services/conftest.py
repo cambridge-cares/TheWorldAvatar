@@ -2,7 +2,6 @@ import pytest
 
 from redis import Redis
 
-from services.retrieve_docs import DocsRetriever
 from services.embed import TritonMPNetEmbedder
 
 
