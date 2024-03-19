@@ -31,6 +31,12 @@ WITH uuid_table AS (
         "realval"
     FROM "citydb"."cityobject_genericattrib"
     WHERE attrname = 'height'
+), factory_data_combined AS (
+    SELECT building_uuid, heat_emissions
+	FROM factories
+	UNION
+	SELECT building_uuid, heat_emissions
+	FROM data_centres
 )
 
 SELECT DISTINCT
@@ -53,7 +59,7 @@ JOIN citydb.objectclass ON b.objectclass_id = citydb.objectclass.id
 LEFT JOIN pointsTable ON uuid_table.uuid = pointsTable.iri
 LEFT JOIN polygonsTable ON uuid_table.uuid = polygonsTable.iri
 LEFT JOIN usageTable ON uuid_table.uuid = usageTable.iri
-LEFT JOIN company ON uuid_table.uuid = company.building_iri
+LEFT JOIN factory_data_combined ON uuid_table.uuid = factory_data_combined.building_uuid
 WHERE sg.geometry IS NOT NULL AND COALESCE(measured_height, 100.0) != '0'
 
 UNION ALL
