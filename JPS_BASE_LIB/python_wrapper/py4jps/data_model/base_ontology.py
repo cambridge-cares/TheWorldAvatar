@@ -65,38 +65,12 @@ class KnowledgeGraph(BaseModel):
         cls.property_lookup[prop.get_predicate_iri()] = prop
 
 
-def create_cache(attr_value):
-    if isinstance(attr_value, ObjectProperty):
-        return attr_value.__class__(range=set([
-            o.instance_iri if isinstance(o, BaseClass) else o for o in attr_value.range
-        ]))
-    elif isinstance(attr_value, DataProperty):
-        return attr_value.__class__(range=set(copy.deepcopy(attr_value.range)))
-    else:
-        return attr_value
-
-
 def as_range_of_object_property(t: T, min_cardinality: int = 0, max_cardinality: int = None) -> Set[Union[T, str]]:
     return Annotated[Set[Union[t, str]], Len(min_cardinality, max_cardinality)]
 
 
 def as_range_of_data_property(t: T, min_cardinality: int = 0, max_cardinality: int = None) -> Set[T]:
     return Annotated[Set[t], Len(min_cardinality, max_cardinality)]
-
-
-def reveal_object_property_range(t: Set[Union[T, str]]) -> T:
-    return t.__args__[0].__args__[0]
-
-
-def reveal_data_property_range(t: Set[T]) -> T:
-    return t.__args__[0]
-
-
-def reveal_possible_property_range(property: BaseProperty, t: Set) -> T:
-    if isinstance(property, ObjectProperty):
-        return t.__args__[0].__args__
-    else:
-        return t.__args__
 
 
 _list = copy.deepcopy(rdflib.term._GenericPythonToXSDRules)
@@ -267,12 +241,18 @@ class BaseProperty(BaseModel, validate_assignment=True):
         # add range
         if is_object_property:
             g.add((URIRef(property_iri), RDFS.range, URIRef(
-                reveal_object_property_range(cls.model_fields['range'].annotation).get_rdf_type())))
+                cls.reveal_object_property_range().get_rdf_type())))
         else:
             g.add((URIRef(property_iri), RDFS.range, URIRef(
-                _castPythonToXSD(reveal_data_property_range(cls.model_fields['range'].annotation)))))
+                _castPythonToXSD(cls.reveal_data_property_range()))))
         return g
 
+    @classmethod
+    def reveal_possible_property_range(cls) -> T:
+        raise NotImplementedError("This is an abstract method.")
+
+    def create_cache(self):
+        return NotImplementedError("This is an abstract method.")
 
     def _exclude_keys_for_compare_(self, *keys_to_exclude):
         list_keys_to_exclude = list(keys_to_exclude) if not isinstance(
@@ -330,7 +310,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         for f, field_info in self.__class__.model_fields.items():
             if issubclass(field_info.annotation, BaseProperty):
                 if f in data:
-                    possible_type = reveal_possible_property_range(field_info.annotation, field_info.annotation.model_fields['range'].annotation)
+                    possible_type = field_info.annotation.reveal_possible_property_range()
                     if isinstance(data[f], list):
                         if all(isinstance(i, possible_type) for i in data[f]):
                             data[f] = field_info.annotation(range=set(data[f]))
@@ -393,9 +373,8 @@ class BaseClass(BaseModel, validate_assignment=True):
             # TODO need to consider what to do when two instances pointing to each other
             object_properties_dict = {
                 op_dct['field']: op_dct['type'](
-                    range=set() if op_iri not in props else reveal_object_property_range(
-                        op_dct['type'].model_fields['range'].annotation
-                    ).pull_from_kg(props[op_iri], sparql_client, recursive_depth) if flag_pull else props[op_iri]
+                    range=set() if op_iri not in props else op_dct['type'].reveal_object_property_range(
+                        ).pull_from_kg(props[op_iri], sparql_client, recursive_depth) if flag_pull else props[op_iri]
                 ) for op_iri, op_dct in ops.items()
             }
             # here we handle data properties
@@ -409,12 +388,10 @@ class BaseClass(BaseModel, validate_assignment=True):
                 # TODO below query can be combined with those connected in the KG to save amount of queries
                 for op_iri, op_dct in ops.items():
                     if flag_pull:
-                        reveal_object_property_range(
-                            op_dct['type'].model_fields['range'].annotation
-                        ).pull_from_kg(
+                        op_dct['type'].reveal_object_property_range().pull_from_kg(
                             set(inst.get_object_property_range_iris(op_dct['field'])) - set(props.get(op_iri, [])),
                             sparql_client, recursive_depth)
-                inst._latest_cache = {k: create_cache(v) for k, v in {**object_properties_dict, **data_properties_dict}.items()}
+                inst._latest_cache = {k: v.create_cache() for k, v in {**object_properties_dict, **data_properties_dict}.items()}
                 inst._timestamp_of_latest_cache = time.time()
             else:
                 inst = cls(
@@ -422,7 +399,7 @@ class BaseClass(BaseModel, validate_assignment=True):
                     **object_properties_dict,
                     **data_properties_dict,
                 )
-                inst._latest_cache = {f: create_cache(getattr(inst, f)) for f in inst.model_fields}
+                inst.create_cache()
                 inst._timestamp_of_latest_cache = time.time()
 
             inst._exist_in_kg = True
@@ -477,6 +454,11 @@ class BaseClass(BaseModel, validate_assignment=True):
             continue
 
         return g
+
+    def create_cache(self):
+        self._latest_cache = {f: getattr(self, f).create_cache()
+                              if issubclass(field_info.annotation, BaseProperty) else getattr(self, f)
+                              for f, field_info in self.model_fields.items()}
 
     def get_object_property_range_iris(self, field_name: str):
         return [o.instance_iri if isinstance(o, BaseClass) else o for o in getattr(self, field_name).range]
@@ -633,6 +615,18 @@ class ObjectProperty(BaseProperty):
     def export_to_owl(cls, g: Graph):
         return super().export_to_owl(g, True)
 
+    @classmethod
+    def reveal_object_property_range(cls) -> T:
+        return cls.model_fields['range'].annotation.__args__[0].__args__[0]
+
+    @classmethod
+    def reveal_possible_property_range(cls) -> T:
+        return cls.model_fields['range'].annotation.__args__[0].__args__
+
+    def create_cache(self):
+        return self.__class__(range=set([
+            o.instance_iri if isinstance(o, BaseClass) else o for o in self.range
+        ]))
 
 class DataProperty(BaseProperty):
 
@@ -671,3 +665,14 @@ class DataProperty(BaseProperty):
     @classmethod
     def export_to_owl(self, g: Graph):
         return super().export_to_owl(g, False)
+
+    @classmethod
+    def reveal_data_property_range(cls) -> T:
+        return cls.model_fields['range'].annotation.__args__[0]
+
+    @classmethod
+    def reveal_possible_property_range(cls) -> T:
+        return cls.model_fields['range'].annotation.__args__
+
+    def create_cache(self):
+        return self.__class__(range=set(copy.deepcopy(self.range)))
