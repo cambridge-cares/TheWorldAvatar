@@ -1,0 +1,18 @@
+apply plugin: 'com.android.library'
+apply from: "${project.rootDir}/common.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.loginmodule'
+}
+
+dependencies {
+
+    implementation 'net.openid:appauth:0.11.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.android.volley:volley:1.2.1'
+    def nav_version = '2.7.5'
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+
+    implementation project(path: ':core:network')
+}
