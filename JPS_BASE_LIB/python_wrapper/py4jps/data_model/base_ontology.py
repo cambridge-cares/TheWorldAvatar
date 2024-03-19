@@ -338,6 +338,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         if not bool(self.instance_iri):
             self.instance_iri = init_instance_iri(
                 self.rdf_type, self.__class__.__name__)
+        # set new instance to the global look up table, so that we can avoid creating the same instance multiple times
         self.register_object()
         return super().model_post_init(__context)
 
@@ -377,6 +378,8 @@ class BaseClass(BaseModel, validate_assignment=True):
         dps = cls.get_data_properties()
 
         for iri, props in node_dct.items():
+            if cls.get_rdf_type() not in props[RDF.type.toPython()]:
+                raise ValueError(f"The instance {iri} is of type {props[RDF.type.toPython()]}, therefore it cannot be instantiated as {cls.get_rdf_type()} ({cls.__name__}).")
             inst = KnowledgeGraph.get_object_from_lookup(iri)
             # handle object properties (where the recursion happens)
             # TODO need to consider what to do when two instances pointing to each other
@@ -414,10 +417,6 @@ class BaseClass(BaseModel, validate_assignment=True):
             inst._exist_in_kg = True
             # update cache here
             instance_lst.append(inst)
-            # set new instance to the global look up table, so that we can avoid creating the same instance multiple times
-            # also, existing objects will be skipped as the modification should already be done to the objects themselves
-            # set_new_ontology_object(iri, inst) # TODO
-        # TODO add check for rdf_type
         return instance_lst
 
     @classmethod

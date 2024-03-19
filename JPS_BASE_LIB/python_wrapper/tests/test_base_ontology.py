@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 import uuid
 
 from rdflib import Graph, RDF, Literal, XSD
@@ -248,6 +249,10 @@ def test_pull_from_kg(initialise_sparql_client):
     assert B.pull_from_kg(b.instance_iri, sparql_client, -1)[0] == b
     assert C.pull_from_kg(c.instance_iri, sparql_client, -1)[0] == c
     assert id(C.pull_from_kg(c.instance_iri, sparql_client, -1)[0]) != id(c)
+    # test exception when pulling an object that does not match the type of the class
+    with pytest.raises(ValueError) as e_info:
+        A.pull_from_kg(c.instance_iri, sparql_client)
+    print(e_info)
 
 
 def test_pull_all_instance_from_kg(initialise_sparql_client):
