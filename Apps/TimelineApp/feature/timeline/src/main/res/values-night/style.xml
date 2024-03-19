@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Widget.GradientToolBar" parent="Widget.Material3.Toolbar">
-        <item name="android:background">@drawable/gradient_app_bar_background_night</item>
+        <item name="android:background">@drawable/app_bar_background</item>
         <item name="titleTextColor">?attr/colorOnSurface</item>
     </style>
 
     <item name="rippleColor" type="color">@color/md_theme_dark_outline</item>
+    <item name="app_bar_background" type="drawable">@drawable/gradient_app_bar_background_night</item>
 </resources>

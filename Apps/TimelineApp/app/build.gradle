@@ -9,6 +9,9 @@ android {
         applicationId "uk.ac.cam.cares.jps.timeline"
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [
+                'appAuthRedirectScheme': 'uk.ac.cam.cares.jps.twatimelineapp'
+        ]
     }
 }
 
@@ -17,4 +20,5 @@ dependencies {
 //    implementation project(path: ':feature:locationtracking')
 //    implementation project(path: ':feature:routing')
     implementation project(path: ':feature:timeline')
+    implementation project(path: ':feature:user')
 }

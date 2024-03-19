@@ -5,6 +5,7 @@
     app:startDestination="@id/timeline_map">
 
     <include app:graph="@navigation/timeline_map"/>
+    <include app:graph="@navigation/user_map"/>
 
 <!--    <include app:graph="@navigation/location_tracking_graph"/>-->
 <!--    <include app:graph="@navigation/routing_graph"/>-->

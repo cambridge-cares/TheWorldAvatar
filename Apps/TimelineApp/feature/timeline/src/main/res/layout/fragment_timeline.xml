@@ -28,6 +28,7 @@
             android:fitsSystemWindows="true"
             app:title="TWA Timeline"
             app:titleCentered="true"
+            app:menu="@menu/timeline_menu"
             />
 
     </com.google.android.material.appbar.AppBarLayout>

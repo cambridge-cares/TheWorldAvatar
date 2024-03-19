@@ -3,4 +3,5 @@
     <string name="last_date_button">Last date button</string>
     <string name="next_date_button">Next date button</string>
     <string name="date_picker_button">Date picker button</string>
+    <string name="user">user page</string>
 </resources>

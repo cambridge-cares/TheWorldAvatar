@@ -4,15 +4,13 @@ apply from: "${project.rootDir}/common.gradle"
 apply from: "${project.rootDir}/ui.gradle"
 
 android {
-    namespace 'uk.ac.cam.cares.jps.timelinemap'
+    namespace 'uk.ac.cam.cares.jps.user'
 }
 
 dependencies {
-
-    implementation 'com.mapbox.maps:android:10.16.0'
-
     implementation project(path: ':core:utils')
     implementation project(path: ':core:data')
     implementation project(path: ':core:ui')
     implementation project(path: ':core:model')
+    implementation project(path: ':core:login')
 }
