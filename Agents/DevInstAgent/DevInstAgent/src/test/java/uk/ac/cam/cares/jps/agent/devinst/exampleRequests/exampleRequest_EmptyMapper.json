@@ -27,5 +27,7 @@
     "IRIMapper":{
 
     },
-    "AdditionalQuery":[]
+    "AdditionalQuery":[],
+    "Task":["Get occupancy of a fumehood"],
+    "Command":["/send"]
 }

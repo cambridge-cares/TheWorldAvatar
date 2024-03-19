@@ -39,5 +39,7 @@
         "http://example.com/prefix/OPENLABAREA https://w3id.org/bot#containsElement http://example.com/prefix/WFH",
         "IRIMapper=find;ProximitySensor_FH-02 https://www.theworldavatar.com/kg/ontodevice/isAttachedTo http://example.com/prefix/WFH",
         "IRIMapper=gen;testingGen;http://example.com/prefix/ http://www.w3.org/1999/02/22-rdf-syntax-ns#type IRIMapper=Length"
-    ]
+    ],
+    "Task":["Get occupancy of a fumehood"],
+    "Command":["/send"]
 }

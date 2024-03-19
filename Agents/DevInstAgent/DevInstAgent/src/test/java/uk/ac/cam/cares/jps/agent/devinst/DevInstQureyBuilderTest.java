@@ -8,8 +8,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.jena.base.Sys;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
@@ -26,23 +24,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
-import org.semanticweb.owlapi.util.IRIComparator;
 
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import wiremock.com.jayway.jsonpath.internal.function.text.Length;
-import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -59,13 +51,11 @@ public class DevInstQureyBuilderTest {
     private static final Iri MicroController = P_DEV.iri("MicroController");
     private static final Iri Sensor = P_SAREF.iri("Sensor");
     private static final Iri ProximitySensor = P_DEV.iri("ProximitySensor");
+    private static final Iri Camera = P_DEV.iri("Camera");
+    private static final Iri Device = P_SAREF.iri("Device");
 
-    private static final Iri consistsOf = P_SAREF.iri("consistsOf");
-    private static final Iri sendsSignalTo = P_DEV.iri("sendsSignalTo");
+
     private static final Iri measures = P_DEV.iri("measures");
-    private static final Iri Task = P_SAREF.iri("Task");
-    private static final Iri hasCommand = P_SAREF.iri("hasCommand");
-    private static final Iri Command = P_SAREF.iri("Command");
     private static final Iri accomplishes = P_SAREF.iri("accomplishes");
     // Temporary folder to place a properties file
     @Rule
@@ -87,8 +77,8 @@ public class DevInstQureyBuilderTest {
 
     //Blazegraph endpoint
     private String sparql_endpoint;
-    private String ontodev_endpoint = "http://10.25.188.58:3838/blazegraph/namespace/ontodevice/sparql";
-    private String saref_endpoint = "http://10.25.188.58:3838/blazegraph/namespace/ontodevice/sparql";
+    //private String ontodev_endpoint = "http://10.25.188.58:3838/blazegraph/namespace/ontodevice/sparql";
+    //private String saref_endpoint = "http://10.25.188.58:3838/blazegraph/namespace/ontodevice/sparql";
 
     private String reqBody = "com.bigdata.rdf.store.AbstractTripleStore.textIndex=false\r\n"+
     "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass=com.bigdata.rdf.axioms.NoAxioms\r\n"+
@@ -151,13 +141,15 @@ public class DevInstQureyBuilderTest {
         
         String clientPropFile = Paths.get(folder.getRoot().toString(), "client.properties").toString();
         
-        String[] clientPropParam = {"sparql.query.endpoint="+sparql_endpoint, "sparql.update.endpoint="+sparql_endpoint, "ontodev.query.endpoint="+ontodev_endpoint, "saref.query.endpoint="+saref_endpoint};
+        String[] clientPropParam = {"sparql.query.endpoint="+sparql_endpoint, "sparql.update.endpoint="+sparql_endpoint, "ontodev.query.endpoint="+sparql_endpoint, "saref.query.endpoint="+sparql_endpoint};
         writePropertyFile(clientPropFile, Arrays.asList(clientPropParam));
 
         //Set the RemoteStoreClient
         storeClient =  new RemoteStoreClient(sparql_endpoint, sparql_endpoint);
-        ontodevClient = new RemoteStoreClient(ontodev_endpoint);
-        sarefClient = new RemoteStoreClient(saref_endpoint);
+        //ontodevClient = new RemoteStoreClient(ontodev_endpoint);
+        //sarefClient = new RemoteStoreClient(saref_endpoint);
+        ontodevClient = new RemoteStoreClient(sparql_endpoint);
+        sarefClient = new RemoteStoreClient(sparql_endpoint);
         //storeClient = queryBuilder.storeClient;
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
         // To mock the environment variable, a try catch need to be used
@@ -192,6 +184,13 @@ public class DevInstQureyBuilderTest {
         exampleEmptyMap = parseJSONFile("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest_EmptyMapper.json");
         exampleAddQuery = parseJSONFile("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest_AdditionalQ.json");
 
+        //To emulate ontodevice and SAREF endpoint used for checking concept existance 
+        ModifyQuery modify = Queries.MODIFY();
+        modify.prefix(P_AGENT, P_DEV, P_OM, P_SAREF);
+        modify.insert(ProximitySensor.isA(Device));
+        modify.insert(Camera.isA(Device));
+        modify.insert(iri("https://saref.etsi.org/core/TemperatureSensor").isA(Device));
+        storeClient.executeUpdate(modify.getQueryString());
     }
 
     @Ignore("Test containers requires docker to function")
@@ -256,9 +255,10 @@ public class DevInstQureyBuilderTest {
 
         //Task
         query = Queries.SELECT();
-        query.where(query.var().has(accomplishes, query.var()));
+        query.where(query.var().has(accomplishes, query.var())).prefix(P_SAREF);
         result = storeClient.executeQuery(query.getQueryString());
-        Assert.assertTrue(result.length() == 3);
+        System.out.println(result);
+        Assert.assertTrue(result.length() == 4);
 
     }
 
@@ -329,7 +329,7 @@ public class DevInstQureyBuilderTest {
 
     }
 
-    @Ignore("The new image requires credential. This ignore is here just for quick testing. To be deleted later")
+    @Ignore("Test requires container")
     @Test
     public void testCheckConceptExistence() {
         Iri doesNotExist = iri("http://www.example.com/prefix/api_AvgDist_FH02");

@@ -34,5 +34,7 @@
         "Length" : "http://www.ontology-of-units-of-measure.org/resource/om-2/Length",
         "cm" : "http://www.ontology-of-units-of-measure.org/resource/om-2/centimetre"
     },
-    "AdditionalQuery":[]
+    "AdditionalQuery":[],
+    "Task":["Get occupancy of a fumehood"],
+    "Command":["/send"]
 }
