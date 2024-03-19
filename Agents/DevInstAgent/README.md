@@ -17,7 +17,7 @@ The post processing agent will also be responsible for instantiating agent and d
  The device instantiaion agent will be responsible for instantiating the sensors and devices in the knowledge graph using a device descriptor file written by the user.  
 
 ### Descriptors
-The agent require a description of the device instantiated. This description must be written in a `.json` format for the agent to take in. A template of the file is provided in the repository. The file is composed of IDs which will be used to find the IRI in the IRI Mapper in the json file.
+The agent require a description of the devices. This description must be written in a `.json` format for the agent to take in. A template of the file is provided in the repository. The file is composed of IDs which will be used to find the IRI in the IRI Mapper in the json file.
 
 Each device will require 1 descriptor. A descriptor can be composed of 1 microcontroller and several sensor modules. Each sensor modules can be composed of several sensors. Each sensor will have 1 type of sensor reading. The diagram of the json structure is shown in image below.
 ![Sensor instantiation design](./readme_img/sensor_conn.png)
@@ -29,7 +29,7 @@ The file can be sparated into 3 different main keys, namely:
     - label: The rdfs:label of the microcontroller 
     - MainSensorMap: The map of the sensor modules connected to the microcontroller.  Composed of a JSONObject that maps the sensor names and their respective information. Each sensor map is composed of (relevant to the device instantiation agent): sensor type, output, output datatype and unit, ThingsBoard field name.
 
-- IRIMapper: Map of all IRIs. An IRI can be readily provided by the user. However, in case a new IRI is to be generated, the user can provide a keyword `gen`. This will create a new IRI for the given ID in the device descriptor, with default prefix of ontodevice. The IRI will also have a UUID v4 attached in the pattern of `prefix:ID_UUID`. If the IRI already exist containing a unique string pattern, the keyword `find` can be used. The agent will search the graph for instance containing the ID. If more than one or none is found, an error will be thrown and the IRI needs to be provided manually or to be generated instead. 
+- IRIMapper: Map of all IRIs. An IRI can be readily provided by the user. However, in case a new IRI is to be generated, the user can provide a keyword `gen`. This will create a new IRI for the given ID in the device descriptor, with default prefix of ontodevice. The IRI will also have a UUID v4 attached in the pattern of `prefix:ID_UUID`. If the IRI already exist containing a unique string pattern, the keyword `find` can be used. The agent will search the graph for an instance containing the ID. If more than one or none is found, an error will be thrown and the IRI needs to be provided manually or to be generated instead. 
 
 At the moment, the sensor type IRIs are checked against ontodevice and SAREF to ensure that the concept exist. If the concept does not exist, an error will be thrown and the device will not be instantiated. 
 
