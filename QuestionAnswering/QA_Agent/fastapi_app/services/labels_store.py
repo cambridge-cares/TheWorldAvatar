@@ -1,5 +1,6 @@
 from functools import cached_property
 import json
+import re
 from typing import Iterable, List
 from dataclasses import asdict
 
@@ -32,6 +33,7 @@ class LabelsStore:
         index_name,
         bindings: Iterable[IRIWithLabels],
     ):
+        # TODO: validate the bindings are not None
         self.redis_client = redis_client
         self.key_prefix = key_prefix
         self.index_name = index_name
@@ -45,6 +47,7 @@ class LabelsStore:
         pipeline = self.redis_client.pipeline()
         for i, binding in enumerate(self.bindings):
             name = self.key_prefix + str(i)
+            print(name)
             pipeline.json().set(name, "$", asdict(binding))
         pipeline.execute()
 
@@ -59,27 +62,27 @@ class LabelsStore:
         if not does_index_exist(self.redis_client, self.index_name):
             self._create_index()
 
+        # TODO: accumulate pages from Redis to ensure all labels are retrieved
         docs = (
             self.redis_client.ft(self.index_name)
-            .search(Query("*").return_field("$.labels", as_field="labels_serialized"))
+            .search(Query("*").return_field("$.labels", as_field="labels_serialized").paging(0, 10000))
             .docs
         )
         labels = [label for doc in docs for label in json.loads(doc.labels_serialized)]
         return list(set(labels))
 
-    def _lookup_iri(self, label: str):
-        print("label to lookup:", label)
+    def _lookup_iris(self, label: str):
         if not does_index_exist(self.redis_client, self.index_name):
             self._create_index()
 
         docs = (
             self.redis_client.ft(self.index_name)
             .search(
-                Query("@labels:{{{label}}}".format(label=label)).return_field("IRI")
+                Query("@labels:{{{label}}}".format(label=re.escape(label))).return_field("IRI")
             )
             .docs
         )
-        iris = [doc.IRI for doc in docs]
+        iris = [str(doc.IRI) for doc in docs]
         return list(set(iris))
 
     def link_entity(self, name: str):
@@ -90,7 +93,7 @@ class LabelsStore:
             scorer=rapidfuzz.fuzz.WRatio,
             processor=rapidfuzz.utils.default_process,
         )
-        return self._lookup_iri(closest_label)
+        return self._lookup_iris(closest_label)
 
     def lookup_labels(self, IRI: str):
         if not does_index_exist(self.redis_client, self.index_name):

@@ -4,10 +4,8 @@ import time
 from typing import Annotated, List
 
 from fastapi import Depends
-from redis import Redis
 
 from model.qa import QAStep
-from services.embed import IEmbedder
 from services.align_enum import EnumAligner
 from services.connectors.agent_connector import AgentConnectorBase
 from .constants import PlotAttrKey
@@ -18,6 +16,7 @@ from .parse import (
     get_attribute_aggregate_parser,
     get_plot_constraint_parser,
 )
+from .align import get_plot_attr_key_aligner
 
 logger = logging.getLogger(__name__)
 
@@ -245,15 +244,6 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         )
 
         return "IR", steps, data
-
-
-def get_plot_attr_key_aligner(embedder: IEmbedder, redis_client: Redis):
-    return EnumAligner(
-        embedder=embedder,
-        redis_client=redis_client,
-        key="sg_land_lots:plot_attr_keys",
-        enum_cls=PlotAttrKey,
-    )
 
 
 def get_sg_land_lots_agent_connector(

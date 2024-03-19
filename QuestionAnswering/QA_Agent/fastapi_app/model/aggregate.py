@@ -6,3 +6,4 @@ class AggregateOperator(Enum):
     MAX = "MAX"
     AVG = "AVG"
     COUNT = "COUNT"
+    SUM = "SUM"
