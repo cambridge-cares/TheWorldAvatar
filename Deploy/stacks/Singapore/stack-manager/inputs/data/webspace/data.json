@@ -599,6 +599,450 @@
                     }
                 },
                 {
+                    "id": "Religious Facility",
+                    "source-layer": "building_usage",
+                    "name": "Religious Facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "ReligiousFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFD700",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Industrial Facility",
+                    "source-layer": "building_usage",
+                    "name": "Industrial Facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "IndustrialFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFA500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Police Station",
+                    "source-layer": "building_usage",
+                    "name": "Police Station",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "PoliceStation",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#1E90FF",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Fire Station",
+                    "source-layer": "building_usage",
+                    "name": "Fire Station",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "FireStation",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Hotel",
+                    "source-layer": "building_usage",
+                    "name": "Hotel",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Hotel",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF1493",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Non-Domestic",
+                    "source-layer": "building_usage",
+                    "name": "Non-Domestic",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Non-Domestic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#F1EB9C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Domestic",
+                    "source-layer": "building_usage",
+                    "name": "Domestic",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Domestic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4682B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Transport Facility",
+                    "source-layer": "building_usage",
+                    "name": "Transport Facility",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "TransportFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#2CA02C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Retail Establishment",
+                    "source-layer": "building_usage",
+                    "name": "Retail Establishment",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "RetailEstablishment",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#DC143C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Office",
+                    "source-layer": "building_usage",
+                    "name": "Office",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Office",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF8C00",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Hospital",
+                    "source-layer": "building_usage",
+                    "name": "Hospital",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Hospital",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Pharmacy",
+                    "source-layer": "building_usage",
+                    "name": "Pharmacy",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Pharmacy",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
                     "id": "School",
                     "source-layer": "building_usage",
                     "name": "School",
@@ -636,9 +1080,9 @@
                     }
                 },
                 {
-                    "id": "Eating establishment",
+                    "id": "Eating Establishment",
                     "source-layer": "building_usage",
-                    "name": "Eating establishment",
+                    "name": "Eating Establishment",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -673,13 +1117,13 @@
                     }
                 },
                 {
-                    "id": "University facility",
+                    "id": "University",
                     "source-layer": "building_usage",
-                    "name": "University facility",
+                    "name": "University",
                     "source": "usage",
                     "filter": [
                         "in",
-                        "UniversityFacility",
+                        "University",
                         [
                             "get",
                             "ontobuilt"
