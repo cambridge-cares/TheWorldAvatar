@@ -601,7 +601,7 @@
                 {
                     "id": "Religious Facility",
                     "source-layer": "building_usage",
-                    "name": "Religious Facility",
+                    "name": "Religious facility",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -638,7 +638,7 @@
                 {
                     "id": "Industrial Facility",
                     "source-layer": "building_usage",
-                    "name": "Industrial Facility",
+                    "name": "Industrial facility",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -675,7 +675,7 @@
                 {
                     "id": "Police Station",
                     "source-layer": "building_usage",
-                    "name": "Police Station",
+                    "name": "Police station",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -712,7 +712,7 @@
                 {
                     "id": "Fire Station",
                     "source-layer": "building_usage",
-                    "name": "Fire Station",
+                    "name": "Fire station",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -786,7 +786,7 @@
                 {
                     "id": "Non-Domestic",
                     "source-layer": "building_usage",
-                    "name": "Non-Domestic",
+                    "name": "Non-domestic",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -860,7 +860,7 @@
                 {
                     "id": "Transport Facility",
                     "source-layer": "building_usage",
-                    "name": "Transport Facility",
+                    "name": "Transport facility",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -897,7 +897,7 @@
                 {
                     "id": "Retail Establishment",
                     "source-layer": "building_usage",
-                    "name": "Retail Establishment",
+                    "name": "Retail establishment",
                     "source": "usage",
                     "filter": [
                         "in",
@@ -1082,7 +1082,7 @@
                 {
                     "id": "Eating Establishment",
                     "source-layer": "building_usage",
-                    "name": "Eating Establishment",
+                    "name": "Eating establishment",
                     "source": "usage",
                     "filter": [
                         "in",
