@@ -5,8 +5,11 @@ from typing_extensions import Annotated
 from annotated_types import Len
 
 from pydantic import BaseModel, Field, PrivateAttr, model_validator
+import rdflib
 from rdflib import Graph, URIRef, Literal
-from rdflib.namespace import RDF, RDFS
+from rdflib.namespace import RDF, RDFS, OWL, XSD, DC
+
+from datetime import datetime
 
 import hashlib
 import base64
@@ -96,19 +99,31 @@ def reveal_possible_property_range(property: BaseProperty, t: Set) -> T:
         return t.__args__
 
 
+_list = copy.deepcopy(rdflib.term._GenericPythonToXSDRules)
+for pType, (castFunc, dType) in _list:
+    if pType == str:
+        _list.remove((pType, (castFunc, dType)))
+        _list.append((pType, (castFunc, XSD.string.toPython())))
+
+
+def _castPythonToXSD(python_clz):
+    for pType, (castFunc, dType) in _list:
+        if python_clz == pType:
+            return dType
+
+
 class BaseOntology(BaseModel):
-    base_url: str = Field(default=TWA_BASE_URL, frozen=True)
-    namespace: str = Field(default=None, frozen=True)
+    base_url: ClassVar[str] = TWA_BASE_URL
+    namespace: ClassVar[str] = None
     class_lookup: ClassVar[Dict[str, BaseClass]] = None
     object_property_lookup: ClassVar[Dict[str, ObjectProperty]] = None
     data_property_lookup: ClassVar[Dict[str, DataProperty]] = None
+    rdfs_comment: ClassVar[str] = None
+    owl_versionInfo: ClassVar[str] = None
 
     @classmethod
     def get_namespace_iri(cls) -> str:
-        return construct_namespace_iri(
-            cls.model_fields['base_url'].default,
-            cls.model_fields['namespace'].default
-        )
+        return construct_namespace_iri(cls.base_url, cls.namespace)
 
     @classmethod
     def register_class(cls, ontolgy_class: BaseClass):
@@ -130,6 +145,62 @@ class BaseOntology(BaseModel):
             cls.data_property_lookup = {}
         cls.data_property_lookup[prop.get_predicate_iri()] = prop
         KnowledgeGraph.register_property(prop)
+
+    @classmethod
+    def export_to_owl(cls, file_path: str, format: str = 'ttl'):
+        g = Graph()
+        # metadata
+        g.add((URIRef(cls.get_namespace_iri()), RDF.type, OWL.Ontology))
+        g.add((URIRef(cls.get_namespace_iri()), DC.date, Literal(datetime.now().isoformat())))
+        if bool(cls.rdfs_comment):
+            g.add((URIRef(cls.get_namespace_iri()), RDFS.comment, Literal(cls.rdfs_comment)))
+        if bool(cls.owl_versionInfo):
+            g.add((URIRef(cls.get_namespace_iri()), OWL.versionInfo, Literal(cls.owl_versionInfo)))
+        # handle all classes
+        if bool(cls.class_lookup):
+            for clz_iri, clz in cls.class_lookup.items():
+                g.add((URIRef(clz_iri), RDF.type, OWL.Class))
+                # add super classes
+                idx = clz.__mro__.index(BaseClass)
+                for i in range(1, idx):
+                    g.add((URIRef(clz_iri), RDFS.subClassOf, URIRef(clz.__mro__[i].get_rdf_type())))
+                # TODO add cardinality for object properties
+                for prop_iri, prop_dct in clz.get_object_properties().items():
+                    continue
+                # TODO add cardinality for data properties
+                for prop_iri, prop_dct in clz.get_data_properties().items():
+                    continue
+        # handle all object properties
+        if bool(cls.object_property_lookup):
+            for prop_iri, prop in cls.object_property_lookup.items():
+                g.add((URIRef(prop_iri), RDF.type, OWL.ObjectProperty))
+                # add super properties
+                idx = prop.__mro__.index(ObjectProperty)
+                for i in range(1, idx):
+                    g.add((URIRef(prop_iri), RDFS.subPropertyOf, URIRef(prop.__mro__[i].get_predicate_iri())))
+                # add domain and range
+                for d in prop.domain:
+                    # TODO union of class as domain
+                    g.add((URIRef(prop_iri), RDFS.domain, URIRef(d)))
+                g.add((URIRef(prop_iri), RDFS.range, URIRef(
+                    reveal_object_property_range(prop.model_fields['range'].annotation).get_rdf_type())))
+        # handle all data properties
+        if bool(cls.data_property_lookup):
+            for prop_iri, prop in cls.data_property_lookup.items():
+                g.add((URIRef(prop_iri), RDF.type, OWL.DatatypeProperty))
+                # add super properties
+                idx = prop.__mro__.index(DataProperty)
+                for i in range(1, idx):
+                    g.add((URIRef(prop_iri), RDFS.subPropertyOf, URIRef(prop.__mro__[i].get_predicate_iri())))
+                # add domain and range
+                for d in prop.domain:
+                    # TODO union of class as domain
+                    g.add((URIRef(prop_iri), RDFS.domain, URIRef(d)))
+                g.add((URIRef(prop_iri), RDFS.range, URIRef(
+                    _castPythonToXSD(reveal_data_property_range(prop.model_fields['range'].annotation)))))
+
+        # serialize
+        g.serialize(destination=file_path, format=format)
 
 
 class BaseProperty(BaseModel, validate_assignment=True):

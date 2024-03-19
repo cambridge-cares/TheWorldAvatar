@@ -16,8 +16,10 @@ EXAMPLE_NAMESPACE = 'example'
 
 
 class ExampleOntology(BaseOntology):
-    base_url: str = EXAMPLE_BASE_URL
-    namespace: str = EXAMPLE_NAMESPACE
+    base_url: ClassVar[str] = EXAMPLE_BASE_URL
+    namespace: ClassVar[str] = EXAMPLE_NAMESPACE
+    owl_versionInfo: ClassVar[str] = '0.0.1a'
+    rdfs_comment: ClassVar[str] = 'An example ontology'
 
 
 class DataProperty_A(DataProperty):
@@ -95,6 +97,8 @@ class D(BaseClass):
     object_property_d_a: ObjectProperty_D_A = Field(default_factory=ObjectProperty_D_A)
     data_property_d: Data_Property_D = Field(default_factory=Data_Property_D)
 
+class E(D):
+    pass
 
 def init():
     KnowledgeGraph.clear_object_lookup()
@@ -114,6 +118,9 @@ def init():
     # in total 18 triples
     return a1, a2, a3, b, c, d
 
+
+def test_export_to_owl():
+    ExampleOntology.export_to_owl('example_ontology.ttl')
 
 def test_register_and_clear():
     # class registration
@@ -154,7 +161,7 @@ def test_added_to_domain():
     for p in [Data_Property_C, ObjectProperty_C_A, ObjectProperty_C_B]:
         assert set([C.get_rdf_type()]) == p.domain
     for p in [Data_Property_D, ObjectProperty_D_A, ObjectProperty_D_B, ObjectProperty_D_C]:
-        assert set([D.get_rdf_type()]) == p.domain
+        assert set([D.get_rdf_type(), E.get_rdf_type()]) == p.domain
 
 
 def test_rdf_type():
