@@ -11,7 +11,7 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
 PREFIX ubem: <https://www.theworldavatar.com/kg/ontoubemmp/>
 PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
-
+PREFIX obm: <https://www.theworldavatar.com/kg/ontobim/>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
