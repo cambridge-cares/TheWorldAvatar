@@ -66,20 +66,28 @@ UNION ALL
 
 SELECT
     CONCAT('City Furniture ', uuid_table.cityobject_id) as name,
-	COALESCE(cityfurniture_height.realval, 100.0) AS building_height,
-	ST_Transform(cityfurniture_footprint.geomval, 4326) AS geom,
-	iri_table.iri,
-	null as ontobuilt,
-	null as heat_emissions,
-	citydb.objectclass.classname AS objectclass
+    COALESCE(cityfurniture_height.realval, 100.0) AS building_height,
+    ST_Transform(cityfurniture_footprint.geomval, 4326) AS geom,
+    iri_table.iri,
+    null as ontobuilt,
+    heat_emissions,
+    objectclass.classname AS objectclass
 FROM 
-    "citydb"."city_furniture", "uuid_table", "iri_table", "cityfurniture_height", "cityfurniture_footprint", "citydb"."objectclass"
-WHERE "citydb"."city_furniture"."objectclass_id" = "citydb"."objectclass"."id"
-    AND "citydb"."city_furniture"."id" = "cityfurniture_height"."cityobject_id"
-    AND "citydb"."city_furniture"."id" = "cityfurniture_footprint"."cityobject_id"
-    AND "citydb"."city_furniture"."id" = "uuid_table"."cityobject_id"
-    AND "citydb"."city_furniture"."id" = "iri_table"."cityobject_id"   
-    AND "cityfurniture_footprint"."geomval" IS NOT NULL;
+    citydb.city_furniture
+JOIN 
+    uuid_table ON city_furniture.id = uuid_table.cityobject_id
+JOIN 
+    iri_table ON city_furniture.id = iri_table.cityobject_id
+JOIN 
+    cityfurniture_height ON city_furniture.id = cityfurniture_height.cityobject_id
+JOIN 
+    cityfurniture_footprint ON city_furniture.id = cityfurniture_footprint.cityobject_id
+JOIN 
+    citydb.objectclass ON city_furniture.objectclass_id = objectclass.id
+LEFT JOIN 
+    jurong_island_city_furniture ON uuid_table.uuid = jurong_island_city_furniture.city_furniture_uuid
+WHERE 
+    cityfurniture_footprint.geomval IS NOT NULL;
 
 CREATE INDEX usage_index ON usage.buildingusage_geoserver (ontobuilt);
 CREATE INDEX geometry_index ON usage.buildingusage_geoserver USING GIST (geom);
