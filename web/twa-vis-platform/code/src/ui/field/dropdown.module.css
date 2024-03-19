@@ -1,0 +1,31 @@
+.dropdown-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.label {
+  width: fit-content;
+  position: relative;
+  top: 0.3rem;
+  left: 0.75rem;
+  padding: 0.25rem 0 0;
+  background-color: var(--background-tertiary);
+  font-size: var(--font-size-tertiary-text);
+}
+
+.selector {
+  width: 80%;
+  padding: 0.25rem;
+  background-color: var(--background-tertiary);
+  color: var(--background-inverse-primary);
+  border-radius: 0.2rem;
+}
+
+.selector option:checked {
+  color: var(--background-inverse-primary);
+}
+
+.selector option:not(:checked) {
+  color: var(--border-primary);
+}

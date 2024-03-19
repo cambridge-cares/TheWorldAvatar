@@ -1,11 +1,16 @@
 import styles from './info-tree.module.css';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Attribute, AttributeGroup } from 'types/attribute';
+import { TimeSeriesGroup } from 'types/timeseries';
 import { JsonObject } from "types/json";
 import InfoTreeNode from './info-tree-node';
 import InfoTabs from './info-tabs';
+import Chart from 'ui/chart/chart';
+import DropdownField, { DropdownFieldOption } from 'ui/field/dropdown';
+import Table from 'ui/table/table';
+import { parseTimeSeries } from 'utils/client-utils';
 
 const rootKey: string = "meta";
 const displayOrderKey: string = "display_order";
@@ -31,6 +36,27 @@ type InfoTreeProps = {
  * @param {boolean} isFetching An indicator if the query is still running.
  */
 export default function InfoTree(props: InfoTreeProps) {
+  const timeSeries: React.MutableRefObject<TimeSeriesGroup> = useRef(null);
+  const options: React.MutableRefObject<DropdownFieldOption[]> = useRef([]);
+  const [selectedTimeSeriesOption, setSelectedTimeSeriesOption] = useState(0);
+
+  const consumeTimeSeries: Function = (data: JsonObject) => {
+    if (data) {
+      timeSeries.current = parseTimeSeries(data);
+      options.current = [];
+      timeSeries.current.data.map((timeSeries, index) => {
+        const label: string = timeSeries.unit === "-" ? timeSeries.name : timeSeries.name + " [" + timeSeries.unit + "]";
+        options.current.push({ index: index, label: label });
+      });
+    }
+  };
+  // Transform time series whenever the info tree is rendered and the data changes
+  consumeTimeSeries(props.data); // Required whenever the component is rerendered
+  useEffect(() => {
+    consumeTimeSeries(props.data);
+    setSelectedTimeSeriesOption(0);
+  }, [props.data]);
+
   return (
     <div className={styles.infoPanelContainer}>
       <div className={styles.infoHeadSection}>
@@ -44,19 +70,21 @@ export default function InfoTree(props: InfoTreeProps) {
             }}
           />)}
       </div>
-      {props.isFetching ? (
-        <div className={styles.spinner}></div>
-      ) : props.data ?
-        // If active tab is 0, render the Metadata Tree
-        props.activeTab.index === 0 ? <div className={styles.infoSection}><InfoTreeNode attribute={recurseParseAttributeGroup(props.data, rootKey)} /></div>
-        // If active tab is not 0 ie 1, render the time series chart
-          : <p>Time series chart placeholder</p>
-        : (
-          <div className={styles.infoSection}>
-            <p>Click to fetch feature information.</p>
-          </div>
-        )
-      }
+      <div className={styles.infoSection}>
+        {props.isFetching ? (
+          <div className={styles.spinner}></div>
+        ) : props.data ?
+          // If active tab is 0, render the Metadata Tree
+          props.activeTab.index === 0 ? <InfoTreeNode attribute={recurseParseAttributeGroup(props.data, rootKey)} /> :
+            // If active tab is not 0 ie 1, render the time series panel
+            <>
+              <DropdownField options={options.current} selectedIndex={selectedTimeSeriesOption} setSelectedIndex={setSelectedTimeSeriesOption} />
+              <Chart data={timeSeries.current} selectedIndex={selectedTimeSeriesOption} />
+              <Table group={timeSeries.current} selectedIndex={selectedTimeSeriesOption} />
+            </>
+          : (<p>Click to fetch feature information.</p>)
+        }
+      </div>
     </div>
   );
 };
