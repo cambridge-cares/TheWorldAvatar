@@ -92,7 +92,7 @@ public class DevInstAgent extends JPSAgent {
 
             jsonMessage = initializeAgent(requestParams.getJSONObject(KEY_DESCRIPTOR));
 			
-            jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
+            jsonMessage.accumulate("Result", "Devices have been instantiated.");
             requestParams = jsonMessage;
             }
       else {
