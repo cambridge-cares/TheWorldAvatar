@@ -3,7 +3,13 @@
   "workspace": "twa",
   "skip": false,
   "datasetDirectory": "companies",
-  "namespace": "company",
+  "namespace": {
+        "name": "company",
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true,
+            "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass": "com.bigdata.rdf.axioms.NoAxioms"
+        }
+    },
   "dataSubsets": [
     {
       "type": "vector",
