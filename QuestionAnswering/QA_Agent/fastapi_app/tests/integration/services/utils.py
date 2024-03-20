@@ -46,14 +46,14 @@ class TriplesManager:
         self.sparql.setMethod(POST)
         self.prefixes = prefixes
 
-    def insert(self, triples: List[str]):
+    def insert(self, triples: str):
         query = """{prefixes}
 INSERT {{
 {triples}
 }}
 WHERE {{}}""".format(
             prefixes=self.prefixes,
-            triples="\n".join(triples),
+            triples=triples,
         )
         print(query)
         self.sparql.setQuery(query)
