@@ -206,7 +206,7 @@ class BaseProperty(BaseModel, validate_assignment=True):
         # throws TypeError: issubclass() arg 1 must be a class
         # see https://github.com/pydantic/pydantic/discussions/5970
         try:
-            return issubclass(prop, BaseProperty)
+            return issubclass(prop, cls)
         except TypeError:
             return False
 
