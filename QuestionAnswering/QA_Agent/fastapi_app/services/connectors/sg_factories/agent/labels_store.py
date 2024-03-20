@@ -48,7 +48,5 @@ def get_sg_factories_labels_store(
         redis_client=redis_client,
         key_prefix="sg_factories:factories:",
         index_name="idx:sg_factories:factories",
-        bindings=get_sg_factories_bindings(
-            bg_client=bg_client, ontop_client=ontop_client
-        ),
+        bindings=get_sg_factories_bindings(ontop_client=ontop_client),
     )

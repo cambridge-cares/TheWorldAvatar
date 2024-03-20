@@ -62,7 +62,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
                             "description": "Factory category e.g. chemical plant, food plant",
                         },
                         "groupby_type": {
-                            "type": "bool",
+                            "type": "boolean",
                             "description": "If true, count factories for each category",
                         },
                     },
@@ -83,7 +83,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
                             "description": "Aggregate of an attribute value e.g. total heat emission, lowest design capacity",
                         },
                         "groupby_type": {
-                            "type": "bool",
+                            "type": "boolean",
                             "description": "If true, aggregate data for each factory category",
                         },
                     },

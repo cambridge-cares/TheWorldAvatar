@@ -1,21 +1,18 @@
 import logging
 import time
-from typing import Annotated, List, Optional
+from typing import Annotated, List
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from model.qa import QAData, QAMode, QAStep
-from services.connectors import (
-    AgentConnectorMediator,
-    get_chemistry_mediator,
-    get_cities_mediator,
-)
+from services.qa import get_marie_mediator, get_zaha_mediator
+from services.connectors import AgentConnectorMediator
 
 
 class QARequest(BaseModel):
     question: str
-    domain: Optional[str] = None
+    domain: str  # TODO: validate domain based on qa_engine (marie or zaha)
 
 
 class QAResponseMetadata(BaseModel):
@@ -31,20 +28,15 @@ class QAResponse(BaseModel):
 
 logger = logging.getLogger(__name__)
 
-chemistry_router = APIRouter()
-cities_router = APIRouter()
+router = APIRouter()
 
 
-@chemistry_router.post("/")
-def qa_chemistry(
-    req: QARequest,
-    mediator: Annotated[AgentConnectorMediator, Depends(get_chemistry_mediator)],
-):
+def _qa(req: QARequest, mediator: AgentConnectorMediator):
     logger.info("Received request to QA endpoint with the following request body")
     logger.info(req)
 
     timestamp = time.time()
-    qa_mode, steps, data = mediator.query(req.question)
+    qa_mode, steps, data = mediator.query(req.question, domain=req.domain)
     latency = time.time() - timestamp
 
     metadata = QAResponseMetadata(mode=qa_mode, latency=latency, steps=steps)
@@ -52,18 +44,17 @@ def qa_chemistry(
     return QAResponse(metadata=metadata, data=data)
 
 
-@cities_router.post("/")
-def qa_cities(
+@router.post("/marie")
+def qa_marie(
     req: QARequest,
-    mediator: Annotated[AgentConnectorMediator, Depends(get_cities_mediator)],
+    mediator: Annotated[AgentConnectorMediator, Depends(get_marie_mediator)],
 ):
-    logger.info("Received request to QA endpoint with the following request body")
-    logger.info(req)
+    return _qa(req=req, mediator=mediator)
 
-    timestamp = time.time()
-    qa_mode, steps, data = mediator.query(query=req.question, domain=req.domain)
-    latency = time.time() - timestamp
 
-    metadata = QAResponseMetadata(mode=qa_mode, latency=latency, steps=steps)
-
-    return QAResponse(metadata=metadata, data=data)
+@router.post("/zaha")
+def qa_zaha(
+    req: QARequest,
+    mediator: Annotated[AgentConnectorMediator, Depends(get_zaha_mediator)],
+):
+    return _qa(req=req, mediator=mediator)
