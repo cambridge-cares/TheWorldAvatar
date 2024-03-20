@@ -10,12 +10,16 @@ from model.constraint import (
     ExtremeValueConstraint,
     LogicalOperator,
 )
-from services.utils.parse import SchemaParser, get_schema_parser
+from services.utils.parse import (
+    KeyAggregateParser,
+    SchemaParser,
+    get_schema_parser,
+)
 from .agent import PlotConstraints
 from .match import LandUseTypeMatcher, get_land_use_type_matcher
 
 
-class NumericalArgConstraintParser:
+class PlotNumArgConstraintParser:
     def __init__(self, schema_parser: SchemaParser):
         self.schema_parser = schema_parser
 
@@ -98,7 +102,7 @@ class PlotConstraintsParser:
     def __init__(
         self,
         schema_parser: SchemaParser,
-        constraint_parser: NumericalArgConstraintParser,
+        constraint_parser: PlotNumArgConstraintParser,
         land_use_type_matcher: LandUseTypeMatcher,
     ):
         self.schema_parser = schema_parser
@@ -155,37 +159,16 @@ class PlotConstraintsParser:
         )
 
 
-class AttributeAggregateParser:
-    def __init__(self, schema_parser: SchemaParser):
-        self.schema_parser = schema_parser
-
-    def parse(self, text: str):
-        args = self.schema_parser.parse(
-            text=text,
-            schema={
-                "type": "object",
-                "properties": {
-                    "key": {
-                        "type": "string",
-                        "enum": ["GrossPlotRatio", "PlotArea", "GrossFloorArea"],
-                    },
-                    "aggregate": {"type": "string", "enum": ["MIN", "MAX", "AVG"]},
-                },
-            },
-        )
-        return PlotAttrKey(args.get("key")), AggregateOperator(args.get("aggregate"))
-
-
 def get_numerical_arg_constraint_parser(
     schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)]
 ):
-    return NumericalArgConstraintParser(schema_parser)
+    return PlotNumArgConstraintParser(schema_parser)
 
 
 def get_plot_constraint_parser(
     schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)],
     constraint_parser: Annotated[
-        NumericalArgConstraintParser, Depends(get_numerical_arg_constraint_parser)
+        PlotNumArgConstraintParser, Depends(get_numerical_arg_constraint_parser)
     ],
     land_use_type_matcher: Annotated[
         LandUseTypeMatcher, Depends(get_land_use_type_matcher)
@@ -198,7 +181,7 @@ def get_plot_constraint_parser(
     )
 
 
-def get_attribute_aggregate_parser(
-    schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)],
+def get_plot_attr_agg_parser(
+    schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)]
 ):
-    return AttributeAggregateParser(schema_parser=schema_parser)
+    return KeyAggregateParser(schema_parser=schema_parser, enum_cls=PlotAttrKey)
