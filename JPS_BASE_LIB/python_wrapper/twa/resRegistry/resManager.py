@@ -1,4 +1,4 @@
-from py4jps.resRegistry import resRegistry
+from twa.resRegistry import resRegistry
 from docopt import docopt, DocoptExit
 import shutil
 import sys
@@ -42,7 +42,7 @@ def start():
         elif args['clean']:
             resReg.cleanReg()
 
-# this function is intended only for jps developers
+# this function is intended only for twa developers
 def _doDevinstall():
     thisPath = os.path.realpath(__file__)
     src = os.path.abspath(os.path.join(thisPath,'..','..','..','..','target'))

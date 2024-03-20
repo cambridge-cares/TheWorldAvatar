@@ -1,6 +1,6 @@
 from py4j.java_gateway import JavaGateway, java_import, launch_gateway ,GatewayParameters
 from os import path
-from py4jps.resRegistry.resManager import resReg
+from twa.resRegistry.resManager import resReg
 import textwrap
 
 def _processLGkwargs(className, **LGkwargs):

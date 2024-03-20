@@ -46,12 +46,12 @@ def _config_logging():
         Initialise and configure loggers.
     """
     # Create logs directory
-    log_dir = os.path.join(os.path.expanduser("~"), ".jps", "logs")
+    log_dir = os.path.join(os.path.expanduser("~"), ".twa", "logs")
     if not os.path.isdir(log_dir):
         os.makedirs(log_dir)
 
-    # Set the logfile to be generated in ~/.jps/logs
-    log_fpath = os.path.join(os.path.expanduser("~"), ".jps", "logs", "jps.log")
+    # Set the logfile to be generated in ~/.twa/logs
+    log_fpath = os.path.join(os.path.expanduser("~"), ".twa", "logs", "twa.log")
 
     # Configure logging from file
     this_dir = os.path.dirname(os.path.abspath(__file__))
