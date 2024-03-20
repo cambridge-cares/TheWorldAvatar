@@ -143,11 +143,14 @@ public class UsageMatcher {
         rdbStoreClient.executeUpdate(initialiseSchema);
         rdbStoreClient.executeUpdate(initialiseTable);
 
-        String copyIri = "INSERT INTO " + usageTable + " (building_iri, ontobuilt) " +
-                "SELECT building_iri, ontobuilt FROM table WHERE table.building_iri IS NOT NULL AND table.ontobuilt IS NOT NULL";
+        String copyIri = "INSERT INTO %s (building_iri, ontobuilt)\n" +
+                "SELECT o.building_iri, o.ontobuilt FROM %s o\n" +
+                "LEFT JOIN %s u on u.building_iri = o.building_iri AND u.ontobuilt = o.ontobuilt\n" +
+                "WHERE u.building_iri IS NULL AND u.ontobuilt IS NULL\n" +
+                "AND o.building_iri IS NOT NULL AND o.ontobuilt IS NOT NULL";
 
-        rdbStoreClient.executeUpdate(copyIri.replace("table", pointTable));
-        rdbStoreClient.executeUpdate(copyIri.replace("table", polygonTable));
+        rdbStoreClient.executeUpdate(String.format(copyIri, usageTable, pointTable, usageTable));
+        rdbStoreClient.executeUpdate(String.format(copyIri, usageTable, polygonTable, usageTable));
     }
 
     /**
