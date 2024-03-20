@@ -5,16 +5,11 @@ import os
 import re
 import psycopg2
 import requests
+from pathlib import Path
 
 from configobj import ConfigObj
 from pathlib import Path
-
-# Define location of properties file (with Triple Store and RDB settings)
-PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "FenlandTrajectory.properties"))
-
-# Initialise global variables to be read from properties file
-global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR, MAPBOX_APIKEY
-global DB_URL, DB_USER, DB_PASSWORD
+from ..utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, DATABASE_NAME, NAMESPACE
 
 # Define format of time series time entries: Year-Month-Day T hour:minute:second Z
 FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -22,7 +17,7 @@ FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
     # Namespace for this example data
-    
+
     # Namespaces for used ontologies
     'ex': 'http://www.theworldavatar.com/kb/fenlandtrajectory/',
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
@@ -35,76 +30,17 @@ PREFIXES = {
 }
 
 
-def read_properties_file(filepath):
+def validate_and_initialize_configs():
     """
-        Reads SPARQL endpoints and output directory from properties file (as global variables).
-
-        Arguments:
-            filepath - absolute file path to properties file.
+    Validates the configurations for database and SPARQL endpoints received from stack_configs.
     """
+    # Validate configurations received from stack_configs.py
+    if not DB_URL or not DB_USER or not DB_PASSWORD:
+        raise ValueError("Database configurations are incomplete.")
+    if not SPARQL_QUERY_ENDPOINT or not SPARQL_UPDATE_ENDPOINT:
+        raise ValueError("SPARQL endpoint configurations are incomplete.")
 
-    # Define global scope for global variables
-    global OUTPUT_DIR, QUERY_ENDPOINT, UPDATE_ENDPOINT, MAPBOX_APIKEY, DB_URL, DB_USER, DB_PASSWORD
-
-    # Read properties file
-    props = ConfigObj(filepath)
-
-    # Extract output directory for JSON file containing retrieved time series data from KG
-    try:
-        OUTPUT_DIR = props['output.directory']
-    except KeyError:
-        raise KeyError('Key "output.directory" is missing in properties file: ' + filepath)
-    if OUTPUT_DIR == '':
-        raise KeyError('No "output.directory" value has been provided in properties file: ' + filepath)
-
-    # Extract Mapbox API key (required for visualisation using DTVF)
-    try:
-        MAPBOX_APIKEY = props['mapbox.apiKey']
-    except KeyError:
-        raise KeyError('Key "mapbox.apiKey" is missing in properties file: ' + filepath)
-    if MAPBOX_APIKEY == '':
-        raise KeyError('No "mapbox.apiKey" value has been provided in properties file: ' + filepath)
-
-    # Extract SPARQL Query endpoint of KG
-    try:
-        QUERY_ENDPOINT = props['sparql.query.endpoint']
-    except KeyError:
-        raise KeyError('Key "sparql.query.endpoint" is missing in properties file: ' + filepath)
-    if QUERY_ENDPOINT == '':
-        raise KeyError('No "sparql.query.endpoint" value has been provided in properties file: ' + filepath)
-
-    # Extract SPARQL Update endpoint of KG
-    try:
-        UPDATE_ENDPOINT = props['sparql.update.endpoint']
-    except KeyError:
-        raise KeyError('Key "sparql.update.endpoint" is missing in properties file: ' + filepath)
-    if UPDATE_ENDPOINT == '':
-        raise KeyError('No "sparql.update.endpoint" value has been provided in properties file: ' + filepath)
-
-    # Extract PostgreSQL database URL
-    try:
-        DB_URL = props['db.url']
-    except KeyError:
-        raise KeyError('Key "db.url" is missing in properties file: ' + filepath)
-    if DB_URL == '':
-        raise KeyError('No "db.url" value has been provided in properties file: ' + filepath)
-
-    # Extract PostgreSQL database username
-    try:
-        DB_USER = props['db.user']
-    except KeyError:
-        raise KeyError('Key "db.user" is missing in properties file: ' + filepath)
-    if DB_USER == '':
-        raise KeyError('No "db.user" value has been provided in properties file: ' + filepath)
-
-    # Extract PostgreSQL database password
-    try:
-        DB_PASSWORD = props['db.password']
-    except KeyError:
-        raise KeyError('Key "db.password" is missing in properties file: ' + filepath)
-    if DB_PASSWORD == '':
-        raise KeyError('No "db.password" value has been provided in properties file: ' + filepath)
-
+    print("Configurations validated successfully.")
 
 def create_sparql_prefix(abbreviation):
     """
@@ -165,21 +101,18 @@ def set_mapbox_apikey():
 
 def create_postgres_db():
     """
-        Creates PostgreSQL database with name as specified in db.url field in the properties file
-        Please note: The PostgreSQL server is assumed to be available at DEFAULT HOST (i.e. localhost)
-        and PORT (i.e. 5432)
+        Creates PostgreSQL database with name as specified in db.url field in the stack_configs
+        Please note: The PostgreSQL server is assumed to be available at the host and port specified in DB_URL
     """
 
-    # Extract database name from DB URL provided in properties file
-    # (for details see: https://www.postgresql.org/docs/7.4/jdbc-use.html)
-    db_name = DB_URL.split(':')[-1]
+    # Extract database name from DB URL provided in stack_configs
+    db_name = DB_URL.split('/')[-1]
 
     # Create PostgreSQL database with extracted name
-    # (for details see: https://www.psycopg.org/docs/module.html)
     conn = None
     try:
-        # Connect to PostgreSQL server (via DEFAULT host and port)
-        conn = psycopg2.connect(user=DB_USER, password=DB_PASSWORD, host='localhost')
+        # Connect to PostgreSQL server (using the host and port from DB_URL)
+        conn = psycopg2.connect(user=DB_USER, password=DB_PASSWORD, host=DB_URL.split('@')[1].split(':')[0], port=DB_URL.split(':')[-1])
         conn.autocommit = True
         # Create cursor object
         cur = conn.cursor()
@@ -200,10 +133,10 @@ def create_blazegraph_namespace():
     """
 
     # Extract Blazegraph REST API url from SPARQL endpoint
-    url = UPDATE_ENDPOINT[:UPDATE_ENDPOINT.find('namespace') + len('namespace')]
+    url = SPARQL_UPDATE_ENDPOINT[:SPARQL_UPDATE_ENDPOINT.find('namespace') + len('namespace')]
 
     # Extract name for new namespace from SPARQL endpoint
-    ns = UPDATE_ENDPOINT[UPDATE_ENDPOINT.find('namespace') + len('namespace') + 1:]
+    ns = SPARQL_UPDATE_ENDPOINT[SPARQL_UPDATE_ENDPOINT.find('namespace') + len('namespace') + 1:]
     ns = ns[:ns.find('/')]
 
     # Define POST request header and payload
@@ -232,5 +165,3 @@ def create_blazegraph_namespace():
         print('Request status code: {}\n'.format(response.status_code))
 
 
-# Run when module is imported
-read_properties_file(PROPERTIES_FILE)

@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  fenland_trajectory_agent:
+    image: ghcr.io/cambridge-cares/fenland_trajectory_agentg:1.0.0-SNAPSHOT
+    build:
+      context: .
+      target: debug
+    ports:
+      - "${DEBUG_PORT}:5678"
+    volumes:
+      - ./agent:/app/agent

@@ -11,10 +11,12 @@ import datetime as dt
 import random
 import uuid
 from jpsSingletons import jpsBaseLibView
+from agent.utils.baselib_gateway import jpsBaseLibGW
 from kgutils.kgclient import KGClient
 from kgutils.tsclient import TSClient
 from agent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
 from datetime import datetime
+from datamodel.data_class import DATACLASS
 
 
 # ===============================================================================
@@ -131,22 +133,15 @@ if __name__ == '__main__':
                          ex:unit "{unit}" . }}'''
             
             kg_client.performUpdate(query)
-            
+            print("Triples independent of TimeSeriesClient are successfully instantiated.")
         
-        # Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
-        # Initialise time series in both KG and RDB using TimeSeriesClass
-        TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, utils.PROPERTIES_FILE)
-        TSClient.initTimeSeries(dataIRIs, [double_class] * len(dataIRIs), utils.FORMAT)  # Using utils.FORMAT if it's correctly defined
+            # Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
+            # Initialise time series in both KG and RDB using TimeSeriesClass
+            times = gps_object['times']
+            ts_client.init_timeseries(dataIRI, times, values, jpsBaseLibView.java.lang.Double.TYPE, utils.FORMAT)  # Using utils.FORMAT if it's correctly defined
+            print("Time series triples and data via TimeSeriesClient successfully instantiated.")
+    
 
-        print("Triples independent of Java TimeSeriesClient successfully instantiated.")
-
-        # Add actual time series data
-        # Create Java TimeSeries object with data to attach
-        times = gps_object['times']
-        variables = dataIRIs
-        values = [gps_object['timeseries'][ts] for ts in gps_object['timeseries']]
-        timeseries = jpsBaseLibView.TimeSeries(times, variables, values)
-        TSClient.addTimeSeriesData(timeseries)
 
         print(f"GPS trajectory data for {gps_object['object']} successfully added.")
 
