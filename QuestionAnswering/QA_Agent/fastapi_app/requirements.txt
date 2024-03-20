@@ -11,3 +11,4 @@ jinja2
 pydantic-settings
 transformers
 tiktoken
+rapidfuzz

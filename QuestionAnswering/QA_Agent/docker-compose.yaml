@@ -18,3 +18,4 @@ services:
       - 5000:8000
     depends_on:
       - redis-stack
+      - triton

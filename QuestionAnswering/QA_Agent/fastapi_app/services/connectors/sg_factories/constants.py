@@ -5,7 +5,7 @@ class FactoryAttrKey(Enum):
     INDUSTRY = "Industry"
     GENERATED_HEAT = "GeneratedHeat"
     SPECIFIC_ENERGY_CONSUMPTION = "SpecificEnergyConsumption"
-    THERMAL_EFFICIENCY = "ThemalEfficiency"
+    THERMAL_EFFICIENCY = "ThermalEfficiency"
     DESIGN_CAPACITY = "DesignCapacity"
 
 

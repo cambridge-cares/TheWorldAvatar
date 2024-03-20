@@ -30,26 +30,26 @@ PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>""",
     )
 
     triples_manager.insert(
-        [
-            """<http://test.com/1> 
+        """<http://test.com/1> 
     rdf:type ontochemplant:ChemicalPlant ;
     rdfs:label "NORMET SINGAPORE PTE. LTD." ;
     ontocompany:hasGeneratedHeat [ om:hasValue [ om:hasNumericalValue "5.610722679"^^xsd:float ; om:hasUnit [ skos:notation "MW" ] ]  ] ;
-    ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.52"^^xsd:float ] ] .""",
-            """<http://test.com/2>
+    ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.52"^^xsd:float ] ] .
+<http://test.com/2>
     rdf:type ontochemplant:ChemicalPlant ;
     rdfs:label "AICA SINGAPORE PTE. LTD." ;
     ontocompany:hasGeneratedHeat [ om:hasValue [ om:hasNumericalValue "12.97975266"^^xsd:float ; om:hasUnit [ skos:notation "MW" ] ] ] ;
-    ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.52"^^xsd:float ] ] .""",
-            """<http://test.com/3>
+    ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.52"^^xsd:float ] ] .
+<http://test.com/3>
     rdf:type ontocompany:FoodPlant ;
     rdfs:label "NORTHERN LUCK PTE LTD" ;
     ontocompany:hasGeneratedHeat [ om:hasValue [ om:hasNumericalValue "6.427321157"^^xsd:float ; om:hasUnit [ skos:notation "MW" ] ] ]  ;
-    ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.43"^^xsd:float ] ] .""",
-        ]
+    ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.43"^^xsd:float ] ] ."""
     )
 
-    endpoint = str(blazegraph_base_url / "blazegraph/namespace/sg_factories_ontop/sparql")
+    endpoint = str(
+        blazegraph_base_url / "blazegraph/namespace/sg_factories_ontop/sparql"
+    )
     yield KgClient(endpoint)
 
     triples_manager.delete_all()
@@ -137,7 +137,7 @@ class TestSGFactoriesAgent:
         assert data.vars == ["GeneratedHeatNumericalValueAVG", "GeneratedHeatUnit"]
         assert data.bindings == [
             {
-                "GeneratedHeatNumericalValueAVG": "5.2952376695",
+                "GeneratedHeatNumericalValueAVG": "9.295238",
                 "GeneratedHeatUnit": "MW",
             }
         ]
@@ -153,14 +153,20 @@ class TestSGFactoriesAgent:
         )
 
         # Assert
-        assert data.vars == ["Type", "GeneratedHeatNumericalValueSUM"]
+        assert data.vars == [
+            "Type",
+            "GeneratedHeatNumericalValueSUM",
+            "GeneratedHeatUnit",
+        ]
         assert data.bindings == [
             {
                 "Type": "http://www.theworldavatar.com/kg/ontochemplant/ChemicalPlant",
                 "GeneratedHeatNumericalValueSUM": "18.590475",
+                "GeneratedHeatUnit": "MW",
             },
             {
                 "GeneratedHeatNumericalValueSUM": "6.427321",
                 "Type": "http://www.theworldavatar.com/kg/ontocompany/FoodPlant",
+                "GeneratedHeatUnit": "MW",
             },
         ]

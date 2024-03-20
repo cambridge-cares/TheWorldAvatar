@@ -78,7 +78,6 @@ class TestSingporeLandLotAgent:
 
         # Assert
         assert len(iris) == 2
-        print(iris)
 
     def test_lookupPlotAttributes(self, agent: SGLandLotsAgent):
         # Arrange

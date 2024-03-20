@@ -47,7 +47,6 @@ class LabelsStore:
         pipeline = self.redis_client.pipeline()
         for i, binding in enumerate(self.bindings):
             name = self.key_prefix + str(i)
-            print(name)
             pipeline.json().set(name, "$", asdict(binding))
         pipeline.execute()
 

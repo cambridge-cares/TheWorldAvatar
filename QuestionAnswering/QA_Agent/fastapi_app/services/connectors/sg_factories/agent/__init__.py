@@ -28,6 +28,11 @@ class SGFactoriesAgent:
         if attr_key is FactoryAttrKey.INDUSTRY:
             vars.append("?Industry")
             pattern = "?IRI ontocompany:belongsToIndustry/rdfs:label ?Industry ."
+        elif attr_key is FactoryAttrKey.THERMAL_EFFICIENCY:
+            vars.append("?{key}NumericalValue".format(key=attr_key.value))
+            pattern = "?IRI ontocompany:has{key}/om:hasValue/om:hasNumericalValue ?{key}NumericalValue .".format(
+                key=attr_key.value
+            )
         else:
             vars.extend(
                 [
@@ -153,6 +158,7 @@ SELECT DISTINCT {vars} WHERE {{
             )
 
         attr_key, agg_op = attr_agg
+        unit = None
         if attr_key is FactoryAttrKey.INDUSTRY:
             agg_var = "?Industry"
             ontop_patterns.append(
@@ -189,12 +195,20 @@ SELECT {vars} WHERE {{
             groupby="\nGROUP BY " + " ".join(groupby_vars) if groupby_vars else "",
         )
         res = self.ontop_client.query(query)
+
+        vars = res["head"]["vars"]
+        bindings = [
+            {k: v["value"] for k, v in binding.items()}
+            for binding in res["results"]["bindings"]
+        ]
+        if unit:
+            unitvar = attr_key.value + "Unit"
+            vars.append(unitvar)
+            for binding in bindings:
+                binding[unitvar] = unit
         return QAData(
-            vars=res["head"]["vars"],
-            bindings=[
-                {k: v["value"] for k, v in binding.items()}
-                for binding in res["results"]["bindings"]
-            ],
+            vars=vars,
+            bindings=bindings,
         )
 
 
