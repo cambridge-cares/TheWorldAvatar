@@ -13,12 +13,12 @@ from model.constraint import (
 )
 from model.qa import QAData
 from services.utils.rdf import extract_name
-from services.embed import IEmbedder, get_embedder
-from services.redis_client import get_redis_client
-from services.kg_client import KgClient
-from services.retrieve_docs import DocsRetriever
+from services.core.embed import IEmbedder, get_embedder
+from services.core.redis import get_redis_client
+from services.core.kg import KgClient
+from services.core.retrieve_docs import DocsRetriever
 from .constants import PlotAttrKey
-from .kg_client import (
+from .kg import (
     get_sg_land_lots_bg_client,
     get_sg_land_lots_ontop_client,
 )

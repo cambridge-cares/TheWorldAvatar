@@ -1,6 +1,6 @@
 from enum import Enum
 
-from services.align_enum import EnumAligner
+from services.core.align_enum import EnumAligner
 
 
 class SampleEnum(Enum):

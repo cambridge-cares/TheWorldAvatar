@@ -5,9 +5,9 @@ from typing import Annotated, List
 
 from fastapi import Depends
 
-from fastapi_app.services.utils.parse import KeyAggregateParser
 from model.qa import QAStep
-from services.align_enum import EnumAligner
+from services.core.align_enum import EnumAligner
+from services.core.parse import KeyAggregateParser
 from services.connectors.agent_connector import AgentConnectorBase
 from .constants import PlotAttrKey
 from .agent import SGLandLotsAgent, get_sg_land_lots_agent

@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import Depends
 from redis import Redis
 
-from services.align_enum import EnumAligner
-from services.embed import IEmbedder, get_embedder
-from services.redis_client import get_redis_client
+from services.core.embed import IEmbedder, get_embedder
+from services.core.redis import get_redis_client
+from services.core.align_enum import EnumAligner
 from .constants import PlotAttrKey
 
 

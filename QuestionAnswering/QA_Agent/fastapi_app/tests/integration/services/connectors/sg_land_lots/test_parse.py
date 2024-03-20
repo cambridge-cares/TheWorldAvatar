@@ -2,14 +2,14 @@ import os
 
 import pytest
 
-from services.connectors.sg_land_lots.agent import PlotConstraints
-from services.connectors.sg_land_lots.match import LandUseTypeMatcher
-from services.kg_client import KgClient
 from model.constraint import (
     AtomicNumericalConstraint,
     ExtremeValueConstraint,
     NumericalOperator,
 )
+from services.core.kg import KgClient
+from services.connectors.sg_land_lots.agent import PlotConstraints
+from services.connectors.sg_land_lots.match import LandUseTypeMatcher
 from services.connectors.sg_land_lots.parse import (
     PlotNumArgConstraintParser,
     PlotConstraintsParser,

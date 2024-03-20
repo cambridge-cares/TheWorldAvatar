@@ -6,7 +6,7 @@ from typing import Annotated, Dict, List, Optional
 from fastapi import Depends
 
 from model.qa import QAStep
-from services.func_call import IFuncCaller, get_func_caller
+from services.core.func_call import IFuncCaller, get_func_caller
 from .agent_connector import AgentConnectorBase
 from .ontospecies import (
     OntoSpeciesAgentConnector,

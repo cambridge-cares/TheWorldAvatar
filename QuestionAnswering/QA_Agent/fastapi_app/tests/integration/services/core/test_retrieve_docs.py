@@ -1,4 +1,4 @@
-from services.retrieve_docs import DocsRetriever
+from services.core.retrieve_docs import DocsRetriever
 
 
 class TestDocsRetriever:

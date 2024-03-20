@@ -1,19 +1,17 @@
-import os
-from urllib.parse import urljoin
 import pytest
 
 from redis import Redis
 from yarl import URL
 
-from tests.integration.services.utils import TriplesManager
 from model.aggregate import AggregateOperator
 from services.connectors.sg_factories.constants import FactoryAttrKey, FactoryConcept
 from services.connectors.sg_factories.agent.labels_store import (
     get_sg_factories_bindings,
 )
-from services.labels_store import LabelsStore
-from services.kg_client import KgClient
+from services.core.labels_store import LabelsStore
+from services.core.kg import KgClient
 from services.connectors.sg_factories.agent import SGFactoriesAgent
+from tests.integration.services.utils import TriplesManager
 
 
 @pytest.fixture(scope="module")

@@ -3,8 +3,8 @@ from typing import Annotated, List
 from fastapi import Depends
 
 
-from services.kg_client import KgClient
-from ..kg_client import get_ontospecies_kg_client
+from services.core.kg import KgClient
+from ..kg import get_ontospecies_kg_client
 
 
 class SpeciesLinker:

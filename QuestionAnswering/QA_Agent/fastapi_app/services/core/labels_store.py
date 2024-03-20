@@ -11,7 +11,7 @@ from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 import rapidfuzz
 
-from services.utils.redis import does_index_exist
+from services.core.redis import does_index_exist
 
 
 @dataclass

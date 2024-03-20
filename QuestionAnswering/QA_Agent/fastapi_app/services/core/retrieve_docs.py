@@ -8,7 +8,7 @@ from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 
 from .embed import IEmbedder
-from .utils.redis import does_index_exist
+from .redis import does_index_exist
 
 T = TypeVar("T")
 

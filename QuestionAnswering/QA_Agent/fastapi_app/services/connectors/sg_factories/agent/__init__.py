@@ -5,10 +5,10 @@ from fastapi import Depends
 
 from model.aggregate import AggregateOperator
 from model.qa import QAData
-from services.kg_client import KgClient
-from services.labels_store import LabelsStore
+from services.core.kg import KgClient
+from services.core.labels_store import LabelsStore
 from ..constants import FACTORYATTR2UNIT, FactoryAttrKey, FactoryConcept
-from ..kg_client import get_sg_factories_ontop_client
+from ..kg import get_sg_factories_ontop_client
 from .labels_store import get_sg_factories_labels_store
 
 

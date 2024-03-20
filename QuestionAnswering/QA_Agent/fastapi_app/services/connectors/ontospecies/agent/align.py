@@ -1,13 +1,13 @@
-from typing import Annotated, Iterable, List, Tuple
+from typing import Annotated, List, Tuple
 
 from fastapi import Depends
 from redis import Redis
 
-from services.embed import IEmbedder, get_embedder
-from services.redis_client import get_redis_client
-from services.kg_client import KgClient
-from services.retrieve_docs import DocsRetriever
-from ..kg_client import get_ontospecies_kg_client
+from services.core.embed import IEmbedder, get_embedder
+from services.core.redis import get_redis_client
+from services.core.kg import KgClient
+from services.core.retrieve_docs import DocsRetriever
+from ..kg import get_ontospecies_kg_client
 
 
 class OntoSpeciesLiteralAligner:
