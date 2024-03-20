@@ -108,7 +108,7 @@ class TestSGFactoriesAgent:
 
     def test_countFactories_groupby(self, sg_factories_agent: SGFactoriesAgent):
         # Act
-        data = sg_factories_agent.count_factories(factory_type=None, group_bytype=True)
+        data = sg_factories_agent.count_factories(factory_type=None, groupby_type=True)
 
         # Assert
         assert data.vars == ["Count", "Type"]
@@ -149,7 +149,7 @@ class TestSGFactoriesAgent:
         data = sg_factories_agent.compute_aggregate_factory_attribute(
             factory_type=None,
             attr_agg=(FactoryAttrKey.GENERATED_HEAT, AggregateOperator.SUM),
-            group_bytype=True,
+            groupby_type=True,
         )
 
         # Assert
