@@ -192,7 +192,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
         timestamp = time.time()
         attr_agg = self.attr_agg_parser.parse(attribute_aggregate)
         latency = time.time() - timestamp
-        unpacked_attr_agg = (x.value for x in attr_agg)
+        unpacked_attr_agg = tuple(x.value for x in attr_agg)
         steps.append(
             QAStep(
                 action="align_attr_agg",
