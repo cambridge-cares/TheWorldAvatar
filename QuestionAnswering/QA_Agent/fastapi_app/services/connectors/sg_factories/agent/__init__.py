@@ -69,13 +69,13 @@ SELECT {vars} WHERE {{
         )
 
     def count_factories(
-        self, factory_type: Optional[FactoryConcept] = None, group_bytype: bool = False
+        self, factory_type: Optional[FactoryConcept] = None, groupby_type: bool = False
     ):
         vars = ["(COUNT(?IRI) AS ?Count)"]
         ontop_patterns = []
         groupby_vars = []
 
-        if group_bytype:
+        if groupby_type:
             vars.append("?Type")
             ontop_patterns.append("?IRI rdf:type ?Type .")
             groupby_vars.append("?Type")
@@ -127,13 +127,13 @@ SELECT DISTINCT {vars} WHERE {{
         self,
         factory_type: Optional[FactoryConcept],
         attr_agg: Tuple[FactoryAttrKey, AggregateOperator],
-        group_bytype: bool = False,
+        groupby_type: bool = False,
     ):
         vars = []
         ontop_patterns = []
         groupby_vars = []
 
-        if group_bytype:
+        if groupby_type:
             vars.append("?Type")
             ontop_patterns.append("?IRI rdf:type ?Type .")
             groupby_vars.append("?Type")
