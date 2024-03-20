@@ -3,6 +3,7 @@ from .trading import Trading
 import logging
 import numpy as np
 
+from .error_handling.exceptions import KGException, TSException
 from NTUP2PEnergyAgent.config.buses import BUYERS, SELLERS
 from NTUP2PEnergyAgent.data_retrieval.query_data import QueryData
 from NTUP2PEnergyAgent.data_retrieval.query_timeseries import query_latest_timeseries
@@ -75,11 +76,29 @@ def default():
     #iterate over sellers, get production
     for bus_number in SELLERS:
 
-        busNode_iri_response = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT, bus_number)
+        #get PV generated power
+        try:
+            bus_node_iri_response = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT, bus_number)
+            bus_node_iri = bus_node_iri_response[0]['busNode']
+            logging.info("Getting busnode:" + busNode_iri)
+        except Exception as ex:
+            logging.error("SPARQL query for bus node IRI not successful.")
+            raise KGException("SPARQL query for bus node IRI not successful.") from ex
+    
+        try:
+            pv_data_iri = QueryData.query_PV_generated_power_for_bus(bus_node_iri, QUERY_ENDPOINT)
+        except Exception as ex:
+            logging.error("SPARQL query for PV IRI not successful.")
+            raise KGException("SPARQL query for PV IRI not successful.") from ex
 
-        busNode_iri = busNode_iri_response[0]['busNode']
+        try:
+            # get latest
+            pv_ts = query_latest_timeseries(pv_data_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
+        except Exception as ex:
+            logging.error("SPARQL query for PV generated timeseries not successful.")
+            raise KGException("SPARQL query for PV generated timeseries not successful.") from ex
 
-        logging.info("Getting busnode:" + busNode_iri)
+        pv_values = [v for v in pv_ts.getValues(pv_data_iri)]
 
 
     ################## some variables for testing

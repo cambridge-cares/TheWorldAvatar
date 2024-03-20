@@ -1,6 +1,6 @@
-from NTUEnergyClusterAgent.error_handling.exceptions import KGException
-from NTUEnergyClusterAgent.kg_utils.kgClient import KGClient
-from NTUEnergyClusterAgent.kg_utils.utils import create_sparql_prefix
+from NTUP2PEnergyAgent.error_handling.exceptions import KGException
+from NTUP2PEnergyAgent.kg_utils.kgClient import KGClient
+from NTUP2PEnergyAgent.kg_utils.utils import create_sparql_prefix
 import logging
 
 class QueryData:
@@ -110,3 +110,28 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for bus node IRI!") from ex
 
+    def query_PV_generated_power_for_bus(bus_iri, query_endpoint: str):
+            try:
+                kg_client = KGClient(query_endpoint, query_endpoint)
+
+                query = create_sparql_prefix('powreal') + \
+                        create_sparql_prefix('rdf') + \
+                        create_sparql_prefix('xsd') + \
+                        create_sparql_prefix('powsys') + \
+                        create_sparql_prefix('ontocape') + \
+                        '''SELECT ?PV WHERE {   ?building powsys:hasBusNode <''' + bus_iri + '''> .
+                                                ?building ontocape:contains ?PV.
+                                                ?PV rdf:type powreal:PhotovoltaicPanel .
+                                                ?PV powsys:hasGeneratedPower ?genpow .
+                                                ?genpow rdf:type powsys:GeneratedPower .
+                                                ?genpow om:hasValue ?datairi .
+                                                ?datairi rdf:type om:Measure .
+                                                }'''
+
+                response = kg_client.performQuery(query)
+                if len(response) == 0:
+                    raise KGException("Unable to query for PV panel!")
+                return response[0]["PV"]
+
+            except Exception as ex:
+                raise KGException("Unable to query for any NTU PV panel!") from ex
