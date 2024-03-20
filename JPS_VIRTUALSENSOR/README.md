@@ -4,12 +4,11 @@
     - postgis_password
     - mapbox_api_key
     - mapbox_username
-2) Ship data needs to be present in ShipInputAgent/data. If the agent is being run for static point sources only, this is not required. 
-3) Set openweather API key in stack-manager/inputs/config/services/weather-agent.json, the API key needs to have OneCall enabled (credit card required, you can set the call limit below the limit before it starts charging).
-4) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
-5) Elevation data (optional):
+2) Set openweather API key in stack-manager/inputs/config/services/weather-agent.json, the API key needs to have OneCall enabled (credit card required, you can set the call limit below the limit before it starts charging).
+3) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
+4) Elevation data (optional):
 AERMOD agent will try to query elevation data from a table named `elevation` in the default database. AERMOD agent can query the data stored in any SRID, but the table needs to contain data in one SRID only, hence it's recommended to convert any elevation data to a uniform SRID, e.g. 4326. An example is provided in [elevation.json]. Note that this config file is written for data in SRID=32632 and it needs to be changed according to your source data. The raw data files should be stored in `./stack-data-uploader/inputs/data/elevation`, any format supported by gdal should work, see https://gdal.org/drivers/raster/index.html for more info.
-6) Buildings data (optional for ships, compulsory for static point source use cases):
+5) Buildings data (optional for ships, compulsory for static point source use cases):
 An example config file is given in [building-pirmasens.json], corresponding raw data should be populated in `stack-data-uploader/inputs/data/pirmasens_final_citygml`
 
 ## Static point source instantiation
@@ -64,9 +63,6 @@ An instance can emit multiple pollutants, the class of pollutant ID needs to be 
 ## Important for visualisation if not deployed locally
 Modify instances of `http://localhost:3838` in [data.json] to the external URL of where the stack is going to be deployed.
 
-*DEPRECATED*
-Modify the `STACK_URL` parameter in `./stack-manager/inputs/config/services/dispersion-interactor.json` to the URL where the stack is deployed, this is used to construct the WMS endpoints and the URL for feature info agent queries.
-
 ## Start up the stack
 
 To start up the stack, execute
@@ -74,12 +70,6 @@ To start up the stack, execute
 ./startup.sh
 ```
 in this folder to spin up pull docker images, spin up containers (using stack manager) and copy files into container volumes.
-
-Make sure you have access to the CMCL Docker registry. You can test your access by runing 
-    ```console
-    docker login docker.cmclinnovations.com
-    ```
-If you are not already logged in then, when prompted, enter the username and password you were given.
 
 ## HTTP requests 
 A number of examples are prepared in the `HTTP requests` folder. Note that you need to install the humao.rest-client extension in VS code to run these files.
