@@ -20,24 +20,12 @@ from services.connectors.ontospecies import (
 
 
 @cache
-def get_marie_mediator(
+def get_mediator(
     func_call_predictor: Annotated[IFuncCaller, Depends(get_func_caller)],
     ontospecies_agent_connector: Annotated[
         OntoSpeciesAgentConnector,
         Depends(get_ontospecies_agent_connector),
     ],
-):
-    chemistry_connectors = [ontospecies_agent_connector]
-
-    return AgentConnectorMediator(
-        func_call_predictor=func_call_predictor,
-        domain2connectors=dict(chemistry=chemistry_connectors),
-    )
-
-
-@cache
-def get_zaha_mediator(
-    func_call_predictor: Annotated[IFuncCaller, Depends(get_func_caller)],
     sg_land_lots_agent_connector: Annotated[
         SGLandLotsAgentConnector,
         Depends(get_sg_land_lots_agent_connector),
@@ -46,9 +34,12 @@ def get_zaha_mediator(
         SGFactoriesAgentConnector, Depends(get_sg_factories_agent_connector)
     ],
 ):
+    chemistry_connectors = [ontospecies_agent_connector]
     singapore_connectors = [sg_land_lots_agent_connector, sg_factories_agent_connector]
 
     return AgentConnectorMediator(
         func_call_predictor=func_call_predictor,
-        domain2connectors=dict(singapore=singapore_connectors),
+        domain2connectors=dict(
+            chemistry=chemistry_connectors, singapore=singapore_connectors
+        ),
     )

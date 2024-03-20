@@ -128,11 +128,11 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             QAStep(
                 action="lookup_factory_attribute",
                 arguments=dict(plant_name=plant_name, attr_key=attr_key.value),
-                latency=None,
+                latency=latency,
             )
         )
 
-        return steps, data
+        return "QA", steps, data
 
     def _align_factory_concept(self, factory_type: Optional[str]):
         if factory_type:
@@ -175,10 +175,13 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             )
         )
 
-        return steps, data
+        return "QA", steps, data
 
     def compute_aggregate_factory_attribute(
-        self, factory_type: str, attribute_aggregate: str, groupby_type: bool
+        self,
+        attribute_aggregate: str,
+        factory_type: Optional[str] = None,
+        groupby_type: bool = False,
     ):
         steps: List[QAStep] = []
         step, factory_concept = self._align_factory_concept(factory_type)
@@ -208,7 +211,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             QAStep(
                 action="compute_aggregate_factory_attribute",
                 arguments=dict(
-                    factory_type=factory_concept.value,
+                    factory_type=factory_concept.value if factory_concept else None,
                     attr_agg=unpacked_attr_agg,
                     groupby_type=groupby_type,
                 ),
@@ -216,7 +219,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             )
         )
 
-        return steps, data
+        return "QA", steps, data
 
 
 def get_sg_factories_agent_connector(

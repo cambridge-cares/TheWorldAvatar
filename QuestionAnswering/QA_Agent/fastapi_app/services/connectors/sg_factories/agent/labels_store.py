@@ -8,7 +8,7 @@ from services.core.kg import KgClient
 from services.core.labels_store import IRIWithLabels, LabelsStore
 from services.core.redis import get_redis_client
 from ..constants import FactoryConcept
-from ..kg import get_sg_factories_bg_client, get_sg_factories_ontop_client
+from ..kg import get_sg_factories_ontop_client
 
 
 def get_sg_factories_bindings(ontop_client: KgClient):
@@ -41,7 +41,6 @@ SELECT ?IRI ?label WHERE {{
 
 def get_sg_factories_labels_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
-    bg_client: Annotated[KgClient, Depends(get_sg_factories_bg_client)],
     ontop_client: Annotated[KgClient, Depends(get_sg_factories_ontop_client)],
 ):
     return LabelsStore(

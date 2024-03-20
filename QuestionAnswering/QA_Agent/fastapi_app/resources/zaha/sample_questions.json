@@ -1,0 +1,32 @@
+[
+    {
+        "qa_domain": "singapore",
+        "label": "Singapore",
+        "subdomains": [
+            {
+                "data_domain": "sg_land_lots",
+                "label": "Singapore's Land Lots",
+                "description": "Data about Singapore's master plan zoning",
+                "questions": [
+                    "What is a commercial plot?",
+                    "what's the land use classification for plots that can have hospitals",
+                    "what's the difference between Business 1 and Business 2 land uses?",
+                    "How many land plots are designated for commercial use?",
+                    "what is the area of the largest residential lot?",
+                    "what is the minimum gross plot ratio of lots designated for health and medical care facilities",
+                    "average gross floor area allowed for lots for business activities"
+                ]
+            },
+            {
+                "data_domain": "sg_factories",
+                "label": "Singapore's Factories",
+                "description": "Data about Singapore's factories",
+                "questions": [
+                    "what's the specific energy consumption of Neste factory?",
+                    "Which factory type has the greatest heat emission value?",
+                    "What is the average thermal efficiency of food plants?"
+                ]
+            }
+        ]
+    }
+]
