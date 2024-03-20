@@ -10,23 +10,15 @@ from model.constraint import (
     ExtremeValueConstraint,
     NumericalOperator,
 )
-from services.func_call import OpenAIFuncCaller
-from services.utils.parse import SchemaParser
 from services.connectors.sg_land_lots.parse import (
-    NumericalArgConstraintParser,
+    PlotNumArgConstraintParser,
     PlotConstraintsParser,
 )
 
 
 @pytest.fixture
-def schema_parser():
-    func_caller = OpenAIFuncCaller()
-    yield SchemaParser(func_caller)
-
-
-@pytest.fixture
-def numerical_arg_constraint_parser(schema_parser):
-    yield NumericalArgConstraintParser(schema_parser)
+def plot_num_arg_constraint_parser(schema_parser):
+    yield PlotNumArgConstraintParser(schema_parser)
 
 
 @pytest.fixture
@@ -43,13 +35,13 @@ class TestPlotConstraintsParser:
     def test_parse_extremeArg(
         self,
         schema_parser,
-        numerical_arg_constraint_parser,
+        plot_num_arg_constraint_parser,
         land_use_type_matcher,
     ):
         # Arrange
         parser = PlotConstraintsParser(
             schema_parser=schema_parser,
-            constraint_parser=numerical_arg_constraint_parser,
+            constraint_parser=plot_num_arg_constraint_parser,
             land_use_type_matcher=land_use_type_matcher,
         )
 
@@ -65,13 +57,13 @@ class TestPlotConstraintsParser:
     def test_parse_extremeArg(
         self,
         schema_parser,
-        numerical_arg_constraint_parser,
+        plot_num_arg_constraint_parser,
         land_use_type_matcher,
     ):
         # Arrange
         parser = PlotConstraintsParser(
             schema_parser=schema_parser,
-            constraint_parser=numerical_arg_constraint_parser,
+            constraint_parser=plot_num_arg_constraint_parser,
             land_use_type_matcher=land_use_type_matcher,
         )
 

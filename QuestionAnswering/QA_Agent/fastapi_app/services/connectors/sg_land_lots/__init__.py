@@ -5,15 +5,15 @@ from typing import Annotated, List
 
 from fastapi import Depends
 
+from fastapi_app.services.utils.parse import KeyAggregateParser
 from model.qa import QAStep
 from services.align_enum import EnumAligner
 from services.connectors.agent_connector import AgentConnectorBase
 from .constants import PlotAttrKey
 from .agent import SGLandLotsAgent, get_sg_land_lots_agent
 from .parse import (
-    AttributeAggregateParser,
     PlotConstraintsParser,
-    get_attribute_aggregate_parser,
+    get_plot_attr_agg_parser,
     get_plot_constraint_parser,
 )
 from .align import get_plot_attr_key_aligner
@@ -26,11 +26,11 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         self,
         plot_attr_key_aligner: EnumAligner[PlotAttrKey],
         plot_constraints_parser: PlotConstraintsParser,
-        sg_land_plots_agent: SGLandLotsAgent,
-        attr_agg_parser: AttributeAggregateParser,
+        agent: SGLandLotsAgent,
+        attr_agg_parser: KeyAggregateParser[PlotAttrKey],
     ):
         self.plot_constraints_parser = plot_constraints_parser
-        self.agent = sg_land_plots_agent
+        self.agent = agent
         self.plot_attr_key_aligner = plot_attr_key_aligner
         self.attr_agg_parser = attr_agg_parser
 
@@ -253,14 +253,14 @@ def get_sg_land_lots_agent_connector(
     plot_constraints_parser: Annotated[
         PlotConstraintsParser, Depends(get_plot_constraint_parser)
     ],
-    sg_land_lots_agent: Annotated[SGLandLotsAgent, Depends(get_sg_land_lots_agent)],
+    agent: Annotated[SGLandLotsAgent, Depends(get_sg_land_lots_agent)],
     attr_agg_parser: Annotated[
-        AttributeAggregateParser, Depends(get_attribute_aggregate_parser)
+        KeyAggregateParser[PlotAttrKey], Depends(get_plot_attr_agg_parser)
     ],
 ):
     return SGLandLotsAgentConnector(
         plot_attr_key_aligner=plot_attr_key_aligner,
         plot_constraints_parser=plot_constraints_parser,
-        sg_land_plots_agent=sg_land_lots_agent,
+        agent=agent,
         attr_agg_parser=attr_agg_parser,
     )
