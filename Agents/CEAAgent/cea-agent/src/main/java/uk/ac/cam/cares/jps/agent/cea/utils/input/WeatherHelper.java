@@ -132,7 +132,7 @@ public class WeatherHelper extends JPSAgent {
             latitude = coordinate.getY();
             longitude = coordinate.getX();
 
-            String stationIRI = getWeatherStation(coordinate, 2.0, weatherRoute);
+            String stationIRI = getWeatherStation(latitude, longitude, 2.0, weatherRoute);
 
             // if no nearby weather station, send request to OpenMeteoAgent to instantiate weather data
             if (stationIRI.isEmpty()) {
@@ -228,12 +228,11 @@ public class WeatherHelper extends JPSAgent {
 
     /**
      * Queries for and returns the IRI of weather station located within {radius} kilometers of center
-     * @param center center of the search circle
      * @param radius radius of the search circle
      * @param route endpoint of the weather station query
      * @return IRI of a weather station located within {radius} kilometers of center
      */
-    private String getWeatherStation(Coordinate center, Double radius, String route) {
+    private String getWeatherStation(Double latitude, Double longitude, Double radius, String route) {
         String result = "";
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("geoservice", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geoservice))
@@ -244,7 +243,7 @@ public class WeatherHelper extends JPSAgent {
                 .addWhere("?station", "geoservice:searchDatatype", "geoliteral:lat-lon")
                 .addWhere("?station", "geoservice:predicate", "ontoems:hasObservationLocation")
                 // PLACEHOLDER because the coordinate will be treated as doubles instead of string otherwise
-                .addWhere("?station", "geoservice:spatialCircleCenter", center.getX() + "PLACEHOLDER" + center.getY())
+                .addWhere("?station", "geoservice:spatialCircleCenter", latitude + "PLACEHOLDER" + longitude)
                 .addWhere("?station", "geoservice:spatialCircleRadius", radius);
 
         SelectBuilder sb = new SelectBuilder()
