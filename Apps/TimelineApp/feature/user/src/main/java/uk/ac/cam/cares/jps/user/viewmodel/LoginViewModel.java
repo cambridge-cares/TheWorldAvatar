@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.user;
+package uk.ac.cam.cares.jps.user.viewmodel;
 
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.CONNECTION_ERROR;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.LOGIN_FAILURE;
@@ -12,12 +12,14 @@ import androidx.lifecycle.ViewModel;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.login.RepositoryCallback;
+import uk.ac.cam.cares.jps.user.R;
 
 @HiltViewModel
 public class LoginViewModel extends ViewModel {
@@ -99,4 +101,5 @@ public class LoginViewModel extends ViewModel {
     public MutableLiveData<Intent> getLoginIntent() {
         return loginIntent;
     }
+
 }

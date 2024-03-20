@@ -9,6 +9,9 @@
         android:id="@+id/timeline_fragment"
         android:name="uk.ac.cam.cares.jps.timeline.TimelineFragment"
         tools:layout="@layout/fragment_timeline">
+        <deepLink
+            app:uri="@string/timeline_fragment_link">
+        </deepLink>
     </fragment>
 
 </navigation>

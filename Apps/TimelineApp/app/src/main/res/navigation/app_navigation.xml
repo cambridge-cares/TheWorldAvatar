@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/app_navigation"
-    app:startDestination="@id/timeline_map">
+    app:startDestination="@id/user_map">
 
     <include app:graph="@navigation/timeline_map"/>
     <include app:graph="@navigation/user_map"/>

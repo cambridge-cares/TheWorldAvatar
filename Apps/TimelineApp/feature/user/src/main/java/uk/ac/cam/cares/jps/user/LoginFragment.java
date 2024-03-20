@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.databinding.FragmentLoginBinding;
+import uk.ac.cam.cares.jps.user.viewmodel.LoginViewModel;
 
 @AndroidEntryPoint
 public class LoginFragment extends Fragment {
@@ -82,7 +83,7 @@ public class LoginFragment extends Fragment {
             hideLoading();
             if (hasLogin) {
                 NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                        .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/home"))
+                        .fromUri(Uri.parse(getString(uk.ac.cam.cares.jps.utils.R.string.timeline_fragment_link)))
                         .build();
                 NavHostFragment.findNavController(this).navigate(request);
             }

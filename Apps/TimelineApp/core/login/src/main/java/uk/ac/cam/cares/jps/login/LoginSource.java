@@ -95,6 +95,10 @@ public class LoginSource {
 
     }
 
+    public boolean hasConfigurationChanged() {
+        return this.configuration.hasConfigurationChanged();
+    }
+
     public void initLoginSource(RepositoryCallback<Boolean> callback) {
         if (authStateManager.getCurrent().isAuthorized()
                 && !configuration.hasConfigurationChanged()) {
@@ -249,7 +253,7 @@ public class LoginSource {
         authStateManager.getCurrent().performActionWithFreshTokens(authService, action);
     }
 
-    public void getUserInfo(RepositoryCallback<JSONObject> callback) {
+    public void getUserInfo(RepositoryCallback<User> callback) {
         AuthState.AuthStateAction getUserInfoAction = (accessToken, idToken, ex) -> {
             if (ex != null) {
                 LOGGER.warn("Failed to refresh access token. Reauthorization is needed.");
@@ -261,7 +265,8 @@ public class LoginSource {
                     response -> {
                         try {
                             JSONObject jsonResponse = new JSONObject(response);
-                            callback.onSuccess(jsonResponse);
+                            User user = new User(jsonResponse.optString("name"), jsonResponse.optString("email"));
+                            callback.onSuccess(user);
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }

@@ -2,14 +2,15 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/user_map">
+    android:id="@+id/user_map"
+    app:startDestination="@id/login_fragment">
 
     <fragment
         android:id="@+id/login_fragment"
         android:name="uk.ac.cam.cares.jps.user.LoginFragment"
         tools:layout="@layout/fragment_login">
         <deepLink
-            app:uri="android-app://uk.ac.cam.cares.jps.app/login">
+            app:uri="@string/login_fragment_link">
         </deepLink>
     </fragment>
 
@@ -18,7 +19,7 @@
         android:name="uk.ac.cam.cares.jps.user.UserFragment"
         tools:layout="@layout/fragment_user_page">
         <deepLink
-            app:uri="android-app://uk.ac.cam.cares.jps.app/user_page">
+            app:uri="@string/user_fragment_link">
         </deepLink>
         <action
             android:id="@+id/action_user_fragment_to_account_setting"

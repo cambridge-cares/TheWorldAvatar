@@ -28,6 +28,7 @@ import uk.ac.cam.cares.jps.loginmodule.R;
 
 public class LoginRepository {
     private static final Logger LOGGER = LogManager.getLogger(LoginRepository.class);
+    private User user;
 
     LoginSource loginSource;
 
@@ -48,7 +49,11 @@ public class LoginRepository {
         loginSource.processAuthorizationResponse(data, repositoryCallback);
     }
 
-    public void getUserInfo(RepositoryCallback<JSONObject> repositoryCallback) {
+    public void getUserInfo(RepositoryCallback<User> repositoryCallback) {
+        if (!loginSource.hasConfigurationChanged() && user != null) {
+            repositoryCallback.onSuccess(user);
+            return;
+        }
         loginSource.getUserInfo(repositoryCallback);
     }
 
@@ -75,8 +80,9 @@ public class LoginRepository {
                         Toast.makeText(fragment.requireActivity(), R.string.cancel_logout, Toast.LENGTH_SHORT).show();
                     } else {
                         loginSource.authStateManager.clearSharedPref();
+                        user = null;
                         NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                                .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/login"))
+                                .fromUri(Uri.parse(fragment.getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
                                 .build();
                         NavHostFragment.findNavController(fragment).navigate(request);
                     }
@@ -96,7 +102,7 @@ public class LoginRepository {
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                     loginSource.authStateManager.clearSharedPref();
                     NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                            .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/login"))
+                            .fromUri(Uri.parse(fragment.getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
                             .build();
                     NavHostFragment.findNavController(fragment).navigate(request);
                 });

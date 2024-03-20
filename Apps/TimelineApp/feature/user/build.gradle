@@ -7,6 +7,10 @@ android {
     namespace 'uk.ac.cam.cares.jps.user'
 }
 
+android.defaultConfig.manifestPlaceholders = [
+        'appAuthRedirectScheme': 'uk.ac.cam.cares.jps.twatimelineapp'
+]
+
 dependencies {
     implementation project(path: ':core:utils')
     implementation project(path: ':core:data')
