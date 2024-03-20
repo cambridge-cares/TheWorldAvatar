@@ -202,7 +202,7 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         attr_agg = self.attr_agg_parser.parse(attribute_aggregate)
         latency = time.time() - timestamp
         logger.info("Parsed aggregate function: " + str(attr_agg))
-        attr_agg_unpacked = (x.value for x in attr_agg)
+        attr_agg_unpacked = tuple(x.value for x in attr_agg)
         steps.append(
             QAStep(
                 action="parse_aggregate_functions",
