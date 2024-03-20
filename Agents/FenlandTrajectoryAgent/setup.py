@@ -34,7 +34,8 @@ setup(name='myproject', version='0.0',
         'py4jps==1.0.27', 
         'requests==2.28.1',
         'gunicorn==20.1.0',
-        'click>=8.0'
+        'click>=8.0',
+        'werkzeug==2.2.2',
     ],
     extras_require={
         "dev": [

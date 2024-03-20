@@ -26,7 +26,7 @@ def create_app(test_config=None):
         # Initialize PostgreSQL database and Blazegraph namespace for RDF data
         # Adjust these function calls based on your actual utility functions and requirements
         create_postgres_db()
-        create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT)
+        create_blazegraph_namespace(endpoint=SPARQL_UPDATE_ENDPOINT)
 
         # Additional setup actions can be added here, such as uploading ontologies
         # if needed, uncomment and adjust the following line:
