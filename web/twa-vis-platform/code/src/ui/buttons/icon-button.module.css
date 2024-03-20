@@ -13,15 +13,21 @@
 }
 
 .icon-button {
-    color: var(--border-tertiary);
+    color: var(--text-color-primar);
+    transition: color 0.3s ease;
 }
 
-.icon-button:hover {
-    color: var(--border-secondary);
+.hover:hover {
+    color: var(--border-tertiary);
 }
 
 .large-icon {
     font-size: var(--icon-size) !important;
+}
+
+
+.small-icon {
+    font-size: var(--small-icon-size) !important;
 }
 
 /** Alignments **/

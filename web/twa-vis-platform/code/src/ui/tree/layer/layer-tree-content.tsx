@@ -1,14 +1,15 @@
 
 
 import styles from './layer-tree.module.css';
+import iconStyles from 'ui/buttons/icon-button.module.css';
 
 import SVG from 'react-inlinesvg';
-import { Icon } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { getIsStyleLoaded } from 'state/floating-panel-slice';
 import { MapLayerGroup, MapLayer } from 'types/map-layer';
+import MaterialIconButton from 'ui/buttons/icon-button';
 
 // type definition for incoming properties
 type LayerTreeHeaderProps = {
@@ -98,11 +99,11 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
         <span style={{ width: spacing }} />
 
         {/* Expand/collapse icon */}
-        <div className={styles.icon} onClick={toggleExpansion}>
-          <Icon className="material-symbols-outlined">
-            {isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}
-          </Icon>
-        </div>
+        <MaterialIconButton
+          iconName={isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}
+          iconStyles={[iconStyles.hover]}
+          onClick ={toggleExpansion}
+        />
 
         {/* Tree icon, if present */}
         {group.icon != null && (
@@ -117,40 +118,42 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
         </div>
 
         {/* Visibility state */}
-        <div className={styles.icon}>
-          <Icon className="material-symbols-outlined" onClick={() => toggleChildrenDisplay(group)}>
-            {showChildren ? "visibility" : "visibility_off"}
-          </Icon>
-        </div>
+        <MaterialIconButton
+          iconName={showChildren ? "visibility" : "visibility_off"}
+          iconStyles={[iconStyles.hover]}
+          onClick={() => toggleChildrenDisplay(group)}
+        />
       </div>
 
       {/* Conditionally show subgroups when expanded */}
-      {isExpanded && (
-        <div className={styles.treeEntryContent}>
-          {group.layers.map((layer) => {
-            return (
-              <LayerTreeEntry
-                key={layer.address}
-                layer={layer}
-                depth={props.depth + 1}
-                showChildren={showChildren}
-                isStyleLoaded={isStyleLoaded}
-                handleLayerVisibility={toggleMapLayerVisibility}
-              />)
-          })}
+      {
+        isExpanded && (
+          <div className={styles.treeEntryContent}>
+            {group.layers.map((layer) => {
+              return (
+                <LayerTreeEntry
+                  key={layer.address}
+                  layer={layer}
+                  depth={props.depth + 1}
+                  showChildren={showChildren}
+                  isStyleLoaded={isStyleLoaded}
+                  handleLayerVisibility={toggleMapLayerVisibility}
+                />)
+            })}
 
-          {group.subGroups.map((subGroup) => {
-            return (
-              <LayerTreeHeader
-                key={subGroup.name}
-                group={subGroup}
-                depth={props.depth + 1}
-                parentShowChildren={showChildren}
-              />)
-          })}
-        </div>
-      )}
-    </div>
+            {group.subGroups.map((subGroup) => {
+              return (
+                <LayerTreeHeader
+                  key={subGroup.name}
+                  group={subGroup}
+                  depth={props.depth + 1}
+                  parentShowChildren={showChildren}
+                />)
+            })}
+          </div>
+        )
+      }
+    </div >
   );
 }
 
@@ -206,11 +209,10 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
         {/* Spacer */}
         <span style={{ width: spacing }} />
 
-        <div className={styles.icon + " " + styles.small}>
-          <Icon className="material-symbols-outlined">
-            subdirectory_arrow_right
-          </Icon>
-        </div>
+        <MaterialIconButton
+          iconName="subdirectory_arrow_right"
+          iconStyles={[iconStyles["small-icon"]]}
+        />
 
         {/* Tree icon, if present */}
         {layer.icon && (
@@ -225,11 +227,11 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
         </div>
 
         {/* Toggle visibility state */}
-        <div className={styles.icon} >
-          <Icon className="material-symbols-outlined" onClick={toggleLayerVisibility}>
-            {isVisible ? "visibility" : "visibility_off"}
-          </Icon>
-        </div>
+        <MaterialIconButton
+          iconName={isVisible ? "visibility" : "visibility_off"}
+          iconStyles={[iconStyles.hover]}
+          onClick={toggleLayerVisibility}
+        />
       </div>
     </div>
   );

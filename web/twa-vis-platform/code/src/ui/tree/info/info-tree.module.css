@@ -70,6 +70,7 @@
   border-style: solid;
   border-color: var(--border-tertiary);
   border-width: 0px 0px 0.12rem 0px;
+  transition: background-color 0.3s ease;
 }
 
 .treeEntryHeader:hover {
@@ -89,6 +90,7 @@
   color: var(--text-color-primary) !important;
   border-color: var(--border-primary);
   border-width: 0px 0px 0.05rem 0px;
+  transition: background-color 0.3s ease;
 }
 
 .treeEntryNonPrimaryHeader:hover {
