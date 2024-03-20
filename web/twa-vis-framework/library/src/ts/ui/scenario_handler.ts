@@ -203,14 +203,7 @@ class ScenarioHandler {
             "type": "get"
         }
 
-        let url = this.agentBaseURL;
-        url += (url.endsWith("/")) ? "getDataJson/" : "/getDataJson/";
-        url += this.selectedScenario;
-
-        if(this.agentDataset != null) {
-            url += "?dataset=" + this.agentDataset;
-        }
-
+        let url = this.getDataURL();
         console.log("Querying for config at " + url);
         
         // Query for scenario configuration
@@ -221,5 +214,16 @@ class ScenarioHandler {
         });
     }
 
+
+    private getDataURL() {
+        let url = this.agentBaseURL;
+        url += (url.endsWith("/")) ? "getDataJson/" : "/getDataJson/";
+        url += this.selectedScenario;
+
+        if(this.agentDataset) {
+            url += "?dataset=" + this.agentDataset;
+        }
+        return url;
+    }
 }
 // End of class.
