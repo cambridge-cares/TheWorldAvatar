@@ -27,7 +27,7 @@ Global states
 
 const globalState = (function () {
     const states = {
-        domain: null,
+        qa_domain: null,
         isProcessing: false,
         chatbotLatency: null,
         err: null
@@ -73,7 +73,7 @@ async function fetchQa(question) {
             "Accept": "application/json",
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ question, domain: globalState.get("domain") })
+        body: JSON.stringify({ question, qa_domain: globalState.get("qa_domain") })
     })
         .then(throwErrorIfNotOk)
         .then(res => res.json())

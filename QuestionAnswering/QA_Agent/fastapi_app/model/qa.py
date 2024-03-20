@@ -13,4 +13,4 @@ class QAData(BaseModel):
     vars: List[str] = []
     bindings: List[Dict[str, Any]] = []
 
-QAMode = Literal["IR", "QA"]
+QAResponseMode = Literal["IR", "QA"]
