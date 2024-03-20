@@ -105,3 +105,7 @@ Answer: """,
             ],
             stream=True,
         )
+
+
+def get_chatbot_client():
+    return ChatbotClient()

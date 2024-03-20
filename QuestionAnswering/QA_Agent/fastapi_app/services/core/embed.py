@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from functools import cache
 from typing import Annotated, List, Literal, Optional
 
+from fastapi import Depends
 import numpy as np
 import numpy.typing as npt
 from openai import OpenAI
@@ -9,7 +10,10 @@ from tritonclient.grpc import InferenceServerClient, InferInput
 from transformers import AutoTokenizer
 
 
-from config import TEXT_EMBEDDING_SETTINGS
+from config import (
+    TextEmbeddingSettings,
+    get_text_embedding_settings,
+)
 
 
 class IEmbedder(ABC):
@@ -81,16 +85,12 @@ class TritonMPNetEmbedder(IEmbedder):
 
 
 @cache
-def get_embedder():
-    if TEXT_EMBEDDING_SETTINGS.server == "openai":
+def get_embedder(
+    settings: Annotated[TextEmbeddingSettings, Depends(get_text_embedding_settings)]
+):
+    if settings.server == "openai":
         cls = OpenAIEmbedder
     else:
         cls = TritonMPNetEmbedder
 
-    return cls(
-        **{
-            k: v
-            for k, v in TEXT_EMBEDDING_SETTINGS.model_dump().items()
-            if v is not None
-        }
-    )
+    return cls(**{k: v for k, v in settings.model_dump().items() if v is not None})
