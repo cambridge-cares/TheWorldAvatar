@@ -23,8 +23,8 @@ def sg_factories_ontop_client(blazegraph_base_url: URL):
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
-PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>""",
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>""",
     )
 
     triples_manager.insert(
@@ -114,11 +114,11 @@ class TestSGFactoriesAgent:
         assert data.bindings == [
             {
                 "Count": "2",
-                "Type": "http://www.theworldavatar.com/kg/ontochemplant/ChemicalPlant",
+                "Type": "http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant",
             },
             {
                 "Count": "1",
-                "Type": "http://www.theworldavatar.com/kg/ontocompany/FoodPlant",
+                "Type": "http://www.theworldavatar.com/kg/ontocompany#FoodPlant",
             },
         ]
 
@@ -158,13 +158,13 @@ class TestSGFactoriesAgent:
         ]
         assert data.bindings == [
             {
-                "Type": "http://www.theworldavatar.com/kg/ontochemplant/ChemicalPlant",
+                "Type": "http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant",
                 "GeneratedHeatNumericalValueSUM": "18.590475",
                 "GeneratedHeatUnit": "MW",
             },
             {
                 "GeneratedHeatNumericalValueSUM": "6.427321",
-                "Type": "http://www.theworldavatar.com/kg/ontocompany/FoodPlant",
+                "Type": "http://www.theworldavatar.com/kg/ontocompany#FoodPlant",
                 "GeneratedHeatUnit": "MW",
             },
         ]

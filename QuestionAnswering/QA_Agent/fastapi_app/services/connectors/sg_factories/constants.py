@@ -18,8 +18,8 @@ FACTORYATTR2UNIT = {
 
 
 class FactoryConcept(Enum):
-    CHEMICAL_PLANT = "http://www.theworldavatar.com/kg/ontochemplant/ChemicalPlant"
-    FOOD_PLANT = "http://www.theworldavatar.com/kg/ontocompany/FoodPlant"
+    CHEMICAL_PLANT = "http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant"
+    FOOD_PLANT = "http://www.theworldavatar.com/kg/ontocompany#FoodPlant"
     SEMICONDUCTOR_PLANT = (
-        "http://www.theworldavatar.com/kg/ontocompany/SemiconductorPlant"
+        "http://www.theworldavatar.com/kg/ontocompany#SemiconductorPlant"
     )

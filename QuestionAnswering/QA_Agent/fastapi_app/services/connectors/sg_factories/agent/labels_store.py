@@ -14,8 +14,8 @@ from ..kg import get_sg_factories_ontop_client
 def get_sg_factories_bindings(ontop_client: KgClient):
     query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
-PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>
 
 SELECT ?IRI ?label WHERE {{
     VALUES ?Type {{ {types} }}
