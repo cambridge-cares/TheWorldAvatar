@@ -7,12 +7,12 @@ from fastapi import Depends
 from redis import Redis
 import unit_parse
 
-from services.redis_client import get_redis_client
-from services.embed import IEmbedder, get_embedder
 from model.qa import QAStep
-from services.kg_client import KgClient
-from services.retrieve_docs import DocsRetriever
 from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
+from services.core.redis import get_redis_client
+from services.core.embed import IEmbedder, get_embedder
+from services.core.kg import KgClient
+from services.core.retrieve_docs import DocsRetriever
 from services.connectors.agent_connector import AgentConnectorBase
 from .constants import (
     SpeciesAttrKey,
@@ -21,7 +21,7 @@ from .constants import (
     SpeciesPropertyAttrKey,
     SpeciesUseAttrKey,
 )
-from .kg_client import get_ontospecies_kg_client
+from .kg import get_ontospecies_kg_client
 from .parse import ConstraintParser, get_constraint_parser
 from .agent import OntoSpeciesAgent, get_ontospecies_agent
 

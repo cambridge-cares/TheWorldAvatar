@@ -2,19 +2,18 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from model.aggregate import AggregateOperator
-from services.connectors.sg_land_lots.constants import PlotAttrKey
 from model.constraint import (
     AtomicNumericalConstraint,
     CompoundNumericalConstraint,
     ExtremeValueConstraint,
     LogicalOperator,
 )
-from services.utils.parse import (
+from services.core.parse import (
     KeyAggregateParser,
     SchemaParser,
     get_schema_parser,
 )
+from .constants import PlotAttrKey
 from .agent import PlotConstraints
 from .match import LandUseTypeMatcher, get_land_use_type_matcher
 

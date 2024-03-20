@@ -5,8 +5,8 @@ from fastapi import Depends
 
 from model.qa import QAData
 from model.constraint import CompoundNumericalConstraint
-from services.kg_client import KgClient
-from ..kg_client import get_ontospecies_kg_client
+from services.core.kg import KgClient
+from ..kg import get_ontospecies_kg_client
 from ..constants import (
     SpeciesAttrKey,
     SpeciesChemicalClassAttrKey,

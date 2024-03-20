@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from services.kg_client import KgClient
+from services.core.kg import KgClient
 from services.connectors.sg_land_lots.match import LandUseTypeMatcher
 
 

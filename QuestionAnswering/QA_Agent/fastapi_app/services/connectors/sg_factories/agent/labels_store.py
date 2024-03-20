@@ -4,11 +4,11 @@ from typing import Annotated
 from fastapi import Depends
 from redis import Redis
 
-from services.kg_client import KgClient
-from services.labels_store import IRIWithLabels, LabelsStore
-from services.redis_client import get_redis_client
+from services.core.kg import KgClient
+from services.core.labels_store import IRIWithLabels, LabelsStore
+from services.core.redis import get_redis_client
 from ..constants import FactoryConcept
-from ..kg_client import get_sg_factories_bg_client, get_sg_factories_ontop_client
+from ..kg import get_sg_factories_bg_client, get_sg_factories_ontop_client
 
 
 def get_sg_factories_bindings(ontop_client: KgClient):

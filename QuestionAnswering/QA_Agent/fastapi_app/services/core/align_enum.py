@@ -2,8 +2,8 @@ from enum import Enum
 from typing import Generic, Type, TypeVar
 from redis import Redis
 
-from services.embed import IEmbedder
-from services.retrieve_docs import DocsRetriever
+from services.core.embed import IEmbedder
+from services.core.retrieve_docs import DocsRetriever
 
 E = TypeVar("E", bound=Enum)
 

@@ -5,8 +5,8 @@ from typing import Annotated, List, Optional
 from fastapi import Depends
 
 from model.qa import QAStep
-from services.utils.parse import KeyAggregateParser
-from services.align_enum import EnumAligner
+from services.core.parse import KeyAggregateParser
+from services.core.align_enum import EnumAligner
 from services.connectors.agent_connector import AgentConnectorBase
 from .constants import FactoryAttrKey, FactoryConcept
 from .align import get_factory_attr_key_aligner, get_factory_concept_aligner

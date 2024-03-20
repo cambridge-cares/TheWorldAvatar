@@ -1,7 +1,7 @@
 from enum import Enum
 
 from model.aggregate import AggregateOperator
-from services.utils.parse import KeyAggregateParser
+from services.core.parse import KeyAggregateParser
 
 
 class SampleEnum(Enum):

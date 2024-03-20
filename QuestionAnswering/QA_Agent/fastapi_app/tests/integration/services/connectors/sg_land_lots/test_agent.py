@@ -1,8 +1,8 @@
 import os
 
 import pytest
-from model.aggregate import AggregateOperator
 
+from model.aggregate import AggregateOperator
 from model.constraint import (
     AtomicNumericalConstraint,
     CompoundNumericalConstraint,
@@ -10,8 +10,8 @@ from model.constraint import (
     LogicalOperator,
     NumericalOperator,
 )
+from services.core.kg import KgClient
 from services.connectors.sg_land_lots.constants import PlotAttrKey
-from services.kg_client import KgClient
 from services.connectors.sg_land_lots.agent import PlotConstraints, SGLandLotsAgent
 
 

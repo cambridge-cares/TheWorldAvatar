@@ -2,8 +2,8 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from services.core.parse import KeyAggregateParser, SchemaParser, get_schema_parser
 from services.connectors.sg_factories.constants import FactoryAttrKey
-from services.utils.parse import KeyAggregateParser, SchemaParser, get_schema_parser
 
 
 def get_factory_attr_agg_parser(

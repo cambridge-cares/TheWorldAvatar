@@ -2,12 +2,12 @@ from typing import Annotated
 from fastapi import Depends
 from redis import Redis
 
-from services.embed import IEmbedder, get_embedder
-from services.redis_client import get_redis_client
-from services.retrieve_docs import DocsRetriever
-from services.kg_client import KgClient
+from services.core.embed import IEmbedder, get_embedder
+from services.core.redis import get_redis_client
+from services.core.kg import KgClient
+from services.core.retrieve_docs import DocsRetriever
 from .constants import LAND_USE_TYPES
-from .kg_client import get_sg_land_lots_bg_client
+from .kg import get_sg_land_lots_bg_client
 
 
 class LandUseTypeMatcher:
