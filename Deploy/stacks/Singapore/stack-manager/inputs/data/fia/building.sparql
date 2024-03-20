@@ -202,7 +202,7 @@ WHERE {
     }
   }
   # company info
-    UNION {  
+    UNION {
         {SERVICE [ONTOP] {
             SELECT ?type ?Value ?Unit  where {      
             [IRI] obm:hasFacility ?facility.      
@@ -226,5 +226,24 @@ WHERE {
         ?p rdfs:subPropertyOf* ontocompany:hasCompanyProperty.
         ?p rdfs:label ?Property.
         }
+	UNION {
+	    SERVICE [ONTOP] {
+            SELECT ?Property ?Value where {
+			[IRI] obm:hasFacility ?facility.      
+			?company_iri ontocompany:isOwnerOf ?facility.
+			BIND("Company Name" AS ?Property).
+			?company_iri rdfs:label ?Value.
+            }
+        }
+	} UNION {
+	    SERVICE [ONTOP] {
+            SELECT ?Property ?Value where {
+			[IRI] obm:hasFacility ?facility.      
+			?company_iri ontocompany:isOwnerOf ?facility.
+			BIND("Plant Name" AS ?Property).
+			?facility rdfs:label ?Value.
+            }
+        }
+	}
     }
 }

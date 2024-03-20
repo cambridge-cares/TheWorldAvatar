@@ -42,6 +42,20 @@ select ?Property ?Value ?Unit  WHERE {
   
   
   } UNION {
+
+      SERVICE [ONTOP] {
+      SELECT ?Property ?Value where {
+        ?pli ontobuiltenv:hasOntoCityGMLRepresentation [IRI].
+        ?plant geo:ehContains ?pli.
+        ?pli rdf:type ontocape:PlantItem.
+        ?company_iri ontocompany:isOwnerOf ?plant.
+        BIND("Plant Name" AS ?Property).
+        ?plant rdfs:label ?Value.
+  
+      }
+  }
+
+  } UNION {
      SERVICE [ONTOP] {
       SELECT ?p ?Value where {
         ?pli ontobuiltenv:hasOntoCityGMLRepresentation [IRI].
