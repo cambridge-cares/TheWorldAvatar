@@ -3,29 +3,17 @@
 # ===============================================================================
 
 import pandas as pd
-import os
-import sys
-from agent.kgutils.utils import utils
 import glob
 import datetime as dt
 import random
 import uuid
 from jpsSingletons import jpsBaseLibView
-from kgutils.kgclient import KGClient
-from kgutils.tsclient import TSClient
-from agent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
+import utils
 from datetime import datetime
-
 
 # ===============================================================================
 # Data Preparation
 # ===============================================================================
-
-script_directory = os.path.dirname(os.path.realpath(__file__))
-
-# Construct the absolute path to the target folder
-target_folder_path = os.path.join(script_directory, '..', 'raw_data', 'gps_target_folder', '*.csv')
-
 
 # Added transform function to make the UTC DATE Aand UTC TIME columns suitable as the input of TSClient
 # The transform_datetime function merges separate date and time strings into a unified datetime string in ISO 8601 format. 
@@ -36,20 +24,13 @@ def transform_datetime(date_str, time_str):
     datetime_obj = datetime.strptime(combined_str, "%Y/%m/%d %H:%M:%S")
     return datetime_obj.strftime('%Y-%m-%dT%H:%M:%SZ')
 
-# ===============================================================================
-# Main Processing
-# ===============================================================================
 # Create database and RDF store, and the name and url for database is set in resources/.properties file
 if __name__ == '__main__':
-
     utils.create_postgres_db()  # Initialize PostgreSQL database
     utils.create_blazegraph_namespace()  # Initialize Blazegraph namespace for RDF data
 
     # Initialize KGClient for RDF data manipulation
-    kg_client = KGClient(utils.QUERY_ENDPOINT, utils.UPDATE_ENDPOINT)
-
-    # Initialize the new TSClient with necessary parameters
-    ts_client = TSClient(kg_client, DB_URL, DB_USER, DB_PASSWORD)
+    KGClient = jpsBaseLibView.RemoteStoreClient(utils.QUERY_ENDPOINT, utils.UPDATE_ENDPOINT)
 
     # Retrieve Java classes for time entries (Instant) and data (ALL Double)
     # (required for time series client instantiation)
@@ -60,6 +41,8 @@ if __name__ == '__main__':
     # Set the target folder
     # Access all the csv file stored in the target folder
     # target each csv file containing gps data one by one, launch a loop to instantiate utilities
+    target_folder_path = '/home/caresuser/TWA_Healthcare/TheWorldAvatar/Agents/FenlandTrajectoryAgent/agent/raw_data/gps_target_folder/*.csv'  
+    # Please adjust the path above as necessary
     csv_files = glob.glob(target_folder_path)
     
     for csv_file in csv_files:
@@ -129,8 +112,7 @@ if __name__ == '__main__':
                     <{dataIRI}> rdf:type ontodevice:{ts} ;
                          rdfs:label "{ts} data for {gps_object['object']}" ;
                          ex:unit "{unit}" . }}'''
-            
-            kg_client.performUpdate(query)
+            KGClient.executeUpdate(query)
             
         
         # Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)

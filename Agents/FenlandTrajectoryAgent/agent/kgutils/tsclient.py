@@ -1,6 +1,6 @@
 ################################################
-# Authors: Jiying Chen (jc2341@cam.ac.uk)      #
-# Date: 11 March 2024                          #
+# Authors: Jiying Chen (jc2341@cam.ac.uk) #
+# Date: 11 March 2024                            #
 ################################################
 # The purpose of this module is to provide functionality to use the TimeSeriesClient from the JPS_BASE_LIB
 
