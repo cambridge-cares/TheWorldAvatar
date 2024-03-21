@@ -1,6 +1,6 @@
 import pytest
 from model.constraint import ExtremeValueConstraint
-from services.connectors.sg_factories.model import FactoryConstraints, Industry
+from services.connectors.sg_factories.model import FactoryAttrKey, FactoryConstraints, Industry
 from services.connectors.sg_factories.agent.make_sparql import SGFactoriesSPARQLMaker
 
 
@@ -16,6 +16,22 @@ def sg_factories_sparql_maker():
 
 
 class TestSGFactoriesSPARQLMaker:
+    def test_lookupFactoryAttribute(self, sg_factories_sparql_maker: SGFactoriesSPARQLMaker):
+        # Act
+        actual = sg_factories_sparql_maker.lookup_factory_attribute(iris=["http://test.com/1", "http://test.com/2"], attr_key=FactoryAttrKey.INDUSTRY)
+
+        # Assert
+        assert actual == """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+
+SELECT DISTINCT ?IRI ?Industry WHERE {
+VALUES ?IRI { <http://test.com/1> <http://test.com/2> }
+?IRI ontocompany:belongsToIndustry/rdf:type ?Industry .
+}"""
+
     def test_findFactories(self, sg_factories_sparql_maker: SGFactoriesSPARQLMaker):
         # Arrange
         constraints = FactoryConstraints(
@@ -36,7 +52,7 @@ PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
 
 SELECT DISTINCT ?IRI ?GeneratedHeatNumericalValue ?ThermalEfficiencyNumericalValue WHERE {
-VALUES ?Type { <http://www.theworldavatar.com/kg/ontocompany#ChemicalPlant> <http://www.theworldavatar.com/kg/ontocompany#FoodPlant> <http://www.theworldavatar.com/kg/ontocompany#SemiconductorPlant> }
+VALUES ?Type { <http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant> <http://www.theworldavatar.com/kg/ontocompany#FoodPlant> <http://www.theworldavatar.com/kg/ontocompany#SemiconductorPlant> }
 ?IRI rdf:type ?Type .
 ?IRI ontocompany:belongsToIndustry/rdf:type ontocompany:FoodIndustry .
 ?IRI ontocompany:hasGeneratedHeat/om:hasValue [ om:hasNumericalValue ?GeneratedHeatNumericalValue ; om:hasUnit/skos:notation "MW" ] .
@@ -59,7 +75,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
 
 SELECT (COUNT(?IRI) AS ?Count) ?Industry WHERE {
-VALUES ?Type { <http://www.theworldavatar.com/kg/ontocompany#ChemicalPlant> <http://www.theworldavatar.com/kg/ontocompany#FoodPlant> <http://www.theworldavatar.com/kg/ontocompany#SemiconductorPlant> }
+VALUES ?Type { <http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant> <http://www.theworldavatar.com/kg/ontocompany#FoodPlant> <http://www.theworldavatar.com/kg/ontocompany#SemiconductorPlant> }
 ?IRI rdf:type ?Type .
 ?IRI ontocompany:belongsToIndustry/rdf:type ontocompany:ChemicalIndustry .
 ?IRI ontocompany:belongsToIndustry/rdf:type ?Industry .

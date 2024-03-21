@@ -24,6 +24,28 @@ from tests.integration.services.utils import TriplesManager
 
 
 @pytest.fixture(scope="class")
+def sg_factories_bg_client(blazegraph_base_url: URL):
+    triples_manager = TriplesManager(
+        base_url=blazegraph_base_url,
+        namespace="sg_factories_bg",
+        prefixes="""PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>""",
+    )
+
+    triples_manager.insert(
+        """ontochemplant:ChemicalPlant rdfs:subClassOf ontocompany:Factory .
+ontocompany:FoodPlant rdfs:subClassOf ontocompany:Factory .
+ontocompany:SemiconductorPlant rdfs:subClassOf ontocompany:Factory ."""
+    )
+
+    endpoint = str(blazegraph_base_url / "blazegraph/namespace/sg_factories_bg/sparql")
+    yield KgClient(endpoint)
+
+    triples_manager.delete_all()
+
+
+@pytest.fixture(scope="class")
 def sg_factories_ontop_client(blazegraph_base_url: URL):
     triples_manager = TriplesManager(
         base_url=blazegraph_base_url,
@@ -69,12 +91,15 @@ PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>""",
 def sg_factories_labels_store(
     redis_client: Redis,
     sg_factories_ontop_client: KgClient,
+    sg_factories_bg_client: KgClient,
 ):
     yield LabelsStore(
         redis_client=redis_client,
         key_prefix="sg_factories:factories:",
         index_name="idx:sg_factories:factories",
-        bindings=get_sg_factories_bindings(ontop_client=sg_factories_ontop_client),
+        bindings=get_sg_factories_bindings(
+            ontop_client=sg_factories_ontop_client, bg_client=sg_factories_bg_client
+        ),
     )
 
 
@@ -103,21 +128,19 @@ def sg_factories_agent(
 
 
 class TestSGFactoriesAgent:
-    # def test_lookupFactoryAttribute(self, sg_factories_agent: SGFactoriesAgent):
-    #     # Act
-    #     data = sg_factories_agent.lookup_factory_attribute(
-    #         plant_name="Normet Singapore", attr_key=FactoryAttrKey.THERMAL_EFFICIENCY
-    #     )
+    def test_lookupFactoryAttribute(self, sg_factories_agent: SGFactoriesAgent):
+        # Act
+        actual = sg_factories_agent.lookup_factory_attribute(
+            plant_name="Normet Singapore", attr_key=FactoryAttrKey.THERMAL_EFFICIENCY
+        )
 
-    #     # Assert
-    #     assert data.vars == ["IRI", "ThermalEfficiencyNumericalValue"]
-    #     assert len(data.bindings) == 1
-    #     assert (
-    #         data.bindings[0].items()
-    #         >= {
-    #             "ThermalEfficiencyNumericalValue": "0.52",
-    #         }.items()
-    #     )
+        # Assert
+        assert actual == QAData(
+            vars=["IRI", "ThermalEfficiencyNumericalValue"],
+            bindings=[
+                {"IRI": "http://test.com/1", "ThermalEfficiencyNumericalValue": "0.52"}
+            ],
+        )
 
     @pytest.mark.parametrize(
         "industry,groupby_industry,expected",
