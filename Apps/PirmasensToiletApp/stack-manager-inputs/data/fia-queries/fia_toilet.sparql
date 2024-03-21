@@ -27,29 +27,29 @@ WHERE {
   }
   UNION {
      
-    optional{
+
     SERVICE [ONTOP] {
        [IRI] schema:openingHoursSpecification ?open_hour_spec.
       ?open_hour_spec schema:opens ?opens;
                       schema:closes ?closes;
                       schema:dayOfWeek ?day;
-                      schema:validThrough ?through;
-                      schema:validFrom ?from;
-      BIND(CONCAT(STR(SUBSTR(STR(?day), 20)), " open hours") as ?Property) 
-     BIND(CONCAT(STR( ?opens ),"-",STR(?closes)) as ?Value)                 
-                                                                   
+      BIND(CONCAT(STR(SUBSTR(STR(?day), 20)), " open hours") as ?Property)
+     BIND(CONCAT(STR( ?opens ),"-",STR(?closes)) as ?Value)
+
       Filter(BOUND(?Value) && STRLEN(STR(?Value))>0)
     }
-            }
-    
+
+
   }
   UNION {
-     
+     BIND("validity" as ?Property)
     optional{
     SERVICE [ONTOP] {
-       [IRI] schema:validThrough ?through;
-                      schema:validFrom ?from;
-      BIND("validity" as ?Property) 
+       [IRI] schema:openingHoursSpecification ?open_hour_spec.
+      ?open_hour_spec schema:dayOfWeek schema:Monday;
+      				schema:validThrough ?through;
+                    schema:validFrom ?from;
+
      BIND(CONCAT(STR( ?from ),"-",STR(?through)) as ?Value)                 
                                                                    
       Filter(BOUND(?Value) && STRLEN(STR(?Value))>0)
