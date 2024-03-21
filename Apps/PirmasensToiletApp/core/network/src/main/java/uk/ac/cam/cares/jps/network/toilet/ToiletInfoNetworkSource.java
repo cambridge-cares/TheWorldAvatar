@@ -30,10 +30,11 @@ public class ToiletInfoNetworkSource {
     String service = "WFS";
     String version = "1.0.0";
     String request = "GetFeature";
-    String typeName = "pirmaasens:points_toilet_id";
+    String typeName = "pirmasens:ps_data";
     String outputFormat = "application/json";
 
     // feature info agent setting
+
     String fiaPath = "feature-info-agent/get";
     String toiletIriPrefix = "https://www.theworldavatar.com/kg/ontocitytoilets/poi_";
     String kgEndpoint = "http://pirmasens-blazegraph:8080/blazegraph/namespace/pirmasens/sparql";
@@ -44,69 +45,48 @@ public class ToiletInfoNetworkSource {
         this.connection = connection;
     }
 
-    public void getToiletInfoData(double lng, double lat, Response.Listener<Toilet> onSuccessUpper, Response.ErrorListener onFailureUpper) {
+    public void getToiletInfoData(String id, Response.Listener<Toilet> onSuccessUpper, Response.ErrorListener onFailureUpper) {
 
-        Response.Listener<String> onGetToiletId = response -> {
+        String osmId = id;
+        // send request to FIA after receiving the toilet osm_id from geoserver
+        Response.Listener<String> onGetToiletInfo = toiletInfo -> {
             try {
-                JSONObject responseJson = new JSONObject(response);
-                String osmId = responseJson.getJSONArray("features").getJSONObject(0).getJSONObject("properties").getString("osm_id");
+                JSONObject toiletInfoJson = new JSONObject(toiletInfo).getJSONObject("meta");
+                LOGGER.info("toiletInfoJson" + toiletInfoJson);
 
-                // send request to FIA after receiving the toilet osm_id from geoserver
-                Response.Listener<String> onGetToiletInfo = toiletInfo -> {
-                    try {
-                        JSONObject toiletInfoJson = new JSONObject(toiletInfo).getJSONObject("meta");
-                        LOGGER.info(toiletInfoJson);
+                // todo: the mapping need to be updated if ontology is refined
+                Toilet toilet = new Toilet(0, 0);
+                toilet.setWheelchair(toiletInfoJson.optString("has wheelchair"));
+                toilet.setName(toiletInfoJson.optString("has name"));
 
-                        // todo: the mapping need to be updated if ontology is refined
-                        Toilet toilet = new Toilet(lng, lat);
-                        toilet.setWheelchair(toiletInfoJson.optString("has wheelchair"));
-                        toilet.setName(toiletInfoJson.optString("has name"));
+                // address
+                toilet.setStreetAddress(toiletInfoJson.optString("street address"));
+                toilet.setLocality(toiletInfoJson.optString("locality"));
+                toilet.setPostalCode(toiletInfoJson.optString("postal code"));
 
-                        // fee related
-                        toilet.setFee(toiletInfoJson.optString("has fee"));
-                        if (!toiletInfoJson.optString("has amount").isEmpty()) {
-                            toilet.setPrice(new Price(toiletInfoJson.optString("has amount"), toiletInfoJson.optString("has currency")));
-                        }
+                // price related
+                toilet.setPrice(new Price(toiletInfoJson.optDouble("price"), toiletInfoJson.optString("price currency")));
 
-                        // time related
-                        toilet.setOpenTime(toiletInfoJson.optString("opens on"));
-                        toilet.setEndTime(toiletInfoJson.optString("closes on"));
 
-                        toilet.setHasFemale(toiletInfoJson.optString("is for female").contains("true"));
-                        toilet.setHasMale(toiletInfoJson.optString("is for male").contains("true"));
+                // time related
+                toilet.setOpenTime(toiletInfoJson.optString("opens on"));
+                toilet.setEndTime(toiletInfoJson.optString("closes on"));
 
-                        toilet.addOtherInfo("access", toiletInfoJson.optString("access"));
-                        toilet.addOtherInfo("operator", toiletInfoJson.optString("has operator"));
+                toilet.setHasFemale(toiletInfoJson.optString("is for female").contains("true"));
+                toilet.setHasMale(toiletInfoJson.optString("is for male").contains("true"));
 
-                        onSuccessUpper.onResponse(toilet);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                };
+                toilet.setImage(toiletInfoJson.optString("has image"));
 
-                StringRequest fiaRequest = new StringRequest(Request.Method.GET, getFIARequestUri(osmId), onGetToiletInfo, onFailureUpper);
-                connection.addToRequestQueue(fiaRequest);
+                toilet.addOtherInfo("Operator", toiletInfoJson.optString("has operator"));
+
+                onSuccessUpper.onResponse(toilet);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-
         };
 
-        StringRequest geoServerRequest = new StringRequest(Request.Method.GET, getGeoServerRequestUri(lng, lat), onGetToiletId, onFailureUpper);
-        connection.addToRequestQueue(geoServerRequest);
-    }
-
-    private String getGeoServerRequestUri(double lng, double lat) {
-        String requestUri = NetworkConfiguration.constructUrlBuilder(geoServerPath)
-                .addQueryParameter("service", service)
-                .addQueryParameter("version", version)
-                .addQueryParameter("request", request)
-                .addQueryParameter("typeName", typeName)
-                .addQueryParameter("outputFormat", outputFormat)
-                .addQueryParameter("viewparams", String.format("lon:%f;lat:%f;", lng, lat))
-                .build().toString();
-        LOGGER.info(requestUri);
-        return requestUri;
+        StringRequest fiaRequest = new StringRequest(Request.Method.GET, getFIARequestUri(osmId), onGetToiletInfo, onFailureUpper);
+        connection.addToRequestQueue(fiaRequest);
     }
 
     private String getFIARequestUri(String toiletId) {

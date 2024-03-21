@@ -2,6 +2,7 @@
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -24,14 +25,14 @@
             android:layout_marginTop="@dimen/component_margin_small" />
 
 
-        <TextView
+        <!--<TextView
             android:id="@+id/address_name_tv"
             android:layout_marginVertical="@dimen/component_margin_xs"
             style="@style/TextAppearance.Material3.TitleLarge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/component_margin_xs"
-            android:text="Name" />
+            android:text="Name" />-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/icon_container"
@@ -93,67 +94,67 @@
                 android:id="@+id/dot_divider1"
                 android:layout_width="5dp"
                 android:layout_height="5dp"
+                android:layout_marginEnd="@dimen/component_margin_xs"
                 android:src="@drawable/baseline_circle_24"
                 app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
                 app:layout_constraintEnd_toStartOf="@id/transport_method_icon"
                 app:layout_constraintTop_toTopOf="@id/has_males_icon"
-                app:tint="@color/grey"
-                android:layout_marginEnd="@dimen/component_margin_xs"/>
+                app:tint="@color/grey" />
 
             <ImageView
+                android:id="@+id/transport_method_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginEnd="@dimen/component_margin_xs"
                 android:src="@drawable/baseline_directions_walk_24"
-                app:layout_constraintEnd_toStartOf="@id/route_time_estimation_tv"
-                app:tint="@color/dark_grey"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:id="@+id/transport_method_icon"/>
+                app:layout_constraintEnd_toStartOf="@id/route_time_estimation_tv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/dark_grey" />
 
             <TextView
+                android:id="@+id/route_time_estimation_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="-"
-                app:layout_constraintEnd_toStartOf="@id/dot_divider2"
+                android:layout_marginEnd="@dimen/component_margin_xs"
                 android:gravity="center"
-                app:layout_constraintTop_toTopOf="parent"
+                android:text="-"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:id="@+id/route_time_estimation_tv"
-                android:layout_marginEnd="@dimen/component_margin_xs"/>
+                app:layout_constraintEnd_toStartOf="@id/dot_divider2"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/dot_divider2"
                 android:layout_width="5dp"
                 android:layout_height="5dp"
+                android:layout_marginHorizontal="@dimen/component_margin_xs"
                 android:src="@drawable/baseline_circle_24"
                 app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
                 app:layout_constraintEnd_toStartOf="@id/distance_tv"
                 app:layout_constraintTop_toTopOf="@id/has_males_icon"
-                app:tint="@color/grey"
-                android:layout_marginHorizontal="@dimen/component_margin_xs"/>
+                app:tint="@color/grey" />
 
             <TextView
+                android:id="@+id/distance_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:id="@+id/distance_tv"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
+            android:id="@+id/address_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="@dimen/component_margin_xs"
-            android:orientation="horizontal"
-            android:id="@+id/address_container">
+            android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:foregroundTint="@color/white"
                 android:src="@drawable/source_marker" />
 
@@ -174,8 +175,8 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:src="@drawable/baseline_access_time_24" />
 
             <TextView
@@ -195,8 +196,8 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:src="@drawable/baseline_attach_money_24" />
 
             <TextView
@@ -206,13 +207,23 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/component_margin"
                 android:text="@string/price" />
+
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/cover_image"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="fitCenter"
+            android:tint="@color/transparent"
+            tools:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/other_info_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

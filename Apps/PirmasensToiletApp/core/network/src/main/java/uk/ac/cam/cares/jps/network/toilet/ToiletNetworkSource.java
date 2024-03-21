@@ -33,7 +33,7 @@ public class ToiletNetworkSource {
     String service = "WFS";
     String version = "2.0.0";
     String request = "GetFeature";
-    String typeName = "pirmasens:points_toilets";
+    String typeName = "pirmasens:ps_data";
     String outputFormat = "application/json";
 
     // TODO: Generalize amenity filter to work with Building, School, ...
@@ -65,12 +65,14 @@ public class ToiletNetworkSource {
 
                         if ("Point".equals(geometry.optString("type"))) {
                             JSONArray coordinates = geometry.getJSONArray("coordinates");
-
+                            String id = properties.getString("id");
                             // Extract longitude and latitude
                             double longitude = coordinates.getDouble(0);
                             double latitude = coordinates.getDouble(1);
 
-                            toilets.add(new Toilet(longitude, latitude));
+                            Toilet toilet = new Toilet(longitude, latitude);
+                            toilet.setId(id);
+                            toilets.add(toilet);
                         }
                     }
 

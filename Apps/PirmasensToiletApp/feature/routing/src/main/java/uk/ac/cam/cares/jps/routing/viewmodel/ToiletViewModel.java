@@ -51,8 +51,8 @@ public class ToiletViewModel extends ViewModel {
         return toilets;
     }
 
-    public void getToilet(double lng, double lat) {
-        toiletRepository.getToiletInfo(lng, lat, new RepositoryCallback<Toilet>() {
+    public void getToilet(String id) {
+        toiletRepository.getToiletInfo(id, new RepositoryCallback<Toilet>() {
             @Override
             public void onSuccess(Toilet result) {
                 selectedToilet.postValue(result);
@@ -61,7 +61,7 @@ public class ToiletViewModel extends ViewModel {
             @Override
             public void onFailure(Throwable error) {
                 LOGGER.error(error.getMessage());
-                errorMessage.postValue(String.format("Failed to get toilet at (%f, %f)", lng, lat));
+                errorMessage.postValue(String.format("Failed to get toilet at (%s)", id));
             }
         });
     }

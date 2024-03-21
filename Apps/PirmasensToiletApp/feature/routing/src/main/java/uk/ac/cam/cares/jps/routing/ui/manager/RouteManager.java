@@ -8,11 +8,13 @@ import com.mapbox.bindgen.None;
 import com.mapbox.bindgen.Value;
 import com.mapbox.maps.LayerPosition;
 import com.mapbox.maps.MapView;
+import com.mapbox.maps.StyleObjectInfo;
 
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Objects;
 
 import uk.ac.cam.cares.jps.model.Route;
@@ -56,11 +58,26 @@ public class RouteManager {
                 layerJson.put("id", "route_layer");
                 layerJson.put("type", "line");
                 layerJson.put("source", "route");
+                JSONObject paint = new JSONObject();
+                paint.put("line-color", "#32CD32"); // Change the color here, #32CD32 is green
+                paint.put("line-width", 5); // Increase the line thickness (in pixels)
+                paint.put("line-cap", "round"); // Set the line cap to round for a more modern look
+                layerJson.put("paint", paint);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-            Expected<String, None> layerSuccess = style.addStyleLayer(Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()), new LayerPosition(null, null, null));
+            Expected<String, None> layerSuccess = style.addStyleLayer(Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()), new LayerPosition(null, "mapbox-android-pointAnnotation-layer-1", null));
             LOGGER.debug("route: layer created " + (layerSuccess.isError() ? layerSuccess.getError() : "success"));
+            // Get the list of all layers in the Mapbox style
+            List<StyleObjectInfo> layers = style.getStyleLayers();
+
+// Print the name of each layer
+            for (StyleObjectInfo layer : layers) {
+                LOGGER.debug("Layer ID: " + layer.getId());
+                LOGGER.debug("Layer Type: " + layer.getType());
+                // You can print more properties of the layer as needed
+
+            }
         }));
     }
 }

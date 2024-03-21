@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.routing.bottomsheet;
 
+import android.graphics.Bitmap;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,6 +19,10 @@ import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.PicassoProvider;
 
 import org.apache.log4j.Logger;
 
@@ -29,6 +35,7 @@ import uk.ac.cam.cares.jps.routing.viewmodel.LocationViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.RoutingViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.ToiletViewModel;
 
+
 public class ToiletBottomSheet {
     private Logger LOGGER = Logger.getLogger(ToiletBottomSheet.class);
     private final ToiletViewModel toiletViewModel;
@@ -37,6 +44,7 @@ public class ToiletBottomSheet {
 
     private final LinearLayoutCompat bottomSheetView;
     public BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
+    private Picasso picasso;
 
     public ToiletBottomSheet(Fragment hostFragment, LinearLayoutCompat bottomSheetView) {
         locationViewModel = new ViewModelProvider(hostFragment).get(LocationViewModel.class);
@@ -48,13 +56,19 @@ public class ToiletBottomSheet {
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetView);
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         this.bottomSheetView = bottomSheetView;
-
+        Picasso.Builder builder = new Picasso.Builder(hostFragment.getContext());
+        builder.defaultBitmapConfig(Bitmap.Config.RGB_565); // or Bitmap.Config.ARGB_8888
+//        builder.defaultBitmapConfig(Bitmap.Config.ARGB_8888);
+        picasso = builder.build();
+        picasso.setLoggingEnabled(true);
+        Picasso.setSingletonInstance(picasso);
         init(hostFragment);
     }
 
     private void init(Fragment hostFragment) {
+
         toiletViewModel.getSelectedToilet().observe(hostFragment, toilet -> {
-            ((TextView) bottomSheetView.findViewById(R.id.address_name_tv)).setText(!toilet.getName().isEmpty() ? toilet.getName() : String.format("(%f, %f)", toilet.getLocation().latitude(), toilet.getLocation().longitude()));
+            // ((TextView) bottomSheetView.findViewById(R.id.address_name_tv)).setText(!toilet.getName().isEmpty() ? toilet.getName() : toilet.getAddress());
 
             ((ImageView) bottomSheetView.findViewById(R.id.has_female_icon))
                     .setColorFilter(toilet.getHasFemale() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.female_toilet) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
@@ -63,7 +77,7 @@ public class ToiletBottomSheet {
             ((ImageView) bottomSheetView.findViewById(R.id.wheelchair_icon))
                     .setColorFilter(!toilet.getWheelchair().isEmpty() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.teal_700) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
 
-            if (toilet.getAddress() != null && !toilet.getAddress().trim().replaceAll(",", "").isEmpty()) {
+            if (toilet.getAddress() != null && !toilet.getAddress().isEmpty()) {
                 bottomSheetView.findViewById(R.id.address_container).setVisibility(View.VISIBLE);
                 ((TextView) bottomSheetView.findViewById(R.id.detailed_address_tv)).setText(toilet.getAddress());
             } else {
@@ -80,11 +94,18 @@ public class ToiletBottomSheet {
             if (toilet.getPrice() != null) {
                 bottomSheetView.findViewById(R.id.price_container).setVisibility(View.VISIBLE);
                 ((TextView) bottomSheetView.findViewById(R.id.price)).setText(toilet.getPrice().toString());
-            } else if (!toilet.getFee().isEmpty()) {
-                bottomSheetView.findViewById(R.id.price_container).setVisibility(View.VISIBLE);
-                ((TextView) bottomSheetView.findViewById(R.id.price)).setText(toilet.getFee());
             } else {
                 bottomSheetView.findViewById(R.id.price_container).setVisibility(View.GONE);
+            }
+
+            if (toilet.getImage() != null && toilet.getImage().isEmpty() == false) {
+                bottomSheetView.findViewById(R.id.cover_image).setVisibility(View.VISIBLE);
+                LOGGER.debug("LOAD IMAGE TOILET " + toilet.getImage().replace("localhost", "192.168.0.12"));
+                Picasso.get()
+                        .load(toilet.getImage().replace("localhost", "192.168.0.12"))
+                        .into(((ImageView) bottomSheetView.findViewById(R.id.cover_image)));
+            } else {
+                bottomSheetView.findViewById(R.id.cover_image).setVisibility(View.GONE);
             }
 
 
