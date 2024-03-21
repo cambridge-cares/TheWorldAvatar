@@ -3,6 +3,7 @@ Includes: OntoMeasureWithUncertainty, OntoVector, OntoMatrix, OntoPlot.
 See also test_ontocrystal_datatypes.py for the tests and usage examples.
 """
 
+
 import logging
 import tools
 
@@ -18,6 +19,8 @@ omOntoPrefix = "http://www.ontology-of-units-of-measure.org/resource/om-2/"
 OM2_KEYWORDS = ["angstrom", "cubicAngstrom", "reciprocalAngstrom",
                 "degree", "dimensionOne", "percent", "reciprocalCubicAngstrom",
                 "reciprocalCubicNanometre",
+                "squareAngstrom", "squareMetrePerGram",
+                "squareMetrePerCubicCentimetre", "gramPerCubicCentimetre",
                 "hasUnit",
                 "Measure", "Unit"
                ]
@@ -32,6 +35,37 @@ def is_http(value):
         return True
     return False
 
+
+def omInitUnits():
+    output = []
+    #uuid_om_angstrom = tools.getUUID(self.uuidDB, self.omOntoPrefix + "Unit", "angstrom")
+    # This must be initialized in om-2, not here.
+    output += omInitUnit("om:angstrom")
+    output += omInitUnit("om:reciprocalAngstrom")
+    output += omInitUnit("om:cubicAngstrom")
+    output += omInitUnit("om:degree")
+    output += omInitUnit("om:dimensionOne")
+    output += omInitUnit("om:percent")
+    output += omInitUnit("om:reciprocalCubicNanometre")
+    output += omInitUnit("om:squareAngstrom")
+    output += omInitUnit("om:squareMetrePerGram")
+    output += omInitUnit("om:squareMetrePerCubicCentimetre")
+    output += omInitUnit("om:gramPerCubicCentimetre")
+
+    ''' Old version:
+        output.append([omOntoPrefix + "angstrom", "Instance",
+                         omOntoPrefix + "Unit", "", "", ""])
+        output.append([omOntoPrefix + "reciprocalAngstrom", "Instance",
+                         omOntoPrefix + "Unit", "", "", ""])
+        output.append([omOntoPrefix + "cubicAngstrom", "Instance",
+                         omOntoPrefix + "Unit", "", "", ""])
+        output.append([omOntoPrefix + "degree", "Instance",
+                         omOntoPrefix + "Unit", "", "", ""])
+        output.append([omOntoPrefix + "dimensionOne", "Instance",
+                         omOntoPrefix + "Unit", "", "", ""])
+    '''
+
+    return output
 
 def omInitUnit(unit):
     """
@@ -83,7 +117,8 @@ def omSetUnit(subject, unit):
 
     if new_unit not in OM2_KEYWORDS:
         logging.error(" Unknown unit '%s'. You may update the" +
-                      " OM2_KEYWORDS array if unit is missing.", unit)
+                      " OM2_KEYWORDS array if unit is missing" +
+                      " in ontocrystal_datatypes.py and csv_maker.py.", unit)
 
     output = []
 
@@ -324,9 +359,9 @@ class OntoVector:
                 "comp_dict" #, "compErrDict"
               ]
     def __init__(self, class_name, item_name,
-                 uuidDB  = None,
-                 tbox_prefix = None,     abox_prefix = None,
-                 unit    = None, vectorLabel = None
+                 uuidDB=None,
+                 tbox_prefix=None, abox_prefix=None,
+                 unit=None, vectorLabel=None
                  #prefix = "",
                  #myUnit = "",
                  #myLabel = ""
@@ -449,6 +484,7 @@ class OntoVector:
         self.comp_dict      = {}
         #self.compErrDict   = {}
 
+        self.uuid       = None
         self.uuid4      = None
         # This is used to avoid double creation of the Uncertainty Vector:
         self.uuid_error = None
@@ -734,7 +770,7 @@ class OntoVector:
         #logging.error(" get_csv_arr() is not implemented yet")
         # FIXME TODO
 
-        self.uuid,self.uuid4 = self.uuidDB.addUUID(
+        self.uuid, self.uuid4 = self.uuidDB.addUUID(
                                     self.tbox_prefix + self.class_name,
                                     self.abox_prefix + self.item_name)
 
@@ -856,7 +892,7 @@ class OntoVector:
 
             uuid_comp, _ = self.uuidDB.addUUID("VectorComponent",
                                                self.item_name + "_comp_" + k,
-                                               newUuid = self.uuid4)
+                                               newUuid=self.uuid4)
 
             output.append([self.abox_prefix + uuid_comp, "Instance",
                           crystOntoPrefix + "VectorComponent", "", "", ""])
@@ -1103,9 +1139,9 @@ class OntoMatrix:
                             " but expecting it to have 'has'.", predicate)
         output = []
 
-        self.uuid,self.uuid4 = self.uuidDB.addUUID(
-                               self.tbox_prefix + self.class_name,
-                               self.abox_prefix + self.item_name)
+        self.uuid, self.uuid4 = self.uuidDB.addUUID(
+                                self.tbox_prefix + self.class_name,
+                                self.abox_prefix + self.item_name)
 
         output.append([self.uuid, "Instance",
                        self.tbox_prefix + self.class_name, "", "", ""])
