@@ -15,7 +15,7 @@ from services.connectors.sg_factories.model import (
 )
 from services.connectors.sg_factories.agent import SGFactoriesAgent
 from services.connectors.sg_factories.agent.labels_store import (
-    get_sg_factories_bindings,
+    sg_factories_bindings_gen,
 )
 from services.connectors.sg_factories.agent.make_sparql import (
     SGFactoriesSPARQLMaker,
@@ -97,7 +97,7 @@ def sg_factories_labels_store(
         redis_client=redis_client,
         key_prefix="sg_factories:factories:",
         index_name="idx:sg_factories:factories",
-        bindings=get_sg_factories_bindings(
+        bindings=sg_factories_bindings_gen(
             ontop_client=sg_factories_ontop_client, bg_client=sg_factories_bg_client
         ),
     )

@@ -1,14 +1,17 @@
 from functools import cache
-from typing import List, Literal, Optional, Tuple
+from typing import Annotated, List, Literal, Optional, Tuple
+
+from fastapi import Depends
 
 from model.aggregate import AggregateOperator
 from model.constraint import ExtremeValueConstraint
-from services.connectors.sg_factories.model import (
+from ..model import (
     FACTORYATTR2UNIT,
     FactoryAttrKey,
     FactoryConstraints,
     Industry,
 )
+from .labels_store import get_factory_subclasses
 
 
 class SGFactoriesSPARQLMaker:
@@ -229,3 +232,10 @@ SELECT {select_vars} WHERE {{
             patterns="\n".join(ontop_patterns),
             groupby="\nGROUP BY " + " ".join(groupby_vars) if groupby_vars else "",
         )
+
+
+@cache
+def get_sg_factories_sparql_maker(
+    factory_subclasses: Annotated[Tuple[str, ...], Depends(get_factory_subclasses)]
+):
+    return SGFactoriesSPARQLMaker(factory_subclasses)
