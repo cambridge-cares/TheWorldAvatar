@@ -8,3 +8,4 @@ gurobipy
 py4jps==1.0.30
 requests==2.28.1
 Werkzeug
+configobj~=5.0

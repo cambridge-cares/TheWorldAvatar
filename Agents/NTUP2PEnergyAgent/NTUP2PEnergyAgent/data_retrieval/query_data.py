@@ -118,8 +118,9 @@ class QueryData:
                         create_sparql_prefix('rdf') + \
                         create_sparql_prefix('xsd') + \
                         create_sparql_prefix('powsys') + \
+                        create_sparql_prefix('om') + \
                         create_sparql_prefix('ontocape') + \
-                        '''SELECT ?PV WHERE {   ?building powsys:hasBusNode <''' + bus_iri + '''> .
+                        '''SELECT ?datairi WHERE {   ?building powsys:hasBusNode <''' + bus_iri + '''> .
                                                 ?building ontocape:contains ?PV.
                                                 ?PV rdf:type powreal:PhotovoltaicPanel .
                                                 ?PV powsys:hasGeneratedPower ?genpow .
@@ -131,7 +132,7 @@ class QueryData:
                 response = kg_client.performQuery(query)
                 if len(response) == 0:
                     raise KGException("Unable to query for PV panel!")
-                return response[0]["PV"]
+                return response[0]["datairi"]
 
             except Exception as ex:
                 raise KGException("Unable to query for any NTU PV panel!") from ex

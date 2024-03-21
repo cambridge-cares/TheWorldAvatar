@@ -33,7 +33,7 @@ WORKDIR /app
 ADD NTUP2PEnergyAgent /app/NTUP2PEnergyAgent
 
 # Copy in config
-COPY ./config/buses.py /app/NTUP2PEnergyClusterAgent/config/buses.py
+COPY ./config/buses.py /app/NTUP2PEnergyAgent/config/buses.py
 
 # Install StackClients py4jps resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
