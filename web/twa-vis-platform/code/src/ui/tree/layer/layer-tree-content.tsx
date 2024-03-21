@@ -38,6 +38,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
   const spacing: string = props.depth * 0.8 + "rem";
   const group: MapLayerGroup = props.group;
   const initialState: boolean = props.parentShowChildren ? group.showChildren : false;
+  const [isFirstRender, setIsFirstRender] = useState<boolean>(true);
   const [isExpanded, setIsExpanded] = useState<boolean>(initialState);
   const [showChildren, setShowChildren] = useState<boolean>(initialState);
   const isStyleLoaded: boolean = useSelector(getIsStyleLoaded);
@@ -45,7 +46,12 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
   // Whenever the parent component's show children property is updated, 
   // the layer visibility should be toggled accordingly
   useEffect(() => {
-    toggleChildrenDisplay(group);
+    // Toggle should only occur after first render
+    if (isFirstRender) {
+      setIsFirstRender(false);
+    } else {
+      toggleChildrenDisplay(group);
+    };
   }, [props.parentShowChildren]);
 
   // A function to hide or expand the current group's content
@@ -102,7 +108,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
         <MaterialIconButton
           iconName={isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}
           iconStyles={[iconStyles.hover]}
-          onClick ={toggleExpansion}
+          onClick={toggleExpansion}
         />
 
         {/* Tree icon, if present */}
@@ -200,6 +206,7 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
 
   // Whenever show children property is updated, the layer visiblity should be toggled accordingly depending on the change
   useEffect(() => {
+    // Set the current visible state for the first render, else, the behaviour becomes wonky when switching tabs
     toggleLayerVisibility();
   }, [props.showChildren]);
 

@@ -33,16 +33,23 @@ export async function addAllLayers(dataStore: DataStore, dispatch: Dispatch<any>
 export function addLayer(layer: DataLayer, currentStyle: ImageryOption, dispatch: Dispatch<any>) {
     const collision = window.map.getLayer(layer.id);
 
-    if(collision != null) {
+    if (collision != null) {
         console.warn("Attempting to add a layer that's already on map: '" + layer.id + "'.");
         return;
     }
 
     // Clone the original layer definition and adjust as needed
-    const options: JsonObject = {...layer.definition};
+    const options: JsonObject = { ...layer.definition };
     options["id"] = layer.id;
     options["source"] = layer.source.id;
-
+    if (options.layout) {
+        const layoutOptions: JsonObject = options.layout as JsonObject;
+        layoutOptions.visibility = layer.cachedVisibility ? "visible" : "none";
+    } else {
+        options.layout = {
+            visibility: "visible"
+        };
+    }
     // Remove properties not expected by Mapbox
     delete options["interactions"];
     delete options["clickable"];
@@ -51,7 +58,7 @@ export function addLayer(layer: DataLayer, currentStyle: ImageryOption, dispatch
     delete options["order"];
 
     // Add attributions if missing
-    if(!options["metadata"]) {
+    if (!options["metadata"]) {
         options["metadata"] = {
             attribution: "CMCL"
         }
@@ -59,7 +66,7 @@ export function addLayer(layer: DataLayer, currentStyle: ImageryOption, dispatch
 
     // Add slot setting if using v3 style
     const isStandard = (currentStyle.url.includes("standard") || currentStyle.time != null);
-    if(isStandard && options["slot"] == null) {
+    if (isStandard && options["slot"] == null) {
         options["slot"] = "top";
     }
     // Have to cast to type specific object to meet Mapbox's API
@@ -67,42 +74,42 @@ export function addLayer(layer: DataLayer, currentStyle: ImageryOption, dispatch
     const layerType = layer.definition["type"];
 
     let paintObj = options["paint"] as JsonObject;
-    if(paintObj == null) {
+    if (paintObj == null) {
         paintObj = {};
         options["paint"] = paintObj;
     }
 
-    switch(layerType as string) {
+    switch (layerType as string) {
         case "background":
-            if(isStandard) paintObj["background-emissive-strength"] = 1.0;
+            if (isStandard) paintObj["background-emissive-strength"] = 1.0;
             mapboxObj = ((options as unknown) as BackgroundLayer);
-        break;
+            break;
         case "circle":
-            if(isStandard) paintObj["circle-emissive-strength"] = 1.0;
+            if (isStandard) paintObj["circle-emissive-strength"] = 1.0;
             mapboxObj = ((options as unknown) as CircleLayer);
-        break;
+            break;
         case "fill-extrusion":
-            if(isStandard) paintObj["fill-emissive-strength"] = 1.0;
+            if (isStandard) paintObj["fill-emissive-strength"] = 1.0;
             mapboxObj = ((options as unknown) as FillExtrusionLayer);
-        break;
+            break;
         case "fill":
-            if(isStandard) paintObj["fill-emissive-strength"] = 1.0;
+            if (isStandard) paintObj["fill-emissive-strength"] = 1.0;
             mapboxObj = ((options as unknown) as FillLayer);
-        break;
+            break;
         case "heatmap":
             mapboxObj = ((options as unknown) as HeatmapLayer);
-        break;
+            break;
         case "line":
-            if(isStandard) paintObj["line-emissive-strength"] = 1.0;
+            if (isStandard) paintObj["line-emissive-strength"] = 1.0;
             mapboxObj = ((options as unknown) as LineLayer);
-        break;
+            break;
         case "raster":
             mapboxObj = ((options as unknown) as RasterLayer);
-        break;
+            break;
         case "symbol":
-            if(isStandard) paintObj["icon-emissive-strength"] = 1.0;
+            if (isStandard) paintObj["icon-emissive-strength"] = 1.0;
             mapboxObj = ((options as unknown) as SymbolLayer);
-        break;
+            break;
     }
 
     // Add to the map
