@@ -8,7 +8,7 @@ from model.qa import QAStep
 from services.core.parse import KeyAggregateParser
 from services.core.align_enum import EnumAligner
 from services.connectors.agent_connector import AgentConnectorBase
-from .constants import FactoryAttrKey, FactoryConcept
+from .model import FactoryAttrKey, Industry
 from .align import get_factory_attr_key_aligner, get_factory_concept_aligner
 from .parse import get_factory_attr_agg_parser
 from .agent import SGFactoriesAgent, get_sg_factories_agent
@@ -22,7 +22,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
         self,
         agent: SGFactoriesAgent,
         factory_attr_key_aligner: EnumAligner[FactoryAttrKey],
-        factory_concept_aligner: EnumAligner[FactoryConcept],
+        factory_concept_aligner: EnumAligner[Industry],
         attr_agg_parser: KeyAggregateParser[FactoryAttrKey],
     ):
         self.agent = agent
@@ -162,7 +162,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
 
         timestamp = time.time()
         data = self.agent.count_factories(
-            factory_type=factory_concept, groupby_type=groupby_type
+            factory_type=factory_concept, groupby_industry=groupby_type
         )
         latency = time.time() - timestamp
         steps.append(
@@ -228,7 +228,7 @@ def get_sg_factories_agent_connector(
         EnumAligner[FactoryAttrKey], Depends(get_factory_attr_key_aligner)
     ],
     factory_concept_aligner: Annotated[
-        EnumAligner[FactoryConcept], Depends(get_factory_concept_aligner)
+        EnumAligner[Industry], Depends(get_factory_concept_aligner)
     ],
     attr_agg_parser: Annotated[
         KeyAggregateParser[FactoryAttrKey], Depends(get_factory_attr_agg_parser)

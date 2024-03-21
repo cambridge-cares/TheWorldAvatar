@@ -7,7 +7,7 @@ from redis import Redis
 from services.core.kg import KgClient
 from services.core.labels_store import IRIWithLabels, LabelsStore
 from services.core.redis import get_redis_client
-from ..constants import FactoryConcept
+from ..model import Industry
 from ..kg import get_sg_factories_ontop_client
 
 
@@ -23,7 +23,7 @@ SELECT ?IRI ?label WHERE {{
     ?IRI rdfs:label ?label .
 }}""".format(
         types=" ".join(
-            ["<{iri}>".format(iri=concept.value) for concept in FactoryConcept]
+            ["<{iri}>".format(iri=concept.value) for concept in Industry]
         )
     )
 
