@@ -41,7 +41,7 @@ VALUES ?IRI { <http://test.com/1> <http://test.com/2> }
         )
 
         # Act
-        actual = sg_factories_sparql_maker.find_factories(constraints=constraints)
+        actual = sg_factories_sparql_maker.find_factories(constraints=constraints, limit=3)
 
         # Assert
         assert (
@@ -58,7 +58,8 @@ VALUES ?Type { <http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant> <h
 ?IRI ontocompany:hasGeneratedHeat/om:hasValue [ om:hasNumericalValue ?GeneratedHeatNumericalValue ; om:hasUnit/skos:notation "MW" ] .
 ?IRI ontocompany:hasThermalEfficiency/om:hasValue/om:hasNumericalValue ?ThermalEfficiencyNumericalValue .
 }
-ORDER BY ?GeneratedHeatNumericalValue DESC(?ThermalEfficiencyNumericalValue)"""
+ORDER BY ?GeneratedHeatNumericalValue DESC(?ThermalEfficiencyNumericalValue)
+LIMIT 3"""
         )
 
     def test_countFactories(self, sg_factories_sparql_maker: SGFactoriesSPARQLMaker):

@@ -94,6 +94,7 @@ VALUES ?IRI {{ {iris} }}
     def find_factories(
         self,
         constraints: Optional[FactoryConstraints] = None,
+        limit: Optional[int] = None
     ):
         vars = ["?IRI"]
         ontop_patterns = []
@@ -136,10 +137,11 @@ PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
 
 SELECT DISTINCT {vars} WHERE {{
 {patterns}
-}}{orderby}""".format(
+}}{orderby}{limit}""".format(
             vars=" ".join(vars),
             patterns="\n".join(ontop_patterns),
             orderby="\nORDER BY " + " ".join(orderby_vars),
+            limit="\nLIMIT " + str(limit) if limit else ""
         )
 
     def count_factories(

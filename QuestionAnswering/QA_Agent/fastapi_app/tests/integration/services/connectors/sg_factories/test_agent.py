@@ -70,7 +70,7 @@ PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>""",
     ontocompany:belongsToIndustry [ rdf:type ontocompany:ChemicalIndustry ] ;
     rdfs:label "AICA SINGAPORE PTE. LTD." ;
     ontocompany:hasGeneratedHeat [ om:hasValue [ om:hasNumericalValue "12.97975266"^^xsd:float ; om:hasUnit [ skos:notation "MW" ] ] ] ;
-    ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.52"^^xsd:float ] ] .
+    ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.61"^^xsd:float ] ] .
 <http://test.com/3>
     rdf:type ontocompany:FoodPlant ;
     ontocompany:belongsToIndustry [ rdf:type ontocompany:FoodIndustry ] ;
@@ -139,6 +139,24 @@ class TestSGFactoriesAgent:
             vars=["IRI", "ThermalEfficiencyNumericalValue"],
             bindings=[
                 {"IRI": "http://test.com/1", "ThermalEfficiencyNumericalValue": "0.52"}
+            ],
+        )
+
+    def test_findFactories(self, sg_factories_agent: SGFactoriesAgent):
+        # Act
+        actual = sg_factories_agent.find_factories(
+            constraints=FactoryConstraints(
+                industry=Industry.CHEMICAL,
+                thermal_efficiency=ExtremeValueConstraint.MAX,
+            ),
+            limit=1
+        )
+
+        # Assert
+        assert actual == QAData(
+            vars=["IRI", "ThermalEfficiencyNumericalValue"],
+            bindings=[
+                {"IRI": "http://test.com/2", "ThermalEfficiencyNumericalValue": "0.61"}
             ],
         )
 

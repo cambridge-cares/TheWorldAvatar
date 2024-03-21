@@ -29,9 +29,8 @@ class SGFactoriesAgent:
         iris = self.labels_store.link_entity(plant_name)
 
         query = self.sparql_maker.lookup_factory_attribute(iris=iris, attr_key=attr_key)
-        print(query)
         res = self.ontop_client.query(query)
-        
+
         return QAData(
             vars=res["head"]["vars"],
             bindings=[
@@ -40,22 +39,28 @@ class SGFactoriesAgent:
             ],
         )
 
-    def find_factories(self, constraints: Optional[FactoryConstraints] = None):
-        pass
+    def find_factories(self, constraints: Optional[FactoryConstraints] = None, limit: Optional[int] = None):
+        query = self.sparql_maker.find_factories(constraints=constraints, limit=limit)
+        res = self.ontop_client.query(query)
 
-        # for key in [
-        #     FactoryAttrKey.DESIGN_CAPACITY,
-        #     FactoryAttrKey.GENERATED_HEAT,
-        #     FactoryAttrKey.SPECIFIC_ENERGY_CONSUMPTION,
-        # ]:
-        #     try:
-        #         idx = vars.index(key.value)
-        #         unit_var = key.value + "Unit"
-        #         vars.insert(idx + 1, unit_var)
-        #         for binding in bindings:
-        #             binding[unit_var] = FACTORYATTR2UNIT[key]
-        #     except:
-        #         pass
+        vars: List[str] = res["head"]["vars"]
+        bindings = [{k: v["value"] for k, v in binding.items()} for binding in res["results"]["bindings"]]
+
+        for key in [
+            FactoryAttrKey.DESIGN_CAPACITY,
+            FactoryAttrKey.GENERATED_HEAT,
+            FactoryAttrKey.SPECIFIC_ENERGY_CONSUMPTION,
+        ]:
+            try:
+                idx = vars.index(key.value)
+                unit_var = key.value + "Unit"
+                vars.insert(idx + 1, unit_var)
+                for binding in bindings:
+                    binding[unit_var] = FACTORYATTR2UNIT[key]
+            except:
+                pass
+
+        return QAData(vars=vars, bindings=bindings)
 
     def count_factories(
         self,
