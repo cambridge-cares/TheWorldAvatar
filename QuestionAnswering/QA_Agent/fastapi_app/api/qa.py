@@ -5,7 +5,7 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from model.qa import QAData, QAResponseMode, QAStep
+from model.qa import QAData, QAStep
 from services.qa import get_mediator
 from services.connectors import AgentConnectorMediator
 
@@ -16,7 +16,6 @@ class QARequest(BaseModel):
 
 
 class QAResponseMetadata(BaseModel):
-    mode: QAResponseMode
     latency: float
     steps: List[QAStep]
 
@@ -40,9 +39,9 @@ def qa(
     logger.info(req)
 
     timestamp = time.time()
-    qa_mode, steps, data = mediator.query(req.question, domain=req.qa_domain)
+    steps, data = mediator.query(req.question, domain=req.qa_domain)
     latency = time.time() - timestamp
 
-    metadata = QAResponseMetadata(mode=qa_mode, latency=latency, steps=steps)
+    metadata = QAResponseMetadata(latency=latency, steps=steps)
 
     return QAResponse(metadata=metadata, data=data)

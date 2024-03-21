@@ -132,7 +132,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             )
         )
 
-        return "QA", steps, data
+        return steps, data
 
     def _align_factory_concept(self, factory_type: Optional[str]):
         if factory_type:
@@ -175,7 +175,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             )
         )
 
-        return "QA", steps, data
+        return steps, data
 
     def compute_aggregate_factory_attribute(
         self,
@@ -219,7 +219,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             )
         )
 
-        return "QA", steps, data
+        return steps, data
 
 
 def get_sg_factories_agent_connector(

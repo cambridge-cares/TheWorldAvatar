@@ -33,28 +33,13 @@ def binary_search(low: int, high: int, fn: Callable[[int], int], target: int):
 
 
 class ChatbotClient:
-    PROMPT_TEMPLATES = {
-        "2NL": """You will be provided with an input query and retrieved structured data. Generate a response that adheres to the following guidelines:
-1. Information Accuracy: Your response must contain information drawn exclusively from the retrieved data. Do not include any additional information or knowledge that is not explicitly present in the provided data.
-2. Data Completeness: Your response should include all the relevant information contained in the retrieved data, except for any repeated or redundant details.
-3. Response Relevance: Tailor your response to directly address the user's input query, focusing on the aspects highlighted or implied by the query.
-
-Query: {query_str}
-
-Data: 
----------------------
-{context_str}
----------------------
-
-Answer: """,
-        "RAG": """Context information is below.
+    PROMPT_TEMPLATE = """Context information is below.
 ---------------------
 {context_str}
 ---------------------
 Given the context information and not prior knowledge, answer the query.
 Query: {query_str}
-Answer: """,
-    }
+Answer: """
 
     def __init__(
         self,
@@ -70,11 +55,8 @@ Answer: """,
     def _count_tokens(self, text: str):
         return len(self.tokenizer.encode(text))
 
-    def request_stream(
-        self, question: str, data: str, mode: Literal["2NL", "RAG"]
-    ) -> Stream[ChatCompletionChunk]:
-        prompt_template = self.PROMPT_TEMPLATES[mode]
-        content = prompt_template.format(context_str=data, query_str=question)
+    def request_stream(self, question: str, data: str) -> Stream[ChatCompletionChunk]:
+        content = self.PROMPT_TEMPLATE.format(context_str=data, query_str=question)
 
         if self._count_tokens(content) > self.user_input_tokens_limit:
             logger.info(
@@ -87,11 +69,13 @@ Answer: """,
                 low=0,
                 high=len(content),
                 fn=lambda idx: self._count_tokens(
-                    prompt_template.format(context_str=data[:idx], query_str=question)
+                    self.PROMPT_TEMPLATE.format(
+                        context_str=data[:idx], query_str=question
+                    )
                 ),
                 target=self.user_input_tokens_limit,
             )
-            content = prompt_template.format(
+            content = self.PROMPT_TEMPLATE.format(
                 context_str=data[:truncate_idx], query_str=question
             )
 

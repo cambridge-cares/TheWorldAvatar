@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Callable, Dict, List, Tuple
 
-from model.qa import QAData, QAResponseMode, QAStep
+from model.qa import QAData, QAStep
 
 
 class AgentConnectorBase:
@@ -14,7 +14,7 @@ class AgentConnectorBase:
     @abstractmethod
     def name2method(
         self,
-    ) -> Dict[str, Callable[..., Tuple[QAResponseMode, List[QAStep], QAData]]]:
+    ) -> Dict[str, Callable[..., Tuple[List[QAStep], QAData]]]:
         pass
 
     def exec(self, method_name: str, args: dict):
