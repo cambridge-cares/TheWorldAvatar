@@ -95,12 +95,12 @@ class Manager {
      */
     public async readCredentials() {
         // Enter Mapbox account name and API key here!
-        await $.get("mapbox_username", {}, function (result) {
+        await $.get("mapbox_username", {}, function (result : string) {
             MapHandler.MAP_USER = result;
         }).fail(function () {
             console.error("Could not read Mapbox username from 'mapbox_username' secret file.");
         });
-        await $.get("mapbox_api_key", {}, function (result) {
+        await $.get("mapbox_api_key", {}, function (result : string) {
             MapHandler.MAP_API = result;
         }).fail(function () {
             console.error("Could not read Mapbox API key from 'mapbox_api_key' secret file.");
