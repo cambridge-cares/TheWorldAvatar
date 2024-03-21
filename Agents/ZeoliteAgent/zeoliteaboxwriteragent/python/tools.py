@@ -623,18 +623,21 @@ def writeCsv( filename, array ):
     pass # writeCsv()
 
 
-def readCsv( filename ):
-  output = []
-  if os.path.exists( filename ):
-    with open( filename, "r" ) as f:
-      csvr = csv.reader( f )
-      for row in csvr:
-        output.append( row )
-  else:
-    print( "readCSV: file does not exist: '" + filename + "'." )
+def readCsv(filename):
+    output = []
+    if os.path.exists(filename):
+        #with open(filename, "r", encoding="utf-8") as f:
+        with open(filename, "r") as f:
+            #print("Opening:", filename)
+            csvr = csv.reader(f)
+            for ir, row in enumerate(csvr):
+                #print(filename, ir, row)
+                output.append(row)
+    else:
+        print("readCSV: file does not exist: '" + filename + "'.")
 
-  return output
-  pass # loadCSV()
+    return output
+    pass # loadCSV()
 
 
 if __name__ == "__main__":
