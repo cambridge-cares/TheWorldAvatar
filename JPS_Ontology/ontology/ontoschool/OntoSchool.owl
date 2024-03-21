@@ -417,14 +417,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoschool/SpecialisedIndepedentSchool -->
+    <!-- https://www.theworldavatar.com/kg/ontoschool/SpecialisedIndependentSchool -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/SpecialisedIndepedentSchool">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/SpecialisedIndependentSchool">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
         <rdfs:comment>Educational institutions that are not administered by the government and focuses on a specific area of study or cater to students with particular needs or interests.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
-        <rdfs:label>Specialised indepdent school</rdfs:label>
+        <rdfs:label>Specialised independent school</rdfs:label>
     </owl:Class>
     
 
