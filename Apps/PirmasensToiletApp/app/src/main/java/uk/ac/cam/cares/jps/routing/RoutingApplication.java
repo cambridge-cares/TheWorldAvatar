@@ -12,5 +12,6 @@ public class RoutingApplication extends Application {
     public void onCreate() {
         super.onCreate();
         BasicConfigurator.configure();
+
     }
 }

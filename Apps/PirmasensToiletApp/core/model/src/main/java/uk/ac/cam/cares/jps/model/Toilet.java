@@ -9,13 +9,36 @@ public class Toilet {
     Point location;
     Boolean hasMale;
     Boolean hasFemale;
-    String fee;
     String wheelchair;
     String name;
-    String address;
+    String street_address;
+    String locality;
+    String postal_code;
     Price price;
     String openTime;
     String endTime;
+
+    String image;
+
+    String id;
+    @Override
+    public String toString() {
+        return "Toilet{" +
+                "location=" + location +
+                ", hasMale=" + hasMale +
+                ", hasFemale=" + hasFemale + '\'' +
+                ", wheelchair='" + wheelchair + '\'' +
+                ", name='" + name + '\'' +
+                ", StreetAddress='" + street_address + '\'' +
+                ", locality='" + locality +
+                ", PostalCode='" + postal_code +
+                ", price=" + price + '\'' +
+                ", openTime='" + openTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", otherInfo=" + otherInfo +
+                ", hasImage=" + image +
+                '}';
+    }
 
     Map<String, String> otherInfo = new HashMap<>();
 
@@ -47,12 +70,23 @@ public class Toilet {
         this.hasFemale = hasFemale;
     }
 
-    public String getFee() {
-        return fee;
+    public String getImage() {
+        return image;
     }
 
-    public void setFee(String fee) {
-        this.fee = fee;
+    public void setImage(String image) {
+        this.image = image;
+    }
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setPrice(Price price) {
+        this.price = price;
     }
 
     public String getWheelchair() {
@@ -83,9 +117,6 @@ public class Toilet {
         return price;
     }
 
-    public void setPrice(Price price) {
-        this.price = price;
-    }
 
     public void setOpenTime(String opensOn) {
         openTime = opensOn;
@@ -103,11 +134,30 @@ public class Toilet {
         return endTime;
     }
 
-    public String getAddress() {
-        return address;
+    public String getStreetAddress() {
+        return street_address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public String getLocality() {
+        return locality;
+    }
+
+    public String getPostalCode() {
+        return postal_code;
+    }
+
+    public String getAddress(){
+        return getStreetAddress() + ", " + getPostalCode() + " " + getLocality(); }
+
+    public void setStreetAddress(String street_address) {
+        this.street_address = street_address;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
+
+    public void setPostalCode(String postal_code) {
+        this.postal_code = postal_code;
     }
 }

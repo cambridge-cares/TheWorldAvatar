@@ -1,0 +1,22 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoCityToilets,TBox,https://www.theworldavatar.com/kg/ontocitytoilets/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoCityToilets,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoCityToilets,TBox,OntoCityToilets is an ontology developed for representing public toilets in a city.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoCityToilets,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+City,Class,,,,,,City,https://www.theworldavatar.com/kg/ontocitytoilets/,City
+Amenity,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,"Represents various amenities available within a city. Instances of this class include facilities and services such as toilets, parks, hospitals, schools, etc.",https://www.theworldavatar.com/kg/ontocitytoilets/,Amenity
+Toilet,Class,Amenity,IS-A,,,,Represents public toilets within a city,https://www.theworldavatar.com/kg/ontocitytoilets/,Toilet
+priceSpecification,Class,,,,,," Shows details on toilet pricing, including payment fees and currency information.",https://www.theworldavatar.com/kg/ontocitytoilets/,price specification
+has,Object Property,,,City,Amenity,,has,https://www.theworldavatar.com/kg/ontocitytoilets/,has
+opensOn,Object Property,,,openingHours,DayOfWeek,,,https://www.theworldavatar.com/kg/ontocitytoilets/,opens on
+closesOn,Object Property,,,openingHours,DayOfWeek,,,https://www.theworldavatar.com/kg/ontocitytoilets/,closes on
+hasFee,Object Property,,,Toilet,priceSpecification,,Specifies the pricing details for a specific toilet.,https://www.theworldavatar.com/kg/ontocitytoilets/,has fee
+hasImage,Object Property,,,Amenity,http://www.w3.org/ns/dcat#Dataset,,Indicates if an amenity has image.,https://www.theworldavatar.com/kg/ontocitytoilets/,has image
+hasID,Data Property,,,Amenity,string,,Represents the unique identifier of an amenity.,https://www.theworldavatar.com/kg/ontocitytoilets/,has ID
+hasOperator,Data Property,,,Amenity,string,,Indicates the operator or entity responsible for a particular amenity.,https://www.theworldavatar.com/kg/ontocitytoilets/,has operator
+hasName,Data Property,,,City,string,,Represents the name of the city.,https://www.theworldavatar.com/kg/ontocitytoilets/,has name
+price,Data Property,,,priceSpecification,double,,Represents the price (fee) for the amenity.,https://www.theworldavatar.com/kg/ontocitytoilets/,price 
+priceCurrency,Data Property,,,priceSpecification,string,,Represents the price currency for the amenity.,https://www.theworldavatar.com/kg/ontocitytoilets/,price currency
+hasWheelchairAccess,Data Property,,,Toilet,boolean,,"Indicates the suitability of places or ways for wheelchair access and accommodation of individuals using mobility devices (e.g., walkers).",https://www.theworldavatar.com/kg/ontocitytoilets/,has wheelchair
+isForMale,Data Property,,,Toilet,boolean,,Indicates that a toilet is specifically designed for males.,https://www.theworldavatar.com/kg/ontocitytoilets/,is for male
+isForFemale,Data Property,,,Toilet,boolean,,Indicates that a toilet is specifically designed for females.,https://www.theworldavatar.com/kg/ontocitytoilets/,is for female

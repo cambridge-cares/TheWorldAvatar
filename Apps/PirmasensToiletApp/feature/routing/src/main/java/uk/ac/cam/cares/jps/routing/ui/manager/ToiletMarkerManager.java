@@ -15,6 +15,8 @@ import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mapbox.geojson.Point;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.plugin.Plugin;
@@ -24,6 +26,7 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.model.Route;
 import uk.ac.cam.cares.jps.model.Toilet;
@@ -59,22 +62,27 @@ public class ToiletMarkerManager {
             LOGGER.debug("Received toilets number: " + toilets.size());
 
             for (Toilet toilet : toilets) {
-                addMarker(toilet.getLocation(), context.getResources().getColor(R.color.end_marker_color));
+                addMarker(toilet, context.getResources().getColor(R.color.end_marker_color));
                 LOGGER.debug("Longitude=" + toilet.getLocation().longitude() + ", Latitude=" + toilet.getLocation().latitude());
             }
         });
 
         pointAnnotationManager.addClickListener(pointAnnotation -> {
-            toiletViewModel.getToilet(pointAnnotation.getPoint().longitude(), pointAnnotation.getPoint().latitude());
+            LOGGER.debug("DEBUGPOINTX"+pointAnnotation.getData());
+            toiletViewModel.getToilet(
+                    pointAnnotation.getData().getAsJsonObject().get("osm_id").getAsString());
             toiletBottomSheet.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
             if (locationViewModel.getCurrentLocationValue() == null) {
                 LOGGER.info("Location permission not granted for distance and estimated time");
                 return false;
             }
-            routingViewModel.getRouteData(locationViewModel.getCurrentLocationValue().longitude(),
+            routingViewModel.getRouteData(
+                    locationViewModel.getCurrentLocationValue().longitude(),
                     locationViewModel.getCurrentLocationValue().latitude(),
-                    pointAnnotation.getPoint().longitude(), pointAnnotation.getPoint().latitude());
+                    pointAnnotation.getPoint().longitude(),
+                    pointAnnotation.getPoint().latitude()
+            );
 
             // clear current route
             routingViewModel.showRoute.setValue(false);
@@ -86,11 +94,18 @@ public class ToiletMarkerManager {
         toiletViewModel.getToiletsData();
     }
 
-    private void addMarker(Point point, int color) {
+    private void addMarker(Toilet toilet, int color) {
+        JsonObject jsonObject = new JsonObject();
+
+        // Add some key-value pairs
+        jsonObject.addProperty("longitude", toilet.getLocation().longitude());
+        jsonObject.addProperty("latitude", toilet.getLocation().latitude());
+        jsonObject.addProperty("osm_id", toilet.getId());
         PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions()
-                .withPoint(point)
+                .withPoint(toilet.getLocation())
                 .withIconImage(drawableToBitmap(R.drawable.source_marker, color))
                 .withIconSize(2.0)
+                .withData(jsonObject)
                 .withDraggable(false);
         pointAnnotationManager.create(pointAnnotationOptions);
     }

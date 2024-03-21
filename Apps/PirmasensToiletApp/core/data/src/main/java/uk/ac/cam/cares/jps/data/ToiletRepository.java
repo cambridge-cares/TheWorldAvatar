@@ -33,7 +33,7 @@ public class ToiletRepository {
         this.toiletBuildingInfoNetworkSource = toiletBuildingInfoNetworkSource;
     }
 
-    public void getToiletInfo(double lng, double lat, RepositoryCallback<Toilet> callback) {
+    public void getToiletInfo(String id, RepositoryCallback<Toilet> callback) {
         RxJavaPlugins.setErrorHandler(throwable -> {
             if (throwable instanceof UndeliverableException) {
                 LOGGER.info("Both network call failed. Ignore this RxJava exception.");
@@ -44,7 +44,7 @@ public class ToiletRepository {
             }
         });
 
-        Completable toiletNetworkCall = Completable.create(emitter -> toiletInfoNetworkSource.getToiletInfoData(lng, lat, toilet -> {
+        Completable toiletNetworkCall = Completable.create(emitter -> toiletInfoNetworkSource.getToiletInfoData(id, toilet -> {
             toiletInfo = toilet;
             emitter.onComplete();
         }, error -> {
@@ -52,19 +52,23 @@ public class ToiletRepository {
             emitter.onError(error);
         }));
 
-        Completable buildingNetworkCall = Completable.create(emitter -> toiletBuildingInfoNetworkSource.getBuildingInfoData(lng, lat, toilet -> {
-            toiletBuildingInfo = toilet;
-            emitter.onComplete();
-        }, error -> {
-            LOGGER.error("failed to get toilet building info");
-            emitter.onError(error);
-        }));
+//        Completable buildingNetworkCall = Completable.create(emitter -> toiletBuildingInfoNetworkSource.getBuildingInfoData(lng, lat, toilet -> {
+//            toiletBuildingInfo = toilet;
+//            emitter.onComplete();
+//        }, error -> {
+//            LOGGER.error("failed to get toilet building info");
+//            emitter.onError(error);
+//        }));
 
-        Completable combinedCompletable = Completable.mergeArray(toiletNetworkCall, buildingNetworkCall);
+        Completable combinedCompletable = Completable.mergeArray(
+                toiletNetworkCall
+//              , buildingNetworkCall
+        );
         Disposable disposable = combinedCompletable.subscribe(
                 () -> {
-                    toiletInfo.setName(toiletBuildingInfo.getName());
-                    toiletInfo.setAddress(toiletBuildingInfo.getAddress());
+//                    toiletInfo.setName(toiletBuildingInfo.getName());
+//                    toiletInfo.setAddress(toiletBuildingInfo.getAddress());
+                    LOGGER.debug("TOILET INFO "+toiletInfo);
                     callback.onSuccess(toiletInfo);
                 },
                 callback::onFailure

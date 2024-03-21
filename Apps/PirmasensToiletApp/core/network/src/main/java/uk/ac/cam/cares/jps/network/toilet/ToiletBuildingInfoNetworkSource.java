@@ -54,11 +54,11 @@ public class ToiletBuildingInfoNetworkSource {
                             street.equals("null") ? "" : street,
                             city.equals("null") ? "" : city,
                             postcode.equals("null") ? "" : postcode);
-                    temp.setAddress(address);
+                    //temp.setAddress(address);
                 }
 
                 temp.setName(houseName.equals("null") ? "" : houseName);
-                LOGGER.info("toilet address: " + temp.getAddress() + ", toilet name: " + temp.getName());
+                //LOGGER.info("toilet address: " + temp.getAddress() + ", toilet name: " + temp.getName());
                 onSuccessUpper.onResponse(temp);
 
             } catch (JSONException e) {
