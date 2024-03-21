@@ -16,9 +16,9 @@ import base64
 import copy
 import time
 
-from py4jps.data_model.utils import construct_namespace_iri, construct_rdf_type, init_instance_iri
-from py4jps.data_model.iris import TWA_BASE_URL
-from py4jps.kg_operations import PySparqlClient
+from twa.data_model.utils import construct_namespace_iri, construct_rdf_type, init_instance_iri
+from twa.data_model.iris import TWA_BASE_URL
+from twa.kg_operations import PySparqlClient
 
 
 T = TypeVar('T')

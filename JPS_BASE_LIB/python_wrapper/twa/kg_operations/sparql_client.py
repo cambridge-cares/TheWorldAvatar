@@ -4,10 +4,10 @@ from datetime import datetime
 from typing import Tuple, Dict, Any, Set
 from rdflib import Graph, Literal
 
-from py4jps.kg_operations.gateway import jpsBaseLibGW
+from twa.kg_operations.gateway import jpsBaseLibGW
 
-from py4jps.data_model import utils
-from py4jps.data_model.iris import PREFIX_RDFS, PREFIX_RDF, PREFIX_XSD, PREFIX_OWL
+from twa.data_model import utils
+from twa.data_model.iris import PREFIX_RDFS, PREFIX_RDF, PREFIX_XSD, PREFIX_OWL
 
 class PySparqlClient:
     def __init__(self, query_endpoint, update_endpoint, kg_user=None, kg_password=None, fs_url=None, fs_user=None, fs_pwd=None) -> None:

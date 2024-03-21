@@ -7,9 +7,9 @@ from rdflib import Graph, RDF, Literal, XSD
 from pydantic import Field
 from typing import ClassVar, Set
 
-from py4jps.data_model.base_ontology import BaseOntology, BaseClass, DataProperty, ObjectProperty
-from py4jps.data_model.base_ontology import as_range_of_data_property, as_range_of_object_property
-from py4jps.data_model.base_ontology import KnowledgeGraph
+from twa.data_model.base_ontology import BaseOntology, BaseClass, DataProperty, ObjectProperty
+from twa.data_model.base_ontology import as_range_of_data_property, as_range_of_object_property
+from twa.data_model.base_ontology import KnowledgeGraph
 
 
 EXAMPLE_BASE_URL = 'https://example.org/'

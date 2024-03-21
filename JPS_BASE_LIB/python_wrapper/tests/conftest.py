@@ -5,7 +5,7 @@ import logging
 import pytest
 import time
 
-from py4jps.kg_operations import PySparqlClient
+from twa.kg_operations import PySparqlClient
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
