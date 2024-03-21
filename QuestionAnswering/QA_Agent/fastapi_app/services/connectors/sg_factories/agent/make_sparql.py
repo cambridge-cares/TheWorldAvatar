@@ -1,6 +1,7 @@
 from functools import cache
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Tuple
 
+from model.aggregate import AggregateOperator
 from model.constraint import ExtremeValueConstraint
 from services.connectors.sg_factories.model import (
     FACTORYATTR2UNIT,
@@ -13,10 +14,7 @@ from services.connectors.sg_factories.model import (
 class SGFactoriesSPARQLMaker:
     def __init__(self, factory_subclasses: List[str]):
         self.factory_subclasses = factory_subclasses
-
-    @cache
-    def _make_patterns_for_entity_type(self):
-        return [
+        self.factory_subclass_patterns = [
             "VALUES ?Type {{ {types} }}".format(
                 types=" ".join(
                     ["<{iri}>".format(iri=iri) for iri in self.factory_subclasses]
@@ -24,6 +22,9 @@ class SGFactoriesSPARQLMaker:
             ),
             "?IRI rdf:type ?Type .",
         ]
+
+    def _make_factory_subclass_patterns(self):
+        return list(self.factory_subclass_patterns)
 
     def lookup_factory_attribute(self, iris: List[str], attr_key: FactoryAttrKey):
         vars = ["?IRI"]
@@ -94,14 +95,11 @@ VALUES ?IRI {{ {iris} }}
     def find_factories(
         self,
         constraints: Optional[FactoryConstraints] = None,
-        limit: Optional[int] = None
+        limit: Optional[int] = None,
     ):
         vars = ["?IRI"]
-        ontop_patterns = []
+        ontop_patterns = self._make_factory_subclass_patterns()
         orderby_vars = []
-
-        # Match subclasses of ontocompany:Factory
-        ontop_patterns.extend(self._make_patterns_for_entity_type())
 
         if constraints:
             if constraints.industry:
@@ -141,36 +139,88 @@ SELECT DISTINCT {vars} WHERE {{
             vars=" ".join(vars),
             patterns="\n".join(ontop_patterns),
             orderby="\nORDER BY " + " ".join(orderby_vars),
-            limit="\nLIMIT " + str(limit) if limit else ""
+            limit="\nLIMIT " + str(limit) if limit else "",
         )
 
-    def count_factories(
+    def _init_clauses_for_agg(
         self, industry: Optional[Industry] = None, groupby_industry: bool = False
     ):
-        select_vars = ["(COUNT(?IRI) AS ?Count)"]
-        ontop_patterns = []
+        select_vars = []
+        ontop_patterns = self._make_factory_subclass_patterns()
         groupby_vars = []
-
-        # Match subclasses of ontocompany:Factory
-        ontop_patterns.extend(self._make_patterns_for_entity_type())
 
         if industry:
             ontop_patterns.append(
-                "?IRI ontocompany:belongsToIndustry/rdf:type ontocompany:{industry} .".format(
+                "VALUES ?Industry {{ ontocompany:{industry} }}".format(
                     industry=industry.value
                 )
             )
 
-        if groupby_industry:
+        if industry or groupby_industry:
             select_vars.append("?Industry")
             ontop_patterns.append(
                 "?IRI ontocompany:belongsToIndustry/rdf:type ?Industry ."
             )
             groupby_vars.append("?Industry")
 
+        return select_vars, ontop_patterns, groupby_vars
+
+    def count_factories(
+        self, industry: Optional[Industry] = None, groupby_industry: bool = False
+    ):
+        select_vars, ontop_patterns, groupby_vars = self._init_clauses_for_agg(
+            industry=industry, groupby_industry=groupby_industry
+        )
+        select_vars.append("(COUNT(?IRI) AS ?Count)")
+
         return """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+
+SELECT {select_vars} WHERE {{
+{patterns}
+}}{groupby}""".format(
+            select_vars=" ".join(select_vars),
+            patterns="\n".join(ontop_patterns),
+            groupby="\nGROUP BY " + " ".join(groupby_vars) if groupby_vars else "",
+        )
+
+    def compute_aggregate_factory_attribute(
+        self,
+        attr_agg: Tuple[FactoryAttrKey, AggregateOperator],
+        industry: Optional[Industry] = None,
+        groupby_industry: bool = False,
+    ):
+        select_vars, ontop_patterns, groupby_vars = self._init_clauses_for_agg(
+            industry=industry, groupby_industry=groupby_industry
+        )
+
+        attr_key, agg_op = attr_agg
+        unit = None
+        if attr_key is FactoryAttrKey.INDUSTRY:
+            pass
+        else:
+            agg_var = "?{key}NumericalValue".format(key=attr_key.value)
+            unit = FACTORYATTR2UNIT[attr_key]
+            if unit:
+                pattern = '?IRI ontocompany:has{key}/om:hasValue [ om:hasNumericalValue ?{key}NumericalValue ; om:hasUnit/skos:notation "{unit}" ] .'.format(
+                    key=attr_key.value, unit=unit
+                )
+            else:
+                pattern = "?IRI ontocompany:has{key}/om:hasValue/om:hasNumericalValue ?{key}NumericalValue .".format(
+                    key=attr_key.value
+                )
+            ontop_patterns.append(pattern)
+        select_vars.append(
+            "({func}({var}) AS {var}{func})".format(func=agg_op.value, var=agg_var)
+        )
+
+        return """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>
 
 SELECT {select_vars} WHERE {{
 {patterns}
