@@ -1,6 +1,12 @@
 import pytest
+
+from model.aggregate import AggregateOperator
 from model.constraint import ExtremeValueConstraint
-from services.connectors.sg_factories.model import FactoryAttrKey, FactoryConstraints, Industry
+from services.connectors.sg_factories.model import (
+    FactoryAttrKey,
+    FactoryConstraints,
+    Industry,
+)
 from services.connectors.sg_factories.agent.make_sparql import SGFactoriesSPARQLMaker
 
 
@@ -16,12 +22,19 @@ def sg_factories_sparql_maker():
 
 
 class TestSGFactoriesSPARQLMaker:
-    def test_lookupFactoryAttribute(self, sg_factories_sparql_maker: SGFactoriesSPARQLMaker):
+    def test_lookupFactoryAttribute(
+        self, sg_factories_sparql_maker: SGFactoriesSPARQLMaker
+    ):
         # Act
-        actual = sg_factories_sparql_maker.lookup_factory_attribute(iris=["http://test.com/1", "http://test.com/2"], attr_key=FactoryAttrKey.INDUSTRY)
+        actual = sg_factories_sparql_maker.lookup_factory_attribute(
+            iris=["http://test.com/1", "http://test.com/2"],
+            attr_key=FactoryAttrKey.INDUSTRY,
+        )
 
         # Assert
-        assert actual == """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        assert (
+            actual
+            == """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
@@ -31,6 +44,7 @@ SELECT DISTINCT ?IRI ?Industry WHERE {
 VALUES ?IRI { <http://test.com/1> <http://test.com/2> }
 ?IRI ontocompany:belongsToIndustry/rdf:type ?Industry .
 }"""
+        )
 
     def test_findFactories(self, sg_factories_sparql_maker: SGFactoriesSPARQLMaker):
         # Arrange
@@ -41,7 +55,9 @@ VALUES ?IRI { <http://test.com/1> <http://test.com/2> }
         )
 
         # Act
-        actual = sg_factories_sparql_maker.find_factories(constraints=constraints, limit=3)
+        actual = sg_factories_sparql_maker.find_factories(
+            constraints=constraints, limit=3
+        )
 
         # Assert
         assert (
@@ -62,11 +78,11 @@ ORDER BY ?GeneratedHeatNumericalValue DESC(?ThermalEfficiencyNumericalValue)
 LIMIT 3"""
         )
 
-    def test_countFactories(self, sg_factories_sparql_maker: SGFactoriesSPARQLMaker):
+    def test_countFactories_chemical(
+        self, sg_factories_sparql_maker: SGFactoriesSPARQLMaker
+    ):
         # Act
-        actual = sg_factories_sparql_maker.count_factories(
-            industry=Industry.CHEMICAL, groupby_industry=True
-        )
+        actual = sg_factories_sparql_maker.count_factories(industry=Industry.CHEMICAL)
 
         # Assert
         assert (
@@ -75,11 +91,60 @@ LIMIT 3"""
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
 
-SELECT (COUNT(?IRI) AS ?Count) ?Industry WHERE {
+SELECT ?Industry (COUNT(?IRI) AS ?Count) WHERE {
 VALUES ?Type { <http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant> <http://www.theworldavatar.com/kg/ontocompany#FoodPlant> <http://www.theworldavatar.com/kg/ontocompany#SemiconductorPlant> }
 ?IRI rdf:type ?Type .
-?IRI ontocompany:belongsToIndustry/rdf:type ontocompany:ChemicalIndustry .
+VALUES ?Industry { ontocompany:ChemicalIndustry }
 ?IRI ontocompany:belongsToIndustry/rdf:type ?Industry .
+}
+GROUP BY ?Industry"""
+        )
+
+    def test_countFactories_groupby(
+        self, sg_factories_sparql_maker: SGFactoriesSPARQLMaker
+    ):
+        # Act
+        actual = sg_factories_sparql_maker.count_factories(groupby_industry=True)
+
+        # Assert
+        assert (
+            actual
+            == """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+
+SELECT ?Industry (COUNT(?IRI) AS ?Count) WHERE {
+VALUES ?Type { <http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant> <http://www.theworldavatar.com/kg/ontocompany#FoodPlant> <http://www.theworldavatar.com/kg/ontocompany#SemiconductorPlant> }
+?IRI rdf:type ?Type .
+?IRI ontocompany:belongsToIndustry/rdf:type ?Industry .
+}
+GROUP BY ?Industry"""
+        )
+
+    def test_computeAggregateFactoryAttribute(
+        self, sg_factories_sparql_maker: SGFactoriesSPARQLMaker
+    ):
+        # Act
+        actual = sg_factories_sparql_maker.compute_aggregate_factory_attribute(
+            attr_agg=(FactoryAttrKey.DESIGN_CAPACITY, AggregateOperator.AVG),
+            groupby_industry=True,
+        )
+
+        # Assert
+        assert (
+            actual
+            == """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>
+
+SELECT ?Industry (AVG(?DesignCapacityNumericalValue) AS ?DesignCapacityNumericalValueAVG) WHERE {
+VALUES ?Type { <http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant> <http://www.theworldavatar.com/kg/ontocompany#FoodPlant> <http://www.theworldavatar.com/kg/ontocompany#SemiconductorPlant> }
+?IRI rdf:type ?Type .
+?IRI ontocompany:belongsToIndustry/rdf:type ?Industry .
+?IRI ontocompany:hasDesignCapacity/om:hasValue [ om:hasNumericalValue ?DesignCapacityNumericalValue ; om:hasUnit/skos:notation "kg/s" ] .
 }
 GROUP BY ?Industry"""
         )

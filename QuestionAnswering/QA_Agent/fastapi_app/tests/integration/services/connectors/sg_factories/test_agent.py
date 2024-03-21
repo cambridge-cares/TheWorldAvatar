@@ -149,7 +149,7 @@ class TestSGFactoriesAgent:
                 industry=Industry.CHEMICAL,
                 thermal_efficiency=ExtremeValueConstraint.MAX,
             ),
-            limit=1
+            limit=1,
         )
 
         # Assert
@@ -167,21 +167,29 @@ class TestSGFactoriesAgent:
             (
                 Industry.CHEMICAL,
                 False,
-                QAData(vars=["Count"], bindings=[{"Count": "2"}]),
+                QAData(
+                    vars=["Industry", "Count"],
+                    bindings=[
+                        {
+                            "Industry": "http://www.theworldavatar.com/kg/ontocompany#ChemicalIndustry",
+                            "Count": "2",
+                        }
+                    ],
+                ),
             ),
             (
                 None,
                 True,
                 QAData(
-                    vars=["Count", "Industry"],
+                    vars=["Industry", "Count"],
                     bindings=[
                         {
-                            "Count": "2",
                             "Industry": "http://www.theworldavatar.com/kg/ontocompany#ChemicalIndustry",
+                            "Count": "2",
                         },
                         {
-                            "Count": "1",
                             "Industry": "http://www.theworldavatar.com/kg/ontocompany#FoodIndustry",
+                            "Count": "1",
                         },
                     ],
                 ),
@@ -203,49 +211,49 @@ class TestSGFactoriesAgent:
         # Assert
         assert actual == expected
 
-    # def test_computeAggregateFactoryAttribute_all(
-    #     self, sg_factories_agent: SGFactoriesAgent
-    # ):
-    #     # Act
-    #     data = sg_factories_agent.compute_aggregate_factory_attribute(
-    #         factory_type=Industry.CHEMICAL,
-    #         attr_agg=(FactoryAttrKey.GENERATED_HEAT, AggregateOperator.AVG),
-    #     )
+    def test_computeAggregateFactoryAttribute_all(
+        self, sg_factories_agent: SGFactoriesAgent
+    ):
+        # Act
+        actual = sg_factories_agent.compute_aggregate_factory_attribute(
+            attr_agg=(FactoryAttrKey.GENERATED_HEAT, AggregateOperator.AVG),
+            industry=Industry.CHEMICAL,
+        )
 
-    #     # Assert
-    #     assert data.vars == ["GeneratedHeatNumericalValueAVG", "GeneratedHeatUnit"]
-    #     assert data.bindings == [
-    #         {
-    #             "GeneratedHeatNumericalValueAVG": "9.295238",
-    #             "GeneratedHeatUnit": "MW",
-    #         }
-    #     ]
+        # Assert
+        assert actual == QAData(
+            vars=["Industry", "GeneratedHeatNumericalValueAVG", "GeneratedHeatUnit"],
+            bindings=[
+                {
+                    "Industry": "http://www.theworldavatar.com/kg/ontocompany#ChemicalIndustry",
+                    "GeneratedHeatNumericalValueAVG": "9.295238",
+                    "GeneratedHeatUnit": "MW",
+                }
+            ],
+        )
 
-    # def test_computeAggregateFactoryAttribute_groupby(
-    #     self, sg_factories_agent: SGFactoriesAgent
-    # ):
-    #     # Act
-    #     data = sg_factories_agent.compute_aggregate_factory_attribute(
-    #         factory_type=None,
-    #         attr_agg=(FactoryAttrKey.GENERATED_HEAT, AggregateOperator.SUM),
-    #         groupby_type=True,
-    #     )
+    def test_computeAggregateFactoryAttribute_groupby(
+        self, sg_factories_agent: SGFactoriesAgent
+    ):
+        # Act
+        actual = sg_factories_agent.compute_aggregate_factory_attribute(
+            attr_agg=(FactoryAttrKey.GENERATED_HEAT, AggregateOperator.SUM),
+            groupby_industry=True,
+        )
 
-    #     # Assert
-    #     assert data.vars == [
-    #         "Type",
-    #         "GeneratedHeatNumericalValueSUM",
-    #         "GeneratedHeatUnit",
-    #     ]
-    #     assert data.bindings == [
-    #         {
-    #             "Type": "http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant",
-    #             "GeneratedHeatNumericalValueSUM": "18.590475",
-    #             "GeneratedHeatUnit": "MW",
-    #         },
-    #         {
-    #             "GeneratedHeatNumericalValueSUM": "6.427321",
-    #             "Type": "http://www.theworldavatar.com/kg/ontocompany#FoodPlant",
-    #             "GeneratedHeatUnit": "MW",
-    #         },
-    #     ]
+        # Assert
+        assert actual == QAData(
+            vars=["Industry", "GeneratedHeatNumericalValueSUM", "GeneratedHeatUnit"],
+            bindings=[
+                {
+                    "Industry": "http://www.theworldavatar.com/kg/ontocompany#ChemicalIndustry",
+                    "GeneratedHeatNumericalValueSUM": "18.590475",
+                    "GeneratedHeatUnit": "MW",
+                },
+                {
+                    "Industry": "http://www.theworldavatar.com/kg/ontocompany#FoodIndustry",
+                    "GeneratedHeatNumericalValueSUM": "6.427321",
+                    "GeneratedHeatUnit": "MW",
+                },
+            ],
+        )

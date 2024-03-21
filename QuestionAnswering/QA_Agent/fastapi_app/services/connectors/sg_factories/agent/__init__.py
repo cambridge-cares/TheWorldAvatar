@@ -39,26 +39,40 @@ class SGFactoriesAgent:
             ],
         )
 
-    def find_factories(self, constraints: Optional[FactoryConstraints] = None, limit: Optional[int] = None):
+    def _add_units(self, vars: List[str], bindings: List[dict]):
+        i = 0
+        while i < len(vars):
+            found = False
+            for key in [
+                FactoryAttrKey.DESIGN_CAPACITY,
+                FactoryAttrKey.GENERATED_HEAT,
+                FactoryAttrKey.SPECIFIC_ENERGY_CONSUMPTION,
+            ]:
+                if vars[i].startswith(key.value):
+                    found = True
+                    unit_var = key.value + "Unit"
+                    vars.insert(i + 1, unit_var)
+                    for binding in bindings:
+                        binding[unit_var] = FACTORYATTR2UNIT[key]
+                    break
+            i += 1
+            if found:
+                i += 1
+
+    def find_factories(
+        self,
+        constraints: Optional[FactoryConstraints] = None,
+        limit: Optional[int] = None,
+    ):
         query = self.sparql_maker.find_factories(constraints=constraints, limit=limit)
         res = self.ontop_client.query(query)
 
-        vars: List[str] = res["head"]["vars"]
-        bindings = [{k: v["value"] for k, v in binding.items()} for binding in res["results"]["bindings"]]
-
-        for key in [
-            FactoryAttrKey.DESIGN_CAPACITY,
-            FactoryAttrKey.GENERATED_HEAT,
-            FactoryAttrKey.SPECIFIC_ENERGY_CONSUMPTION,
-        ]:
-            try:
-                idx = vars.index(key.value)
-                unit_var = key.value + "Unit"
-                vars.insert(idx + 1, unit_var)
-                for binding in bindings:
-                    binding[unit_var] = FACTORYATTR2UNIT[key]
-            except:
-                pass
+        vars = res["head"]["vars"]
+        bindings = [
+            {k: v["value"] for k, v in binding.items()}
+            for binding in res["results"]["bindings"]
+        ]
+        self._add_units(vars=vars, bindings=bindings)
 
         return QAData(vars=vars, bindings=bindings)
 
@@ -86,75 +100,14 @@ class SGFactoriesAgent:
 
     def compute_aggregate_factory_attribute(
         self,
-        factory_type: Optional[Industry],
         attr_agg: Tuple[FactoryAttrKey, AggregateOperator],
-        groupby_type: bool = False,
+        industry: Optional[Industry] = None,
+        groupby_industry: bool = False,
     ):
-        vars = []
-        ontop_patterns = []
-        groupby_vars = []
-
-        if groupby_type:
-            vars.append("?Type")
-            ontop_patterns.append("?IRI rdf:type ?Type .")
-            groupby_vars.append("?Type")
-
-        if factory_type is None:
-            ontop_patterns.extend(
-                [
-                    "VALUES ?Type {{ {types} }}".format(
-                        types=" ".join(
-                            [
-                                "<{iri}>".format(iri=concept.value)
-                                for concept in Industry
-                            ]
-                        )
-                    ),
-                    "?IRI rdf:type ?Type .",
-                ]
-            )
-        else:
-            ontop_patterns.append(
-                "?IRI rdf:type <{type}> .".format(type=factory_type.value)
-            )
-
-        attr_key, agg_op = attr_agg
-        unit = None
-        if attr_key is FactoryAttrKey.INDUSTRY:
-            agg_var = "?Industry"
-            ontop_patterns.append(
-                "?IRI ontocompany:belongsToIndustry/rdfs:label ?Industry ."
-            )
-        else:
-            agg_var = "?{key}NumericalValue".format(key=attr_key.value)
-            unit = FACTORYATTR2UNIT[attr_key]
-            if unit:
-                pattern = '?IRI ontocompany:has{key}/om:hasValue [ om:hasNumericalValue ?{key}NumericalValue ; om:hasUnit/skos:notation "{unit}" ] .'.format(
-                    key=attr_key.value, unit=unit
-                )
-            else:
-                pattern = "?IRI ontocompany:has{key}/om:hasValue/om:hasNumericalValue ?{key}NumericalValue .".format(
-                    key=attr_key.value
-                )
-            ontop_patterns.append(pattern)
-        vars.append(
-            "({func}({var}) AS {var}{func})".format(func=agg_op.value, var=agg_var)
+        query = self.sparql_maker.compute_aggregate_factory_attribute(
+            attr_agg=attr_agg, industry=industry, groupby_industry=groupby_industry
         )
-
-        query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
-PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>
-
-SELECT {vars} WHERE {{
-{patterns}
-}}{groupby}""".format(
-            vars=" ".join(vars),
-            patterns="\n".join(ontop_patterns),
-            groupby="\nGROUP BY " + " ".join(groupby_vars) if groupby_vars else "",
-        )
+        print(query)
         res = self.ontop_client.query(query)
 
         vars = res["head"]["vars"]
@@ -162,11 +115,8 @@ SELECT {vars} WHERE {{
             {k: v["value"] for k, v in binding.items()}
             for binding in res["results"]["bindings"]
         ]
-        if unit:
-            unitvar = attr_key.value + "Unit"
-            vars.append(unitvar)
-            for binding in bindings:
-                binding[unitvar] = unit
+        self._add_units(vars=vars, bindings=bindings)
+
         return QAData(
             vars=vars,
             bindings=bindings,

@@ -204,7 +204,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
 
         timestamp = time.time()
         data = self.agent.compute_aggregate_factory_attribute(
-            factory_type=factory_concept, attr_agg=attr_agg, groupby_type=groupby_type
+            factory_type=factory_concept, attr_agg=attr_agg, groupby_industry=groupby_type
         )
         latency = time.time() - timestamp
         steps.append(
