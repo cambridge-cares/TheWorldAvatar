@@ -50,7 +50,6 @@ public class GFAAgent extends JPSAgent{
             if(requestParams.getString("requestUrl").contains("/calculation")){            
                 //calculate GFA 1. query footpring 2. query height (if no height, estimate 3.2m/floor) 3. calculate 4. store
                 gfaCalculation.calculationGFA();
-                // gfAkg.saveGFA(gfaResult);
             }else if(requestParams.getString("requestUrl").contains("/floors")){
                //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
                 IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword);

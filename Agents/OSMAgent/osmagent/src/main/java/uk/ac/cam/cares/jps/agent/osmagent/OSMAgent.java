@@ -82,41 +82,41 @@ public class OSMAgent extends JPSAgent {
             geometryMatcher.matchGeometry(pointTable);
             geometryMatcher.matchGeometry(polygonTable);
 
-            // // intialise usage table and copy building IRI that has OSM usage
-            // usageMatcher.copyFromOSM(pointTable, polygonTable, usageTable);
+            // intialise usage table and copy building IRI that has OSM usage
+            usageMatcher.copyFromOSM(pointTable, polygonTable, usageTable);
 
-            // // match buildings without OSM usage with land use
-            // if (!landUseTable.isEmpty()) {
-            //     shareCalculator.updateLandUse(usageTable, landUseTable, landUseCsv);
-            // }
+            // match buildings without OSM usage with land use
+            if (!landUseTable.isEmpty()) {
+                shareCalculator.updateLandUse(usageTable, landUseTable, landUseCsv);
+            }
 
-            // // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
-            // // buildings
-            // shareCalculator.updateUsageShare(usageTable);
-            // shareCalculator.addMaterializedView(usageTable);
+            // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
+            // buildings
+            shareCalculator.updateUsageShare(usageTable);
+            shareCalculator.addMaterializedView(usageTable);
 
-            // //Create geoserver layer
-            // GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            // String workspaceName= "twa";
-            // String schema = "public";
-            // geoServerClient.createWorkspace(workspaceName);
-            // UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-            // GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-            // virtualTable.setSql(buildingSQLQuery);
-            // virtualTable.setEscapeSql(true);
-            // virtualTable.setName("building_usage");
-            // virtualTable.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
-            // geoServerVectorSettings.setVirtualTable(virtualTable);
-            // geoServerClient.createPostGISDataStore(workspaceName,"building_usage" , dbName, schema);
-            // geoServerClient.createPostGISLayer(workspaceName, dbName,"building_usage" ,geoServerVectorSettings);
+            //Create geoserver layer
+            GeoServerClient geoServerClient = GeoServerClient.getInstance();
+            String workspaceName= "twa";
+            String schema = "public";
+            geoServerClient.createWorkspace(workspaceName);
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(buildingSQLQuery);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("building_usage");
+            virtualTable.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName,"building_usage" , dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName,"building_usage" ,geoServerVectorSettings);
 
-            // //Upload Isochrone Ontop mapping
-            // try {
-            //     OntopClient ontopClient = OntopClient.getInstance();
-            //     ontopClient.updateOBDA(obdaFile);
-            // } catch (Exception e) {
-            //     System.out.println("Could not retrieve building_usage.obda file.");
-            // }
+            //Upload Isochrone Ontop mapping
+            try {
+                OntopClient ontopClient = OntopClient.getInstance();
+                ontopClient.updateOBDA(obdaFile);
+            } catch (Exception e) {
+                System.out.println("Could not retrieve building_usage.obda file.");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
