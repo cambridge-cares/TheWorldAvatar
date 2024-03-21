@@ -7,7 +7,7 @@ setup(
     author_email='jb2197@cam.ac.uk; danieln@cmclinnovations.com',
     license='MIT',
     python_requires='>=3.8',
-    description="twa is a thin Python wrapper for the TheWorldAvatar project.",
+    description="twa is a Python wrapper for TheWorldAvatar project.",
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
