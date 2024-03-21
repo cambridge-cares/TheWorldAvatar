@@ -1,9 +1,7 @@
-from functools import cache
-from typing import Annotated, List, Literal, Optional, Tuple, Union
+from typing import Annotated, List, Optional, Tuple
 
 from fastapi import Depends
 
-from model.constraint import ExtremeValueConstraint
 from model.aggregate import AggregateOperator
 from model.qa import QAData
 from services.core.kg import KgClient
@@ -11,7 +9,7 @@ from services.core.labels_store import LabelsStore
 from ..model import FACTORYATTR2UNIT, FactoryAttrKey, FactoryConstraints, Industry
 from ..kg import get_sg_factories_ontop_client
 from .labels_store import get_sg_factories_labels_store
-from .make_sparql import SGFactoriesSPARQLMaker
+from .make_sparql import SGFactoriesSPARQLMaker, get_sg_factories_sparql_maker
 
 
 class SGFactoriesAgent:
@@ -126,8 +124,10 @@ class SGFactoriesAgent:
 def get_sg_factories_agent(
     ontop_client: Annotated[KgClient, Depends(get_sg_factories_ontop_client)],
     labels_store: Annotated[LabelsStore, Depends(get_sg_factories_labels_store)],
+    sparql_maker: Annotated[
+        SGFactoriesSPARQLMaker, Depends(get_sg_factories_sparql_maker)
+    ],
 ):
     return SGFactoriesAgent(
-        ontop_client=ontop_client,
-        labels_store=labels_store,
+        ontop_client=ontop_client, labels_store=labels_store, sparql_maker=sparql_maker
     )
