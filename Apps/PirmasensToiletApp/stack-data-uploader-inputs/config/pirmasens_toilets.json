@@ -1,0 +1,235 @@
+{
+    "name": "pirmasens",
+    "database": "postgres",
+    "datasetDirectory": "pirmasens_toilets",
+    "workspace":"pirmasens",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "osm",
+            "subdirectory": "polygon",
+            "table": "polygons"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "Wasgau",
+            "table": "Wasgau",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "lon",
+                    "Y_POSSIBLE_NAMES": "lat"
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "osm",
+            "subdirectory": "ps_data",
+            "table": "ps_data",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "lon",
+                    "Y_POSSIBLE_NAMES": "lat"
+                }
+            }
+        },{
+            "type": "tboxcsv",
+            "skip": false,
+            "subdirectory": "tbox"
+        },
+        {
+            "type": "RDF",
+            "skip": false,
+            "subdirectory": "vcard_RDF"
+        },
+        {
+            "type": "RDF",
+            "skip": false,
+            "subdirectory": "dcat_RDF"
+        },
+        {
+            "type": "RDF",
+            "skip": false,
+            "subdirectory": "schema_RDF"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "osm",
+            "subdirectory": "point",
+            "table": "points",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "poi",
+                    "sql": "@/inputs/data/pirmasens_toilets/sql/toilet.sql",
+                    "escapeSql": true,
+                    "geometry": {
+                        "name": "geometryProperty",
+                        "type": "Point"
+                    }
+                },
+                "defaultStyle": "generic"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "osm",
+            "subdirectory": "point",
+            "table": "points_toilet_id",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "points",
+                    "sql": "@/inputs/data/pirmasens_toilets/sql/get_toilet_id.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "Point",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "lon",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        },
+                        {
+                            "name": "lat",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        }
+                    ]
+                },
+                "defaultStyle": "generic"
+            }
+        },        
+        {
+            "type": "vector",
+            "skip": true,
+            "table": "polygons_nearby_building_info",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "polygons",
+                    "sql": "@/inputs/data/pirmasens_toilets/sql/get_nearby_building_info.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geometryProperty",
+                        "type": "Polygon",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "lon",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        },
+                        {
+                            "name": "lat",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        }
+                    ]
+                },
+                "defaultStyle": "generic"
+            }
+        },
+        {
+            "type": "OSMRouting",
+            "skip": false,
+            "name": "routing",
+            "schema": "public",
+            "subdirectory": "routing",
+            "sql": "@/inputs/data/pirmasens_toilets/sql/nearest_node.sql",
+            "verticesGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/pirmasens_toilets/sql/nearest_vertex.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "Point",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "lon",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        },
+                        {
+                            "name": "lat",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        }
+                    ]
+                }
+            },
+            "waysGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/pirmasens_toilets/sql/find_poi.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "Point",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "lon",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        },
+                        {
+                            "name": "lat",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        }
+                    ]
+                }
+            },
+            "poiGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/pirmasens_toilets/sql/shortest_paths.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d]+$"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "mappings": [
+        "toilet.obda"
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons",
+        "otherFiles": [
+          {
+            "source": "source_data",
+            "target": "target_data"
+          }
+        ]
+      }
+}

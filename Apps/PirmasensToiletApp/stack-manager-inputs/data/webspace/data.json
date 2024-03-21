@@ -1,0 +1,58 @@
+{
+    "name": "Pirmasens",
+    "groups": [
+        {
+            "name": "Points of Interest",
+            "stack": "http://localhost:3838",
+            "sources": [
+                
+                {
+                    "id": "city_toilet",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Aps_data&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "wasgau",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3AWasgau&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "city_toilet_layer",
+                    "name": "City Toilet",
+                    "source": "city_toilet",
+                    "type": "symbol",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "toilet_image",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.1],
+                        "icon-anchor": "bottom"
+                    }
+                },
+                
+                {
+                    "id": "wasgau_layer",
+                    "name": "Wasgau",
+                    "source": "wasgau",
+                    "type": "symbol",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "wasgau_image",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.1],
+                        "icon-anchor": "bottom"
+                    }
+                }
+            ]
+        }
+       
+    ]
+}

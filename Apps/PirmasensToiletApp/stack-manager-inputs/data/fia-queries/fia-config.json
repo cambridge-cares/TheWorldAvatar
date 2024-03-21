@@ -1,0 +1,11 @@
+{
+    "entries": [
+        {
+            "id": "Toilet",
+            "class": "https://www.theworldavatar.com/kg/ontocitytoilets/Toilet",
+            "meta" : {
+                "queryFile": "fia_toilet.sparql"
+            }
+        }
+    ]
+}

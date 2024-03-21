@@ -1,0 +1,75 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX tps: <https://www.theworldavatar.com/kg/ontocitytoilets/>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX schema: <https://schema.org/>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+  {
+   
+  	SERVICE [ONTOP] {
+    	[IRI] ?prop_iri ?Value .
+      	
+    }
+    ?prop_iri rdfs:label ?Property .
+    FILTER(isLiteral(?Value))
+  }
+  UNION {
+    tps:hasImage rdfs:label ?Property . 
+    optional{
+    SERVICE [ONTOP] {
+       [IRI] tps:hasImage/dcat:distribution/dcat:downloadURL ?Value .
+      Filter(BOUND(?Value) && STRLEN(STR(?Value))>0)
+    }
+            }
+    
+  }
+  UNION {
+     
+    optional{
+    SERVICE [ONTOP] {
+       [IRI] schema:openingHoursSpecification ?open_hour_spec.
+      ?open_hour_spec schema:opens ?opens;
+                      schema:closes ?closes;
+                      schema:dayOfWeek ?day;
+                      schema:validThrough ?through;
+                      schema:validFrom ?from;
+      BIND(CONCAT(STR(SUBSTR(STR(?day), 20)), " open hours") as ?Property) 
+     BIND(CONCAT(STR( ?opens ),"-",STR(?closes)) as ?Value)                 
+                                                                   
+      Filter(BOUND(?Value) && STRLEN(STR(?Value))>0)
+    }
+            }
+    
+  }
+  UNION {
+     
+    optional{
+    SERVICE [ONTOP] {
+       [IRI] schema:validThrough ?through;
+                      schema:validFrom ?from;
+      BIND("validity" as ?Property) 
+     BIND(CONCAT(STR( ?from ),"-",STR(?through)) as ?Value)                 
+                                                                   
+      Filter(BOUND(?Value) && STRLEN(STR(?Value))>0)
+    }
+            }
+    
+  }
+  UNION {
+    SERVICE [ONTOP] {
+      
+    	[IRI] tps:hasFee/tps:price ?Value .
+        
+       
+	}
+	tps:price rdfs:label ?Property   
+  }
+  UNION {
+    SERVICE [ONTOP] {
+    	[IRI] tps:hasFee/tps:priceCurrency ?Value .
+	}
+	tps:priceCurrency rdfs:label ?Property    
+  }
+} 

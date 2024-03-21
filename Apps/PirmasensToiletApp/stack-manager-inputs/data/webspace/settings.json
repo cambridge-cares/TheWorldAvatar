@@ -1,0 +1,13 @@
+{
+    "start": {
+        "center": [7.6002, 49.2016],
+        "zoom": 16,
+        "bearing": 0,
+        "pitch": 0
+    },
+    "search": {
+        "Name": "name",
+        "ID": "id"
+    },
+    "attribution": "Map data copyrighted OpenStreetMap contributors <BR>"
+}
