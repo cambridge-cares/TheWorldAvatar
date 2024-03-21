@@ -29,6 +29,9 @@ public class IntegrateFloors {
     private final String password;
 
     private RemoteRDBStoreClient postgisClient;
+
+    private static final String polygonSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM polygons WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
+    private static final String pointSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM points WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
     
     public IntegrateFloors (String postgisDb, String postgisUser, String postgisPassword){
         this.dbUrl = postgisDb;
@@ -156,7 +159,6 @@ public class IntegrateFloors {
         }       
     }
 
-    private static final String polygonSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM polygons WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
-    private static final String pointSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM points WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
+    
 
 }
