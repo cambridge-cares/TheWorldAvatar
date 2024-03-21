@@ -1,15 +1,17 @@
 from functools import cache
-from typing import Annotated, Optional, Tuple
+from typing import Annotated, List, Literal, Optional, Tuple, Union
 
 from fastapi import Depends
 
+from model.constraint import ExtremeValueConstraint
 from model.aggregate import AggregateOperator
 from model.qa import QAData
 from services.core.kg import KgClient
 from services.core.labels_store import LabelsStore
-from ..constants import FACTORYATTR2UNIT, FactoryAttrKey, FactoryConcept
+from ..model import FACTORYATTR2UNIT, FactoryAttrKey, FactoryConstraints, Industry
 from ..kg import get_sg_factories_ontop_client
 from .labels_store import get_sg_factories_labels_store
+from .make_sparql import SGFactoriesSPARQLMaker
 
 
 class SGFactoriesAgent:
@@ -17,9 +19,11 @@ class SGFactoriesAgent:
         self,
         ontop_client: KgClient,
         labels_store: LabelsStore,
+        sparql_maker: SGFactoriesSPARQLMaker,
     ):
         self.ontop_client = ontop_client
         self.labels_store = labels_store
+        self.sparql_maker = sparql_maker
 
     def lookup_factory_attribute(self, plant_name: str, attr_key: FactoryAttrKey):
         vars = ["?IRI"]
@@ -69,64 +73,48 @@ SELECT {vars} WHERE {{
             ],
         )
 
+    def find_factories(self, constraints: Optional[FactoryConstraints] = None):
+        pass
+
+        # for key in [
+        #     FactoryAttrKey.DESIGN_CAPACITY,
+        #     FactoryAttrKey.GENERATED_HEAT,
+        #     FactoryAttrKey.SPECIFIC_ENERGY_CONSUMPTION,
+        # ]:
+        #     try:
+        #         idx = vars.index(key.value)
+        #         unit_var = key.value + "Unit"
+        #         vars.insert(idx + 1, unit_var)
+        #         for binding in bindings:
+        #             binding[unit_var] = FACTORYATTR2UNIT[key]
+        #     except:
+        #         pass
+
     def count_factories(
-        self, factory_type: Optional[FactoryConcept] = None, groupby_type: bool = False
+        self,
+        industry: Optional[Industry] = None,
+        groupby_industry: bool = False,
     ):
-        vars = ["(COUNT(?IRI) AS ?Count)"]
-        ontop_patterns = []
-        groupby_vars = []
-
-        if groupby_type:
-            vars.append("?Type")
-            ontop_patterns.append("?IRI rdf:type ?Type .")
-            groupby_vars.append("?Type")
-
-        if factory_type is None:
-            ontop_patterns.extend(
-                [
-                    "VALUES ?Type {{ {types} }}".format(
-                        types=" ".join(
-                            [
-                                "<{iri}>".format(iri=concept.value)
-                                for concept in FactoryConcept
-                            ]
-                        )
-                    ),
-                    "?IRI rdf:type ?Type .",
-                ]
-            )
-        else:
-            if factory_type is FactoryConcept.CHEMICAL_PLANT:
-                concept = "ontochemplant:ChemicalPlant"
-            else:
-                concept = "ontocompany:" + factory_type.value
-            ontop_patterns.append("?IRI rdf:type {type} .".format(type=concept))
-
-        query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
-PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>
-
-SELECT DISTINCT {vars} WHERE {{
-{patterns}
-}}{groupby}""".format(
-            vars=" ".join(vars),
-            patterns="\n".join(ontop_patterns),
-            groupby="\nGROUP BY " + " ".join(groupby_vars) if groupby_vars else "",
+        query = self.sparql_maker.count_factories(
+            industry=industry, groupby_industry=groupby_industry
         )
+        print(query)
         res = self.ontop_client.query(query)
 
+        vars: List[str] = res["head"]["vars"]
+        bindings = [
+            {k: v["value"] for k, v in binding.items()}
+            for binding in res["results"]["bindings"]
+        ]
+
         return QAData(
-            vars=res["head"]["vars"],
-            bindings=[
-                {k: v["value"] for k, v in binding.items()}
-                for binding in res["results"]["bindings"]
-            ],
+            vars=vars,
+            bindings=bindings,
         )
 
     def compute_aggregate_factory_attribute(
         self,
-        factory_type: Optional[FactoryConcept],
+        factory_type: Optional[Industry],
         attr_agg: Tuple[FactoryAttrKey, AggregateOperator],
         groupby_type: bool = False,
     ):
@@ -146,7 +134,7 @@ SELECT DISTINCT {vars} WHERE {{
                         types=" ".join(
                             [
                                 "<{iri}>".format(iri=concept.value)
-                                for concept in FactoryConcept
+                                for concept in Industry
                             ]
                         )
                     ),
@@ -221,3 +209,16 @@ def get_sg_factories_agent(
         ontop_client=ontop_client,
         labels_store=labels_store,
     )
+
+
+@cache
+def _get_factory_subclasses(self):
+    query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+
+SELECT DISTINCT ?IRI WHERE {
+?IRI rdfs:subClassOf* ontocompany:Factory .
+}"""
+    return [
+        x["IRI"]["value"] for x in self.bg_client.query(query)["results"]["bindings"]
+    ]
