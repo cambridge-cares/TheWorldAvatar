@@ -230,14 +230,14 @@ class resRegistry:
             +'\n        jarPath : str\n            absolute path to the main jar file of the java resource\n','')"
 
         _class_template = """
-        from py4jps import JPSGateway
+        from twa import JPSGateway
         class {0}(JPSGateway):
         ----def __init__(self,**JGkwargs):
         --------super({0}, self).__init__(resName='{0}',**JGkwargs)""".format(resName).replace('  ','').replace('-',' ')
 
         _class_template = _class_template + '\n    ' + _new_init_doc_str
 
-        _ini_class_template="from py4jps.resources.{0}.{0} import {0}".format(resName)
+        _ini_class_template="from twa.resources.{0}.{0} import {0}".format(resName)
 
         # write class definition and init
         print('Info: Installing {} files...'.format(resName))

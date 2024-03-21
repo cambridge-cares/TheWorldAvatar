@@ -2,13 +2,13 @@
 # D. Nurkowski (danieln@cmclinnovations.com)
 # J. Bai (jb2197@cam.ac.uk)
 #
-# py4jps release script
+# twa release script
 #
 AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>; Jiaru Bai <jb2197@cam.ac.uk>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-VENV_NAME='py4jps_venv'
+VENV_NAME='twa_venv'
 TEST_VENV_NAME='test_venv'
-PROJECT_NAME='py4jps'
+PROJECT_NAME='twa'
 TEST_PYPI="https://test.pypi.org/legacy/"
 DEP_FILE='dependencies.yml'
 STEP_NR=1
@@ -29,7 +29,7 @@ usage() {
 	echo "  -h              : Print this usage message."
     echo ""
 	echo "Example usage:"
-    echo "./release_py4jps_to_pypi.sh -v 1.0.17   - release version 1.0.17"
+    echo "./release_twa_to_pypi.sh -v 1.0.17   - release version 1.0.17"
 	echo "==============================================================================================================="
 	read -n 1 -s -r -p "Press any key to continue"
     exit
@@ -37,10 +37,10 @@ usage() {
 
 main() {
     install_packages_for_building
-    bump_py4jps_version_number
+    bump_twa_version_number
     clean_and_build_jps_base_lib
-    package_jps_base_lib_with_py4jps
-    build_py4jps_for_release
+    package_jps_base_lib_with_twa
+    build_twa_for_release
     release_to_pypi test-pypi
     test_release test-pypi
     release_to_pypi main-pypi
@@ -59,7 +59,7 @@ install_packages_for_building() {
     STEP_NR=$((STEP_NR+1))
 }
 
-bump_py4jps_version_number() {
+bump_twa_version_number() {
     echo "-------------------------------------------------------------------------"
     echo "$STEP_NR. Bumping the $PROJECT_NAME version number to $NEXT_VERSION"
     echo "-------------------------------------------------------------------------"
@@ -87,15 +87,15 @@ clean_and_build_jps_base_lib() {
     STEP_NR=$((STEP_NR+1))
 }
 
-clean_py4jps_repository() {
+clean_twa_repository() {
     rm -rf $SPATH/build $SPATH/dist $SPATH/.eggs $SPATH/*egg-info $SPATH/*venv
 }
 
-install_py4jps() {
+install_twa() {
     echo "-------------------------------"
     echo "Installing $PROJECT_NAME"
     echo "-------------------------------"
-    clean_py4jps_repository
+    clean_twa_repository
     sleep .5
     venv_name_local=$1
     venv_dir_local=$2
@@ -111,7 +111,7 @@ install_py4jps() {
     fi
 }
 
-run_py4jps_tests() {
+run_twa_tests() {
     echo "-------------------------------"
     echo "Running the $PROJECT_NAME tests"
     echo "-------------------------------"
@@ -129,29 +129,29 @@ run_py4jps_tests() {
     fi
 }
 
-package_jps_base_lib_with_py4jps() {
+package_jps_base_lib_with_twa() {
     echo "-------------------------------------------------------------------------"
     echo "$STEP_NR. Packaging the $PROJECT_NAME project"
     echo "-------------------------------------------------------------------------"
     echo
     echo
-    install_py4jps $VENV_NAME $SPATH
+    install_twa $VENV_NAME $SPATH
 
     $SPATH/$VENV_NAME/$PYTHON_EXEC_FOLDER/jpsrm uninstall JpsBaseLib
     $SPATH/$VENV_NAME/$PYTHON_EXEC_FOLDER/jpsrm devinstall
 
-    run_py4jps_tests $PYTHON_EXEC
+    run_twa_tests $PYTHON_EXEC
 
     STEP_NR=$((STEP_NR+1))
 }
 
-build_py4jps_for_release() {
+build_twa_for_release() {
     echo "-------------------------------------------------------------------------"
     echo "$STEP_NR. Building the $PROJECT_NAME for the release"
     echo "-------------------------------------------------------------------------"
     echo
     echo
-    clean_py4jps_repository
+    clean_twa_repository
     sleep .5
     python setup.py sdist bdist_wheel
     if [ $? -eq 0 ]; then
@@ -235,7 +235,7 @@ test_release() {
     fi
     $PYTHON_EXEC -m pip install pytest testcontainers
 
-    run_py4jps_tests $PYTHON_EXEC
+    run_twa_tests $PYTHON_EXEC
 
     echo "Removing test venv."
     rm -rf $SPATH/../$TEST_VENV_NAME
