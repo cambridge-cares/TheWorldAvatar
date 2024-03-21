@@ -58,8 +58,8 @@ class AgentConnectorMediator:
             )
         )
 
-        qa_mode, connector_steps, data = self.funcname2connector[func_name].exec(
+        connector_steps, data = self.funcname2connector[func_name].exec(
             method_name=func_name, args=func_args
         )
 
-        return qa_mode, steps + connector_steps, data
+        return steps + connector_steps, data

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List
 
 from pydantic import BaseModel
 
@@ -12,5 +12,3 @@ class QAStep(BaseModel):
 class QAData(BaseModel):
     vars: List[str] = []
     bindings: List[Dict[str, Any]] = []
-
-QAResponseMode = Literal["IR", "QA"]
