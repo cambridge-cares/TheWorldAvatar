@@ -54,7 +54,6 @@ WHERE {{}}""".format(
             prefixes=self.prefixes,
             triples=triples,
         )
-        print(query)
         self.sparql.setQuery(query)
         self.sparql.query()
 

@@ -16,14 +16,52 @@ class SGFactoriesSPARQLMaker:
 
     @cache
     def _make_patterns_for_entity_type(self):
-        return     [
-                "VALUES ?Type {{ {types} }}".format(
-                    types=" ".join(
-                        ["<{iri}>".format(iri=iri) for iri in self.factory_subclasses]
-                    )
-                ),
-                "?IRI rdf:type ?Type .",
-            ]
+        return [
+            "VALUES ?Type {{ {types} }}".format(
+                types=" ".join(
+                    ["<{iri}>".format(iri=iri) for iri in self.factory_subclasses]
+                )
+            ),
+            "?IRI rdf:type ?Type .",
+        ]
+
+    def lookup_factory_attribute(self, iris: List[str], attr_key: FactoryAttrKey):
+        vars = ["?IRI"]
+
+        if attr_key is FactoryAttrKey.INDUSTRY:
+            vars.append("?Industry")
+            pattern = "?IRI ontocompany:belongsToIndustry/rdf:type ?Industry ."
+        elif attr_key is FactoryAttrKey.THERMAL_EFFICIENCY:
+            vars.append("?{key}NumericalValue".format(key=attr_key.value))
+            pattern = "?IRI ontocompany:has{key}/om:hasValue/om:hasNumericalValue ?{key}NumericalValue .".format(
+                key=attr_key.value
+            )
+        else:
+            vars.extend(
+                [
+                    "?{key}NumericalValue".format(key=attr_key.value),
+                    "?{key}Unit".format(key=attr_key.value),
+                ]
+            )
+            pattern = "?IRI ontocompany:has{key}/om:hasValue [ om:hasNumericalValue ?{key}NumericalValue ; om:hasUnit/skos:notation ?{key}Unit ] .".format(
+                key=attr_key.value
+            )
+
+        return """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+
+SELECT DISTINCT {vars} WHERE {{
+VALUES ?IRI {{ {iris} }}
+{pattern}
+}}""".format(
+            iris=" ".join(["<{iri}>".format(iri=iri) for iri in iris]),
+            vars=" ".join(vars),
+            pattern=pattern,
+        )
+
     def _make_clauses_for_constraint(
         self,
         key: Literal[

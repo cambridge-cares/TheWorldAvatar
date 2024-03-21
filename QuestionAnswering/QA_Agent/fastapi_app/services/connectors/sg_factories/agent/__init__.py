@@ -26,45 +26,12 @@ class SGFactoriesAgent:
         self.sparql_maker = sparql_maker
 
     def lookup_factory_attribute(self, plant_name: str, attr_key: FactoryAttrKey):
-        vars = ["?IRI"]
         iris = self.labels_store.link_entity(plant_name)
 
-        if attr_key is FactoryAttrKey.INDUSTRY:
-            vars.append("?Industry")
-            pattern = "?IRI ontocompany:belongsToIndustry/rdfs:label ?Industry ."
-        elif attr_key is FactoryAttrKey.THERMAL_EFFICIENCY:
-            vars.append("?{key}NumericalValue".format(key=attr_key.value))
-            pattern = "?IRI ontocompany:has{key}/om:hasValue/om:hasNumericalValue ?{key}NumericalValue .".format(
-                key=attr_key.value
-            )
-        else:
-            vars.extend(
-                [
-                    "?{key}NumericalValue".format(key=attr_key.value),
-                    "?{key}Unit".format(key=attr_key.value),
-                ]
-            )
-            pattern = "?IRI ontocompany:has{key}/om:hasValue [ om:hasNumericalValue ?{key}NumericalValue ; om:hasUnit/skos:notation ?{key}Unit ] .".format(
-                key=attr_key.value
-            )
-
-        query = """PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
-PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>
-
-SELECT {vars} WHERE {{
-    VALUES ?IRI {{ {iris} }}
-    {pattern}
-}}
-""".format(
-            iris=" ".join(["<{iri}>".format(iri=iri) for iri in iris]),
-            vars=" ".join(vars),
-            pattern=pattern,
-        )
+        query = self.sparql_maker.lookup_factory_attribute(iris=iris, attr_key=attr_key)
         print(query)
-
         res = self.ontop_client.query(query)
+        
         return QAData(
             vars=res["head"]["vars"],
             bindings=[
@@ -209,16 +176,3 @@ def get_sg_factories_agent(
         ontop_client=ontop_client,
         labels_store=labels_store,
     )
-
-
-@cache
-def _get_factory_subclasses(self):
-    query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
-
-SELECT DISTINCT ?IRI WHERE {
-?IRI rdfs:subClassOf* ontocompany:Factory .
-}"""
-    return [
-        x["IRI"]["value"] for x in self.bg_client.query(query)["results"]["bindings"]
-    ]
