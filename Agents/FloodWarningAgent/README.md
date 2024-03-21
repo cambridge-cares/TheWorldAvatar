@@ -17,7 +17,6 @@ Before building and deploying the Docker image, several key properties need to b
 
 ```bash
 # Stack & Stack Clients configuration
-STACK_NAME            # Name of stack to which agent shall be deployed
 NAMESPACE             # Blazegraph namespace into which to instantiate data
 DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`, i.e. required for Ontop to access database)
 LAYERNAME             # Geoserver layer name, ALSO table name for geospatial features in PostGIS
@@ -38,11 +37,7 @@ docker login ghcr.io -u <github_username>
 <github_personal_access_token>
 ```
 
-### **3) Accessing CMCL docker registry**
-
-The agent requires building the [Stack-Clients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
-
-### **4) VS Code specifics**
+### **3) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -76,7 +71,7 @@ bash ./stack.sh build
 bash ./stack.sh start <STACK_NAME>
 ```
 
-In case of time out issues in automatically building the StackClients resource, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`
+
 
 The *debug version* of the agent can be launched through the provided VS Code `launch.json` configurations:
 > **Build and Debug**: Build Debug Docker image (incl. pushing to [Github package repository]) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
@@ -125,8 +120,6 @@ Markus Hofmeister (mh807@cam.ac.uk), February 2023
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
-[CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-[CMCL Docker registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 [Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
