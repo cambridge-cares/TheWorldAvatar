@@ -1,12 +1,14 @@
-import logging
-#logging.basicConfig( level = logging.INFO )
-logging.basicConfig( level = logging.WARNING )
 import csv
 import os
 import uuid
+import logging
+
+logging.basicConfig( level = logging.WARNING )
+#logging.basicConfig( level = logging.INFO )
 
 # TODO change uuid from dict to a separate class. For example UUID.
 # To avoid error while using it.
+
 
 class UuidDB:
     """
@@ -16,7 +18,7 @@ class UuidDB:
     getUUID() - find out whether instance exists in database, return the name and uuid.
     addUUID() - do same as getUUID + add new element to database
                 return the new name and also new UUID.
- ###add element to database and 
+ ###add element to database and
     getUUID_Random() - what is this??
 
     """
@@ -27,11 +29,10 @@ class UuidDB:
         The input parameter may be:
         - string (i.e. the filename of the existing database):
           Load the file and use the data as the database.
-        - an existing database of type UuidDB 
+        - an existing database of type UuidDB
           (copy it to the current database?)
-          
         - None or not specified.
-          Warning and open a default data base 'uuid-default.csv' 
+          Warning and open a default data base 'uuid-default.csv'
           or create a new file if file does not exist.
           Later save to the same file (create new, if necessary).
         """
@@ -100,7 +101,7 @@ class UuidDB:
             logging.info( "UUID DB does not exist, initialize a new DB" )
             self.uuidDB = dict()
             return self.uuidDB
-  
+
         array = readCsv( filePath )
 
   # Convert the list from csv into a dictionary:
@@ -111,10 +112,10 @@ class UuidDB:
             return self.uuidDB
 
   # Checking for the title line in the csv file:
-        line = array[0] 
+        line = array[0]
         if line[0].strip().lower() ==    "Class name".strip().lower() and \
            line[1].strip().lower() == "Instance name".strip().lower() and \
-           line[2].strip().lower() ==          "UUID".strip().lower(): 
+           line[2].strip().lower() ==          "UUID".strip().lower():
             startLine = 1
         else:
             startLine = 0
@@ -161,68 +162,79 @@ class UuidDB:
 
         nLinesWarn = 20 * 1000
         if len( array ) > nLinesWarn:
-            logging.warning( "The size of the uuid database is over " + 
+            logging.warning( "The size of the uuid database is over " +
                     str(nLinesWarn) + " entries: " + str(len(array)) + "." )
 
         writeCsv( filePath, array )
 
         pass # UuidDB.saveDB()
 
-    def getUUID( self, className, instanceName ):
+    def getUUID(self, className, instanceName):
         """
-        className    - Is saved in the database for easier error detection, 
+        className    - Is saved in the database for easier error detection,
                        but it will not be added to the instanceName.
                        It is your responsibility to write a correct instanceName.
-        instanceName - Instance, exactly how it should look in the database 
+        instanceName - Instance, exactly how it should look in the database
                        and later in ontology.
         return None if the instance does not exist
         """
 
         # Display the database (for debugging):
-        if False:  
-            print( ">>>>>>>>> Database status: >>>>>> " )
+        if False:
+            print(">>>>>>>>> Database status: >>>>>> ")
             for c in self.uuidDB:
                 for i in self.uuidDB[c]:
-                    print( "   ", c, i, ">>>", self.uuidDB[c][i] )
+                    print("   ", c, i, ">>>", self.uuidDB[c][i])
 
-        if not isinstance( self.uuidDB, dict ):
-            logging.error( " uuid database must be a dictionary, but got " +
-                           str(type(self.uuidDB)) + ". Failed to get UUID." )
+        if not isinstance(self.uuidDB, dict):
+            logging.error(" uuid database must be a dictionary, but got " +
+                          str(type(self.uuidDB)) + ". Failed to get UUID.")
             #self.uuidDB = dict()
             return None
 
         # Check the input names:
-        if not self.valueIsValid( className ):
-            logging.error( " Class '" + className + "' is not valid. Failed to get UUID. a1" )
+        if not self.valueIsValid(className):
+            logging.error(" Class '" + className + "' is not valid. Failed to get UUID. a1")
             return None
 
-        if not self.valueIsValid( instanceName ):
+        if not self.valueIsValid(instanceName):
             #logging.warning( " Instance '" + instanceName + "' is not valid. Failed to get UUID. a2" )
-            logging.info( " Instance '" + instanceName + "' is not valid. Removing wrong characters. a2" )
+            logging.info(" Instance '%s' is not valid." +
+                         " Removing wrong characters. a2", instanceName)
             instanceName = valueToValid( instanceName )
             #return None
 
         # Check whether the instanceName exists in other classes:
         # Warning! For big database this verification is slow.
-        for k1 in list( self.uuidDB.keys() ):
-            for k2 in list( self.uuidDB[k1].keys() ):
-                if k2 == instanceName and k1 != className:
-                    logging.warning( " Instance '" + k2 + "' in '" + className + \
-                                     "' may be in conflict with existing '" + \
-                                     k1 + "." + k2 + "'." )
+        #for k1 in list( self.uuidDB.keys() ):
+        #    for k2 in list( self.uuidDB[k1].keys() ):
+        #        if k2 == instanceName and k1 != className:
+        #            logging.warning( " Instance '" + k2 + "' in '" + className + \
+        #                             "' may be in conflict with existing '" + \
+        #                             k1 + "." + k2 + "'." )
+
+        if False:
+            for k1, cls_dict in self.uuidDB.items():
+                for k2 in cls_dict:
+                    if k2 == instanceName and k1 != className:
+                        logging.warning(" Instance '%s' in '%s' may be in" +
+                                        " conflict with existing '%s '%s'.",
+                                        k2, className, k1, k2)
+                        # Report only the first case.
+                        break
 
         uuidStr = "" # Default value of uuidStr
 
         # Find and return the new UUID for the className.instanceName
-        if className in list(self.uuidDB.keys()):
-            if instanceName in list(self.uuidDB[className]):
+        if className in self.uuidDB:
+            if instanceName in self.uuidDB[className]:
                 uuidStr = self.uuidDB[className][instanceName]
 
         return str(uuidStr)
         pass # UuidDB.getUUID()
 
 
-    def addUUID(self, className, instanceName, newUuid = "" ):
+    def addUUID(self, className, instanceName, newUuid = ""):
         """
             newUuid - Recommended uuid for this instance.
             If uuidDB has an element with this class+instance+uuid -> use it.
@@ -233,26 +245,27 @@ class UuidDB:
               - the same uuid as a second entity of the tuple
         """
 
-        if not isinstance( self.uuidDB, dict ):
-            logging.error( " uuid database must be a dictionary, but got " +
-                           str(type(self.uuidDB)) + " (line A2)." )
+        if not isinstance(self.uuidDB, dict):
+            logging.error(" uuid database must be a dictionary, but got " +
+                          str(type(self.uuidDB)) + " (line A2).")
             self.uuidDB = dict()
             pass
 
         # This will be checked inside getUUID()
-        #if not self.valueIsValid( className ):
-        #    logging.error( " Class '" + className + "' is not valid. a3" )
+        #if not self.valueIsValid(className):
+        #    logging.error(" Class '" + className + "' is not valid. a3")
 
         # This will be checked inside getUUID()
-        #if not self.valueIsValid( instanceName ):
+        #if not self.valueIsValid(instanceName):
         #    logging.error( " Instance '" + instanceName + "' is not valid. a4" )
 
-        if not isinstance( newUuid, str ):
-            logging.error( " newUuid must be a string, but got " + str(type(newUuid)) + "." )
+        if not isinstance(newUuid, str):
+            logging.error(" newUuid must be a string, but got '%s'.",
+                          str(type(newUuid)))
             return "",""
 
         # Check whether the instanceName exists in other classes:
-        uuidStr = self.getUUID( className, instanceName )
+        uuidStr = self.getUUID(className, instanceName)
 
         # Check for duplicates in existing database:
         #for k1 in list( self.uuidDB.keys() ):
@@ -266,10 +279,10 @@ class UuidDB:
 
         #if "" != newUuid and uuidStr != newUuid:
         #    logging.error( " Existing element in database has different uuid:" +
-        #                   " class '" + className + "'," + 
+        #                   " class '" + className + "'," +
         #                   " instance '" + instanceName + "'," +
         #                   " in DB '" + uuidStr + "', requested '" + newUuid + "'." )
- 
+
         # Assign the value to the database:
         if "" == newUuid:
             if "" == uuidStr:
@@ -279,19 +292,19 @@ class UuidDB:
                 # Do nothing, the id does not exist or has errors
                 pass
             elif uuidStr != newUuid:
-                logging.warning( " Existing element in database has different uuid:" +
-                                 " class '" + className + "'," + 
-                                 " instance '" + instanceName + "' has UUID" +
-                                 " in DB '" + uuidStr + "', while the new is '" + newUuid + 
-                                 "'. The new UUID has priority and is overwritten in database." )
+                logging.error(" Existing element in DB has different uuid:" +
+                              " class '%s', instance '%s', has UUID in DB" + 
+                              " '%s', while the new is '%s'. The new UUID" +
+                              " has priority and is overwritten in database.",
+                              className, instanceName, uuidStr, newUuid)
  
             uuidStr = newUuid
 
         if className not in list(self.uuidDB.keys()):
             self.uuidDB[className] = dict()
-        
+
         self.uuidDB[className][instanceName] = uuidStr
- 
+
         output = instanceName + "_" + str(uuidStr)
 
         return output, uuidStr
@@ -302,7 +315,7 @@ class UuidDB:
 
                 if "" != newUuid and uuidStr != newUuid:
                     logging.error( " Existing element in database has different uuid:" +
-                               " class '" + className + "'," + 
+                               " class '" + className + "'," +
                                " instance '" + instanceName + "'," +
                                " in DB '" + uuidStr + "', requested '" + newUuid + "'." )
             else:
@@ -311,7 +324,7 @@ class UuidDB:
                 else:
                     uuidStr = newUuid
                 self.uuidDB[className][instanceName] = uuidStr
-      
+
         else:
             if "" == newUuid:
                 uuidStr = uuid.uuid4()
@@ -334,7 +347,7 @@ class UuidDB:
         """
         #output = ""
         #output = "uuid-" + code
-  
+
         uuidStr = str(uuid.uuid4())
 
         output = name + "_" + uuidStr
@@ -356,7 +369,7 @@ def loadUUID( filename = "" ):
   if not os.path.isfile( filePath ):
     logging.info( "UUID DB does not exist, initialize a new DB" )
     return dict()
-  
+
   array = readCsv( filePath )
 
   # Convert the list from csv into a dictionary:
@@ -367,10 +380,10 @@ def loadUUID( filename = "" ):
     return db
 
   # Checking for the title line in the csv file:
-  line = array[0] 
+  line = array[0]
   if line[0].strip().lower() ==    "Class name".strip().lower() and \
      line[1].strip().lower() == "Instance name".strip().lower() and \
-     line[2].strip().lower() ==          "UUID".strip().lower(): 
+     line[2].strip().lower() ==          "UUID".strip().lower():
     startLine = 1
   else:
     startLine = 0
@@ -387,76 +400,76 @@ def loadUUID( filename = "" ):
           db[cName][iName] = uuidStr
         else:
           if uuidStr != db[cName][iName]:
-            logging.error( "Mismatch uuid in database" )
+            logging.error( "Mismatch uuid in database")
 
   return db
   pass # loadUUID()
 
-def saveUUID( db, filename = "default" ):
+def saveUUID( db, filename = "default"):
   if "default" == filename:
-    filePath = os.path.join( "ontozeolite", "uuid", "default.csv" )
+    filePath = os.path.join( "ontozeolite", "uuid", "default.csv")
   else:
     filePath = filename
 
-  folder = os.path.dirname( filePath )
-  if not os.path.isdir( folder ):
-    os.makedirs( folder, exist_ok = True )
+  folder = os.path.dirname( filePath)
+  if not os.path.isdir( folder):
+    os.makedirs( folder, exist_ok = True)
 
   array = []
-  array.append( [ "Class name", "Instance name", "UUID" ] )
-  for cName in list( db.keys() ):
-    for iName in list( db[cName] ):
-      array.append( [ cName, iName, db[cName][iName] ] )
+  array.append( [ "Class name", "Instance name", "UUID" ])
+  for cName in list( db.keys()):
+    for iName in list( db[cName]):
+      array.append( [ cName, iName, db[cName][iName] ])
 
   nLinesWarn = 20 * 1000
-  if len( array ) > nLinesWarn:
-    logging.warning( "The size of the uuid database is over " + 
-                     str(nLinesWarn) + " entries: " + str(len(array)) + "." )
+  if len( array) > nLinesWarn:
+    logging.warning( "The size of the uuid database is over " +
+                     str(nLinesWarn) + " entries: " + str(len(array)) + ".")
 
-  writeCsv( filePath, array )
+  writeCsv( filePath, array)
   pass # saveUUID()
 
-def valueIsValid( value ):
-  if not isinstance( value, str ):
-    logging.error( " Value must be string, but got '" + str(value) + "'." )
+def valueIsValid( value):
+  if not isinstance( value, str):
+    logging.error( " Value must be string, but got '" + str(value) + "'.")
     return False
 
   short = value.strip()
-  if short.find( " " ) >= 0:
-    logging.info( " Value '" + value + "' contains space." )
+  if short.find( " ") >= 0:
+    logging.info( " Value '" + value + "' contains space.")
     return False
 
   #short = value.strip()
-  if short.find( "," ) >= 0:
-    logging.info( " Value '" + value + "' contains comma." )
+  if short.find( ",") >= 0:
+    logging.info( " Value '" + value + "' contains comma.")
     return False
 
   #short = value.strip()
-  if short.find( ";" ) >= 0:
-    logging.info( " Value '" + value + "' contains semicolon." )
+  if short.find( ";") >= 0:
+    logging.info( " Value '" + value + "' contains semicolon.")
     return False
 
   return True
 
-def valueToValid( value ):
+def valueToValid( value):
     output = value
-    output = output.replace( " ", "" )
-    output = output.replace( ",", "" )
-    output = output.replace( ";", "" )
+    output = output.replace( " ", "")
+    output = output.replace( ",", "")
+    output = output.replace( ";", "")
 
     return output.strip()
-    return 
+    return
 
-def getCifLineRanges( fileIn ):
+def getCifLineRanges( fileIn):
   ranges = []
 
-  if not os.path.isfile( fileIn ):
-    logging.error( "File '" + fileIn + "' does not exist " + \
-                   "in tools.getCifLineRanges()" )
+  if not os.path.isfile( fileIn):
+    logging.error("File '%s' does not exist " +
+                  "in tools.getCifLineRanges()", fileIn)
     return ranges
 
-  f = open( fileIn )
-  ranges.append( 0 )
+  f = open( fileIn)
+  ranges.append( 0)
   lineCount = 0
   for line in f:
     # TODO detect beginning of the new CIF file
@@ -464,79 +477,99 @@ def getCifLineRanges( fileIn ):
     lineCount += 1
     pass
 
-  ranges.append( lineCount )
+  ranges.append( lineCount)
 
   f.close()
 
   return ranges
   pass # getCifLineRanges()
 
-def getUUID( uuidDB, className, instanceName, newUuid = "" ):
-  """
+def getUUID( uuidDB, className, instanceName, newUuid = ""):
+    """
   newUuid - Recommended uuid for this instance.
             If uuidDB has an element with this class+instance+uuid -> use it.
             If uuidDB has class+instance different uuid -> warning.
             If uuidDB does not have class+instance -> create with given newUuid.
-  className - Is saved in the database for easier error detection, 
+  className - Is saved in the database for easier error detection,
               but it will not be added to the instanceName.
               It is your responsibility to write a correct instanceName.
   instanceName - Instance, exactly how it should look in the database and later in ontology.
-  """
-  # Check the input names:
-  if not valueIsValid( className ):
-    logging.error( " Class '" + className + "' is not valid. a5" )
+    """
+    # Check the input names:
+    if not valueIsValid( className):
+        logging.error(" Class '%s' is not valid. a5", className)
 
-  if not valueIsValid( instanceName ):
-    logging.error( " Instance '" + instanceName + "' is not valid. a6" )
+    if not valueIsValid( instanceName):
+        logging.error(" Instance '%s' is not valid. a6", instanceName)
 
-  if not isinstance( uuidDB, dict ):
-    logging.error( " uuid database must be a dictionary, but got " +
-                   str(type(uuidDB)) + " (line A1)." )
-    return ""
+    if not isinstance(uuidDB, dict):
+        logging.error(" uuid database must be a dictionary, but got %s" +
+                      " (line A1).", str(type(uuidDB)))
+        return ""
 
-  if not isinstance( newUuid, str ):
-    logging.error( " newUuid must be a string, but got " + str(type(newUuid)) + "." )
+    if not isinstance(newUuid, str):
+        logging.error(" newUuid must be a string, but got %s.", str(type(newUuid)))
 
-  # Check whether the instanceName exists in other classes:
-  tmp = []
-  for k1 in list( uuidDB.keys() ):
-    for k2 in list( uuidDB[k1].keys() ):
-      if k1 != className and k2 == instanceName:
-        logging.warning( " Instance '" + k2 + "' in '" + className + "' is in " +
-                         "conflict with existing '" + k1 + "." + k2 + "'." )
+    # Check whether the instanceName exists in other classes:
+    tmp = []
+    #for k1 in list( uuidDB.keys() ):
+    #  for k2 in list( uuidDB[k1].keys()):
+    #    if k1 != className and k2 == instanceName:
+    #      logging.warning( " Instance '" + k2 + "' in '" + className + "' is in " +
+    #                       "conflict with existing '" + k1 + "." + k2 + "'.")
 
-  # Find are return or assign new UUID for the className.instanceName
-  if className in list(uuidDB.keys()):
-    if instanceName in list(uuidDB[className]):
-      uuidStr = uuidDB[className][instanceName]
-      if "" != newUuid and uuidStr != newUuid:
-        logging.error( " Existing element in database has different uuid:" +
-                       " class '" + className + "'," + 
-                       " instance '" + instanceName + "'," +
-                       " in DB '" + uuidStr + "', requested '" + newUuid + "'." )
+    for k1, cls_dict in uuidDB.items():
+        if k1 != className:
+            #for k2, ins_name in cls_name.items():
+            for k2 in cls_dict.keys():
+                if k2 == instanceName:
+                    logging.warning(" Instance '" + k2 + "' in '" + className + "' is in " +
+                                    "conflict with existing '" + k1 + "." + k2 + "'.")
+                    # Find only the first error (to speed up)
+                    break
+
+
+    # Find and return or assign new UUID for the className.instanceName
+    #if className in list(uuidDB.keys()):
+    #  if instanceName in list(uuidDB[className]):
+    #    uuidStr = uuidDB[className][instanceName]
+    #    if "" != newUuid and uuidStr != newUuid:
+    #      logging.error( " Existing element in database has different uuid:" +
+    #                     " class '" + className + "'," +
+    #                     " instance '" + instanceName + "'," +
+    #                     " in DB '" + uuidStr + "', requested '" + newUuid + "'." )
+
+    if className in uuidDB:
+        if instanceName in list(uuidDB[className]):
+            uuidStr = uuidDB[className][instanceName]
+            if "" != newUuid and uuidStr != newUuid:
+                logging.error(" Existing element in DB has different uuid:" +
+                              " class '%s', instance '%s', in DB '%s'," + 
+                              " requested '%s'.", 
+                              className, instanceName, uuidStr, newUuid)
+        else:
+            if "" == newUuid:
+                uuidStr = uuid.uuid4()
+            else:
+                uuidStr = newUuid
+            uuidDB[className][instanceName] = uuidStr
+
     else:
-      if "" == newUuid:
-        uuidStr = uuid.uuid4()
-      else:
-        uuidStr = newUuid
-      uuidDB[className][instanceName] = uuidStr
-      
-  else:
-    if "" == newUuid:
-      uuidStr = uuid.uuid4()
-    else:
-      uuidStr = newUuid
+        if "" == newUuid:
+            uuidStr = uuid.uuid4()
+        else:
+            uuidStr = newUuid
 
-    uuidDB[className] = dict()
-    uuidDB[className][instanceName] = uuidStr
+        uuidDB[className] = dict()
+        uuidDB[className][instanceName] = uuidStr
 
-  output = instanceName + "_" + str(uuidStr)
+    output = instanceName + "_" + str(uuidStr)
 
-  return output #, uuidStr
-  pass # getUUID()
+    return output #, uuidStr
+    pass # getUUID()
 
 
-def getUUID_random( code ):
+def getUUID_random( code):
   """
   Create an instance and uuid without adding them to the database.
   Why is this necessary?
@@ -544,38 +577,39 @@ def getUUID_random( code ):
 
   #output = ""
   #output = "uuid-" + code
-  
+
   uuidStr = str(uuid.uuid4())
 
   output = code + "_" + str(uuidStr)
 
-  logging.warning( "Not implemented getUUID(), using '" + str(uuidStr) + "'." )
+  logging.warning( "Not implemented getUUID(), using '%s'.", str(uuidStr))
 
   return output
-  pass # getUUID_random()
+  # === end of getUUID_random()
 
-def strSplit( inline, sep = [" ","\t"], quotes = ["'", '"'] ):
+
+def strSplit(inline, sep = [" ", "\t"], quotes = ["'", '"']):
     words = []
     w = []
     #inQuote1 = False
     #inQuote2 = False
     inQuote = ""
-    if isinstance( sep, list ):
+    if isinstance( sep, list):
       sepArr = sep
-    elif isinstance( sep, str ):
+    elif isinstance( sep, str):
       sepArr = [sep]
     else:
-      logging.error( "Unknown type '" + str(type(sep)) + "' of sep '" + 
-                   str(sep) + "'. Expected str or list." )
+      logging.error("Unknown type '%s' of sep '%s'." +
+                    " Expected str or list.", str(type(sep)), str(sep))
 
-    for ic,c in enumerate(inline.strip()):
+    for ic, c in enumerate(inline.strip()):
       if inQuote == "":
         #if "'" == c or '"' == c:
         if c in quotes:
           inQuote = c
         elif c in sepArr:
           if len(w) > 0:
-            words.append( "".join(w) )
+            words.append( "".join(w))
             w = []
         else:
           w.append(c)
@@ -584,7 +618,7 @@ def strSplit( inline, sep = [" ","\t"], quotes = ["'", '"'] ):
         #if "'" == c or '"' == c:
         if c in quotes:
           inQuote = ""
-          words.append( "".join(w) )
+          words.append( "".join(w))
           w = []
 
         #elif " " == c:
@@ -594,79 +628,104 @@ def strSplit( inline, sep = [" ","\t"], quotes = ["'", '"'] ):
           w.append(c)
     else:
       if len(w) > 0:
-        words.append( "".join(w) )
+        words.append("".join(w))
 
     return words
-
-    #return line.split()
-    pass
+    # === end of strSplit()
 
 writeCsvErrCount = 0
-def writeCsv( filename, array ):
+def writeCsv(filename, array):
     global writeCsvErrCount
-    logging.info( "writeCSV to '" + filename + "'" )
+    logging.info("writeCSV to '" + filename + "'")
     try:
-        with open( filename, "w", newline = "", encoding="utf-8" ) as f:
-            csvw = csv.writer( f, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL )
+        with open(filename, "w", newline = "", encoding="utf-8") as f:
+            csvw = csv.writer(f, delimiter=",", quotechar='"',
+                              quoting=csv.QUOTE_MINIMAL)
             for a in array:
-                csvw.writerow( a )
+                csvw.writerow( a)
     except IOError:
         tmpFile = "test-tmp.csv"
         logging.error( " File '" + filename + "' is protected. " +
-                       "Using temporary instead: '" + tmpFile + "'." )
+                       "Using temporary instead: '" + tmpFile + "'.")
         writeCsvErrCount += 1
         if 1 == writeCsvErrCount :
-            writeCsv( tmpFile, array )
+            writeCsv( tmpFile, array)
         else:
-            logging.error( " I give up. " + "You need to close the files." )
+            logging.error( " I give up. " + "You need to close the files.")
 
     pass # writeCsv()
 
 
-def readCsv(filename):
+def readCsv(filename, encoding="utf-8"):
     output = []
     if os.path.exists(filename):
-        #with open(filename, "r", encoding="utf-8") as f:
-        with open(filename, "r") as f:
-            #print("Opening:", filename)
+        try:
+            #print(">>> In tools.py going to open file", filename)
+            #with open(filename, "r", encoding="utf-8") as f:
+            if encoding == "utf-8":
+                f = open(filename, "r", encoding="utf-8")
+                #print("Opening as utf")
+            else:
+                f = open(filename, "r")
+                #print("Opening as default")
             csvr = csv.reader(f)
             for ir, row in enumerate(csvr):
                 #print(filename, ir, row)
                 output.append(row)
+            f.close()
+        except Exception as e:
+            print("Failed to open file '", filename, "' as utf-8", sep="")
+            print("An error:", e)
+            raise e
     else:
         print("readCSV: file does not exist: '" + filename + "'.")
 
     return output
-    pass # loadCSV()
+    # === end of loadCSV()
 
+
+def get_csv_init(baseName, tPrefix, aPrefix):
+
+    if aPrefix.endswith("/"):
+        aPrefix = tPrefix[:-1]
+
+    output = []
+    output.append(["Source", "Type", "Target", "Relation", "Value", "Data Type"])
+
+    output.append([baseName, "Ontology", tPrefix,
+                   "http://www.w3.org/2002/07/owl#imports", "", ""])
+
+    output.append([baseName, "Ontology", aPrefix, "base", "", ""])
+
+    return output
+    # === end of getCsvInit()
 
 if __name__ == "__main__":
 
   # Test and example of use:
   db = loadUUID()
 
-  print( getUUID( db, "ClassA", "a1" ) )
-  print( getUUID( db, "ClassA", "a2" ) )
-  print( getUUID( db, "ClassA", "a3" ) )
-  print( getUUID( db, "ClassB", "b1" ) )
-  print( getUUID( db, "ClassB", "a1" ) )
-  #print( getUUID( db, "ClassC", "c1" ) )
-  #print( getUUID( db, "ClassC", "c2" ) )
-  #print( getUUID( db, "ClassC", "c3" ) )
-  print( getUUID( "ss", "ClassC", "c3" ) )
+  print( getUUID( db, "ClassA", "a1"))
+  print( getUUID( db, "ClassA", "a2"))
+  print( getUUID( db, "ClassA", "a3"))
+  print( getUUID( db, "ClassB", "b1"))
+  print( getUUID( db, "ClassB", "a1"))
+  #print( getUUID( db, "ClassC", "c1"))
+  #print( getUUID( db, "ClassC", "c2"))
+  #print( getUUID( db, "ClassC", "c3"))
+  print( getUUID( "ss", "ClassC", "c3"))
 
   for k1 in db.keys():
-    #print( "Class '" + k1 +"': " )
+    #print( "Class '" + k1 +"': ")
     for k2 in db[k1].keys():
-      #print( " ", k2, ":", db[k1][k2] )
+      #print( " ", k2, ":", db[k1][k2])
       pass
 
-  saveUUID( db )
+  saveUUID( db)
 
   input_strings = [ "1 2 3 4 5", "1   2  3   4  5\n", "1 '2 3' 4 5", "1 2 3 '4   5'"  ]
   for input_string in input_strings:
-    out = strSplit(input_string )
+    out = strSplit(input_string)
     print( f"Input: {input_string}, Out: {str(out)}" )
     #print( out )
-
 
