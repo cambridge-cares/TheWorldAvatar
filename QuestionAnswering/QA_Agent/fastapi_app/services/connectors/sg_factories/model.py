@@ -35,3 +35,19 @@ class FactoryConstraints:
     specific_energy_consumption: Optional[ExtremeValueConstraint] = None
     thermal_efficiency: Optional[ExtremeValueConstraint] = None
     design_capacity: Optional[ExtremeValueConstraint] = None
+
+    def __str__(self):
+        result = ""
+
+        for key in [
+            "industry",
+            "generated_heat",
+            "specific_energy_consumption",
+            "thermal_efficiency",
+            "design_capacity",
+        ]:
+            field = getattr(self, key)
+            if field:
+                result += "{key}: {value}".format(key=key, value=field.value)
+
+        return result
