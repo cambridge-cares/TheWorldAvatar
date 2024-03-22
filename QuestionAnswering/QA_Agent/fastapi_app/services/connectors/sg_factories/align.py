@@ -21,13 +21,13 @@ def get_factory_attr_key_aligner(
     )
 
 
-def get_factory_concept_aligner(
+def get_industry_aligner(
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     redis_client: Annotated[Redis, Depends(get_redis_client)],
 ):
     return EnumAligner(
         embedder=embedder,
         redis_client=redis_client,
-        key="sg_factories:factory_concepts",
+        key="sg_factories:industry",
         enum_cls=Industry,
     )
