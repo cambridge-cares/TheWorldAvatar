@@ -8,9 +8,17 @@ from model.qa import QAStep
 from services.core.parse import KeyAggregateParser
 from services.core.align_enum import EnumAligner
 from services.connectors.agent_connector import AgentConnectorBase
-from .model import FactoryAttrKey, Industry
-from .align import get_factoryAttrkey_aligner, get_industry_aligner
-from .parse import FactoryConstraintsParser, get_factoryAttr_aggParser
+from .model import FactoryIndustryKey, FactoryNumAttrKey, Industry
+from .align import (
+    get_factoryIndustryKey_aligner,
+    get_factoryNumAttrkey_aligner,
+    get_industry_aligner,
+)
+from .parse import (
+    FactoryConstraintsParser,
+    get_factoryAttr_aggParser,
+    get_factoryConstraints_parser,
+)
 from .agent import SGFactoriesAgent, get_sgFactories_agent
 
 
@@ -21,13 +29,16 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
     def __init__(
         self,
         agent: SGFactoriesAgent,
-        factory_attr_key_aligner: EnumAligner[FactoryAttrKey],
+        factory_industry_key_aligner: EnumAligner[FactoryIndustryKey],
+        factory_num_attr_key_aligner: EnumAligner[FactoryNumAttrKey],
         industry_aligner: EnumAligner[Industry],
-        attr_agg_parser: KeyAggregateParser[FactoryAttrKey],
+        attr_agg_parser: KeyAggregateParser[FactoryNumAttrKey],
         factory_constraints_parser: FactoryConstraintsParser,
     ):
         self.agent = agent
-        self.factory_attr_key_aligner = factory_attr_key_aligner
+        # TODO: Implement an aligner for factory attribute keys, index whether the attribute is numerical or categorical
+        self.factory_industry_key_aligner = factory_industry_key_aligner
+        self.factory_num_attr_key_aligner = factory_num_attr_key_aligner
         self.industry_aligner = industry_aligner
         self.attr_agg_parser = attr_agg_parser
         self.factory_constraints_parser = factory_constraints_parser
@@ -37,7 +48,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
         return [
             {
                 "name": "lookup_factory_attribute",
-                "description": "Retrieve a data attribute of the given factory",
+                "description": "Retrieve a data attribute of the given factory (aka manufacturng plant or facility)",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -55,13 +66,17 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             },
             {
                 "name": "find_factories",
-                "description": "Find factories that satisfy some constraints",
+                "description": "Find factories (aka manufacturing plants or facilities) that satisfy some constraints",
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "constraints": {
+                        "industry": {
+                            "type": ["string", "null"],
+                            "description": "Industry aka sector to search in e.g. chemical; if null, search across all industries",
+                        },
+                        "numerical_constraints": {
                             "type": "string",
-                            "description": "Constraints on factories to find e.g. belonging to chemical industry with lowest heat emission",
+                            "description": "Numerical constraints e.g. lowest heat emission, greatest production rate",
                         },
                         "limit": {
                             "type": ["number", "null"],
@@ -72,38 +87,30 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             },
             {
                 "name": "count_factories",
-                "description": "Count the number of factories",
+                "description": "Count the number of factories (aka manufacturing plants or facilities)",
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "industry": {
-                            "type": "string",
-                            "description": "Limit the counting to a particular industry e.g. chemical industry",
-                        },
-                        "groupby_industry": {
-                            "type": "boolean",
-                            "description": "If true, count factories for each industry",
-                        },
+                            "type": ["string", "null"],
+                            "description": "Industry aka sector to count in e.g. food; if null, count for every industry",
+                        }
                     },
                 },
             },
             {
                 "name": "compute_aggregate_factory_attribute",
-                "description": "Aggregate attribute data of factories",
+                "description": "Aggregate attribute data of factories (aka manufacturing plants or facilities)",
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "attribute_aggregate": {
                             "type": "string",
-                            "description": "Aggregate of an attribute value e.g. total heat emission, lowest design capacity",
+                            "description": "An attribute name and an aggregate operation acted upon it e.g. total heat emission, lowest production volume",
                         },
                         "industry": {
-                            "type": "string",
-                            "description": "Industry aka sector over which aggregation is performed e.g. chemical industry",
-                        },
-                        "groupby_industry": {
-                            "type": "boolean",
-                            "description": "If true, aggregate data for each industry",
+                            "type": ["string", "null"],
+                            "description": "Industry aka sector to aggregate over e.g. semiconductor; if null, aggregate across each industry",
                         },
                     },
                 },
@@ -117,6 +124,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
     ):
         return {
             "lookup_factory_attribute": self.lookup_factory_attribute,
+            "find_factories": self.find_factories,
             "count_factories": self.count_factories,
             "compute_aggregate_factory_attribute": self.compute_aggregate_factory_attribute,
         }
@@ -126,7 +134,19 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
 
         logger.info("Aligning attribute: " + attribute)
         timestamp = time.time()
-        attr_key = self.factory_attr_key_aligner.align(attribute)
+
+        industry_key, industry_score = (
+            self.factory_industry_key_aligner.align_with_score(attribute)
+        )
+        num_attr_key, num_attr_score = (
+            self.factory_num_attr_key_aligner.align_with_score(attribute)
+        )
+
+        if industry_score > num_attr_score:
+            attr_key = industry_key
+        else:
+            attr_key = num_attr_key
+
         latency = time.time() - timestamp
         logger.info("Aligned attribute: " + str(attr_key))
         steps.append(
@@ -154,73 +174,80 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
         return steps, data
 
     def _align_industry(self, industry: Optional[str]):
-        if industry:
-            logger.info("Aligning factory type: " + industry)
-            timestamp = time.time()
-            factory_concept = self.industry_aligner.align(industry)
-            latency = time.time() - timestamp
-            logger.info("Aligned factory type: " + str(factory_concept))
-            step = QAStep(
-                action="align_factory_type",
-                arguments=industry,
-                results=factory_concept.value,
-                latency=latency,
-            )
-        else:
-            factory_concept = None
-            step = None
-        return step, factory_concept
+        if not industry:
+            return None, None
+        
+        logger.info("Aligning factory type: " + industry)
+        timestamp = time.time()
+        aligned_industry = self.industry_aligner.align(industry)
+        latency = time.time() - timestamp
+        logger.info("Aligned factory type: " + str(aligned_industry))
+        step = QAStep(
+            action="align_factory_type",
+            arguments=industry,
+            results=aligned_industry.value,
+            latency=latency,
+        )
+        
+        return step, aligned_industry
 
     def find_factories(
-        self, constraints: Optional[str] = None, limit: Optional[int] = None
+        self,
+        industry: Optional[str] = None,
+        numerical_constraints: Optional[str] = None,
+        limit: Optional[int] = None,
     ):
         steps: List[QAStep] = []
 
-        logger.info("Parsing factory constraints: " + constraints)
+        step, aligned_industry = self._align_industry(industry)
+        if step:
+            steps.append(step)
+
+        logger.info("Parsing factory constraints: " + numerical_constraints)
         timestamp = time.time()
-        parsed_constraints = self.factory_constraints_parser.parse(constraints)
+        parsed_constraints = self.factory_constraints_parser.parse(
+            numerical_constraints
+        )
         latency = time.time() - timestamp
         logger.info("Parsed factory constraints: " + str(parsed_constraints))
         steps.append(
             QAStep(
                 action="parse_factory_constraint",
-                arguments=constraints,
+                arguments=numerical_constraints,
                 results=str(parsed_constraints),
                 latency=latency,
             )
         )
 
         timestamp = time.time()
-        data = self.agent.find_factories(constraints=constraints, limit=limit)
+        data = self.agent.find_factories(
+            industry=aligned_industry, numattr_constraints=parsed_constraints, limit=limit
+        )
         latency = time.time() - timestamp
         steps.append(
             QAStep(
                 action="find_factories",
-                arguments=dict(constraints=str(constraints), limit=limit),
+                arguments=dict(constraints=str(numerical_constraints), limit=limit),
                 latency=latency,
             )
         )
 
         return steps, data
 
-    def count_factories(
-        self, industry: Optional[str] = None, groupby_industry: bool = False
-    ):
+    def count_factories(self, industry: Optional[str] = None):
         steps: List[QAStep] = []
         step, aligned_industry = self._align_industry(industry)
         if step:
             steps.append(step)
 
         timestamp = time.time()
-        data = self.agent.count_factories(
-            industry=aligned_industry, groupby_industry=groupby_industry
-        )
+        data = self.agent.count_factories(industry=aligned_industry)
         latency = time.time() - timestamp
         steps.append(
             QAStep(
                 action="count_factories",
                 arguments=dict(
-                    industry=aligned_industry.value, groupby_industry=groupby_industry
+                    industry=aligned_industry.value if aligned_industry else None,
                 ),
                 latency=latency,
             )
@@ -232,7 +259,6 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
         self,
         attribute_aggregate: str,
         industry: Optional[str] = None,
-        groupby_industry: bool = False,
     ):
         steps: List[QAStep] = []
 
@@ -258,7 +284,6 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
         data = self.agent.compute_aggregate_factory_attribute(
             attr_agg=attr_agg,
             industry=aligned_industry,
-            groupby_industry=groupby_industry,
         )
         latency = time.time() - timestamp
         steps.append(
@@ -267,7 +292,6 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
                 arguments=dict(
                     attr_agg=unpacked_attr_agg,
                     industry=aligned_industry.value if aligned_industry else None,
-                    groupby_industry=groupby_industry,
                 ),
                 latency=latency,
             )
@@ -278,17 +302,25 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
 
 def get_sgFactories_agentConnector(
     agent: Annotated[SGFactoriesAgent, Depends(get_sgFactories_agent)],
-    factory_attr_key_aligner: Annotated[
-        EnumAligner[FactoryAttrKey], Depends(get_factoryAttrkey_aligner)
+    factory_industry_key_aligner: Annotated[
+        EnumAligner[FactoryIndustryKey], Depends(get_factoryIndustryKey_aligner)
+    ],
+    factory_num_attr_key_aligner: Annotated[
+        EnumAligner[FactoryNumAttrKey], Depends(get_factoryNumAttrkey_aligner)
     ],
     industry_aligner: Annotated[EnumAligner[Industry], Depends(get_industry_aligner)],
     attr_agg_parser: Annotated[
-        KeyAggregateParser[FactoryAttrKey], Depends(get_factoryAttr_aggParser)
+        KeyAggregateParser[FactoryNumAttrKey], Depends(get_factoryAttr_aggParser)
+    ],
+    factory_constraints_parser: Annotated[
+        FactoryConstraintsParser, Depends(get_factoryConstraints_parser)
     ],
 ):
     return SGFactoriesAgentConnector(
         agent=agent,
-        factory_attr_key_aligner=factory_attr_key_aligner,
+        factory_industry_key_aligner=factory_industry_key_aligner,
+        factory_num_attr_key_aligner=factory_num_attr_key_aligner,
         industry_aligner=industry_aligner,
         attr_agg_parser=attr_agg_parser,
+        factory_constraints_parser=factory_constraints_parser,
     )

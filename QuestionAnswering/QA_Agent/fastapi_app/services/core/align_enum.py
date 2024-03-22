@@ -21,4 +21,9 @@ class EnumAligner(Generic[E]):
         self.enum_cls = enum_cls
 
     def align(self, value: str):
-        return self.enum_cls(self.retriever.retrieve(queries=[value], k=1)[0][0][0])
+        aligned, _ = self.align_with_score(value)
+        return aligned
+
+    def align_with_score(self, value: str):        
+        closest, score = self.retriever.retrieve(queries=[value], k=1)[0][0]
+        return self.enum_cls(closest), score

@@ -1,6 +1,5 @@
 import pytest
 
-from redis import Redis
 from yarl import URL
 
 from model.constraint import ExtremeValueConstraint
@@ -136,9 +135,7 @@ class TestSGFactoriesAgent:
 
         expected = QAData(
             vars=["IRI", "ThermalEfficiencyValue", "ThermalEfficiencyUnit"],
-            bindings=[
-                {"IRI": "http://test.com/1", "ThermalEfficiencyValue": "0.52"}
-            ],
+            bindings=[{"IRI": "http://test.com/1", "ThermalEfficiencyValue": "0.52"}],
         )
 
         # Act
