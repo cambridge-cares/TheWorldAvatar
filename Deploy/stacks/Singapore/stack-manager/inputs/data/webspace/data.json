@@ -710,6 +710,43 @@
                     }
                 },
                 {
+                    "id": "Emergency Service",
+                    "source-layer": "building_usage",
+                    "name": "Emergency Service",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "EmergencyService",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#1E90FF",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
                     "id": "Fire Station",
                     "source-layer": "building_usage",
                     "name": "Fire station",
@@ -976,6 +1013,43 @@
                     "filter": [
                         "in",
                         "Hospital",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Medical",
+                    "source-layer": "building_usage",
+                    "name": "Medical",
+                    "source": "usage",
+                    "filter": [
+                        "in",
+                        "Medical",
                         [
                             "get",
                             "ontobuilt"
