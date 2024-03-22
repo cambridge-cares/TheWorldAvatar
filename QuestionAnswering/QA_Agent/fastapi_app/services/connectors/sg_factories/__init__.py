@@ -9,9 +9,9 @@ from services.core.parse import KeyAggregateParser
 from services.core.align_enum import EnumAligner
 from services.connectors.agent_connector import AgentConnectorBase
 from .model import FactoryAttrKey, Industry
-from .align import get_factory_attr_key_aligner, get_industry_aligner
-from .parse import FactoryConstraintsParser, get_factory_attr_agg_parser
-from .agent import SGFactoriesAgent, get_sg_factories_agent
+from .align import get_factoryAttrkey_aligner, get_industry_aligner
+from .parse import FactoryConstraintsParser, get_factoryAttr_aggParser
+from .agent import SGFactoriesAgent, get_sgFactories_agent
 
 
 logger = logging.getLogger(__name__)
@@ -276,14 +276,14 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
         return steps, data
 
 
-def get_sg_factories_agent_connector(
-    agent: Annotated[SGFactoriesAgent, Depends(get_sg_factories_agent)],
+def get_sgFactories_agentConnector(
+    agent: Annotated[SGFactoriesAgent, Depends(get_sgFactories_agent)],
     factory_attr_key_aligner: Annotated[
-        EnumAligner[FactoryAttrKey], Depends(get_factory_attr_key_aligner)
+        EnumAligner[FactoryAttrKey], Depends(get_factoryAttrkey_aligner)
     ],
     industry_aligner: Annotated[EnumAligner[Industry], Depends(get_industry_aligner)],
     attr_agg_parser: Annotated[
-        KeyAggregateParser[FactoryAttrKey], Depends(get_factory_attr_agg_parser)
+        KeyAggregateParser[FactoryAttrKey], Depends(get_factoryAttr_aggParser)
     ],
 ):
     return SGFactoriesAgentConnector(

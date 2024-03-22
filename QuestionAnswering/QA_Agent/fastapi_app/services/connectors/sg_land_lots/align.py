@@ -9,7 +9,7 @@ from services.core.align_enum import EnumAligner
 from .constants import PlotAttrKey
 
 
-def get_plot_attr_key_aligner(
+def get_plotAttrKey_aligner(
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     redis_client: Annotated[Redis, Depends(get_redis_client)],
 ):

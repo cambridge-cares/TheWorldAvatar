@@ -15,7 +15,7 @@ from services.core.parse import (
 )
 from .constants import PlotAttrKey
 from .agent import PlotConstraints
-from .match import LandUseTypeMatcher, get_land_use_type_matcher
+from .match import LandUseTypeMatcher, get_landUseType_matcher
 
 
 class PlotNumArgConstraintParser:
@@ -170,7 +170,7 @@ def get_plot_constraint_parser(
         PlotNumArgConstraintParser, Depends(get_numerical_arg_constraint_parser)
     ],
     land_use_type_matcher: Annotated[
-        LandUseTypeMatcher, Depends(get_land_use_type_matcher)
+        LandUseTypeMatcher, Depends(get_landUseType_matcher)
     ],
 ):
     return PlotConstraintsParser(
@@ -180,7 +180,7 @@ def get_plot_constraint_parser(
     )
 
 
-def get_plot_attr_agg_parser(
+def get_plotAttr_aggParser(
     schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)]
 ):
     return KeyAggregateParser(schema_parser=schema_parser, enum_cls=PlotAttrKey)

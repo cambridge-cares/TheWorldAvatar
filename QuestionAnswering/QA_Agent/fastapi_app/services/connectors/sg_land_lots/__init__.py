@@ -10,13 +10,13 @@ from services.core.align_enum import EnumAligner
 from services.core.parse import KeyAggregateParser
 from services.connectors.agent_connector import AgentConnectorBase
 from .constants import PlotAttrKey
-from .agent import SGLandLotsAgent, get_sg_land_lots_agent
+from .agent import SGLandLotsAgent, get_sgLandLots_agent
 from .parse import (
     PlotConstraintsParser,
-    get_plot_attr_agg_parser,
+    get_plotAttr_aggParser,
     get_plot_constraint_parser,
 )
-from .align import get_plot_attr_key_aligner
+from .align import get_plotAttrKey_aligner
 
 logger = logging.getLogger(__name__)
 
@@ -246,16 +246,16 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         return steps, data
 
 
-def get_sg_land_lots_agent_connector(
+def get_sgLandLots_agentConnector(
     plot_attr_key_aligner: Annotated[
-        EnumAligner[PlotAttrKey], Depends(get_plot_attr_key_aligner)
+        EnumAligner[PlotAttrKey], Depends(get_plotAttrKey_aligner)
     ],
     plot_constraints_parser: Annotated[
         PlotConstraintsParser, Depends(get_plot_constraint_parser)
     ],
-    agent: Annotated[SGLandLotsAgent, Depends(get_sg_land_lots_agent)],
+    agent: Annotated[SGLandLotsAgent, Depends(get_sgLandLots_agent)],
     attr_agg_parser: Annotated[
-        KeyAggregateParser[PlotAttrKey], Depends(get_plot_attr_agg_parser)
+        KeyAggregateParser[PlotAttrKey], Depends(get_plotAttr_aggParser)
     ],
 ):
     return SGLandLotsAgentConnector(

@@ -19,8 +19,8 @@ from services.core.kg import KgClient
 from services.core.retrieve_docs import DocsRetriever
 from .constants import PlotAttrKey
 from .kg import (
-    get_sg_land_lots_bg_client,
-    get_sg_land_lots_ontop_client,
+    get_sgLandLots_bgClient,
+    get_sgLandLots_ontopClient,
 )
 
 logger = logging.getLogger(__name__)
@@ -312,11 +312,11 @@ SELECT {vars} WHERE {{
         )
 
 
-def get_sg_land_lots_agent(
+def get_sgLandLots_agent(
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     redis_client: Annotated[Redis, Depends(get_redis_client)],
-    bg_client: Annotated[KgClient, Depends(get_sg_land_lots_bg_client)],
-    ontop_client: Annotated[KgClient, Depends(get_sg_land_lots_ontop_client)],
+    bg_client: Annotated[KgClient, Depends(get_sgLandLots_bgClient)],
+    ontop_client: Annotated[KgClient, Depends(get_sgLandLots_ontopClient)],
 ):
     return SGLandLotsAgent(
         embedder=embedder,

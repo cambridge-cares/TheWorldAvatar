@@ -9,7 +9,7 @@ from services.core.align_enum import EnumAligner
 from .model import FactoryAttrKey, Industry
 
 
-def get_factory_attr_key_aligner(
+def get_factoryAttrkey_aligner(
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     redis_client: Annotated[Redis, Depends(get_redis_client)],
 ):

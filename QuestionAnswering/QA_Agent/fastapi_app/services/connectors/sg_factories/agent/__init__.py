@@ -7,9 +7,9 @@ from model.qa import QAData
 from services.core.kg import KgClient
 from services.core.labels_store import LabelsStore
 from ..model import FACTORYATTR2UNIT, FactoryAttrKey, FactoryConstraints, Industry
-from ..kg import get_sg_factories_ontop_client
-from .labels_store import get_sg_factories_labels_store
-from .make_sparql import SGFactoriesSPARQLMaker, get_sg_factories_sparql_maker
+from ..kg import get_sgFactories_ontopClient
+from .labels_store import get_sgFactories_labelsStore
+from .make_sparql import SGFactoriesSPARQLMaker, get_sgFactories_sparqlmaker
 
 
 class SGFactoriesAgent:
@@ -121,11 +121,11 @@ class SGFactoriesAgent:
         )
 
 
-def get_sg_factories_agent(
-    ontop_client: Annotated[KgClient, Depends(get_sg_factories_ontop_client)],
-    labels_store: Annotated[LabelsStore, Depends(get_sg_factories_labels_store)],
+def get_sgFactories_agent(
+    ontop_client: Annotated[KgClient, Depends(get_sgFactories_ontopClient)],
+    labels_store: Annotated[LabelsStore, Depends(get_sgFactories_labelsStore)],
     sparql_maker: Annotated[
-        SGFactoriesSPARQLMaker, Depends(get_sg_factories_sparql_maker)
+        SGFactoriesSPARQLMaker, Depends(get_sgFactories_sparqlmaker)
     ],
 ):
     return SGFactoriesAgent(

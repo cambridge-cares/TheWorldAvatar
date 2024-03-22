@@ -8,12 +8,12 @@ from redis import Redis
 from services.core.kg import KgClient
 from services.core.labels_store import IRIWithLabels, LabelsStore
 from services.core.redis import get_redis_client
-from ..kg import get_sg_factories_bg_client, get_sg_factories_ontop_client
+from ..kg import get_sgFactories_bgClient, get_sgFactories_ontopClient
 
 
 @cache
 def get_factory_subclasses(
-    bg_client: Annotated[KgClient, Depends(get_sg_factories_bg_client)]
+    bg_client: Annotated[KgClient, Depends(get_sgFactories_bgClient)]
 ):
     query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
@@ -26,7 +26,7 @@ SELECT DISTINCT ?IRI WHERE {
     )
 
 
-def sg_factories_bindings_gen(
+def sgFactories_bindings_gen(
     factory_subclasses: Tuple[str, ...], ontop_client: KgClient
 ):
     query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -54,16 +54,16 @@ SELECT ?IRI ?label WHERE {{
         yield IRIWithLabels(IRI=iri, labels=labels)
 
 
-def get_sg_factories_labels_store(
+def get_sgFactories_labelsStore(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
-    ontop_client: Annotated[KgClient, Depends(get_sg_factories_ontop_client)],
+    ontop_client: Annotated[KgClient, Depends(get_sgFactories_ontopClient)],
     factory_subclasses: Annotated[Tuple[str, ...], Depends(get_factory_subclasses)],
 ):
     return LabelsStore(
         redis_client=redis_client,
         key_prefix="sg_factories:factories:",
         index_name="idx:sg_factories:factories",
-        bindings=sg_factories_bindings_gen(
+        bindings=sgFactories_bindings_gen(
             factory_subclasses=factory_subclasses, ontop_client=ontop_client
         ),
     )
