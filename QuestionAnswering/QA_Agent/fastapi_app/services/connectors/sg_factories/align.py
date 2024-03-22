@@ -6,7 +6,7 @@ from redis import Redis
 from services.core.embed import IEmbedder, get_embedder
 from services.core.redis import get_redis_client
 from services.core.align_enum import EnumAligner
-from .model import FactoryAttrKey, Industry
+from .model import FactoryNumAttrKey, Industry
 
 
 def get_factoryAttrkey_aligner(
@@ -17,7 +17,7 @@ def get_factoryAttrkey_aligner(
         embedder=embedder,
         redis_client=redis_client,
         key="sg_factories:factory_attr_keys",
-        enum_cls=FactoryAttrKey,
+        enum_cls=FactoryNumAttrKey,
     )
 
 

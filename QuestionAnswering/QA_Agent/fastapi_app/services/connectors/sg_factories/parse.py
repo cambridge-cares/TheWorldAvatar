@@ -5,13 +5,14 @@ from fastapi import Depends
 from model.constraint import ExtremeValueConstraint
 from services.core.align_enum import EnumAligner
 from services.core.parse import KeyAggregateParser, SchemaParser, get_schema_parser
-from .model import FactoryAttrKey, FactoryConstraints, Industry
+from services.connectors.sg_factories.align import get_industry_aligner
+from .model import FactoryNumAttrKey, Industry
 
 
 def get_factoryAttr_aggParser(
     schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)]
 ):
-    return KeyAggregateParser(schema_parser=schema_parser, enum_cls=FactoryAttrKey)
+    return KeyAggregateParser(schema_parser=schema_parser, enum_cls=FactoryNumAttrKey)
 
 
 class FactoryConstraintsParser:
@@ -64,7 +65,7 @@ class FactoryConstraintsParser:
         thermal_efficiency = args.get("thermal_efficiency")
         design_capacity = args.get("design_capacity")
 
-        return FactoryConstraints(
+        return FactoryNumericalConstraints(
             industry=self.industry_aligner.align(industry) if industry else None,
             generated_heat=(
                 ExtremeValueConstraint(generated_heat) if generated_heat else None
@@ -83,3 +84,12 @@ class FactoryConstraintsParser:
                 ExtremeValueConstraint(design_capacity) if design_capacity else None
             ),
         )
+
+
+def get_factoryConstraints_parser(
+    schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)],
+    industry_aligner: Annotated[EnumAligner[Industry], Depends(get_industry_aligner)],
+):
+    return FactoryConstraintsParser(
+        schema_parser=schema_parser, industry_aligner=industry_aligner
+    )
