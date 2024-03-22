@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Konami from 'react-konami-code';
-import {  Provider } from 'react-redux';
+import { Provider } from 'react-redux';
 
 import Trex from 'utils/trex';
 import ContextMenu from './context-menu/context-menu';
@@ -73,7 +73,7 @@ export default class GlobalContainer extends React.Component<
             <ContextMenu
               x={this.state.contextMenuPosition.x}
               y={this.state.contextMenuPosition.y}
-              onClose={this.closeContextMenu} // Assuming ContextMenu can accept an onClose prop
+              showContextMenu={this.state.contextMenuVisible}
             />
           )}
 

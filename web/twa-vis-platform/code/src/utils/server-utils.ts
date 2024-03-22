@@ -2,6 +2,7 @@
  * Utilties to be run on the server.
  */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { JsonObject } from 'types/json';
 
 /**
  * Returns the server/client state of the current process.
@@ -10,7 +11,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
  */
 export function isServer() {
     return !(typeof window != 'undefined' && window.document);
-};
+}
 
 /**
  * Define a service that fetches supporting data for a given feature based on its IRI, stack endpoint, and a specified scenario ID.
@@ -21,7 +22,7 @@ export const featureInfoAgentApi = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({ baseUrl: '' }),
     endpoints: (builder) => ({
-        getMetadata: builder.query<any, string>({
+        getMetadata: builder.query<JsonObject, string>({
             query: (url) => `${url}`,
         }),
     }),

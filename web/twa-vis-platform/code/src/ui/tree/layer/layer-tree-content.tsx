@@ -4,7 +4,7 @@ import styles from './layer-tree.module.css';
 import iconStyles from 'ui/buttons/icon-button.module.css';
 
 import SVG from 'react-inlinesvg';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { getIsStyleLoaded } from 'state/floating-panel-slice';
@@ -51,7 +51,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
       setIsFirstRender(false);
     } else {
       toggleChildrenDisplay(group);
-    };
+    }
   }, [props.parentShowChildren]);
 
   // A function to hide or expand the current group's content
@@ -72,10 +72,10 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
       if (props.parentShowChildren) {
         if (showChildren) {
           assumedVisibilityState = true;
-        };
+        }
       } else {
         assumedVisibilityState = true;
-      };
+      }
       group.layers.forEach((layer) => {
         toggleMapLayerVisibility(layer.ids, assumedVisibilityState);
       });
@@ -190,18 +190,18 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
     if (props.isStyleLoaded) {
       const firstLayerId: string = layer.ids.split(" ")[0];
       // Existing visible state before any changes
-      let beforeVisibleState: boolean = window.map.getLayoutProperty(firstLayerId, "visibility") === "visible";
+      const beforeVisibleState: boolean = window.map.getLayoutProperty(firstLayerId, "visibility") === "visible";
       // This boolean is the required state that should toggle either the corresponding hidden or show effect depending on the various states
-      let requiredVisibleState: boolean = props.showChildren ?
+      const requiredVisibleState: boolean = props.showChildren ?
         beforeVisibleState ? isVisible : false :
         true;
 
       // Toggle visibility on the map
       props.handleLayerVisibility(layer.ids, requiredVisibleState);
       // Get current visibility state of the layer after any toggling
-      let currentVisibleState: boolean = window.map.getLayoutProperty(firstLayerId, "visibility") === "visible";
+      const currentVisibleState: boolean = window.map.getLayoutProperty(firstLayerId, "visibility") === "visible";
       setIsVisible(currentVisibleState);
-    };
+    }
   };
 
   // Whenever show children property is updated, the layer visiblity should be toggled accordingly depending on the change

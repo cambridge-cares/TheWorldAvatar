@@ -11,7 +11,7 @@ import { DataStore } from 'io/data/data-store';
  * @param {mapboxgl.Map} map - The Mapbox map object to attach the event listener to.
  * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
  */
-export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch<any>, dataStore: DataStore) {
+export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch, dataStore: DataStore) {
   // For any movement within the map
   map.on("mousemove", function (e) {
     // Access the first feature under the mouse pointer
@@ -38,7 +38,7 @@ export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch<an
       const scenarioID: string = "sFCkEoNC"; // WIP: To allow additional parameters for non-default settings
       url = `${dataStore.getStackEndpoint(feature.source)}/CReDoAccessAgent/getMetadataPrivate/${scenarioID}?iri=${encodeURIComponent(feature.properties.iri)}`
       queryTrigger = true;
-    };
+    }
     dispatch(setUrl(url));
     dispatch(setQueryTrigger(queryTrigger));
   });

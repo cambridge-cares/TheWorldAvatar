@@ -16,7 +16,7 @@ type TableProps = {
  * @param {number} selectedIndex The currently selected index.
  */
 export default function Table(props: TableProps) {
-  let currentTimeSeries: TimeSeries = props.group.data[props.selectedIndex];
+  const currentTimeSeries: TimeSeries = props.group.data[props.selectedIndex];
   return (
     <div className={styles["table"]}>
       <p>Data series</p>
@@ -31,4 +31,4 @@ export default function Table(props: TableProps) {
       </div>
     </div>
   );
-};
+}

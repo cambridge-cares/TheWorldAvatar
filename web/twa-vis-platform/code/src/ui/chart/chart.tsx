@@ -11,7 +11,7 @@ import { TimeSeriesGroup, TimeSeries } from 'types/timeseries';
 interface ChartProps {
   data: TimeSeriesGroup;
   selectedIndex: number;
-};
+}
 
 ChartJS.defaults.font.family = "Dosis";
 
@@ -65,7 +65,7 @@ export default function Chart(props: ChartProps) {
             }]
           },
         });
-      };
+      }
       // Add the options separately (to reduce duplication) and the `update` method MUST be called
       chartInstance.current.options = {
         responsive: true,
@@ -116,7 +116,7 @@ export default function Chart(props: ChartProps) {
           chartInstance.current.destroy();
         }
       };
-    };
+    }
   }, [props.selectedIndex]);
 
   return (
@@ -126,4 +126,4 @@ export default function Chart(props: ChartProps) {
       </div>
     </>
   );
-};
+}

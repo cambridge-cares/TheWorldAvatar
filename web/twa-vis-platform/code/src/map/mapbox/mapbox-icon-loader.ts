@@ -9,7 +9,7 @@ export function addIcons(iconSettings: IconSettings) {
     const promises: Promise<void>[] = [];
 
     for (const key of Object.keys(iconSettings)) {
-        const promise = new Promise<void>(function(resolve, reject) {
+        const promise = new Promise<void>(function(resolve) {
 
             loadIcon(key, iconSettings[key], function() {
                 resolve();

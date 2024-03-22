@@ -94,7 +94,7 @@ export class DataStore {
      * @param sourceId The source layer ID of interest.
      */
     public getStackEndpoint(sourceId: string): string {
-        let source: DataSource= this.getSourceList().find(source => source.id.trim() === sourceId.trim());
+        const source: DataSource= this.getSourceList().find(source => source.id.trim() === sourceId.trim());
         return source ? source.stackEndpoint : undefined;
     }
 

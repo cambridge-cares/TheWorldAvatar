@@ -102,7 +102,7 @@ export function parseTimeSeries(data: JsonObject): TimeSeriesGroup {
         } else if (timeClass === "offsetTime") {
             times.push(moment(rawTimes[t], "HH:mm:ss"));
         }
-    };
+    }
 
     // Extract the current values and unit for each time series
     tsNames.map((name, index) => {
@@ -120,4 +120,4 @@ export function parseTimeSeries(data: JsonObject): TimeSeriesGroup {
         times: rawTimes,
         data: timeSeries,
     };
-};
+}

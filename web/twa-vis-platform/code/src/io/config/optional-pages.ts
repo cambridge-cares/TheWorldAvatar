@@ -46,7 +46,7 @@ export class OptionalPages {
 
         try {
             // List file names from pages directory.
-            let pagesDirectory = path.join(process.cwd(), dir ?? this.DIRECTORY);
+            const pagesDirectory = path.join(process.cwd(), dir ?? this.DIRECTORY);
             const fileNames = fs.readdirSync(pagesDirectory);
 
             // Parse each file and key under file name (without extension).
@@ -56,7 +56,7 @@ export class OptionalPages {
                     const rawContents = fs.readFileSync(fullPath, "utf8");
                     const matterResult = matter(rawContents);
 
-                    let page: OptionalPage = {
+                    const page: OptionalPage = {
                         title: matterResult.data.title,
                         slug: matterResult.data.slug,
                         description: matterResult.data.description,
@@ -86,7 +86,7 @@ export class OptionalPages {
     public static getPage(slug: string): OptionalPage {
         if(OptionalPages.LOADED_PAGES.length == 0) OptionalPages.loadPages();
 
-        for(let page of OptionalPages.LOADED_PAGES) {
+        for(const page of OptionalPages.LOADED_PAGES) {
              if(page.slug === slug) return page;
         }
         return null;

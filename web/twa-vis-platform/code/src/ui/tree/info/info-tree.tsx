@@ -40,7 +40,7 @@ export default function InfoTree(props: InfoTreeProps) {
   const options: React.MutableRefObject<DropdownFieldOption[]> = useRef([]);
   const [selectedTimeSeriesOption, setSelectedTimeSeriesOption] = useState(0);
 
-  const consumeTimeSeries: Function = (data: JsonObject) => {
+  const consumeTimeSeries = (data: JsonObject) => {
     if (data) {
       timeSeries.current = parseTimeSeries(data);
       options.current = [];
@@ -87,7 +87,7 @@ export default function InfoTree(props: InfoTreeProps) {
       </div>
     </div>
   );
-};
+}
 
 /**
  * Recursively parse the data returned from the Feature Info Agent into the attribute group data model.
@@ -115,15 +115,15 @@ function recurseParseAttributeGroup(data: JsonObject, currentNode: string): Attr
 
   // Note that the elements will be pushed according to the display order and do not require further processing according to this order
   displayOrder.map((currentVal) => {
+    const currentValue: JsonObject = currentDataObject[currentVal] as JsonObject;
     // Parses the attribute for nested values and units
     // Javascript falsy checks returns true for 0. But we wish to accept 0 too
-    if (currentDataObject[currentVal][valueKey] || currentDataObject[currentVal][valueKey] === 0) {
-      const unit: string = currentDataObject[currentVal][unitKey] ? currentDataObject[currentVal][unitKey].toString() : "";
-
-      attributes.push(parseAttribute(currentVal, currentDataObject[currentVal][valueKey].toString(), unit))
+    if (currentValue[valueKey] || currentValue[valueKey] === 0) {
+      const unit: string = currentValue[unitKey] ? currentValue[unitKey].toString() : "";
+      attributes.push(parseAttribute(currentVal, currentValue[valueKey].toString(), unit))
     } else {
-      typeof currentDataObject[currentVal] === "string" || typeof currentDataObject[currentVal] === "number" ?
-        attributes.push(parseAttribute(currentVal, currentDataObject[currentVal].toString())) : // Simplified attribute parsing
+      typeof currentValue === "string" || typeof currentValue === "number" ?
+        attributes.push(parseAttribute(currentVal, currentValue)) : // Simplified attribute parsing
         subGroups.push(recurseParseAttributeGroup(currentDataObject, currentVal));
     }
   });
@@ -143,7 +143,7 @@ function recurseParseAttributeGroup(data: JsonObject, currentNode: string): Attr
  *
  * @param {string} property The attribute name.
  * @param {string} value The attribute value.
- * @param {string} value The attribute unit if available.
+ * @param {string} unit The attribute unit if available.
  * @returns {Attribute} The parsed attribute.
  */
 function parseAttribute(property: string, value: string, unit: string = ""): Attribute {

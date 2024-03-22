@@ -54,7 +54,7 @@ export default function InfoTabs(props: InfoTabsProps) {
       )}
     </div>
   );
-};
+}
 
 /**
  * This component renders a tab for the parent component.
@@ -78,4 +78,4 @@ function InfoTab(props: InfoTabProps) {
       }
     />
   );
-};
+}

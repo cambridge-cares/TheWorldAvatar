@@ -1,10 +1,9 @@
 import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, HeatmapLayer, LineLayer, RasterLayer, SymbolLayer } from 'mapbox-gl';
-import { Dispatch } from 'redux';
 
 import { DataLayer } from 'io/data/data-layer';
 import { DataStore } from 'io/data/data-store';
-import { JsonArray, JsonObject } from 'types/json';
-import { ImageryOption, MapSettings } from 'types/map-settings';
+import { JsonObject } from 'types/json';
+import { ImageryOption } from 'types/map-settings';
 import { getMapSettings } from 'utils/client-utils';
 import { getCurrentImageryOption } from './mapbox-imagery-utils';
 /**
@@ -14,12 +13,12 @@ import { getCurrentImageryOption } from './mapbox-imagery-utils';
  * @param {dataStore} dataStore Store containing parsed DataLayer instances.
  * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
  */
-export async function addAllLayers(dataStore: DataStore, dispatch: Dispatch<any>) {
+export async function addAllLayers(dataStore: DataStore) {
     const mapSettings = await getMapSettings();
     const currentStyle = getCurrentImageryOption(mapSettings);
 
     const layerArray: DataLayer[] = dataStore.getLayerList();
-    layerArray.forEach((layer) => addLayer(layer, currentStyle, dispatch));
+    layerArray.forEach((layer) => addLayer(layer, currentStyle));
     console.log("Added all registered layers to the map object.");
 }
 
@@ -28,9 +27,8 @@ export async function addAllLayers(dataStore: DataStore, dispatch: Dispatch<any>
  * 
  * @param {DataLayer} layer - The input DataLayer.
  * @param {ImageryOption} currentStyle - The current imagery style.
- * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
  */
-export function addLayer(layer: DataLayer, currentStyle: ImageryOption, dispatch: Dispatch<any>) {
+export function addLayer(layer: DataLayer, currentStyle: ImageryOption) {
     const collision = window.map.getLayer(layer.id);
 
     if (collision != null) {

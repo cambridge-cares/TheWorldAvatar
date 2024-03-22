@@ -1,4 +1,5 @@
 import styles from './analytics.module.css';
+import React from 'react';
 
 /**
  * Dynamically load and render content from an optional metadata file

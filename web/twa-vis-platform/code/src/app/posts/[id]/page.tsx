@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import React from 'react';
+import markdownIt from "markdown-it";
 
 import StaticContentPage from 'ui/content/static-content-page';
 import { OptionalPage, OptionalPages } from 'io/config/optional-pages';
@@ -11,7 +13,7 @@ type Properties = {
 }
 
 // Utilities to render markdown into HTML
-const markdowner = require("markdown-it")({
+const markdowner = markdownIt({
     html: true,
     typographer: true,
     breaks: true,
@@ -26,7 +28,7 @@ const markdowner = require("markdown-it")({
  * @returns metadata promise.
  */
 export async function generateMetadata({ params }: Properties): Promise<Metadata> {
-    let page: OptionalPage = OptionalPages.getPage(params.id);
+    const page: OptionalPage = OptionalPages.getPage(params.id);
     return {
         title: page.title,
         description: page.description
@@ -43,8 +45,8 @@ export async function generateMetadata({ params }: Properties): Promise<Metadata
  */
 export default async function Post({ params }: Readonly<Properties>) {
     // Get cached page content.
-    let page: OptionalPage = OptionalPages.getPage(params.id);
-    let markdownResult = markdowner.render(page.content);
+    const page: OptionalPage = OptionalPages.getPage(params.id);
+    const markdownResult = markdowner.render(page.content);
 
     return (
         <StaticContentPage

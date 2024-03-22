@@ -1,5 +1,5 @@
 import styles from './ribbon.module.css';
-import React, { useRef } from 'react';
+import React from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 import RibbonPanel from './ribbon-panel';
 
@@ -151,7 +151,7 @@ export default class Ribbon extends React.Component<RibbonProps, RibbonState> {
                                 text="Hide Labels"
                                 tooltip="Toggle display of place names."
                                 initialState={false}
-                                action={state => {
+                                action={() => {
                                     togglePlacenames();
                                 }}
                             />

@@ -24,7 +24,7 @@ import { getLatLng, getName } from 'state/map-feature-slice';
 import { MapSettings } from 'types/map-settings';
 import { DataStore } from 'io/data/data-store';
 import { getDefaultCameraPosition } from './mapbox-camera-utils';
-import { getCurrentImageryOption, getDefaultImageryOption, getImageryOption } from './mapbox-imagery-utils';
+import { getCurrentImageryOption } from './mapbox-imagery-utils';
 import { addAllSources } from './mapbox-source-utils';
 import { addAllLayers } from './mapbox-layer-utils';
 import { addIcons } from './mapbox-icon-loader';
@@ -36,23 +36,6 @@ import { setIsStyleLoaded } from 'state/floating-panel-slice';
 interface MapProperties {
   settings: MapSettings;
   dataStore: DataStore;
-}
-
-// Return the default style URL
-function getDefaultStyle(mapSettings: MapSettings) {
-  if (mapSettings.imagery.default.toLowerCase() == "auto") {
-    // Auto detect browser theme
-    if (
-      window?.matchMedia &&
-      window?.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-      return getImageryOption("3D (Night)", mapSettings.imagery);
-    } else {
-      return getImageryOption("3D (Day)", mapSettings.imagery);
-    }
-  } else {
-    return getDefaultImageryOption(mapSettings);
-  }
 }
 
 /**
@@ -149,14 +132,14 @@ export default function MapboxMapComponent(props: MapProperties) {
       const iconPromise = addIcons(settings.icons);
 
       Promise.all([iconPromise]).then(() => {
-        let dataStore: DataStore = props.dataStore;
+        const dataStore: DataStore = props.dataStore;
 
         // Once that is done and completed...
         console.log("Data definitions fetched and parsed.");
 
         // Plot data
         addAllSources(dataStore);
-        addAllLayers(dataStore, dispatch);
+        addAllLayers(dataStore);
       });
     });
   };

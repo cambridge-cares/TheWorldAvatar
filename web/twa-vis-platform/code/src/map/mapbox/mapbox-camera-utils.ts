@@ -3,7 +3,7 @@
  */
 
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 import { reduxStore } from 'app/store';
 import { CameraPosition, CameraSettings, MapSettings } from 'types/map-settings';
@@ -99,7 +99,7 @@ export async function locateUser() {
                 essential: true
             });
         },
-        (err) => {
+        () => {
             toast.warning(
                 "Cannot read user's location without browser authorisation.",
                 { position: toast.POSITION.BOTTOM_LEFT }

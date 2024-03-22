@@ -11,6 +11,9 @@ import ContextItem, { ContextItemDefinition } from './context-item';
 
 // Incoming properties type
 type ContextMenuProps = {
+    x: number,
+    y: number,
+    showContextMenu: boolean,
     items?: ContextItemDefinition[],
     addItem?: (item: ContextItemDefinition) => void,
     toggleItem?: (name: string) => void
@@ -43,9 +46,9 @@ class ContextMenu extends React.Component<ContextMenuProps, ContextMenuState> {
 
     // Default state
     state = {
-        xPos: "0px",
-        yPos: "0px",
-        show: false
+        xPos: `${this.props.x}px`,
+        yPos: `${this.props.y}px`,
+        show: this.props.showContextMenu
     }
 
     // On render

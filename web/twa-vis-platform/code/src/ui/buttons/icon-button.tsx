@@ -14,12 +14,12 @@ interface ButtonProps extends React.HTMLAttributes<HTMLDivElement> {
         content: string,
     }
     callback?: () => void,
-};
+}
 
 interface IndexedButtonProps extends ButtonProps {
     index?: number,
     onButtonClick: (index: number) => void;
-};
+}
 
 /**
  * A material icon button with custom styling and icons.

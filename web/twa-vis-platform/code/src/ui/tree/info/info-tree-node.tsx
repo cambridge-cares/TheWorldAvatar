@@ -3,7 +3,7 @@
 import styles from './info-tree.module.css';
 import iconStyles from 'ui/buttons/icon-button.module.css';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { Attribute, AttributeGroup } from 'types/attribute';
 import MaterialIconButton from 'ui/buttons/icon-button';

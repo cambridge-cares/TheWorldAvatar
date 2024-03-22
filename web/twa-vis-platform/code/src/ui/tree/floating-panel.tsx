@@ -53,8 +53,8 @@ export default function FloatingPanelContainer(
       if (data) {
         setQueriedData(data);
         dispatch(setQueryTrigger(false));
-      };
-    };
+      }
+    }
   }, [isFetching]);
 
   const clickAction = (index: number) => {
