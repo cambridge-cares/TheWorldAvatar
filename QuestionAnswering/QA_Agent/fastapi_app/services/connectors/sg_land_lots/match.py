@@ -7,7 +7,7 @@ from services.core.redis import get_redis_client
 from services.core.kg import KgClient
 from services.core.retrieve_docs import DocsRetriever
 from .constants import LAND_USE_TYPES
-from .kg import get_sg_land_lots_bg_client
+from .kg import get_sgLandLots_bgClient
 
 
 class LandUseTypeMatcher:
@@ -48,10 +48,10 @@ SELECT ?IRI ?label ?comment WHERE {{
         return retrieved[0][0][0]["IRI"]
 
 
-def get_land_use_type_matcher(
+def get_landUseType_matcher(
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     redis_client: Annotated[Redis, Depends(get_redis_client)],
-    kg_client: Annotated[KgClient, Depends(get_sg_land_lots_bg_client)],
+    kg_client: Annotated[KgClient, Depends(get_sgLandLots_bgClient)],
 ):
     return LandUseTypeMatcher(
         embedder=embedder, redis_client=redis_client, kg_client=kg_client

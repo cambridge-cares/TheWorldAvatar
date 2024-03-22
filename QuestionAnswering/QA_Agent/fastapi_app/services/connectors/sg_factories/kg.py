@@ -4,9 +4,9 @@ import os
 from services.core.kg import KgClient
 
 @cache
-def get_sg_factories_bg_client():
+def get_sgFactories_bgClient():
     return KgClient(os.getenv("KG_ENDPOINT_SG_FACTORIES", "localhost"))
 
 @cache
-def get_sg_factories_ontop_client():
+def get_sgFactories_ontopClient():
     return KgClient(os.getenv("KG_ENDPOINT_SG_FACTORIES_ONTOP", "localhost"))

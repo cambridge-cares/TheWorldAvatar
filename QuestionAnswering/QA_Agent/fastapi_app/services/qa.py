@@ -7,11 +7,11 @@ from services.core.func_call import IFuncCaller, get_func_caller
 from services.connectors import AgentConnectorMediator
 from services.connectors.sg_factories import (
     SGFactoriesAgentConnector,
-    get_sg_factories_agent_connector,
+    get_sgFactories_agentConnector,
 )
 from services.connectors.sg_land_lots import (
     SGLandLotsAgentConnector,
-    get_sg_land_lots_agent_connector,
+    get_sgLandLots_agentConnector,
 )
 from services.connectors.ontospecies import (
     OntoSpeciesAgentConnector,
@@ -28,10 +28,10 @@ def get_mediator(
     ],
     sg_land_lots_agent_connector: Annotated[
         SGLandLotsAgentConnector,
-        Depends(get_sg_land_lots_agent_connector),
+        Depends(get_sgLandLots_agentConnector),
     ],
     sg_factories_agent_connector: Annotated[
-        SGFactoriesAgentConnector, Depends(get_sg_factories_agent_connector)
+        SGFactoriesAgentConnector, Depends(get_sgFactories_agentConnector)
     ],
 ):
     chemistry_connectors = [ontospecies_agent_connector]

@@ -235,7 +235,7 @@ SELECT {select_vars} WHERE {{
 
 
 @cache
-def get_sg_factories_sparql_maker(
+def get_sgFactories_sparqlmaker(
     factory_subclasses: Annotated[Tuple[str, ...], Depends(get_factory_subclasses)]
 ):
     return SGFactoriesSPARQLMaker(factory_subclasses)
