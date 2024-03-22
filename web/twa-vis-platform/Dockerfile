@@ -10,17 +10,17 @@
 # so that volumed data can be used.
 #
 
-FROM node:18.18-slim
+FROM node:18.18-slim as base
 
 # Make directory to house application
-RUN mkdir /twa
+RUN mkdir -p /twa/app
+WORKDIR /twa/app
 
-# Copy in application files
-COPY ./code/ /twa
+# Copy only the package.json to install the required dependencies
+COPY ./code/package.json /twa/app/package.json
+RUN npm install 
 
-# Expose port 80
-EXPOSE 80
-
-# Build then run the app
-WORKDIR /twa
-CMD [ "/bin/bash", "-c", "npm install && npm run dev" ]
+# ---- For development ----
+FROM base as develop
+ENV UPLOADS_PATH /twa/uploads
+CMD [ "/bin/bash", "-c", "npm run dev" ]

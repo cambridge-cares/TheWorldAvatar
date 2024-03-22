@@ -1,0 +1,30 @@
+#
+# Compose file for the TWA-VP.
+#
+version: "3.8"
+
+# All Services
+services:
+
+  # Builds a base image that, when combined with a volume of files, can be used as a visualisation for development purposes. 
+  # It is not intended that this config is used to run the production image.
+  visualise:
+    image: ghcr.io/cambridge-cares/twa-vf:dev-vis-platform-SNAPSHOT
+    container_name: "twa-vis-platform-development"
+    restart: "no"
+    environment:
+      WATCHPACK_POLLING: true
+      MAPBOX_USERNAME: user
+      MAPBOX_API_KEY: api_key
+    build:
+      context: "./"
+      dockerfile: "Dockerfile"
+      target: develop
+      labels:
+        authors: "support@cmcl.io"
+        description: "Development environment for TWA Visualisation Platform image."
+    volumes:
+      - ./code:/twa/app
+      - ./uploads:/twa/uploads
+    ports:
+      - "3000:3000" 
