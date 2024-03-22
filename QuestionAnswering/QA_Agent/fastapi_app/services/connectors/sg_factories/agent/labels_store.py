@@ -1,12 +1,12 @@
-from collections import defaultdict
 from functools import cache
 from typing import Annotated, Tuple
 
 from fastapi import Depends
 from redis import Redis
 
+from services.utils.bindings import agg_iri_label_pairs
 from services.core.kg import KgClient
-from services.core.labels_store import IRIWithLabels, LabelsStore
+from services.core.labels_store import LabelsStore
 from services.core.redis import get_redis_client
 from ..kg import get_sgFactories_bgClient, get_sgFactories_ontopClient
 
@@ -46,12 +46,10 @@ SELECT ?IRI ?label WHERE {{
         {k: v["value"] for k, v in binding.items()}
         for binding in ontop_client.query(query)["results"]["bindings"]
     ]
-    iri2labels = defaultdict(list)
-    for binding in bindings:
-        iri2labels[binding["IRI"]].append(binding["label"])
+    pairs = [(binding["IRI"], binding["label"]) for binding in bindings]
 
-    for iri, labels in iri2labels.items():
-        yield IRIWithLabels(IRI=iri, labels=labels)
+    for item in agg_iri_label_pairs(pairs):
+        yield item
 
 
 def get_sgFactories_labelsStore(

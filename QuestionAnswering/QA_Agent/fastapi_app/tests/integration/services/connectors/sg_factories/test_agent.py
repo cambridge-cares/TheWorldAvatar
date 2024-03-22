@@ -9,8 +9,7 @@ from model.aggregate import AggregateOperator
 from services.core.labels_store import LabelsStore
 from services.core.kg import KgClient
 from services.connectors.sg_factories.model import (
-    FactoryAttrKey,
-    FactoryConstraints,
+    FactoryNumAttrKey,
     Industry,
 )
 from services.connectors.sg_factories.agent import SGFactoriesAgent
@@ -63,19 +62,19 @@ PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>""",
     rdf:type ontochemplant:ChemicalPlant ;
     ontocompany:belongsToIndustry [ rdf:type ontocompany:ChemicalIndustry ] ;
     rdfs:label "NORMET SINGAPORE PTE. LTD." ;
-    ontocompany:hasGeneratedHeat [ om:hasValue [ om:hasNumericalValue "5.610722679"^^xsd:float ; om:hasUnit [ skos:notation "MW" ] ]  ] ;
+    ontocompany:hasDesignCapacity [ om:hasValue [ om:hasNumericalValue "2.219685"^^xsd:float ; om:hasUnit [ skos:notation "kg/s" ] ]  ] ;
     ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.52"^^xsd:float ] ] .
 <http://test.com/2>
     rdf:type ontochemplant:ChemicalPlant ;
     ontocompany:belongsToIndustry [ rdf:type ontocompany:ChemicalIndustry ] ;
     rdfs:label "AICA SINGAPORE PTE. LTD." ;
-    ontocompany:hasGeneratedHeat [ om:hasValue [ om:hasNumericalValue "12.97975266"^^xsd:float ; om:hasUnit [ skos:notation "MW" ] ] ] ;
+    ontocompany:hasDesignCapacity [ om:hasValue [ om:hasNumericalValue "2.219685"^^xsd:float ; om:hasUnit [ skos:notation "kg/s" ] ] ] ;
     ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.61"^^xsd:float ] ] .
 <http://test.com/3>
-    rdf:type ontocompany:FoodPlant ;
-    ontocompany:belongsToIndustry [ rdf:type ontocompany:FoodIndustry ] ;
+    rdf:type ontocompany:SemiconductorPlant ;
+    ontocompany:belongsToIndustry [ rdf:type ontocompany:SemiconductorIndustry ] ;
     rdfs:label "NORTHERN LUCK PTE LTD" ;
-    ontocompany:hasGeneratedHeat [ om:hasValue [ om:hasNumericalValue "6.427321157"^^xsd:float ; om:hasUnit [ skos:notation "MW" ] ] ]  ;
+    ontocompany:hasDesignCapacity [ om:hasValue [ om:hasNumericalValue "0.001121092"^^xsd:float ; om:hasUnit [ skos:notation "m^2/s" ] ] ]  ;
     ontocompany:hasThermalEfficiency [ om:hasValue [ om:hasNumericalValue "0.43"^^xsd:float ] ] ."""
     )
 
@@ -88,30 +87,32 @@ PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>""",
 
 
 @pytest.fixture(scope="class")
+def factory_subclasses():
+    yield [
+        "http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant",
+        "http://www.theworldavatar.com/kg/ontocompany#FoodPlant",
+        "http://www.theworldavatar.com/kg/ontocompany#SemiconductorPlant",
+    ]
+
+
+@pytest.fixture(scope="class")
 def sg_factories_labels_store(
-    redis_client: Redis,
-    sg_factories_ontop_client: KgClient,
-    sg_factories_bg_client: KgClient,
+    redis_client, sg_factories_ontop_client, factory_subclasses
 ):
     yield LabelsStore(
         redis_client=redis_client,
         key_prefix="sg_factories:factories:",
         index_name="idx:sg_factories:factories",
         bindings=sgFactories_bindings_gen(
-            ontop_client=sg_factories_ontop_client, bg_client=sg_factories_bg_client
+            factory_subclasses=factory_subclasses,
+            ontop_client=sg_factories_ontop_client,
         ),
     )
 
 
 @pytest.fixture(scope="class")
-def sg_factories_sparql_maker():
-    yield SGFactoriesSPARQLMaker(
-        [
-            "http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant",
-            "http://www.theworldavatar.com/kg/ontocompany#FoodPlant",
-            "http://www.theworldavatar.com/kg/ontocompany#SemiconductorPlant",
-        ]
-    )
+def sg_factories_sparql_maker(factory_subclasses):
+    yield SGFactoriesSPARQLMaker(factory_subclasses)
 
 
 @pytest.fixture(scope="class")
@@ -129,49 +130,62 @@ def sg_factories_agent(
 
 class TestSGFactoriesAgent:
     def test_lookupFactoryAttribute(self, sg_factories_agent: SGFactoriesAgent):
+        # Arrange
+        plant_name = "Normet Singapore"
+        attr_key = FactoryNumAttrKey.THERMAL_EFFICIENCY
+
+        expected = QAData(
+            vars=["IRI", "ThermalEfficiencyValue", "ThermalEfficiencyUnit"],
+            bindings=[
+                {"IRI": "http://test.com/1", "ThermalEfficiencyValue": "0.52"}
+            ],
+        )
+
         # Act
         actual = sg_factories_agent.lookup_factory_attribute(
-            plant_name="Normet Singapore", attr_key=FactoryAttrKey.THERMAL_EFFICIENCY
+            plant_name=plant_name, attr_key=attr_key
         )
 
         # Assert
-        assert actual == QAData(
-            vars=["IRI", "ThermalEfficiencyNumericalValue"],
-            bindings=[
-                {"IRI": "http://test.com/1", "ThermalEfficiencyNumericalValue": "0.52"}
-            ],
-        )
+        assert actual == expected
 
     def test_findFactories(self, sg_factories_agent: SGFactoriesAgent):
-        # Act
-        actual = sg_factories_agent.find_factories(
-            constraints=FactoryConstraints(
-                industry=Industry.CHEMICAL,
-                thermal_efficiency=ExtremeValueConstraint.MAX,
-            ),
-            limit=1,
-        )
+        # Arrange
+        industry = Industry.CHEMICAL
+        constraints = {FactoryNumAttrKey.THERMAL_EFFICIENCY: ExtremeValueConstraint.MAX}
+        limit = 1
 
-        # Assert
-        assert actual == QAData(
-            vars=["IRI", "ThermalEfficiencyNumericalValue"],
+        expected = QAData(
+            vars=["Industry", "IRI", "ThermalEfficiencyValue", "ThermalEfficiencyUnit"],
             bindings=[
-                {"IRI": "http://test.com/2", "ThermalEfficiencyNumericalValue": "0.61"}
+                {
+                    "Industry": "ChemicalIndustry",
+                    "IRI": "http://test.com/2",
+                    "ThermalEfficiencyValue": "0.61",
+                }
             ],
         )
 
+        # Act
+        actual = sg_factories_agent.find_factories(
+            industry=industry,
+            numattr_constraints=constraints,
+            limit=limit,
+        )
+
+        # Assert
+        assert actual == expected
+
     @pytest.mark.parametrize(
-        "industry,groupby_industry,expected",
+        "industry, expected",
         [
-            (None, False, QAData(vars=["Count"], bindings=[{"Count": "3"}])),
             (
                 Industry.CHEMICAL,
-                False,
                 QAData(
                     vars=["Industry", "Count"],
                     bindings=[
                         {
-                            "Industry": "http://www.theworldavatar.com/kg/ontocompany#ChemicalIndustry",
+                            "Industry": "ChemicalIndustry",
                             "Count": "2",
                         }
                     ],
@@ -179,18 +193,19 @@ class TestSGFactoriesAgent:
             ),
             (
                 None,
-                True,
                 QAData(
                     vars=["Industry", "Count"],
                     bindings=[
                         {
-                            "Industry": "http://www.theworldavatar.com/kg/ontocompany#ChemicalIndustry",
+                            "Industry": "ChemicalIndustry",
                             "Count": "2",
                         },
+                        {"Industry": "FoodIndustry", "Count": "0"},
                         {
-                            "Industry": "http://www.theworldavatar.com/kg/ontocompany#FoodIndustry",
+                            "Industry": "SemiconductorIndustry",
                             "Count": "1",
                         },
+                        {"Industry": "SUM", "Count": "3"},
                     ],
                 ),
             ),
@@ -200,60 +215,68 @@ class TestSGFactoriesAgent:
         self,
         sg_factories_agent: SGFactoriesAgent,
         industry,
-        groupby_industry,
         expected,
     ):
         # Act
-        actual = sg_factories_agent.count_factories(
-            industry=industry, groupby_industry=groupby_industry
+        actual = sg_factories_agent.count_factories(industry=industry)
+
+        # Assert
+        assert actual == expected
+
+    def test_computeAggregateFactoryAttribute_chemicalIndustry(
+        self, sg_factories_agent: SGFactoriesAgent
+    ):
+        # Arrange
+        industry = Industry.CHEMICAL
+        attr_agg = (FactoryNumAttrKey.DESIGN_CAPACITY, AggregateOperator.AVG)
+
+        expected = QAData(
+            vars=["Industry", "DesignCapacityValueAVG", "DesignCapacityUnit"],
+            bindings=[
+                {
+                    "Industry": "ChemicalIndustry",
+                    "DesignCapacityValueAVG": "2.219685",
+                    "DesignCapacityUnit": "kg/s",
+                }
+            ],
+        )
+
+        # Act
+        actual = sg_factories_agent.compute_aggregate_factory_attribute(
+            attr_agg=attr_agg, industry=industry
         )
 
         # Assert
         assert actual == expected
 
-    def test_computeAggregateFactoryAttribute_all(
+    def test_computeAggregateFactoryAttribute_noIndustry(
         self, sg_factories_agent: SGFactoriesAgent
     ):
-        # Act
-        actual = sg_factories_agent.compute_aggregate_factory_attribute(
-            attr_agg=(FactoryAttrKey.GENERATED_HEAT, AggregateOperator.AVG),
-            industry=Industry.CHEMICAL,
-        )
+        # Arrange
+        attr_agg = (FactoryNumAttrKey.DESIGN_CAPACITY, AggregateOperator.SUM)
+        industry = None
 
-        # Assert
-        assert actual == QAData(
-            vars=["Industry", "GeneratedHeatNumericalValueAVG", "GeneratedHeatUnit"],
+        expected = QAData(
+            vars=["Industry", "DesignCapacityValueSUM", "DesignCapacityUnit"],
             bindings=[
                 {
-                    "Industry": "http://www.theworldavatar.com/kg/ontocompany#ChemicalIndustry",
-                    "GeneratedHeatNumericalValueAVG": "9.295238",
-                    "GeneratedHeatUnit": "MW",
-                }
-            ],
-        )
-
-    def test_computeAggregateFactoryAttribute_groupby(
-        self, sg_factories_agent: SGFactoriesAgent
-    ):
-        # Act
-        actual = sg_factories_agent.compute_aggregate_factory_attribute(
-            attr_agg=(FactoryAttrKey.GENERATED_HEAT, AggregateOperator.SUM),
-            groupby_industry=True,
-        )
-
-        # Assert
-        assert actual == QAData(
-            vars=["Industry", "GeneratedHeatNumericalValueSUM", "GeneratedHeatUnit"],
-            bindings=[
-                {
-                    "Industry": "http://www.theworldavatar.com/kg/ontocompany#ChemicalIndustry",
-                    "GeneratedHeatNumericalValueSUM": "18.590475",
-                    "GeneratedHeatUnit": "MW",
+                    "Industry": "ChemicalIndustry",
+                    "DesignCapacityValueSUM": "4.43937",
+                    "DesignCapacityUnit": "kg/s",
                 },
                 {
-                    "Industry": "http://www.theworldavatar.com/kg/ontocompany#FoodIndustry",
-                    "GeneratedHeatNumericalValueSUM": "6.427321",
-                    "GeneratedHeatUnit": "MW",
+                    "Industry": "SemiconductorIndustry",
+                    "DesignCapacityValueSUM": "0.001121092",
+                    "DesignCapacityUnit": "m^2/s",
                 },
             ],
         )
+
+        # Act
+        actual = sg_factories_agent.compute_aggregate_factory_attribute(
+            attr_agg=attr_agg,
+            industry=industry,
+        )
+
+        # Assert
+        assert actual == expected
