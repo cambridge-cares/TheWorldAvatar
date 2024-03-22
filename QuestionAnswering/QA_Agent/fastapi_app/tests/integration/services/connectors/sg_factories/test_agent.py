@@ -134,8 +134,14 @@ class TestSGFactoriesAgent:
         attr_key = FactoryNumAttrKey.THERMAL_EFFICIENCY
 
         expected = QAData(
-            vars=["IRI", "ThermalEfficiencyValue", "ThermalEfficiencyUnit"],
-            bindings=[{"IRI": "http://test.com/1", "ThermalEfficiencyValue": "0.52"}],
+            vars=["IRI", "label", "ThermalEfficiencyValue", "ThermalEfficiencyUnit"],
+            bindings=[
+                {
+                    "IRI": "http://test.com/1",
+                    "label": "NORMET SINGAPORE PTE. LTD.",
+                    "ThermalEfficiencyValue": "0.52",
+                }
+            ],
         )
 
         # Act
@@ -153,11 +159,18 @@ class TestSGFactoriesAgent:
         limit = 1
 
         expected = QAData(
-            vars=["Industry", "IRI", "ThermalEfficiencyValue", "ThermalEfficiencyUnit"],
+            vars=[
+                "Industry",
+                "IRI",
+                "label",
+                "ThermalEfficiencyValue",
+                "ThermalEfficiencyUnit",
+            ],
             bindings=[
                 {
                     "Industry": "ChemicalIndustry",
                     "IRI": "http://test.com/2",
+                    "label": "AICA SINGAPORE PTE. LTD.",
                     "ThermalEfficiencyValue": "0.61",
                 }
             ],

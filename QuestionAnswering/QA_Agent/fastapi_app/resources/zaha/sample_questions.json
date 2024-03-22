@@ -23,8 +23,9 @@
                 "description": "Data about Singapore's factories",
                 "questions": [
                     "what's the specific energy consumption of Neste factory?",
-                    "Which factory type has the greatest heat emission value?",
-                    "What is the average thermal efficiency of food plants?"
+                    "Which industry has the greatest heat emission value?",
+                    "What is the average thermal efficiency of food plants?",
+                    "Which semiconductor plant has the highest production rate?"
                 ]
             }
         ]

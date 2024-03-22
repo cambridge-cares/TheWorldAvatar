@@ -23,7 +23,7 @@ class OpenAIFuncCaller(IFuncCaller):
         self.client = OpenAI(base_url=url)
         self.model = model
 
-    def predict(self, funcs: List[dict], query: str) -> Tuple[str, dict]:
+    def _predict(self, funcs: List[dict], query: str) -> Tuple[str, dict]:
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": query}],
@@ -34,6 +34,23 @@ class OpenAIFuncCaller(IFuncCaller):
         func = response.choices[0].message.tool_calls[0].function
         # TODO: type-check and handle error at json.loads
         return func.name, json.loads(func.arguments)
+
+    def predict(self, funcs: List[dict], query: str) -> Tuple[str, dict]:
+        if len(funcs) <= 3:
+            return self._predict(funcs, query)
+
+        func_name, _ = self._predict(
+            [
+                {k: func[k] for k in ["name", "description"] if k in func}
+                for func in funcs
+            ],
+            query,
+        )
+        _, func_args = self._predict(
+            [next(func for func in funcs if func["name"] == func_name)], query
+        )
+
+        return func_name, func_args
 
 
 @cache

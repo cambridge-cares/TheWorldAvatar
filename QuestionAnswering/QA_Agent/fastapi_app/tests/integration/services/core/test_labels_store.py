@@ -4,7 +4,7 @@ from services.core.labels_store import IRIWithLabels, LabelsStore
 class TestLabelsStore:
     SAMPLE_BINDINGS = [
         IRIWithLabels(IRI="1", labels=["one", "One"]),
-        IRIWithLabels(IRI="2", labels=["two", "tWo"]),
+        IRIWithLabels(IRI="http://test.org/2", labels=["two", "tWo"]),
         IRIWithLabels(IRI="3", labels=["thRee", "3333"]),
         IRIWithLabels(IRI="3bis", labels=["thRee"])
     ]
@@ -35,7 +35,7 @@ class TestLabelsStore:
         )
 
         # Act
-        actual = labels_store.lookup_labels("2")
+        actual = labels_store.lookup_labels("http://test.org/2")
 
         # Assert
         expected = ["two", "tWo"]
