@@ -32,11 +32,13 @@ WITH uuid_table AS (
     FROM "citydb"."cityobject_genericattrib"
     WHERE attrname = 'height'
 ), factory_data_combined AS (
-    SELECT building_uuid, heat_emissions
+    SELECT building_uuid, sum(heat_emissions) as heat_emissions
 	FROM factories
+	GROUP BY building_uuid
 	UNION
-	SELECT building_uuid, heat_emissions
+	SELECT building_uuid, sum(heat_emissions) as heat_emissions
 	FROM data_centres
+	GROUP BY building_uuid
 )
 
 SELECT DISTINCT
