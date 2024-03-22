@@ -93,38 +93,38 @@ public class SchoolAgent extends JPSAgent {
         LOGGER.info("API Connector Object Initialized");
         jsonMessage.accumulate("Result", "API Connector object Initialized");
 
-        JSONObject general_readings;
-        JSONObject programme_readings;
-        JSONObject cca_readings;
+        JSONObject generalReadings;
+        JSONObject programmeReadings;
+        JSONObject ccaReadings;
 
         try {
-            general_readings = connector.getGeneralReadings();
+            generalReadings = connector.getGeneralReadings();
         } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
 
         LOGGER.info(String.format("Retrieved %d school readings",
-        general_readings.getJSONObject("result").getJSONArray("records").length()));
+        generalReadings.getJSONObject("result").getJSONArray("records").length()));
         jsonMessage.accumulate("Result", "Retrieved"
-                + general_readings.getJSONObject("result").getJSONArray("records").length() + " school readings");
+                + generalReadings.getJSONObject("result").getJSONArray("records").length() + " school readings");
 
         //SqlHandler to instantiate general information
 
         try {
-            programme_readings = connector.getProgrammes();
+            programmeReadings = connector.getProgrammes();
         } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
 
         LOGGER.info(String.format("Retrieved programmes readings for %d schools",
-        programme_readings.getJSONObject("result").getJSONArray("records").length()));
+        programmeReadings.getJSONObject("result").getJSONArray("records").length()));
         jsonMessage.accumulate("Result", "Retrieved"
-                + programme_readings.getJSONObject("result").getJSONArray("records").length() + "programme readings");
+                + programmeReadings.getJSONObject("result").getJSONArray("records").length() + "programme readings");
 
         try {
-            cca_readings = connector.getCCA();
+            ccaReadings = connector.getCCA();
         } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
@@ -132,7 +132,7 @@ public class SchoolAgent extends JPSAgent {
 
         LOGGER.info(String.format("Retrieved CCA Readings"));
         jsonMessage.accumulate("Result",
-                "Retrieved" + cca_readings.getJSONObject("result").getJSONArray("records").length() + "CCA Readings");
+                "Retrieved" + ccaReadings.getJSONObject("result").getJSONArray("records").length() + "CCA Readings");
 
         return jsonMessage;
     }

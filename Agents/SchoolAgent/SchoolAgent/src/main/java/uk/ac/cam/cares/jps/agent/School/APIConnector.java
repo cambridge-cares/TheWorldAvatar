@@ -18,9 +18,9 @@ public class APIConnector {
     private static final String API_ERROR_MSG = "Data cannot be retrieved from the following: ";
     private static final Logger LOGGER = LogManager.getLogger(APIConnector.class);
 
-    String school_general_info_url;
-    String school_programmes_url;
-    String school_cca_url;
+    String schoolGeneralInfoUrl;
+    String schoolProgrammesUrl;
+    String schoolCcaUrl;
 
     // Constructor to initialise the variables according to the Properties file
     public APIConnector(String filepath) throws IOException {
@@ -74,7 +74,7 @@ public class APIConnector {
      */
     private JSONObject retrieveGeneralData() throws IOException, JSONException {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            HttpGet readrequest = new HttpGet(school_general_info_url);
+            HttpGet readrequest = new HttpGet(schoolGeneralInfoUrl);
             try (CloseableHttpResponse response = httpclient.execute(readrequest)) {
                 int status = response.getStatusLine().getStatusCode();
                 if (status == 200) {
@@ -95,7 +95,7 @@ public class APIConnector {
      */
     private JSONObject retreiveProgrammes() throws IOException, JSONException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpGet readrequest = new HttpGet(school_programmes_url);
+            HttpGet readrequest = new HttpGet(schoolProgrammesUrl);
             try (CloseableHttpResponse response = httpClient.execute(readrequest)) {
                 int status = response.getStatusLine().getStatusCode();
                 if (status == 200) {
@@ -115,7 +115,7 @@ public class APIConnector {
      */
     private JSONObject retrieveCCA() throws IOException, JSONException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpGet readrequest = new HttpGet(school_cca_url);
+            HttpGet readrequest = new HttpGet(schoolCcaUrl);
             try (CloseableHttpResponse response = httpClient.execute(readrequest)) {
                 int status = response.getStatusLine().getStatusCode();
                 if (status == 200) {
@@ -143,19 +143,19 @@ public class APIConnector {
             prop.load(input);
 
             if (prop.containsKey("school.general.info.url")) {
-                this.school_general_info_url = prop.getProperty("school.general.info.url");
+                this.schoolGeneralInfoUrl = prop.getProperty("school.general.info.url");
             } else {
                 throw new IOException("The file is missing: \"school.general.info.url=<api_url>\"");
             }
 
             if (prop.containsKey("school.programmes.url")) {
-                this.school_programmes_url = prop.getProperty("school.programmes.url");
+                this.schoolProgrammesUrl = prop.getProperty("school.programmes.url");
             } else {
                 throw new IOException("The file is missing: \"school.programmes.url=<api_url>\"");
             }
 
             if (prop.containsKey("school.cca.url")) {
-                this.school_cca_url = prop.getProperty("school.cca.url");
+                this.schoolCcaUrl = prop.getProperty("school.cca.url");
             } else {
                 throw new IOException("The file is missing: \"school.cca.url=<api_url>\"");
             }
