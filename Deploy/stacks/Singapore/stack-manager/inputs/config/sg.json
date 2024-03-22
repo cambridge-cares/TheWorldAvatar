@@ -14,7 +14,8 @@
             "ship-input-agent",
             "buildingidentificationagent",
             "carpark-agent",
-            "osmagent"
+            "osmagent",
+            "gfaagent"
         ],
         "excludes": []
     },
