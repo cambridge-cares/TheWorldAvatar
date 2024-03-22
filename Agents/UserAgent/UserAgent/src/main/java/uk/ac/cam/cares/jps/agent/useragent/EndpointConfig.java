@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.useragent;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
+import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
@@ -18,16 +19,16 @@ public class EndpointConfig {
     
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
-        BlazegraphEndpointConfig blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph",
+        BlazegraphEndpointConfig blazegraphEndpointConfig = containerClient.readEndpointConfig(EndpointNames.BLAZEGRAPH,
                     BlazegraphEndpointConfig.class);
         this.kgurl = blazegraphEndpointConfig.getUrl("kb");
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
 
-        OntopEndpointConfig ontopEndpointConfig = containerClient.readEndpointConfig("ontop", OntopEndpointConfig.class);
+        OntopEndpointConfig ontopEndpointConfig = containerClient.readEndpointConfig(EndpointNames.ONTOP, OntopEndpointConfig.class);
         this.ontopurl = ontopEndpointConfig.getUrl();
 
-        postGISEndpointConfig = containerClient.readEndpointConfig("postgis",
+        postGISEndpointConfig = containerClient.readEndpointConfig(EndpointNames.POSTGIS,
                     PostGISEndpointConfig.class);
         this.dbuser = postGISEndpointConfig.getUsername();
         this.dbpassword = postGISEndpointConfig.getPassword();
@@ -35,7 +36,6 @@ public class EndpointConfig {
     public String getKgurl() {
         return this.kgurl;
     }
-    public String getOntopurl() { return this.ontopurl; }
     public String getDburl() {
         return postGISEndpointConfig.getJdbcURL("postgres");
     }

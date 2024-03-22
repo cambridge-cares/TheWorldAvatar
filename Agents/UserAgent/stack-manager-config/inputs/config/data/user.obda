@@ -6,11 +6,16 @@ sla:    https://www.theworldavatar.com/kg/sensorloggerapp/
 
 [MappingDeclaration] @collection [[
 mappingId   User
-target      mon:Person_{id} a mon:Person;
+target      mon:person_{id} a mon:Person;
                 mon:personalMailbox {email}^^xsd:string;
                 mon:firstName {first_name}^^xsd:string;
                 mon:lastName {last_name}^^xsd:string;
                 sla:userName {username}^^xsd:string.
 source      SELECT id, email, first_name, last_name, username
             FROM "keycloak"."user_entity"
+
+mappingId   Phone
+target      mon:person_{user_id} sla::hasA sla:smartphone_{phone_id}.
+source      SELECT user_id, phone_id
+            FROM "timeline"."smartPhone"
 ]]

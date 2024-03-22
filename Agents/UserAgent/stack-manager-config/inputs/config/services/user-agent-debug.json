@@ -20,6 +20,9 @@
             },
             {
               "ConfigName": "postgis"
+            },
+            {
+              "ConfigName": "ontop"
             }
           ],
           "Secrets": [
@@ -46,4 +49,4 @@
         "externalPath": "/user-agent/"
       }
     }
-  }
+}
