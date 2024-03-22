@@ -1,30 +1,42 @@
 package uk.ac.cam.cares.jps.agent.useragent;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Node_URI;
 import org.apache.jena.sparql.core.Var;
-
+import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class KGQueryClient {
 
     private RemoteStoreClient storeClient;
-    private String ontopEndpoint;
     // Prefixes
-    static final String ONTOSLMA = "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/";
     static final String SLA = "https://www.theworldavatar.com/kg/sensorloggerapp/";
-    static final String OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
-    static final String SF ="http://www.opengis.net/ont/sf#";
-    static final String ONTODEVICE = "https://www.theworldavatar.com/kg/ontodevice/";
     static final String MON = "https://w3id.org/MON/person.owl";
-    static final String SAREF="https://saref.etsi.org/core/";
-    static final String RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     final static String str_s = "s";
     final static Var VAR_S = Var.alloc(str_s);
     final static String str_o = "o";
     final static Var VAR_O = Var.alloc(str_o);
 
-    public KGQueryClient(RemoteStoreClient storeClient, String ontopEndpoint) {
+    public KGQueryClient(RemoteStoreClient storeClient) {
         this.storeClient = storeClient;
-        this.ontopEndpoint = ontopEndpoint;
+    }
+
+    public JSONArray getPhoneIds(String userId) {
+        String userIri = MON + "#person_" + userId;
+        Node userIriNode = NodeFactory.createURI(userIri);
+
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("slm", SLA)
+                .addWhere(userIriNode, "slm:hasA", VAR_O);
+
+        SelectBuilder sb = new SelectBuilder()
+                .setDistinct(true)
+                .addVar(VAR_O).addWhere(wb);
+
+        return storeClient.executeQuery(sb.buildString());
     }
 
 }

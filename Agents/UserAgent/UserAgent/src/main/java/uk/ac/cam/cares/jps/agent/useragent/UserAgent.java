@@ -3,13 +3,12 @@ package uk.ac.cam.cares.jps.agent.useragent;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.codehaus.jettison.json.JSONArray;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -17,10 +16,11 @@ import javax.ws.rs.BadRequestException;
 import java.nio.file.Path;
 
 
-@WebServlet(urlPatterns = "/registerPhone")
+@WebServlet(urlPatterns = {"/registerPhone", "/getPhoneIds"})
 
 public class UserAgent extends JPSAgent {
     private TimelineRDBStoreHelper timelineRdbStoreHelper;
+    private KGQueryClient kgQueryClient;
     private final Logger LOGGER = LogManager.getLogger(UserAgent.class);
 
     private static final Path obdaFile = Path.of("/inputs/user.obda");
@@ -33,6 +33,8 @@ public class UserAgent extends JPSAgent {
         LOGGER.fatal("This is a fatal message.");
 
         EndpointConfig endpointConfig = new EndpointConfig();
+
+        kgQueryClient = new KGQueryClient(new RemoteStoreClient(endpointConfig.getOntopurl()));
 
         LOGGER.info("initializing rdb");
         RemoteRDBStoreClient postgresRdbClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
@@ -58,7 +60,15 @@ public class UserAgent extends JPSAgent {
             JSONObject result = new JSONObject();
             result.put("Comment", "Phone is registered successfully.");
             return result;
+        } else if (request.getRequestURI().contains("getPhoneIds")) {
+            validateInputGetPhoneIds(requestParams);
+            JSONArray phoneIds = kgQueryClient.getPhoneIds(requestParams.getString("userId"));
+            JSONObject result = new JSONObject();
+            result.put("PhoneIds", phoneIds);
+            result.put("Comment", "Phone ids are retrieved.");
+            return result;
         }
+
         return processRequestParameters(requestParams);
     }
 
@@ -69,6 +79,13 @@ public class UserAgent extends JPSAgent {
         }
         if (!requestParams.has("phoneId")) {
             throw new BadRequestException("No phone id provided");
+        }
+    }
+
+    private void validateInputGetPhoneIds(JSONObject requestParams) throws BadRequestException {
+        LOGGER.debug("Request received: " + requestParams.toString());
+        if (!requestParams.has("userId")) {
+            throw new BadRequestException("No user id provided");
         }
     }
 }

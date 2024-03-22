@@ -48,4 +48,7 @@ public class EndpointConfig {
     public String getDbpassword() {
         return this.dbpassword;
     }
+    public String getOntopurl() {
+        return ontopurl;
+    }
 }

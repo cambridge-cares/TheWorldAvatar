@@ -15,7 +15,7 @@ source      SELECT id, email, first_name, last_name, username
             FROM "keycloak"."user_entity"
 
 mappingId   Phone
-target      mon:person_{user_id} sla::hasA sla:smartphone_{phone_id}.
+target      mon:person_{user_id} sla:hasA sla:smartphone_{phone_id}.
 source      SELECT user_id, phone_id
             FROM "timeline"."smartPhone"
 ]]
