@@ -10,7 +10,7 @@
      xmlns:ontoschool="https://www.theworldavatar.com/kg/ontoschool/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoschool/">
         <owl:imports rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl"/>
-        <dc:date>21 March 2024</dc:date>
+        <dc:date>22 March 2024</dc:date>
         <rdfs:comment>OntoSchool is an ontology to represent schools and their information such as (contact information, address, CCAs etc).</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -290,10 +290,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoschool/GovermentAidedSchool -->
+    <!-- https://www.theworldavatar.com/kg/ontoschool/GovernmentAidedSchool -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/GovermentAidedSchool">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/GovernmentAidedSchool">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
         <rdfs:comment>Educational institutions that receive partial funding from the government but are managed independently.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
@@ -330,7 +330,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/JuniorCollege">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/Secondary"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/SecondaryEducation"/>
         <rdfs:comment>This level offers advanced coursework, preparation for college or university admissions, and opportunities for students to pursue specialized subjects or interests in preparation for further academic study.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
         <rdfs:label>Junior college</rdfs:label>
@@ -395,13 +395,6 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
         <rdfs:label>School</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoschool/Secondary -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/Secondary"/>
     
 
 
@@ -472,7 +465,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/CCAGroups"/>
         <rdfs:comment>Uniformed groups CCAs involve organizations that promote leadership, discipline, and community service through structured programs and activities.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
-        <rdfs:label>Uniformed group</rdfs:label>
+        <rdfs:label>Uniformed groups</rdfs:label>
     </owl:Class>
     
 
