@@ -1,6 +1,6 @@
 from functools import cached_property
 import json
-import re
+import regex
 from typing import Iterable, List
 from dataclasses import asdict
 
@@ -64,7 +64,11 @@ class LabelsStore:
         # TODO: accumulate pages from Redis to ensure all labels are retrieved
         docs = (
             self.redis_client.ft(self.index_name)
-            .search(Query("*").return_field("$.labels", as_field="labels_serialized").paging(0, 10000))
+            .search(
+                Query("*")
+                .return_field("$.labels", as_field="labels_serialized")
+                .paging(0, 10000)
+            )
             .docs
         )
         labels = [label for doc in docs for label in json.loads(doc.labels_serialized)]
@@ -77,7 +81,11 @@ class LabelsStore:
         docs = (
             self.redis_client.ft(self.index_name)
             .search(
-                Query("@labels:{{{label}}}".format(label=re.escape(label))).return_field("IRI")
+                Query(
+                    "@labels:{{{label}}}".format(
+                        label=regex.escape(label, special_only=False)
+                    )
+                ).return_field("IRI")
             )
             .docs
         )
@@ -102,11 +110,12 @@ class LabelsStore:
             label
             for doc in self.redis_client.ft(self.index_name)
             .search(
-                Query("@IRI:{{iri}}".format(iri=IRI)).return_field(
-                    "$.labels", as_field="labels_serialized"
-                )
+                Query(
+                    "@IRI:{{{iri}}}".format(iri=regex.escape(IRI, special_only=False))
+                ).return_field("$.labels", as_field="labels_serialized")
             )
             .docs
             for label in json.loads(doc.labels_serialized)
         ]
+
         return list(set(labels))

@@ -25,19 +25,31 @@ class SGFactoriesAgent:
         self.labels_store = labels_store
         self.sparql_maker = sparql_maker
 
+    def _flatten_sparql_response(self, res: dict):
+        vars: List[str] = res["head"]["vars"]
+        bindings = [
+            {k: v["value"] for k, v in binding.items()}
+            for binding in res["results"]["bindings"]
+        ]
+        return vars, bindings
+
+    def _add_label(self, vars: List[str], bindings: List[dict]):
+        vars.insert(vars.index("IRI") + 1, "label")
+        for binding in bindings:
+            labels = self.labels_store.lookup_labels(binding["IRI"])
+            if labels:
+                binding["label"] = labels[0]
+
     def lookup_factory_attribute(self, plant_name: str, attr_key: FactoryAttrKey):
         iris = self.labels_store.link_entity(plant_name)
 
         query = self.sparql_maker.lookup_factory_attribute(iris=iris, attr_key=attr_key)
         res = self.ontop_client.query(query)
 
-        return QAData(
-            vars=res["head"]["vars"],
-            bindings=[
-                {k: v["value"] for k, v in binding.items()}
-                for binding in res["results"]["bindings"]
-            ],
-        )
+        vars, bindings = self._flatten_sparql_response(res)
+        self._add_label(vars, bindings)
+
+        return QAData(vars=vars, bindings=bindings)
 
     def _aggregate_across_industries(
         self, industry: Optional[Industry], query_maker: Callable[[Industry], str]
@@ -52,11 +64,7 @@ class SGFactoriesAgent:
             query = query_maker(_industry)
 
             res = self.ontop_client.query(query)
-            _vars = res["head"]["vars"]
-            _bindings = [
-                {k: v["value"] for k, v in binding.items()}
-                for binding in res["results"]["bindings"]
-            ]
+            _vars, _bindings = self._flatten_sparql_response(res)
 
             _vars.insert(0, "Industry")
             for binding in _bindings:
@@ -83,6 +91,7 @@ class SGFactoriesAgent:
                 industry=_industry, numattr_constraints=numattr_constraints, limit=limit
             ),
         )
+        self._add_label(vars, bindings)
 
         return QAData(vars=vars, bindings=bindings)
 
