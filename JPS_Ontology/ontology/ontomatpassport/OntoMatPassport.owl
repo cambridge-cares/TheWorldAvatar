@@ -625,6 +625,16 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CompositionProperty"/>
+        <rdfs:comment xml:lang="en">A part or component of a bigger whole or component or product.</rdfs:comment>
+        <rdfs:label xml:lang="en">Constituent part</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#Density -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Density">
@@ -840,6 +850,7 @@
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#MaterialPassport -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#MaterialPassport">
+        <rdfs:comment xml:lang="en">A passport or document providing identification, physical, temporal, sustainability and other properties of a product or component.</rdfs:comment>
         <rdfs:label xml:lang="en">Material passport</rdfs:label>
     </owl:Class>
     
