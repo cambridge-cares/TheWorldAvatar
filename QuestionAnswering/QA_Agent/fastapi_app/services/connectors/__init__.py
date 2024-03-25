@@ -1,4 +1,6 @@
 from functools import cache
+import functools
+import itertools
 import logging
 import time
 from typing import Dict, List, Optional
@@ -17,14 +19,16 @@ class AgentConnectorMediator:
     def __init__(
         self,
         func_call_predictor: IFuncCaller,
+        common_connectors: List[AgentConnectorBase],
         domain2connectors: Dict[str, List[AgentConnectorBase]],
     ):
         self.func_call_predictor = func_call_predictor
+        self.common_connectors = common_connectors
         self.domain2connectors = domain2connectors
         # TODO: validate that no connectors have the same methodname
         self.funcname2connector = {
             methodname: connector
-            for connectors in domain2connectors.values()
+            for connectors in itertools.chain([common_connectors], domain2connectors.values())
             for connector in connectors
             for methodname in connector.name2method.keys()
         }
@@ -33,7 +37,7 @@ class AgentConnectorMediator:
     def _get_funcs(self, domain: str):
         return [
             func
-            for connector in self.domain2connectors[domain]
+            for connector in itertools.chain(self.common_connectors, self.domain2connectors[domain])
             for func in connector.funcs
         ]
 

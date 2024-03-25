@@ -203,21 +203,24 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
         if step:
             steps.append(step)
 
-        logger.info("Parsing factory constraints: " + numerical_constraints)
-        timestamp = time.time()
-        parsed_constraints = self.factory_constraints_parser.parse(
-            numerical_constraints
-        )
-        latency = time.time() - timestamp
-        logger.info("Parsed factory constraints: " + str(parsed_constraints))
-        steps.append(
-            QAStep(
-                action="parse_factory_constraint",
-                arguments=numerical_constraints,
-                results=str(parsed_constraints),
-                latency=latency,
+        if numerical_constraints:
+            logger.info("Parsing factory constraints: " + numerical_constraints)
+            timestamp = time.time()
+            parsed_constraints = self.factory_constraints_parser.parse(
+                numerical_constraints
             )
-        )
+            latency = time.time() - timestamp
+            logger.info("Parsed factory constraints: " + str(parsed_constraints))
+            steps.append(
+                QAStep(
+                    action="parse_factory_constraint",
+                    arguments=numerical_constraints,
+                    results=str(parsed_constraints),
+                    latency=latency,
+                )
+            )
+        else:
+            parsed_constraints = dict()
 
         timestamp = time.time()
         data = self.agent.find_factories(

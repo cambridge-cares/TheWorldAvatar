@@ -63,6 +63,7 @@ class SGFactoriesAgent:
         for _industry in industries:
             query = query_maker(_industry)
 
+            print(query)
             res = self.ontop_client.query(query)
             _vars, _bindings = self._flatten_sparql_response(res)
 

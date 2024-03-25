@@ -86,23 +86,6 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
                 },
                 "required": ["attribute_aggregate"],
             },
-            {
-                "name": "explain_concepts",
-                "description": "Provide explainations for concepts related to land lots",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "concepts": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "description": "Concept e.g. commercial plot, Business 1 land use, Residential/Institution",
-                            },
-                        }
-                    },
-                },
-                "required": ["concepts"],
-            },
         ]
 
     @cached_property
@@ -111,7 +94,6 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
             "lookup_plot_attribute": self.lookup_plot_attribute,
             "count_plots": self.count_plots,
             "compute_aggregate_plot_attribute": self.compute_aggregate_plot_attribute,
-            "explain_concepts": self.explain_concepts,
         }
 
     def _parse_plot_constraints(self, plot_constraints: str):
@@ -223,22 +205,6 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
                 arguments=dict(
                     plot_constraints=str(constraints), attr_aggs=attr_agg_unpacked
                 ),
-                latency=latency,
-            )
-        )
-
-        return steps, data
-
-    def explain_concepts(self, concepts: List[str]):
-        steps: List[QAStep] = []
-
-        timestamp = time.time()
-        data = self.agent.retrieve_concepts(concepts)
-        latency = time.time() - timestamp
-        steps.append(
-            QAStep(
-                action="retrieve_concepts",
-                arguments=concepts,
                 latency=latency,
             )
         )
