@@ -10,7 +10,7 @@
      xmlns:ontoschool="https://www.theworldavatar.com/kg/ontoschool/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoschool/">
         <owl:imports rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl"/>
-        <dc:date>22 March 2024</dc:date>
+        <dc:date>25 March 2024</dc:date>
         <rdfs:comment>OntoSchool is an ontology to represent schools and their information such as (contact information, address, CCAs etc).</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -53,6 +53,19 @@
      -->
 
 
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/hasAddress -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/hasAddress">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
+        <rdfs:comment>A relationship that describes a school's address.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>has address</rdfs:label>
+    </owl:ObjectProperty>
     
 
 
@@ -121,6 +134,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoschool/hasProperty -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/hasProperty">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+        <rdfs:comment>A relationship that relates a school to its built structures.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>has property</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -184,6 +210,13 @@
     
 
 
+    <!-- http://ontology.eil.utoronto.ca/icontact.owl#Address -->
+
+
+    <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
+    
+
+
     <!-- http://ontology.eil.utoronto.ca/icontact.owl#PhoneNumber -->
 
 
@@ -191,10 +224,17 @@
     
 
 
-    <!-- https://w3id.org/bot#Building -->
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization -->
 
 
-    <owl:Class rdf:about="https://w3id.org/bot#Building"/>
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Property -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
     
 
 
@@ -390,7 +430,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/School">
-        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Building"/>
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization"/>
         <rdfs:comment>An educational institution and building designed to provide learning spaces and learning environments for the teaching of students under the direction of teachers.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
         <rdfs:label>School</rdfs:label>

@@ -4,7 +4,7 @@ OntoSchool,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoSchool,TBox,"OntoSchool is an ontology to represent schools and their information such as (contact information, address, CCAs etc).",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoSchool,TBox,http://ontology.eil.utoronto.ca/icontact.owl,http://www.w3.org/2002/07/owl#imports,,,,,,
 OntoSchool,TBox,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl,http://www.w3.org/2002/07/owl#imports,,,,,,
-School,Class,https://w3id.org/bot#Building,IS-A,,,,An educational institution and building designed to provide learning spaces and learning environments for the teaching of students under the direction of teachers.,https://www.theworldavatar.com/kg/ontoschool/,School
+School,Class,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization,IS-A,,,,An educational institution and building designed to provide learning spaces and learning environments for the teaching of students under the direction of teachers.,https://www.theworldavatar.com/kg/ontoschool/,School
 GovernmentSchool,Class,School,IS-A,,,,Educational institutions funded and managed by the government.,https://www.theworldavatar.com/kg/ontoschool/,Government school
 GovernmentAidedSchool,Class,School,IS-A,,,,Educational institutions that receive partial funding from the government but are managed independently.,https://www.theworldavatar.com/kg/ontoschool/,Government aided school
 IndependentSchool,Class,School,IS-A,,,,Educational institutions that are not administered by the government.,https://www.theworldavatar.com/kg/ontoschool/,Independent school
@@ -33,6 +33,8 @@ hasCCA,Object Property,,,CCAGroups,CCA,,A relationship which decribes the differ
 hasContactNumber,Object Property,,,School,http://ontology.eil.utoronto.ca/icontact.owl#PhoneNumber,,A relationship which describes the contact number of a school.,https://www.theworldavatar.com/kg/ontoschool/,has contact number
 hasEducationLevel,Object Property,,,School,EducationLevel,,A relationship which describes the education level that a school provides.,https://www.theworldavatar.com/kg/ontoschool/,has education level
 hasGenderComposition,Object Property,,,School,GenderComposition,,"A relationship which describes the gender composition of a school (Boys only, girls only, mixed).",https://www.theworldavatar.com/kg/ontoschool/,has gender composition
+hasProperty,Object Property,,,School,https://www.theworldavatar.com/kg/ontobuiltenv/Property,,A relationship that relates a school to its built structures.,https://www.theworldavatar.com/kg/ontoschool/,has property
+hasAddress,Object Property,,,School,http://ontology.eil.utoronto.ca/icontact.owl#Address,,A relationship that describes a school's address.,https://www.theworldavatar.com/kg/ontoschool/,has address
 offersProgramme,Data Property,,,School,String,,Programmes offered by the school.,https://www.theworldavatar.com/kg/ontoschool/,offers programme
 http://ontology.eil.utoronto.ca/icontact.owl#hasWebSite,Data Property,,,School,String,,Website of the school.,https://www.theworldavatar.com/kg/ontoschool/,hasWeb Site
 http://ontology.eil.utoronto.ca/icontact.owl#hasEmail,Data Property,,,School,String,,Email address of a school.,https://www.theworldavatar.com/kg/ontoschool/,has email
