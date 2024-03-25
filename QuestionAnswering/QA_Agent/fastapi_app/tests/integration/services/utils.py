@@ -15,6 +15,7 @@ class TriplesManager:
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     <entry key="com.bigdata.rdf.sail.namespace">{namespace}</entry>
+    <entry key="com.bigdata.rdf.store.AbstractTripleStore.axiomsClass">com.bigdata.rdf.axioms.NoAxioms</entry>
 </properties>""".format(
             namespace=namespace
         )
@@ -50,7 +51,7 @@ class TriplesManager:
 INSERT {{
 {triples}
 }}
-WHERE {{}}""".format(
+WHERE {{ }}""".format(
             prefixes=self.prefixes,
             triples=triples,
         )
