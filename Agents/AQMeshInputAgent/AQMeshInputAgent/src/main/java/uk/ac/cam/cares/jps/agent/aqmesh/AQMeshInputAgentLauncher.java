@@ -1,11 +1,23 @@
 package uk.ac.cam.cares.jps.agent.aqmesh;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,8 +27,9 @@ import org.apache.logging.log4j.Logger;
  * data from the API and write it into the database.
  * @author Niklas Kasenburg
  */
-public class AQMeshInputAgentLauncher {
-
+@WebServlet(urlPatterns = {"/retrieve", "/status"})
+public class AQMeshInputAgentLauncher extends JPSAgent {
+    private boolean valid = false;
     /**
      * Logger for reporting info/errors.
      */
@@ -33,8 +46,130 @@ public class AQMeshInputAgentLauncher {
             " in the pointers if one readings was successful and needs to be fixed!";
     private static final String ONE_READING_EMPTY_ERROR_MSG = "One of the readings (gas or particle) is empty, that means there is " +
             "a mismatch in the pointer for each readings. This should be fixed (and might require a clean up of the database)!";
+    private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
+    
+    /**
+     * Environment Variables
+     */
+    private static final String AQMESH_AGENT_PROPERTIES_ENV = "AQMESH_AGENT_PROPERTIES";
+    private static final String AQMESH_API_POPERTIES_ENV = "AQMESH_API_PROPERTIES";
+    private static final String AQMESH_CLIENT_PROPERTIES_ENV = "AQMESH_CLIENT_PROPERTIES";
 
-    // TODO: Use proper argument parsing
+    /**
+     * Keys
+     */
+    private static final String JSON_ERROR_KEY = "Error";
+    private static final String JSON_RESULT_KEY = "Result";
+
+    /**
+     * Servlet init.
+     *
+     * @throws ServletException
+     */
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        LOGGER.debug("This is a debug message.");
+        LOGGER.info("This is an info message.");
+        LOGGER.warn("This is a warn message.");
+        LOGGER.error("This is an error message.");
+        LOGGER.fatal("This is a fatal message.");
+        valid = true;
+    }
+
+    /**
+     * A method to process all the different HTTP (GET/POST/PULL..) requests.
+     * Do note all requests to JPS agents are processed similarly and will only return response objects.
+     *
+     * @return A response to the request called as a JSON Object.
+     */
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+        return processRequestParameters(requestParams);
+    }
+
+    /**
+     * A method that process all the different HTTP (GET/POST/PULL..) requests.
+     * This will validate the incoming request type and parameters against their route options.
+     *
+     * @return A response to the request called as a JSON Object.
+     */
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
+        String datetime = dateFormat.format(new Date());
+        LOGGER.info("Request received at: {}", datetime);
+        JSONObject msg = new JSONObject();
+        String route = requestParams.get("requestUrl").toString();
+        route = route.substring(route.lastIndexOf("/") + 1);
+        String[] args = new String[]{AQMESH_AGENT_PROPERTIES_ENV, AQMESH_CLIENT_PROPERTIES_ENV, AQMESH_API_POPERTIES_ENV};
+        switch (route) {
+            case "status":
+                msg = statusRoute();
+                break;
+            case "retrieve":
+                int delay = requestParams.getInt("delay");
+                int interval = requestParams.getInt("interval");
+                String timeunit = requestParams.getString("timeunit");
+                LOGGER.info("Executing retrieve route ...");
+                setSchedulerForRetrievedRoute(args, delay, interval, timeunit);
+                msg.put("result", "Retrieve route will be executed at the following intervals:" + interval + " " + timeunit);
+                break;
+            default:
+                LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
+                msg.put(JSON_ERROR_KEY, UNDEFINED_ROUTE_ERROR_MSG + route);
+        }
+        return msg;
+    }
+
+    /**
+     * Handle GET /status route and return the status of the agent.
+     *
+     * @return Status of the agent
+     */
+    private JSONObject statusRoute() {
+        JSONObject response = new JSONObject();
+        LOGGER.info("Detected request to get agent status...");
+        if (valid) {
+            response.put(JSON_RESULT_KEY, "Agent is ready to receive requests.");
+        } else {
+            response.put(JSON_ERROR_KEY, "Agent could not be initialised! Please check logs for more information.");
+        }
+        return response;
+    }
+
+    /**
+     * Set up scheduler for the retrieve route
+     * @param args contains the environment variables that indicates the location of each config file
+     * @param delay time delay before first execution
+     * @param interval interval between successive executions
+     * @param timeunit the time unit for delay and interval
+     */
+    private void setSchedulerForRetrievedRoute(String[] args, int delay, int interval, String timeunit) {
+        // Create a ScheduledExecutorService with a single thread
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        
+        // Define the task to be scheduled
+        Runnable task = new Runnable() {
+            public void run() {
+                main(args);
+            }
+        };
+        TimeUnit timeUnit = null;
+        switch (timeunit) {
+            case "seconds":
+                timeUnit = TimeUnit.SECONDS;
+                break;
+            case "minutes":
+                timeUnit = TimeUnit.MINUTES;
+                break;
+            case "hours":
+                timeUnit = TimeUnit.HOURS;
+                break;
+        }
+        scheduler.scheduleAtFixedRate(task, delay, interval, timeUnit);
+    }
+
     /**
      * Main method that runs through all steps to update the data received from the AQMesh API.
      * defined in the provided properties file.
