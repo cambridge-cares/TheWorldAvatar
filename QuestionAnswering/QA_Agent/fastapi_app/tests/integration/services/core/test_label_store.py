@@ -1,7 +1,7 @@
-from services.core.labels_store import IRIWithLabels, LabelsStore
+from services.core.label_store import IRIWithLabels, LabelStore
 
 
-class TestLabelsStore:
+class TestLabelStore:
     SAMPLE_BINDINGS = [
         IRIWithLabels(IRI="1", labels=["one", "One"]),
         IRIWithLabels(IRI="http://test.org/2", labels=["two", "tWo"]),
@@ -11,7 +11,7 @@ class TestLabelsStore:
 
     def test_linkEntity(self, redis_client):
         # Arrange
-        labels_store = LabelsStore(
+        labels_store = LabelStore(
             redis_client=redis_client,
             key_prefix="test:",
             index_name="idx:test",
@@ -27,7 +27,7 @@ class TestLabelsStore:
 
     def test_lookupLabels(self, redis_client):
         # Arrange
-        labels_store = LabelsStore(
+        labels_store = LabelStore(
             redis_client=redis_client,
             key_prefix="test:",
             index_name="idx:test",

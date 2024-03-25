@@ -5,14 +5,14 @@ from yarl import URL
 from model.constraint import ExtremeValueConstraint
 from model.qa import QAData
 from model.aggregate import AggregateOperator
-from services.core.labels_store import LabelsStore
+from services.core.label_store import LabelStore
 from services.core.kg import KgClient
 from services.connectors.sg_factories.model import (
     FactoryNumAttrKey,
     Industry,
 )
 from services.connectors.sg_factories.agent import SGFactoriesAgent
-from services.connectors.sg_factories.agent.labels_store import (
+from services.connectors.sg_factories.agent.label_store import (
     sgFactories_bindings_gen,
 )
 from services.connectors.sg_factories.agent.make_sparql import (
@@ -98,7 +98,7 @@ def factory_subclasses():
 def sg_factories_labels_store(
     redis_client, sg_factories_ontop_client, factory_subclasses
 ):
-    yield LabelsStore(
+    yield LabelStore(
         redis_client=redis_client,
         key_prefix="sg_factories:factories:",
         index_name="idx:sg_factories:factories",
@@ -117,7 +117,7 @@ def sg_factories_sparql_maker(factory_subclasses):
 @pytest.fixture(scope="class")
 def sg_factories_agent(
     sg_factories_ontop_client: KgClient,
-    sg_factories_labels_store: LabelsStore,
+    sg_factories_labels_store: LabelStore,
     sg_factories_sparql_maker: SGFactoriesSPARQLMaker,
 ):
     yield SGFactoriesAgent(
