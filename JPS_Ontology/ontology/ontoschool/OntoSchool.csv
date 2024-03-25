@@ -4,7 +4,7 @@ OntoSchool,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoSchool,TBox,"OntoSchool is an ontology to represent schools and their information such as (contact information, address, CCAs etc).",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoSchool,TBox,http://ontology.eil.utoronto.ca/icontact.owl,http://www.w3.org/2002/07/owl#imports,,,,,,
 OntoSchool,TBox,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl,http://www.w3.org/2002/07/owl#imports,,,,,,
-School,Class,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization,IS-A,,,,An educational institution and building designed to provide learning spaces and learning environments for the teaching of students under the direction of teachers.,https://www.theworldavatar.com/kg/ontoschool/,School
+School,Class,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization,IS-A,,,,An educational institution designed to provide learning spaces and learning environments for the teaching of students under the direction of teachers.,https://www.theworldavatar.com/kg/ontoschool/,School
 GovernmentSchool,Class,School,IS-A,,,,Educational institutions funded and managed by the government.,https://www.theworldavatar.com/kg/ontoschool/,Government school
 GovernmentAidedSchool,Class,School,IS-A,,,,Educational institutions that receive partial funding from the government but are managed independently.,https://www.theworldavatar.com/kg/ontoschool/,Government aided school
 IndependentSchool,Class,School,IS-A,,,,Educational institutions that are not administered by the government.,https://www.theworldavatar.com/kg/ontoschool/,Independent school

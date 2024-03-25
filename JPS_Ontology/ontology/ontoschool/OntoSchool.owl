@@ -431,7 +431,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/School">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization"/>
-        <rdfs:comment>An educational institution and building designed to provide learning spaces and learning environments for the teaching of students under the direction of teachers.</rdfs:comment>
+        <rdfs:comment>An educational institution designed to provide learning spaces and learning environments for the teaching of students under the direction of teachers.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
         <rdfs:label>School</rdfs:label>
     </owl:Class>
