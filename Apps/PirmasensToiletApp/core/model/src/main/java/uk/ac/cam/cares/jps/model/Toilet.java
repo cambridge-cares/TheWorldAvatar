@@ -33,8 +33,6 @@ public class Toilet {
                 ", locality='" + locality +
                 ", PostalCode='" + postal_code +
                 ", price=" + price + '\'' +
-                ", openTime='" + openTime + '\'' +
-                ", endTime='" + endTime + '\'' +
                 ", otherInfo=" + otherInfo +
                 ", hasImage=" + image +
                 '}';
@@ -115,23 +113,6 @@ public class Toilet {
 
     public Price getPrice() {
         return price;
-    }
-
-
-    public void setOpenTime(String opensOn) {
-        openTime = opensOn;
-    }
-
-    public void setEndTime(String endsOn) {
-        endTime = endsOn;
-    }
-
-    public String getOpenTime() {
-        return openTime;
-    }
-
-    public String getEndTime() {
-        return endTime;
     }
 
     public String getStreetAddress() {

@@ -168,27 +168,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/open_hour_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/component_margin_xs"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/baseline_access_time_24" />
-
-            <TextView
-                android:id="@+id/open_hour_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/component_margin"
-                android:text="@string/open_hours" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/price_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

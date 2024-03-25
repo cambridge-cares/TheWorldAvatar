@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Map;
 
+import uk.ac.cam.cares.jps.network.NetworkConfiguration;
 import uk.ac.cam.cares.jps.routing.R;
 import uk.ac.cam.cares.jps.routing.RoutingFragment;
 import uk.ac.cam.cares.jps.routing.ui.manager.ToiletMarkerManager;
@@ -57,8 +58,7 @@ public class ToiletBottomSheet {
         this.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         this.bottomSheetView = bottomSheetView;
         Picasso.Builder builder = new Picasso.Builder(hostFragment.getContext());
-        builder.defaultBitmapConfig(Bitmap.Config.RGB_565); // or Bitmap.Config.ARGB_8888
-//        builder.defaultBitmapConfig(Bitmap.Config.ARGB_8888);
+        builder.defaultBitmapConfig(Bitmap.Config.RGB_565);
         picasso = builder.build();
         picasso.setLoggingEnabled(true);
         Picasso.setSingletonInstance(picasso);
@@ -84,13 +84,6 @@ public class ToiletBottomSheet {
                 bottomSheetView.findViewById(R.id.address_container).setVisibility(View.GONE);
             }
 
-            if (!toilet.getOpenTime().isEmpty() || !toilet.getEndTime().isEmpty()) {
-                bottomSheetView.findViewById(R.id.open_hour_container).setVisibility(View.VISIBLE);
-                ((TextView) bottomSheetView.findViewById(R.id.open_hour_tv)).setText(String.format("%s - %s", toilet.getOpenTime(), toilet.getEndTime()));
-            } else {
-                bottomSheetView.findViewById(R.id.open_hour_container).setVisibility(View.GONE);
-            }
-
             if (toilet.getPrice() != null) {
                 bottomSheetView.findViewById(R.id.price_container).setVisibility(View.VISIBLE);
                 ((TextView) bottomSheetView.findViewById(R.id.price)).setText(toilet.getPrice().toString());
@@ -102,7 +95,7 @@ public class ToiletBottomSheet {
                 bottomSheetView.findViewById(R.id.cover_image).setVisibility(View.VISIBLE);
                 LOGGER.debug("LOAD IMAGE TOILET " + toilet.getImage().replace("localhost", "192.168.0.12"));
                 Picasso.get()
-                        .load(toilet.getImage().replace("localhost", "192.168.0.12"))
+                        .load(toilet.getImage().replace("localhost", NetworkConfiguration.HOST))
                         .into(((ImageView) bottomSheetView.findViewById(R.id.cover_image)));
             } else {
                 bottomSheetView.findViewById(R.id.cover_image).setVisibility(View.GONE);

@@ -8,8 +8,6 @@ Amenity,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,"Represents v
 Toilet,Class,Amenity,IS-A,,,,Represents public toilets within a city,https://www.theworldavatar.com/kg/ontocitytoilets/,Toilet
 priceSpecification,Class,,,,,," Shows details on toilet pricing, including payment fees and currency information.",https://www.theworldavatar.com/kg/ontocitytoilets/,price specification
 has,Object Property,,,City,Amenity,,has,https://www.theworldavatar.com/kg/ontocitytoilets/,has
-opensOn,Object Property,,,openingHours,DayOfWeek,,,https://www.theworldavatar.com/kg/ontocitytoilets/,opens on
-closesOn,Object Property,,,openingHours,DayOfWeek,,,https://www.theworldavatar.com/kg/ontocitytoilets/,closes on
 hasFee,Object Property,,,Toilet,priceSpecification,,Specifies the pricing details for a specific toilet.,https://www.theworldavatar.com/kg/ontocitytoilets/,has fee
 hasImage,Object Property,,,Amenity,http://www.w3.org/ns/dcat#Dataset,,Indicates if an amenity has image.,https://www.theworldavatar.com/kg/ontocitytoilets/,has image
 hasID,Data Property,,,Amenity,string,,Represents the unique identifier of an amenity.,https://www.theworldavatar.com/kg/ontocitytoilets/,has ID

@@ -17,16 +17,14 @@ WHERE {
   }
   UNION {
     tps:hasImage rdfs:label ?Property . 
-    optional{
     SERVICE [ONTOP] {
        [IRI] tps:hasImage/dcat:distribution/dcat:downloadURL ?Value .
       Filter(BOUND(?Value) && STRLEN(STR(?Value))>0)
     }
-            }
-    
+
   }
   UNION {
-     
+
 
     SERVICE [ONTOP] {
        [IRI] schema:openingHoursSpecification ?open_hour_spec.
@@ -34,7 +32,7 @@ WHERE {
                       schema:closes ?closes;
                       schema:dayOfWeek ?day;
       BIND(CONCAT(STR(SUBSTR(STR(?day), 20)), " open hours") as ?Property)
-     BIND(CONCAT(STR( ?opens ),"-",STR(?closes)) as ?Value)
+     BIND(CONCAT(STR(SUBSTR(STR(?opens), 0,6) ),"-",STR(SUBSTR(STR(?closes), 0,6))) as ?Value)
 
       Filter(BOUND(?Value) && STRLEN(STR(?Value))>0)
     }
@@ -43,18 +41,17 @@ WHERE {
   }
   UNION {
      BIND("validity" as ?Property)
-    optional{
     SERVICE [ONTOP] {
        [IRI] schema:openingHoursSpecification ?open_hour_spec.
       ?open_hour_spec schema:dayOfWeek schema:Monday;
       				schema:validThrough ?through;
                     schema:validFrom ?from;
 
-     BIND(CONCAT(STR( ?from ),"-",STR(?through)) as ?Value)                 
-                                                                   
+     BIND(CONCAT(STR( SUBSTR(STR(?from), 6) )," until ",STR(SUBSTR(STR(?through), 6))) as ?Value)
+
       Filter(BOUND(?Value) && STRLEN(STR(?Value))>0)
     }
-            }
+
     
   }
   UNION {

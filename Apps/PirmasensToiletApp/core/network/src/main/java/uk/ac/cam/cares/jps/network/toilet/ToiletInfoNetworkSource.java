@@ -9,7 +9,12 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -68,16 +73,36 @@ public class ToiletInfoNetworkSource {
                 toilet.setPrice(new Price(toiletInfoJson.optDouble("price"), toiletInfoJson.optString("price currency")));
 
 
-                // time related
-                toilet.setOpenTime(toiletInfoJson.optString("opens on"));
-                toilet.setEndTime(toiletInfoJson.optString("closes on"));
-
                 toilet.setHasFemale(toiletInfoJson.optString("is for female").contains("true"));
                 toilet.setHasMale(toiletInfoJson.optString("is for male").contains("true"));
 
                 toilet.setImage(toiletInfoJson.optString("has image"));
 
                 toilet.addOtherInfo("Operator", toiletInfoJson.optString("has operator"));
+
+                // working hours
+                String[] days = new String[]{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+
+                Map<String, String> toiletWorkingInfoJson = new HashMap<>();
+                for(String day:days){
+                    toiletWorkingInfoJson.put(day, toiletInfoJson.optString(day + " open hours", "Not Open"));
+                }
+
+
+                String workingHoursInfo = aggregateWorkingHours(days, toiletWorkingInfoJson);
+
+                toilet.addOtherInfo("Working Hours", workingHoursInfo);
+
+                String validityPeriod = toiletInfoJson.optString("validity");
+                if (validityPeriod != null && validityPeriod.isEmpty() == false) {
+                    String beginMonth = validityPeriod.substring(0, 2);
+                    String endMonth = validityPeriod.substring(12, 14);
+
+                    toilet.addOtherInfo("Opening Period",
+                            convertMonthNumberToName(Integer.valueOf(beginMonth)) + " - " +
+                                    convertMonthNumberToName(Integer.valueOf(endMonth)));
+                }
+
 
                 onSuccessUpper.onResponse(toilet);
             } catch (JSONException e) {
@@ -87,6 +112,40 @@ public class ToiletInfoNetworkSource {
 
         StringRequest fiaRequest = new StringRequest(Request.Method.GET, getFIARequestUri(osmId), onGetToiletInfo, onFailureUpper);
         connection.addToRequestQueue(fiaRequest);
+    }
+
+    public static String aggregateWorkingHours(String[] days, Map<String, String> toiletInfoJson) {
+        StringBuilder resultBuilder = new StringBuilder();
+        String currentHours = "";
+        String previousHours = "";
+        String beginRange = "Monday";
+        String endRange = "Monday";
+        for (int i = 1; i < days.length; i++) {
+            currentHours = toiletInfoJson.getOrDefault(days[i], "Not Open");
+            previousHours = toiletInfoJson.getOrDefault(days[i-1], "Not Open");
+            if(currentHours.equals(previousHours)){
+                endRange  = days[i];
+            }else{
+
+                if(beginRange.equals(endRange)){
+                    resultBuilder.append(beginRange+": "+previousHours+"\n");
+                }else{
+                    resultBuilder.append(beginRange+"-"+endRange+": "+previousHours+"\n");
+                }
+                beginRange = days[i];
+                endRange= days[i];
+            }
+        }
+
+        return resultBuilder.toString();
+    }
+
+    public static String convertMonthNumberToName(int monthNumber) {
+        if (monthNumber < 1 || monthNumber > 12) {
+            return "Invalid month number";
+        }
+
+        return Month.of(monthNumber).getDisplayName(TextStyle.FULL, Locale.ENGLISH);
     }
 
     private String getFIARequestUri(String toiletId) {
