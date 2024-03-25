@@ -1,22 +1,40 @@
-#sliderStartTime {
+.time-label {
   position: absolute;
   bottom: 10%;
-  left: 18%;
   background-color: #f6f8fa;
   padding: 3px 10px;
-  border-radius: 10px; 
-  backdrop-filter: blur(5px); /* Apply a blur effect to the background */
+  /* border-radius: 10px; */
 
+  color: var(--text-color);
+  border: 1px solid var(--text-color);
+  border-radius: 6px;
+  margin-bottom: 16px;
+  transition: all .5s ease;
+}
+
+.time-label:hover {
+  background-color: var(--cmcl-blue);
+  color: var(--background-color);
+}
+
+#sliderStartTime {
+  left: 23%;
 }
 
 #sliderEndTime {
-  position: absolute;
-  bottom: 10%;
   left: 62%;
-  background-color: #f6f8fa;
-  padding: 3px 10px;
-  border-radius: 10px; 
-  backdrop-filter: blur(5px); /* Apply a blur effect to the background */
+}
+
+#timeSliderLabel {
+  left: 43%;
+  /* display: none; */
+}
+
+#timeSliderContainer:hover ~ #timeSliderLabel {
+  background-color: var(--cmcl-blue);
+  color: var(--background-color);
+
+  /* display: block; */
 }
 
 .slidecontainer {
@@ -36,7 +54,7 @@
   /* -webkit-transition: .2s;
   transition: opacity .2s;
   box-shadow: 0 4px 8px 0 #18677a; */
-  margin: 4px ;
+  margin: 4px;
   height: 7px;
   box-shadow: 0 1px 0px rgba(255, 255, 255, 0.25), inset 0 0 4px rgba(0, 0, 0, 0.9);
   -webkit-border-radius: 7px;
@@ -48,21 +66,6 @@
 
 .time-slider::-webkit-slider-thumb {
   background-color: #18677a;
-}
-
-.time-slider-jq {
-  position: relative;
-  margin: 32px auto;
-  width: 250px;
-  display: block;
-  background: #565656;
-  height: 7px;
-  box-shadow: 0 1px 0px rgba(255, 255, 255, 0.25), inset 0 0 4px rgba(0, 0, 0, 0.9);
-  -webkit-border-radius: 7px;
-  -moz-border-radius: 7px;
-  -ms-border-radius: 7px;
-  -o-border-radius: 7px;
-  border-radius: 7px;
 }
 
 .time-slider-jq div.ui-slider-range {
@@ -87,9 +90,12 @@
   background-color: #9FD0E9;
   box-shadow: inset 0 0 4px rgba(0, 85, 151, 0.8), inset 0 0 2px rgba(0, 0, 0, 0.5);
 }
-.time-slider-jq.blue div.ui-slider-range.hilite, .time-slider-jq.blue div.ui-slider-range.dragging {
+
+.time-slider-jq.blue div.ui-slider-range.hilite,
+.time-slider-jq.blue div.ui-slider-range.dragging {
   background-color: #9fd5ff;
 }
+
 .time-slider-jq a.ui-slider-handle {
   position: absolute;
   top: -5px;
@@ -116,6 +122,7 @@
   box-shadow: 0 0px 2px rgba(0, 0, 0, 0.4), inset 0 0px 1px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.6), 0 4px 2px rgba(0, 0, 0, 0.2), 0 9px 4px rgba(0, 0, 0, 0.1), inset 0 2px 1px white;
   outline: none;
 }
+
 .time-slider-jq a.ui-slider-handle:after {
   content: "";
   position: absolute;
