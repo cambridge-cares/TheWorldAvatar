@@ -27,7 +27,7 @@ Global states
 
 const globalState = (function () {
     const states = {
-        qa_domain: null,
+        qa_domain: "singapore",
         isProcessing: false,
         chatbotLatency: null,
         err: null

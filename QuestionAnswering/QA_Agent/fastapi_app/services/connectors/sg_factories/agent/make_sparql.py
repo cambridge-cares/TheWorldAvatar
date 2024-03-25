@@ -132,7 +132,7 @@ SELECT DISTINCT {vars} WHERE {{
 }}{orderby}{limit}""".format(
             vars=" ".join(select_vars),
             patterns="\n".join(ontop_patterns),
-            orderby="\nORDER BY " + " ".join(orderby_vars),
+            orderby="\nORDER BY " + " ".join(orderby_vars) if orderby_vars else "",
             limit="\nLIMIT " + str(limit) if limit else "",
         )
 

@@ -23,11 +23,8 @@ class FactoryConstraintsParser:
         self.industry_aligner = industry_aligner
 
     def parse(
-        self, text: Optional[str]
+        self, text: str
     ) -> Dict[FactoryNumAttrKey, ExtremeValueConstraint]:
-        if not text:
-            return dict()
-
         args = self.schema_parser.parse(
             text=text,
             schema={

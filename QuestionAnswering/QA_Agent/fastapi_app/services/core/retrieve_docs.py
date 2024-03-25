@@ -23,12 +23,14 @@ class DocsRetriever:
         redis_client: Redis,
         key: str,
         docs: Iterable[T],
-        linearize_func: Callable[[T], str] = str,
+        linearize: Callable[[T], str] = str,
+        jsonify: Callable[[T], dict] = dict
     ):
         self.embedder = embedder
         self.redis_client = redis_client
         self._docs = docs
-        self.linearize_func = linearize_func
+        self.linearize = linearize
+        self.jsonify = jsonify
         self.doc_key_prefix = self._KEY_PREFIX_TEMPLATE.format(key=key)
         self.index_name = self._INDEX_NAME_TEMPLATE.format(key=key)
 
@@ -45,14 +47,14 @@ class DocsRetriever:
         )
 
     def _embed(self):
-        texts = [self.linearize_func(doc) for doc in self.docs]
+        texts = [self.linearize(doc) for doc in self.docs]
         embeddings = self.embedder(texts).astype(np.float32).tolist()
         vector_dim = len(embeddings[0])
 
         pipeline = self.redis_client.pipeline()
         for i, (doc, text, embedding) in enumerate(zip(self.docs, texts, embeddings)):
             redis_key = self.doc_key_prefix + str(i)
-            datum = dict(doc=doc, linearized_doc=text, embedding=embedding)
+            datum = dict(doc=self.jsonify(doc), linearized_doc=text, embedding=embedding)
             pipeline.json().set(redis_key, "$", datum)
         pipeline.execute()
 

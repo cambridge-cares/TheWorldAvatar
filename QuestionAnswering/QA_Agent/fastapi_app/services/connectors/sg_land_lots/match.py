@@ -36,7 +36,7 @@ SELECT ?IRI ?label ?comment WHERE {{
             redis_client=redis_client,
             key="sg_land_lots:land_use_types",
             docs=self._get_land_use_type_data(kg_client),
-            linearize_func=self._linearize_land_use_type_datum,
+            linearize=self._linearize_land_use_type_datum,
         )
 
     def match(self, query):

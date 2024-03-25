@@ -52,48 +52,13 @@ class SGLandLotsAgent:
         PlotAttrKey.GROSS_FLOOR_AREA: "ontoplot:hasMaximumPermittedGPR/om:hasValue",
     }
 
-    @classmethod
-    def _get_plot_concepts(cls, kg_client: KgClient):
-        query = "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
-        subjs = [x["s"]["value"] for x in kg_client.query(query)["results"]["bindings"]]
-        for iri in subjs:
-            query = "SELECT DISTINCT ?p ?o WHERE {{ <{subj}> ?p ?o . FILTER isLiteral(?o) }}".format(
-                subj=iri
-            )
-            tails = [
-                (binding["p"]["value"], binding["o"]["value"])
-                for binding in kg_client.query(query)["results"]["bindings"]
-            ]
-            yield dict(
-                IRI=iri,
-                attributes=[
-                    "{p}: {o}".format(p=extract_name(p), o=extract_name(o))
-                    for p, o in tails
-                ],
-            )
-
-    @classmethod
-    def _linearize_plot_concept(cls, datum: dict):
-        return "{IRI}\n{attributes}".format(
-            IRI=datum["IRI"], attributes="\n".join(datum["attributes"])
-        )
-
     def __init__(
         self,
-        embedder: IEmbedder,
-        redis_client: Redis,
         bg_client: KgClient,
         ontop_client: KgClient,
     ):
         self.bg_client = bg_client
         self.ontop_client = ontop_client
-        self.plot_concepts_retriever = DocsRetriever(
-            embedder=embedder,
-            redis_client=redis_client,
-            key="sg_land_lots:concepts",
-            docs=self._get_plot_concepts(bg_client),
-            linearize_func=self._linearize_plot_concept,
-        )
 
     def _make_clauses_for_constraint(
         self, key: PlotAttrKey, constraint: NumericalArgConstraint
@@ -210,9 +175,9 @@ OPTIONAL {{
     ?IRI opr:isAwaitingDetailedGPREvaluation ?awaiting_detailed_evaluation .
 }}
 BIND(IF(BOUND(?gpr), ?gpr, IF(?awaiting_detailed_evaluation = true, "Awaiting detailed evaluation", "")) AS ?{key})""".format(
-                        pred=self._ATTRKEY2PRED[attr_key], key=attr_key.value
-                    )
+                    pred=self._ATTRKEY2PRED[attr_key], key=attr_key.value
                 )
+            )
             vars.append("?" + attr_key.value)
         else:
             patterns.append(
@@ -297,30 +262,12 @@ SELECT {vars} WHERE {{
 
         return QAData(vars=vars, bindings=bindings)
 
-    def retrieve_concepts(self, concepts: List[str]):
-        retrieved = self.plot_concepts_retriever.retrieve(
-            queries=concepts,
-            k=3,
-        )
-        retrieved = [[dict(obj) for obj, _ in lst] for lst in retrieved]
-        return QAData(
-            vars=["concept", "retrieved_data"],
-            bindings=[
-                dict(concept=concept, retrieved_data=node_data)
-                for concept, node_data in zip(concepts, retrieved)
-            ],
-        )
-
 
 def get_sgLandLots_agent(
-    embedder: Annotated[IEmbedder, Depends(get_embedder)],
-    redis_client: Annotated[Redis, Depends(get_redis_client)],
     bg_client: Annotated[KgClient, Depends(get_sgLandLots_bgClient)],
     ontop_client: Annotated[KgClient, Depends(get_sgLandLots_ontopClient)],
 ):
     return SGLandLotsAgent(
-        embedder=embedder,
-        redis_client=redis_client,
         bg_client=bg_client,
         ontop_client=ontop_client,
     )

@@ -90,7 +90,6 @@ class NodeStore:
         iris = [
             x["s"]["value"] for x in self.kg_client.query(query)["results"]["bindings"]
         ]
-        print(iris)
         for iri in iris:
             query = "SELECT DISTINCT ?p ?o WHERE {{ <{head}> ?p ?o . }}".format(
                 head=iri
