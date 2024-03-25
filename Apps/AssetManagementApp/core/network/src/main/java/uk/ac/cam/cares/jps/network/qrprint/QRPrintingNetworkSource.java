@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.network.qrprint;
 
+import android.content.Context;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -15,26 +17,28 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import uk.ac.cam.cares.jps.model.PrintItem;
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.NetworkConfiguration;
+import uk.ac.cam.cares.jps.network.R;
 
 public class QRPrintingNetworkSource {
 
     private static final Logger LOGGER = Logger.getLogger(QRPrintingNetworkSource.class);
 
-    String path = "asset-manager-agent/printbulk";
-
     Connection connection;
+    Context context;
 
     @Inject
-    public QRPrintingNetworkSource(Connection connection) {
+    public QRPrintingNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
         BasicConfigurator.configure();
         this.connection = connection;
+        this.context = applicationContext;
     }
 
     public void bulkPrintQRCodes(List<PrintItem> items, Response.Listener<Boolean> onSuccessUpper, Response.ErrorListener onFailureUpper) {
-        String requestUri = NetworkConfiguration.constructUrlBuilder(path).build().toString();
+        String requestUri = NetworkConfiguration.constructUrlBuilder(context.getString(R.string.print_qr_code), context).build().toString();
 
         JSONObject param = new JSONObject();
         JSONArray iris = new JSONArray();

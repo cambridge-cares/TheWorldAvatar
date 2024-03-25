@@ -1,28 +1,23 @@
 package uk.ac.cam.cares.jps.network;
 
+import android.content.Context;
+
 import okhttp3.HttpUrl;
 
 public class NetworkConfiguration {
-    public static final String HOST_DEV = "192.168.1.115";
-    public static final String HOST_LOCALHOST = "10.0.2.2";
 
-    public static final String HOST_LAB_WIFI = "192.168.51.103";
-    public static final String HOST_OFFICE = "10.25.188.58";
-    public static final String HOST_PROD = "137.132.22.165";
-    public static final String HOST = HOST_DEV;
-
-    public static HttpUrl.Builder constructUrlBuilder(String path) {
-//        return constructUrlBuilder(HOST, 3838, path);
-        return constructPublicUrlBuilder(path);
+    public static HttpUrl.Builder constructUrlBuilder(String path, Context context) {
+        return constructTestUrlBuilder(path, context);
+//        return constructPublicUrlBuilder(path, context);
     }
 
-    public static HttpUrl.Builder constructUrlBuilder(String host, int port, String path) {
-        HttpUrl.Builder builder = new HttpUrl.Builder().scheme("http").host(host).port(port);
+    public static HttpUrl.Builder constructTestUrlBuilder(String path, Context context) {
+        HttpUrl.Builder builder = HttpUrl.get(context.getString(R.string.test_host)).newBuilder();
         return builder.addPathSegments(path);
     }
 
-    public static HttpUrl.Builder constructPublicUrlBuilder(String path) {
-        HttpUrl.Builder builder = HttpUrl.get("https://www.theworldavatar.com:1010/careslab").newBuilder();
+    public static HttpUrl.Builder constructPublicUrlBuilder(String path, Context context) {
+        HttpUrl.Builder builder = HttpUrl.get(context.getString(R.string.host)).newBuilder();
         return builder.addPathSegments(path);
     }
 }

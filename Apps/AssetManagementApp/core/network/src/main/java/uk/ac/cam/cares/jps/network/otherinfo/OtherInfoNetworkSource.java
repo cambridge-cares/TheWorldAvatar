@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.network.otherinfo;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.*;
 
+import android.content.Context;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
@@ -24,24 +26,25 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import uk.ac.cam.cares.jps.model.building.Element;
 import uk.ac.cam.cares.jps.model.building.Room;
 import uk.ac.cam.cares.jps.model.building.Workspace;
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.NetworkConfiguration;
+import uk.ac.cam.cares.jps.network.R;
 
 public class OtherInfoNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(OtherInfoNetworkSource.class);
 
-    String path = "asset-manager-agent/getuidata";
-
-
     Connection connection;
+    Context context;
 
     @Inject
-    public OtherInfoNetworkSource(Connection connection) {
+    public OtherInfoNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
         BasicConfigurator.configure();
         this.connection = connection;
+        this.context = applicationContext;
     }
 
     /**
@@ -50,7 +53,7 @@ public class OtherInfoNetworkSource {
      * @param onFailureUpper upper level onFailure listener. It is created by Repository and used to handle error
      */
     public void getOtherInfo(Response.Listener<OtherInfoResponse> onSuccessUpper, Response.ErrorListener onFailureUpper) {
-        String requestUri = NetworkConfiguration.constructUrlBuilder(path).build().toString();
+        String requestUri = NetworkConfiguration.constructUrlBuilder(context.getString(R.string.get_ui_data_for_add_asset), context).build().toString();
         LOGGER.info(requestUri);
 
         Response.Listener<String> onSuccess = response -> {

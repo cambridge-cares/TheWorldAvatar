@@ -17,13 +17,12 @@ import javax.inject.Inject;
 
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.NetworkConfiguration;
+import uk.ac.cam.cares.jps.network.R;
 import uk.ac.cam.cares.jps.utils.FileUtils;
 import uk.ac.cam.cares.jps.utils.SerializationUtils;
 
 public class DataSheetNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(DataSheetNetworkSource.class);
-
-    String addDataSheetPath = "asset-manager-agent/addmanual";
 
     Connection connection;
     Context context;
@@ -51,7 +50,7 @@ public class DataSheetNetworkSource {
             JSONObject param = new JSONObject();
             param.put("assetData", assetData);
 
-            String requestUri = NetworkConfiguration.constructUrlBuilder(addDataSheetPath)
+            String requestUri = NetworkConfiguration.constructUrlBuilder(context.getString(R.string.add_manual), context)
                     .build().toString();
             LOGGER.info(requestUri);
 

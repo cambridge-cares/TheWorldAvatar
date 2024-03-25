@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.network.assetinfo;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.*;
 
+import android.content.Context;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -11,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,26 +23,27 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.NetworkConfiguration;
+import uk.ac.cam.cares.jps.network.R;
 
 public class AssetNetworkSource {
 
     private static final Logger LOGGER = Logger.getLogger(AssetNetworkSource.class);
 
-    String retrievePath = "asset-manager-agent/retrieve";
-    String addAssetPath = "asset-manager-agent/instantiate";
-
     Connection connection;
+    Context context;
 
     @Inject
-    public AssetNetworkSource(Connection connection) {
+    public AssetNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
         BasicConfigurator.configure();
         this.connection = connection;
+        this.context = applicationContext;
     }
 
     public void getAssetInfoByIri(String iri, Response.Listener<AssetInfoModel> onSuccessUpper, Response.ErrorListener onFailureUpper) {
-        String requestUri = NetworkConfiguration.constructUrlBuilder(retrievePath)
+        String requestUri = NetworkConfiguration.constructUrlBuilder(context.getString(R.string.retrieve_asset), context)
                 .build().toString();
         LOGGER.info(requestUri);
 
@@ -47,7 +51,10 @@ public class AssetNetworkSource {
             Gson gson = new Gson();
             Type type = new TypeToken<HashMap<String, String>>() {}.getType();
             try {
-                AssetInfoModel assets = new AssetInfoModel(keyConversion(gson.fromJson(rawResponse.getJSONArray("Result").get(0).toString(), type)));
+                JSONObject result = (JSONObject) rawResponse.getJSONArray("Result").get(0);
+                JSONArray maintenanceSchedule = (JSONArray) result.remove("maintenanceSchedule");
+
+                AssetInfoModel assets = new AssetInfoModel(keyConversion(gson.fromJson(result.toString(), type)));
                 assets.getProperties().put(INVENTORY_ID, rawResponse.getJSONArray("ID").get(0).toString());
                 assets.setHasTimeSeries((Boolean) rawResponse.getJSONArray("Result").get(1));
                 onSuccessUpper.onResponse(assets);
@@ -70,7 +77,7 @@ public class AssetNetworkSource {
     }
 
     public void addAsset(JSONObject param, Response.Listener<JSONObject> onSuccessUpper, Response.ErrorListener onFailureUpper) {
-        String requestUri = NetworkConfiguration.constructUrlBuilder(addAssetPath).build().toString();
+        String requestUri = NetworkConfiguration.constructUrlBuilder(context.getString(R.string.add_asset), context).build().toString();
 
         Response.Listener<JSONObject> onSuccess = response -> {
             try {

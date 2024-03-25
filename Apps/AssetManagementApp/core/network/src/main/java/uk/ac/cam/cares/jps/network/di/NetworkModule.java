@@ -29,26 +29,26 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    public AssetNetworkSource provideAssetNetworkSource(Connection connection) {
-        return new AssetNetworkSource(connection);
+    public AssetNetworkSource provideAssetNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new AssetNetworkSource(connection, applicationContext);
     }
 
     @Provides
     @Singleton
-    public MailNetworkSource provideMailNetworkSource(Connection connection) {
-        return new MailNetworkSource(connection);
+    public MailNetworkSource provideMailNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new MailNetworkSource(connection, applicationContext);
     }
 
     @Provides
     @Singleton
-    public OtherInfoNetworkSource provideOtherInfoNetworkSource(Connection connection) {
-        return new OtherInfoNetworkSource(connection);
+    public OtherInfoNetworkSource provideOtherInfoNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new OtherInfoNetworkSource(connection, applicationContext);
     }
 
     @Provides
     @Singleton
-    public BMSNetworkSource provideBMSNetworkSource(Connection connection) {
-        return new BMSNetworkSource(connection);
+    public BMSNetworkSource provideBMSNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new BMSNetworkSource(connection, applicationContext);
     }
 
     @Provides
@@ -59,14 +59,14 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    public QRPrintingNetworkSource provideQRPrintingNetworkSource(Connection connection) {
-        return new QRPrintingNetworkSource(connection);
+    public QRPrintingNetworkSource provideQRPrintingNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new QRPrintingNetworkSource(connection, applicationContext);
     }
 
     @Provides
     @Singleton
-    public MaintenanceNetworkSource provideMaintenanceNetworkSource(Connection connection) {
-        return new MaintenanceNetworkSource(connection);
+    public MaintenanceNetworkSource provideMaintenanceNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new MaintenanceNetworkSource(connection, applicationContext);
     }
 
 }

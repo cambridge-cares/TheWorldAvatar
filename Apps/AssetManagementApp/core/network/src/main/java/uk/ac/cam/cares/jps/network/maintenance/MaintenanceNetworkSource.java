@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.network.maintenance;
 
+import android.content.Context;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -10,18 +12,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import uk.ac.cam.cares.jps.model.Maintenance;
 import uk.ac.cam.cares.jps.network.Connection;
+import uk.ac.cam.cares.jps.network.R;
 
 public class MaintenanceNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(MaintenanceNetworkSource.class);
 
-    String path = "asset-manager-agent/addmaintenance";
-
     Connection connection;
+    Context context;
 
-    public MaintenanceNetworkSource(Connection connection) {
+    public MaintenanceNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
         this.connection = connection;
+        this.context = applicationContext;
     }
 
     public void addMaintenance(Maintenance maintenance, Response.Listener<Boolean> onSuccessUpper, Response.ErrorListener onFailureUpper) {
@@ -53,7 +57,7 @@ public class MaintenanceNetworkSource {
             }
         };
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, path, param, onSuccess, onFailureUpper);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, context.getString(R.string.add_maintenance), param, onSuccess, onFailureUpper);
         connection.addToRequestQueue(request);
     }
 }

@@ -39,7 +39,9 @@ public class Instance {
     }
 
     public List<Instance> getSortedSubLevelItems() {
+
         return subLevelItems.stream()
+                .filter(o -> o != null && o.label != null)
                 .sorted(Comparator.comparing(o -> o.label))
                 .collect(Collectors.toList());
     }
