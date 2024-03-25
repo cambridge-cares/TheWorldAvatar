@@ -20,7 +20,7 @@ class IRIWithLabels:
     labels: List[str]
 
 
-class LabelsStore:
+class LabelStore:
     SCHEMA = (
         TagField("$.labels.*", as_name="labels"),
         TagField("$.IRI", as_name="IRI"),

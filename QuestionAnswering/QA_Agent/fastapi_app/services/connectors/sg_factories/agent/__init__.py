@@ -6,10 +6,10 @@ from model.constraint import ExtremeValueConstraint
 from model.aggregate import AggregateOperator
 from model.qa import QAData
 from services.core.kg import KgClient
-from services.core.labels_store import LabelsStore
+from services.core.label_store import LabelStore
 from ..model import FactoryAttrKey, FactoryNumAttrKey, Industry
 from ..kg import get_sgFactories_ontopClient
-from .labels_store import get_sgFactories_labelsStore
+from .label_store import get_sgFactories_labelStore
 from .make_sparql import SGFactoriesSPARQLMaker, get_sgFactories_sparqlmaker
 
 
@@ -18,7 +18,7 @@ class SGFactoriesAgent:
     def __init__(
         self,
         ontop_client: KgClient,
-        labels_store: LabelsStore,
+        labels_store: LabelStore,
         sparql_maker: SGFactoriesSPARQLMaker,
     ):
         self.ontop_client = ontop_client
@@ -136,7 +136,7 @@ class SGFactoriesAgent:
 
 def get_sgFactories_agent(
     ontop_client: Annotated[KgClient, Depends(get_sgFactories_ontopClient)],
-    labels_store: Annotated[LabelsStore, Depends(get_sgFactories_labelsStore)],
+    labels_store: Annotated[LabelStore, Depends(get_sgFactories_labelStore)],
     sparql_maker: Annotated[
         SGFactoriesSPARQLMaker, Depends(get_sgFactories_sparqlmaker)
     ],

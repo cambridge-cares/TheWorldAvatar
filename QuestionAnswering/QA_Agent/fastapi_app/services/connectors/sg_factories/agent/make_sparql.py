@@ -11,7 +11,7 @@ from ..model import (
     FactoryNumAttrKey,
     Industry,
 )
-from .labels_store import get_factory_subclasses
+from .label_store import get_factory_subclasses
 
 
 class SGFactoriesSPARQLMaker:

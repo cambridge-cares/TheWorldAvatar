@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Iterable, List, Tuple
 
-from services.core.labels_store import IRIWithLabels
+from services.core.label_store import IRIWithLabels
 
 
 def agg_iri_label_pairs(iri_label_pairs: Iterable[Tuple[str, str]]):
