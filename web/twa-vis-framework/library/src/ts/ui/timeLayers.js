@@ -54,7 +54,7 @@ window.addEventListener('load', function () {
 
     const slider = document.getElementById('range-slider');
 
-    slider.addEventListener('input', function (e) {
+    slider.addEventListener('change', function (e) {
 
         let value = e.target.value;
         console.log(value);
