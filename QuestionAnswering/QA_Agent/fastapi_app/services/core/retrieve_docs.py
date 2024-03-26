@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Callable, Iterable, List, TypeVar
+from typing import Callable, Iterable, List, TypeVar, Union
 
 import numpy as np
 from redis import Redis
@@ -24,7 +24,7 @@ class DocsRetriever:
         key: str,
         docs: Iterable[T],
         linearize: Callable[[T], str] = str,
-        jsonify: Callable[[T], dict] = dict
+        jsonify: Callable[[T], Union[str, list, dict]] = lambda x: x
     ):
         self.embedder = embedder
         self.redis_client = redis_client
@@ -54,7 +54,8 @@ class DocsRetriever:
         pipeline = self.redis_client.pipeline()
         for i, (doc, text, embedding) in enumerate(zip(self.docs, texts, embeddings)):
             redis_key = self.doc_key_prefix + str(i)
-            datum = dict(doc=self.jsonify(doc), linearized_doc=text, embedding=embedding)
+            doc = self.jsonify(doc)
+            datum = dict(doc=doc, linearized_doc=text, embedding=embedding)
             pipeline.json().set(redis_key, "$", datum)
         pipeline.execute()
 

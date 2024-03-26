@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import Depends
 from redis import Redis
 
-from fastapi_app.services.utils.bindings import agg_iri_label_pairs
-from fastapi_app.services.core.label_store import LabelStore
-from services.connectors.sg_data_centres.kg import get_sgDataCentres_ontopClient
 from services.core.kg import KgClient
 from services.core.redis import get_redis_client
+from services.core.label_store import LabelStore
+from services.utils.bindings import agg_iri_label_pairs
+from services.connectors.sg import get_sg_ontopClient
 
 
 def sgDataCentres_bindings_gen(ontop_client: KgClient):
@@ -31,10 +31,11 @@ SELECT DISTINCT ?IRI ?label WHERE {
 
 def get_sgDataCentres_labesStore(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
-    ontop_client: Annotated[KgClient, Depends(get_sgDataCentres_ontopClient)],
+    ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
 ):
     return LabelStore(
         redis_client=redis_client,
-        ontop_client=ontop_client,
+        key_prefix="singapore:data_centres:",
+        index_name="idx:singapore:data_centres",
         bindings=sgDataCentres_bindings_gen(ontop_client),
     )

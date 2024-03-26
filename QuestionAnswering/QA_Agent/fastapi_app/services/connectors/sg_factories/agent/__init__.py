@@ -8,8 +8,8 @@ from model.qa import QAData
 from services.utils.rdf import add_label_to_sparql_resposne, flatten_sparql_response
 from services.core.kg import KgClient
 from services.core.label_store import LabelStore
+from services.connectors.sg import get_sg_ontopClient
 from ..model import FactoryAttrKey, FactoryNumAttrKey, Industry
-from ..kg import get_sgFactories_ontopClient
 from .label_store import get_sgFactories_labelStore
 from .make_sparql import SGFactoriesSPARQLMaker, get_sgFactories_sparqlmaker
 
@@ -49,7 +49,6 @@ class SGFactoriesAgent:
         for _industry in industries:
             query = query_maker(_industry)
 
-            print(query)
             res = self.ontop_client.query(query)
             _vars, _bindings = flatten_sparql_response(res)
 
@@ -122,7 +121,7 @@ class SGFactoriesAgent:
 
 
 def get_sgFactories_agent(
-    ontop_client: Annotated[KgClient, Depends(get_sgFactories_ontopClient)],
+    ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
     labels_store: Annotated[LabelStore, Depends(get_sgFactories_labelStore)],
     sparql_maker: Annotated[
         SGFactoriesSPARQLMaker, Depends(get_sgFactories_sparqlmaker)

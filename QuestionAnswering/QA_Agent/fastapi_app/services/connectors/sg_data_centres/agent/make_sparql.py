@@ -1,3 +1,4 @@
+from functools import cache
 from typing import Dict, List, Optional, Tuple
 
 from model.aggregate import AggregateOperator
@@ -6,9 +7,6 @@ from services.connectors.sg_data_centres.model import DataCentreAttrKey
 
 
 class SGDataCentresSPARQLMaker:
-    def __init__(self):
-        pass
-
     def lookup_dataCentre_attribute(self, iris: List[str], attr_key: DataCentreAttrKey):
         select_vars = ["?IRI"]
         ontop_patterns = [
@@ -52,7 +50,7 @@ SELECT DISTINCT {vars} WHERE {{
         return "?IRI rdf:type ontocompany:DataCentre ."
 
     def _make_clauses_for_constraint(
-        key: DataCentreAttrKey, constraint: ExtremeValueConstraint
+        self, key: DataCentreAttrKey, constraint: ExtremeValueConstraint
     ):
         value_var = "?{key}Value".format(key=key.value)
         unit_var = "?{key}Unit".format(key=key.value)
@@ -79,7 +77,7 @@ SELECT DISTINCT {vars} WHERE {{
         constraints: Dict[DataCentreAttrKey, ExtremeValueConstraint] = dict(),
         limit: Optional[int] = None,
     ):
-        select_vars = []
+        select_vars = ["?IRI"]
         ontop_patterns = [self._make_dataCentre_class_pattern()]
         orderby_vars = []
 
@@ -161,3 +159,8 @@ SELECT {select_vars} WHERE {{
             patterns="\n".join(ontop_patterns),
             groupby="\nGROUP BY " + " ".join(groupby_vars) if groupby_vars else "",
         )
+
+
+@cache
+def get_sgDataCentres_sparqlMaker():
+    return SGDataCentresSPARQLMaker()

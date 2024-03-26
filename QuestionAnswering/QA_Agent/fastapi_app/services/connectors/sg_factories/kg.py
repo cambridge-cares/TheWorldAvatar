@@ -11,8 +11,3 @@ def get_sgFactories_bgClient():
         user=os.getenv("KG_ENDPOINT_SG_FACTORIES_USER"),
         password=os.getenv("KG_ENDPOINT_SG_FACTORIES_PASSWORD"),
     )
-
-
-@cache
-def get_sgFactories_ontopClient():
-    return KgClient(os.getenv("KG_ENDPOINT_SG_FACTORIES_ONTOP", "localhost"))

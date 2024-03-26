@@ -3,7 +3,6 @@ from typing import Annotated, Iterator, List, Optional, Tuple
 
 from fastapi import Depends
 from pydantic.dataclasses import dataclass
-from redis import Redis
 
 from model.aggregate import AggregateOperator
 from model.constraint import (
@@ -12,16 +11,10 @@ from model.constraint import (
     ExtremeValueConstraint,
 )
 from model.qa import QAData
-from services.utils.rdf import extract_name
-from services.core.embed import IEmbedder, get_embedder
-from services.core.redis import get_redis_client
 from services.core.kg import KgClient
-from services.core.retrieve_docs import DocsRetriever
+from services.connectors.sg import get_sg_ontopClient
 from .constants import PlotAttrKey
-from .kg import (
-    get_sgLandLots_bgClient,
-    get_sgLandLots_ontopClient,
-)
+from .kg import get_sgLandLots_bgClient
 
 logger = logging.getLogger(__name__)
 
@@ -265,7 +258,7 @@ SELECT {vars} WHERE {{
 
 def get_sgLandLots_agent(
     bg_client: Annotated[KgClient, Depends(get_sgLandLots_bgClient)],
-    ontop_client: Annotated[KgClient, Depends(get_sgLandLots_ontopClient)],
+    ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
 ):
     return SGLandLotsAgent(
         bg_client=bg_client,

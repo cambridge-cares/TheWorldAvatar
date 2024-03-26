@@ -3,6 +3,10 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from services.connectors.sg_data_centres import (
+    SGDataCentresAgentConnector,
+    get_sgDataCentres_agentConnector,
+)
 from services.core.func_call import IFuncCaller, get_func_caller
 from services.connectors import AgentConnectorMediator
 from services.connectors.retrieval import (
@@ -40,10 +44,17 @@ def get_mediator(
     sg_factories_agent_connector: Annotated[
         SGFactoriesAgentConnector, Depends(get_sgFactories_agentConnector)
     ],
+    sg_data_centres_agent_connector: Annotated[
+        SGDataCentresAgentConnector, Depends(get_sgDataCentres_agentConnector)
+    ],
 ):
     common_connectors = [retrieval_agent_connector]
     chemistry_connectors = [ontospecies_agent_connector]
-    singapore_connectors = [sg_land_lots_agent_connector, sg_factories_agent_connector]
+    singapore_connectors = [
+        sg_land_lots_agent_connector,
+        sg_factories_agent_connector,
+        sg_data_centres_agent_connector,
+    ]
 
     return AgentConnectorMediator(
         func_call_predictor=func_call_predictor,
