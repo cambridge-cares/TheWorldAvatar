@@ -1,5 +1,9 @@
+from typing import Annotated
+
+from fastapi import Depends
+
 from model.constraint import ExtremeValueConstraint
-from services.core.parse import SchemaParser
+from services.core.parse import KeyAggregateParser, SchemaParser, get_schema_parser
 from .model import DataCentreAttrKey
 
 
@@ -40,3 +44,15 @@ class DataCentreConstraintsParser:
         return {
             DataCentreAttrKey(k): ExtremeValueConstraint(v) for k, v in args.items()
         }
+
+
+def get_dataCentreConstraints_parser(
+    schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)]
+):
+    return DataCentreConstraintsParser(schema_parser)
+
+
+def get_dataCentreAttr_aggParser(
+    schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)]
+):
+    return KeyAggregateParser(schema_parser=schema_parser, enum_cls=DataCentreAttrKey)
