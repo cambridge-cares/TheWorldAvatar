@@ -1026,7 +1026,6 @@
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CircularEconomyProperty"/>
         <rdfs:subClassOf>
             <owl:Restriction>
