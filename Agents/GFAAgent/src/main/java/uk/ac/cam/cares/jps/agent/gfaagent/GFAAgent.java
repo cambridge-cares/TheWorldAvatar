@@ -25,9 +25,10 @@ public class GFAAgent extends JPSAgent{
     private String dbUrl;
     private String dbUser;
     private String dbPassword;
-    private String kgurl;
-    private String kgNameSpace;
     public String floorsCsv;
+    private String osmSchema;
+    private String osmPoint;
+    private String osmPolygon;
 
     public synchronized void init() {
         this.dbName = endpointConfig.getDbName();
@@ -35,6 +36,9 @@ public class GFAAgent extends JPSAgent{
         this.dbUser = endpointConfig.getDbUser();
         this.dbPassword = endpointConfig.getDbPassword();       
         this.floorsCsv = endpointConfig.getFilepath();
+        this.osmSchema = endpointConfig.getOSMSchema();
+        this.osmPoint = endpointConfig.getOSMPoints();
+        this.osmPolygon = endpointConfig.getOSMPolygons();
     }
 
     @Override
@@ -52,7 +56,7 @@ public class GFAAgent extends JPSAgent{
                 gfaCalculation.calculationGFA();
             }else if(requestParams.getString("requestUrl").contains("/floors")){
                //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
-                IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword);
+                IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint, osmPolygon);
                 integrateFloors.matchAddress(floorsCsv);
             }
 

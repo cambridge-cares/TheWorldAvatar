@@ -27,19 +27,22 @@ public class IntegrateFloors {
     private final String dbUrl;
     private final String user;
     private final String password;
+    private String osmSchema;
+    private String osmPoint;
+    private String osmPolygon;
 
     private RemoteRDBStoreClient postgisClient;
 
-    private static final String polygonSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM polygons WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
-    private static final String pointSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM points WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
     
-    public IntegrateFloors (String postgisDb, String postgisUser, String postgisPassword){
+    public IntegrateFloors (String postgisDb, String postgisUser, String postgisPassword, String osmSchema, String osmPoint, String osmPolygon){
         this.dbUrl = postgisDb;
         this.user = postgisUser;
         this.password = postgisPassword;
         this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
 
-        
+        this.osmSchema = osmSchema;
+        this.osmPoint = osmPoint;
+        this.osmPolygon = osmPolygon;
     }
     /******************************************** */
     /* Fuzzy match building address from outer data source (csv) and osm agent to integrate floors data to citydb.buildilng */
@@ -51,6 +54,10 @@ public class IntegrateFloors {
         //query address infor from osm db
         List<Document> polyDoc = new ArrayList<>();
         List<Document> pointDoc = new ArrayList<>();
+
+        String polygonSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM " + this.osmSchema + "." + this.osmPolygon + " WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
+        String pointSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM " + this.osmSchema + "." + this.osmPoint + " WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
+    
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
                 ResultSet polyResults = stmt.executeQuery(polygonSQLQuery);
