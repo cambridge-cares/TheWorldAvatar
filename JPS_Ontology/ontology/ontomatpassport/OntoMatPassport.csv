@@ -1,0 +1,62 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoMatPassport,TBox,http://www.theworldavatar.com/kg/ontomatpassport,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoMatPassport,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoMatPassport,TBox,OntoMatPassport is an ontology developed for representing material passport of products and components.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoMatPassport,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Product,Class,,,,,,An artefact manufactured in an industrial setting to meet the demands of consumers and usually consists of multiple parts.,http://www.theworldavatar.com/kg/ontomatpassport,Product
+Component,Class,,,,,,Part of a bigger whole that can be a system or a product of composite nature.,http://www.theworldavatar.com/kg/ontomatpassport,Component
+http://emmo.info/emmo#EMMO_4207e895_8b83_4318_996a_72cfb32acd94,Class,,,,,,,http://emmo.info/emmo,Material
+Material Passport,Class,,,,,,"A passport or document providing identification, physical, temporal, sustainability and other properties of a product or component.",http://www.theworldavatar.com/kg/ontomatpassport,Material passport
+http://xmlns.com/foaf/0.1/Agent,Class,,,,,,,http://xmlns.com/foaf/0.1,Agent
+Manufacturer,Class,,,,,,"A business, company or entity manufacturing goods for the consumer market.",http://www.theworldavatar.com/kg/ontomatpassport,Manufacturer
+Supplier,Class,,,,,,"A business, company or entity supplying goods to another business, company or entity.",http://www.theworldavatar.com/kg/ontomatpassport,Supplier
+http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,Class,,,,,,A characteristic of an object that can be applied in determining its use in applications.,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl,Property
+https://w3id.org/mdo/core/PhysicalProperty,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,A property to express the physical aspect of an object.,https://w3id.org/mdo/core,Physical property
+Thermal Property,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,A property to express the thermal aspect of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Thermal property
+Temporal Property,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,A property to express the temporal aspect of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Temporal property
+Composition Property,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,A property to describe the composition aspect of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Composition property
+Chemical Property,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,A property to express the chemical aspect of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Chemical property
+Biological Property,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,A property to express the biological feature of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Biological property
+Circular Economy Property,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,A property that expresses the circular economy aspect of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Sustainability property
+Dimension,Class,https://w3id.org/mdo/core/PhysicalProperty,IS-A,,,,A physical propertythat describes the dimension of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Dimension
+Height,Class,Dimension,IS-A,,,,A dimensional property expressing the height of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Height
+Width,Class,Dimension,IS-A,,,,A dimensional property expressing the width of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Width
+Length,Class,Dimension,IS-A,,,,A dimensional property expressing the length of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Length
+Mass,Class,https://w3id.org/mdo/core/PhysicalProperty,IS-A,,,,A physical property to describe the mass of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Mass
+Density,Class,https://w3id.org/mdo/core/PhysicalProperty,IS-A,,,,A physical property that describes the density of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Density
+Rigidity,Class,https://w3id.org/mdo/core/PhysicalProperty,IS-A,,,,The physical property of being stiff and resisting bending [WordNet 3.1],http://www.theworldavatar.com/kg/ontomatpassport,Rigidity
+Shear Modulus,Class,Rigidity,IS-A,,,,The rigidity of an object to shearing forces.,http://www.theworldavatar.com/kg/ontomatpassport,Shear modulus
+Young's Modulus,Class,Rigidity,IS-A,,,,The elastic rigidity of an object to stress.,http://www.theworldavatar.com/kg/ontomatpassport,Young's modulus
+Resistance,Class,https://w3id.org/mdo/core/PhysicalProperty,IS-A,,,,Any mechanical force that tends to retard or oppose motion [WordNet 3.1],http://www.theworldavatar.com/kg/ontomatpassport,Resistance
+Compressive Strength,Class,Resistance,IS-A,,,,The resistance of an object to compressive forces.,http://www.theworldavatar.com/kg/ontomatpassport,Compressive Strength
+Shear Strength,Class,Resistance,IS-A,,,,The resistance of an object to shearing forces.,http://www.theworldavatar.com/kg/ontomatpassport,Shear strength
+Tensile Strength,Class,Resistance,IS-A,,,,The resistance of an object to tensile forces.,http://www.theworldavatar.com/kg/ontomatpassport,Tensile strength
+Expected Lifetime,Class,Temporal Property,IS-A,,,,A temporary property expressing the duration an object may serve its intended purpose.,http://www.theworldavatar.com/kg/ontomatpassport,Expected lifetime
+Service Life,Class,Temporal Property,IS-A,,,,A temporary property expressing the duration an object may serve its intended purpose.,http://www.theworldavatar.com/kg/ontomatpassport,Service life
+http://www.ontology-of-units-of-measure.org/resource/om-2/HeatTransferCoefficient,Class,Thermal Property,IS-A,,,,A thermal property that describes the heat transfer coefficient of an object.,http://www.ontology-of-units-of-measure.org/resource/om-2,Heat transfer coefficient
+http://www.ontology-of-units-of-measure.org/resource/om-2/ThermalConductivity,Class,Thermal Property,IS-A,,,,A thermal property that describes the capacity of an object to conduct heat.,http://www.ontology-of-units-of-measure.org/resource/om-2,Thermal conductivity
+Flammability,Class,Chemical Property,IS-A,,,,A property that determines the ease and intensity with which an object can ignite and burn.,http://www.theworldavatar.com/kg/ontomatpassport,Flammability
+Toxicity,Class,Chemical Property,IS-A,,,,A property that indicates the degree to which a substance can be harmful or poisonous.,http://www.theworldavatar.com/kg/ontomatpassport,Toxicity
+Biodegradability,Class,Biological Property,IS-A,,,,"A property expressing whether an object is entirely, partially or not biodegradable.",http://www.theworldavatar.com/kg/ontomatpassport,Biodegradability
+Constituent Material,Class,Composition Property,IS-A,,,,A property to describe the type and amount of constituent materials belonging to an object.,http://www.theworldavatar.com/kg/ontomatpassport,Constituent material
+Constituent Part,Class,Composition Property,IS-A,,,,A part or component of a bigger whole or component or product.,http://www.theworldavatar.com/kg/ontomatpassport,Constituent part
+FeedstockFractionFromRecycledProduct,Class,Circular Economy Property,IS-A,,,,The fraction of feedstock from recycled products.,http://www.theworldavatar.com/kg/ontomatpassport,Feedstock fraction from recycled product
+FeedstockFractionFromReusedProduct,Class,Circular Economy Property,IS-A,,,,The fraction of feedstock from reused products.,http://www.theworldavatar.com/kg/ontomatpassport,Feedstock fraction from reused product
+LinearFlowIndex,Class,Circular Economy Property,IS-A,,,,"The proportion of material that moves from its origin as virgin materials to its final state as non-recyclable waste [Ellen MacArthur Foundation, 2015]",http://www.theworldavatar.com/kg/ontomatpassport,Linear Flow Index
+MaterialCircularityIndicator,Class,Circular Economy Property,IS-A,,,,A measure of how circular the materials of a product are.,http://www.theworldavatar.com/kg/ontomatpassport,Material Circularity Indicator
+ProductFractionCollectedForRecycling,Class,Circular Economy Property,IS-A,,,,The fraction of a product collected for recycling.,http://www.theworldavatar.com/kg/ontomatpassport,Product fraction collected for recycling
+ProductFractionCollectedForReuse,Class,Circular Economy Property,IS-A,,,,The fraction of a product collected for reuse.,http://www.theworldavatar.com/kg/ontomatpassport,Product fraction collected for reuse
+RecycledContent,Class,Circular Economy Property,IS-A,,,,A sustainability property to describe the amount of recycled content used in manufacturing an object.,http://www.theworldavatar.com/kg/ontomatpassport,Recycled content
+RecyclingEfficiencyForPortionCollectedForRecycling,Class,Circular Economy Property,IS-A,,,,The recycling efficiency of a portion collected from a product for recycling.,http://www.theworldavatar.com/kg/ontomatpassport,Recycling efficiency for portion collected for recycling
+RecyclingEfficiencyForProducingFeedstock,Class,Circular Economy Property,IS-A,,,,The recycling efficiency in producing recycled feedstock.,http://www.theworldavatar.com/kg/ontomatpassport,Recycling efficiency for producing feedstock
+VirginContentMass,Class,Circular Economy Property,IS-A,,,,The mass of virgin content in a product.,http://www.theworldavatar.com/kg/ontomatpassport,Virgin content mass
+WasteMass,Class,Circular Economy Property,IS-A,,,,The mass of waste produced from an end-of-life product.,http://www.theworldavatar.com/kg/ontomatpassport,Waste mass
+WasteMassAfterTakingRecyclable&ReusablePortion,Class,WasteMass,IS-A,,,,The mass of waste that remains after the recyclable and reusable materials have been separated and that cannot be turned into useful materials.,http://www.theworldavatar.com/kg/ontomatpassport,Waste mass after taking recyclable & reusable portion
+WasteMassGeneratedInProducingRecylcedFeedstock,Class,WasteMass,IS-A,,,,The mass of waste generated while producing recycled feedstock.,http://www.theworldavatar.com/kg/ontomatpassport,Waste mass generated in producing recylced feedstock
+WasteMassGeneratedInRecyclingCollectedPortion,Class,WasteMass,IS-A,,,,The mass of waste generated while recycling the collected portion of a product.,http://www.theworldavatar.com/kg/ontomatpassport,Waste mass generated in recycling collected portion
+http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2,Quantity
+https://w3id.org/mdo/core/PhysicalProperty,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,,
+Temporal Property,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,,
+Thermal Property,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,,
+Circular Economy Property,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,,
+Dimensionless Quantity,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,,
