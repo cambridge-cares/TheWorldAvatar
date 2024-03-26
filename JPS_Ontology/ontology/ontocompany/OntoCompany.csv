@@ -12,7 +12,7 @@ PrecisionEngineeringPlant,Class,Factory,IS-A,,,,A factory established to produce
 FoodPlant,Class,Factory,IS-A,,,,A factory established to produce food.,http://www.theworldavatar.com/kg/ontocompany,Food Plant
 BeveragePlant,Class,Factory,IS-A,,,,A factory established to produce beverages.,http://www.theworldavatar.com/kg/ontocompany,Beverage Plant
 PharmaceuticalPlant,Class,Factory,IS-A,,,,A factory established to produce pharmaceuticals.,http://www.theworldavatar.com/kg/ontocompany,Pharmaceutical Plant
-http://www.theworldavatar.com/kg/ontochemplant/ChemicalPlant,Class,Factory,IS-A,,,,A factory established to produce chemicals.,http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl,Chemical plant
+http://www.theworldavatar.com/kg/ontochemplant#ChemicalPlant,Class,Factory,IS-A,,,,A factory established to produce chemicals.,http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl,Chemical plant
 DataCentre,Class,IndustrialFacility,IS-A,,,,A centre for housing servers and storage devices that manage and store data.,http://www.theworldavatar.com/kg/ontocompany,Data Centre
 Industry,Class,,,,,,An economic sector that groups businesses that offer products or services.,http://www.theworldavatar.com/kg/ontocompany,Industry
 PrintingIndustry,Class,Industry,IS-A,,,,An industry established to produce printed products.,http://www.theworldavatar.com/kg/ontocompany,Printing Industry
@@ -65,6 +65,10 @@ DesignCapacity,Class,FactoryProperty,IS-A,,,,Design capacity of a factory.,http:
 hasDesignCapacity,Object Property,,,Factory,DesignCapacity,exactly 1,A relationship between a factory and its design capacity.,http://www.theworldavatar.com/kg/ontocompany,design capacity
 SpecificEnergyConsumption,Class,FactoryProperty,IS-A,,,,Specific energy consumption of a factory. It refers to the quantity of energy used per unit mass of product or unit of sales revenue.,http://www.theworldavatar.com/kg/ontocompany,Specific Energy Consumption
 hasSpecificEnergyConsumption,Object Property,,,Factory,SpecificEnergyConsumption,exactly 1,A relationship between a chemical plant and its design capacity.,http://www.theworldavatar.com/kg/ontocompany,specific energy consumption
+GeneratedHeatPerPrinter,Class,FactoryProperty,IS-A,,,,The average amount of heat emitted by each printer within a printing facility.,http://www.theworldavatar.com/kg/ontocompany,Generated Heat Per Printer
+hasGeneratedHeatPerPrinter,Object Property,,,PrintingPlant,GeneratedHeatPerPrinter,exactly 1,A relationship between a printing plant and the average amount of heat emitted by each printer within the facility,http://www.theworldavatar.com/kg/ontocompany,Generated Heat Per Printer
+EnergyConsumptionPerUnitFloorArea,Class,FactoryProperty,IS-A,,,,The amount of energy used per unit floor area of factory space.,http://www.theworldavatar.com/kg/ontocompany,Energy Consumption Per Unit Floor Area
+hasEnergyConsumptionPerUnitFloorArea,Object Property,,,Factory,EnergyConsumptionPerUnitFloorArea,exactly 1,A relationship between a factory and the amount of energy used per unit floor area.,http://www.theworldavatar.com/kg/ontocompany,Energy Consumption Per Unit Floor Area
 PlantCO2Emission,Class,FactoryProperty,IS-A,,,,Estimated value of annual CO2 emission for the entire factory.,http://www.theworldavatar.com/kg/ontocompany,Plant CO2 emission
 hasPlantCO2Emission,Object Property,,,Factory,PlantCO2Emission,,A relationship between a factory and its overall annual CO2 emission.,http://www.theworldavatar.com/kg/ontocompany,plant CO2 emission
 ThermalEfficiency,Class,FactoryProperty,IS-A,,,,The proportion of input energy converted to useful work.,http://www.theworldavatar.com/kg/ontocompany,Thermal Efficiency
