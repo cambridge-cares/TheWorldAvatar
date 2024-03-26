@@ -188,7 +188,7 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
         // Create the agent
         AQMeshInputAgent agent;
         try {
-            agent = new AQMeshInputAgent(args[0]);
+            agent = new AQMeshInputAgent(System.getenv(args[0]));
         } catch (IOException e) {
             LOGGER.error(AGENT_ERROR_MSG, e);
             throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
@@ -198,7 +198,7 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
         // Create and set the time series client
         TimeSeriesClient<OffsetDateTime> tsClient;
         try {
-            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
+            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, System.getenv(args[1]));
             agent.setTsClient(tsClient);
         } catch (IOException | JPSRuntimeException e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
@@ -218,7 +218,7 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
         // Create the connector to interact with the AQMesh API
         AQMeshAPIConnector connector;
         try {
-            connector = new AQMeshAPIConnector(args[2]);
+            connector = new AQMeshAPIConnector(System.getenv(args[2]));
         } catch (IOException e) {
             LOGGER.error(CONNECTOR_ERROR_MSG, e);
             throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);

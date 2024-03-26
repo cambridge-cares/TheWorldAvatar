@@ -70,7 +70,7 @@ public class AQMeshInputAgent {
             Properties prop = new Properties();
             prop.load(input);
             // Read the mappings folder from the properties file
-            String mappingFolder = prop.getProperty("aqmesh.mappingfolder");
+            String mappingFolder = System.getenv(prop.getProperty("aqmesh.mappingfolder"));
             if (mappingFolder == null) {
                 throw new InvalidPropertiesFormatException("The properties file does not contain the key aqmesh.mappingfolder " +
                         "with a path to the folder containing the required JSON key to IRI mappings.");
