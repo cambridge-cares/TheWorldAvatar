@@ -254,8 +254,8 @@ public class GDALClient extends ContainerClient {
         return new JSONObject(inputString).getJSONArray("values");
     }
 
-    private void multipleRastersFromMultiDim(MultidimSettings mdimSettings, String filePath, Path outputDirectory,
-            String database, String layername) {
+    private List<String> multipleRastersFromMultiDim(MultidimSettings mdimSettings, String filePath,
+            Path outputDirectory, String database, String layername) {
 
         String timeArrayName = mdimSettings.getTimeOptions().getArrayName();
         String variableArrayName = mdimSettings.getLayerArrayName();
@@ -285,22 +285,30 @@ public class GDALClient extends ContainerClient {
             }
             timeSqlType = "TEXT";
         }
+
+        List<String> filenames = new ArrayList<>(timeArray.length());
+
+        String inputRasterFilePath = "NETCDF:" + filePath + ":" + variableArrayName;
+
         for (int index = 0; index < timeArray.length(); index++) {
 
-            String outputRasterFilePath;
-
+            String filename;
             if (null != dateTimeFormat) {
-                outputRasterFilePath = outputDirectory
-                        .resolve(variableArrayName + "_" + timeArray.getString(index) + ".tif").toString();
+                filename = variableArrayName + "_" + timeArray.getString(index) + ".tif";
+            } else {
+                filename = variableArrayName + "_" + index + ".tif";
             }
+            filenames.add(filename);
+            String outputRasterFilePath = outputDirectory.resolve(filename).toString();
 
-            else {
-                outputRasterFilePath = outputDirectory.resolve(variableArrayName + "_" + index + ".tif").toString();
-            }
-
-            String execId = createComplexCommand(gdalContainerId, "gdalwarp", "-srcband", Integer.toString(index + 1),
-                    "-t_srs", "EPSG:4326", "-r", "cubicspline", "-wo", "OPTIMIZE_SIZE=YES", "-multi", "-wo",
-                    "NUM_THREADS=ALL_CPUS", "NETCDF:" + filePath + ":" + variableArrayName,
+            String execId = createComplexCommand(gdalContainerId, "gdalwarp",
+                    "-srcband", Integer.toString(index + 1),
+                    "-t_srs", "EPSG:4326",
+                    "-r", "cubicspline",
+                    "-wo", "OPTIMIZE_SIZE=YES",
+                    "-multi",
+                    "-wo", "NUM_THREADS=ALL_CPUS",
+                    inputRasterFilePath,
                     outputRasterFilePath)
                     .withErrorStream(errorStream)
                     .exec();
@@ -319,6 +327,8 @@ public class GDALClient extends ContainerClient {
 
         handleErrors(errorStream, execId, logger);
         errorStream.reset();
+
+        return filenames;
     }
 
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
@@ -340,7 +350,7 @@ public class GDALClient extends ContainerClient {
                             databaseName, options.getSridOut());
                 }
 
-                postgresFiles.add(processFile(gdalContainerId, inputFormat, filePath, databaseName, schemaName,
+                postgresFiles.addAll(processFile(gdalContainerId, inputFormat, filePath, databaseName, schemaName,
                         layerName, tempDir, options, mdimSettings, createdDirectories));
             }
         }
@@ -349,7 +359,7 @@ public class GDALClient extends ContainerClient {
         return postgresFiles;
     }
 
-    private String processFile(String gdalContainerId, String inputFormat, String filePath,
+    private List<String> processFile(String gdalContainerId, String inputFormat, String filePath,
             String databaseName, String schemaName, String layerName, TempDir tempDir,
             GDALTranslateOptions options, MultidimSettings mdimSettings, Set<Path> createdDirectories) {
 
@@ -381,6 +391,7 @@ public class GDALClient extends ContainerClient {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
+        List<String> postgresOutputPaths = new ArrayList<>();
         String execId;
         if (inputFormat.equals("netCDF")) {
             logger.info("netCDF found, uploading without translate and creating gdal virtual format .vrt file");
@@ -392,16 +403,29 @@ public class GDALClient extends ContainerClient {
                     .withEvaluationTimeout(300)
                     .exec();
             handleErrors(errorStream, execId, logger);
-            multipleRastersFromMultiDim(mdimSettings, filePath, geotiffsOutputDirectory, databaseName, layerName);
+            List<String> geoTiffFilenames = multipleRastersFromMultiDim(mdimSettings, filePath,
+                    geotiffsOutputDirectory, databaseName, layerName);
 
-            String outputRasterFilePath = FileUtils.replaceExtension(postgresOutputPath, "vrt");
-            execId = createComplexCommand(gdalContainerId, "gdalwarp",
-                    "-t_srs", "EPSG:4326", "NETCDF:" + postgresOutputPath + ":" + mdimSettings.getLayerArrayName(),
-                    outputRasterFilePath)
-                    .withErrorStream(errorStream)
-                    .exec();
-            handleErrors(errorStream, execId, logger);
-            postgresOutputPath = outputRasterFilePath;
+            String inputRasterFilePath = "NETCDF:" + postgresOutputPath + ":" + mdimSettings.getLayerArrayName();
+
+            for (int index = 0; index < geoTiffFilenames.size(); ++index) {
+                String geoTiffFilename = geoTiffFilenames.get(index);
+                String outputRasterFilePath = Paths.get(postgresOutputPath)
+                        .resolveSibling(FileUtils.replaceExtension(geoTiffFilename, "vrt"))
+                        .toString();
+                execId = createComplexCommand(gdalContainerId, "gdalwarp",
+                        "-srcband", Integer.toString(index + 1),
+                        "-t_srs", "EPSG:4326",
+                        "-wo", "OPTIMIZE_SIZE=YES",
+                        inputRasterFilePath,
+                        outputRasterFilePath)
+                        .withErrorStream(errorStream)
+                        .exec();
+                handleErrors(errorStream, execId, logger);
+                errorStream.reset();
+
+                postgresOutputPaths.add(outputRasterFilePath);
+            }
         } else {
             execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
                     "-if", inputFormat,
@@ -415,9 +439,11 @@ public class GDALClient extends ContainerClient {
                     .withEvaluationTimeout(300)
                     .exec();
             handleErrors(errorStream, execId, logger);
+
+            postgresOutputPaths.add(postgresOutputPath);
         }
 
-        return postgresOutputPath;
+        return postgresOutputPaths;
     }
 
     private void ensurePostGISRasterSupportEnabled(String postGISContainerId, String database) {
