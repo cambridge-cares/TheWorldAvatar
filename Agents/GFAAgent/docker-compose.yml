@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   gfaagent:
-    image: ghcr.io/cambridge-cares/gfaagent:1.0.1-SNAPSHOT
+    image: ghcr.io/cambridge-cares/gfaagent:1.1.0-SNAPSHOT
     build: .
     ports:
       - "10104:8080"

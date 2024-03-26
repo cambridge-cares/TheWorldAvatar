@@ -42,7 +42,7 @@ RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked 
 FROM tomcat:9.0 as agent
 
 
-COPY --from=war_builder /root/code/output/gfaagent##1.0.1-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=war_builder /root/code/output/gfaagent##1.1.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 
