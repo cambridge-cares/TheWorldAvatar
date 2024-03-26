@@ -805,6 +805,26 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#FeedstockFractionFromRecycledProduct -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#FeedstockFractionFromRecycledProduct">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty"/>
+        <rdfs:comment xml:lang="en">The fraction of feedstock from recycled products.</rdfs:comment>
+        <rdfs:label xml:lang="en">Feedstock fraction from recycled product</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#FeedstockFractionFromReusedProduct -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#FeedstockFractionFromReusedProduct">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty"/>
+        <rdfs:comment xml:lang="en">The fraction of feedstock from reused products.</rdfs:comment>
+        <rdfs:label xml:lang="en">Feedstock fraction from reused product</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#Flammability -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Flammability">
@@ -923,6 +943,26 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ProductFractionCollectedForRecycling -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ProductFractionCollectedForRecycling">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty"/>
+        <rdfs:label xml:lang="en">Product fraction collected for recycling</rdfs:label>
+        <rdfs:label xml:lang="en">The fraction of a product collected for recycling.</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ProductFractionCollectedForReuse -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ProductFractionCollectedForReuse">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty"/>
+        <rdfs:comment xml:lang="en">The fraction of a product collected for reuse.</rdfs:comment>
+        <rdfs:label xml:lang="en">Product fraction collected for reuse</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent">
@@ -956,6 +996,26 @@
         </rdfs:subClassOf>
         <rdfs:comment xml:lang="en">A measure to quantify the amount of recycled content in an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Recycled content measure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#RecyclingEfficiencyForPortionCollectedForRecycling -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#RecyclingEfficiencyForPortionCollectedForRecycling">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty"/>
+        <rdfs:comment xml:lang="en">The recycling efficiency of a portion collected from a product for recycling.</rdfs:comment>
+        <rdfs:label xml:lang="en">Recycling efficiency for portion collected for recycling</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#RecyclingEfficiencyForProducingFeedstock -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#RecyclingEfficiencyForProducingFeedstock">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty"/>
+        <rdfs:comment xml:lang="en">The recycling efficiency in producing recycled feedstock.</rdfs:comment>
+        <rdfs:label xml:lang="en">Recycling efficiency for producing feedstock</rdfs:label>
     </owl:Class>
     
 
@@ -1100,6 +1160,7 @@
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -1228,10 +1289,40 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#WasteMassGeneratedInProducingRecylcedFeedstock -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#WasteMassGeneratedInProducingRecylcedFeedstock">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty"/>
+        <rdfs:comment xml:lang="en">The mass of waste generated while producing recycled feedstock.</rdfs:comment>
+        <rdfs:label xml:lang="en">Waste mass generated in producing recylced feedstock</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#WasteMassGeneratedInRecyclingCollectedPortion -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#WasteMassGeneratedInRecyclingCollectedPortion">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty"/>
+        <rdfs:comment xml:lang="en">The mass of waste generated while recycling the collected portion of a product.</rdfs:comment>
+        <rdfs:label xml:lang="en">Waste mass generated in recycling collected portion</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#Width -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Width">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Dimension"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#WasteMassAfterTakingRecyclable&amp;ReusablePortion -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#WasteMassAfterTakingRecyclable&amp;ReusablePortion">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SustainabilityProperty"/>
+        <rdfs:comment xml:lang="en">The mass of waste that remains after the recyclable and reusable materials have been separated and that cannot be turned into useful materials.</rdfs:comment>
+        <rdfs:label xml:lang="en">Waste mass after taking recyclable &amp; reusable portion</rdfs:label>
     </owl:Class>
     
 
