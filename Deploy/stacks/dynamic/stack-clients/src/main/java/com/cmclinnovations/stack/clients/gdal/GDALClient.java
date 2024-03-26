@@ -470,7 +470,7 @@ public class GDALClient extends ContainerClient {
             Path rasterOutDirPath = Path.of(StackClient.GEOTIFFS_DIR, databaseName, schemaName, layerName);
             String rasterOutFilePath = rasterOutDirPath.resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
                     .toString();
-            return FileUtils.replaceExtension(rasterOutFilePath, ".tif");
+            return FileUtils.replaceExtension(rasterOutFilePath, "tif");
 
         }
     }
