@@ -52,7 +52,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "plant_name": {
+                        "name": {
                             "type": "string",
                             "description": "Name of the factory",
                         },
@@ -62,7 +62,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
                         },
                     },
                 },
-                "required": ["plant_name", "attribute"],
+                "required": ["name", "attribute"],
             },
             {
                 "name": "find_factories",
@@ -129,7 +129,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             "compute_aggregate_factory_attribute": self.compute_aggregate_factory_attribute,
         }
 
-    def lookup_factory_attribute(self, plant_name: str, attribute: str):
+    def lookup_factory_attribute(self, name: str, attribute: str):
         steps: List[QAStep] = []
 
         logger.info("Aligning attribute: " + attribute)
@@ -160,13 +160,13 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
 
         timestamp = time.time()
         data = self.agent.lookup_factory_attribute(
-            plant_name=plant_name, attr_key=attr_key
+            name=name, attr_key=attr_key
         )
         latency = time.time() - timestamp
         steps.append(
             QAStep(
                 action="lookup_factory_attribute",
-                arguments=dict(plant_name=plant_name, attr_key=attr_key.value),
+                arguments=dict(name=name, attr_key=attr_key.value),
                 latency=latency,
             )
         )
@@ -273,6 +273,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
         timestamp = time.time()
         attr_agg = self.attr_agg_parser.parse(attribute_aggregate)
         latency = time.time() - timestamp
+        logger.info("Aligned attribute aggregate: " + str(attr_agg))
         unpacked_attr_agg = tuple(x.value for x in attr_agg)
         steps.append(
             QAStep(
