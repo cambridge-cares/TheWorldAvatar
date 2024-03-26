@@ -1,0 +1,17 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "./",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "skip": false,
+            "table": "raster",
+            "subdirectory": "raster",
+            "gdalTranslateOptions": {
+				"sridIn": "EPSG:3857"
+			}
+        }
+    ]
+}

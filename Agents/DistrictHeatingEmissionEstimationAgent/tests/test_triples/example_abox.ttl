@@ -1,0 +1,60 @@
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix om:     <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix time:   <http://www.w3.org/2006/time#> .
+@prefix ts:     <https://www.theworldavatar.com/kg/ontotimeseries/> .
+@prefix deriv:	<https://www.theworldavatar.com/kg/derivation/> .
+@prefix disp:	<https://www.theworldavatar.com/kg/ontodispersion/> .
+@prefix dh:	    <https://www.theworldavatar.com/kg/ontoheatnetwork/> .
+@prefix :       <https://www.theworldavatar.com/test/> . 
+
+###############################################
+##       Emission Agent TEST instances       ##
+###############################################
+
+# The Emission Agent takes the following 4 pure inputs:
+#   disp:SimulationTime
+#   disp:StaticPointSource
+#   dh:ProvidedHeatAmount OR dh:ConsumedGasAmount
+#
+# They need timestamp to be retrieved by the derivation agent.
+# However, the timestamps are not part of the example triples.
+# Instead, they will be added when creating derivation for new info.
+
+:StaticPointSource_1 rdf:type disp:StaticPointSource .
+
+:SimulationTime_1 rdf:type disp:SimulationTime ;
+                  time:inTimePosition :TimePosition_1 .
+:TimePosition_1 rdf:type time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1673308800.0 .
+
+:SimulationTime_2 rdf:type disp:SimulationTime ;
+                  time:inTimePosition :TimePosition_2 .
+:TimePosition_2 rdf:type time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1674172800.0 .
+
+:SimulationTime_3 rdf:type disp:SimulationTime ;
+                  time:inTimePosition :TimePosition_3 .
+:TimePosition_3 rdf:type time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1677628800.0 .
+
+:ProvidedHeatAmount_1 rdf:type dh:ProvidedHeatAmount ;
+                      om:hasValue :Measure_1 ;
+                      ts:hasForecast :Forecast_1 .
+:Measure_1 rdf:type om:Measure ;
+           om:hasUnit om:megawattHour .
+:Forecast_1 rdf:type ts:Forecast ;
+           om:hasUnit om:megawattHour .
+
+:ConsumedGasAmount_1 rdf:type dh:ConsumedGasAmount ;
+                     ts:hasForecast :Forecast_2 .
+:Forecast_2 rdf:type ts:Forecast ;
+            om:hasUnit om:megawattHour .
+:ConsumedGasAmount_2 rdf:type dh:ConsumedGasAmount ;
+                     ts:hasForecast :Forecast_3 .
+:Forecast_3 rdf:type ts:Forecast ;
+            om:hasUnit om:megawattHour .

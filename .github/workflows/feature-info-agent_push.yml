@@ -22,7 +22,7 @@ on:
     branches:
       - main
     paths:
-      - Agents/FeatureInfoAgent/**
+      - 'Agents/FeatureInfoAgent/**'
 
 
 # Job definitions
@@ -62,9 +62,15 @@ jobs:
           cmd: yq '.services.feature-info-agent.image' './Agents/FeatureInfoAgent/docker-compose.yml'
         
         
-      # Echo the docker image name for debugging
-      - name: Test the tag format
-        run: echo ${{ steps.extractor.outputs.result }}
+      # Get and parse the version from the POM
+      - name: Parse the version number
+        working-directory: ./Agents/FeatureInfoAgent
+        run: |
+          sudo apt install -y libxml2-utils
+          VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" ./code/pom.xml)
+          echo versionFull=$VERSION >> $GITHUB_ENV
+          echo versionMajor=$(echo $VERSION | cut -d. -f1) >> $GITHUB_ENV
+          echo versionMinor=$(echo $VERSION | cut -d. -f1).$(echo $VERSION | cut -d. -f2) >> $GITHUB_ENV
         
           
       # Login to Docker image registry
@@ -81,5 +87,9 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{ steps.extractor.outputs.result }}
           context: ./Agents/FeatureInfoAgent
+          tags: |
+            ghcr.io/cambridge-cares/feature-info-agent:latest
+            ghcr.io/cambridge-cares/feature-info-agent:${{ env.versionFull }}
+            ghcr.io/cambridge-cares/feature-info-agent:${{ env.versionMajor }}
+            ghcr.io/cambridge-cares/feature-info-agent:${{ env.versionMinor }}

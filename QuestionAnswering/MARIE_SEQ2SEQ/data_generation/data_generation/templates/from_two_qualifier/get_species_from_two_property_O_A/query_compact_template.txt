@@ -1,0 +1,8 @@
+SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName2}Value 
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
+    FILTER(?{PropertyName1}Value < {minvalue1} || ?{PropertyName1}Value > {maxvalue1})
+    ?SpeciesIRI os:hasProperty{PropertyName2} ?{PropertyName2}Value .
+    FILTER(?{PropertyName2}Value > {value2}*0.9 && ?{PropertyName2}Value < {value2}*1.1)
+}}

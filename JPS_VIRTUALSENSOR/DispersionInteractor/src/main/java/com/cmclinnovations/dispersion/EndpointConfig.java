@@ -2,6 +2,8 @@ package com.cmclinnovations.dispersion;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
+import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 public class EndpointConfig {
@@ -12,6 +14,8 @@ public class EndpointConfig {
     private String kgurl;
     private String kguser;
     private String kgpassword;
+
+    private String ontopurl;
 
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
@@ -26,6 +30,10 @@ public class EndpointConfig {
         this.kgurl = blazegraphEndpointConfig.getUrl("kb");
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
+
+        OntopEndpointConfig ontopEndpointConfig = OntopClient.getInstance().getEndpoint();
+        this.ontopurl = ontopEndpointConfig.getUrl();
+
     }
 
     public String getDburl() {
@@ -50,5 +58,9 @@ public class EndpointConfig {
 
     public String getKgpassword() {
         return this.kgpassword;
+    }
+
+    public String getOntopUrl() {
+        return this.ontopurl;
     }
 }

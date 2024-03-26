@@ -1,0 +1,41 @@
+{
+    "type": "externally-accessible-agent",
+    "ServiceSpec": {
+        "Name": "filter-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/filter-agent:1",
+                "Env": [
+                    "DEFAULT_NAMESPACE=kb",
+                    "DEFAULT_QUERY=query"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "filter-queries",
+                        "Target": "/inputs/queries"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "blazegraph_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "endpoint": {
+            "url": "http://localhost:8080/",
+            "externalPath": "/filter-agent/"
+        }
+    }
+}

@@ -15,20 +15,20 @@ CO FINISHED
 ** AERMOD Source Pathway
 SO STARTING
 SO INCLUDED points.so
-   INCLUDED buildings.dat
+   INCLUDED ../../../bpipprm/buildings.dat
 SO SRCGROUP ALL
 SO FINISHED
 
 
 ** AERMOD Receptor Pathway
 RE STARTING
-   INCLUDED receptor.dat
+   INCLUDED ../../receptor.dat
 RE FINISHED
 
 ** AERMOD Meteorology Pathway
 ME STARTING
-   SURFFILE AERMET_SURF.SFC
-   PROFFILE AERMET_UPPER.PFL
+   SURFFILE ../../../aermet/AERMET_SURF.SFC
+   PROFFILE ../../../aermet/AERMET_UPPER.PFL
    SURFDATA 99999 2022
    UAIRDATA 99999 2022
    PROFBASE 0.0 METERS

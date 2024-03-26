@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} lower than {value1} and {PropertyName2} lower than {value2}
+Provide a catalog of chemical species exhibiting {PropertyName1} values below {value1} and {PropertyName2} values below {value2}.
+Enumerate molecules that possess {PropertyName1} values beneath {value1} and {PropertyName2} values beneath {value2}.
+List compounds with {PropertyName1} values less than {value1} and {PropertyName2} values less than {value2}.
+Furnish a record of chemical entities having {PropertyName1} values lower than {value1} and {PropertyName2} values lower than {value2}.
+Compile a roster of species demonstrating {PropertyName1} values below {value1} and {PropertyName2} values below {value2}.
+Enumerate substances where {PropertyName1} is less than {value1} and {PropertyName2} is less than {value2}.
+Present a list of molecules showcasing {PropertyName1} values beneath {value1} and {PropertyName2} values beneath {value2}.
+Offer a rundown of compounds featuring {PropertyName1} values lower than {value1} and {PropertyName2} values lower than {value2}.
+Provide an inventory of chemical species with {PropertyName1} values beneath {value1} and {PropertyName2} values beneath {value2}.
+Give a summary of molecules displaying {PropertyName1} values below {value1} and {PropertyName2} values below {value2}.
+Detail compounds with {PropertyName1} values less than {value1} and {PropertyName2} values less than {value2}.
+Present a collection of chemical entities possessing {PropertyName1} values lower than {value1} and {PropertyName2} values lower than {value2}.
+Share a list of species featuring {PropertyName1} values beneath {value1} and {PropertyName2} values beneath {value2}.
+Provide a compilation of substances where {PropertyName1} is less than {value1} and {PropertyName2} is less than {value2}.
+Offer a catalog of molecules showcasing {PropertyName1} values lower than {value1} and {PropertyName2} values lower than {value2}.
+Furnish a list of compounds exhibiting {PropertyName1} values beneath {value1} and {PropertyName2} values beneath {value2}.
+Enumerate chemical species with {PropertyName1} values below {value1} and {PropertyName2} values below {value2}.
+List chemical entities that possess {PropertyName1} values less than {value1} and {PropertyName2} values less than {value2}.
+Compile a roster of species demonstrating {PropertyName1} values lower than {value1} and {PropertyName2} values lower than {value2}.
+Present a record of molecules featuring {PropertyName1} values beneath {value1} and {PropertyName2} values beneath {value2}.

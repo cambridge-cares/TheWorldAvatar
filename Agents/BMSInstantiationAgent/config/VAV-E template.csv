@@ -1,0 +1,11 @@
+[REQUIRED]
+VAVE_label,VAV-E7-19
+AirFlow_IRI,https://www.theworldavatar.com/kg/ontobms/V_AirFlow_
+AirFlow_IRI_label,VAV-E7-19 airflow rate
+DamperState_IRI,https://www.theworldavatar.com/kg/ontobms/DamperState_
+DamperState_IRI_label,VAV-E7-19 damper state
+SetpointQuantity_IRI,https://www.theworldavatar.com/kg/ontobms/V_SetpointQuantity_
+SetpointQuantity_IRI_label,VAV-E7-19 airflow setpoint
+[OPTIONAL]
+Percentage_IRI,https://www.theworldavatar.com/kg/ontobms/V_Percentage_
+Percentage_IRI_label,VAV-E7-19 snorkel arm 7-1 opening

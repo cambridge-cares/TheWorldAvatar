@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  carpark-agent:
+    image: ghcr.io/cambridge-cares/carpark-agent:1.0.0
+    container_name: carpark-agent
+    build:
+      context: .
+      target: agent
+    volumes:
+      - ./config:/usr/local/tomcat/config
+    ports:
+      - "1080:8080"
