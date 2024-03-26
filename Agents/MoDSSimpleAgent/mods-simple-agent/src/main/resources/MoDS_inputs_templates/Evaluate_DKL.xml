@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<mods xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd" xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<mods
+    xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd"
+    xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <algorithms>
         <algorithm name="Initial" display_name="HIDDEN">
             <details>
@@ -9,15 +11,29 @@
                 <detail name="global">false</detail>
             </details>
         </algorithm>
-        <algorithm name="GenSurrogateAlg" display_name="Surrogate model">
+        <algorithm name="GenSurrogateAlg" display_name="HIDDEN">
             <details>
                 <detail name="algorithm_type">Surrogate</detail>
                 <detail name="global">false</detail>
-                <detail name="surrogate_type">HDMR</detail>
+                <detail name="surrogate_type">AutotunedDKL</detail>
                 <detail name="fit_to_coded_responses">false</detail>
-                <detail name="order">6</detail>
-                <detail name="HDMRorder">2</detail>
-                <detail name="r_squared_tol">0.99999</detail>
+                <detail name="pythonfilename">surrogate-torch-DKL</detail>
+                <detail name="python_arch">100,5,1</detail>
+                <detail name="python_kernel">RBF</detail>
+                <detail name="python_wnoscale">0.1</detail>
+                <detail name="python_numepochs">10</detail>
+                <detail name="python_lr">0.001</detail>
+                <detail name="validation_set_fraction">0.1</detail>
+                <detail name="rng_seed">5489</detail>
+                <detail name="global_search_seed">1</detail>
+                <detail name="global_search_n_points">10</detail>
+                <detail name="opti_algorithm_type">Hooke_Jeeves</detail>
+                <detail name="opti_n_iters">50</detail>
+                <detail name="opti_n_initial_points">1</detail>
+                <detail name="opti_constrained">true</detail>
+                <detail name="opti_rho">0.5</detail>
+                <detail name="opti_rho_factor">0.5</detail>
+                <detail name="opti_epsilon">0.001</detail>
                 <detail name="previous_algorithm">Initial</detail>
             </details>
         </algorithm>
