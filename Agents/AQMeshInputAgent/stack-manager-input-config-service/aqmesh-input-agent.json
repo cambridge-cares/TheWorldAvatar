@@ -1,0 +1,51 @@
+{
+  "ServiceSpec": {
+    "Name": "aqmesh-input-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "aqmesh-input-agent:1.3.0",
+        "Env": [
+					"AQMESH_AGENT_PROPERTIES=/usr/local/tomcat/config/agent.properties",
+          "AQMESH_API_PROPERTIES=/usr/local/tomcat/config/api.properties",
+          "AQMESH_CLIENT_PROPERTIES=/usr/local/tomcat/config/client.properties",
+          "AQMESH_AGENT_MAPPINGS=/usr/local/tomcat/config/mappings"
+				],
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/c/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/AQMeshInputAgent/config",
+            "Target": "/usr/local/tomcat/config"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+              "ConfigName": "postgis"
+          },
+          {
+              "ConfigName": "geoserver"
+          }
+      ],
+      "Secrets": [
+          {
+              "SecretName": "blazegraph_password"
+          },
+          {
+              "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
+          }
+      ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/aqmesh-input-agent/",
+      "externalPath": "/aqmesh-input-agent/"
+    }
+  }
+}

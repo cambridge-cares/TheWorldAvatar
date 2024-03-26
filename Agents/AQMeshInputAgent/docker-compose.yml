@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  aqmesh-input-agent:
+    image: aqmesh-input-agent:1.3.0
+    container_name: aqmesh-input-agent
+    build:
+      context: .
+      target: agent
+    volumes:
+      - ./config:/usr/local/tomcat/config
+    ports:
+      - "1080:8080"
