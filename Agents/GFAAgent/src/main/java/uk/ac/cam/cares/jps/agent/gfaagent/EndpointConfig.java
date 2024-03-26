@@ -9,7 +9,10 @@ public class EndpointConfig {
     private String dbUser;
     private String dbPassword;
     private String filePath = System.getenv("floors_csv");
-    public String dbName = System.getenv("DATABASE");
+    private String dbName = System.getenv("DATABASE");
+    private String osmSchema =  System.getenv("osmSchema");
+    private String osmPoints =  System.getenv("osmPoints");
+    private String osmPolygons =  System.getenv("osmPolygons");
 
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
@@ -37,5 +40,17 @@ public class EndpointConfig {
 
     public String getFilepath() {
         return this.filePath;
+    }
+
+    public String getOSMSchema() {
+        return this.osmSchema;
+    }
+
+    public String getOSMPoints() {
+        return this.osmPoints;
+    }
+
+    public String getOSMPolygons() {
+        return this.osmPolygons;
     }
 }
