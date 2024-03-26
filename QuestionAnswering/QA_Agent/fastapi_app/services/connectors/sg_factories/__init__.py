@@ -66,7 +66,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             },
             {
                 "name": "find_factories",
-                "description": "Find factories (aka manufacturing plants or facilities) that satisfy some constraints",
+                "description": "Find manufacturing companies and factories (aka manufacturing plants or facilities) that satisfy some constraints",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -87,7 +87,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             },
             {
                 "name": "count_factories",
-                "description": "Count the number of factories (aka manufacturing plants or facilities)",
+                "description": "Count the number of manufacturing companies and factories (aka manufacturing plants or facilities)",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -211,16 +211,18 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             )
             latency = time.time() - timestamp
             logger.info("Parsed factory constraints: " + str(parsed_constraints))
+            unpacked_parsed_constraints = {k.value: v.value for k, v in parsed_constraints.items()}
             steps.append(
                 QAStep(
                     action="parse_factory_constraint",
                     arguments=numerical_constraints,
-                    results=str(parsed_constraints),
+                    results=unpacked_parsed_constraints,
                     latency=latency,
                 )
             )
         else:
             parsed_constraints = dict()
+            unpacked_parsed_constraints = dict()
 
         timestamp = time.time()
         data = self.agent.find_factories(
@@ -230,7 +232,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
         steps.append(
             QAStep(
                 action="find_factories",
-                arguments=dict(constraints=str(numerical_constraints), limit=limit),
+                arguments=dict(constraints=unpacked_parsed_constraints, limit=limit),
                 latency=latency,
             )
         )

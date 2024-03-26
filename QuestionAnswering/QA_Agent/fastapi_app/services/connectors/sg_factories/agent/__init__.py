@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Annotated, Callable, Dict, List, Optional, Tuple
 
 from fastapi import Depends
@@ -26,6 +27,35 @@ class SGFactoriesAgent:
         self.label_store = label_store
         self.sparql_maker = sparql_maker
 
+    @lru_cache(maxsize=128)
+    def _lookup_company_name(self, factory_iri: str):
+        query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+
+SELECT ?CompanyLabel WHERE {{
+VALUES ?Factory {{ <{iri}> }}
+?Company ontocompany:isOwnerOf ?Factory .
+?Company rdfs:label ?CompanyLabel .
+}}""".format(
+            iri=factory_iri
+        )
+        res = self.ontop_client.query(query)
+        bindings = res["results"]["bindings"]
+        if bindings:
+            return bindings[0]["CompanyLabel"]["value"]
+        return None
+
+    def _add_company_label(self, vars: List[str], bindings: List[dict]):
+        try:
+            iri_idx = vars.index("IRI")
+        except ValueError:
+            raise ValueError("IRI must be present, found: " + str(vars))
+
+        vars.insert(iri_idx + 1, "Company")
+        for binding in bindings:
+            binding["Company"] = self._lookup_company_name(binding["IRI"])
+
     def lookup_factory_attribute(self, name: str, attr_key: FactoryAttrKey):
         iris = self.label_store.link_entity(name)
 
@@ -33,7 +63,10 @@ class SGFactoriesAgent:
         res = self.ontop_client.query(query)
 
         vars, bindings = flatten_sparql_response(res)
-        add_label_to_sparql_resposne(self.label_store, vars, bindings)
+        add_label_to_sparql_resposne(
+            self.label_store, vars, bindings, label_header="FactoryName"
+        )
+        self._add_company_label(vars, bindings)
 
         return QAData(vars=vars, bindings=bindings)
 
@@ -77,7 +110,10 @@ class SGFactoriesAgent:
                 industry=_industry, numattr_constraints=numattr_constraints, limit=limit
             ),
         )
-        add_label_to_sparql_resposne(vars, bindings)
+        add_label_to_sparql_resposne(
+            self.label_store, vars, bindings, label_header="FactoryName"
+        )
+        self._add_company_label(vars, bindings)
 
         return QAData(vars=vars, bindings=bindings)
 
@@ -89,11 +125,12 @@ class SGFactoriesAgent:
             industry=industry, query_maker=self.sparql_maker.count_factories
         )
 
-        if industry is None:
+        if industry is None and all(header in vars for header in ["FactoryCount", "CompanyCount"]):
             bindings.append(
                 {
                     "Industry": "SUM",
-                    "Count": str(sum(int(binding["Count"]) for binding in bindings)),
+                    "FactoryCount": str(sum(int(binding["FactoryCount"]) for binding in bindings)),
+                    "CompanyCount": str(sum(int(binding["CompanyCount"]) for binding in bindings))
                 }
             )
 

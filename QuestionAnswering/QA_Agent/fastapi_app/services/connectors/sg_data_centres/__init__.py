@@ -62,7 +62,7 @@ class SGDataCentresAgentConnector(AgentConnectorBase):
             },
             {
                 "name": "find_dataCentres",
-                "description": "Find data centres that satisfy some constraints e.g. lowest heat emission",
+                "description": "Find ICT companies and data centres that satisfy some constraints e.g. lowest heat emission",
                 "parameters": {
                     "type": "object",
                     "properties": {

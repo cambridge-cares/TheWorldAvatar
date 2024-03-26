@@ -142,10 +142,10 @@ SELECT DISTINCT {vars} WHERE {{
         )
 
     def count_factories(self, industry: Industry):
-        select_vars = []
+        select_vars = ["(COUNT(DISTINCT ?IRI) AS ?FactoryCount)", "(COUNT(DISTINCT ?Company) AS ?CompanyCount)"]
         ontop_patterns = self._make_factory_subclass_patterns()
         ontop_patterns.append(self._make_industry_pattern(industry))
-        select_vars.append("(COUNT(?IRI) AS ?Count)")
+        ontop_patterns.append("?Company ontocompany:isOwnerOf ?IRI .")
 
         return """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
