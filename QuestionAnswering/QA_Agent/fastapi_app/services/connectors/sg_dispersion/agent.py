@@ -19,7 +19,7 @@ class SGDispersionAgent:
 
     def get_pollutant_concentrations(self, coord: Tuple[float, float]):
         now = datetime.now()
-        time = [now - timedelta(minutes=30 * i) for i in range(self.DATA_POINT_NUM)]
+        time = [(now - timedelta(minutes=30 * i)).strftime(self.JSON_DATETIME_PATTERN) for i in range(self.DATA_POINT_NUM)]
         return {
             k: {
                 "time": time,
