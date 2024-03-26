@@ -1,9 +1,7 @@
 from enum import Enum
-from typing import Optional, Union
+from typing import Union
 
 from pydantic.dataclasses import dataclass
-
-from model.constraint import ExtremeValueConstraint
 
 
 class FactoryIndustryKey(Enum):

@@ -122,7 +122,7 @@ def sg_factories_agent(
 ):
     yield SGFactoriesAgent(
         ontop_client=sg_factories_ontop_client,
-        labels_store=sg_factories_labels_store,
+        label_store=sg_factories_labels_store,
         sparql_maker=sg_factories_sparql_maker,
     )
 
@@ -146,7 +146,7 @@ class TestSGFactoriesAgent:
 
         # Act
         actual = sg_factories_agent.lookup_factory_attribute(
-            plant_name=plant_name, attr_key=attr_key
+            name=plant_name, attr_key=attr_key
         )
 
         # Assert

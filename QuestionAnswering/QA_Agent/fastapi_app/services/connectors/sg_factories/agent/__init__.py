@@ -5,6 +5,7 @@ from fastapi import Depends
 from model.constraint import ExtremeValueConstraint
 from model.aggregate import AggregateOperator
 from model.qa import QAData
+from services.utils.rdf import add_label_to_sparql_resposne, flatten_sparql_response
 from services.core.kg import KgClient
 from services.core.label_store import LabelStore
 from ..model import FactoryAttrKey, FactoryNumAttrKey, Industry
@@ -18,36 +19,21 @@ class SGFactoriesAgent:
     def __init__(
         self,
         ontop_client: KgClient,
-        labels_store: LabelStore,
+        label_store: LabelStore,
         sparql_maker: SGFactoriesSPARQLMaker,
     ):
         self.ontop_client = ontop_client
-        self.labels_store = labels_store
+        self.label_store = label_store
         self.sparql_maker = sparql_maker
 
-    def _flatten_sparql_response(self, res: dict):
-        vars: List[str] = res["head"]["vars"]
-        bindings = [
-            {k: v["value"] for k, v in binding.items()}
-            for binding in res["results"]["bindings"]
-        ]
-        return vars, bindings
-
-    def _add_label(self, vars: List[str], bindings: List[dict]):
-        vars.insert(vars.index("IRI") + 1, "label")
-        for binding in bindings:
-            labels = self.labels_store.lookup_labels(binding["IRI"])
-            if labels:
-                binding["label"] = labels[0]
-
-    def lookup_factory_attribute(self, plant_name: str, attr_key: FactoryAttrKey):
-        iris = self.labels_store.link_entity(plant_name)
+    def lookup_factory_attribute(self, name: str, attr_key: FactoryAttrKey):
+        iris = self.label_store.link_entity(name)
 
         query = self.sparql_maker.lookup_factory_attribute(iris=iris, attr_key=attr_key)
         res = self.ontop_client.query(query)
 
-        vars, bindings = self._flatten_sparql_response(res)
-        self._add_label(vars, bindings)
+        vars, bindings = flatten_sparql_response(res)
+        add_label_to_sparql_resposne(self.label_store, vars, bindings)
 
         return QAData(vars=vars, bindings=bindings)
 
@@ -65,7 +51,7 @@ class SGFactoriesAgent:
 
             print(query)
             res = self.ontop_client.query(query)
-            _vars, _bindings = self._flatten_sparql_response(res)
+            _vars, _bindings = flatten_sparql_response(res)
 
             _vars.insert(0, "Industry")
             for binding in _bindings:
@@ -92,7 +78,7 @@ class SGFactoriesAgent:
                 industry=_industry, numattr_constraints=numattr_constraints, limit=limit
             ),
         )
-        self._add_label(vars, bindings)
+        add_label_to_sparql_resposne(vars, bindings)
 
         return QAData(vars=vars, bindings=bindings)
 
@@ -143,5 +129,5 @@ def get_sgFactories_agent(
     ],
 ):
     return SGFactoriesAgent(
-        ontop_client=ontop_client, labels_store=labels_store, sparql_maker=sparql_maker
+        ontop_client=ontop_client, label_store=labels_store, sparql_maker=sparql_maker
     )
