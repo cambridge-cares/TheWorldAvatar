@@ -47,6 +47,10 @@ class SGDataCentresAgentConnector(AgentConnectorBase):
                 "parameters": {
                     "type": "object",
                     "properties": {
+                        "company": {
+                            "type": "string",
+                            "description": "Owner of the data centre",
+                        },
                         "name": {"type": "string", "description": "Data centre name"},
                         "attribute": {
                             "type": "string",
@@ -54,7 +58,7 @@ class SGDataCentresAgentConnector(AgentConnectorBase):
                         },
                     },
                 },
-                "required": ["name", "attribute"],
+                "required": ["attribute"],
             },
             {
                 "name": "find_dataCentres",
@@ -102,7 +106,9 @@ class SGDataCentresAgentConnector(AgentConnectorBase):
             "compute_aggregate_dataCentre_attribute": self.compute_aggregate_dataCentre_attribute,
         }
 
-    def lookup_dataCentre_attribute(self, name: str, attribute: str):
+    def lookup_dataCentre_attribute(
+        self, attribute: str, company: Optional[str] = None, name: Optional[str] = None
+    ):
         steps: List[QAStep] = []
 
         logger.info("Aligning attribute: " + attribute)
@@ -120,7 +126,9 @@ class SGDataCentresAgentConnector(AgentConnectorBase):
         )
 
         timestamp = time.time()
-        data = self.agent.lookup_dataCentre_attribute(name=name, attr_key=attr_key)
+        data = self.agent.lookup_dataCentre_attribute(
+            company=company, name=name, attr_key=attr_key
+        )
         latency = time.time() - timestamp
         steps.append(
             QAStep(

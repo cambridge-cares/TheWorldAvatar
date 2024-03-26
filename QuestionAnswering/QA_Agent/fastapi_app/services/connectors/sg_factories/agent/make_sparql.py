@@ -32,8 +32,13 @@ class SGFactoriesSPARQLMaker:
     def lookup_factory_attribute(self, iris: List[str], attr_key: FactoryAttrKey):
         select_vars = ["?IRI"]
         patterns = [
-            "VALUES ?IRI {{ {iris} }}".format(
-                iris=" ".join(["<{iri}>".format(iri=iri) for iri in iris])
+            # Use FILTER instead of VALUES because a VALUES clause with 2 or more UUID
+            # values results in an error at the ONTOP endpoint
+            # "VALUES ?IRI {{ {iris} }}".format(
+            #     iris=" ".join(["<{iri}>".format(iri=iri) for iri in iris])
+            # )
+            "FILTER ( ?IRI IN ({values}) )".format(
+                values=", ".join(["<{iri}>".format(iri=iri) for iri in iris])
             )
         ]
 

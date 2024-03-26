@@ -10,14 +10,13 @@ from services.utils.bindings import agg_iri_label_pairs
 from services.connectors.sg import get_sg_ontopClient
 
 
-def sgDataCentres_bindings_gen(ontop_client: KgClient):
+def sgCompanies_bindings_gen(ontop_client: KgClient):
     query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
 
 SELECT DISTINCT ?IRI ?company ?label WHERE {
-    ?IRI rdf:type ontocompany:DataCentre .
-    ?IRI ^ontocompany:hasDataCentre/rdfs:label ?company .
+    ?IRI rdf:type ontocompany:Company .
     ?IRI rdfs:label ?label .
 }"""
     bindings = [
@@ -30,13 +29,13 @@ SELECT DISTINCT ?IRI ?company ?label WHERE {
         yield item
 
 
-def get_sgDataCentres_labelStore(
+def get_sgCompanies_labesStore(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
 ):
     return LabelStore(
         redis_client=redis_client,
-        key_prefix="singapore:data_centres:",
-        index_name="idx:singapore:data_centres",
-        bindings=sgDataCentres_bindings_gen(ontop_client),
+        key_prefix="singapore:companies:",
+        index_name="idx:singapore:companies",
+        bindings=sgCompanies_bindings_gen(ontop_client),
     )

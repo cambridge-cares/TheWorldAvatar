@@ -6,7 +6,7 @@
             {
                 "data_domain": "sg_land_lots",
                 "label": "Singapore's Land Lots",
-                "description": "Data about Singapore's master plan zoning",
+                "description": "Singapore's master plan zoning",
                 "questions": [
                     "What is a commercial plot?",
                     "what's the land use classification for plots that can have hospitals",
@@ -20,12 +20,21 @@
             {
                 "data_domain": "sg_factories",
                 "label": "Singapore's Factories",
-                "description": "Data about Singapore's factories",
+                "description": "Singapore's manufacturing facilities",
                 "questions": [
                     "what's the specific energy consumption of Neste factory?",
                     "Which industry has the greatest heat emission value?",
                     "What is the average thermal efficiency of food plants?",
                     "Which semiconductor plant has the highest production rate?"
+                ]
+            },
+            {
+                "data_domain": "sg_data_centres",
+                "label": "Singapore's Data Centres",
+                "description": "Singapore's data centre facilities",
+                "questions": [
+                    "What is the heat emission of Keppel data centres",
+                    "which company has the largest data centre by area?"
                 ]
             }
         ]
