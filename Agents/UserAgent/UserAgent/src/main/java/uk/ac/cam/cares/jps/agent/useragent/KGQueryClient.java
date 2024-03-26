@@ -7,6 +7,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Node_URI;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class KGQueryClient {
@@ -36,7 +37,13 @@ public class KGQueryClient {
                 .setDistinct(true)
                 .addVar(VAR_O).addWhere(wb);
 
-        return storeClient.executeQuery(sb.buildString());
+        JSONArray jsonArray = storeClient.executeQuery(sb.buildString());
+        JSONArray result = new JSONArray();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            result.put(jsonObject.get("o"));
+        }
+        return result;
     }
 
 }

@@ -44,6 +44,9 @@ public class UserAgent extends JPSAgent {
             OntopClient ontopClient = OntopClient.getInstance();
             LOGGER.info("updating obda");
             ontopClient.updateOBDA(obdaFile);
+
+            // wait for ontop to be restarted
+            Thread.sleep(1500);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println("Could not retrieve user.obda file.");
