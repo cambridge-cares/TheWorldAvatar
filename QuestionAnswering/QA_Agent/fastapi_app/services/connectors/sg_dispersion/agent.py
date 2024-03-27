@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
-import random
+from functools import cache
 from typing import Dict, Tuple
 
 import numpy as np
+
+from model.qa import QAData
 
 
 class SGDispersionAgent:
@@ -17,9 +19,12 @@ class SGDispersionAgent:
         "Unburned hydrocarbons": (420, 490),
     }
 
-    def get_pollutant_concentrations(self, coord: Tuple[float, float]):
+    def _mock_api_response(self):
         now = datetime.now()
-        time = [(now - timedelta(minutes=30 * i)).strftime(self.JSON_DATETIME_PATTERN) for i in range(self.DATA_POINT_NUM)]
+        time = [
+            (now - timedelta(minutes=30 * i)).strftime(self.JSON_DATETIME_PATTERN)
+            for i in range(self.DATA_POINT_NUM - 1, -1, -1)
+        ]
         return {
             k: {
                 "time": time,
@@ -27,3 +32,20 @@ class SGDispersionAgent:
             }
             for k, (lower, upper) in self.POLUTANT_BOUNDS.items()
         }
+
+    def get_pollutant_concentrations(self, coords: Tuple[float, float]):
+        api_response = self._mock_api_response()
+        return QAData(
+            vars=["pollutant", "timeseries"],
+            bindings=[
+                {
+                    "pollutant": key,
+                    "timeseries": list(zip(value["time"], value["values"])),
+                }
+                for key, value in api_response.items()
+            ],
+        )
+
+@cache
+def get_sgDisperson_agent():
+    return SGDispersionAgent()
