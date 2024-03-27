@@ -56,6 +56,7 @@ class SGDispersionAgentConnector(AgentConnectorBase):
 
         timestamp = time.time()
         data = self.agent.get_pollutant_concentrations(coords)
+        data.title = "Pollutant concentrations in " + location
         latency = time.time() - timestamp
         steps.append(
             QAStep(

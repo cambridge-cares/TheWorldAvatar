@@ -140,6 +140,22 @@ function renderBootstrapTable(vars, bindings, id, containerElem) {
     containerElem.innerHTML = content;
 }
 
+function renderTimeseriesGraph(title, vars, bindings, id) {
+    let traces = bindings.map(binding => {
+        return {
+            type: "scatter",
+            mode: "lines",
+            name: vars.filter(key => key !== "timeseries").map(key => binding[key]).join(", "),
+            x: binding["timeseries"].map(obs => obs[0]),
+            y: binding["timeseries"].map(obs => obs[1]),
+        }
+    })
+
+    let layout = { title }
+
+    Plotly.newPlot(id, traces, layout)
+}
+
 const errorContainer = (function () {
     const elem = document.getElementById("error-container")
 
@@ -185,9 +201,10 @@ const qaMetadataContainer = (function () {
 })()
 
 const qaDataContainer = (function () {
-    const elem = document.getElementById("qa-data-container")
-    const tableContainer = document.getElementById("qa-results-container")
+    const tableContainerOuter = document.getElementById("tabular-data-container")
+    const tableContainerInner = document.getElementById("tabular-data")
     const toggleIriButton = document.getElementById("toggle-iri")
+    const figureContainer = document.getElementById("figure-container")
 
     let table = null
     let isShowingIRI = false
@@ -224,13 +241,20 @@ const qaDataContainer = (function () {
 
     return {
         reset() {
-            elem.style.display = "none"
-            tableContainer.innerHTML = ""
+            tableContainerOuter.style.display = "none"
+            tableContainerInner.innerHTML = ""
+            figureContainer.display = "none"
+            figureContainer.innerHTML = ""
         },
 
         render(data) {
-            table = renderDataTable(vars=data["vars"], bindings=data["bindings"], id="qa-results-table", containerElem=tableContainer)
-            elem.style.display = "block"
+            if (data["vars"].includes("timeseries")) {
+                renderTimeseriesGraph(data["title"], data["vars"], data["bindings"], figureContainer.id)
+                figureContainer.style.display = "block"
+            } else {
+                table = renderDataTable(vars = data["vars"], bindings = data["bindings"], id = "qa-results-table", containerElem = tableContainerInner)
+                tableContainerOuter.style.display = "block"
+            }
 
             isShowingIRI = true
             _toggleIRIColumns()
