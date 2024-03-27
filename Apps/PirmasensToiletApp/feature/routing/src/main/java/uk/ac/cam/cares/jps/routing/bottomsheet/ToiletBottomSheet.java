@@ -69,6 +69,22 @@ public class ToiletBottomSheet {
 
         toiletViewModel.getSelectedToilet().observe(hostFragment, toilet -> {
             // ((TextView) bottomSheetView.findViewById(R.id.address_name_tv)).setText(!toilet.getName().isEmpty() ? toilet.getName() : toilet.getAddress());
+            ((ImageView) bottomSheetView.findViewById(R.id.feeling_icon_happy))
+                    .setImageResource(R.drawable.emoji_smile_black_24);
+            ((ImageView) bottomSheetView.findViewById(R.id.feeling_icon_neutral))
+                    .setImageResource(R.drawable.emoji_neutral_balck_24);
+            ((ImageView) bottomSheetView.findViewById(R.id.feeling_icon_sad))
+                    .setImageResource(R.drawable.emoji_sad_black_24);
+            if(toilet.getAverageRating().equals("3")){
+                ((ImageView) bottomSheetView.findViewById(R.id.feeling_icon_happy))
+                        .setImageResource(R.drawable.emoji_smile_color_24);
+            }else if(toilet.getAverageRating().equals("2")){
+                ((ImageView) bottomSheetView.findViewById(R.id.feeling_icon_neutral))
+                        .setImageResource(R.drawable.emoji_neutral_color_24);
+            }else if(toilet.getAverageRating().equals("1")){
+                ((ImageView) bottomSheetView.findViewById(R.id.feeling_icon_sad))
+                        .setImageResource(R.drawable.emoji_sad_color_24);
+            }
 
             ((ImageView) bottomSheetView.findViewById(R.id.has_female_icon))
                     .setColorFilter(toilet.getHasFemale() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.female_toilet) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));

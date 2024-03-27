@@ -93,6 +93,8 @@ public class ToiletInfoNetworkSource {
 
                 toilet.addOtherInfo("Working Hours", workingHoursInfo);
 
+                String averageRating = toiletInfoJson.optString("average rating","0");
+                toilet.setAverageRating(averageRating);
                 String validityPeriod = toiletInfoJson.optString("validity");
                 if (validityPeriod != null && validityPeriod.isEmpty() == false) {
                     String beginMonth = validityPeriod.substring(0, 2);

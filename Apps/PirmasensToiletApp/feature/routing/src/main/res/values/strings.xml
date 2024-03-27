@@ -11,4 +11,5 @@
     <string name="direction">Direction</string>
     <string name="open_hours">Open Hours</string>
     <string name="price">Price</string>
+    <string name="rating">Rating</string>
 </resources>

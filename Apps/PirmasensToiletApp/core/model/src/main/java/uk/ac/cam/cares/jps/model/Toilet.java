@@ -15,12 +15,17 @@ public class Toilet {
     String locality;
     String postal_code;
     Price price;
-    String openTime;
-    String endTime;
+
+
+    String averageRating;
 
     String image;
 
     String id;
+
+
+    Map<String, String> otherInfo = new HashMap<>();
+
     @Override
     public String toString() {
         return "Toilet{" +
@@ -38,7 +43,6 @@ public class Toilet {
                 '}';
     }
 
-    Map<String, String> otherInfo = new HashMap<>();
 
     public Toilet(double lng, double lat) {
         location = Point.fromLngLat(lng, lat);
@@ -75,6 +79,7 @@ public class Toilet {
     public void setImage(String image) {
         this.image = image;
     }
+
     public String getId() {
         return id;
     }
@@ -127,8 +132,17 @@ public class Toilet {
         return postal_code;
     }
 
-    public String getAddress(){
-        return getStreetAddress() + ", " + getPostalCode() + " " + getLocality(); }
+    public String getAddress() {
+        return getStreetAddress() + ", " + getPostalCode() + " " + getLocality();
+    }
+
+    public String getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(String averageRating) {
+        this.averageRating = averageRating;
+    }
 
     public void setStreetAddress(String street_address) {
         this.street_address = street_address;
