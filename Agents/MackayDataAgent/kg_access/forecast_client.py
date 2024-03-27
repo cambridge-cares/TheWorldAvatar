@@ -11,8 +11,8 @@ from pyderivationagent.kg_operations import PySparqlClient
 DELETE_STR = "DELETE WHERE"
 SELECT_STR=  "SELECT * WHERE"
 INSERT_STR = "INSERT DATA"
-FORECAST_META_BASE_IRI = "https://www.theworldavatar.com/test/"
-META_PREFIX = 'PREFIX : <' + FORECAST_META_BASE_IRI + '> ' + '''
+GLOBAL_BASE = "https://www.theworldavatar.com/kg/"
+META_PREFIX = 'PREFIX : <{base_iri}> ' + '''
 PREFIX owl:    <http://www.w3.org/2002/07/owl#>
 prefix xsd:    <http://www.w3.org/2001/XMLSchema#>
 prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -68,6 +68,7 @@ class ForcastAgentClient:
         self.forcastagent_iri = agent_iri
         self.sparql_client = PySparqlClient(kg_info.endpoint, kg_info.endpoint, kg_user=kg_info.user,
                                             kg_password=kg_info.password)
+        self.base_iri = GLOBAL_BASE + kg_info.endpoint.split('/')[-2] # namespace
 
     def call_predict(self, forecast_meta: ForecastMeta):
         predict_input = self.update_forcast_meta(
@@ -101,15 +102,15 @@ class ForcastAgentClient:
         self._insert_forecast_meta(fmeta)
         logging.info('Forecast meta successfully inserted')
         input_list = [fmeta.iri,
-                      FORECAST_META_BASE_IRI + "ForecastingModel_{}".format(fmeta.name),
-                      FORECAST_META_BASE_IRI + "Frequency_{}".format(fmeta.name),
-                      FORECAST_META_BASE_IRI + "OptimisationInterval_{}".format(fmeta.name),
-                      FORECAST_META_BASE_IRI + "Duration_{}".format(fmeta.name)
+                      self.base_iri + "ForecastingModel_{}".format(fmeta.name),
+                      self.base_iri  + "Frequency_{}".format(fmeta.name),
+                      self.base_iri  + "OptimisationInterval_{}".format(fmeta.name),
+                      self.base_iri  + "Duration_{}".format(fmeta.name)
                       ]
         return input_list
 
     def _delete_forecast_meta(self, src_iri, name):
-        delete_str = META_PREFIX + META_UPDATE_QUERY.format(action=DELETE_STR, name=name, ts_iri=src_iri, model='?m',
+        delete_str = META_PREFIX.format(self.base_iri) + META_UPDATE_QUERY.format(action=DELETE_STR, name=name, ts_iri=src_iri, model='?m',
                                                             start='?s', end='?e', frequency='?f', unit='?u',
                                                             duration="?d")
         if self.get_forecast_meta(src_iri,name):
@@ -118,14 +119,14 @@ class ForcastAgentClient:
 
 
     def _insert_forecast_meta(self, fmeta: ForecastMeta):
-        update_str = META_PREFIX + META_UPDATE_QUERY.format(action=INSERT_STR, name=fmeta.name, ts_iri=fmeta.iri,
+        update_str = META_PREFIX.format(self.base_iri) + META_UPDATE_QUERY.format(action=INSERT_STR, name=fmeta.name, ts_iri=fmeta.iri,
                                                             model="\"" + fmeta.model + "\"", start=fmeta.start,
                                                             end=fmeta.end, frequency=fmeta.frequency,
                                                             unit=fmeta.unit_frequency_kg, duration=fmeta.duration)
         r = self.sparql_client.performUpdate(update_str)
 
     def get_forecast_meta(self,src_iri,name):
-        search_str = META_PREFIX + META_UPDATE_QUERY.format(action=SELECT_STR, name=name, ts_iri=src_iri, model='?model',
+        search_str = META_PREFIX.format(self.base_iri) + META_UPDATE_QUERY.format(action=SELECT_STR, name=name, ts_iri=src_iri, model='?model',
                                                             start='?start', end='?end', frequency='?frequency', unit='?unit_frequency',
                                                             duration="?duration")
         r = self.sparql_client.performQuery(search_str)

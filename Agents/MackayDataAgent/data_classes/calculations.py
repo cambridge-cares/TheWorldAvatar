@@ -5,7 +5,7 @@ from data_classes.ts_data_classes import *
 from collections import Counter
 
 
-def sum_by_time(ts: TimeSeriesInstance) -> TimeSeriesInstance:
+def algebra_sum(ts: TimeSeriesInstance) -> TimeSeriesInstance:
     sum_values = Counter()
     for t, v in zip(ts.times, ts.values):
         if type(v) == str:

@@ -2,8 +2,8 @@
 # set lever configurations or read all weboutputs.
 # ===============================================================================
 from .xlsvmodel import XLSVModel
-from .plot_formatter import translateValueIdList,translateControlIdList,translateSingleValueIdList
-from .config import XLSMMODELPATH,KG_UPDATE_LIST,NAME_NETZERO
+from utils.plot_formatter import translateValueIdList,translateControlIdList,translateSingleValueIdList
+from utils.config import XLSMMODELPATH,KG_UPDATE_LIST,NAME_NETZERO
 
 import time
 from collections import deque

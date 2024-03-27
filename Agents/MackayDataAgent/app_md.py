@@ -1,4 +1,4 @@
-from agents.mackay_data_agent import MackayDataAgent
+from api_agent.mackay_data_agent import MackayDataAgent
 from flask import Flask, Response
 import json
 import os,sys
@@ -8,10 +8,10 @@ from pathlib import Path
 def create_app(testing=False):
     app = Flask(__name__)
     if testing:
-        cfg = os.path.join( os.path.dirname(Path(__file__)), 'confs')
+        cfg = os.path.join(os.path.dirname(Path(__file__)), 'confs_files')
         print(cfg)
     else:
-        cfg = os.path.join( os.path.dirname(os.path.abspath(__file__)), 'confs')
+        cfg = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'confs_files')
     agent = MackayDataAgent(cfg)
     agent.initiate()
 

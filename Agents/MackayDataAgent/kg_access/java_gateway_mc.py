@@ -23,6 +23,8 @@ class jpsBaseLibView():
         self.jpsBaseLibViewO = jpsBaseLibGW.createModuleView()
         jpsBaseLibGW.importPackages(self.jpsBaseLibViewO, "uk.ac.cam.cares.jps.base.query.*")
         jpsBaseLibGW.importPackages(self.jpsBaseLibViewO, "uk.ac.cam.cares.jps.base.timeseries.*")
+        jpsBaseLibGW.importPackages(self.jpsBaseLibViewO, "uk.ac.cam.cares.jps.base.derivation.*")
+        jpsBaseLibGW.importPackages(self.jpsBaseLibViewO, "uk.ac.cam.cares.jps.base.agent.*")
 
     def getView(self):
         return self.jpsBaseLibViewO

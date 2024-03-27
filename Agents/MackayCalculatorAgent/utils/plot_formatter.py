@@ -4,7 +4,7 @@ This module contains utility functions to construct mappings for values in the E
 import json
 
 from utils.config import XLSMMODELPATH,OUTPUTMAPPINGPATH,CONTROLMAPPINGPATH,SINGLEVALUEMAPPINGPATH
-from utils.xlsvmodel import XLSVModel
+from mackay.xlsvmodel import XLSVModel
 import csv
 import string
 

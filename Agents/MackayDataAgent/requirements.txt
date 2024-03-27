@@ -1,4 +1,13 @@
-git+https://github.com/anuzzolese/pyrml
 pyderivationagent
 pandas
 openpyxl
+pytest
+py4jps
+jsonpath_ng
+pydantic==1.9.0
+testcontainers==3.4.2
+pytest==6.2.5
+pytest-docker-compose
+pytest-rerunfailures==10.2
+PyYAML==5.4.1
+psycopg2-binary

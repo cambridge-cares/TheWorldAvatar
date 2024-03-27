@@ -2,7 +2,7 @@
 # This router is still in development and not used for deployment
 # ===============================================================================
 from flask_restful import Api, Resource, reqparse,request
-from utils.calculator_model import CalculatorModel
+from mackay.calculator_model import CalculatorModel
 from flask import jsonify
 
 calculator = CalculatorModel()

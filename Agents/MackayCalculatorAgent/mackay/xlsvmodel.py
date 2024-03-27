@@ -5,6 +5,7 @@
 
 import xlwings as xw
 import time
+import numpy as np
 
 class XLSVModel():
     def __init__(self, root):
@@ -22,5 +23,7 @@ class XLSVModel():
     def updateValue(self, range, values, pagename='control', transpose=True):
         book = xw.Book(self.root)
         sheet = book.sheets[self.pageDict[pagename]]
-        sheet.range(range).options(transpose=transpose).value = values
-
+        myrange = sheet.range(range)
+        rrow, rcol = myrange.last_cell.row - myrange.row + 1, myrange.last_cell.column - myrange.column + 1
+        values = np.reshape(values, (rrow, rcol))
+        sheet.range(range).options().value = values

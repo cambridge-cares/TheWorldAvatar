@@ -17,7 +17,7 @@ TEST_UPDATE_TIMES = [2001,2002,2003]
 TEST_UPDATE_VALUES = [1,3,5]
 UPDATE_TS = TimeSeriesInstance(src_iri=TEST_INSTANCE_IRI, times= TEST_UPDATE_TIMES,values=TEST_UPDATE_VALUES)
 TEST_TS = TimeSeriesInstance(src_iri=TEST_INSTANCE_IRI, times= TEST_TIMES,values=TEST_VALUES)
-TS_CONFIG_DICT= {'db.url':'jdbc:postgresql://localhost:5432/test',
+TS_CONFIG_DICT= {'db.url':'jdbc:postgresql://localhost:5432/test2',
                  'db.user':'postgres',
                 'db.password':'postgres',
                 'sparql.query.endpoint':'http://localhost:9999/blazegraph/namespace/country/sparql',
@@ -37,7 +37,7 @@ TEST_FORECAST_META_1 = ForecastMeta(**{
 
 def test_tsclient_wrapper_update_timeseries_if_new():
     #Create TEST table and regsiter test TS
-    create_postgres_db_if_not_exists('test', TS_CONFIG_DICT['db.user'],TS_CONFIG_DICT['db.password'])
+    create_postgres_db_if_not_exists('test2', TS_CONFIG_DICT['db.user'],TS_CONFIG_DICT['db.password'])
     tmp_file = './temp.properties'
     conf_utils.write_java_properties_conf(TS_CONFIG_DICT, tmp_file)
     ts = TSClient( tmp_file)
@@ -62,9 +62,16 @@ def test_tsclient_wrapper_update_timeseries_if_new():
     ts.delete_timeseries(TEST_INSTANCE_IRI)
 
 
+def test_get_tsiri_notexist():
+    create_postgres_db_if_not_exists('test', TS_CONFIG_DICT['db.user'],TS_CONFIG_DICT['db.password'])
+    tmp_file = './temp.properties'
+    conf_utils.write_java_properties_conf(TS_CONFIG_DICT, tmp_file)
+    ts = TSClient( tmp_file)
+    re = ts.check_timeseries_exist('www.eee.com/this_is_dummy')
+    assert not re
 
 def test_update_forcast_meta():
-    AGENT_CONF = load_conf(os.path.join('../confs', 'base.cfg'))
+    AGENT_CONF = load_conf(os.path.join('../confs_files', 'base.cfg'))
     agent = ForcastAgentClient(AGENT_CONF['forecast_agent']['url'],AGENT_CONF['forecast_agent']['iri'], KgAccessInfo(endpoint=TS_CONFIG_DICT['sparql.query.endpoint']))
     #Check insert
     agent._insert_forecast_meta(TEST_FORECAST_META_1)

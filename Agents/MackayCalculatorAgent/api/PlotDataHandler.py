@@ -1,7 +1,7 @@
 # Data Handler for retrieve calculator chart values and defined single values by setting lever configuration
 # ===============================================================================
 from flask_restful import Api, Resource, reqparse,request
-from utils.calculator_model import CalculatorModel
+from mackay.calculator_model import CalculatorModel
 from flask import Response
 from flask import jsonify
 

@@ -2,15 +2,18 @@
 This module wraps JAVA functions of TimeseriesClient in JPS_BASE_LIB
 '''
 import psycopg2
-from .java_gateway import jpsBaseLibView
+from .java_gateway_mc import jpsBaseLibView
 from data_classes.ts_data_classes import *
 import logging
 import datetime
 from typing import List
-
+#TODO: restructure this with not property file
+#https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries/TimeSeriesClient.java
+DOUBLE = jpsBaseLibView().getView().java.lang.Double.TYPE
 
 def get_ts_client(property_file_path: str, data_class_name: str = 'Instant'):
     TSClient = jpsBaseLibView().getView().TimeSeriesClient(get_java_time_object(data_class_name), property_file_path)
+    print('get ts client')
     return TSClient
 
 
@@ -21,14 +24,14 @@ def get_java_time_object(data_class_name: str = 'Instant'):
 
 
 class TSClient():
-    def __init__(self, property_file_path: str, time_class: str = 'Instant'):
+    def __init__(self, property_file_path, time_class: str = 'Instant'):
         self.client = get_ts_client(property_file_path, time_class)
         self.time_class = time_class
 
     def register_timeseries(self, ts_meta: TimeSeriesMeta):
         # Retrieve Java classes for time entries (Instant) and data (ALL Double)
         # (required for time series client instantiation)
-        double_class = jpsBaseLibView().getView().java.lang.Double.TYPE
+        double_class = DOUBLE
         time_units = ts_meta.time_unit
         src_iris = [ts_meta.src_iri]
         self.client.initTimeSeries(src_iris, [double_class], time_units)
@@ -51,6 +54,9 @@ class TSClient():
         tsiri = self.client.getTimeSeriesIRI(datairi)
         return False if not tsiri else self.client.checkTimeSeriesExists(tsiri)
 
+    def get_ts_iri(self,datairi):
+        return self.client.getTimeSeriesIRI(datairi)
+
     def update_timeseries_if_new(self, tsinstance: TimeSeriesInstance, force=False) -> bool:
         times_new = [parse_time_to_format(t, self.time_class) for t in tsinstance.times]
         ts_exist = self.check_timeseries_exist(tsinstance.src_iri)
@@ -64,13 +70,13 @@ class TSClient():
                 if not to_update_idx:
                     logging.info('API for {} has not updated since last time. No change is made into KG'.format(
                         tsinstance.src_iri))
-                    return False
+                    return False # Source data has no different time points than current record, no update
         new_values = [tsinstance.values]
         dataIRIs = [tsinstance.src_iri]
         timeseries = jpsBaseLibView().getView().TimeSeries(times_new, dataIRIs, new_values)
-        lowb = jpsBaseLibView().getView().java.time.Instant.parse(parse_time_to_format(parse_incomplete_time("1000")))
+        lowb = jpsBaseLibView().getView().java.time.Instant.parse(parse_time_to_format(parse_incomplete_time("1000")))#TODO, should change this
         hb = jpsBaseLibView().getView().java.time.Instant.parse(parse_time_to_format(parse_incomplete_time("3000")))
-        a = self.client.deleteTimeSeriesHistory(tsinstance.src_iri, lowb, hb)  # Delete everything in last TS record
+        a = self.client.deleteTimeSeriesHistory(tsinstance.src_iri, lowb, hb)  # Delete data in last TS record but do not make new TS IRI
         self.client.addTimeSeriesData(timeseries)
         logging.info('Timeseries for {} updated from API'.format(tsinstance.src_iri))
         return True
@@ -84,7 +90,7 @@ class TSClient():
         return times, list(values)
 
 
-def create_postgres_db_if_not_exists(db_name, db_usr, db_pw):
+def create_postgres_db_if_not_exists(db_url, db_usr, db_pw):
     """
         Creates PostgreSQL database with name as specified in db.url field in the properties file
         Please note: The PostgreSQL server is assumed to be available at DEFAULT HOST (i.e. localhost)
@@ -97,6 +103,8 @@ def create_postgres_db_if_not_exists(db_name, db_usr, db_pw):
     # Create PostgreSQL database with extracted name
     # (for details see: https://www.psycopg.org/docs/module.html)
     conn = None
+    dburls = db_url.split('/')
+    db_name = dburls[-1]
     try:
         # Connect to PostgreSQL server (via DEFAULT host and port)
         conn = psycopg2.connect(user=db_usr, password=db_pw, host='localhost')

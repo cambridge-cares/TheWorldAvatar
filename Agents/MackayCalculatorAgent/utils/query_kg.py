@@ -13,7 +13,7 @@ def unit_convert_hv(hv):
     return hv/1e6
 
 # convert population to thousands of population
-def unit_convert_ppl(ppl):
+def unit_convert_thousand(ppl):
     return ppl/1000
 
 #TODO: check unit for this
@@ -22,7 +22,7 @@ def query_data_agent(agent_url):
 
 
 
-'''
+
 #Read in a query object, returns the result of query if success
 def query_single_ep(queryobj):
     kg_client = KGClient(queryobj['url'], queryobj['url'], kg_user=None if 'user' not in queryobj else queryobj['user'], kg_password=None if 'pwd' not in queryobj else queryobj['pwd'])
@@ -35,8 +35,7 @@ def query_single_ep(queryobj):
         for out in queryobj['outputs']:
             results[out] = response[0][out]
     return results
-'''
-'''
+
 def query_all(querylist):
     querylist = querylist['queries']
     results = {}
@@ -47,10 +46,9 @@ def query_all(querylist):
                 if k == 'hhv' or k=='lhv':#Plug in unit conversion
                     results[k] = unit_convert_hv(float(result[k]))
                 elif k == 'population':
-                    results[k] = unit_convert_ppl(float(result[k]))
+                    results[k] = unit_convert_thousand(float(result[k]))
                 else:
                     results[k] = float(result[k])
         except Exception as e:
             raise e
     return results
-'''

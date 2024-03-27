@@ -27,6 +27,17 @@ def load_confs_from_dir(fulldirpath) -> list:
         data_conf_list.append(load_conf(confpath))
     return data_conf_list
 
+'''
+Remove sector name and put conf key-value into dict
+'''
+def conf_to_dict(conf) -> dict:
+    conf_dict = {}
+    for sector in conf:
+        for key in conf[sector]:
+            conf_dict[key] = conf[sector][key]
+    return conf_dict
+
+
 
 def match_properties(props_java: dict, props_ini: dict) -> dict:
     updated = props_java.copy()
@@ -61,3 +72,16 @@ def create_property_files(base_conf, data_confs) -> dict:
         write_java_properties_conf(updated_props, outpath)
         outpaths[dataname] = outpath
     return outpaths
+
+def create_property_file(name, db_url, db_user, db_pw, kg_url ) -> str:
+    outdir = (os.path.join(Path(__file__).parent.parent, 'resources'))
+    Path(outdir).mkdir(parents=True, exist_ok=True)
+    outpath = os.path.abspath(os.path.join(outdir, "{}.properties".format(name)))
+    props = PropertiesFileProtytype.copy()
+    props['db.url'] = db_url
+    props['db.user'] = db_user
+    props['db.password'] = db_pw
+    props['sparql.query.endpoint']  =kg_url
+    props['sparql.update.endpoint']  =kg_url
+    write_java_properties_conf(props, outpath)
+    return outpath

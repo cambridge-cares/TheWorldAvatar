@@ -20,9 +20,10 @@ class MackayDataAgent:
         self.property_files_dict = create_property_files(self.base_conf,data_confs)
         self.tsclients = {}
         self.forecastclients = {}
-        self.name_to_iris = {d["source"]["name"]: d["output"]["src_iri"] for d in data_confs}
-        self.data_downloaders = {d["source"]["name"]: Downloader(d) for d in data_confs}
+        self.name_to_iris = {d["source"]["name"]: d["output"]["target_iri"] for d in data_confs}
+        self.data_downloaders = {d["source"]["name"]: Downloader(**conf_to_dict(d)) for d in data_confs}
         self.requires_predict = {d["source"]["name"]: True if 'forecast' in d else False for d in data_confs}
+        self.predict_cfgs = {d["source"]["name"]: d["forecast"] for d in data_confs if d["source"]["name"] in self.requires_predict}
         self.pre_serve = {d["source"]["name"]: d["pre_serve"]["calculation"] if 'pre_serve' in d else None for d in data_confs}
         for cfg in data_confs:
             data_name = cfg["source"]["name"]
@@ -36,6 +37,7 @@ class MackayDataAgent:
         self.init_RDB()
         self.register_all_timeseries_if_not_exist()
 
+    # Get current data in RDB of all APIs, if requires forecast, return forecasted data
     def get_data(self, forecast=True) -> dict:
         data = {}
         for data_name in self.name_to_iris:
@@ -64,9 +66,7 @@ class MackayDataAgent:
     # Create DB if not exist
     def init_RDB(self):
         sqlcfg = self.base_conf['rdb_access']
-        dburls = sqlcfg['url'].split('/')
-        db_name = dburls[-1]
-        tsclient_wrapper.create_postgres_db_if_not_exists(db_name, sqlcfg['user'], sqlcfg['password'])
+        tsclient_wrapper.create_postgres_db_if_not_exists(sqlcfg['url'], sqlcfg['user'], sqlcfg['password'])
 
     # Register TS in RDB and KB if not exist
     def register_all_timeseries_if_not_exist(self):
@@ -92,7 +92,7 @@ class MackayDataAgent:
             # Call predication agent if: requires to predict and either A. an update in timeseries record B. no predication has ever been made
             if self.requires_predict[data_name] and (updated or not exist_predict or force_predict):  #Run a required predict session if updated/no previous record/ force predict flag set
                 # pad empty TS instance for prediction
-                forecast_cfg = data_factory.conf['forecast']
+                forecast_cfg = self.predict_cfgs[data_name]
                 predict_end = parse_incomplete_time(forecast_cfg['predictEnd'])
                 padding_ts = get_padded_TSInstance(data_iri,forecast_cfg['unitFrequency'], timeseries_instance.times[-1],predict_end )
                 #TSClient.add_timeseries(padding_ts)
