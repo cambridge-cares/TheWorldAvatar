@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
+
+    <include
+        layout="@layout/fragment_camera"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/camera"
+        />
+
+    <uk.ac.cam.cares.jps.qrscan.ui.BoxOverlayView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/box_overlay_view"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

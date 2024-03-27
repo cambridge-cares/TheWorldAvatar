@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mailbox">Mailbox</string>
+    <string name="network_error">Unable to get new mails, please try again later.</string>
+</resources>

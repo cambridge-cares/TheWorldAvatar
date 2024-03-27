@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_close_button">close button</string>
+    <string name="cd_flash_button">flash button</string>
+    <string name="request_camera_permission">Camera Permission Required</string>
+    <string name="faile_to_get_camera_permission">Fail to get camera permission</string>
+    <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
+</resources>
