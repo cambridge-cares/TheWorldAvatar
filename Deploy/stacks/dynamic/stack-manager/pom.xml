@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-manager</artifactId>
-  <version>1.25.3-hotfix-multidim-vrt-raster-SNAPSHOT</version>
+  <version>1.25.4-hotfix-multidim-vrt-raster-SNAPSHOT</version>
 
   <name>Stack Manager</name>
   <url>https://theworldavatar.io</url>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>com.cmclinnovations</groupId>
       <artifactId>stack-clients</artifactId>
-      <version>1.25.3-hotfix-multidim-vrt-raster-SNAPSHOT</version>
+      <version>1.25.4-hotfix-multidim-vrt-raster-SNAPSHOT</version>
     </dependency>
 
     <dependency>

@@ -28,6 +28,7 @@ import com.cmclinnovations.stack.clients.geoserver.MultidimSettings;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.DateTimeParser;
+import com.cmclinnovations.stack.clients.utils.DateStringFormatter;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.clients.utils.TempDir;
 import com.google.common.collect.ArrayListMultimap;
@@ -280,8 +281,9 @@ public class GDALClient extends ContainerClient {
             timeSqlType = "TIMESTAMPTZ";
         } else {
             for (int index = 0; index < timeArray.length(); index++) {
-                dateTimes.add(timeArray.getString(index));
-
+                String timeStringUnFormatted = timeArray.getString(index);
+                String timeStringFormatted = DateStringFormatter.customDateStringFormatter(timeStringUnFormatted, mdimSettings.getTimeOptions().getArrayName());
+                dateTimes.add(timeStringFormatted);
             }
             timeSqlType = "TEXT";
         }
