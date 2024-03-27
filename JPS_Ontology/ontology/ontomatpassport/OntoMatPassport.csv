@@ -8,6 +8,8 @@ Component,Class,,,,,,Part of a bigger whole that can be a system or a product of
 http://emmo.info/emmo#EMMO_4207e895_8b83_4318_996a_72cfb32acd94,Class,,,,,,,http://emmo.info/emmo,Material
 Material Passport,Class,,,,,,"A passport or document providing identification, physical, temporal, sustainability and other properties of a product or component.",http://www.theworldavatar.com/kg/ontomatpassport,Material passport
 http://xmlns.com/foaf/0.1/Agent,Class,,,,,,,http://xmlns.com/foaf/0.1,Agent
+https://dbpedia.org/ontology/Country,Class,,,,,,A political entity associated with a territory considered a motherland to a nation ruled by a government.,https://dbpedia.org/ontology,Country
+http://purl.org/dc/dcmitype/Image,Class,,,,,,A visual representation of an inanimate or animate object captured through technological means or drawn by humans.,http://purl.org/dc/dcmitype,
 Manufacturer,Class,,,,,,"A business, company or entity manufacturing goods for the consumer market.",http://www.theworldavatar.com/kg/ontomatpassport,Manufacturer
 Supplier,Class,,,,,,"A business, company or entity supplying goods to another business, company or entity.",http://www.theworldavatar.com/kg/ontomatpassport,Supplier
 http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,Class,,,,,,A characteristic of an object that can be applied in determining its use in applications.,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl,Property
@@ -60,3 +62,21 @@ Temporal Property,Class,http://www.ontology-of-units-of-measure.org/resource/om-
 Thermal Property,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,,
 Circular Economy Property,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,,
 Dimensionless Quantity,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,,
+Specific Heat,Class,,,,,,The quantity of heat needed to increase the temperature of a material's unit mass by one unit.,http://www.theworldavatar.com/kg/ontomatpassport,Specific heat
+description,Data Property,,,Product UNION Component UNION Constituent Material,string,,"A narrative or detailed account of a product, component or material.",http://www.theworldavatar.com/kg/ontomatpassport,Description
+hasAutomaticTrackingOrScanning,Data Property,,,Product UNION Component,boolean,,A datatype property that indicates if a product or component has an automatic tracking number in the form of a barcode or any other means.,http://www.theworldavatar.com/kg/ontomatpassport,Automatic tracking/scanning
+hasEAN,Data Property,,,Product UNION Component,string,,A datatype property expressing the European Article Number (EAN) of a product or component.,http://www.theworldavatar.com/kg/ontomatpassport,EAN
+hasFunctionality,Data Property,,,Product UNION Component,string,,The intended purpose of a product or component.,http://www.theworldavatar.com/kg/ontomatpassport,Functionality
+hasGTIN,Data Property,,,Product UNION Component,string,,A datatype property expressing the Global Trade Item Number (GTIN) of a product or component.,http://www.theworldavatar.com/kg/ontomatpassport,GTIN
+id,Data Property,,,Product UNION Component UNION Constituent Material,string,,A datatype property expressing the Global Trade Item Number (GTIN) of a product or component.,http://www.theworldavatar.com/kg/ontomatpassport,Id
+isBiodegradable,Data Property,,,Product UNION Component UNION Constituent Material,boolean,,Indicates if a product or component is biodegradable or not.,http://www.theworldavatar.com/kg/ontomatpassport,Is biodegradable
+isDecomposable,Data Property,,,Product UNION Component UNION Constituent Material,boolean,,Indicates if a product or component is decomposable or not.,http://www.theworldavatar.com/kg/ontomatpassport,Is decomposable
+isHazardous,Data Property,,,Product UNION Component UNION Constituent Material,boolean,,Indicates if a product or component poses any danger.,http://www.theworldavatar.com/kg/ontomatpassport,Is hazardous
+http://purl.org/goodrelations/v1#name,Data Property,,,Product UNION Component UNION Constituent Material,string,,"A linguistic identity of a product, component or material.",http://purl.org/goodrelations/v1,Name
+hasBrandName,Data Property,http://purl.org/goodrelations/v1#name,IS-A,Product UNION Component,string,,A name that indicates the commercial brand of a product or component.,http://www.theworldavatar.com/kg/ontomatpassport,Brand name
+hasManufacturerName,Data Property,http://purl.org/goodrelations/v1#name,IS-A,Manufacturer,string,,A name that indicates who the manufacturer of a product or component is.,http://www.theworldavatar.com/kg/ontomatpassport,Manufacturer name
+hasSupplierName,Data Property,http://purl.org/goodrelations/v1#name,IS-A,Supplier,string,,A name that indicates who the supplier of a product or component is.,http://www.theworldavatar.com/kg/ontomatpassport,Supplier name
+hasNumber,Data Property,,,,string,,A string of numerals that expresses the identity of an object.,http://www.theworldavatar.com/kg/ontomatpassport,Number
+hasRegistrationNumber,Data Property,hasNumber,IS-A,Manufacturer UNION Supplier,string,,A number given to a manufacturer when registration is completed with a regulatory body.,http://www.theworldavatar.com/kg/ontomatpassport,Registration number
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,,,Measure UNION FeedstockFractionFromRecycledProduct UNION FeedstockFractionFromReusedProduct UNION LinearFlowIndex UNION MaterialCircularityIndicator UNION ProductFractionCollectedForRecycling UNION ProductFractionCollectedForReuse,float,,The numerical value of a measured quantity.,http://www.ontology-of-units-of-measure.org/resource/om-2,Numerical Value
+http://purl.org/dc/terms/URI,Data Property,,,Image,any uri,,The locatable address of an image on the web.,http://purl.org/dc/terms/URI,URL
