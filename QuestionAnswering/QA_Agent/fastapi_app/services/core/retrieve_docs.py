@@ -23,7 +23,7 @@ class DocsRetriever(Generic[T]):
         redis_client: Redis,
         key: str,
         docs: Iterable[T],
-        tags: Iterable[str],
+        tags: Optional[Iterable[str]] = None,
         linearize: Callable[[T], str] = str,
         jsonify: Callable[[T], Union[str, list, dict]] = lambda x: x,
     ):
@@ -42,10 +42,12 @@ class DocsRetriever(Generic[T]):
 
     @cached_property
     def tags(self):
-        return list(self._tags)
+        if self._tags:
+            return list(self._tags)
+        return None
 
     def _make_knn_query(self, k: int, tag: Optional[str]):
-        if tag:
+        if self.tags and tag:
             prefilter = "@tag:{{{tag}}}".format(tag=tag)
         else:
             prefilter = "*"
@@ -61,29 +63,36 @@ class DocsRetriever(Generic[T]):
         )
 
     def _embed(self):
+        tags = self.tags if self.tags else [None for _ in self.docs]
         texts = [self.linearize(doc) for doc in self.docs]
         embeddings = self.embedder(texts).astype(np.float32).tolist()
         vector_dim = len(embeddings[0])
 
         pipeline = self.redis_client.pipeline()
         for i, (tag, doc, text, embedding) in enumerate(
-            zip(self.tags, self.docs, texts, embeddings)
+            zip(tags, self.docs, texts, embeddings)
         ):
             redis_key = self.doc_key_prefix + str(i)
             doc = self.jsonify(doc)
-            datum = dict(tag=tag, doc=doc, linearized_doc=text, embedding=embedding)
+            datum = dict(doc=doc, linearized_doc=text, embedding=embedding)
+            if tag:
+                datum["tag"] = tag
             pipeline.json().set(redis_key, "$", datum)
         pipeline.execute()
 
-        schema = (
-            TagField("$.tag", as_name="tag"),
+        schema = [
             VectorField(
                 "$.embedding",
                 "FLAT",
                 {"TYPE": "FLOAT32", "DIM": vector_dim, "DISTANCE_METRIC": "IP"},
                 as_name="vector",
             ),
-        )
+        ]
+        if self.tags:
+            schema.append(TagField("$.tag", as_name="tag"))
+        schema = tuple(schema)
+        print(schema)
+
         definition = IndexDefinition(
             prefix=[self.doc_key_prefix], index_type=IndexType.JSON
         )
@@ -98,11 +107,15 @@ class DocsRetriever(Generic[T]):
             .search(knn_query, {"query_vector": encoded_query.tobytes()})
             .docs
         ]
+        # TODO: handle the case when ids_and_scores is empty
+        print(ids_and_scores)
         docs = self.redis_client.json().mget([id for id, _ in ids_and_scores], ".doc")
         return list(zip(docs, [score for _, score in ids_and_scores]))
 
     def retrieve(self, queries: List[str], k: int = 3, tag: Optional[str] = None):
+        print("HI")
         if not does_index_exist(self.redis_client, self.index_name):
+            print("INDEX DOES NOT EXIST")
             self._embed()
 
         encoded_queries = self.embedder(queries).astype(np.float32)
