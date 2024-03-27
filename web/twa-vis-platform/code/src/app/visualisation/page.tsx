@@ -12,7 +12,7 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './visualisation.module.css';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Ribbon from './ribbon/ribbon';
@@ -39,7 +39,6 @@ const ribbonContextItem: ContextItemDefinition = {
  * @returns React component for display. 
  */
 export default function MapContainer() {
-    const [isFetching, setIsFetching] = useState(true);
 
     // State for map configuration settings
     const dispatch = useDispatch()
@@ -50,9 +49,8 @@ export default function MapContainer() {
 
     // Run when component loaded
     useEffect(() => {
-        setIsFetching(true);
         dispatch(addItem(ribbonContextItem));   // Add context menu item
-        
+
         const settingsPromise = getMapSettings();
         settingsPromise.then((settingsObj) => {
             mapSettings.current = settingsObj;
@@ -61,54 +59,39 @@ export default function MapContainer() {
             const dataPromise = getAndParseDataSettings();
             dataPromise.then((dataObj) => {
                 dataStore.current = dataObj;
-                setIsFetching(false);
             });
         });
     }, []);
 
     return (
         <>
-            {/* Loading icon */}
-            {isFetching && 
-                <div className={styles.loadingContainer}>
-                    <img
-                        src="/img/loading.gif"
-                        width="500px"
-                        height="500px"
-                    />
-                    <h1>Loading visualisation, please wait...</h1>
-                </div>
-            }
-
             {/* Mapbox map */}
-            {!isFetching && mapSettings?.current?.["type"] === "mapbox" &&
+            {mapSettings?.current?.["type"] === "mapbox" &&
                 <MapboxMapComponent
                     settings={mapSettings.current}
-                    dataStore= {dataStore.current}
+                    dataStore={dataStore.current}
                 />
             }
 
             {/* Cesium map */}
-            {!isFetching &&mapSettings?.current?.["type"] === "cesium" &&
+            {mapSettings?.current?.["type"] === "cesium" &&
                 <div></div>
             }
-    
+
             {/* Container elements */}
-            {!isFetching &&
-                <div className={styles.componentContainer}>
+            <div className={styles.componentContainer}>
 
-                    {/* Map controls ribbon */}
-                    {ribbonState?.toggled != null && ribbonState.toggled &&
-                        <Ribbon startingIndex={0}/>
-                    }
+                {/* Map controls ribbon */}
+                {ribbonState?.toggled != null && ribbonState.toggled &&
+                    <Ribbon startingIndex={0} />
+                }
 
-                    {/* Containers for upcoming components (layer tree, metadata, time series charts etc.) */}
-                    <div className={styles.upperContainer}>
-                        <FloatingPanelContainer dataStore={dataStore.current}/>
-                    </div>
-                    <div className={styles.lowerContainer}/>
+                {/* Containers for upcoming components (layer tree, metadata, time series charts etc.) */}
+                <div className={styles.upperContainer}>
+                    <FloatingPanelContainer dataStore={dataStore.current} />
                 </div>
-            }
+                <div className={styles.lowerContainer} />
+            </div>
         </>
     )
 }

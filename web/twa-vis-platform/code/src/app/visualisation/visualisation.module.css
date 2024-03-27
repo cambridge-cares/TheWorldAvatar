@@ -10,19 +10,6 @@
     z-index: 1;
 }
 
-.loadingContainer {
-    width: 500px;
-    height: 600px;
-    position: absolute;
-    top: calc(50% - 250px);
-    left: calc(50% - 250px);
-}
-.loadingContainer h1 {
-    width: 500px;
-    text-align: center;
-    font-size: var(--font-size-h1);
-}
-
 .upperContainer {
     width: 100%;
     min-height: 225px;
