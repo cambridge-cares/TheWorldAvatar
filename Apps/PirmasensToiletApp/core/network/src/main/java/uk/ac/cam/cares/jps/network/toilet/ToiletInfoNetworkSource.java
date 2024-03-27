@@ -91,7 +91,7 @@ public class ToiletInfoNetworkSource {
 
                 String workingHoursInfo = aggregateWorkingHours(days, toiletWorkingInfoJson);
 
-                toilet.addOtherInfo("Working Hours", workingHoursInfo);
+                toilet.addOtherInfo("Opening Hours", workingHoursInfo);
 
                 String averageRating = toiletInfoJson.optString("average rating","0");
                 toilet.setAverageRating(averageRating);
