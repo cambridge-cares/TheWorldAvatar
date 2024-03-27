@@ -95,6 +95,7 @@
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
         <rdfs:domain rdf:resource="http://emmo.info/emmo#EMMO_4207e895_8b83_4318_996a_72cfb32acd94"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalComposition"/>
+        <rdfs:label xml:lang="en">has chemical composition</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -111,6 +112,42 @@
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="https://dbpedia.org/ontology/Country"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasFeedstockFractionFromRecycledProduct -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasFeedstockFractionFromRecycledProduct">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#FeedstockFractionFromRecycledProduct"/>
+        <rdfs:label xml:lang="en">has feedstock fraction from recycled product</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasFeedstockFractionFromReusedProduct -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasFeedstockFractionFromReusedProduct">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#FeedstockFractionFromReusedProduct"/>
+        <rdfs:label xml:lang="en">has feedstock fraction from reused product</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -143,6 +180,24 @@
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Manufacturer"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasMass -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasMass">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Mass"/>
+        <rdfs:label xml:lang="en">Mass</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -185,6 +240,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasSpecificHeat">
         <rdfs:domain rdf:resource="http://emmo.info/emmo#EMMO_4207e895_8b83_4318_996a_72cfb32acd94"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SpecificHeat"/>
+        <rdfs:label xml:lang="en">has specific heat</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -257,7 +313,9 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Manufacturer"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Supplier"/>
@@ -439,7 +497,9 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
@@ -603,6 +663,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Biodegradability">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#BiologicalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -670,6 +742,26 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Constituent -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CompositionProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial">
@@ -677,13 +769,13 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
-                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterialMeasure"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMeasure"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterialMeasure"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMeasure"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment xml:lang="en">A property to describe the type and amount of constituent materials belonging to an object.</rdfs:comment>
@@ -692,9 +784,9 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterialMeasure -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMeasure -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterialMeasure">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMeasure">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -715,7 +807,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment xml:lang="en">A measure to quantify the amount of constituent materials.</rdfs:comment>
-        <rdfs:label xml:lang="en">Constituent material measure</rdfs:label>
+        <rdfs:label xml:lang="en">Constituent measure</rdfs:label>
     </owl:Class>
     
 
@@ -724,6 +816,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CompositionProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment xml:lang="en">A part or component of a bigger whole or component or product.</rdfs:comment>
         <rdfs:label xml:lang="en">Constituent part</rdfs:label>
     </owl:Class>
@@ -846,6 +950,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#FeedstockFractionFromRecycledProduct">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment xml:lang="en">The fraction of feedstock from recycled products.</rdfs:comment>
         <rdfs:label xml:lang="en">Feedstock fraction from recycled product</rdfs:label>
     </owl:Class>
@@ -856,6 +972,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#FeedstockFractionFromReusedProduct">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment xml:lang="en">The fraction of feedstock from reused products.</rdfs:comment>
         <rdfs:label xml:lang="en">Feedstock fraction from reused product</rdfs:label>
     </owl:Class>
@@ -1021,6 +1149,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ProductFractionCollectedForRecycling">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:label xml:lang="en">Product fraction collected for recycling</rdfs:label>
         <rdfs:label xml:lang="en">The fraction of a product collected for recycling.</rdfs:label>
     </owl:Class>
@@ -1031,6 +1171,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ProductFractionCollectedForReuse">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment xml:lang="en">The fraction of a product collected for reuse.</rdfs:comment>
         <rdfs:label xml:lang="en">Product fraction collected for reuse</rdfs:label>
     </owl:Class>
@@ -1041,6 +1193,12 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
@@ -1058,6 +1216,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
                 <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -1071,6 +1235,12 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#RecyclingEfficiencyForProducingFeedstock">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
@@ -2196,6 +2366,7 @@
         <rdfs:label xml:lang="en">Property</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasRegistrationCountry">
+        <rdfs:comment xml:lang="en">An object property referring to the country where a manufacturer, supplier, company or industry is registered.</rdfs:comment>
         <rdfs:label xml:lang="en">Registration country</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasRegistrationNumber">
