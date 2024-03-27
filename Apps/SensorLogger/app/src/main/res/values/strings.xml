@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">
+        NotSensorLogger2
+    </string>
+
+    <string name="mapbox_access_token">sk.eyJ1IjoieWFzaG5hbGx1cmkiLCJhIjoiY2x0M3JwdTl5MjBzczJybXVpMjAyZzh6MSJ9.XBRqrPDGkbq4-H33eYHZug</string>
+
+    <string name="start_button_text">
+        Start
+    </string>
+
+    <string name="stop_button_text">
+        Stop
+    </string>
+    <string name="record_sensor_data">Record Sensor Data</string>
+</resources>
+
+

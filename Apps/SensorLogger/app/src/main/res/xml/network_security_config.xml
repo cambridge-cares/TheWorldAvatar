@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.1.60</domain>
+    </domain-config>
+</network-security-config>
+
+
+
+<!--    I built an android app which tracks various sensor data like follows:-->
+
+<!--    Sensor List:-->
+<!--    1. Accelerometer-->
+<!--    2. Gravity-->
+<!--    3. Gyroscope-->
+<!--    4. Light (lux)-->
+<!--    5. Magnetometer-->
+<!--    6. Pressure-->
+<!--    7. Relative Humidity-->
+<!--    8. Sound Pressure Level-->
+<!--    9. GPS which contains: Active location tracking, Latitude and Longitude, Speed, Altitude, Bearing-->
+
+<!--    Currently this is the code for the UI of the app and a picture of how it looks:-->
+
+<!--    <?xml version="1.0" encoding="utf-8"?>-->
+<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--xmlns:tools="http://schemas.android.com/tools"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="match_parent"-->
+<!--android:background="@color/white"-->
+<!--tools:context=".MainActivity">-->
+
+
+<!--<TextView-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:fontFamily="sans-serif-light"-->
+<!--    android:text="@string/record_sensor_data"-->
+<!--    android:textAlignment="center"-->
+<!--    android:textColor="@color/black"-->
+<!--    android:textSize="28sp"-->
+<!--    android:textStyle="bold"-->
+<!--    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--    app:layout_constraintEnd_toEndOf="parent"-->
+<!--    app:layout_constraintStart_toStartOf="parent"-->
+<!--    app:layout_constraintTop_toTopOf="parent"-->
+<!--    app:layout_constraintVertical_bias="0.349" />-->
+
+<!--<Button-->
+<!--    android:id="@+id/start_button"-->
+<!--    android:layout_width="125dp"-->
+<!--    android:layout_height="54dp"-->
+<!--    android:layout_marginStart="52dp"-->
+<!--    android:background="@drawable/start_button_config"-->
+<!--    android:text="@string/start_button_text"-->
+<!--    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--    app:layout_constraintStart_toStartOf="parent"-->
+<!--    app:layout_constraintTop_toTopOf="parent" />-->
+
+
+<!--<Button-->
+<!--    android:id="@+id/stop_button"-->
+<!--    android:layout_width="127dp"-->
+<!--    android:layout_height="54dp"-->
+<!--    android:layout_marginEnd="52dp"-->
+<!--    android:background="@drawable/red_oval_button"-->
+<!--    android:text="@string/stop_button_text"-->
+<!--    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--    app:layout_constraintEnd_toEndOf="parent"-->
+<!--    app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--<ImageView-->
+<!--    android:id="@+id/locationButton"-->
+<!--    android:layout_width="65dp"-->
+<!--    android:layout_height="72dp"-->
+<!--    android:layout_marginEnd="16dp"-->
+<!--    android:layout_marginBottom="16dp"-->
+<!--    android:background="@color/white"-->
+<!--    android:backgroundTint="@color/white"-->
+<!--    android:src="@android:drawable/ic_menu_mylocation"-->
+<!--    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--    app:layout_constraintEnd_toEndOf="parent"-->
+<!--    app:srcCompat="@android:drawable/ic_menu_mylocation" />-->
+
+<!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+<!--    I now want it to like more like the second picture, where:-->
+<!--    1. Each sensor has buttons where you could toggle them on and off.-->
+<!--    2. Each sensor has a small icon/image to the left of its name which depicts what the sensor is-->
+<!--    3. Each sensor has an eye icon towards its right, which when clicked, opens to a page about the sensor, containing its description, notes, sampling, and latest readings, like shown in the screenshot.-->
+
+<!--    tell me what I have to do in order to get my app the above UI functionalities. GIve me detailed step by step of this and the code as well-->
