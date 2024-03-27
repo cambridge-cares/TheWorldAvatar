@@ -1,5 +1,6 @@
 # Fumehood agent
 
+
 This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding fumehood occupancy status.
 The agent will retrieve the sensor readings from the Thingsboard (TB) server and determine the fumehood occupancy. The agent is also responsible for instantiating the derivations and agent instances of the occupancy derivation instances using the derivation client.
 

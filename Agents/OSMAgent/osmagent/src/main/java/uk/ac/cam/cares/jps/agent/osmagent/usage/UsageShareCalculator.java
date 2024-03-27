@@ -28,14 +28,6 @@ import java.util.UUID;
  */
 
 public class UsageShareCalculator {
-        private static final String RESOURCES_PATH = "/resources";
-
-        private static final String citydb = "SELECT cga.strval AS urival, public.ST_Collect(sg.geometry) as geometry, public.ST_AsText(public.ST_Collect(sg.geometry)) AS geostring, public.ST_SRID(public.ST_Collect(sg.geometry)) AS srid \n" +
-                "FROM citydb.building b \n" +
-                "INNER JOIN citydb.cityobject_genericattrib cga ON b.id = cga.cityobject_id \n" +
-                "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.parent_id \n" +
-                "WHERE cga.attrname = 'uuid' AND sg.geometry IS NOT NULL \n" +
-                "GROUP BY strval";
         private RemoteRDBStoreClient rdbStoreClient;
 
         /**
@@ -99,54 +91,6 @@ public class UsageShareCalculator {
                 rdbStoreClient.executeUpdate(updatePropertyUsageStatement);
                 System.out.println("UsageShare calculated and propertyUsage assigned.");
 
-        }
-
-        /**
-         * Matches building IRIs not in usageTable with land use from landUseTable, and updates usageTable with the assigned OntoBuiltEnv:PropertyUsage class according to '/dlm_landuse.csv'
-         * @param usageTable centralised table to store usage information
-         * @param landUseTable table containing DLM land use data
-         */
-        public void updateLandUse(String usageTable, String landUseTable, String geometryColumn, String csv) {
-                try (InputStream input = FileReader.getStream(RESOURCES_PATH + "/" + csv)) {
-                        InputStreamReader inputStreamReader = new InputStreamReader(input);
-                        CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
-                        String[] line;
-
-                        while ((line = csvReader.readNext()) != null) {
-                                String ontobuilt = line[3];
-                                String key = line[0];
-                                String value = line[1];
-
-                                String updateLandUse = "INSERT INTO " + usageTable + " (building_iri, ontobuilt) \n" +
-                                        "SELECT q2.iri, \'" + ontobuilt + "\' FROM \n" +
-                                        "(SELECT q.urival AS iri, q.geometry AS geo, q.srid AS srid FROM \n" +
-                                        "(" + citydb + ") AS q \n" +
-                                        "LEFT JOIN " + usageTable + " u ON q.urival = u.building_iri \n" +
-                                        "WHERE u.building_iri IS NULL) AS q2 \n" +
-                                        "WHERE public.ST_Intersects(q2.geo, public.ST_Transform(\n" +
-                                        "(SELECT CASE WHEN public.ST_IsValid(public.ST_Collect(%s)) THEN public.ST_Collect(%s)\n" +
-                                        "ELSE public.ST_MakeValid(public.ST_Collect(%s)) END AS g FROM " + landUseTable + " \n" +
-                                        "WHERE \"" + key + "\" = \'" + value + "\'), q2.srid))";
-
-                                rdbStoreClient.executeUpdate(String.format(updateLandUse, geometryColumn, geometryColumn, geometryColumn));
-                                System.out.println(
-                                        "Untagged buildings with building_iri are assigned for " + key + " with value:"
-                                                + value + " under the ontobuiltenv:" + ontobuilt
-                                                + " category.");
-                        }
-
-                        System.out.println(
-                                "Untagged building has been assigned an ontobuilt type according to the corresponding landuse.");
-                        csvReader.close();
-                }
-                catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                        throw new JPSRuntimeException("dlm_landuse.csv file not found");
-                }
-                catch (IOException e) {
-                        e.printStackTrace();
-                        throw new JPSRuntimeException(e);
-                }
         }
 
         public void addMaterializedView(String usageTable, String osmSchema) {

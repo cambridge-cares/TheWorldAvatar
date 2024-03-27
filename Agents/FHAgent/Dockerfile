@@ -13,7 +13,9 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/FHAgent
+
 RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn package
+
 
 #==================================================================================================
 
@@ -40,6 +42,7 @@ COPY ./config/client.properties /root/client.properties
 
 # Set the required environment variable
 ENV THINGSBOARD_CLIENTPROPERTIES="/root/client.properties"
+
 
 # Set the required environment variable
 ENV IRI_MAPPINGSTORE="/root/iriMapping.txt"
