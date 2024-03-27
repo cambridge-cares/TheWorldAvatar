@@ -1,50 +1,25 @@
 import logging
-from typing import Annotated, Iterator, List, Optional, Tuple
+from typing import Annotated, Dict, Optional, Tuple
 
 from fastapi import Depends
-from pydantic.dataclasses import dataclass
 
 from model.aggregate import AggregateOperator
 from model.constraint import (
-    CompoundNumericalConstraint,
-    NumericalArgConstraint,
+    CompoundComparativeConstraint,
+    NumericalConstraint,
     ExtremeValueConstraint,
 )
 from model.qa import QAData
 from services.core.kg import KgClient
 from services.connectors.sg import get_sg_ontopClient
-from .constants import PlotAttrKey
+from .constants import LAND_USE_TYPE_PREDICATE, PLOT_NUM_ATTR_PREDICATES
+from .model import PlotAttrKey, PlotCatAttrKey, PlotNumAttrKey
 from .kg import get_sgLandLots_bgClient
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class PlotConstraints:
-    land_use_type_iri: Optional[str] = None
-    gross_plot_ratio: Optional[NumericalArgConstraint] = None
-    plot_area: Optional[NumericalArgConstraint] = None
-    gross_floor_area: Optional[NumericalArgConstraint] = None
-    num: Optional[int] = None
-
-    def __str__(self):
-        agg = []
-        if self.land_use_type_iri:
-            agg.append("land_use_type_iri='{iri}'".format(iri=self.land_use_type_iri))
-        for field in ["gross_plot_ratio", "plot_area", "gross_floor_area"]:
-            if getattr(self, field):
-                agg.append(str(getattr(self, field)))
-        return ", ".join(agg)
-
-
 class SGLandLotsAgent:
-    _ATTRKEY2PRED = {
-        PlotAttrKey.LAND_USE_TYPE: "ontozoning:hasLandUseType",
-        PlotAttrKey.GROSS_PLOT_RATIO: "^opr:appliesTo/opr:allowsGrossPlotRatio/om:hasValue",
-        PlotAttrKey.PLOT_AREA: "ontoplot:hasPlotArea/om:hasValue",
-        PlotAttrKey.GROSS_FLOOR_AREA: "ontoplot:hasMaximumPermittedGPR/om:hasValue",
-    }
-
     def __init__(
         self,
         bg_client: KgClient,
@@ -54,7 +29,7 @@ class SGLandLotsAgent:
         self.ontop_client = ontop_client
 
     def _make_clauses_for_constraint(
-        self, key: PlotAttrKey, constraint: NumericalArgConstraint
+        self, key: PlotNumAttrKey, constraint: NumericalConstraint
     ):
         where_patterns = []
         orderby = None
@@ -62,11 +37,11 @@ class SGLandLotsAgent:
         valuenode = "?{key}NumericalValue".format(key=key.value)
         where_patterns.append(
             "?IRI {pred}/om:hasNumericalValue {valuenode} .".format(
-                pred=self._ATTRKEY2PRED[key], valuenode=valuenode
+                pred=PLOT_NUM_ATTR_PREDICATES[key], valuenode=valuenode
             )
         )
 
-        if isinstance(constraint, CompoundNumericalConstraint):
+        if isinstance(constraint, CompoundComparativeConstraint):
             atomic_constraints = [
                 "{valuenode} {operator} {operand}".format(
                     valuenode=valuenode, operator=x.operator.value, operand=x.operand
@@ -88,24 +63,24 @@ class SGLandLotsAgent:
 
         return where_patterns, orderby
 
-    def find_plot_iris(self, plot_constraints: PlotConstraints):
+    def find_plot_iris(
+        self,
+        land_use_type_iri: Optional[str] = None,
+        num_constraints: Dict[PlotNumAttrKey, NumericalConstraint] = dict(),
+        limit: Optional[int] = None,
+    ):
         patterns = ["?IRI rdf:type ontoplot:Plot ."]
         orderbys = []
 
-        if plot_constraints.land_use_type_iri:
+        if land_use_type_iri:
             patterns.append(
                 "?IRI {pred} <{land_use}> .".format(
-                    pred=self._ATTRKEY2PRED[PlotAttrKey.LAND_USE_TYPE],
-                    land_use=plot_constraints.land_use_type_iri,
+                    pred=LAND_USE_TYPE_PREDICATE,
+                    land_use=land_use_type_iri,
                 )
             )
-        for fieldname, key in [
-            ("gross_plot_ratio", PlotAttrKey.GROSS_PLOT_RATIO),
-            ("plot_area", PlotAttrKey.PLOT_AREA),
-            ("gross_floor_area", PlotAttrKey.GROSS_FLOOR_AREA),
-        ]:
-            field = getattr(plot_constraints, fieldname)
-            where_patterns, orderby = self._make_clauses_for_constraint(key, field)
+        for key, constraint in num_constraints.items():
+            where_patterns, orderby = self._make_clauses_for_constraint(key, constraint)
             patterns.extend(where_patterns)
             if orderby:
                 orderbys.append(orderby)
@@ -120,15 +95,11 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
 SELECT ?IRI WHERE {{
 {patterns}  
-}}""".format(
-            patterns="\n".join(patterns)
+}}{orderby}{limit}""".format(
+            patterns="\n".join(patterns),
+            orderby="\nORDER BY " + " ".join(orderbys) if orderbys else "",
+            limit="\nLIMIT " + str(limit) if limit else "",
         )
-
-        if orderbys:
-            query += "\nORDER BY " + " ".join(orderbys)
-
-        if plot_constraints.num:
-            query += "\nLIMIT " + str(plot_constraints.num)
 
         logger.info("SPARQL query:\n" + query)
 
@@ -138,9 +109,14 @@ SELECT ?IRI WHERE {{
         ]
 
     def lookup_plot_attribute(
-        self, plot_constraints: PlotConstraints, attr_key: PlotAttrKey
+        self,
+        attr_key: PlotAttrKey,
+        land_use_type_iri: Optional[str] = None,
+        num_constraints: Dict[PlotNumAttrKey, NumericalConstraint] = dict(),
     ):
-        iris = self.find_plot_iris(plot_constraints)
+        iris = self.find_plot_iris(
+            land_use_type_iri=land_use_type_iri, num_constraints=num_constraints
+        )
         if not iris:
             return QAData()
 
@@ -150,7 +126,7 @@ SELECT ?IRI WHERE {{
             )
         ]
         vars = ["?IRI"]
-        if attr_key is PlotAttrKey.LAND_USE_TYPE:
+        if attr_key is PlotCatAttrKey.LAND_USE_TYPE:
             patterns.append("?IRI ontozoning:hasLandUseType ?LandUseType .")
             patterns.append(
                 "SERVICE <{bg}> {{ ?LandUseType rdfs:label ?LandUseTypeLabel }} ".format(
@@ -158,7 +134,7 @@ SELECT ?IRI WHERE {{
                 )
             )
             vars.append("?LandUseTypeLabel")
-        elif attr_key is PlotAttrKey.GROSS_PLOT_RATIO:
+        elif attr_key is PlotNumAttrKey.GROSS_PLOT_RATIO:
             patterns.append(
                 """
 OPTIONAL {{
@@ -168,14 +144,14 @@ OPTIONAL {{
     ?IRI opr:isAwaitingDetailedGPREvaluation ?awaiting_detailed_evaluation .
 }}
 BIND(IF(BOUND(?gpr), ?gpr, IF(?awaiting_detailed_evaluation = true, "Awaiting detailed evaluation", "")) AS ?{key})""".format(
-                    pred=self._ATTRKEY2PRED[attr_key], key=attr_key.value
+                    pred=PLOT_NUM_ATTR_PREDICATES[attr_key], key=attr_key.value
                 )
             )
             vars.append("?" + attr_key.value)
         else:
             patterns.append(
                 "?IRI {pred} [ om:hasNumericalValue ?{key} ; om:hasUnit ?{key}Unit ] .".format(
-                    pred=self._ATTRKEY2PRED[attr_key], key=attr_key.value
+                    pred=PLOT_NUM_ATTR_PREDICATES[attr_key], key=attr_key.value
                 )
             )
             vars.append("?" + attr_key.value)
@@ -202,16 +178,21 @@ SELECT {vars} WHERE {{
         ]
         return QAData(vars=vars, bindings=bindings)
 
-    def count_plots(self, plot_args: PlotConstraints):
-        iris = self.find_plot_iris(plot_args)
+    def count_plots(
+        self,
+        land_use_type_iri: Optional[str] = None,
+        num_constraints: Dict[PlotNumAttrKey, NumericalConstraint] = dict(),
+    ):
+        iris = self.find_plot_iris(land_use_type_iri, num_constraints)
         return QAData(vars=["count"], bindings=[dict(count=len(iris))])
 
     def compute_aggregate_plot_attribute(
         self,
-        plot_constraints: PlotConstraints,
-        attr_agg: Tuple[PlotAttrKey, AggregateOperator],
+        attr_agg: Tuple[PlotNumAttrKey, AggregateOperator],
+        land_use_type_iri: Optional[str] = None,
+        num_constraints: Dict[PlotNumAttrKey, NumericalConstraint] = dict(),
     ):
-        iris = self.find_plot_iris(plot_constraints)
+        iris = self.find_plot_iris(land_use_type_iri, num_constraints)
         vars = []
         patterns = [
             "VALUES ?IRI {{ {values} }}".format(
@@ -229,7 +210,7 @@ SELECT {vars} WHERE {{
         )
         patterns.append(
             "?IRI {pred}/om:hasNumericalValue {valuenode} .".format(
-                pred=self._ATTRKEY2PRED[key], valuenode=valuenode
+                pred=PLOT_NUM_ATTR_PREDICATES[key], valuenode=valuenode
             )
         )
 

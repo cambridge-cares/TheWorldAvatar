@@ -4,7 +4,7 @@ from typing import Annotated, Dict, List, Tuple
 from fastapi import Depends
 
 from model.qa import QAData
-from model.constraint import CompoundNumericalConstraint
+from model.constraint import CompoundComparativeConstraint
 from services.core.kg import KgClient
 from ..kg import get_ontospecies_kg_client
 from ..constants import (
@@ -109,7 +109,7 @@ SELECT ?Label WHERE {{
         chemical_classes: List[str] = [],
         uses: List[str] = [],
         properties: List[
-            Tuple[SpeciesPropertyAttrKey, CompoundNumericalConstraint]
+            Tuple[SpeciesPropertyAttrKey, CompoundComparativeConstraint]
         ] = [],
     ):
         vars = []

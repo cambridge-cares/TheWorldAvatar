@@ -16,15 +16,10 @@ def get_factoryAttr_aggParser(
 
 
 class FactoryConstraintsParser:
-    def __init__(
-        self, schema_parser: SchemaParser, industry_aligner: EnumAligner[Industry]
-    ):
+    def __init__(self, schema_parser: SchemaParser):
         self.schema_parser = schema_parser
-        self.industry_aligner = industry_aligner
 
-    def parse(
-        self, text: str
-    ) -> Dict[FactoryNumAttrKey, ExtremeValueConstraint]:
+    def parse(self, text: str) -> Dict[FactoryNumAttrKey, ExtremeValueConstraint]:
         args = self.schema_parser.parse(
             text=text,
             schema={
@@ -61,8 +56,5 @@ class FactoryConstraintsParser:
 
 def get_factoryConstraints_parser(
     schema_parser: Annotated[SchemaParser, Depends(get_schema_parser)],
-    industry_aligner: Annotated[EnumAligner[Industry], Depends(get_industry_aligner)],
 ):
-    return FactoryConstraintsParser(
-        schema_parser=schema_parser, industry_aligner=industry_aligner
-    )
+    return FactoryConstraintsParser(schema_parser=schema_parser)

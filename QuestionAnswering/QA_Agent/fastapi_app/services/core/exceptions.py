@@ -1,0 +1,2 @@
+class InferenceWithUnsatisfiedConstraint(Exception):
+    pass

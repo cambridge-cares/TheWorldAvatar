@@ -1,21 +1,23 @@
 from functools import cached_property
 import logging
 import time
-from typing import Annotated, List
+from typing import Annotated, Dict, List
 
 from fastapi import Depends
 
 from model.qa import QAStep
-from services.core.align_enum import EnumAligner
-from services.core.parse import KeyAggregateParser
-from services.connectors.agent_connector import AgentConnectorBase
-from .constants import PlotAttrKey
-from .agent import SGLandLotsAgent, get_sgLandLots_agent
-from .parse import (
-    PlotConstraintsParser,
-    get_plotAttr_aggParser,
-    get_plot_constraint_parser,
+from services.core.align_enum import BiEnumAligner
+from services.core.retrieve_docs import DocsRetriever
+from services.core.parse import (
+    KeyAggregateParser,
+    NumericalConstraintParser,
+    get_numConstraint_parser,
 )
+from services.connectors.agent_connector import AgentConnectorBase
+from .model import PlotCatAttrKey, PlotNumAttrKey
+from .agent import SGLandLotsAgent, get_sgLandLots_agent
+from .parse import get_plotAttr_aggParser
+from .match import LandUseType, get_landUseType_retriever
 from .align import get_plotAttrKey_aligner
 
 logger = logging.getLogger(__name__)
@@ -24,14 +26,16 @@ logger = logging.getLogger(__name__)
 class SGLandLotsAgentConnector(AgentConnectorBase):
     def __init__(
         self,
-        plot_attr_key_aligner: EnumAligner[PlotAttrKey],
-        plot_constraints_parser: PlotConstraintsParser,
         agent: SGLandLotsAgent,
-        attr_agg_parser: KeyAggregateParser[PlotAttrKey],
+        attr_key_aligner: BiEnumAligner[PlotCatAttrKey, PlotNumAttrKey],
+        land_use_type_retriever: DocsRetriever[LandUseType],
+        num_constraint_parser: NumericalConstraintParser,
+        attr_agg_parser: KeyAggregateParser[PlotNumAttrKey],
     ):
-        self.plot_constraints_parser = plot_constraints_parser
         self.agent = agent
-        self.plot_attr_key_aligner = plot_attr_key_aligner
+        self.attr_key_aligner = attr_key_aligner
+        self.land_use_type_retriever = land_use_type_retriever
+        self.num_constraint_parser = num_constraint_parser
         self.attr_agg_parser = attr_agg_parser
 
     @cached_property
@@ -43,13 +47,25 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "plot_constraints": {
-                            "type": "string",
-                            "description": "Conditions that define the plots of interest e.g. plots for commercial usage with gross floor area less than 1000sqm",
-                        },
                         "attribute": {
                             "type": "string",
                             "description": "Attribute to query e.g. land use type, gross plot ratio, plot area, gross floor area",
+                        },
+                        "land_use_type": {
+                            "type": "string",
+                            "description": "Land use classification e.g. commerical, education",
+                        },
+                        "gross_plot_ratio": {
+                            "type": "string",
+                            "description": "Conditions on gross plot ratio e.g. betwen 0.5 and 2",
+                        },
+                        "plot_area": {
+                            "type": "string",
+                            "description": "Conditions on plot area e.g. lowest plot area",
+                        },
+                        "gross_floor_area": {
+                            "type": "string",
+                            "description": "Conditions on gross_floor_area e.g. less than 1000sqm",
                         },
                     },
                 },
@@ -61,10 +77,22 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "plot_constraints": {
+                        "land_use_type": {
                             "type": "string",
-                            "description": "Conditions that define the plots of interest e.g. plots for commercial usage with gross floor area less than 1000sqm",
-                        }
+                            "description": "Land use classification etc. commerical, education",
+                        },
+                        "gross_plot_ratio": {
+                            "type": "string",
+                            "description": "Conditions on gross plot ratio e.g. betwen 0.5 and 2",
+                        },
+                        "plot_area": {
+                            "type": "string",
+                            "description": "Conditions on plot area e.g. lowest plot area",
+                        },
+                        "gross_floor_area": {
+                            "type": "string",
+                            "description": "Conditions on gross_floor_area e.g. less than 1000sqm",
+                        },
                     },
                 },
             },
@@ -74,13 +102,25 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "plot_constraints": {
-                            "type": "string",
-                            "description": "Conditions that define the plots of interest e.g. plots for commercial usage with gross floor area less than 1000sqm",
-                        },
                         "attribute_aggregate": {
                             "type": "string",
                             "description": "Aggregate of an attribute value e.g. average plot area, largest gross plot ratio",
+                        },
+                        "land_use_type": {
+                            "type": "string",
+                            "description": "Land use classification etc. commerical, education",
+                        },
+                        "gross_plot_ratio": {
+                            "type": "string",
+                            "description": "Conditions on gross plot ratio e.g. betwen 0.5 and 2",
+                        },
+                        "plot_area": {
+                            "type": "string",
+                            "description": "Conditions on plot area e.g. lowest plot area",
+                        },
+                        "gross_floor_area": {
+                            "type": "string",
+                            "description": "Conditions on gross_floor_area e.g. less than 1000sqm",
                         },
                     },
                 },
@@ -96,26 +136,10 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
             "compute_aggregate_plot_attribute": self.compute_aggregate_plot_attribute,
         }
 
-    def _parse_plot_constraints(self, plot_constraints: str):
-        logger.info("Parsing plot constraints...")
-        timestamp = time.time()
-        constraints = self.plot_constraints_parser.parse(plot_constraints)
-        latency = time.time() - timestamp
-        logger.info("Parsed plot constraints: " + str(constraints))
-
-        step = QAStep(
-            action="parse_plot_constraints",
-            arguments=plot_constraints,
-            results=str(constraints),
-            latency=latency,
-        )
-
-        return constraints, step
-
     def _align_attributes(self, attribute: str):
         logger.info("Aligning attribute keys...")
         timestamp = time.time()
-        attr_key = self.plot_attr_key_aligner.align(
+        attr_key = self.attr_key_aligner.align(
             "".join([x.capitalize() for x in attribute.split()])
         )
         latency = time.time() - timestamp
@@ -129,25 +153,80 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         )
         return attr_key, step
 
-    def lookup_plot_attribute(self, plot_constraints: str, attribute: str):
-        steps: List[QAStep] = []
+    def _align_land_use_type(self, land_use_type: str):
+        logger.info("Align land use classification: " + land_use_type)
+        timestamp = time.time()
+        land_use_type_iri = self.land_use_type_retriever.match(land_use_type, key="IRI")
+        latency = time.time() - timestamp
+        step = QAStep(
+            action="align_land_use_type",
+            arguments=land_use_type,
+            results=land_use_type_iri,
+            latency=latency,
+        )
 
-        constraints, step = self._parse_plot_constraints(plot_constraints)
-        steps.append(step)
+        return land_use_type_iri, step
+
+    def _parse_plot_num_constraints(self, constraints: Dict[PlotNumAttrKey, str]):
+        if not constraints:
+            return dict(), None
+
+        logger.info("Parsing plot constraints...")
+        timestamp = time.time()
+        parsed_constraints = {
+            k: self.num_constraint_parser.parse(constraint)
+            for k, constraint in constraints.items()
+        }
+        parsed_constraints = {k: v for k, v in parsed_constraints.items() if v}
+        latency = time.time() - timestamp
+        logger.info("Parsed plot constraints: " + str(parsed_constraints))
+
+        step = QAStep(
+            action="parse_plot_constraints",
+            arguments={k.value: v for k, v in constraints.items()},
+            results=str(parsed_constraints),
+            latency=latency,
+        )
+
+        return parsed_constraints, step
+
+    def lookup_plot_attribute(
+        self,
+        attribute: str,
+        land_use_type: str,
+        gross_plot_ratio: str,
+        plot_area: str,
+        gross_floor_area: str,
+    ):
+        steps: List[QAStep] = []
 
         attr_key, step = self._align_attributes(attribute)
         steps.append(step)
 
+        land_use_type_iri, step = self._align_land_use_type(land_use_type)
+        steps.append(step)
+
+        parsed_constraints, step = self._parse_plot_num_constraints(
+            {
+                PlotNumAttrKey.GROSS_PLOT_RATIO: gross_plot_ratio,
+                PlotNumAttrKey.PLOT_AREA: plot_area,
+                PlotNumAttrKey.GROSS_FLOOR_AREA: gross_floor_area,
+            }
+        )
+        steps.append(step)
+
         timestamp = time.time()
         data = self.agent.lookup_plot_attribute(
-            plot_constraints=constraints, attr_key=attr_key
+            attr_key=attr_key,
+            land_use_type_iri=land_use_type_iri,
+            num_constraints=parsed_constraints,
         )
         latency = time.time() - timestamp
         steps.append(
             QAStep(
                 action="lookup_plot_attributes",
                 arguments=dict(
-                    plot_constraints=str(constraints),
+                    constraints=str(parsed_constraints),
                     attribute=attr_key.value,
                 ),
                 latency=latency,
@@ -156,27 +235,66 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
 
         return steps, data
 
-    def count_plots(self, plot_constraints: str):
+    def count_plots(
+        self,
+        land_use_type: str,
+        gross_plot_ratio: str,
+        plot_area: str,
+        gross_floor_area: str,
+    ):
         steps: List[QAStep] = []
 
-        constraints, step = self._parse_plot_constraints(plot_constraints)
+        land_use_type_iri, step = self._align_land_use_type(land_use_type)
+        steps.append(step)
+
+        parsed_constraints, step = self._parse_plot_num_constraints(
+            {
+                PlotNumAttrKey.GROSS_PLOT_RATIO: gross_plot_ratio,
+                PlotNumAttrKey.PLOT_AREA: plot_area,
+                PlotNumAttrKey.GROSS_FLOOR_AREA: gross_floor_area,
+            }
+        )
         steps.append(step)
 
         timestamp = time.time()
-        data = self.agent.count_plots(constraints)
+        data = self.agent.count_plots(
+            land_use_type_iri=land_use_type_iri, num_constraints=parsed_constraints
+        )
         latency = time.time() - timestamp
         steps.append(
-            QAStep(action="count_plots", arguments=str(constraints), latency=latency)
+            QAStep(
+                action="count_plots",
+                arguments=dict(
+                    land_use_type_iri=land_use_type_iri,
+                    num_constraints={
+                        k.value: v.value for k, v in parsed_constraints.items()
+                    },
+                ),
+                latency=latency,
+            )
         )
 
         return steps, data
 
     def compute_aggregate_plot_attribute(
-        self, plot_constraints: str, attribute_aggregate: str
+        self,
+        attribute_aggregate: str,
+        land_use_type: str,
+        gross_plot_ratio: str,
+        plot_area: str,
+        gross_floor_area: str,
     ):
         steps: List[QAStep] = []
+        land_use_type_iri, step = self._align_land_use_type(land_use_type)
+        steps.append(step)
 
-        constraints, step = self._parse_plot_constraints(plot_constraints)
+        parsed_constraints, step = self._parse_plot_num_constraints(
+            {
+                PlotNumAttrKey.GROSS_PLOT_RATIO: gross_plot_ratio,
+                PlotNumAttrKey.PLOT_AREA: plot_area,
+                PlotNumAttrKey.GROSS_FLOOR_AREA: gross_floor_area,
+            }
+        )
         steps.append(step)
 
         logger.info("Parsing aggregate function...")
@@ -196,14 +314,16 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
 
         timestamp = time.time()
         data = self.agent.compute_aggregate_plot_attribute(
-            plot_constraints=constraints, attr_agg=attr_agg
+            attr_agg=attr_agg,
+            land_use_type_iri=land_use_type_iri,
+            num_constraints=parsed_constraints,
         )
         latency = time.time() - timestamp
         steps.append(
             QAStep(
                 action="compute_aggregate_plot_attributes",
                 arguments=dict(
-                    plot_constraints=str(constraints), attr_aggs=attr_agg_unpacked
+                    constraints=str(parsed_constraints), attr_aggs=attr_agg_unpacked
                 ),
                 latency=latency,
             )
@@ -213,20 +333,24 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
 
 
 def get_sgLandLots_agentConnector(
-    plot_attr_key_aligner: Annotated[
-        EnumAligner[PlotAttrKey], Depends(get_plotAttrKey_aligner)
-    ],
-    plot_constraints_parser: Annotated[
-        PlotConstraintsParser, Depends(get_plot_constraint_parser)
-    ],
     agent: Annotated[SGLandLotsAgent, Depends(get_sgLandLots_agent)],
+    attr_key_aligner: Annotated[
+        BiEnumAligner[PlotCatAttrKey, PlotNumAttrKey], Depends(get_plotAttrKey_aligner)
+    ],
+    land_use_type_retriever: Annotated[
+        DocsRetriever[LandUseType], Depends(get_landUseType_retriever)
+    ],
+    num_constraint_parser: Annotated[
+        NumericalConstraintParser, Depends(get_numConstraint_parser)
+    ],
     attr_agg_parser: Annotated[
-        KeyAggregateParser[PlotAttrKey], Depends(get_plotAttr_aggParser)
+        KeyAggregateParser[PlotNumAttrKey], Depends(get_plotAttr_aggParser)
     ],
 ):
     return SGLandLotsAgentConnector(
-        plot_attr_key_aligner=plot_attr_key_aligner,
-        plot_constraints_parser=plot_constraints_parser,
         agent=agent,
+        attr_key_aligner=attr_key_aligner,
+        land_use_type_retriever=land_use_type_retriever,
+        num_constraint_parser=num_constraint_parser,
         attr_agg_parser=attr_agg_parser,
     )
