@@ -35,33 +35,16 @@ Important note: Instances where 'sg' is committed - [access-agent.json], [sg.jso
 
 ### Company data
 The "buildings" and "company" datasets need to be uploaded for this step. 
-1) Execute [company.http] to match building IRIs to respective companies, this will add a column in the company table:
-2) Once the building IRIs have been appended, please go to the `mainland` geoserver layer and update the query as below:
-    ```
-    WITH "uuid_table" AS 
-    ( SELECT "strval" AS "uuid", "cityobject_id" FROM "citydb"."cityobject_genericattrib" WHERE "attrname" = 'uuid' ), 
-    "iri_table" AS ( SELECT "urival" AS "iri", "cityobject_id" FROM "citydb"."cityobject_genericattrib" WHERE "attrname" = 'iri' ), 
-    // new line below
-    "companies" AS (SELECT "heat_emissions", "building_iri" FROM "company") 
-    SELECT "building"."id" AS "building_id", 
-    COALESCE("measured_height", 100.0) AS "building_height", 
-    "geometry", 
-    "uuid", 
-    "iri" ,
-    "heat_emissions" // new parameter
-    FROM "citydb"."building" 
-    JOIN "citydb"."surface_geometry" ON "citydb"."surface_geometry"."root_id" = "citydb"."building"."lod0_footprint_id" 
-    JOIN "uuid_table" ON "citydb"."building"."id" = "uuid_table"."cityobject_id" 
-    JOIN "iri_table" ON "citydb"."building"."id" = "iri_table"."cityobject_id"
-    LEFT JOIN "companies" ON "uuid_table"."uuid" = "companies"."building_iri" // new line
-    WHERE "citydb"."surface_geometry"."geometry" IS NOT NULL
-    ```
+- Execute [company.http] to match building IRIs to factories and data centres. This will add a `building_uuid` column to the tables `data_centres` and `factories`.
+
+### City furniture footprint
+Execute [cityfurniture-footprint-height.sql] to add footprint data in the `citydb.cityobject_genericattrib` table. This is necessary because unlike the buildings table, the city_furniture table does not contain the lod0 footprint necessary for visualisation on MapBox.
 
 ### Dispersion data
 To generate dispersion data, make sure the weather agent and ship input agent are spun up with the correct API keys. Examples of HTTP requests are made available in [HTTP requests for dispersion]. 
 
 1) Execute [start-live-updates.http] to start live ship updates from aisstream.
-2) Execute [jurong-live.http] and [mbs-live.http] to start scheduled simulations. Important thing to consider is at the time of the first dispersion simulation, there should be ships that are instantiated within the simulation boundary (see explanation of delayMinutes below).
+2) Execute [mbs-live.http] to start scheduled simulations. Important thing to consider is at the time of the first dispersion simulation, there should be ships that are instantiated within the simulation boundary (see explanation of delayMinutes below).
 - Parameters:
     1) ewkt - Extended WKT literal for PostGIS
     2) nx - number of x cells
@@ -83,6 +66,15 @@ curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"in
 ```
 curl -X POST http://localhost:3838/carpark-agent/create
 ```
+### GeoServer layer
+Currently the creation of the layer is not automated through the data uploader because it requires data from different sources (city furniture, heat emissions from companies etc.).
+
+Execute [geoserver_layer.sql] to create the materialised view manually. Edit the SQL view of building_usage layer to
+```
+select * from usage.buildingusage_geoserver_sg
+```
+
+
 ## 3. Miscellaneous Functions
 ### Legend
 The mapbox visualisation can currently generate legends for different parameters manually. Please  check out the `manager.getPanelHandler().setLegend(htmlContent);` line at the `./stack-manager/inputs/data/webspace/index.html`.
@@ -105,3 +97,5 @@ New sets of gradient bars can be generated in the `./stack-manager/inputs/data/w
 [mbs-live.http]: <./HTTP requests for dispersion/mbs-live.http>
 [dispersion-interactor.json]: ./stack-manager/inputs/config/services/dispersion-interactor.json
 [client.properties]: ./carpark_config/client.properties
+[cityfurniture-footprint-height.sql]: ./cityfurniture/cityfurniture-footprint-height.sql
+[geoserver_layer.sql]: ./cityfurniture/geoserver_layer.sql
