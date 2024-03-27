@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from functools import cache
 from typing import Tuple
 
 import requests
@@ -18,3 +19,7 @@ class NominatimGeocoder(IGeocoder):
         entries = requests.get(self.URL, params=query_params).json()
         entry = entries[0]
         return entry["lat"], entry["lon"]
+
+@cache
+def get_geocoder():
+    return NominatimGeocoder()
