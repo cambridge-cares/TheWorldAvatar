@@ -57,15 +57,19 @@ public class ShipInputAgent extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (req.getServletPath().contentEquals(LIVE_SERVER_PATH)) {
-            URI uri;
-            try {
-                uri = new URI(URI_STRING);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
+            if (client != null && client.isOpen()) {
+                LOGGER.info("Live updates ongoing, ignoring POST request");
+            } else {
+                URI uri;
+                try {
+                    uri = new URI(URI_STRING);
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
+                }
 
-            client = new AisStreamWebsocketClient(uri, queryClient);
-            client.connect();
+                client = new AisStreamWebsocketClient(uri, queryClient);
+                client.connect();
+            }
         } else if (req.getServletPath().contentEquals(UPDATE_PATH)) {
             // read ship data from data folder
             LOGGER.info("Received POST request to update ship data");
