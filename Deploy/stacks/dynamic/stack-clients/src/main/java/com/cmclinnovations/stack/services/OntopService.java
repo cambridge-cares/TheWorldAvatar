@@ -38,6 +38,7 @@ public final class OntopService extends ContainerService {
     private static final String DEFAULT_PORT = "8080";
 
     private final String containerName;
+    private final OntopEndpointConfig endpointConfig;
     private final String configDir;
 
     public OntopService(String stackName, ServiceConfig config) {
@@ -47,9 +48,8 @@ public final class OntopService extends ContainerService {
 
         configDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
 
-        EndpointConfig endpointConfig = new OntopEndpointConfig(
-                containerName, getHostName(), DEFAULT_PORT,
-                "", null);
+        endpointConfig = new OntopEndpointConfig(
+                containerName, getHostName(), DEFAULT_PORT, "", null);
 
         addEndpointConfig(endpointConfig);
     }
@@ -103,6 +103,15 @@ public final class OntopService extends ContainerService {
         dockerClient.createComplexCommand(dockerClient.getContainerId(containerName),
                 "chown", "ontop:ontop", configDir)
                 .withUser("root");
+    }
+
+    /**
+     * used after spinning up a new ontop container
+     * 
+     * @return
+     */
+    public OntopEndpointConfig getOntopEndpointConfig() {
+        return this.endpointConfig;
     }
 
     @Override

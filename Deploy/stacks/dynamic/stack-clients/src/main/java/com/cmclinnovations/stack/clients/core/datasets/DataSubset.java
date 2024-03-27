@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(value = CityDB.class, names = { "CityDB", "citydb" }),
         @Type(value = XtoCityDB.class, names = { "XtoCityDB", "xtocitydb" }) })
 public abstract class DataSubset {
-
     private String name;
     @JsonProperty
     private Path subdirectory;
@@ -26,8 +25,19 @@ public abstract class DataSubset {
     @JsonProperty
     private boolean skip;
 
+    @JsonProperty
+    private String description;
+
+    // for dcat cataloging purposes
+    private boolean exists; // used to determine whether this exists in the catalog
+    private String iri;
+
     public String getName() {
         return name;
+    }
+    
+    public String getDescription() {
+        return (null != description) ? description : getName();
     }
 
     public Path getSubdirectory() {
@@ -57,4 +67,18 @@ public abstract class DataSubset {
     }
 
     abstract void loadInternal(Dataset dataset);
+
+    public void setExists(boolean exists) {
+        this.exists = exists;
+    }
+    public boolean getExists() {
+        return exists;
+    }
+
+    public void setIri(String iri) {
+        this.iri = iri;
+    }
+    public String getIri() {
+        return iri;
+    }
 }

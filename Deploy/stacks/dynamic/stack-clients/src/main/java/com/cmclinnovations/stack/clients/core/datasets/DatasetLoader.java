@@ -80,7 +80,7 @@ public class DatasetLoader {
     private static void addToGraph(Map<String, Dataset> allDatasets, DirectedAcyclicGraph<Dataset, DefaultEdge> graph,
             Dataset current) {
         if (graph.addVertex(current)) {
-            current.getExternalDatasets().forEach(datasetName -> {
+            current.getExternalDatasetsString().forEach(datasetName -> {
                 Dataset child = allDatasets.get(datasetName);
                 if (null == child) {
                     throw new RuntimeException("Failed to find external dataset '"
@@ -108,7 +108,13 @@ public class DatasetLoader {
         try {
             updateInjectableValues(configFile);
 
-            return objectMapper.readValue(configFile.toFile(), Dataset.class);
+            Dataset dataset = objectMapper.readValue(configFile.toFile(), Dataset.class);
+            dataset.getDataSubsets().stream().forEach(dataSubset -> {
+                if (dataSubset.getName() == null) {
+                    throw new RuntimeException("Not all datasets have a name: " + dataSubset.getClass());
+                }
+            });
+            return dataset;
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in dataset config file '" + configFile + "'.", ex);
         }
@@ -150,8 +156,9 @@ public class DatasetLoader {
             dataSubsets.forEach(subset -> subset.load(dataset));
 
             List<String> ontopMappings = dataset.getOntopMappings();
-            if (!ontopMappings.isEmpty()) {
 
+            String newOntopEndpoint = null;
+            if (!ontopMappings.isEmpty()) {
                 String newOntopServiceName = EndpointNames.ONTOP + "-" + dataset.getName();
 
                 ServiceConfig newOntopServiceConfig = serviceManager.duplicateServiceConfig(EndpointNames.ONTOP,
@@ -165,16 +172,23 @@ public class DatasetLoader {
                                 URI.create(connection.getExternalPath().toString()
                                         .replace(EndpointNames.ONTOP, newOntopServiceName))));
 
-                serviceManager.initialiseService(StackClient.getStackName(), newOntopServiceName);
+                OntopService ontopService = serviceManager.initialiseService(StackClient.getStackName(),
+                        newOntopServiceName);
+                newOntopEndpoint = ontopService.getOntopEndpointConfig().getUrl();
 
                 OntopClient ontopClient = OntopClient.getInstance(newOntopServiceName);
                 ontopMappings.forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
 
-                if(PostGISClient.DEFAULT_DATABASE_NAME.equals(dataset.getDatabase())){
+                if (PostGISClient.DEFAULT_DATABASE_NAME.equals(dataset.getDatabase())) {
                     OntopClient defaultOntopClient = OntopClient.getInstance();
-                    dataset.getOntopMappings().forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
+                    dataset.getOntopMappings()
+                            .forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
                 }
             }
+
+            // record added datasets in the default kb namespace
+            BlazegraphClient.getInstance().getRemoteStoreClient("kb")
+                    .executeUpdate(dataset.getQueryStringForCataloging(newOntopEndpoint));
         }
     }
 
