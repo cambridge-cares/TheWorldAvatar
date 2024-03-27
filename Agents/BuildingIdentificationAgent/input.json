@@ -11,7 +11,7 @@
         ]
     ],
     "srid": "4326",
-    "table": "data_centres",
+    "table": "printing",
     "column": "wkb_geometry",
     "overlapFraction": "0.70",
     "oneToMany": "false",
@@ -24,5 +24,6 @@
             "ROAD",
             "PARK"
         ]
-    ]
+    ],
+    "mapping": "industry_buildings.obda"
 }

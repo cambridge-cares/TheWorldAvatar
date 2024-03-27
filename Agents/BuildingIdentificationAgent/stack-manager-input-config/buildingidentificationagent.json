@@ -4,6 +4,13 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "buildingidentificationagent:2.0.0-SNAPSHOT",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/BuildingIdentificationAgent/BuildingIdentificationAgent/src/main/resources",
+                        "Target": "/resources"
+                    }
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"

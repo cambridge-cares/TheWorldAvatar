@@ -5,6 +5,8 @@ import javax.ws.rs.BadRequestException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.core.io.ClassPathResource;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -15,6 +17,8 @@ import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
@@ -37,6 +41,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
     public static final String KEY_FILTER_COLUMNS = "filterColumns";
     public static final String KEY_EXCLUDED_VALUES = "excludedValues";
     public static final String KEY_OVERLAP_FRACTION = "overlapFraction";
+    public static final String KEY_MAPPING = "mapping";
     private static final String EPSG = "EPSG:";
     public static final String POINT_TYPE = "ST_Point";
 
@@ -112,6 +117,20 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     newTable = requestParams.getString(KEY_NEW_TABLE);
             }
 
+            // ontop mapping file that specifies the sematic relationship between the
+            // user-specified
+            // geometry IRIs and the building IRs
+            Path obdaFile = null;
+
+            if (requestParams.has(KEY_MAPPING)) {
+                String ontopFileName = requestParams.getString(KEY_MAPPING);
+                try {
+                    obdaFile = new ClassPathResource(ontopFileName).getFile().toPath();
+                } catch (IOException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+
             // Reset all variables
             // List of coordinates for which the nearest building needs to be identified
             List<List<Double>> locations = new ArrayList<>();
@@ -157,6 +176,10 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     numberBuildingsIdentified = getNumberOfMatchedBuildings(tableName);
                 }
 
+                if (obdaFile != null) {
+                    OntopClient ontopClient = OntopClient.getInstance();
+                    ontopClient.updateOBDA(obdaFile);
+                }
             } else {
                 String route = requestParams.getString(KEY_REQ_URL);
                 LOGGER.fatal("{}{}", "The Building Identification Agent does not support the route ", route);
