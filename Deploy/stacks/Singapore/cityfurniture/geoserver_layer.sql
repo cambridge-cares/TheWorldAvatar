@@ -1,7 +1,7 @@
 -- Drop the materialized view if it exists
-DROP MATERIALIZED VIEW IF EXISTS usage.buildingusage_geoserver;
+DROP MATERIALIZED VIEW IF EXISTS usage.buildingusage_geoserver_sg;
 
-CREATE MATERIALIZED VIEW usage.buildingusage_geoserver AS
+CREATE MATERIALIZED VIEW usage.buildingusage_geoserver_sg AS
 WITH uuid_table AS (
     SELECT strval AS uuid, cityobject_id
     FROM citydb.cityobject_genericattrib
@@ -91,6 +91,6 @@ LEFT JOIN
 WHERE 
     cityfurniture_footprint.geomval IS NOT NULL;
 
-CREATE INDEX usage_index ON usage.buildingusage_geoserver (ontobuilt);
-CREATE INDEX geometry_index ON usage.buildingusage_geoserver USING GIST (geom);
-CREATE INDEX classname_index ON usage.buildingusage_geoserver (objectclass);
+CREATE INDEX usage_index ON usage.buildingusage_geoserver_sg (ontobuilt);
+CREATE INDEX geometry_index ON usage.buildingusage_geoserver_sg USING GIST (geom);
+CREATE INDEX classname_index ON usage.buildingusage_geoserver_sg (objectclass);
