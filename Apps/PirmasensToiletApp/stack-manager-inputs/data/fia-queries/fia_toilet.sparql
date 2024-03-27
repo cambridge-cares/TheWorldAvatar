@@ -40,6 +40,19 @@ WHERE {
 
   }
   UNION {
+    BIND("average rating" as ?Property)
+
+    {
+      SELECT (ROUND(AVG(?rating)) AS ?Value)
+      WHERE {
+        [IRI] tps:hasRating ?ratingNode .
+        ?ratingNode tps:ratingValue ?rating .
+      }
+
+    }
+
+  }
+  UNION {
      BIND("validity" as ?Property)
     SERVICE [ONTOP] {
        [IRI] schema:openingHoursSpecification ?open_hour_spec.
