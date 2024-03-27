@@ -4,14 +4,14 @@ import pytest
 
 from model.aggregate import AggregateOperator
 from model.constraint import (
-    AtomicNumericalConstraint,
-    CompoundNumericalConstraint,
+    UnaryComparativeConstraint,
+    CompoundComparativeConstraint,
     ExtremeValueConstraint,
     LogicalOperator,
-    NumericalOperator,
+    ComparativeOperator,
 )
 from services.core.kg import KgClient
-from services.connectors.sg_land_lots.constants import PlotAttrKey
+from fastapi_app.services.connectors.sg_land_lots.model import PlotAttrKey
 from services.connectors.sg_land_lots.agent import PlotConstraints, SGLandLotsAgent
 
 
@@ -31,28 +31,28 @@ class TestSingporeLandLotAgent:
         # Arrange
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
-            gross_plot_ratio=CompoundNumericalConstraint(
+            gross_plot_ratio=CompoundComparativeConstraint(
                 logical_operator=LogicalOperator.AND,
                 constraints=[
-                    AtomicNumericalConstraint(operator=NumericalOperator.GT, operand=1),
-                    AtomicNumericalConstraint(operator=NumericalOperator.LT, operand=3),
+                    UnaryComparativeConstraint(operator=ComparativeOperator.GT, operand=1),
+                    UnaryComparativeConstraint(operator=ComparativeOperator.LT, operand=3),
                 ],
             ),
-            plot_area=CompoundNumericalConstraint(
+            plot_area=CompoundComparativeConstraint(
                 logical_operator=LogicalOperator.OR,
                 constraints=[
-                    AtomicNumericalConstraint(
-                        operator=NumericalOperator.GT, operand=400
+                    UnaryComparativeConstraint(
+                        operator=ComparativeOperator.GT, operand=400
                     ),
-                    AtomicNumericalConstraint(
-                        operator=NumericalOperator.LT, operand=50
+                    UnaryComparativeConstraint(
+                        operator=ComparativeOperator.LT, operand=50
                     ),
                 ],
             ),
-            gross_floor_area=CompoundNumericalConstraint(
+            gross_floor_area=CompoundComparativeConstraint(
                 constraints=[
-                    AtomicNumericalConstraint(
-                        operator=NumericalOperator.GT, operand=1000
+                    UnaryComparativeConstraint(
+                        operator=ComparativeOperator.GT, operand=1000
                     ),
                 ]
             ),
@@ -82,10 +82,10 @@ class TestSingporeLandLotAgent:
         # Arrange
         plot_args = PlotConstraints(
             land_use_type_iri="https://www.theworldavatar.com/kg/landplot/LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075",
-            gross_floor_area=CompoundNumericalConstraint(
+            gross_floor_area=CompoundComparativeConstraint(
                 constraints=[
-                    AtomicNumericalConstraint(
-                        operator=NumericalOperator.LT, operand=50
+                    UnaryComparativeConstraint(
+                        operator=ComparativeOperator.LT, operand=50
                     ),
                 ]
             ),
@@ -111,7 +111,7 @@ class TestSingporeLandLotAgent:
 
         # Act
         data = agent.compute_aggregate_plot_attribute(
-            plot_constraints=plot_args, attr_agg=attr_agg
+            constraints=plot_args, attr_agg=attr_agg
         )
 
         # Assert

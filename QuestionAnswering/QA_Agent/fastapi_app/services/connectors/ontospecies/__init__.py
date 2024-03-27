@@ -8,7 +8,7 @@ from redis import Redis
 import unit_parse
 
 from model.qa import QAStep
-from model.constraint import AtomicNumericalConstraint, CompoundNumericalConstraint
+from model.constraint import UnaryComparativeConstraint, CompoundComparativeConstraint
 from services.core.redis import get_redis_client
 from services.core.embed import IEmbedder, get_embedder
 from services.core.kg import KgClient
@@ -177,7 +177,7 @@ class OntoSpeciesAgentConnector(AgentConnectorBase):
 
         return steps, data
 
-    def _convert_units(self, constraint: AtomicNumericalConstraint):
+    def _convert_units(self, constraint: UnaryComparativeConstraint):
         operand = constraint.operand
         unit = constraint.unit
         if constraint.unit:
@@ -194,7 +194,7 @@ class OntoSpeciesAgentConnector(AgentConnectorBase):
                 operand = quantity.magnitude
             except:
                 pass
-        return AtomicNumericalConstraint(
+        return UnaryComparativeConstraint(
             operator=constraint.operator, operand=operand, unit=unit
         )
 
@@ -214,7 +214,7 @@ class OntoSpeciesAgentConnector(AgentConnectorBase):
         property_constraints = [self.constraint_parser.parse(x) for x in properties]
 
         property_constraints_unit_converted = [
-            CompoundNumericalConstraint(
+            CompoundComparativeConstraint(
                 logical_operator=compound_constraint.logical_operator,
                 constraints=[
                     self._convert_units(constraint)

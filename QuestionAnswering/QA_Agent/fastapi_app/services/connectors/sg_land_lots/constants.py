@@ -1,13 +1,6 @@
-from enum import Enum
 from importlib.resources import files
 
-
-class PlotAttrKey(Enum):
-    LAND_USE_TYPE = "LandUseType"
-    GROSS_PLOT_RATIO = "GrossPlotRatio"
-    PLOT_AREA = "PlotArea"
-    GROSS_FLOOR_AREA = "GrossFloorArea"
-
+from .model import PlotNumAttrKey
 
 LAND_USE_TYPES = (
     files("resources.zaha.sg_land_lots")
@@ -15,3 +8,11 @@ LAND_USE_TYPES = (
     .read_text()
     .split()
 )
+
+
+LAND_USE_TYPE_PREDICATE = "ontozoning:hasLandUseType"
+PLOT_NUM_ATTR_PREDICATES = {
+    PlotNumAttrKey.GROSS_PLOT_RATIO: "^opr:appliesTo/opr:allowsGrossPlotRatio/om:hasValue",
+    PlotNumAttrKey.PLOT_AREA: "ontoplot:hasPlotArea/om:hasValue",
+    PlotNumAttrKey.GROSS_FLOOR_AREA: "ontoplot:hasMaximumPermittedGPR/om:hasValue",
+}

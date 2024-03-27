@@ -4,7 +4,7 @@ from typing import Optional, Tuple, Union
 from pydantic.dataclasses import dataclass
 
 
-class NumericalOperator(Enum):
+class ComparativeOperator(Enum):
     EQ = "="
     GT = ">"
     GE = ">="
@@ -13,8 +13,8 @@ class NumericalOperator(Enum):
 
 
 @dataclass
-class AtomicNumericalConstraint:
-    operator: NumericalOperator
+class UnaryComparativeConstraint:
+    operator: ComparativeOperator
     operand: float
     unit: Optional[str] = None
 
@@ -33,9 +33,9 @@ class LogicalOperator(Enum):
 
 
 @dataclass
-class CompoundNumericalConstraint:
+class CompoundComparativeConstraint:
     logical_operator: Optional[LogicalOperator] = None
-    constraints: Tuple[AtomicNumericalConstraint, ...] = tuple()
+    constraints: Tuple[UnaryComparativeConstraint, ...] = tuple()
 
     def __str__(self):
         if not self.constraints:
@@ -57,4 +57,4 @@ class ExtremeValueConstraint(Enum):
         return self.value.lower()
 
 
-NumericalArgConstraint = Union[CompoundNumericalConstraint, ExtremeValueConstraint]
+NumericalConstraint = Union[CompoundComparativeConstraint, ExtremeValueConstraint]

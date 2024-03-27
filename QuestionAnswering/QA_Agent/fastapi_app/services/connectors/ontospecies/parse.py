@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import Depends
 
 from model.constraint import (
-    AtomicNumericalConstraint,
-    CompoundNumericalConstraint,
+    UnaryComparativeConstraint,
+    CompoundComparativeConstraint,
     LogicalOperator,
 )
 from services.core.parse import SchemaParser, get_schema_parser
@@ -64,7 +64,7 @@ class ConstraintParser:
             logical_operator = None
 
         constraints = [
-            AtomicNumericalConstraint(
+            UnaryComparativeConstraint(
                 operator=constraint["operator"],
                 operand=constraint["operand"],
                 unit=constraint.get("unit"),
@@ -72,7 +72,7 @@ class ConstraintParser:
             for constraint in args["constraints"]
         ]
 
-        constraint = CompoundNumericalConstraint(
+        constraint = CompoundComparativeConstraint(
             logical_operator=logical_operator,
             constraints=constraints,
         )
