@@ -38,6 +38,14 @@
                     "What is the heat emission of Keppel data centres",
                     "which company has the largest data centre by area?"
                 ]
+            },
+            {
+                "data_domain": "sg_dispersion",
+                "label": "Singapore's Dispersion",
+                "description": "Singapore's pollutant data",
+                "questions": [
+                    "What are the concentrations of common air pollutants in Clementi, Singapore"
+                ]
             }
         ]
     }
