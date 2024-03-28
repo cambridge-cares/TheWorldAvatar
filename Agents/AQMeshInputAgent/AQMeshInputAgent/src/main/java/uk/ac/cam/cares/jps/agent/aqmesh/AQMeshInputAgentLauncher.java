@@ -334,14 +334,18 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
 			if (!postgisClient.checkTableExists(System.getenv(AQMeshInputAgentLauncher.LAYERNAME_ENV), conn)) {
                 LOGGER.info("The table " + System.getenv(AQMeshInputAgentLauncher.LAYERNAME_ENV) + " does not exist");
                 geospatialClient.createGeospatialInformation(latitude, longitude, aqmeshName, aqmeshIRI, sparqlEndpoint);
-				response.put("message", "Geospatial information instantiated for the following: " + aqmeshName);
+                response.put("message", "Geospatial information instantiated for the AQMesh pod.");
+                response.put("name", aqmeshName);
+                response.put("iri", aqmeshIRI);
 			} else {
 				// table exists, check table contents for an equivalent point or aqmesh
                 LOGGER.info("Checking for existing aqmesh to prevent duplicates...");
 				if (!postgisClient.checkAQMeshExists(aqmeshIRI, conn)) {
                     LOGGER.info("No existing aqmesh instance found for " + aqmeshIRI);
                     geospatialClient.createGeospatialInformation(latitude, longitude, aqmeshName, aqmeshIRI, sparqlEndpoint);
-					response.put("message", "Geospatial information instantiated for the following AQMesh: name: " + aqmeshName + " IRI: " + aqmeshIRI);
+					response.put("message", "Geospatial information instantiated for the AQMesh pod.");
+                    response.put("name", aqmeshName);
+                    response.put("iri", aqmeshIRI);
 				} else {
 					response.put("message", "An AQMesh instance already exist for the following: " + aqmeshIRI);
 				}
