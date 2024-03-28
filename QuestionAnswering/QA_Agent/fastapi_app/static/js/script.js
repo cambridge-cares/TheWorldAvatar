@@ -13,9 +13,14 @@ Custom classes
 */
 
 class HttpError extends Error {
-    constructor(statusCode) {
+    constructor(statusCode, detail = null) {
         super("HTTP error")
         this.statusCode = statusCode
+        this.detail = detail
+    }
+
+    toString() {
+        return `HTTPError (${this.statusCode}): ${this.detail}`
     }
 }
 
@@ -35,15 +40,15 @@ const globalState = (function () {
     const watchers = {}
 
     return {
-        get(prop) {
-            return states[prop]
+        get(key) {
+            return states[key]
         },
-        set(prop, val) {
-            const oldVal = states[prop]
-            states[prop] = val
+        set(key, val) {
+            const oldVal = states[key]
+            states[key] = val
 
-            if (prop in watchers) {
-                watchers[prop](oldVal, val)
+            if (key in watchers) {
+                watchers[key](oldVal, val)
             }
         },
         registerWatcher(prop, watcher) {
@@ -60,8 +65,12 @@ API calls
 
 async function throwErrorIfNotOk(res) {
     if (!res.ok) {
-        console.log(await res.text())
-        throw new HttpError(res.status)
+        let detail = null
+        try {
+            let resJson = await res.json()
+            detail = resJson["detail"]
+        } catch (_) {}
+        throw new HttpError(res.status, detail)
     }
     return res
 }
@@ -173,9 +182,7 @@ const errorContainer = (function () {
 })();
 
 globalState.registerWatcher("err", (_, newVal) => {
-    if (newVal) {
-        errorContainer.displayError(newVal)
-    }
+    errorContainer.displayError(newVal)
 })
 
 const qaMetadataContainer = (function () {
@@ -417,7 +424,8 @@ async function askQuestion() {
         return;
     }
 
-    document.getElementById("result-section").style.display = "none"
+    const resultSection = document.getElementById("result-section")
+    resultSection.style.display = "none"
 
     const question = document.getElementById("input-field").value;
     if (question === "") {
@@ -434,16 +442,23 @@ async function askQuestion() {
     try {
         const results = await fetchQa(question)
         qaMetadataContainer.render(results["metadata"])
-        document.getElementById("result-section").style.display = "block"
+        resultSection.style.display = "block"
         qaDataContainer.render(results["data"])
         chatbotResponseCard.render(question, results["data"])
     } catch (error) {
-        console.log(error)
-        if ((error instanceof HttpError) && (error.statusCode == 500)) {
-            globalState.set("err", "An internal server error is encountered. Please try again.")
+        console.log(error.toString())
+        if (error instanceof HttpError) {
+            if (error.statusCode >= 500 && error.statusCode <= 599) {
+                globalState.set("err", "An internal server error is encountered. Please try again.")
+            } else if (error.statusCode >= 400 && error.statusCode <= 499) {
+                globalState.set("err", error.detail)
+            } else {
+                globalState.set("err", "An unexpected error is encountered. Please report it with the following error message<br/>" + error)
+            }
         } else {
             globalState.set("err", "An unexpected error is encountered. Please report it with the following error message<br/>" + error)
         }
+        resultSection.style.display = "block"
     } finally {
         globalState.set("isProcessing", false);
         chatbotResponseCard.hideChatbotSpinner()
