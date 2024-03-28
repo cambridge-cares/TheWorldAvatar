@@ -17,7 +17,7 @@ import org.json.JSONObject;
 
 @WebServlet(urlPatterns = {"/calculation", "/floors"})
 public class GFAAgent extends JPSAgent{
-    private static final String PROPERTIES_PATH = "/resources/config.properties";
+    
     
     private EndpointConfig endpointConfig = new EndpointConfig();
 

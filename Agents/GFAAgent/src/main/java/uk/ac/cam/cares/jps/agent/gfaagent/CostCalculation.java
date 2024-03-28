@@ -1,11 +1,16 @@
 package uk.ac.cam.cares.jps.agent.gfaagent;
 
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.apache.jena.vocabulary.AS;
 import org.json.JSONArray;
+
+import com.opencsv.bean.CsvToBeanBuilder;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -18,6 +23,7 @@ public class CostCalculation {
     private RemoteRDBStoreClient postgisClient;
 
     private BuildingInfo buildingInfo;
+    private static final String MATCHING_PATH = "/resources/cost_landuse.csv";
 
     private static final String costSQLInsert = "INSERT INTO cityobject_genericattrib (attrname, realval, cityobject_id)\n" +
     "SELECT DISTINCT ON (attrname, cityobject_id) *\n" +
@@ -37,19 +43,39 @@ public class CostCalculation {
                 "AND ccg.strval = mb.building_iri\r\n" + //
                 "AND mb.public_landplot_ogc_fid = pl.ogc_fid";
 
-    public CostCalculation (String postgisDb, String postgisUser, String postgisPassword){
+    public CostCalculation (String postgisDb, String postgisUser, String postgisPassword) throws IOException {
         this.dbUrl = postgisDb;
         this.user = postgisUser;
         this.password = postgisPassword;
 
         this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
+
+        //get matching from csv
+        List<MatchingType> matchingType = new CsvToBeanBuilder(new FileReader(MATCHING_PATH))
+                .withType(MatchingType.class)
+                .build()
+                .parse();
+
+        ResultSet buildingType = getBuildingType();
+        
+        while (buildingType.next()) {
+            String typeLand = buildingType.getString("LU_DESC");
+            String typeCost = null;
+            String keyCost = null;
+            for (int i = 0; i < matchingType.size(); i++){
+                if(typeLand == matchingType.get(i).getLUType()){
+                    typeCost = matchingType.get(i).getType();
+                    keyCost = matchingType.get(i).getKey();
+                }
+            }
+            
+        }
     }
 
-    public BuildingInfo getBuildingInfor(){
+    public ResultSet getBuildingType(){
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
-                stmt.executeQuery(buildingTypeQuery);
-                
+                 return stmt.executeQuery(buildingTypeQuery);
             }
         }catch (SQLException e) {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
