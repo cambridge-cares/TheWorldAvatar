@@ -11,7 +11,7 @@
         ]
     ],
     "srid": "4326",
-    "table": "printing",
+    "table": "data_centres",
     "column": "wkb_geometry",
     "overlapFraction": "0.70",
     "oneToMany": "false",
