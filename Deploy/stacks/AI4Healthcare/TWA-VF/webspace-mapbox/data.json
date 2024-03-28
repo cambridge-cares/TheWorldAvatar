@@ -2,6 +2,142 @@
     "name": "All Layers",
     "groups": [
         {
+            "name": "Dispersion",
+            "stack": "http://174.138.27.240:10102",
+            "expanded": true,
+            "sources": [
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
+                    ],
+                    "id": "dispersion-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
+                    ],
+                    "id": "weather-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
+                    ],
+                    "id": "ship-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
+                    ],
+                    "id": "sensor-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:building-pirmasens_gsl"
+                    ],
+                    "id": "building-source",
+                    "type": "vector"
+                }
+            ],
+            "layers": [
+                {
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "name": "Plumes",
+                    "paint": {
+                        "fill-outline-color": [
+                            "get",
+                            "stroke"
+                        ],
+                        "fill-color": [
+                            "get",
+                            "fill"
+                        ],
+                        "fill-opacity": 0.3
+                    },
+                    "id": "dispersion-layer",
+                    "source": "dispersion-source",
+                    "source-layer": "dispersion_contours",
+                    "type": "fill",
+                    "minzoom": 4
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Weather station",
+                    "paint": {
+                        "circle-color": "blue"
+                    },
+                    "id": "weather-layer",
+                    "source": "weather-source",
+                    "source-layer": "weather",
+                    "type": "circle"
+                },
+                {
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "name": "Ships",
+                    "paint": {
+                        "circle-color": "black"
+                    },
+                    "id": "ships-layer",
+                    "source": "ship-source",
+                    "source-layer": "ships",
+                    "type": "circle",
+                    "minzoom": 4
+                },
+                {
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "name": "Virtual sensors",
+                    "paint": {
+                        "circle-color": "red"
+                    },
+                    "id": "sensor-layer",
+                    "source": "sensor-source",
+                    "source-layer": "sensors",
+                    "type": "circle",
+                    "minzoom": 4
+                },
+                {
+                    "id": "buildings",
+                    "source-layer": "building-pirmasens_gsl",
+                    "name": "Buildings",
+                    "source": "building-source",
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#8D99AE",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
             "name": "Cam-Ely-Wisbech Buildings",
             "stack": "http://174.138.27.240:3838",
             "sources": [
@@ -352,6 +488,61 @@
                         "icon-ignore-placement": true
                     }
                 }
+            ]
+        },
+        {   "name": "Food Retailing",
+            "stack": "http://174.138.27.240:5007",
+            "sources": [
+                {
+                    "id": "Takeaways Sources",
+                    "type": "vector",
+                    "tiles": [
+                        "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:takeaways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "Supermarket Sources",
+                    "type": "vector",
+                    "tiles": [
+                        "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:supermarket&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+
+            ],
+            "layers": [
+                {
+                    "id": "Takeaways_layer",
+                    "name": "Fast Food Outlets",
+                    "source": "Takeaways Sources",
+                    "source-layer": "takeaways",
+                    "type": "symbol",
+                    "minzoom": 6,
+                    "order": 24,
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "takeaway",
+                        "icon-size": 0.35,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                },
+                {
+                    "id": "Supermarket_layer",
+                    "name": "Supermarket Footprint",
+                    "source": "Supermarket Sources",
+                    "source-layer": "supermarket",
+                    "type": "symbol",
+                    "minzoom": 6,
+                    "order": 25,
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "supermarket",
+                        "icon-size": 0.35,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                }
+
             ]
         },
         {

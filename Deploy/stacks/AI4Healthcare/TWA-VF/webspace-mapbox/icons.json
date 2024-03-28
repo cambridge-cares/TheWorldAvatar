@@ -23,6 +23,8 @@
 	"FoodHygieneRating": "data/icons/FoodHygieneRating.png",
 	"gpslocation": "data/icons/gpslocation.png",
 	"gpslocation2": "data/icons/gpslocation2.png",
+	"takeaway": "data/icons/takeaway.png",
+	"supermarket": "data/icons/supermarket.png",
 
 	"power-primary": "data/icons/power-primary.png",
 	"power-secondary": "data/icons/power-secondary.png",
