@@ -2,16 +2,15 @@ package com.example.notsensorlogger2;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.hardware.SensorManager;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.notsensorlogger2.gpsfunctionality.MainActivity2;
@@ -35,6 +34,8 @@ public class MainActivity extends Activity {
     private SensorHandler gravitySensorHandler;
     private LocationHandler locationTracker; // Make sure this is the updated LocationHandler
     private String deviceId;
+
+    private RequestQueue requestQueue;
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
@@ -62,24 +63,48 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }
         });
+
+        Button startButton = findViewById(R.id.start_button);
+        startButton.setOnClickListener(view -> {
+            startSensors();
+
+        });
+
+        Button stopButton = findViewById(R.id.stop_button);
+        stopButton.setOnClickListener(view -> {
+            stopSensors();
+
+            // Collect sensor data
+            JSONArray allSensorData = new JSONArray();
+            allSensorData.put(((AbstractSensorHandler) accelerometerHandler).getSensorData());
+            allSensorData.put(((AbstractSensorHandler) gyroscopeHandler).getSensorData());
+            allSensorData.put(((AbstractSensorHandler) magnetometerHandler).getSensorData());
+            allSensorData.put(((AbstractSensorHandler) lightSensorHandler).getSensorData());
+            allSensorData.put(((AbstractSensorHandler) humiditySensorHandler).getSensorData());
+            allSensorData.put(((AbstractSensorHandler) pressureSensorHandler).getSensorData());
+            allSensorData.put(((AbstractSensorHandler) gravitySensorHandler).getSensorData());
+            allSensorData.put(locationTracker.getLocationData());
+
+            // Send the sensor data
+            sendPostRequest(allSensorData);
+        });
+
+        requestQueue = Volley.newRequestQueue(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        accelerometerHandler.start();
-        gyroscopeHandler.start();
-        magnetometerHandler.start();
-        lightSensorHandler.start();
-        humiditySensorHandler.start();
-        pressureSensorHandler.start();
-        gravitySensorHandler.start();
-        locationTracker.start(); // Start the LocationHandler
+        startSensors();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        stopSensors();
+    }
+
+    private void stopSensors() {
         accelerometerHandler.stop();
         gyroscopeHandler.stop();
         magnetometerHandler.stop();
@@ -88,25 +113,23 @@ public class MainActivity extends Activity {
         pressureSensorHandler.stop();
         gravitySensorHandler.stop();
         locationTracker.stop(); // Stop the LocationHandler
+    }
 
-        // Collect sensor data
-        JSONArray allSensorData = new JSONArray();
-        allSensorData.put(((AbstractSensorHandler) accelerometerHandler).getSensorData());
-        allSensorData.put(((AbstractSensorHandler) gyroscopeHandler).getSensorData());
-        allSensorData.put(((AbstractSensorHandler) magnetometerHandler).getSensorData());
-        allSensorData.put(((AbstractSensorHandler) lightSensorHandler).getSensorData());
-        allSensorData.put(((AbstractSensorHandler) humiditySensorHandler).getSensorData());
-        allSensorData.put(((AbstractSensorHandler) pressureSensorHandler).getSensorData());
-        allSensorData.put(((AbstractSensorHandler) gravitySensorHandler).getSensorData());
-        allSensorData.put(locationTracker.getLocationData());
+    private void startSensors() {
+        accelerometerHandler.start();
+        gyroscopeHandler.start();
+        magnetometerHandler.start();
+        lightSensorHandler.start();
+        humiditySensorHandler.start();
+        pressureSensorHandler.start();
+        gravitySensorHandler.start();
+        locationTracker.start(); // Start the LocationHandler
 
-        // Send the sensor data
-        sendPostRequest(allSensorData);
+        Log.d(MainActivity.class.getName(), "sensor started");
     }
 
     private void sendPostRequest(JSONArray sensorData) {
-        String url = "http://192.168.1.60:3838/sensorloggermobileappagent/update"; // http://192.168.1.60:3838/sensorloggermobileappagent/update          //  https://eou1bwdjb3p7r6h.m.pipedream.net  //https://eo1kqlcacw69s9d.m.pipedream.net/
-        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "http://10.0.2.2:3838/sensorloggermobileappagent/update"; // http://192.168.1.60:3838/sensorloggermobileappagent/update          //  https://eou1bwdjb3p7r6h.m.pipedream.net  //https://eo1kqlcacw69s9d.m.pipedream.net/
 
         // Generate a session ID and message ID as needed
         String sessionId = UUID.randomUUID().toString(); // Example, use an actual session management
@@ -118,25 +141,16 @@ public class MainActivity extends Activity {
             payloadWrapper.put("deviceId", deviceId);
             payloadWrapper.put("messageId", messageId);
             payloadWrapper.put("payload", sensorData); // Your existing sensor data JSONArray
-            payloadWrapper.put("sessionI", sessionId);
+            payloadWrapper.put("sessionId", sessionId);
 
             // Convert the whole payload to a JSON string
             final String requestBody = payloadWrapper.toString();
+            Log.d(MainActivity.class.getName(), payloadWrapper.toString());
 
             // Create the request with the proper body and headers
             StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.d("Response", response);
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d("Error.Response", error.getMessage() == null? "null error mesage" : error.getMessage());
-                        }
-                    }
+                    response -> Log.d("Response", response),
+                    error -> Log.d("Error.Response", error.getMessage() == null? "null error mesage" : error.getMessage())
             ) {
                 @Override
                 public byte[] getBody() {
@@ -149,7 +163,7 @@ public class MainActivity extends Activity {
                 }
             };
 
-            queue.add(postRequest);
+            requestQueue.add(postRequest);
         } catch (JSONException e) {
             e.printStackTrace();
         }
