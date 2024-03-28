@@ -1,5 +1,5 @@
 import styles from './ribbon.module.css';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Tabs, Tab } from '@mui/material';
 

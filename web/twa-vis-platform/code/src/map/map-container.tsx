@@ -9,7 +9,7 @@ import { MapSettings } from 'types/settings';
 import { DataStore } from 'io/data/data-store';
 import { parseMapDataSettings } from 'utils/client-utils';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
-import Ribbon from 'app/visualisation/ribbon/ribbon';
+import Ribbon from 'ui/ribbon/ribbon';
 import FloatingPanelContainer from 'ui/tree/floating-panel';
 
 // Type definition of incoming properties
