@@ -14,7 +14,7 @@ services:
     restart: "no"
     environment:
       WATCHPACK_POLLING: true
-      MAPBOX_USERNAME: user
+      MAPBOX_USER: user
       MAPBOX_API_KEY: api_key
     build:
       context: "./"

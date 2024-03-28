@@ -85,7 +85,7 @@ export default class SettingsStore {
       return { username, key };
     } catch (error) {
       // Fallback to environment variables
-      const username = process.env.MAPBOX_USERNAME;
+      const username = process.env.MAPBOX_USER;
       const key = process.env.MAPBOX_API_KEY;
       return { username: username || "unknown", key: key || "unknown" };
     }
