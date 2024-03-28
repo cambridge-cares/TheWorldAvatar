@@ -297,7 +297,6 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
@@ -364,9 +363,11 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -383,9 +384,11 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -434,15 +437,35 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
-        <rdfs:comment xml:lang="en">A data property referring to the quantity of matter a constituent holds. The unit of represented quantity is kg.</rdfs:comment>
+        <rdfs:comment xml:lang="en">A data property referring to the quantity of matter a constituent, product or component holds. The unit of represented quantity is kg.</rdfs:comment>
         <rdfs:label xml:lang="en">Mass</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasMaterialCircularityIndicator -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasMaterialCircularityIndicator">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment xml:lang="en">A datatype property indicating the measure of how circular the materials of a product are. The value is between 0 and 1 inclusive, where 0 means not circular at all and 1 means entirely circular.</rdfs:comment>
+        <rdfs:label xml:lang="en">Circularity indicator</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -461,9 +484,11 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -480,9 +505,11 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -499,9 +526,11 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -518,15 +547,17 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
         <rdfs:comment xml:lang="en">A datatype property referring to the efficiency of the recycling process in producing recycled feedstock.</rdfs:comment>
-        <rdfs:label xml:lang="en">Recycling ffficiency for producing feedstock</rdfs:label>
+        <rdfs:label xml:lang="en">Recycling efficiency for producing feedstock</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -565,6 +596,50 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasVirginContentMass -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasVirginContentMass">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#hasMass"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment xml:lang="en">A datatype property indicating the mass of virgin content in a product. The unit of represented quantity is kg.</rdfs:comment>
+        <rdfs:label xml:lang="en">Virgin content mass</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasWasteMass -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasWasteMass">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#hasMass"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment xml:lang="en">A datatype property referring to the mass of waste produced from an end-of-life product. The unit of represented quantity is kg.</rdfs:comment>
+        <rdfs:label xml:lang="en">Waste mass</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#id -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#id">
@@ -593,7 +668,9 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
@@ -610,7 +687,9 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
@@ -628,7 +707,9 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Constituent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentPart"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product"/>
                 </owl:unionOf>
             </owl:Class>
@@ -2446,17 +2527,17 @@
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#isBiodegradable">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
-        <rdfs:comment xml:lang="en">Indicates if a product or component is biodegradable or not.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Indicates if a product or its constituent is biodegradable or not.</rdfs:comment>
         <rdfs:label xml:lang="en">Is biodegradable</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#isDecomposable">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
-        <rdfs:comment xml:lang="en">Indicates if a product or component is decomposable or not.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Indicates if a product or its constituent is decomposable or not.</rdfs:comment>
         <rdfs:label xml:lang="en">Is decomposable</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#isHazardous">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
-        <rdfs:comment xml:lang="en">Indicates if a product or component poses any danger.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Indicates if a product or its constituent poses any danger.</rdfs:comment>
         <rdfs:label xml:lang="en">Is hazardous</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#partOf">
