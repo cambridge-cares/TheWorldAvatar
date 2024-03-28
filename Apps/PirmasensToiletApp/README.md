@@ -7,7 +7,7 @@ Entities are defined in Miro board
 
 ## Screenshots
 
-![image](https://github.com/cambridge-cares/TheWorldAvatar/assets/115569120/17cf02e6-b13b-471c-9a48-33a448612cf2)
+![image](https://github.com/cambridge-cares/TheWorldAvatar/assets/115569120/575660d0-183b-4e1a-8ec5-db6ed235efbf)
 
 
 ## Mapbox token
@@ -15,7 +15,7 @@ Entities are defined in Miro board
 Your mapbox token should be in [`settings.gradle`](./gradle.properties) and also [`developer-config.xml`](./core/utils/src/main/res/values/developer-config.xml). 
 
 ## Phone and Stack communication
-If you are running on emulator use `HOST_LOCALHOST` in `NetworkConfiguration.java`, otherwise you should have android and stack on same network. You can use `ipconfig` or other related commands to find the ip address of your pc.
+If you are running on emulator use `HOST_LOCALHOST` in [`NetworkConfiguration.java`](./core/network/src/main/java/uk/ac/cam/cares/jps/network/NetworkConfiguration.java), otherwise you should have android and stack on same network. You can use `ipconfig` or other related commands to find the ip address of your pc.
 
 
 
