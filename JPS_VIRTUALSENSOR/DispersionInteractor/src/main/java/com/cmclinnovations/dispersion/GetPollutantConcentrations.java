@@ -40,7 +40,7 @@ public class GetPollutantConcentrations extends HttpServlet {
         List<String> scopes = queryClient.getScopesIncludingPoint(location);
 
         if (scopes.isEmpty()) {
-            resp.setStatus(500);
+            resp.setStatus(404);
             resp.getWriter().print("There is no dispersion data within the specified location");
             resp.setCharacterEncoding("UTF-8");
         } else {
