@@ -61,35 +61,6 @@ class KeyAggregateParser(Generic[E]):
         return self.enum_cls(args.get("key")), AggregateOperator(args.get("aggregate"))
 
 
-class MultiExtremeValueParser(Generic[E]):
-    def __init__(
-        self, schema_parser: SchemaParser, enum_cls: Type[E], labels: Dict[E, str]
-    ):
-        self.schema_parser = schema_parser
-        self.enum_cls = enum_cls
-        self.labels = labels
-
-    def parse(self, text: str):
-        args = self.schema_parser.parse(
-            text=text,
-            schema={
-                "type": "object",
-                "properties": {
-                    key: {
-                        "type": "string",
-                        "description": "Whether to take the lowest or greatest {label} value".format(
-                            label=self.labels[key]
-                        ),
-                        "enum": ["MIN", "MAX"],
-                    }
-                    for key in self.enum_cls
-                },
-            },
-        )
-
-        return {self.enum_cls(k): ExtremeValueConstraint(v) for k, v in args.items()}
-
-
 class NumericalConstraintParser:
     def __init__(self, schema_parser: SchemaParser):
         self.schema_parser = schema_parser

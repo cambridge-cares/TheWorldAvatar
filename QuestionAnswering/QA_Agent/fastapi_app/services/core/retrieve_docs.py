@@ -91,7 +91,6 @@ class DocsRetriever(Generic[T]):
         if self.tags:
             schema.append(TagField("$.tag", as_name="tag"))
         schema = tuple(schema)
-        print(schema)
 
         definition = IndexDefinition(
             prefix=[self.doc_key_prefix], index_type=IndexType.JSON
@@ -108,14 +107,11 @@ class DocsRetriever(Generic[T]):
             .docs
         ]
         # TODO: handle the case when ids_and_scores is empty
-        print(ids_and_scores)
         docs = self.redis_client.json().mget([id for id, _ in ids_and_scores], ".doc")
         return list(zip(docs, [score for _, score in ids_and_scores]))
 
     def retrieve(self, queries: List[str], k: int = 3, tag: Optional[str] = None):
-        print("HI")
         if not does_index_exist(self.redis_client, self.index_name):
-            print("INDEX DOES NOT EXIST")
             self._embed()
 
         encoded_queries = self.embedder(queries).astype(np.float32)
