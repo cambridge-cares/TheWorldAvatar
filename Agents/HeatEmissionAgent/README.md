@@ -4,7 +4,7 @@ The heat emission agent calculates heat emissions of data centres and various ty
 
 
 
-The steps required to run the agent for each case are described below:
+The steps required to run the agent are described below:
 
 ## Instructions
 
@@ -90,12 +90,12 @@ The parameters $N_p$ and $H_p$ denote the number of printers and average heat em
 
 - Factories not in the precision engineering and printing industries:
 
-$$ Q = begin{cases}
-    -VS \text{if } S < 0  
+$$ Q = \begin{cases}
+    -VS & \text{if } S < 0  \\
     VS(1 - \eta) & \text{otherwise.}
 \end{cases} $$
 
-The parameters $V$ and $S$ denote the production volume in kilograms per second and specific energy consumption in megaJoules per kilogram respectively.
+The parameters $V$ and $S$ denote the production volume in kilograms per second and specific energy consumption in megajoules per kilogram respectively.
 
 - Individual Heat Sources in Chemical Plants and Petroleum Refineries:
 
