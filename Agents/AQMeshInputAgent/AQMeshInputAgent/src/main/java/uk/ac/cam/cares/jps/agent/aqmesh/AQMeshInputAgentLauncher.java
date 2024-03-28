@@ -165,8 +165,9 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
                     aqmeshIRI = requestParams.getString("iri");
                     aqmeshName = requestParams.getString("name");
                 } else {
-                    aqmeshIRI = OntoAqmesh_NS + "AQMesh_" + UUID.randomUUID();
-                    aqmeshName = "AQMesh " + UUID.randomUUID();
+                    UUID uuid = UUID.randomUUID();
+                    aqmeshIRI = OntoAqmesh_NS + "AQMesh_" + uuid;
+                    aqmeshName = "AQMesh " + uuid;
                 }
                 msg = instantiateGeoLocationRoute(aqmeshIRI, aqmeshPodInformation, aqmeshName, sparqlEndpoint);
                 break;
