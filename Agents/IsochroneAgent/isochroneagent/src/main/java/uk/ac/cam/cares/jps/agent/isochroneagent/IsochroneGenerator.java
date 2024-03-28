@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -78,14 +79,11 @@ public class IsochroneGenerator {
      * @param remoteRDBStoreClient
      */
     private void generateTable(RemoteRDBStoreClient remoteRDBStoreClient) {
-        try (Connection connection = remoteRDBStoreClient.getConnection()) {
-            // Read SQL commands from file
-            InputStream is = getClass().getResourceAsStream("create_isochrone_aggregated.sql");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                executeSql(connection, line);
-            }
+        try (Connection connection = remoteRDBStoreClient.getConnection();
+                InputStream is = getClass().getResourceAsStream("create_isochrone_aggregated.sql");) {
+
+            String query = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            executeSql(connection, query);
             System.out.println("Isochrone_aggregated table created. Calculating isochrones based on POI now.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,14 +107,10 @@ public class IsochroneGenerator {
     private void createIsochrone(RemoteRDBStoreClient remoteRDBStoreClient, int upperTimeLimit, int timeInterval,
             String transportMode, String roadCondition, String edgeTable, String poiType) {
 
-        InputStream is = getClass().getResourceAsStream("isochrone_function.sql");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        String line;
-
-        try (Connection connection = remoteRDBStoreClient.getConnection()) {
-            while ((line = reader.readLine()) != null) {
-                executeSql(connection, line);
-            }
+        try (Connection connection = remoteRDBStoreClient.getConnection();
+                InputStream is = getClass().getResourceAsStream("isochrone_function.sql");) {
+            String query = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            executeSql(connection, query);
             System.out.println("Isochrones added to tables");
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,19 +130,13 @@ public class IsochroneGenerator {
 
         try (InputStream is = getClass().getResourceAsStream("get_nearest_node.sql");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));) {
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-                sb.append(System.lineSeparator());
-            }
-            String getNearestNodeSQL = sb.toString();
 
+            String query = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             List<String> poiTypes = new ArrayList<>();
 
             try (Connection connection = remoteRDBStoreClient.getConnection();
                     Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(getNearestNodeSQL)) {
+                    ResultSet resultSet = statement.executeQuery(query)) {
 
                 while (resultSet.next()) {
                     poiTypes.add(resultSet.getString("poi_type"));
@@ -182,21 +170,16 @@ public class IsochroneGenerator {
      */
     private void smoothIsochrone(RemoteRDBStoreClient remoteRDBStoreClient) {
 
-        InputStream is = getClass().getResourceAsStream("smooth_isochrone.sql");
+        try (Connection connection = remoteRDBStoreClient.getConnection();
+                InputStream is = getClass().getResourceAsStream("smooth_isochrone.sql");) {
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        String line;
-
-        try (Connection connection = remoteRDBStoreClient.getConnection()) {
-            while ((line = reader.readLine()) != null) {
-                executeSql(connection, line);
-            }
+            String query = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            executeSql(connection, query);
             System.out.println("Isochrone_aggregated smoothened.");
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-
     }
 
     /**
@@ -207,20 +190,14 @@ public class IsochroneGenerator {
      */
     public void createIsochroneBuilding(RemoteRDBStoreClient remoteRDBStoreClient) {
 
-        InputStream is = getClass().getResourceAsStream("create_isochrone_building_table.sql");
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        String line;
-
-        try (Connection connection = remoteRDBStoreClient.getConnection()) {
-            while ((line = reader.readLine()) != null) {
-                executeSql(connection, line);
-            }
+        try (Connection connection = remoteRDBStoreClient.getConnection();
+                InputStream is = getClass().getResourceAsStream("create_isochrone_building_table.sql");) {
+            String query = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            executeSql(connection, query);
             System.out.println("isochrone_building_ref table created.");
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
     }
-
 }
