@@ -20,5 +20,5 @@ priceCurrency,Data Property,,,priceSpecification,string,,Represents the price cu
 hasWheelchairAccess,Data Property,,,Toilet,boolean,,"Indicates the suitability of places or ways for wheelchair access and accommodation of individuals using mobility devices (e.g., walkers).",https://www.theworldavatar.com/kg/ontocitytoilets/,has wheelchair
 isForMale,Data Property,,,Toilet,boolean,,Indicates that a toilet is specifically designed for males.,https://www.theworldavatar.com/kg/ontocitytoilets/,is for male
 isForFemale,Data Property,,,Toilet,boolean,,Indicates that a toilet is specifically designed for females.,https://www.theworldavatar.com/kg/ontocitytoilets/,is for female
-ratingValue,Data Property,,,Rating,integer,,"Indicates the rating value for an amenity which can be 1 as bad, 2 as neutral, and 3 as good.",https://www.theworldavatar.com/kg/ontocitytoilets/,rating value
+ratingValue,Data Property,,,Rating,int,,"Indicates the rating value for an amenity which can be 1 as bad, 2 as neutral, and 3 as good.",https://www.theworldavatar.com/kg/ontocitytoilets/,rating value
 ratingTimestamp,Data Property,,,Rating,dateTime,,Indicates the rating timestamp.,https://www.theworldavatar.com/kg/ontocitytoilets/,rating timestamp
