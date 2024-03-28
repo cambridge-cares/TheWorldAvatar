@@ -8,7 +8,10 @@
 					"AQMESH_AGENT_PROPERTIES=/usr/local/tomcat/config/agent.properties",
           "AQMESH_API_PROPERTIES=/usr/local/tomcat/config/api.properties",
           "AQMESH_CLIENT_PROPERTIES=/usr/local/tomcat/config/client.properties",
-          "AQMESH_AGENT_MAPPINGS=/usr/local/tomcat/config/mappings"
+          "AQMESH_AGENT_MAPPINGS=/usr/local/tomcat/config/mappings",
+          "GEOSERVER_WORKSPACE=aqmesh",
+          "DATABASE=postgres",
+          "LAYERNAME=aqmesh"
 				],
         "Mounts": [
           {
