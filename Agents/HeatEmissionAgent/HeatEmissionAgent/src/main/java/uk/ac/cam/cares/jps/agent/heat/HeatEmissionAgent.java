@@ -76,7 +76,7 @@ public class HeatEmissionAgent extends JPSAgent {
 				dbUser = requestParams.getString("dbUser");
 				dbPassword = requestParams.getString("dbPassword");
 			} else {
-				String dbName = "postgres";
+				String dbName = requestParams.getString("dbName");
 				EndpointConfig endpointConfig = new EndpointConfig();
 				dbUrl = endpointConfig.getDbUrl(dbName);
 				dbUser = endpointConfig.getDbUser();
@@ -107,9 +107,9 @@ public class HeatEmissionAgent extends JPSAgent {
 			throw new BadRequestException();
 		}
 
-		if (!requestParams.has("endpoint") && !requestParams.has("database")) {
+		if (!requestParams.has("dbName") && !requestParams.has("dbUrl")) {
 			throw new BadRequestException(
-					"Either a postgres database name or URL must be specified when running the heat emisson agent.\n");
+					"Either a postgres database name or URL must be specified when running the heat emission agent.\n");
 
 		}
 
