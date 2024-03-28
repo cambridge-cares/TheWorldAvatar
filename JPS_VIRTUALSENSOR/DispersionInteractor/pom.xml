@@ -82,7 +82,7 @@
         <dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.40.1</version>
+			<version>1.43.0</version>
 		</dependency>
 
 		<dependency>
@@ -98,13 +98,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-        </dependency>
-
-		<!-- used to create sparql query strings -->
-		<dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-sparqlbuilder</artifactId>
-            <version>3.4.3</version>
         </dependency>
 
 		<!-- Logging, versions pulled from parent -->
@@ -127,13 +120,6 @@
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
             <version>1.25.0</version>
-        </dependency>
-
-         <!-- Driver for connecting to postgresql -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.5.4</version>
         </dependency>
 
         <!-- parse wkt literals from ontop -->
