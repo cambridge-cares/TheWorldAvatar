@@ -78,8 +78,8 @@ public class JurongIsland {
                         this.updateEndpoint = queryEndpoint;
                 } else {
                         String namespace = request.getString("namespace");
-                        EndpointConfig endpointConfig = new EndpointConfig(namespace);
-                        queryEndpoint = endpointConfig.getKgurl();
+                        EndpointConfig endpointConfig = new EndpointConfig();
+                        queryEndpoint = endpointConfig.getKgurl(namespace);
                         updateEndpoint = queryEndpoint;
                 }
         }
