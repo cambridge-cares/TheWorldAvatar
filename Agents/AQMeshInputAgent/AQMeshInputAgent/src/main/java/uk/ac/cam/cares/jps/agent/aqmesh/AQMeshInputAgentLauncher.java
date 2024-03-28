@@ -1,16 +1,23 @@
 package uk.ac.cam.cares.jps.agent.aqmesh;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,9 +34,10 @@ import org.apache.logging.log4j.Logger;
  * data from the API and write it into the database.
  * @author Niklas Kasenburg
  */
-@WebServlet(urlPatterns = {"/retrieve", "/status"})
+@WebServlet(urlPatterns = {"/retrieve", "/status", "/instantiateGeoLocation"})
 public class AQMeshInputAgentLauncher extends JPSAgent {
     private boolean valid = false;
+    private String sparqlEndpoint = null;
     /**
      * Logger for reporting info/errors.
      */
@@ -44,9 +52,12 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the AQMesh API connector needed to interact with the API!";
     private static final String GET_READINGS_ERROR_MSG = "One or both readings could not be retrieved, this might have created a mismatch" +
             " in the pointers if one readings was successful and needs to be fixed!";
+    private static final String GET_POD_INFORMATION_ERROR_MSG = "Unable to retrieve AQMesh pod information!";
     private static final String ONE_READING_EMPTY_ERROR_MSG = "One of the readings (gas or particle) is empty, that means there is " +
             "a mismatch in the pointer for each readings. This should be fixed (and might require a clean up of the database)!";
     private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
+    private static final String CREATEGEOSPATIAL_ERROR_MSG = "Unable to instantiate geospatial information for the following ";
+    private static final String READCLIENTPROPERTIES_ERROR_MSG = "Unable to read the information from the client.properties file! ";
     
     /**
      * Environment Variables
@@ -54,12 +65,20 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
     private static final String AQMESH_AGENT_PROPERTIES_ENV = "AQMESH_AGENT_PROPERTIES";
     private static final String AQMESH_API_POPERTIES_ENV = "AQMESH_API_PROPERTIES";
     private static final String AQMESH_CLIENT_PROPERTIES_ENV = "AQMESH_CLIENT_PROPERTIES";
+    public static final String GEOSERVER_WORKSPACE_ENV = "GEOSERVER_WORKSPACE";
+	public static final String DATABASE_ENV = "DATABASE";
+	public static final String LAYERNAME_ENV = "LAYERNAME";
 
     /**
      * Keys
      */
     private static final String JSON_ERROR_KEY = "Error";
     private static final String JSON_RESULT_KEY = "Result";
+
+    /**
+     * OntoAQMesh namespace
+     */
+    private static final String OntoAqmesh_NS = "http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl/";
 
     /**
      * Servlet init.
@@ -114,6 +133,42 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
                 LOGGER.info("Executing retrieve route ...");
                 setSchedulerForRetrievedRoute(args, delay, interval, timeunit);
                 msg.put("result", "Retrieve route will be executed at the following intervals:" + interval + " " + timeunit);
+                break;
+            case "instantiateGeoLocation":
+                LOGGER.info("Executing retrieve route ...");
+                try {
+                    loadSparqlConfigs(System.getenv(AQMESH_CLIENT_PROPERTIES_ENV));
+                } catch (IOException e) {
+                    throw new JPSRuntimeException(READCLIENTPROPERTIES_ERROR_MSG, e);
+                }
+                // Create the connector to interact with the AQMesh API
+                AQMeshAPIConnector connector;
+                try {
+                    connector = new AQMeshAPIConnector(System.getenv(args[2]));
+                } catch (IOException e) {
+                    LOGGER.error(CONNECTOR_ERROR_MSG, e);
+                    throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
+                }
+                LOGGER.info("API connector object initialized.");
+                connector.connect();
+                JSONObject aqmeshPodInformation;
+                try {
+                    aqmeshPodInformation = connector.setLocation();
+                } catch (JSONException e) {
+                    throw new JPSRuntimeException(GET_POD_INFORMATION_ERROR_MSG, e);
+                } catch (IOException e) {
+                    throw new JPSRuntimeException(GET_POD_INFORMATION_ERROR_MSG, e);
+                }
+                String aqmeshIRI = null;
+                String aqmeshName = null;
+                if (requestParams.has("iri") & requestParams.has("name")) {
+                    aqmeshIRI = requestParams.getString("iri");
+                    aqmeshName = requestParams.getString("name");
+                } else {
+                    aqmeshIRI = OntoAqmesh_NS + "AQMesh_" + UUID.randomUUID();
+                    aqmeshName = "AQMesh " + UUID.randomUUID();
+                }
+                instantiateGeoLocationRoute(aqmeshIRI, aqmeshPodInformation, aqmeshName, sparqlEndpoint);
                 break;
             default:
                 LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
@@ -258,6 +313,71 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
         else {
             LOGGER.error(ONE_READING_EMPTY_ERROR_MSG);
             throw new JPSRuntimeException(ONE_READING_EMPTY_ERROR_MSG);
+        }
+    }
+
+    /**
+     * Handle POST /instantiateGeoLocation route and returns the IRI of the aqmesh instance
+     *
+     * @return IRI of the aqmesh instance
+     */
+    private JSONObject instantiateGeoLocationRoute(String aqmeshIRI, JSONObject aqmeshPodInformation, String aqmeshName, String sparqlEndpoint) {
+        LOGGER.info("Detected request to instantiate geo location of aqmesh instance...");
+        //postgisClient is used to interact with the stack's database that will store the geolocation information
+        Double latitude = aqmeshPodInformation.getDouble("pod_latitude");
+        Double longitude = aqmeshPodInformation.getDouble("pod_longitude");
+        AQMeshPostGISClient postgisClient = new AQMeshPostGISClient();
+        try (Connection conn = postgisClient.getConnection()) {
+            JSONObject response = new JSONObject();
+           AQMeshGeospatialClient geospatialClient = new AQMeshGeospatialClient();
+			if (!postgisClient.checkTableExists(System.getenv(AQMeshInputAgentLauncher.LAYERNAME_ENV), conn)) {
+                LOGGER.info("The table " + System.getenv(AQMeshInputAgentLauncher.LAYERNAME_ENV) + " does not exist");
+                
+                geospatialClient.createGeospatialInformation(latitude, longitude, aqmeshName, aqmeshIRI, sparqlEndpoint);
+				response.put("message", "Geospatial information instantiated for the following: " + aqmeshName);
+			} else {
+				// table exists, check table contents for an equivalent point or aqmesh
+                LOGGER.info("Checking for existing aqmesh to prevent duplicates...");
+				if (!postgisClient.checkAQMeshExists(aqmeshIRI, conn)) {
+                    LOGGER.info("No existing aqmesh instance found for " + aqmeshIRI);
+                    geospatialClient.createGeospatialInformation(latitude, longitude, aqmeshName, aqmeshIRI, sparqlEndpoint);
+					response.put("message", "Geospatial information instantiated for the following AQMesh: name: " + aqmeshName + " IRI: " + aqmeshIRI);
+				} else {
+					response.put("message", "An AQMesh instance already exist for the following: " + aqmeshIRI);
+				}
+			}
+            return response;
+		} catch (Exception e) {
+			LOGGER.error(CREATEGEOSPATIAL_ERROR_MSG + aqmeshName, e);
+            throw new JPSRuntimeException(CREATEGEOSPATIAL_ERROR_MSG + aqmeshName);
+		}
+    }
+
+    /**
+     * Reads the sparql endpoints from the client.properties file
+     * Optionally, also reads the pod index which is 0 by default.
+     * @param filepath Path to the properties file from which to read the username, password and URL
+     */
+    private void loadSparqlConfigs(String filepath) throws IOException {
+        // Check whether properties file exists at specified location
+        File file = new File(filepath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("No properties file found at specified filepath: " + filepath);
+        }
+        // Read username and password for AQMesh API from properties file
+        // Try-with-resource to ensure closure of input stream
+        try (InputStream input = new FileInputStream(file)) {
+
+            // Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+
+            // Get username, password and URL from properties file
+            if (prop.containsKey("sparql.update.endpoint")) {
+                this.sparqlEndpoint = prop.getProperty("sparql.update.endpoint");
+            } else {
+                throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
+            }
         }
     }
 
