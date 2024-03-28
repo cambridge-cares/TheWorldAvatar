@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated, Dict, Optional, Tuple
+from typing import Annotated, Optional, Tuple
 
 from fastapi import Depends
 
@@ -66,7 +66,6 @@ class SGLandLotsAgent:
     def find_plot_iris(
         self,
         land_use_type_iri: Optional[str] = None,
-        num_constraints: Dict[PlotNumAttrKey, NumericalConstraint] = dict(),
         limit: Optional[int] = None,
     ):
         patterns = ["?IRI rdf:type ontoplot:Plot ."]
@@ -79,13 +78,7 @@ class SGLandLotsAgent:
                     land_use=land_use_type_iri,
                 )
             )
-        for key, constraint in num_constraints.items():
-            where_patterns, orderby = self._make_clauses_for_constraint(key, constraint)
-            patterns.extend(where_patterns)
-            if orderby:
-                orderbys.append(orderby)
-            else:
-                pass
+
         query = """PREFIX ontoplot:<https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX opr: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
 PREFIX ontozoning:<https://www.theworldavatar.com/kg/ontozoning/>
@@ -101,8 +94,6 @@ SELECT ?IRI WHERE {{
             limit="\nLIMIT " + str(limit) if limit else "",
         )
 
-        logger.info("SPARQL query:\n" + query)
-
         return [
             x["IRI"]["value"]
             for x in self.ontop_client.query(query)["results"]["bindings"]
@@ -112,11 +103,8 @@ SELECT ?IRI WHERE {{
         self,
         attr_key: PlotAttrKey,
         land_use_type_iri: Optional[str] = None,
-        num_constraints: Dict[PlotNumAttrKey, NumericalConstraint] = dict(),
     ):
-        iris = self.find_plot_iris(
-            land_use_type_iri=land_use_type_iri, num_constraints=num_constraints
-        )
+        iris = self.find_plot_iris(land_use_type_iri=land_use_type_iri)
         if not iris:
             return QAData()
 
@@ -178,21 +166,16 @@ SELECT {vars} WHERE {{
         ]
         return QAData(vars=vars, bindings=bindings)
 
-    def count_plots(
-        self,
-        land_use_type_iri: Optional[str] = None,
-        num_constraints: Dict[PlotNumAttrKey, NumericalConstraint] = dict(),
-    ):
-        iris = self.find_plot_iris(land_use_type_iri, num_constraints)
+    def count_plots(self, land_use_type_iri: Optional[str] = None):
+        iris = self.find_plot_iris(land_use_type_iri)
         return QAData(vars=["count"], bindings=[dict(count=len(iris))])
 
     def compute_aggregate_plot_attribute(
         self,
         attr_agg: Tuple[PlotNumAttrKey, AggregateOperator],
         land_use_type_iri: Optional[str] = None,
-        num_constraints: Dict[PlotNumAttrKey, NumericalConstraint] = dict(),
     ):
-        iris = self.find_plot_iris(land_use_type_iri, num_constraints)
+        iris = self.find_plot_iris(land_use_type_iri)
         vars = []
         patterns = [
             "VALUES ?IRI {{ {values} }}".format(
