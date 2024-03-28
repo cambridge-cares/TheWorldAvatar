@@ -108,15 +108,18 @@ public class IsochroneGenerator {
             String transportMode, String roadCondition, String edgeTable, String poiType) {
 
         try (Connection connection = remoteRDBStoreClient.getConnection();
-                InputStream is = getClass().getResourceAsStream("isochrone_function.sql");) {
-            String query = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-            executeSql(connection, query);
+                InputStream isCreate = getClass().getResourceAsStream("isochrone_function.sql");
+                InputStream isDrop = getClass().getResourceAsStream("drop_intermediary_tables.sql");) {
+            String createQuery = new String(isCreate.readAllBytes(), StandardCharsets.UTF_8);
+            String dropQuery = new String(isDrop.readAllBytes(), StandardCharsets.UTF_8);
+
+            executeSql(connection, createQuery);
+            executeSql(connection, dropQuery);
             System.out.println("Isochrones added to tables");
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-
     }
 
     /**

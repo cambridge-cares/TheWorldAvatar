@@ -1,4 +1,4 @@
-DO $ $ DECLARE node bigint;
+DO $$DECLARE node bigint;
 
 -- Drop the existing tables
 BEGIN DROP TABLE IF EXISTS eventspace_etas;
@@ -7,15 +7,15 @@ DROP TABLE IF EXISTS eventspace_isochrones;
 
 DROP TABLE IF EXISTS isochrone_individual;
 
--- Create the ETA table CREATE TABLE
-eventspace_etas (
+-- Create the ETA table 
+CREATE TABLE eventspace_etas (
     id bigint,
     agg_cost double precision,
     the_geom geometry(PointZ, 4326)
 );
 
--- Create the eventspace_isochrones 
-table CREATE TABLE eventspace_isochrones (
+-- Create the eventspace_isochrones table
+CREATE TABLE eventspace_isochrones (
     id bigint,
     geom geometry,
     transportmode VARCHAR,
@@ -235,12 +235,4 @@ FROM
 WHERE
     t1.transportmode = t2.transportmode;
 
-DROP TABLE eventspace_etas;
-
-DROP TABLE eventspace_delaunay;
-
-DROP TABLE eventspace_isochrones;
-
-DROP TABLE isochrone_individual;
-
-END $ $;
+END$$;
