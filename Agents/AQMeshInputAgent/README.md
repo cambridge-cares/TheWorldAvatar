@@ -113,20 +113,7 @@ The following shows a single JSON object example contained in particle readings 
 ![Shows part of the response body of a successful gas readings request.](docs/img/example_particle_readings_2.png "Particle readings sensors")
 
 ## Usage 
-This part of the README describes the usage of the input agent. The module itself can be packaged into an executable 
-jar that can be executed to run the agent. Since it uses the time-series client which maintains both instances in a 
-knowledge graph and a Postgres database to store the data, these will be required to be set-up before.  
-
-The [next section](#requirements) will explain the requirements to run the agent and then both the steps for [running it 
-as jar](#using-the-jar-directly) directly on a machine or in form of a [Docker container](#docker) are described.
-
-### Requirements
-Independent on whether the jar is used directly or the agent is run in form of a Docker container using a built image, it
-is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine 
-or need to be accessible from the host machine via a fixed URL.
-
-This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README
-to explain the set-up of a knowledge graph triple store or Postgres database.
+This part of the README describes the usage of the input agent. The agent needs to be deployed as part of the stack.
 
 ### Property files
 For running the agent, three property files are required:
@@ -137,11 +124,10 @@ For running the agent, three property files are required:
 #### Agent properties
 The agent property file only needs to contain a single line:
 ```
-aqmesh.mappingfolder=[mappings_folder]
+aqmesh.mappingfolder=AQMESH_AGENT_MAPPINGS
 ```
-where `[mappings_folder]` is the absolute path to a folder containing JSON key to IRI mappings 
-(use '/' as path separator also on Windows). An example property file can be found in the `config` folder under 
-`agent.properties`. See [this section](#mapping-files) of the README for an explanation of the mapping files.
+`AQMESH_AGENT_MAPPINGS` is the environment variable pointing to the location of a folder containing JSON key to IRI mappings. 
+A sample file can be found at `config/agent.properties`.  See [this section](#mapping-files) of the README for an explanation of the mapping files.
 
 #### Time-series client properties
 The time-series client property file needs to contain all credentials and endpoints to access the SPARQL endpoint of
@@ -152,7 +138,7 @@ the knowledge graph and the Postgres database. It should contain the following k
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
 
-More information can be found in the example property file `client.properties` in the `config` folder.
+A sample file can be found at `config/client.properties`.
 
 #### API properties
 The API properties contain the credentials to authorize access to the AQMesh API (see the [API description](#aqmesh-api)),
@@ -167,7 +153,7 @@ pod (see [Data retrieval](#data-retrieval)). This property also allows to adjust
 pod. Currently CARES only owns one pod, so the index should be 0. When using the test API the index should be 1, as the 
 other test pod is currently not properly working.
 
-More information can be found in the example property file `api.properties` in the `config` folder.
+A sample file can be found at `config/api.properties`.
 
 #### Mapping files
 What are the mapping files and why are they required? The mapping files define how data received from the API is connected
@@ -206,128 +192,75 @@ folder. Here, the keys are grouped into three groups, where the particle reading
 information, and for the gas readings general information already contained in the particle readings are ignored (see 
 also [Example readings](#example-readings)).
 
-### Using the jar directly
+### Geolocation data configurations
+In the `./stack-manager-input-config-service/aqmesh-input-agent.json`, there are three variables that affects where the geolocation information will be uploaded to in postGIS and the Geoserver:
+- `LAYERNAME` the name of the layer in Geoserver, this will also be the name of the table in the postGIS database that will be used to store the geolocation information
+- `DATABASE` the name of the database in postGIS to store the geolocation information
+- `GEOSERVER_WORKSPACE` the name of the workspace in Geoserver to store the geolocation information
 
-#### Building the jar
-To build the jar file of this agent, you need to have [Maven](https://maven.apache.org/) installed. The current version
-of the code was tested with version 3.8.1 running on Windows. In addition, the machine needs to be able to access the 
-CMCL Maven repository for downloading the JPS base lib dependency and default logging configuration. Check the 
-[wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages) for how to set it up. Example Maven settings 
-files are provided in the `.m2` folder.
+More information can be found in the `./stack-manager-input-config-service/aqmesh-input-agent.json`.
 
-If everything is set up, the executable jar can be built using the following command in a terminal from within the 
-`AQMeshInputAgent` folder (in which the `pom.xml` is located):
+### Stack Deployment
+
+Modify [api.properties](#api-properties) and [client.properties](#time-series-client-properties) in the `config` folder accordingly. The sparql endpoints and postGIS database indicated in the [client.properties](#time-series-client-properties) needs to be created manually beforehand. 
+
+Open up the command prompt in the same directory as this README, run the command below to build the docker image:
 ```
-mvn clean package
+docker compose build
+```
+Open `stack-manager-input-config-service/aqmesh-input-agent.json` and under the `Mounts` section, modify the `Source` and insert the filepath of where the `config` folder is located at (For Windows users using WSL on Docker, the file path should start with `/mnt/c/`, which is equivalent to `C://`). Under the `Env` section, modify the variables listed in [Geolocation data configurations](#geolocation-data-configurations) accordingly.
+
+Copy `stack-manager-input-config-service/aqmesh-input-agent.json` to the services folder under your stack-manager directory (By default it should be `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`) and start up the stack.
+
+### Run the agent
+
+The agent has three routes, a status route, a retrieve route and a instantiateGeoLocation route. A description for each route is provided below.
+
+#### Status route
+
+This request gets the status of the agent. The request has the following format:
+```
+curl -X GET http://localhost:3838/aqmesh-input-agent/status
+```
+and it should return:
+
+{"Result":"Agent is ready to receive requests."}
+
+#### Retrieve route
+
+This request gets the latest timeseries for the AQMesh and uploads them to the knowledge graph. The timeseries data will be stored in the endpoints indicated in the [client.properties](#time-series-client-properties). The request will also initiate a scheduler to constantly run the retrieve route at a set interval. In the request, the user can set the following parameters for the scheduler:
+- `delay` the time delay before the first execution of retrieve route
+- `interval` the interval between successive executions 
+- `timeunit` the time unit of delay and interval, this is currently limited to the following options: seconds, minutes, hours 
+
+An example of the request in curl syntax is shown below:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"interval\":\"180\",\"timeunit\":\"seconds\"}" http://localhost:3838/aqmesh-input-agent/retrieve
 ```
 
-Maven will automatically run all unit tests before packaging. As part of the packaging process, Maven will also download all 
-dependencies in a specific folder inside the `target` folder that are required to run the jar, and the logging configuration 
-from the CMCL repository.
-
-A successful built should result in a `target` folder containing among other files:
-- The jar `aqmesh_inputAgent-[version].jar`
-- A folder containing all the dependencies called `aqmesh_inputAgent-[version].lib`
-- A folder containing the logging configuration `aqmesh_inputAgent-[version].conf`
-
-In all cases `[version]` is the current version number of the package 
-(see also the rules about versioning on the [wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Versioning)).
-
-#### Run the agent
-Running the agent with the jar requires the jar itself, the dependency folder and the logging configuration folder 
-(see [above](#building-the-jar)) all located in the same root folder. These files/folders can be copied to a new location, 
-i.e. where the property files are located (recommended), or the agent can be run directly from the target folder.
-
-In addition to the files that are created during the built, [property files](#property-files) are required as well. You
-can check the files located in the `config` folder as an example, but **do not** modify them or use them. Instead, copy 
-them to a different location on the machine before modifying. As described [above](#mapping-files), mapping configurations
-are required as well (the location can be set in the agent property file). These mapping files need to be kept persistent, 
-so once the agent is run they should not be modified anymore. 
-Use the `mapping` folder in the `config` folder as template, but **do not** modify or use them directly. Instead,
-create copies, move them to a new location, e.g `C:\AQMeshAgent\mappings`, and modify them accordingly.
-
-Once the property files and built files are set up, the agent can be run using the following command 
-(run it from within the root where the jar file, dependency folder and configuration folder are located):
+#### InstatiateGeoLocation route
+This request instantiates the geolocation information of the AQMesh pod in postGIS and geoserver based on the locations indicated in the `stack-manager-input-config-service/aqmesh-input-agent.json` ([Geolocation data configurations](#geolocation-data-configurations)). The request has two possible formats:
 ```
-java -jar aqmesh_inputAgent-[version].jar [agent_property_file] [client_property_file] [api_property_file]
+curl -X POST http://localhost:3838/aqmesh-input-agent/instantiateGeoLocation
 ```
-The `[version]` is the current version of the agent package. For the files you can provide absolute or relative 
-(relative to the root folder) paths. 
+For this request, the agent will create an AQMesh IRI and name for the AQMesh pod indicated in [api.properties](#api-properties) and instantiate them in postGIS and geoserver. The agent will return back the generated AQMesh IRI and name in a JSON Object.
 
-When running the agent, logging will be shown in the terminal and log files will be created in the home folder under 
-`.jps` (see the [wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Logging) for details on the logging).
-On a successful run, information about the process should be printed to the terminal and the run should terminate without
-errors. Otherwise, error messages will inform about the cause of the error. 
-
-### Docker
-This section describes how the agent can be dockerized. This can be useful to ensure running the agent with the same
-property files (which will be part of the Docker image), or when setting up a Docker compose with other components like
-the knowledge graph triple store and Postgres database.
-
-#### Building the docker image
-To build the Docker image some set-up is required, as all files and credentials that are required to run the agent need 
-to be included in the image: 
-- Creating the Docker image requires that the agent jar file is built. This requires a Maven set-up with credentials to
-access the CMCL Maven repository (see [Building the jar](#building-the-jar)). Here, we achieve this by providing Maven
-settings in the `.m2` folder with placeholders for the credentials. These placeholders will be filled with the actual
-credentials during the build process read from files in the `credentials` folder (`repo_password.txt` and 
-`repo_username.txt`).
-More information about this can be found in the 
-[example java agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Deploy/examples/java_agent).
-- To run the agent inside the image, property files are needed (see [Run the agent](#run-the-agent)). These will be
-copied into the Docker image from the `config` folder. Change information like the postgress URL, SPARQL endpoints, API
-URL and pod index before building the image. Note, that you can use `host.docker.internal` (Windows and MAC) or 
-`172.17.0.1` (Linux, not tested) as IP in the URLs if the SPARQL endpoint or Postgres is running on the host machine
-outside the Docker engine (or without using a shared network for the containers). Similar to the Maven credentials,
-there are placeholders for the Postgres and AQMesh API credentials in the property files that are filled during the build
-process (**do not change them!**). The credential files should be named `postgres_credentials.txt` and `api_credentials.txt`
-respectively, and should contain the username in the first line and the password in the second line.
-
-When the credential files are set up and the property files are changed according to the SPARQL endpoint and Postgres 
-set up, the Docker image can be build using the following command (run from the root folder):
 ```
-docker build -t test/aqmesh-input-agent -f Dockerfile .
+curl -X POST --header "Content-Type: application/json" -d "{\"iri\":\"https://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl/AQMesh_3f2c8a39-4bda-4df2-9102-309a8f878375\",\"name\":\"AQMesh 3f2c8a39-4bda-4df2-9102-309a8f878375\"}" http://localhost:3838/aqmesh-input-agent/instantiateGeoLocation
 ```
-The name/tag of the image can be changed, but be aware to use the same name when running a container (see next 
-[section](#using-the-docker-image)).
+For this request, the agent will retrieve the AQMesh IRI and name for the AQMesh pod from the request and instantiate them in postGIS and geoserver. The agent will return back the AQMesh IRI and name in a JSON Object.
 
-The Docker image is built in two stages, one that runs the Maven package command and one that copies the relevant files
-from the first stage and sets the entrypoint to directly run the agent. 
-
-#### Using the docker image
-The Docker image is supposed to be used as one shot container, i.e. run the agent and then remove the container again.
-Which means the container will not be running constantly, but only on demand.
-
-As described [above](#mapping-files), mapping configurations are required to run the agent. In addition, these mapping
-files need to be kept persistent, so they can not exist within the Docker container but must be on the machine running
-the agent/container. Use the `mapping` folder in the `config` folder as template, but **do not** modify or use them directly. Instead,
-create copies, move them to a new location, e.g `C:\AQMeshAgent\mappings`, and modify them accordingly. 
-
-With a built image and the mapping files set-up, the agent can be run in form of a Docker container using the following 
-command:
+If the instance does not already exist in postGIS and geoserver, the following will be returned back:
 ```
-docker run -v [mapping_folder]:/app/config/mappings --rm test/aqmesh-input-agent
+{"iri":"https://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl/AQMesh_c98872ec-ab6a-467b-9faf-60fe0d5851ae","name":"AQMesh c98872ec-ab6a-467b-9faf-60fe0d5851ae","message":"Geospatial information instantiated for the AQMesh pod."}
 ```
-Here, `[mapping_folder]` needs to be the **absolute** path to the folder in which you stored the mapping files, e.g. 
-`C:\AQMeshAgent\mappings`. The `-v` argument ensures that the files are kept persistent (do not change the location 
-within the container). The `-rm` argument ensures that the container is removed after the agent is run successfully or
-resulted in errors. The output to the command line will be the same as when running the agent directly from the jar 
-(see [Run the agent](#run-the-agent)).
 
-## Testing
-If you want to test the agent, either by running the [jar directly](#using-the-jar-directly) or through 
-[using the docker image](#using-the-docker-image) the following might be helpful:
-- Have a SPARQL endpoint and Postgres database running on the test system. Ideally, both the 
-triple store and database should be empty to not interfere with existing data. This could also be achieved
-by using a new namespace and database withing an existing triple store or Postgres instance respectively.
-- You will need the credentials for accessing the AQMesh API. They can be found in a shared Dropbox folder 
-(`IRP3 CAPRICORN shared folder\NKASENBURG\KGTimeSeries\AQMesh_API\api_credentials.txt`). Ask a relevant CARES employer
-of how to get access to the folder or credentials.
-- Use the test URL of the AQMesh API (`https://apitest.aqmeshdata.net/api/`) to not change the pointer for the actual 
-pod (see [Data retrieval](#data-retrieval)).
-- When testing the behaviour of updating existing data, use the same property and mapping files for consecutive 
-test runs.
-- When running consecutive, independent tests make sure to clean the database (drop the `dbTable` 
-and the other created tables) and remove all created triples in the triplestore (all 
-`http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries` objects and their links) between
-tests.
+If the instance already exist in postGIS and geoserver, the following will be returned back instead:
+```
+{"message":"An AQMesh instance already exist for the following: https://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl/AQMesh_3f2c8a39-4bda-4df2-9102-309a8f878375"}
+```
+
+#### Recommended execution sequence
+To fully instantiate the data (geolocation, timeseries etc) into the knowledge graph, it is recommended to follow the sequence below when executing the routes:
+1) Retrieve Route - instantiate the timeseries and start the scheduler to periodically retrieve and upload the latest timeseries to the knowledge graph
+2) InstantiateGeoLocation Route - instantiate geolocation data for the AQMesh pods in postGIS and geoserver
