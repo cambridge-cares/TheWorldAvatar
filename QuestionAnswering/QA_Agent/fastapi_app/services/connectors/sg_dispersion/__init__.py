@@ -4,7 +4,6 @@ import time
 from typing import Annotated, List
 
 from fastapi import Depends, HTTPException
-from requests import HTTPError
 import requests
 
 from model.qa import QAStep

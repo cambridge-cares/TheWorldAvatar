@@ -30,6 +30,7 @@ class QAEngine(Enum):
     MARIE = "marie"
     ZAHA = "zaha"
 
+
 @cache
 def get_qa_engine():
     engine = QAEngine(os.getenv("QA_ENGINE"))
