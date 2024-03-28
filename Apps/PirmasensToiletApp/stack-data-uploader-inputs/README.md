@@ -1,6 +1,6 @@
 ## Add Ratings
 
-Ratings should be added with a SPARQL insert query like:
+Ratings should be added with a SPARQL insert query in Blazegraph like:
 
 ```sparql
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -16,3 +16,5 @@ INSERT
                                                                                tps:ratingTimestamp "2024-03-27T12:35:56Z"^^xsd:dateTime ;] .
 }WHERE{}
 ```
+
+The rating value can be 1 (bad), 2 (neutral), and 3 (good).
