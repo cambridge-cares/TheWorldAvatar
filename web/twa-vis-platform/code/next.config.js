@@ -7,6 +7,8 @@
 	not included in the browser build.
 **/
 
-const nextConfig = {};
+const nextConfig = {
+	output: "standalone"
+};
 
 module.exports = nextConfig;

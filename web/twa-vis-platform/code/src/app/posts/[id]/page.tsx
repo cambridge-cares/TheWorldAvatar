@@ -3,7 +3,7 @@ import React from 'react';
 import markdownIt from "markdown-it";
 
 import StaticContentPage from 'ui/content/static-content-page';
-import { OptionalPage, OptionalPages } from 'io/config/optional-pages';
+import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
 
 // Type definition for incoming page parameters
 type Properties = {

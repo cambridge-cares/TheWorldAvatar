@@ -18,10 +18,10 @@ export type OptionalPage = {
  * Handles loading routes and contents for additional/optional pages
  * with static content (i.e. acknowledgements, glossaries, legends etc.).
  */
-export class OptionalPages {
+export default class OptionalPages {
 
     // Location of optional pages directory.
-    private static readonly DIRECTORY = "../uploads/optional-pages";
+    private static readonly DIRECTORY:string = "uploads/optional-pages";
 
     /**
      * 

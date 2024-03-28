@@ -1,206 +1,169 @@
 import styles from './ribbon.module.css';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, Tabs, Tab } from '@mui/material';
-import RibbonPanel from './ribbon-panel';
 
+import RibbonPanel from './ribbon-panel';
 import RibbonComponentClick from './components/ribbon-component-click';
 import RibbonComponentToggle from './components/ribbon-component-toggle';
 import RibbonComponentCombo from './components/ribbon-component-combo';
-import { set3DTerrain, resetCamera, locateUser } from 'map/mapbox/mapbox-camera-utils';
-import { setImagery, togglePlacenames } from 'map/mapbox/mapbox-imagery-utils';
-import { CameraPosition, ImageryOption, MapSettings } from 'types/map-settings';
-import { closeFullscreen, getMapSettings, openFullscreen } from 'utils/client-utils';
+import { addItem, selectItem } from 'state/context-menu-slice';
+import { ImageryOption, MapSettings } from 'types/settings';
+import { ContextItemDefinition } from 'ui/context-menu/context-item';
+import { closeFullscreen, openFullscreen } from 'utils/client-utils';
+import {
+  getCameraPositions,
+  getImageryOptions,
+  getDefaultImageryOption,
+  setImagery, 
+  resetCamera, 
+  togglePlacenames, 
+  locateUser, 
+  set3DTerrain
+} from 'map/map-helper';
 
 // Type definition for Ribbon parameters
 export type RibbonProps = {
-    startingIndex: number
+  startingIndex: number,
+  mapSettings: MapSettings,
 }
 
-// Type definition for Ribbon state.
-type RibbonState = {
-    activeIndex: number,
-    cameraNames: string[],
-    cameraDefault: string,
-    imageryNames: string[],
-    imageryDefault: string
-}
-
-async function getMapSettingsObject(): Promise<MapSettings> {
-    return await getMapSettings();
-}
-
-function getCameraPositions(settings: MapSettings) {
-    const camera = settings.camera;
-    return camera.positions.map((position: CameraPosition) => position.name);
-}
-
-function getDefaultCameraPosition(settings: MapSettings) {
-    return settings.camera.default;
-}
-
-function getImageryOptions(settings: MapSettings) {
-    const imagery = settings.imagery;
-    return imagery.options.map((option: ImageryOption) => option.name);
-}
-
-function getDefaultImageryOption(settings: MapSettings) {
-    // Return the default style name
-    if(settings.imagery.default.toLowerCase() == "auto") {
-        // Auto detect browser theme
-        if (window?.matchMedia && window?.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return "3D (Night)"
-        } else {
-            return "3D (Day)"
-        }
-    } else {
-        return settings.imagery.default;
-    }
-}
+// Definition of context menu item used to toggle map ribbon.
+const ribbonContextItem: ContextItemDefinition = {
+  name: "Show Controls Ribbon",
+  description: "Toggle map controls ribbon.",
+  toggled: true,
+};
 
 /**
  * Ribbon containing visualisation controls.
  */
-export default class Ribbon extends React.Component<RibbonProps, RibbonState> {
+export default function Ribbon(props: RibbonProps) {
+  const cameraDefault: string = props.mapSettings.camera.default;
+  const [activeIndex, SetActiveIndex] = useState(props.startingIndex);
+  const ribbonState: ContextItemDefinition = useSelector(selectItem("Show Controls Ribbon"));
+  const cameraNames: string[] = getCameraPositions(props.mapSettings.camera);
+  const imageryNames: string[] = getImageryOptions(props.mapSettings.imagery);
+  const currentImagery:ImageryOption = getDefaultImageryOption(props.mapSettings.imagery);
 
-    // Initialise a new state
-    state: RibbonState = {
-        activeIndex: this.props.startingIndex,
-        cameraNames: [""],
-        cameraDefault: "",
-        imageryNames: [""],
-        imageryDefault: ""
-    }
+  // State for map configuration settings
+  const dispatch = useDispatch();
+  dispatch(addItem(ribbonContextItem));   // Add context menu item
 
-    handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        this.setState({
-            activeIndex: newValue
-        });
-    };
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    SetActiveIndex(newValue);
+  };
 
-    getClass = (isActive: boolean) => {
-        return isActive ? styles.ribbonTabActive : styles.ribbonTab
-    }
+  const getRibbonTabClass = (isActive: boolean) => {
+    return isActive ? styles.ribbonTabActive : styles.ribbonTab;
+  }
 
-    async componentDidMount() {
-        const settings = await getMapSettingsObject();
+  // Return renderable element
+  if (ribbonState?.toggled != null && ribbonState.toggled) {
+    return (
+      <div className={styles.ribbonContainer}>
 
-        this.setState({
-            cameraNames: getCameraPositions(settings),
-            cameraDefault: getDefaultCameraPosition(settings),
-            imageryNames: getImageryOptions(settings),
-            imageryDefault: getDefaultImageryOption(settings)
-        });
-    }
+        <Box className={styles.ribbon}>
+          <Box>
+            <Tabs
+              className={styles.ribbonTabs}
+              value={activeIndex}
+              onChange={handleChange}
+              TabIndicatorProps={{
+                style: {
+                  background: "transparent"
+                }
+              }}>
 
-    // Return renderable element
-    public render() {
+              <Tab
+                className={getRibbonTabClass(activeIndex === 0)}
+                label="View" />
+              <Tab
+                className={getRibbonTabClass(activeIndex === 1)}
+                label="Filter" />
+              <Tab
+                className={getRibbonTabClass(activeIndex === 2)}
+                label="Search" />
 
-        return (
-            <div className={styles.ribbonContainer}>
+            </Tabs>
+          </Box>
 
-                <Box className={styles.ribbon}>
-                    <Box>
-                        <Tabs
-                            className={styles.ribbonTabs}
-                            value={this.state.activeIndex}
-                            onChange={this.handleChange}
-                            TabIndicatorProps={{
-                                style: {
-                                    background: "transparent"
-                                }
-                            }}>
+          {activeIndex == 0 &&
+            <RibbonPanel>
+              <RibbonComponentCombo
+                icon="/img/icons/imagery.svg"
+                text="Imagery"
+                tooltip="Change map imagery"
+                options={imageryNames}
+                initialOption={currentImagery?.name}
+                iconClickable={false}
+                action={() => {
+                  setImagery(props.mapSettings.imagery);
+                }}
+              />
+              <RibbonComponentCombo
+                icon="/img/icons/camera.svg"
+                text="Reset Camera"
+                tooltip="Reset camera to default position."
+                options={cameraNames}
+                initialOption={cameraDefault}
+                action={() => {
+                  resetCamera(props.mapSettings.camera);
+                }}
+              />
+              <RibbonComponentToggle
+                icon="glyphs"
+                text="Hide Labels"
+                tooltip="Toggle display of place names."
+                initialState={false}
+                action={() => {
+                  togglePlacenames(props.mapSettings.imagery);
+                }}
+              />
+              <RibbonComponentToggle
+                icon="/img/icons/terrain.svg"
+                text="3D Terrain"
+                tooltip="Toggle 3D terrain."
+                initialState={false}
+                action={state => {
+                  set3DTerrain(state);
+                }}
+              />
+              <RibbonComponentToggle
+                icon="/img/icons/maximise.svg"
+                text="Full Screen"
+                tooltip="Toggle fullscreen mode."
+                initialState={false}
+                action={state => {
+                  if (state) {
+                    openFullscreen();
+                  } else {
+                    closeFullscreen();
+                  }
+                }}
+              />
+            </RibbonPanel>
+          }
 
-                            <Tab
-                                className={this.getClass(this.state.activeIndex === 0)}
-                                label="View" />
-                            <Tab
-                                className={this.getClass(this.state.activeIndex === 1)}
-                                label="Filter" />
-                            <Tab
-                                className={this.getClass(this.state.activeIndex === 2)}
-                                label="Search" />
+          {activeIndex == 1 &&
+            <RibbonPanel>
+              Item Two
+            </RibbonPanel>
+          }
 
-                        </Tabs>
-                    </Box>
-
-                    {this.state.activeIndex == 0 &&
-                        <RibbonPanel>
-                            <RibbonComponentCombo
-                                icon="/img/icons/imagery.svg"
-                                text="Imagery"
-                                tooltip="Change map imagery"
-                                options={this.state.imageryNames}
-                                initialOption={this.state.imageryDefault}
-                                iconClickable={false}
-                                action={() => {
-                                    setImagery();
-                                }}
-                            />
-                            <RibbonComponentCombo
-                                icon="/img/icons/camera.svg"
-                                text="Reset Camera"
-                                tooltip="Reset camera to default position."
-                                options={this.state.cameraNames}
-                                initialOption={this.state.cameraDefault}
-                                action={() => {
-                                    resetCamera();
-                                }}
-                            />
-                            <RibbonComponentToggle
-                                icon="glyphs"
-                                text="Hide Labels"
-                                tooltip="Toggle display of place names."
-                                initialState={false}
-                                action={() => {
-                                    togglePlacenames();
-                                }}
-                            />
-                            <RibbonComponentToggle
-                                icon="/img/icons/terrain.svg"
-                                text="3D Terrain"
-                                tooltip="Toggle 3D terrain."
-                                initialState={false}
-                                action={state => {
-                                    set3DTerrain(state);
-                                }}
-                            />
-                            <RibbonComponentToggle
-                                icon="/img/icons/maximise.svg"
-                                text="Full Screen"
-                                tooltip="Toggle fullscreen mode."
-                                initialState={false}
-                                action={state => {
-                                    if(state) {
-                                        openFullscreen();
-                                    } else {
-                                        closeFullscreen();
-                                    }
-                                }}
-                            />
-                        </RibbonPanel>
-                    }
-
-                    {this.state.activeIndex == 1 &&
-                        <RibbonPanel>
-                            Item Two
-                        </RibbonPanel>
-                    }
-
-                    {this.state.activeIndex == 2 &&
-                        <RibbonPanel>
-                            <RibbonComponentClick
-                                icon="my_location"
-                                text="Your Location"
-                                tooltip="Move the map to your location."
-                                action={() => {
-                                    locateUser();
-                                }}
-                            />
-                        </RibbonPanel>
-                    }
-                </Box>
-
-            </div>
-        )
-    }
+          {activeIndex == 2 &&
+            <RibbonPanel>
+              <RibbonComponentClick
+                icon="my_location"
+                text="Your Location"
+                tooltip="Move the map to your location."
+                action={() => {
+                  locateUser();
+                }}
+              />
+            </RibbonPanel>
+          }
+        </Box>
+      </div>)
+  }
 }

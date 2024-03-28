@@ -9,15 +9,16 @@ import { MapboxDataLayer } from './mapbox/mapbox-data-layer';
  * Handles parsing of raw JSON data into instances of the data classes.
  */
 export class DataParser {
-
+    private readonly mapType: string;
     // Data store to populate with parsed objects
     private readonly dataStore: DataStore;
 
     /**
      * Initialise a new DataParser instance.
      */
-    constructor() {
+    constructor(mapType: string) {
         this.dataStore = new DataStore();
+        this.mapType = mapType;
     }
 
     /**
@@ -148,7 +149,7 @@ export class DataParser {
             let layer: DataLayer;
             const layerID = dataGroup.id + "." + elementID;
 
-            switch(window.type.toLowerCase()) {
+            switch(this.mapType.toLowerCase()) {
                 case "mapbox": 
                     layer = new MapboxDataLayer(
                         layerID,

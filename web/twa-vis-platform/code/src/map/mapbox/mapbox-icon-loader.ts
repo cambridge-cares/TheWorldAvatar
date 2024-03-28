@@ -1,4 +1,4 @@
-import { IconSettings } from 'types/map-settings';
+import { IconSettings } from 'types/settings';
 
 /**
  * Adds icons to the map

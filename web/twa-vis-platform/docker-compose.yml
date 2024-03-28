@@ -5,23 +5,31 @@ version: "3.8"
 
 # All Services
 services:
-
-  # Empty TWA-VF visualisation image for deployment. Builds a base image that, when combined
-  # with a volume of files, can be used as a visualisation. It is not intended that this
-  # config is used to run the twa-vf image.
+  # Empty visualisation image for deployment.
   visualise:
-    image: ghcr.io/cambridge-cares/twa-vf:dev-vis-platform-SNAPSHOT
+    image: ghcr.io/cambridge-cares/twa-vf:vis-platform-SNAPSHOT
     container_name: "twa-vis-platform"
     restart: "no"
+    secrets:
+      - mapbox_user
+      - mapbox_api_key
     build:
       context: "./"
       dockerfile: "Dockerfile"
+      target: prod
       labels:
         authors: "support@cmcl.io"
         description: "TWA Visualisation Platform image."
     volumes:
-      - type: bind
-        source: ./config
-        target: /twa/config
+      - ./uploads/config:/twa/uploads/config
+      - ./uploads/optional-pages:/twa/uploads/optional-pages
+      - ./uploads/style-overrides.css:/twa/uploads/style-overrides.css
+      - ./uploads/data:/twa/public/uploads/data
+      - ./uploads/images:/twa/public/uploads/images
     ports:
       - "80:3000" 
+secrets:
+    mapbox_user: 
+      file: ./mapbox_username
+    mapbox_api_key:
+      file: ./mapbox_api_key

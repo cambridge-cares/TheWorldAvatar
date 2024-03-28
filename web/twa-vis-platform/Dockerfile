@@ -13,14 +13,74 @@
 FROM node:18.18-slim as base
 
 # Make directory to house application
-RUN mkdir -p /twa/app
-WORKDIR /twa/app
+RUN mkdir -p /twa
+WORKDIR /twa
 
 # Copy only the package.json to install the required dependencies
-COPY ./code/package.json /twa/app/package.json
+COPY ./code/package.json /twa/package.json
 RUN npm install 
 
-# ---- For development ----
+# Next.js collects completely anonymous telemetry data about general usage and should be disabled
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# ---- Development Image ----
 FROM base as develop
-ENV UPLOADS_PATH /twa/uploads
+
 CMD [ "/bin/bash", "-c", "npm run dev" ]
+
+# ---- For production ----
+# Building the code
+FROM base as builder
+
+ENV NODE_ENV production
+
+# Copy the required code
+COPY ./code/ /twa/
+# Transfer the uploads so that the building process can complete
+COPY ./uploads/config /twa/uploads/config
+COPY ./uploads/optional-pages /twa/uploads/optional-pages
+COPY ./uploads/style-overrides.css /twa/uploads/style-overrides.css
+
+# Compile the files
+RUN npm run build
+
+# ---- Production Image ----
+FROM node:18-alpine AS prod
+
+# Environment variables
+ENV NODE_ENV production
+# Next.js collects completely anonymous telemetry data about general usage and should be disabled
+ENV NEXT_TELEMETRY_DISABLED 1
+
+WORKDIR /twa
+
+# Install only production dependencies
+COPY ./code/package*.json ./
+RUN npm install
+
+# Create specific user in a user group
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy the public resources
+COPY --from=builder /twa/public ./public
+
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Automatically leverage output traces to reduce image size
+COPY --from=builder --chown=nextjs:nodejs /twa/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /twa/.next/static ./.next/static
+
+# Set up environment for starting server
+USER nextjs
+
+EXPOSE 3000
+ENV PORT 3000
+# set hostname to localhost
+ENV HOSTNAME "0.0.0.0"
+
+# server.js is created by next build from the standalone output
+# https://nextjs.org/docs/pages/api-reference/next-config-js/output
+CMD ["node", "server.js"]

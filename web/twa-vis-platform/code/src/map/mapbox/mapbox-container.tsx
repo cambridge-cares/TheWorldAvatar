@@ -11,8 +11,6 @@
  * - Can I create a map instance that won't re-initialise (and re-load ALL the data) anytime something
  * else in the UI changes?
  */
-"use client";
-
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './mapbox.css';
 
@@ -21,15 +19,14 @@ import React, { useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getLatLng, getName } from 'state/map-feature-slice';
-import { MapSettings } from 'types/map-settings';
+import { setIsStyleLoaded } from 'state/floating-panel-slice';
+import { MapSettings } from 'types/settings';
 import { DataStore } from 'io/data/data-store';
-import { getDefaultCameraPosition } from './mapbox-camera-utils';
-import { getCurrentImageryOption } from './mapbox-imagery-utils';
 import { addAllSources } from './mapbox-source-utils';
 import { addAllLayers } from './mapbox-layer-utils';
 import { addIcons } from './mapbox-icon-loader';
 import { addMapboxEventListeners } from '../event-listeners';
-import { setIsStyleLoaded } from 'state/floating-panel-slice';
+import { getCurrentImageryOption, getDefaultCameraPosition } from '../map-helper';
 
 
 // Type definition of incoming properties
@@ -47,7 +44,6 @@ interface MapProperties {
  * @returns React component for display.
  */
 export default function MapboxMapComponent(props: MapProperties) {
-  const settings = props.settings;
   const mapContainer = useRef(null);
   const map = useRef(null);
   const toolTip = useRef(null);
@@ -58,12 +54,12 @@ export default function MapboxMapComponent(props: MapProperties) {
   // Run when component loaded
   useEffect(() => {
     initialiseMap();
-  }, []);
+  }, [props.settings]);
 
   // Run whenever coordinates are changed from moving across the map
   useEffect(() => {
     // Remove the tool tip if it is currently open
-    if (toolTip.current.isOpen()) {
+    if (toolTip.current?.isOpen()) {
       toolTip.current.remove();
     }
     // If there is a name, add the tool tip with the name to the map
@@ -75,13 +71,19 @@ export default function MapboxMapComponent(props: MapProperties) {
   // Initialise the map object
   const initialiseMap = async () => {
     if (map.current) return;
+    window.type = "mapbox";
 
+    const response = await fetch("/api/map/settings", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const respJson = await response.json();
     // Set credentials
-    mapboxgl.accessToken = settings["credentials"]["key"];
+    mapboxgl.accessToken = respJson.token;
 
     // Get default camera position
-    const defaultPosition = getDefaultCameraPosition(settings);
-    let styleObject = getCurrentImageryOption(settings);
+    const defaultPosition = getDefaultCameraPosition(props.settings.camera);
+    let styleObject = getCurrentImageryOption(props.settings.imagery);
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -116,7 +118,7 @@ export default function MapboxMapComponent(props: MapProperties) {
 
     window.map.on("style.load", function () {
       // Update time if using new v3 standard style
-      styleObject = getCurrentImageryOption(settings);
+      styleObject = getCurrentImageryOption(props.settings.imagery);
       if (styleObject.time != null) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window.map as any).setConfigProperty(
@@ -125,21 +127,18 @@ export default function MapboxMapComponent(props: MapProperties) {
           styleObject.time
         );
       }
-
       dispatch(setIsStyleLoaded(true))
 
       // Parse data configuration and load icons
-      const iconPromise = addIcons(settings.icons);
+      const iconPromise = addIcons(props.settings.icons);
 
       Promise.all([iconPromise]).then(() => {
-        const dataStore: DataStore = props.dataStore;
-
         // Once that is done and completed...
         console.log("Data definitions fetched and parsed.");
 
         // Plot data
-        addAllSources(dataStore);
-        addAllLayers(dataStore);
+        addAllSources(props.dataStore);
+        addAllLayers(props.dataStore, props.settings.imagery);
       });
     });
   };

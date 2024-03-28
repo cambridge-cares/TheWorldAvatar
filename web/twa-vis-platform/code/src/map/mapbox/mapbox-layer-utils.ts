@@ -3,19 +3,17 @@ import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, 
 import { DataLayer } from 'io/data/data-layer';
 import { DataStore } from 'io/data/data-store';
 import { JsonObject } from 'types/json';
-import { ImageryOption } from 'types/map-settings';
-import { getMapSettings } from 'utils/client-utils';
-import { getCurrentImageryOption } from './mapbox-imagery-utils';
+import { ImageryOption, ImagerySettings } from 'types/settings';
+import { getCurrentImageryOption } from '../map-helper';
 /**
  * Given a DataStore instance housing parsed DataLayer instances,
  * this function adds them all to the Mapbox map object.
  * 
  * @param {dataStore} dataStore Store containing parsed DataLayer instances.
- * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
+ * @param {ImagerySettings} imagerySettings - The imagery settings for the map.
  */
-export async function addAllLayers(dataStore: DataStore) {
-    const mapSettings = await getMapSettings();
-    const currentStyle = getCurrentImageryOption(mapSettings);
+export async function addAllLayers(dataStore: DataStore, imagerySettings: ImagerySettings) {
+    const currentStyle = getCurrentImageryOption(imagerySettings);
 
     const layerArray: DataLayer[] = dataStore.getLayerList();
     layerArray.forEach((layer) => addLayer(layer, currentStyle));

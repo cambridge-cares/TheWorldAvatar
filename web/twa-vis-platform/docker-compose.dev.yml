@@ -24,7 +24,11 @@ services:
         authors: "support@cmcl.io"
         description: "Development environment for TWA Visualisation Platform image."
     volumes:
-      - ./code:/twa/app
-      - ./uploads:/twa/uploads
+      - ./code:/twa/
+      - ./uploads/config:/twa/uploads/config
+      - ./uploads/optional-pages:/twa/uploads/optional-pages
+      - ./uploads/style-overrides.css:/twa/uploads/style-overrides.css
+      - ./uploads/data:/twa/public/uploads/data
+      - ./uploads/images:/twa/public/uploads/images
     ports:
       - "3000:3000" 

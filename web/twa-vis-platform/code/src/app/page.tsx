@@ -6,9 +6,8 @@ import React from 'react';
 import { Metadata } from 'next';
 
 import LandingPage from 'ui/pages/landing';
-import UISettings from 'io/config/ui-settings';
-import MapContainer from './visualisation/page';
-import { OptionalPages } from 'io/config/optional-pages';
+import OptionalPages from 'io/config/optional-pages';
+import VisualisationPage from './visualisation/page';
 
 /**
  * Set page metadata.
@@ -16,18 +15,16 @@ import { OptionalPages } from 'io/config/optional-pages';
  * @returns metadata promise.
  */
 export async function generateMetadata(): Promise<Metadata> {
-    const moduleSettings = UISettings.getSettings().modules;
-
-    if(moduleSettings.landing) {
-        const landingPage = OptionalPages.getPage("landing");
-        return {
-            title: landingPage.title
-        }
-    }
-
+  const landingPage = OptionalPages.getPage("landing");
+  if (landingPage) {
     return {
-        title: "Welcome"
+      title: landingPage.title
     }
+  } else {
+    return {
+      title: "Welcome"
+    }
+  }
 }
 
 /**
@@ -37,16 +34,15 @@ export async function generateMetadata(): Promise<Metadata> {
  * @returns JSX for default (home) page.
  */
 export default function App() {
-    const moduleSettings = UISettings.getSettings().modules;
-    
-    return (
-        <>
-            {moduleSettings.landing &&
-                <LandingPage/>
-            }
-            {!moduleSettings.landing &&
-                <MapContainer/>
-            }
-        </>
-    );
+  const landingPage = OptionalPages.getPage("landing");
+  return (
+    <>
+      {landingPage &&
+        <LandingPage />
+      }
+      {!landingPage &&
+        <VisualisationPage />
+      }
+    </>
+  );
 }

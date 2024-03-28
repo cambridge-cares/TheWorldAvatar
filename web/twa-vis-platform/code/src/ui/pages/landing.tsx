@@ -11,7 +11,7 @@ import { Tooltip } from '@mui/material';
 import markdownit from 'markdown-it';
 
 import StaticPageThumbnail from 'ui/content/static-page-thumbnail';
-import { OptionalPage, OptionalPages } from 'io/config/optional-pages';
+import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
 
 // Utilities to render markdown into HTML
 const markdowner = markdownit({

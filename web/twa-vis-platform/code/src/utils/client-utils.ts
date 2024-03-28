@@ -3,11 +3,9 @@
  */
 import moment from 'moment';
 
-import { DataStoreCache } from 'io/data/data-store-cache';
 import { DataParser } from 'io/data/data-parser';
 import { DataStore } from 'io/data/data-store';
 import { JsonObject } from "types/json";
-import { MapSettings } from 'types/map-settings';
 import { TimeSeriesGroup, TimeSeries } from 'types/timeseries';
 
 /**
@@ -15,65 +13,29 @@ import { TimeSeriesGroup, TimeSeries } from 'types/timeseries';
  */
 export function openFullscreen() {
     const elem = document?.documentElement;
-    if(elem?.requestFullscreen) {
+    if (elem?.requestFullscreen) {
         elem.requestFullscreen();
-    } 
+    }
 }
-  
+
 /**
  * Close fullscreen mode.
  */
 export function closeFullscreen() {
-    if(document?.exitFullscreen) {
+    if (document?.exitFullscreen) {
         document.exitFullscreen();
     }
 }
 
 /**
- * Query the server to get the map-settings.json file.
- */
-export async function getMapSettings(): Promise<MapSettings> {
-    return fetch("/api/visualisation/settings", { cache: "force-cache" })
-            .then((result) => result.json())
-            .catch((err) => console.log(err));
-}
-
-/**
- * Query the server to get the data.json file.
+ * Parses the contents of the data.json file into class instances for setting the map.
  * 
- * @param jsonFileURL optional override for location of data file.
+ * @param dataSettings Map data settings.
+ * @param mapType The type of map. Either Cesium or Mapbox
+ * @returns The data model required for visualisation.
  */
-export async function getDataSettings(jsonFileURL?: string) {
-    const url = jsonFileURL ?? "/api/visualisation/data";
-    return fetch(url, { cache: "force-cache" })
-            .then((result) => result.json())
-            .catch((err) => console.log(err));
-}
-
-/**
- * Fetch the contents of the data.json file AND parses it into class instances
- * to be cached in the DataStoreCache singleton.
- * 
- * @param jsonFileURL optional override for location of data file.
- * 
- * @returns promise that resolves after fetch and parse.
- */
-export async function getAndParseDataSettings(jsonFileURL?: string): Promise<DataStore> {
-    const key = jsonFileURL ?? "local";
-
-    // Return cached version if present
-    if(DataStoreCache.STORES[key] != null) {
-        return Promise.resolve(DataStoreCache.STORES[key]);
-    }
-
-    // Fetch and parse from data.json
-    const fetchPromise = getDataSettings(jsonFileURL);
-    
-    return fetchPromise.then((json) => {
-        const dataStore: DataStore = new DataParser().loadData(json);
-        DataStoreCache.STORES[key] = dataStore;
-        return dataStore;
-    });
+export function parseMapDataSettings(dataSettings: JsonObject, mapType: string): DataStore {
+    return new DataParser(mapType).loadData(dataSettings);
 }
 
 /**

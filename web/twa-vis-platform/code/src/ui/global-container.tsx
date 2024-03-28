@@ -8,12 +8,12 @@ import Trex from 'utils/trex';
 import ContextMenu from './context-menu/context-menu';
 import Toolbar from './toolbar/toolbar';
 import { reduxStore } from 'app/store';
-import { SettingsInterface } from 'io/config/ui-settings';
+import { DefaultSettings } from 'types/settings';
 
 // Incoming properties for global container
 type GlobalContainerProps = {
   children?: React.ReactNode;
-  settings: SettingsInterface;
+  settings: DefaultSettings;
 };
 
 // Internal state for global container
