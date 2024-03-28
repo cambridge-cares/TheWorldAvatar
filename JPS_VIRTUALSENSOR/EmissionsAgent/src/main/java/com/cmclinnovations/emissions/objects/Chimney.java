@@ -148,4 +148,13 @@ public class Chimney {
     public double getParticleDensity() {
         return this.particleDensity;
     }
+
+    public void rescaleEmissions(double factor) {
+        flowrateNOx = flowrateNOx * factor;
+        flowrateSO2 = flowrateSO2 * factor;
+        flowrateHC = flowrateHC * factor;
+        flowrateCO = flowrateCO * factor;
+        pm25 = pm25 * factor;
+        pm10 = pm10 * factor;
+    }
 }

@@ -23,9 +23,19 @@ public class PointSource {
     private String iri;
     private double baseElevation = 0;
 
+    private String label = null;
+
     public PointSource(String iri) {
         this.iri = iri;
         flowrateInGramsPerS = new EnumMap<>(PollutantType.class);
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     public String getIri() {

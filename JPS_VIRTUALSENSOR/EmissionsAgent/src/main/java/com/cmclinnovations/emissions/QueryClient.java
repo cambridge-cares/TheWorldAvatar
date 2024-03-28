@@ -1,5 +1,6 @@
 package com.cmclinnovations.emissions;
 
+import org.eclipse.rdf4j.model.vocabulary.TIME;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -22,6 +23,8 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.util.List;
 
 /**
  * sends sparql queries
@@ -29,7 +32,7 @@ import java.sql.SQLException;
 public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
     private StoreClientInterface storeClient;
-    private TimeSeriesClient<Long> tsClient;
+    private TimeSeriesClient<Instant> tsClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
     static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
@@ -56,6 +59,9 @@ public class QueryClient {
     private static final String SHIP_TYPE_STRING = PREFIX + "ShipType";
     private static final Iri SHIP_TYPE = iri(SHIP_TYPE_STRING);
 
+    static final String SHIP = PREFIX + "Ship";
+    static final String SIMULATION_TIME = PREFIX + "SimulationTime";
+
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
@@ -65,7 +71,7 @@ public class QueryClient {
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;
-        this.tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        this.tsClient = new TimeSeriesClient<>(storeClient, Instant.class);
         this.remoteRDBStoreClient = remoteRDBStoreClient;
     }
 
@@ -75,7 +81,7 @@ public class QueryClient {
      * @param shipIri
      * @return
      */
-    Ship getShip(String shipIri) {
+    Ship getShip(String shipIri, Long simTime) {
         // step 1: query ship type
         SelectQuery query = Queries.SELECT();
 
@@ -115,9 +121,22 @@ public class QueryClient {
             throw new RuntimeException("Incorrect number of ships queried");
         }
 
-        int shipSpeed;
+        double shipSpeed;
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            shipSpeed = tsClient.getLatestData(speedMeasure, conn).getValuesAsInteger(speedMeasure).get(0);
+            // get value closest to simulation time
+            if (simTime != null) {
+                List<Double> speedList = tsClient
+                        .getTimeSeriesWithinBounds(List.of(speedMeasure), Instant.ofEpochSecond(simTime), null, conn)
+                        .getValuesAsDouble(speedMeasure);
+                if (!speedList.isEmpty()) {
+                    shipSpeed = speedList.get(0);
+                } else {
+                    shipSpeed = tsClient.getLatestData(speedMeasure, conn).getValuesAsDouble(speedMeasure).get(0);
+                }
+            } else {
+                shipSpeed = tsClient.getLatestData(speedMeasure, conn).getValuesAsDouble(speedMeasure).get(0);
+            }
+
             Ship ship = new Ship();
             ship.setSpeed(shipSpeed);
             ship.setShipType(shipTypeInt);
@@ -126,6 +145,20 @@ public class QueryClient {
             LOGGER.error("Failed at getting ship time series data");
             LOGGER.error(e.getMessage());
             return null;
+        } catch (Exception e) {
+            LOGGER.error("Probably the ship is instantiated but does not contain time series data yet");
+            LOGGER.error(e.getMessage());
+            return null;
         }
+    }
+
+    long getSimTimeValue(String simTimeIri) {
+        SelectQuery query = Queries.SELECT().prefix(P_OM);
+        Variable value = query.var();
+        GraphPattern gp = iri(simTimeIri).has(
+                PropertyPaths.path(iri(TIME.IN_TIME_POSITION), iri(TIME.NUMERIC_POSITION)), value);
+        query.where(gp);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        return Long.parseLong(queryResult.getJSONObject(0).getString(value.getQueryString().substring(1)));
     }
 }

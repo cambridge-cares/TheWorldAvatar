@@ -39,7 +39,7 @@ RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked 
 #==================================================================================================
 # Build aermod components
 #==================================================================================================
-FROM ubuntu:22.10 AS aermod_builder
+FROM ubuntu:24.04 AS aermod_builder
 
 RUN apt-get update
 RUN apt-get install gfortran dos2unix -y

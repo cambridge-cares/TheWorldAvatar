@@ -26,6 +26,13 @@
             "class": "https://www.theworldavatar.com/kg/ontodispersion/Ship",
 			"meta": {
 				"queryFile": "ship_meta.sparql"
+			},
+			"time": {
+				"queryFile": "ship_time.sparql",
+                "limit": 24,
+			    "unit": "hours",
+			    "reference": "latest",
+                "database": "postgres"
 			}
         }
     ]
