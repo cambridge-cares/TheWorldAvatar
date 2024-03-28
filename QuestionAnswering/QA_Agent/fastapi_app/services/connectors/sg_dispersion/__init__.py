@@ -45,22 +45,22 @@ class SGDispersionAgentConnector(AgentConnectorBase):
 
         logger.info("Get coordinates for the location: " + location)
         timestamp = time.time()
-        coords = self.geocoder.get_coords(location)
+        place = self.geocoder.search(location)
         latency = time.time() - timestamp
-        logger.info("Coordinates: " + str(coords))
+        logger.info("Geo-decoded data: " + str(place))
         steps.append(
             QAStep(
-                action="geodecode", arguments=location, results=coords, latency=latency
+                action="geodecode", arguments=location, results=str(place), latency=latency
             )
         )
 
         timestamp = time.time()
-        data = self.agent.get_pollutant_concentrations(coords)
-        data.title = "Pollutant concentrations in " + location
+        data = self.agent.get_pollutant_concentrations(lat=place.lat, lon=place.lon)
+        data.title = "Pollutant concentrations (µg/m³) in " + place.display_name
         latency = time.time() - timestamp
         steps.append(
             QAStep(
-                action="get_pollutant_concentrations", arguments=coords, latency=latency
+                action="get_pollutant_concentrations", arguments=str(place), latency=latency
             )
         )
 

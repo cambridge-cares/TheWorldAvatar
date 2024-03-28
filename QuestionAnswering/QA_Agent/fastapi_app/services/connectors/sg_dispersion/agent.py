@@ -1,51 +1,40 @@
-from datetime import datetime, timedelta
 from functools import cache
-from typing import Dict, Tuple
+import os
+from typing import Annotated, Tuple
 
-import numpy as np
+from fastapi import Depends
+import requests
 
 from model.qa import QAData
 
 
 class SGDispersionAgent:
-    JSON_DATETIME_PATTERN = "%Y-%m-%dT%H:%M:%SZ"
-    DATA_POINT_NUM = 4
-    POLUTANT_BOUNDS: Dict[str, Tuple[float, float]] = {
-        "CO": (100, 200),
-        "PM2.5": (0.2, 0.6),
-        "SO2": (3, 3.4),
-        "NOx": (10, 11.5),
-        "PM10": (0.35, 0.45),
-        "Unburned hydrocarbons": (420, 490),
-    }
+    def __init__(self, url: str):
+        self.url = url
 
-    def _mock_api_response(self):
-        now = datetime.now()
-        time = [
-            (now - timedelta(minutes=30 * i)).strftime(self.JSON_DATETIME_PATTERN)
-            for i in range(self.DATA_POINT_NUM - 1, -1, -1)
-        ]
-        return {
-            k: {
-                "time": time,
-                "values": np.random.uniform(lower, upper, self.DATA_POINT_NUM),
-            }
-            for k, (lower, upper) in self.POLUTANT_BOUNDS.items()
-        }
+    def get_pollutant_concentrations(self, lat: str, lon: str):
+        query_params = {"lat": lat, "lon": lon}
+        res = requests.get(self.url, params=query_params).json()
 
-    def get_pollutant_concentrations(self, coords: Tuple[float, float]):
-        api_response = self._mock_api_response()
+        timestamps = res["time"]
         return QAData(
             vars=["pollutant", "timeseries"],
             bindings=[
                 {
                     "pollutant": key,
-                    "timeseries": list(zip(value["time"], value["values"])),
+                    "timeseries": list(zip(timestamps, value)),
                 }
-                for key, value in api_response.items()
+                for key, value in res.items()
+                if key != "time"
             ],
         )
 
+
 @cache
-def get_sgDisperson_agent():
-    return SGDispersionAgent()
+def get_dispersion_url():
+    return os.getenv("ENDPOINT_GET_POLLUTANT_CONCENTRATIONS")
+
+
+@cache
+def get_sgDisperson_agent(dispersion_url: Annotated[str, Depends(get_dispersion_url)]):
+    return SGDispersionAgent(url=dispersion_url)
