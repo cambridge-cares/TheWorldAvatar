@@ -1,6 +1,7 @@
 # Heat Emission Agent
 
-The heat emission agent calculates heat emissions of various types of factories. The factories' data needs to have been instantiated in a blazegraph namespace according to either the [OntoCompany](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocompany) or [OntoChemPlant](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontochemplant) ontologies. The former ontology would be used for namespaces containing data for various different types of factories while the latter is suitable for instantiating data for petrochemical refining hubs such as Jurong Island. The heat emissions values are instantiated in the same namespace from which the companies' properties are queried:
+The heat emission agent calculates heat emissions of data centres and various types of factories. The properties of these industrial facilities that are required to calculate the heat emissions need to be stored in PostgreSQL tables as explained below. 
+
 
 
 The steps required to run the agent for each case are described below:
@@ -9,7 +10,7 @@ The steps required to run the agent for each case are described below:
 
 ### 1. Agent Deployment
 
-The agent's docker container can be run within a stack or as a standalone container.  
+The agent is designed to be run as part a stack.  
 
 
 ### 1.1 Preparation
@@ -26,17 +27,17 @@ repo_username.txt should contain your Github username. repo_password.txt should 
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
 
-#### Blazegraph namespace
+#### PostgreSQL database
 
-The blazegraph namespace contains manufacturing facilities' data in the form of triples. The agent performs heat emissions calculations for the following two scenarios
+The data needed to estimate the heat emissions of various types of industrial facilities are as follows:
 
-(1) Triples instantiated according to [OntoCompany](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocompany). In this case, values for the following attributes need to be present for each type of factory:
+- Data Centres: Maximum IT capacity in units of megawatts, utilization rate, which is a dimensionless parameter between 0 and 1 and floor area in units of square meters. Their values must be stored in columns called 'maximum_it_capacity', 'utilization_rate' and 'floor_area'. The table must be called 'data_centres'.
+- Precision Engineering Plants: Floor area in units of square meters, energy consumption per unit of gross floor area in units of megaJoules per square meters and thermal efficiency, which is a dimensionless quantity between 0 and 1. Their values must be stored in columns called 'floor_area', 'specific_energy_consumption' and 'thermal_efficiency'. The table must be called 'precision_engineering'.
+- Printing Plants: Average heat output per printer in units of megawatts. These values must be stored in a column called 'heat_emissions_per_printer'. The table must be called 'printing'.
+- Factories in industries other than precision engineering and printing: Specific energy consumption in units of MegaJoules per kilogram, production capacity in units of kilogram per second and thermal efficiency. Units other than kilograms can be used for the production volume as long as it is consistent between the specific energy consumption and production capacity. These values must be stored in columns called 'production_volume', 'specific_energy_consumption' and 'thermal_efficiency'. The table must be called 'factories'.
+- Individual Heat Sources in Chemical Plants and Petroleum Refineries: Carbon dioxide emissions in units of tons per year. These values must be stored in a column called 'co2_emissions'. The table name must be called 'jurong_island_city_furniture'.   
 
-- Chemical Plant: Specific energy consumption in units of megaJoules per kilogram, production volume in tons per year and thermal efficiency, which must be between 0 and 1.
 
-Although the agent currently only performs heat emissions calculations for chemical plants, it is being extended to include data centres and all other factory types in OntoCompany. The triples can be instantiated according to this ontology using the [heat instantiation agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1690-add-heat-instantiation-agent/Agents/HeatInstantiationAgent).
-
-(2) Triples instantiated according to [OntoChemPlant](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontochemplant). In this case, each chemical plant instance in the knowledge graph must contain at least one instance of the PlantItem class. Each PlantItem instance must have an associated CO2 emissions value. The heat emissions values are calculated separately for each plant item.
 
 
 ##### Stack containers
@@ -51,67 +52,53 @@ If the agent is being run as part of a stack, the user can opt to use a namespac
 
 The agent has a single API route which requires a POST request. It accepts the following input parameters:
 
-- ```namespace```: The name of the Blazegraph namespace from which the companies' properties are queried. This parameter should be included for cases in which this data is stored in a namespace in the stack blazegraph.
-- ```endpoint```: The full endpoint of the Blazegraph namespace from which the companies' properties are queried. This parameter should be used if this data is stored in a blzegraph namespace outside the stack.
-- ```ontology```: The ontology used to instantiate the triples in the SPARQL endpoint. This must be either 'ontocompany' or 'ontochemplant'. The agent executes different SPARQL queries in the Blazegraph endpoint dpeending upon the value of this parameter. 
+- ```dbName```: The name of the PostgreSQL database from which the factories' properties are queried. 
 
-- ```lower_bounds```: The lower bounds of the bounding box. This must be specified as three floating point values separated by a '#' symbol. It is only applicable for the ontochemplant case and has no effect otherwise. If run for a namespace with OntoChemPlant triples, the agent only calculates heat emissions and instantiates the triples for heat sources located within this bounding box.
--```upper_bounds```: The upper bounds of the bounding box. This must be specified as three floating point values separated by a '#' symbol. It is only applicable for the ontochemplant case.
-
-Some example POST request for different values of input parameters are listed below.
-
-
-#### Running the agent as a standalone Docker container for OntoCompany triples
-
-In this example, the triples are assumed to be instantiated in a local namespace called 'sgbusinessunits'.
+The following is an example POST request for running the agent. The stack is assumed to have been spun up using the default port 3838:
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"ontology":"ontocompany","endpoint":"http://localhost:48889/blazegraph/namespace/sgbusinessunits/sparql"}'  "http://localhost:8082/heatemissionagent/performheatquery"
-```
-
-#### Running the agent as a standalone Docker container for OntoChemPlant triples
-
-In this example, the triples are assumed to be instantiated in a local namespace called 'jibusinessunits'.
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{"lower_bounds":"8464#23588#0","upper_bounds":"17619#30520#105","ontology":"ontochemplant","endpoint":"http://localhost:48889/blazegraph/namespace/jibusinessunits/sparql"}'  "http://localhost:8082/heatemissionagent/performheatquery"
+curl -X POST -H "Content-Type: application/json" -d '{"dbName":"postgres"}'  "http://localhost:3838/heatemissionagent/performheatquery"
 ```
 
 
-
-#### Running the agent within a stack for OntoCompany triples
-
-In this example, the triples are assumed to be instantiated in a stack namespace called 'sgbusinessunits'. The stack is assumed to have been spun up using the default port 3838.
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{"ontology":"ontocompany","namespace":"sgbusinessunits"}'  "http://localhost:3838/heatemissionagent/performheatquery"
-```
-
-#### Running the agent within a stack for OntoChemPlant triples
-
-In this example, the triples are assumed to be instantiated in a stack namespace called 'jibusinessunits'. The stack is assumed to have been spun up using the default port 3838.
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{"lower_bounds":"8464#23588#0","upper_bounds":"17619#30520#105","ontology":"ontochemplant","endpoint":"http://localhost:48889/blazegraph/namespace/jibusinessunits/sparql"}'  "http://localhost:3838/heatemissionagent/performheatquery"
-```
-
-
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{"lower_bounds":"8464#23588#0","upper_bounds":"17619#30520#105","ontology":"ontocompany"}'  "localhost:3838/heatemissionagent/performheatquery"
-```
 
 
 #### Return values 
 
 
-For the ontocompany case, the agent prints the number of factories for which heat emissions were calculated in the form of a JSON object upon successful completion. An example is shown below.
+The agent adds a new column called 'heat_emissions' to each of the tables mentioned above containing the heat emissions of each type of industrial facility in units of megawatts.
 
-`
-{"success": "true", "number_factories": 96 }
-`
+The following methods are used to estimate the heat emissions of each type of industrial facility:
 
-For the ontochemplant case, the agent prints the coordinates of the heat sources and their corresponding heat emissions in the form of a JSON object upon successful completion. An example is shown below: 
+- Data Centres:
 
-`{"result":[{"Coordinate":"13469.086796413478#26462.33106185692#41.0","Heat Emission":80.22970472647032},{"Coordinate":"13252.157092925416#28023.664545558153#25.0","Heat Emission":80.22970472647032},{"Coordinate":"13341.125256486484#26898.004451070658#21.0","Heat Emission":80.22970472647032}]}
-`
+$$ Q = \frac{1.08*P_{max}U_R + 21.53A_F + 9400}{1.0 \times 10^6} $$
+
+The parameters $Q$, $P_{max}$, $U_R$ and $A_F$ denote the heat emissions rate in megawatts, maximum IT capacity in megawatts, utilization rate and gross floor area in square meters respectively.
+
+- Precision Engineering
+
+$$ Q = A_FS_F(1 - \eta) $$
+
+The parameter $\eta$ denote the thermal efficiency.
+
+- Printing:
+
+$$ Q = N_pH_p $$
+
+The parameters $N_p$ and $H_p$ denote the number of printers and average heat emissions per printer in megawatts.
+
+- Factories not in the precision engineering and printing industries:
+
+$$ Q = begin{cases}
+    -VS \text{if } S < 0  
+    VS(1 - \eta) & \text{otherwise.}
+\end{cases} $$
+
+The parameters $V$ and $S$ denote the production volume in kilograms per second and specific energy consumption in megaJoules per kilogram respectively.
+
+- Individual Heat Sources in Chemical Plants and Petroleum Refineries:
+
+$$ Q = \frac{E_c \times(1 - \eta) \times 1.0 \times 10^{12}}{C_I \times Y_s \times (1.0 \times 10^6)} $$
+
+The parameters $E_c$, $C_I$ and $Y_s$ denote the carbon dioxide emissions rate in units of tons per year, carbon emissions index which is assumed to be 63.0 kg/GJ and number of seconds per year respectively. 
