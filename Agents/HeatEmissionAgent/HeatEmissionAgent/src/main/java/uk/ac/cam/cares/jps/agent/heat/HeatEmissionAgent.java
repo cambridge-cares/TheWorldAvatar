@@ -89,6 +89,7 @@ public class HeatEmissionAgent extends JPSAgent {
 			updateFactoryEmissions();
 			updatePrintingEmissions();
 			updatePrecisionEmissions();
+			updateDataCentreEmissions();
 
 			return new JSONObject().put("success", "true");
 
@@ -183,6 +184,25 @@ public class HeatEmissionAgent extends JPSAgent {
 				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
 						" alter table \"%s\" add column %s double precision; " +
 						" update table \"%s\" set %s = floor_area*specific_energy_consumption*(1.0 - thermal_efficiency) ;",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	void updateDataCentreEmissions() {
+		String tableName = "data_centres";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
+
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = (1.08*max_it_capacity*(1.0^6)*utilization_rate + 21.53*floor_area + 9400)/(1.0^6) ;",
 						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
 				stmt.executeUpdate(sqlString);
 			}
