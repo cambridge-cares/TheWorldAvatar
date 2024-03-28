@@ -49,6 +49,10 @@ abstract class DataLayer {
         this.source = source;
     }
 
+    public setID(id: string) {
+        this.id =id;
+    }
+
     /**
      * Cache the current visibility state.
      * 

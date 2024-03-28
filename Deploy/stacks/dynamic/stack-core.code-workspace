@@ -23,6 +23,9 @@
 		},
 		{
 			"path": "third-party/postgis"
+		},
+		{
+			"path": "../../../web/twa-vis-framework"
 		}
 	],
 	"settings": {
@@ -59,7 +62,27 @@
 			"SPARQL",
 			"SRID"
 		],
-		"java.compile.nullAnalysis.mode": "automatic"
+		"java.compile.nullAnalysis.mode": "automatic",
+		"workbench.colorCustomizations": {
+			"activityBar.activeBackground": "#d86d30",
+			"activityBar.background": "#d86d30",
+			"activityBar.foreground": "#15202b",
+			"activityBar.inactiveForeground": "#15202b99",
+			"activityBarBadge.background": "#5ee18d",
+			"activityBarBadge.foreground": "#15202b",
+			"commandCenter.border": "#e7e7e799",
+			"sash.hoverBorder": "#d86d30",
+			"statusBar.background": "#b35722",
+			"statusBar.foreground": "#e7e7e7",
+			"statusBarItem.hoverBackground": "#d86d30",
+			"statusBarItem.remoteBackground": "#b35722",
+			"statusBarItem.remoteForeground": "#e7e7e7",
+			"titleBar.activeBackground": "#b35722",
+			"titleBar.activeForeground": "#e7e7e7",
+			"titleBar.inactiveBackground": "#b3572299",
+			"titleBar.inactiveForeground": "#e7e7e799"
+		},
+		"peacock.remoteColor": "#b35722"
 	},
 	"extensions": {
 		"recommendations": [

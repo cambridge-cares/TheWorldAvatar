@@ -95,12 +95,12 @@ class Manager {
      */
     public async readCredentials() {
         // Enter Mapbox account name and API key here!
-        await $.get("mapbox_username", {}, function (result) {
+        await $.get("mapbox_username", {}, function (result : string) {
             MapHandler.MAP_USER = result;
         }).fail(function () {
             console.error("Could not read Mapbox username from 'mapbox_username' secret file.");
         });
-        await $.get("mapbox_api_key", {}, function (result) {
+        await $.get("mapbox_api_key", {}, function (result : string) {
             MapHandler.MAP_API = result;
         }).fail(function () {
             console.error("Could not read Mapbox API key from 'mapbox_api_key' secret file.");
@@ -224,7 +224,7 @@ class Manager {
     
         return settingPromise.then(() => {
             if(!this.checkForScenarios()) {
-                return this.loadDefinitionsFromURL("./data.json");
+                return this.loadDefinitionsFromURL("./data.json", 1);
             }
         });
     }
@@ -236,7 +236,7 @@ class Manager {
      * 
      * @returns promise object
      */
-    public loadDefinitionsFromObject(dataJSON) {
+    public loadDefinitionsFromObject(dataJSON, value: number) {
         if(dataJSON == null) {
             return Promise.resolve();
         }
@@ -244,7 +244,7 @@ class Manager {
         // Initialise global settings
         Manager.DATA_STORE.reset();
 
-        let promise =  Manager.DATA_STORE.loadDataGroups(dataJSON) as Promise<any>;
+        let promise =  Manager.DATA_STORE.loadDataGroups(dataJSON, value) as Promise<any>;
         return promise.then(() => {
             // Rebuild the layer tree
             this.controlHandler.rebuildTree(Manager.DATA_STORE);
@@ -259,7 +259,7 @@ class Manager {
      * 
      * @returns promise object
      */
-    public loadDefinitionsFromURL(dataURL) {
+    public loadDefinitionsFromURL(dataURL, value: number) {
         let self = this;
         let promise = $.getJSON(dataURL, function(json) {
             return json;
@@ -267,8 +267,7 @@ class Manager {
             console.log("Error reading data specification file from URL.");
             console.log(error);
         });    
-
-        return promise.then((response) => self.loadDefinitionsFromObject(response));
+        return promise.then((response) => self.loadDefinitionsFromObject(response, value));
     }
 
     /**
@@ -765,7 +764,7 @@ class Manager {
             // Load its data configuration file
             let self = this;
             this.scenarioHandler.getConfiguration(function(dataJSON) {
-                let promise = self.loadDefinitionsFromObject(dataJSON) as Promise<any>;
+                let promise = self.loadDefinitionsFromObject(dataJSON, 1) as Promise<any>;
                 promise.then(() => self.plotData());
             });
         }

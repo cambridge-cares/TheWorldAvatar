@@ -23,9 +23,10 @@
   "dependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-react-app": "^3.1.2",
+    "compass-mixins": "^0.12.12",
     "keycloak-js": "^23.0.5",
     "mapbox-gl": "^2.15.0",
-    "sass": "^1.69.7",
+    "sass": "^1.71.1",
     "turf": "^3.0.14"
   },
   "description": "This `/library` directory houses the Typescript, CSS, and HTML files that make up the framework along with some configuration files for compilation. The result of the build process is a Docker image that contains the compiled TWA-VF files along with an Apache web server; this allow users to then attach their content via a Docker volume mounted to `/var/www/html`.",
