@@ -244,5 +244,3 @@ DROP TABLE eventspace_isochrones;
 DROP TABLE isochrone_individual;
 
 END $ $;
-
-;
