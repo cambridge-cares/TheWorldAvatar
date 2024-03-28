@@ -1,4 +1,4 @@
-from services.connectors.sg_dispersion.geocoding import NominatimGeocoder
+from services.connectors.sg_dispersion.geocoding import NominatimGeocoder, Place
 
 
 class TestNominatimGeocoder:
@@ -6,10 +6,14 @@ class TestNominatimGeocoder:
         # Arrange
         geocoder = NominatimGeocoder()
         location = "NUS UTown"
+        expected = Place(
+            lat="1.30589515",
+            lot="103.77319830315889",
+            display_name="University Town, Dover Road, Queenstown, Southwest, Singapore, 139657, Singapore",
+        )
 
         # Act
-        actual = geocoder.get_coords(location)
+        actual = geocoder.search(location)
 
         # Assert
-        expected = ("1.30589515", "103.77319830315889")
         assert actual == expected
