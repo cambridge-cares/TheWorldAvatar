@@ -3,7 +3,9 @@ import logging
 import time
 from typing import Annotated, List
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
+from requests import HTTPError
+import requests
 
 from model.qa import QAStep
 from services.connectors.agent_connector import AgentConnectorBase
@@ -50,17 +52,30 @@ class SGDispersionAgentConnector(AgentConnectorBase):
         logger.info("Geo-decoded data: " + str(place))
         steps.append(
             QAStep(
-                action="geodecode", arguments=location, results=str(place), latency=latency
+                action="geodecode",
+                arguments=location,
+                results=str(place),
+                latency=latency,
             )
         )
 
         timestamp = time.time()
-        data = self.agent.get_pollutant_concentrations(lat=place.lat, lon=place.lon)
-        data.title = "Pollutant concentrations (µg/m³) in " + place.display_name
+        try:
+            data = self.agent.get_pollutant_concentrations(lat=place.lat, lon=place.lon)
+            data.title = "Pollutant concentrations (µg/m³) in " + place.name
+        except requests.HTTPError as e:
+            if e.response.status_code == 404:
+                raise HTTPException(
+                    404,
+                    detail="Unable to retrieve pollutant concentrations. Please ensure that the provided location is either in the Jurong Island area or NUS Kent Ridge campus.",
+                )
+
         latency = time.time() - timestamp
         steps.append(
             QAStep(
-                action="get_pollutant_concentrations", arguments=str(place), latency=latency
+                action="get_pollutant_concentrations",
+                arguments=str(place),
+                latency=latency,
             )
         )
 

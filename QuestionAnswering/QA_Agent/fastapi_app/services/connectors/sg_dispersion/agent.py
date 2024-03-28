@@ -14,7 +14,9 @@ class SGDispersionAgent:
 
     def get_pollutant_concentrations(self, lat: str, lon: str):
         query_params = {"lat": lat, "lon": lon}
-        res = requests.get(self.url, params=query_params).json()
+        res = requests.get(self.url, params=query_params)
+        res.raise_for_status()
+        res = res.json()
 
         timestamps = res["time"]
         return QAData(

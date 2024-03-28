@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from functools import cache
-from typing import Tuple
 
 from pydantic.dataclasses import dataclass
 import requests
@@ -10,6 +9,7 @@ import requests
 class Place:
     lat: str
     lon: str
+    name: str
     display_name: str
 
 
@@ -27,7 +27,13 @@ class NominatimGeocoder(IGeocoder):
         entries = requests.get(self.URL, params=query_params).json()
         # TODO: handle when entries is empty
         entry = entries[0]
-        return Place(lat=entry["lat"], lon=entry["lon"], display_name=entry["display_name"])
+        return Place(
+            lat=entry["lat"],
+            lon=entry["lon"],
+            name=entry["name"],
+            display_name=entry["display_name"],
+        )
+
 
 @cache
 def get_geocoder():
