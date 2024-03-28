@@ -78,7 +78,7 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
     /**
      * OntoAQMesh namespace
      */
-    private static final String OntoAqmesh_NS = "http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl/";
+    private static final String OntoAqmesh_NS = "https://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl/";
 
     /**
      * Servlet init.
@@ -135,7 +135,7 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
                 msg.put("result", "Retrieve route will be executed at the following intervals:" + interval + " " + timeunit);
                 break;
             case "instantiateGeoLocation":
-                LOGGER.info("Executing retrieve route ...");
+                LOGGER.info("Executing instantiate geolocation route ...");
                 try {
                     loadSparqlConfigs(System.getenv(AQMESH_CLIENT_PROPERTIES_ENV));
                 } catch (IOException e) {
@@ -161,14 +161,14 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
                 }
                 String aqmeshIRI = null;
                 String aqmeshName = null;
-                if (requestParams.has("iri") & requestParams.has("name")) {
+                if (requestParams.has("iri") && requestParams.has("name")) {
                     aqmeshIRI = requestParams.getString("iri");
                     aqmeshName = requestParams.getString("name");
                 } else {
                     aqmeshIRI = OntoAqmesh_NS + "AQMesh_" + UUID.randomUUID();
                     aqmeshName = "AQMesh " + UUID.randomUUID();
                 }
-                instantiateGeoLocationRoute(aqmeshIRI, aqmeshPodInformation, aqmeshName, sparqlEndpoint);
+                msg = instantiateGeoLocationRoute(aqmeshIRI, aqmeshPodInformation, aqmeshName, sparqlEndpoint);
                 break;
             default:
                 LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
@@ -329,10 +329,9 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
         AQMeshPostGISClient postgisClient = new AQMeshPostGISClient();
         try (Connection conn = postgisClient.getConnection()) {
             JSONObject response = new JSONObject();
-           AQMeshGeospatialClient geospatialClient = new AQMeshGeospatialClient();
+            AQMeshGeospatialClient geospatialClient = new AQMeshGeospatialClient();
 			if (!postgisClient.checkTableExists(System.getenv(AQMeshInputAgentLauncher.LAYERNAME_ENV), conn)) {
                 LOGGER.info("The table " + System.getenv(AQMeshInputAgentLauncher.LAYERNAME_ENV) + " does not exist");
-                
                 geospatialClient.createGeospatialInformation(latitude, longitude, aqmeshName, aqmeshIRI, sparqlEndpoint);
 				response.put("message", "Geospatial information instantiated for the following: " + aqmeshName);
 			} else {
