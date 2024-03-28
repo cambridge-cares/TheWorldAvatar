@@ -18,4 +18,8 @@ Your mapbox token should be in [`settings.gradle`](./gradle.properties) and also
 If you are running on emulator use `HOST_LOCALHOST` in [`NetworkConfiguration.java`](./core/network/src/main/java/uk/ac/cam/cares/jps/network/NetworkConfiguration.java), otherwise you should have android and stack on same network. You can use `ipconfig` or other related commands to find the ip address of your pc.
 
 
+## Web Visualization
+If you run the backend of the android application, you can also see the following web visualization at http://localhost:3838/visualisation/:
+
+![image](https://github.com/cambridge-cares/TheWorldAvatar/assets/115569120/e3402978-26bb-40f4-a6f2-7e1bb52f99e2)
 
