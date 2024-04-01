@@ -1,5 +1,7 @@
 from enum import Enum
-from typing import Union
+from typing import Optional, Union
+
+from pydantic.dataclasses import dataclass
 
 
 class PlotCatAttrKey(Enum):
@@ -13,3 +15,11 @@ class PlotNumAttrKey(Enum):
 
 
 PlotAttrKey = Union[PlotCatAttrKey, PlotNumAttrKey]
+
+
+@dataclass
+class LandUseTypeNode:
+    IRI: str
+    label: str
+    comment: Optional[str] = None
+    clsname: Optional[str] = None
