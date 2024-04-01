@@ -21,5 +21,5 @@ PlotAttrKey = Union[PlotCatAttrKey, PlotNumAttrKey]
 class LandUseTypeNode:
     IRI: str
     label: str
-    comment: Optional[str] = None
-    clsname: Optional[str] = None
+    comment: str
+    clsname: str

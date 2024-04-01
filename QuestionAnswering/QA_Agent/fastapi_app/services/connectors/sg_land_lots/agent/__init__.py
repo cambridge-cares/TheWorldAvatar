@@ -1,9 +1,11 @@
+from collections import defaultdict
 from functools import cache
 import logging
 from typing import Annotated, Any, Dict, List, Optional, Tuple
 
 from fastapi import Depends
 
+from services.connectors.sg_land_lots.land_use import LandUseTypeStore, get_landUseType_store
 from services.utils.rdf import extract_name, flatten_sparql_response
 from model.aggregate import AggregateOperator
 from model.qa import QAData
@@ -19,42 +21,23 @@ logger = logging.getLogger(__name__)
 class SGLandLotsAgent:
     def __init__(
         self,
-        bg_client: KgClient,
         ontop_client: KgClient,
+        land_use_type_store: LandUseTypeStore,
         sparql_maker: SGLandLotsSPARQLMaker,
     ):
-        self.bg_client = bg_client
         # self.ontop_client = ontop_client
         self.ontop_client = KgClient("http://174.138.23.221:3838/ontop/ui/sparql")
+        self.land_use_type_store = land_use_type_store
         self.sparql_maker = sparql_maker
 
-    @cache
-    def _landUse_clsname2iris(self, land_use_type: Optional[str]):
-        if not land_use_type:
-            return []
-        
-        query = """PREFIX ontozoning: <https://www.theworldavatar.com/kg/ontozoning/>
-
-SELECT ?IRI WHERE {{
-?IRI a ontozoning:{land_use} .        
-}}""".format(
-            land_use=land_use_type
-        )
-
-        return [
-            binding["IRI"]["value"]
-            for binding in self.bg_client.query(query)["results"]["bindings"]
-        ]
-    
-    def _add_landUseType(self, vars: List[str], bindings: List[dict], land_use_type: Optional[str]):
-        if not land_use_type:
-            return
-        
+    def _add_landUseType(self, vars: List[str], bindings: List[dict]):
         try:
             idx = vars.index("LandUseTypeIRI")
             vars.insert(idx + 1, "LandUseType")
             for binding in bindings:
-                binding["LandUseType"] = land_use_type
+                binding["LandUseType"] = ", ".join(
+                    self.land_use_type_store.get_labels(binding["LandUseTypeIRI"])
+                )
         except:
             pass
 
@@ -64,14 +47,19 @@ SELECT ?IRI WHERE {{
                 if k.endswith("Unit") and isinstance(v, str):
                     binding[k] = extract_name(v)
 
-    def count_plots(self, land_use_type: Optional[str] = None):
-        land_use_type_iris = self._landUse_clsname2iris(land_use_type)
-        query = self.sparql_maker.count_plots(land_use_type_iris)
+    def count_plots(self, land_use_types: List[str] = []):
+        landUseType_iris = [
+            iri
+            for clsname in land_use_types
+            for iri in self.land_use_type_store.get_iris(clsname)
+        ]
+
+        query = self.sparql_maker.count_plots(landUseType_iris)
 
         res = self.ontop_client.query(query)
         vars, bindings = flatten_sparql_response(res)
 
-        self._add_landUseType(vars, bindings, land_use_type)
+        self._add_landUseType(vars, bindings)
         self._process_unit_iri(bindings)
 
         return QAData(vars=vars, bindings=bindings)
@@ -79,27 +67,33 @@ SELECT ?IRI WHERE {{
     def compute_aggregate_plot_attribute(
         self,
         attr_agg: Tuple[PlotNumAttrKey, AggregateOperator],
-        land_use_type: Optional[str] = None,
+        land_use_types: List[str] = [],
     ):
-        land_use_type_iris = self._landUse_clsname2iris(land_use_type)
-        query = self.sparql_maker.compute_aggregate_plot_attribute(attr_agg, land_use_type_iris)
+        landUseType_iris = [
+            iri
+            for clsname in land_use_types
+            for iri in self.land_use_type_store.get_iris(clsname)
+        ]
+        query = self.sparql_maker.compute_aggregate_plot_attribute(
+            attr_agg, landUseType_iris
+        )
 
         res = self.ontop_client.query(query)
         vars, bindings = flatten_sparql_response(res)
-        
-        self._add_landUseType(vars, bindings, land_use_type)
+
+        self._add_landUseType(vars, bindings)
         self._process_unit_iri(bindings)
 
         return QAData(vars=vars, bindings=bindings)
 
 
 def get_sgLandLots_agent(
-    bg_client: Annotated[KgClient, Depends(get_sgLandLots_bgClient)],
-    sparql_maker: Annotated[SGLandLotsSPARQLMaker, Depends(get_sgLandLots_sparqlMaker)],
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
+    land_use_type_store: Annotated[LandUseTypeStore, Depends(get_landUseType_store)],
+    sparql_maker: Annotated[SGLandLotsSPARQLMaker, Depends(get_sgLandLots_sparqlMaker)],
 ):
     return SGLandLotsAgent(
-        bg_client=bg_client,
-        sparql_maker=sparql_maker,
         ontop_client=ontop_client,
+        land_use_type_store=land_use_type_store,
+        sparql_maker=sparql_maker,
     )

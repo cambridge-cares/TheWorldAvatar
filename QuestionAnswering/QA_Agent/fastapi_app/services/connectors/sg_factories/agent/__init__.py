@@ -82,6 +82,7 @@ VALUES ?Factory {{ <{iri}> }}
         for _industry in industries:
             query = query_maker(_industry)
 
+            # TODO: Refactor to make a single call to database instead of for every industry value
             res = self.ontop_client.query(query)
             _vars, _bindings = flatten_sparql_response(res)
 
@@ -125,12 +126,18 @@ VALUES ?Factory {{ <{iri}> }}
             industry=industry, query_maker=self.sparql_maker.count_factories
         )
 
-        if industry is None and all(header in vars for header in ["FactoryCount", "CompanyCount"]):
+        if industry is None and all(
+            header in vars for header in ["FactoryCount", "CompanyCount"]
+        ):
             bindings.append(
                 {
                     "Industry": "SUM",
-                    "FactoryCount": str(sum(int(binding["FactoryCount"]) for binding in bindings)),
-                    "CompanyCount": str(sum(int(binding["CompanyCount"]) for binding in bindings))
+                    "FactoryCount": str(
+                        sum(int(binding["FactoryCount"]) for binding in bindings)
+                    ),
+                    "CompanyCount": str(
+                        sum(int(binding["CompanyCount"]) for binding in bindings)
+                    ),
                 }
             )
 
