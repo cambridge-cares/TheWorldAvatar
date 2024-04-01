@@ -110,3 +110,19 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for bus node IRI!") from ex
 
+    def query_all_busnode_iris(query_endpoint: str, update_endpoint: str):
+        try:
+            kg_client = KGClient(query_endpoint, update_endpoint)
+            query = create_sparql_prefix('powreal') + \
+                    create_sparql_prefix('rdf') + \
+                    '''SELECT ?busNode WHERE { ?busNode rdf:type powreal:BusNode .}'''
+            response = kg_client.performQuery(query)
+            if len(response) == 0:
+                raise KGException("Unable to query for any bus node IRI!")
+            # sort the response based on the bus node number
+            #response = sorted(response, key=lambda url: int(url.rstrip('>').split('_')[-1]))
+            response = sorted(response, key=lambda d: int(d['busNode'].rstrip('>').split('_')[-1]))
+            return response
+
+        except Exception as ex:
+            raise KGException("Unable to query for bus node IRI!") from ex
