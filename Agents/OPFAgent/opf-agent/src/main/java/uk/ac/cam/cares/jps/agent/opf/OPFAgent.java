@@ -25,8 +25,8 @@ import javax.ws.rs.BadRequestException;
 import org.json.JSONException;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import main.java.uk.ac.cam.cares.jps.agent.opf.utils.IriMapper;
 import main.java.uk.ac.cam.cares.jps.agent.opf.utils.IriMapper.IriMapping;
@@ -57,11 +57,10 @@ public class OPFAgent extends JPSAgent{
 	protected String sparqlQueryEndpoint;
 	protected String sparqlUpdateEndpoint;
 
-    @Override
-    protected void setLogger() {
-        logger = LoggerFactory.getLogger(OPFAgent.class);
-    }
-    Logger logger = LoggerFactory.getLogger(OPFAgent.class);
+	/**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(OPFAgent.class);
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -115,16 +114,16 @@ public class OPFAgent extends JPSAgent{
 			throw new JPSRuntimeException("Input generation failed.");
 		}
 
-		logger.info("running PyPower simulation");
+		System.out.println("running PyPower simulation");
 		try {
 			String[] fileNames = {"/baseMVA.txt", "/bus.txt", "/gen.txt", "/branch.txt", "/outputBusOPF.txt", 
 								"/outputBranchOPF.txt", "/outputGenOPF.txt", "/areas.txt", "/genCost.txt", "/outputStatus.txt"};
 			runPythonScript("PyPower-PF-OPF-JA-9-Java-2.py", baseUrl, fileNames);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			throw new JPSRuntimeException("Run PyPower failed.\n",e1);
 		}
 		
+		System.out.println("Reading results");
 		String fileName = baseUrl + "/outputStatus.txt";
 		BufferedReader input = new BufferedReader(new FileReader(fileName));
 	    String last, line;
@@ -133,7 +132,9 @@ public class OPFAgent extends JPSAgent{
 	        last = line;
 	    }
 	    input.close();
+	    
 		if (last.contains("Converged")) {
+			System.out.println("Converged. Write results to KG.");
 			resjo.put("status", "converged");	
 			try {
 				doConversionWithAccessAgent(targetResourceID, baseUrl, OffsetDateTime.parse(time), modeltype);
@@ -245,6 +246,7 @@ public class OPFAgent extends JPSAgent{
 		tsClient = new TimeSeriesClient<>(kbClient ,OffsetDateTime.class);
 		List<String[]> busList = new ArrayList<String[]>();
 		TimeSeries<OffsetDateTime> timeseries;
+		TimeSeries<OffsetDateTime> pvtimeseries;
 		String[] busValues;
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
@@ -261,6 +263,7 @@ public class OPFAgent extends JPSAgent{
 				// If we take solar PV into consideration for this system
 				for (int i = 0; i < numOfBus; i++) {
 					if (dataIRIs.get(i)[2] == null) {
+						logger.info("Bus node has no PV");
 						// If this bus node does not have solar PV, only take Pd and Qd IRIs
 						busValues = new String[2];
 						String[] loadIRIs = new String[2];
@@ -270,11 +273,23 @@ public class OPFAgent extends JPSAgent{
 						busValues[0] = timeseries.getValuesAsString(dataIRIs.get(i)[0]).get(0); // Pd value of this bus
 						busValues[1] = timeseries.getValuesAsString(dataIRIs.get(i)[1]).get(0); // Qd value of this bus
 					} else {
-						// If this bus node has solar PV
 						busValues = new String[3];
-						timeseries = tsClient.getTimeSeriesWithinBounds(Arrays.asList(dataIRIs.get(i)), time, time, conn);
-						for (int j = 0; j < 3; j++) {
-							busValues[j] = timeseries.getValuesAsString(dataIRIs.get(i)[j]).get(0);
+						String[] loadIRIs = new String[2];
+						loadIRIs[0] = dataIRIs.get(i)[0];
+						loadIRIs[1] = dataIRIs.get(i)[1];
+						timeseries = tsClient.getTimeSeriesWithinBounds(Arrays.asList(loadIRIs), time, time, conn);
+						busValues[0] = timeseries.getValuesAsString(dataIRIs.get(i)[0]).get(0); // Pd value of this bus
+						busValues[1] = timeseries.getValuesAsString(dataIRIs.get(i)[1]).get(0); // Qd value of this bus
+						
+						logger.info("Bus node has PV");
+						//PV data IRI is different so do this separately
+						try {
+						String[] pvIRI = new String[1];
+						pvIRI[0] = dataIRIs.get(i)[2];
+						pvtimeseries = tsClient.getTimeSeriesWithinBounds(Arrays.asList(pvIRI), time, time, conn);
+						busValues[2] = pvtimeseries.getValuesAsString(dataIRIs.get(i)[2]).get(0);
+						}catch(Exception e) {
+							throw new JPSRuntimeException("Failed to read PV timeseries data.\n");
 						}
 					}
 					busList.add(busValues);
