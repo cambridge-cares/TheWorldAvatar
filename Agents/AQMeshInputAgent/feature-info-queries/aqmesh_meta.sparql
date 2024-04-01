@@ -1,0 +1,29 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX geo:	<http://www.opengis.net/ont/geosparql#>
+PREFIX xsd:	<http://www.w3.org/2001/XMLSchema#>
+PREFIX carpark: <https://www.theworldavatar.com/kg/ontocarpark/>
+PREFIX building: <https://www.theworldavatar.com/kg/Building/>
+PREFIX bot: <https://w3id.org/bot#>
+PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+SELECT ?Property ?Value ?Unit WHERE {
+  SERVICE <http://sgteststack-blazegraph:8080/blazegraph/namespace/aqmesh/sparql> {
+    {
+      BIND("Air Quality Monitoring System" AS ?Property) 
+      [IRI] rdf:type <http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl#AQMesh> ;
+      rdfs:label ?Value .
+    } UNION {
+        BIND("Price" AS ?Property)
+        BIND("USD" AS ?Unit)
+        [IRI] <http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl#hasPrice> ?price .
+        ?price <http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> ?measure .
+        ?measure <http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue> ?Value .
+    } UNION {
+      BIND("Weight" AS ?Property)
+      [IRI] <http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl#hasWeight> ?weight .
+      ?weight <http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> ?measure .
+      ?measure <http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue> ?Value .
+      ?measure <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit>/<http://www.ontology-of-units-of-measure.org/resource/om-2/symbol> ?Unit .
+   }
+}
+          }

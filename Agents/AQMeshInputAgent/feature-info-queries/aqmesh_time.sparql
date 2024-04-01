@@ -1,0 +1,15 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd:	<http://www.w3.org/2001/XMLSchema#>
+PREFIX time:    <https://www.theworldavatar.com/kg/ontotimeseries/>
+SELECT DISTINCT ?Measurement ?TimeSeries ?Name ?Unit WHERE {
+  [IRI] rdf:type <http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl#AQMesh> .
+  [IRI] <http://www.w3.org/ns/ssn/hasSubsystem> ?subsystem .
+  ?subsystem <http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl#observes> ?quantity .
+  ?quantity <http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> ?Measurement .
+  ?Measurement rdfs:label ?Name .
+  ?Measurement time:hasTimeSeries ?TimeSeries .
+  ?Measurement <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit> ?unit .
+  ?unit <http://www.ontology-of-units-of-measure.org/resource/om-2/symbol> ?symbol .
+  BIND (?symbol as ?Unit).
+     }
