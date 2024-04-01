@@ -57,20 +57,6 @@ SELECT ?IRI WHERE {{
                 binding["LandUseType"] = land_use_type
         except:
             pass
-    
-    def lookup_plot_attribute(
-        self,
-        attr_key: PlotAttrKey,
-        land_use_type: Optional[str] = None,
-    ):
-        land_use_type_iris = self._landUse_clsname2iris(land_use_type)
-        query = self.sparql_maker.lookup_plot_attribute(attr_key, land_use_type_iris)
-
-        res = self.ontop_client.query(query)
-        vars, bindings = flatten_sparql_response(res)
-        self._add_landUseType(vars, bindings, land_use_type)
-
-        return QAData(vars=vars, bindings=bindings)
 
     def count_plots(self, land_use_type: Optional[str] = None):
         land_use_type_iris = self._landUse_clsname2iris(land_use_type)
