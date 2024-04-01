@@ -193,10 +193,13 @@
                 //manager.getPanelHandler().setTitle("<h1>NTU Digital Twin Visualisation</h1>");
                 manager.getPanelHandler().setTitle(`<a href="http://128.199.151.149:3939/"><img src="twa-logo-with-title-blue-256.png"></a><br><h3>KG-Driven NTU Digital Twin Visualisation</h3>`);
                 manager.getPanelHandler().setContent(`
-                    <div id="buttonTabs">
+					<div id="buttonTabs">
                     <button id="getClassScheduleButton" class="custom-button2" '="">Class Schedule</button>
                     <button id="getWeatherDataButton" class="custom-button2" '="">Weather Data</button>
-                    <button id="getShowHeatmapButton" class="custom-button2" '="">Power Heatmap</button>
+                    <button id="getBNNHeatmapButton" class="custom-button2" '="">BNN Heatmap</button>
+					<button id="getSolarDataButton" class="custom-button2" '="">Solar</button>
+					<button id="runOPFButton" class="custom-button2" '="">Run OPF</button>
+					<button id="getOPFHeatmapButton" class="custom-button2" '="">OPF Heatmap</button>
                     </div>
                     <div id="metaTabs">
                     <p> The NTU digital twin visualization has been developed to showcase an interactive UI for a knowledge graph. 
@@ -281,63 +284,248 @@
                 });
 
 
-                // for Heatmap button
-                document.getElementById('getShowHeatmapButton').addEventListener('click', function () {
+                // for BNN Heatmap button
+                document.getElementById('getBNNHeatmapButton').addEventListener('click', function () {
 
-                    // Change this URL to where the NTUEnergyClusterAgent is located
-                    $.getJSON("http://localhost:3838/ntuenergycluster-agent/?stack=true",function(data){
-				        
-                        // 0 low voltage, 1 nominal voltage, 2 high voltage
-                        let valueMin = 0;
-                        let valueMax = 2;
-                        let mappedData = [ // maps bus data (buses 1-15, indexed 0-15) to coordinates
-                            { x: 103.6818572460, y: 1.3419334155, value: data[10] }, // 11 School of Physical and Mathematical Sciences
-                            { x: 103.6800064641, y: 1.3442181323, value: data[2] },  // 3 Nanyang Auditorium
-                            { x: 103.6791746564, y: 1.3450496383, value: data[5] },  // 6 School of Biological Sciences
-                            { x: 103.6800881613, y: 1.3454565079, value: data[1] },  // 2 Block N1.3
-                            { x: 103.6796595995, y: 1.3467408413, value: data[8] },  // 9 Block N2
-                            { x: 103.6800130775, y: 1.3473157834, value: data[9] },  // 10 Block N2.1
-                            { x: 103.67898,      y: 1.34488,      value: data[6] },  // 7 Experimental Medicine Building
-                            { x: 103.6854021333, y: 1.3442537009, value: data[11] }, // 12 Hall of Residence 4
-                            { x: 103.6883786891, y: 1.3458209704, value: data[12] }, // 13 Pioneer Hall
-                            { x: 103.6853405644, y: 1.3483400219, value: data[3] },  // 4 Canteen 2
-                            { x: 103.6877703643, y: 1.3494060864, value: data[14] }, // 15 The Wave
-                            { x: 103.6881162008, y: 1.3514382803, value: data[13] }, // 14 Nanyang Executive Centre
-                            { x: 103.67943,      y: 1.34366,      value: data[7] },  // 8 RTP
-                            { x: 103.693812,     y: 1.353296,     value: data[4] },  // 5
-                            { x: 103.675338,     y: 1.345447,     value: data[0] }   // 1
-                        ];
+					var entered_date
+					entered_date = prompt("Please enter date and hour (GMT).", selected_date.toISOString().slice(0,16));
+					
+					let energyclusterurl;
+					let p2purl;
+					
+					if(entered_date == null || entered_date == "") {
+						p2purl = "http://localhost:3838/ntu-p2p-energy-agent/?stack=true";
+					}else{
+						try{				
+							//validate date
+							let testdate = new Date(entered_date+":00Z").toISOString()	
+							selected_date = new Date(entered_date+":00Z");	//update selected date					
+						}catch(error){
+							alert("Invalid date")
+						}
+						p2purl = "http://localhost:3838/ntu-p2p-energy-agent/?stack=true&datetime="+entered_date+":00Z";
+					}
+					
+					$.getJSON(p2purl,function(data){
+						energyclusterurl = "http://localhost:3838/ntuenergycluster-agent/?stack=true&p2p="+data;
+						
+						// Change this URL to where the NTUEnergyClusterAgent is located
+						$.getJSON(energyclusterurl,function(data){
+							
+							// 0 low voltage, 1 nominal voltage, 2 high voltage
+							let valueMin = 0;
+							let valueMax = 2;
+							let mappedData = [ // maps bus data (buses 1-15, indexed 0-15) to coordinates
+								{ x: 103.6818572460, y: 1.3419334155, value: data[10] }, // 11 School of Physical and Mathematical Sciences
+								{ x: 103.6800064641, y: 1.3442181323, value: data[2] },  // 3 Nanyang Auditorium
+								{ x: 103.6791746564, y: 1.3450496383, value: data[5] },  // 6 School of Biological Sciences
+								{ x: 103.6800881613, y: 1.3454565079, value: data[1] },  // 2 Block N1.3
+								{ x: 103.6796595995, y: 1.3467408413, value: data[8] },  // 9 Block N2
+								{ x: 103.6800130775, y: 1.3473157834, value: data[9] },  // 10 Block N2.1
+								{ x: 103.67898,      y: 1.34488,      value: data[6] },  // 7 Experimental Medicine Building
+								{ x: 103.6854021333, y: 1.3442537009, value: data[11] }, // 12 Hall of Residence 4
+								{ x: 103.6883786891, y: 1.3458209704, value: data[12] }, // 13 Pioneer Hall
+								{ x: 103.6853405644, y: 1.3483400219, value: data[3] },  // 4 Canteen 2
+								{ x: 103.6877703643, y: 1.3494060864, value: data[14] }, // 15 The Wave
+								{ x: 103.6881162008, y: 1.3514382803, value: data[13] }, // 14 Nanyang Executive Centre
+								{ x: 103.67943,      y: 1.34366,      value: data[7] },  // 8 RTP
+								{ x: 103.693812,     y: 1.353296,     value: data[4] },  // 5
+								{ x: 103.675338,     y: 1.345447,     value: data[0] }   // 1
+							];
 
-                        console.log("viewer? ", MapHandler.MAP instanceof Cesium.Viewer);
-                        let bounds = {
-                            west: 103.6687938762,
-                            east: 103.6963979333,
-                            south: 1.3372667367,
-                            north: 1.3605829566,
-                        };
-                        let heatMap = CesiumHeatmap.create(
-                            MapHandler.MAP, // your cesium viewer
-                            bounds, // bounds for heatmap layer
-                            {
-                                // heatmap.js options go here
-                                //minOpacity: 0.2,
-                                maxOpacity: 0.75,
-                                //useEntitiesIfAvailable: false,
-                                radius: 75,
-                                blur: 0.5,
-                                gradient: {  // the gradient used if not given in the heatmap options object
-                                    '.05': '#2a37ed',
-                                    '.3': '#2a7aed',
-                                    '.5': '#00ff00',
-                                    '.8': '#70fb01',
-                                    '.95': '#c91212'
-                                },
-                            },
-                        );
-                        
-                        heatMap.setWGS84Data(valueMin, valueMax, mappedData);
-                    });
+							console.log("viewer? ", MapHandler.MAP instanceof Cesium.Viewer);
+							let bounds = {
+								west: 103.6687938762,
+								east: 103.6963979333,
+								south: 1.3372667367,
+								north: 1.3605829566,
+							};
+							let heatMap = CesiumHeatmap.create(
+								MapHandler.MAP, // your cesium viewer
+								bounds, // bounds for heatmap layer
+								{
+									// heatmap.js options go here
+									//minOpacity: 0.2,
+									maxOpacity: 0.75,
+									//useEntitiesIfAvailable: false,
+									radius: 75,
+									blur: 0.5,
+									gradient: {  // the gradient used if not given in the heatmap options object
+										'.05': '#2a37ed',
+										'.3': '#2a7aed',
+										'.5': '#00ff00',
+										'.8': '#70fb01',
+										'.95': '#c91212'
+									},
+								},
+							);
+							
+							heatMap.setWGS84Data(valueMin, valueMax, mappedData);
+						});
+					});
                 });
+
+//////////////////////////////////////////////////
+
+				// default date to yesterday
+				var selected_date = new Date();
+				selected_date.setDate(selected_date.getDate() -1);
+				selected_date.setHours(12);
+				selected_date.setMinutes(0);
+				selected_date.setSeconds(0);
+				
+				// get weather and solar and load
+				document.getElementById('getSolarDataButton').addEventListener('click', function () {
+										
+					var date = prompt("Please enter date (YYYY-MM-DD).", selected_date.toISOString().slice(0,10));
+					
+					try{					
+						//validate date
+						let testdate = new Date(date).toISOString()	
+						selected_date = new Date(date);	//update selected date
+					}catch(error){
+						alert("Invalid date")
+					}
+					
+					try{
+						var startdate = new Date(date+"T16:00:00Z")
+						startdate.setDate(startdate.getDate() - 1);
+						
+						var enddate = new Date(date+"T15:00:00Z")		
+					
+						$.post("http://localhost:3838/openmeteo-agent/run",
+						  {						
+							"latitude": "1.3485",
+							"longitude": "103.6827",
+							"start_date": startdate.toISOString().slice(0,10),
+							"end_date": enddate.toISOString().slice(0,10)
+						  },
+						//run pvlib
+						function(data, status){
+							
+							let pvliburl = "http://localhost:3838/pvlib-agent/api/v1/evaluate?device=openmeteo&stack=true&start="+startdate.toISOString().slice(0, 19)+"Z&end="+enddate.toISOString().slice(0, 19)+"Z";
+							$.getJSON(pvliburl,function(data){	});						
+						},"json");
+					}catch(error){
+						alert("Error"+error)
+					}
+					
+				});
+
+				// run data and OPF
+                document.getElementById('runOPFButton').addEventListener('click', function () {
+					
+					var entered_date
+					entered_date = prompt("Please enter date and hour (GMT).", selected_date.toISOString().slice(0,16));
+										
+					try{				
+						//validate date
+						let testdate = new Date(entered_date+":00Z").toISOString()	
+						selected_date = new Date(entered_date+":00Z");	//update selected date					
+					}catch(error){
+						alert("Invalid date")
+					}
+					
+					try{
+						// Produce load data
+						let dataagenturl = "http://localhost:3838/ntu-data-agent/generate?stack=true&date="+entered_date.slice(0,10);
+						$.getJSON(dataagenturl,function(data){});
+					
+						// Run OPF						
+						let opfdatetime = entered_date+":00+00:00"
+						$.post("http://localhost:3838/opf-agent/startsimulationOPF",
+						  {
+							"electricalnetwork":"http://ntu-access-agent:8080/ntuenergy",
+							"baseMVA":"1",
+							"time":opfdatetime,
+							"hasSolar":"true"
+						  },
+						  function(data, status){
+							alert("Data: " + data + "\nStatus: " + status);
+						},"json");
+					}catch(error){
+						alert("Error"+error)
+					}	
+                });
+
+				// for OPF Heatmap button
+                document.getElementById('getOPFHeatmapButton').addEventListener('click', function () {
+
+					var entered_date
+					entered_date = prompt("Please enter date and hour (GMT).", selected_date.toISOString().slice(0,16));
+										
+					try{				
+						//validate date
+						let testdate = new Date(entered_date+":00Z").toISOString()	
+						selected_date = new Date(entered_date+":00Z");	//update selected date					
+					}catch(error){
+						alert("Invalid date")
+					}
+					
+					let energyclusterurl;
+					
+						
+						// Run energy cluster
+						energyclusterurl = "http://localhost:3838/ntuenergycluster-agent/?stack=true&opf=true&datetime="+entered_date+":00Z"
+
+						// Change this URL to where the NTUEnergyClusterAgent is located
+						$.getJSON(energyclusterurl,function(data){
+							
+							//alert("Data: " + data);
+							
+							// 0 low voltage, 1 nominal voltage, 2 high voltage
+							let valueMin = 0;
+							let valueMax = 2.01; //data requires a small offset to correctly plot 0 values 
+							let mappedData = [ // maps bus data (buses 1-15, indexed 0-14) to coordinates
+								{ x: 103.6818572460, y: 1.3419334155, value: data[10]+0.01 }, // 11 School of Physical and Mathematical Sciences
+								{ x: 103.6800064641, y: 1.3442181323, value: data[2]+0.01 },  // 3 Nanyang Auditorium
+								{ x: 103.6791746564, y: 1.3450496383, value: data[5]+0.01 },  // 6 School of Biological Sciences
+								{ x: 103.6800881613, y: 1.3454565079, value: data[1]+0.01 },  // 2 Block N1.3
+								{ x: 103.6796595995, y: 1.3467408413, value: data[8]+0.01 },  // 9 Block N2
+								{ x: 103.6800130775, y: 1.3473157834, value: data[9]+0.01 },  // 10 Block N2.1
+								{ x: 103.67898,      y: 1.34488,      value: data[6]+0.01 },  // 7 Experimental Medicine Building
+								{ x: 103.6854021333, y: 1.3442537009, value: data[11]+0.01 }, // 12 Hall of Residence 4
+								{ x: 103.6883786891, y: 1.3458209704, value: data[12]+0.01 }, // 13 Pioneer Hall
+								{ x: 103.6853405644, y: 1.3483400219, value: data[3]+0.01 },  // 4 Canteen 2
+								{ x: 103.6877703643, y: 1.3494060864, value: data[14]+0.01 }, // 15 The Wave
+								{ x: 103.6881162008, y: 1.3514382803, value: data[13]+0.01 }, // 14 Nanyang Executive Centre
+								{ x: 103.67943,      y: 1.34366,      value: data[7]+0.01 },  // 8 RTP
+								{ x: 103.693812,     y: 1.353296,     value: data[4]+0.01 },  // 5
+								{ x: 103.675338,     y: 1.345447,     value: data[0]+0.01 }   // 1
+							];
+
+							console.log("viewer? ", MapHandler.MAP instanceof Cesium.Viewer);
+							let bounds = {
+								west: 103.6687938762,
+								east: 103.6963979333,
+								south: 1.3372667367,
+								north: 1.3605829566,
+							};
+							let heatMap = CesiumHeatmap.create(
+								MapHandler.MAP, // your cesium viewer
+								bounds, // bounds for heatmap layer
+								{
+									// heatmap.js options go here
+									minOpacity: 0.5,
+									maxOpacity: 0.75,
+									//useEntitiesIfAvailable: false,
+									radius: 75,
+									blur: 0.4,
+									gradient: {  // the gradient used if not given in the heatmap options object
+										'.05': '#2a37ed',
+										'.3': '#2a7aed',
+										'.5': '#00ff00',
+										'.8': '#70fb01',
+										'.95': '#c91212'
+									},
+								},
+							);
+							
+							heatMap.setWGS84Data(valueMin, valueMax, mappedData);
+						});
+                });
+				
+///////////////////////////////////////////////////////				
 
                 // Save general tab state as default
                 manager.getPanelHandler().storeDefault();
