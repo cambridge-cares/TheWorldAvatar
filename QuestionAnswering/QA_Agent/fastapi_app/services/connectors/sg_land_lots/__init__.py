@@ -36,24 +36,6 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
     def funcs(self):
         return [
             {
-                "name": "lookup_plot_attribute",
-                "description": "Look up an attribute of a subset of plots satisfying some constraints",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "attribute": {
-                            "type": "string",
-                            "description": "Attribute to query e.g. land use type, gross plot ratio, plot area, gross floor area",
-                        },
-                        "land_use_type": {
-                            "type": "string",
-                            "description": "Land use classification e.g. commerical, education",
-                        },
-                    },
-                },
-                "required": ["attribute"],
-            },
-            {
                 "name": "count_plots",
                 "description": "Count the number of plots satisfying some constraints",
                 "parameters": {
@@ -89,7 +71,6 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
     @cached_property
     def name2method(self):
         return {
-            "lookup_plot_attribute": self.lookup_plot_attribute,
             "count_plots": self.count_plots,
             "compute_aggregate_plot_attribute": self.compute_aggregate_plot_attribute,
         }
@@ -124,39 +105,6 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         )
 
         return land_use_type, step
-
-    def lookup_plot_attribute(
-        self, attribute: str, land_use_type: Optional[str] = None
-    ):
-        steps: List[QAStep] = []
-
-        attr_key, step = self._align_attributes(attribute)
-        steps.append(step)
-
-        if land_use_type:
-            land_use_type, step = self._align_land_use_type(land_use_type)
-            steps.append(step)
-        else:
-            land_use_type = None
-
-        timestamp = time.time()
-        data = self.agent.lookup_plot_attribute(
-            attr_key=attr_key,
-            land_use_type=land_use_type,
-        )
-        latency = time.time() - timestamp
-        steps.append(
-            QAStep(
-                action="lookup_plot_attributes",
-                arguments=dict(
-                    land_use_type=land_use_type,
-                    attribute=attr_key.value,
-                ),
-                latency=latency,
-            )
-        )
-
-        return steps, data
 
     def count_plots(self, land_use_type: Optional[str] = None):
         steps: List[QAStep] = []

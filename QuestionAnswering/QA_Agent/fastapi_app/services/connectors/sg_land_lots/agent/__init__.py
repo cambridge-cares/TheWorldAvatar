@@ -1,10 +1,10 @@
 from functools import cache
 import logging
-from typing import Annotated, List, Optional, Tuple
+from typing import Annotated, Any, Dict, List, Optional, Tuple
 
 from fastapi import Depends
 
-from services.utils.rdf import flatten_sparql_response
+from services.utils.rdf import extract_name, flatten_sparql_response
 from model.aggregate import AggregateOperator
 from model.qa import QAData
 from services.core.kg import KgClient
@@ -58,13 +58,21 @@ SELECT ?IRI WHERE {{
         except:
             pass
 
+    def _process_unit_iri(self, bindings: List[Dict[str, Any]]):
+        for binding in bindings:
+            for k, v in binding.items():
+                if k.endswith("Unit") and isinstance(v, str):
+                    binding[k] = extract_name(v)
+
     def count_plots(self, land_use_type: Optional[str] = None):
         land_use_type_iris = self._landUse_clsname2iris(land_use_type)
         query = self.sparql_maker.count_plots(land_use_type_iris)
-        print(query)
+
         res = self.ontop_client.query(query)
         vars, bindings = flatten_sparql_response(res)
+
         self._add_landUseType(vars, bindings, land_use_type)
+        self._process_unit_iri(bindings)
 
         return QAData(vars=vars, bindings=bindings)
 
@@ -78,7 +86,9 @@ SELECT ?IRI WHERE {{
 
         res = self.ontop_client.query(query)
         vars, bindings = flatten_sparql_response(res)
+        
         self._add_landUseType(vars, bindings, land_use_type)
+        self._process_unit_iri(bindings)
 
         return QAData(vars=vars, bindings=bindings)
 
