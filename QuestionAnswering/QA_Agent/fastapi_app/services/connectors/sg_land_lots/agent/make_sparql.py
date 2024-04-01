@@ -1,78 +1,81 @@
 from functools import cache
-from typing import Optional, Tuple
+from typing import List, Tuple
 
 from model.aggregate import AggregateOperator
-from services.core.kg import KgClient
 from ..model import PlotAttrKey, PlotCatAttrKey, PlotNumAttrKey
 from ..constants import LAND_USE_TYPE_PREDICATE, PLOT_NUM_ATTR_PREDICATES
 
 
 class SGLandLotsSPARQLMaker:
-    def __init__(self, bg_client: KgClient):
-        self.bg_client = bg_client
-
-    @cache
-    def _landUse_clsname2iri(self, land_use_type: str):
-        query = """PREFIX ontozoning: <https://www.theworldavatar.com/kg/ontozoning/>
-
-SELECT ?IRI WHERE {{
-?IRI a ontozoning:{land_use} .        
-}}""".format(
-            land_use=land_use_type
-        )
-
-        return [
-            binding["IRI"]["value"]
-            for binding in self.bg_client.query(query)["results"]["bindings"]
-        ]
-
-    def _make_clauses_to_locate_plots(self, land_use_type: Optional[str] = None):
+    def _make_clauses_to_locate_plots(self, land_use_type_iris: List[str] = []):
+        select_vars = []
         ontop_patterns = ["?IRI rdf:type ontoplot:Plot ."]
-        if land_use_type:
+        groupby_vars = []
+
+        if land_use_type_iris:
+            node = "?LandUseTypeIRI"
+            select_vars.append(node)
+            groupby_vars.append(node)
+
             ontop_patterns.extend(
                 [
-                    "VALUES ?LandUseType {{ {values} }}".format(
+                    "VALUES {node} {{ {values} }}".format(
+                        node=node,
                         values=" ".join(
-                            [
-                                "<{iri}>".format(iri=iri)
-                                for iri in self._landUse_clsname2iri(land_use_type)
-                            ]
-                        )
+                            ["<{iri}>".format(iri=iri) for iri in land_use_type_iris]
+                        ),
                     ),
-                    "?IRI {pred} ?LandUseType .".format(pred=LAND_USE_TYPE_PREDICATE),
+                    "?IRI {pred} ?LandUseTypeIRI .".format(
+                        pred=LAND_USE_TYPE_PREDICATE
+                    ),
                 ]
             )
-        return ontop_patterns
+        return select_vars, ontop_patterns, groupby_vars
 
     def lookup_plot_attribute(
-        self, attr_key: PlotAttrKey, land_use_type: Optional[str] = None
+        self, attr_key: PlotAttrKey, land_use_type_iris: List[str] = []
     ):
-        ontop_patterns = self._make_clauses_to_locate_plots(land_use_type)
-        vars = ["?IRI"]
+        select_vars, ontop_patterns, groupby_vars = self._make_clauses_to_locate_plots(
+            land_use_type_iris
+        )
+        select_vars.append("?IRI")
+
         if attr_key is PlotCatAttrKey.LAND_USE_TYPE:
             ontop_patterns.append("?IRI ontozoning:hasLandUseType ?LandUseType .")
-            vars.append("?LandUseType")
-        elif attr_key is PlotNumAttrKey.GROSS_PLOT_RATIO:
-            varnode = "?" + attr_key.value
-            ontop_patterns.extend(
-                [
-                    "OPTIONAL {{ ?IRI {pred} ?gpr . }}".format(
-                        pred=PLOT_NUM_ATTR_PREDICATES[attr_key]
-                    ),
-                    "OPTIONAL { ?IRI opr:isAwaitingDetailedGPREvaluation ?awaiting_detailed_evaluation . }",
-                    'BIND(IF(BOUND(?gpr), ?gpr, IF(?awaiting_detailed_evaluation = true, "Awaiting detailed evaluation", "")) AS {varnode})'.format(
-                        varnode=varnode
-                    ),
-                ]
-            )
-            vars.append(varnode)
+            select_vars.append("?LandUseType")
         else:
-            ontop_patterns.append(
-                "?IRI {pred} [ om:hasNumericalValue ?{key} ; om:hasUnit ?{key}Unit ] .".format(
-                    pred=PLOT_NUM_ATTR_PREDICATES[attr_key], key=attr_key.value
+            value_node = "?{key}Value".format(key=attr_key.value)
+            unit_node = "?{key}Unit".format(key=attr_key.value)
+            select_vars.extend([value_node, unit_node])
+
+            if attr_key is PlotNumAttrKey.GROSS_PLOT_RATIO:
+                optional_valuenode = "?OptionalGPR"
+                awaiting_node = "?Awaiting"
+                ontop_patterns.extend(
+                    [
+                        "OPTIONAL {{ ?IRI {pred} [ om:hasNumericalValue {optional} ; om:hasUnit {unit} ] . }}".format(
+                            pred=PLOT_NUM_ATTR_PREDICATES[attr_key],
+                            optional=optional_valuenode,
+                            unit=unit_node,
+                        ),
+                        "OPTIONAL {{ ?IRI opr:isAwaitingDetailedGPREvaluation {awaiting} . }}".format(
+                            awaiting=awaiting_node
+                        ),
+                        'BIND(IF(BOUND({optional}), {optional}, IF({awaiting} = true, "Awaiting detailed evaluation", "")) AS {value})'.format(
+                            optional=optional_valuenode,
+                            awaiting=awaiting_node,
+                            value=value_node,
+                        ),
+                    ]
                 )
-            )
-            vars.append("?" + attr_key.value)
+            else:
+                ontop_patterns.append(
+                    "?IRI {pred} [ om:hasNumericalValue {value} ; om:hasUnit {unit} ] .".format(
+                        pred=PLOT_NUM_ATTR_PREDICATES[attr_key],
+                        value=value_node,
+                        unit=unit_node,
+                    )
+                )
 
         return """PREFIX ontoplot:<https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX opr: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
@@ -83,13 +86,17 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
 SELECT {vars} WHERE {{
 {patterns}
-}}""".format(
-            vars=" ".join(vars), patterns="\n".join(ontop_patterns)
+}}{groupby}""".format(
+            vars=" ".join(select_vars),
+            patterns="\n".join(ontop_patterns),
+            groupby="\nGROUP BY " + " ".join(groupby_vars) if groupby_vars else "",
         )
 
-    def count_plots(self, land_use_type: Optional[str]):
-        ontop_patterns = self._make_clauses_to_locate_plots(land_use_type)
-        vars = ["(COUNT(?IRI) as ?Count)"]
+    def count_plots(self, land_use_type_iris: List[str] = []):
+        select_vars, ontop_patterns, groupby_vars = self._make_clauses_to_locate_plots(
+            land_use_type_iris
+        )
+        select_vars.append("(COUNT(?IRI) as ?Count)")
 
         return """PREFIX ontoplot:<https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX opr: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
@@ -100,23 +107,26 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
 SELECT {vars} WHERE {{
 {patterns}
-}}""".format(
-            vars=" ".join(vars), patterns="\n".join(ontop_patterns)
+}}{groupby}""".format(
+            vars=" ".join(select_vars),
+            patterns="\n".join(ontop_patterns),
+            groupby="\nGROUP BY " + " ".join(groupby_vars) if groupby_vars else "",
         )
 
     def compute_aggregate_plot_attribute(
         self,
         attr_agg: Tuple[PlotNumAttrKey, AggregateOperator],
-        land_use_type: Optional[str] = None,
+        land_use_type_iris: List[str] = [],
     ):
-        ontop_patterns = self._make_clauses_to_locate_plots(land_use_type)
-        vars = []
+        select_vars, ontop_patterns, groupby_vars = self._make_clauses_to_locate_plots(
+            land_use_type_iris
+        )
 
         key, agg = attr_agg
         func = agg.value
         valuenode = "?{key}NumericalValue".format(key=key.value)
 
-        vars.append(
+        select_vars.append(
             "({func}({valuenode}) AS {valuenode}{func})".format(
                 func=func, valuenode=valuenode
             )
@@ -136,6 +146,13 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
 SELECT {vars} WHERE {{
 {patterns} 
-}}""".format(
-            vars=" ".join(vars), patterns="\n".join(ontop_patterns)
+}}{groupby}""".format(
+            vars=" ".join(select_vars),
+            patterns="\n".join(ontop_patterns),
+            groupby="\nGROUP BY " + " ".join(groupby_vars) if groupby_vars else "",
         )
+
+
+@cache
+def get_sgLandLots_sparqlMaker():
+    return SGLandLotsSPARQLMaker()
