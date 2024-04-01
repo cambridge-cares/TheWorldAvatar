@@ -92,36 +92,40 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         )
         return attr_key, step
 
-    def _align_land_use_type(self, land_use_type: str):
+    def _align_land_use_types(self, land_use_type: str):
         logger.info("Align land use classification: " + land_use_type)
+
         timestamp = time.time()
-        land_use_type = str(self.land_use_type_retriever.match(land_use_type, key="clsname"))
+        closest = self.land_use_type_retriever.retrieve(queries=[land_use_type], k=3)[0]
+        aligned_land_use_types = [node["clsname"] for node, _ in closest]
         latency = time.time() - timestamp
         step = QAStep(
             action="align_land_use_type",
             arguments=land_use_type,
-            results=land_use_type,
+            results=aligned_land_use_types,
             latency=latency,
         )
 
-        return land_use_type, step
+        logger.info("Aligned land use classification: " + str(aligned_land_use_types))
+
+        return aligned_land_use_types, step
 
     def count_plots(self, land_use_type: Optional[str] = None):
         steps: List[QAStep] = []
 
         if land_use_type:
-            land_use_type, step = self._align_land_use_type(land_use_type)
+            aligned_land_use_types, step = self._align_land_use_types(land_use_type)
             steps.append(step)
         else:
             land_use_type = None
 
         timestamp = time.time()
-        data = self.agent.count_plots(land_use_type=land_use_type)
+        data = self.agent.count_plots(land_use_types=aligned_land_use_types)
         latency = time.time() - timestamp
         steps.append(
             QAStep(
                 action="count_plots",
-                arguments=dict(land_use_type=land_use_type),
+                arguments=dict(land_use_type=aligned_land_use_types),
                 latency=latency,
             )
         )
@@ -136,10 +140,10 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         steps: List[QAStep] = []
 
         if land_use_type:
-            land_use_type, step = self._align_land_use_type(land_use_type)
+            aligned_land_use_types, step = self._align_land_use_types(land_use_type)
             steps.append(step)
         else:
-            land_use_type = None
+            aligned_land_use_types = None
 
         logger.info("Parsing aggregate function...")
         timestamp = time.time()
@@ -159,14 +163,14 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         timestamp = time.time()
         data = self.agent.compute_aggregate_plot_attribute(
             attr_agg=attr_agg,
-            land_use_type=land_use_type,
+            land_use_types=aligned_land_use_types,
         )
         latency = time.time() - timestamp
         steps.append(
             QAStep(
                 action="compute_aggregate_plot_attributes",
                 arguments=dict(
-                    land_use_type=land_use_type, attr_aggs=attr_agg_unpacked
+                    land_use_type=aligned_land_use_types, attr_aggs=attr_agg_unpacked
                 ),
                 latency=latency,
             )
