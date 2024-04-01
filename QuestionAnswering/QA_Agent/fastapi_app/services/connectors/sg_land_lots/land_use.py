@@ -1,6 +1,6 @@
 from collections import defaultdict
-from functools import cache
-from typing import Annotated, DefaultDict, List
+from functools import cache, lru_cache
+from typing import Annotated, DefaultDict, List, Set
 
 from fastapi import Depends
 
@@ -13,10 +13,10 @@ class LandUseTypeStore:
     def __init__(self, nodes: List[LandUseTypeNode]):
         self.nodes = nodes
 
-        clsname2iris: DefaultDict[str, List[str]] = defaultdict(list)
+        clsname2iris: DefaultDict[str, Set[str]] = defaultdict(set)
         iri2nodes: DefaultDict[str, List[LandUseTypeNode]] = defaultdict(list)
         for node in nodes:
-            clsname2iris[node.clsname].append(node.IRI)
+            clsname2iris[node.clsname].add(node.IRI)
             iri2nodes[node.IRI].append(node)
 
         self.clsname2iris = clsname2iris
@@ -26,13 +26,15 @@ class LandUseTypeStore:
         return self.nodes
 
     def get_iris(self, clsname: str):
-        return self.clsname2iris[clsname]
+        return list(self.clsname2iris[clsname])
 
+    @lru_cache(maxsize=64)
     def get_clsnames(self, iri: str):
-        return [node.clsname for node in self.iri2nodes[iri]]
+        return list(set([node.clsname for node in self.iri2nodes[iri]]))
     
+    @lru_cache(maxsize=64)
     def get_labels(self, iri: str):
-        return [node.label for node in self.iri2nodes[iri]]
+        return list(set([node.label for node in self.iri2nodes[iri]]))
 
 
 def get_landUseType_nodes(kg_client: KgClient):
