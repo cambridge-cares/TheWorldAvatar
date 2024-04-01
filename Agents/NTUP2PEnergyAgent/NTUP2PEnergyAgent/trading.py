@@ -20,8 +20,8 @@ class Trading():
     
         buyer_cost=np.zeros((n_buyers,1))
         seller_cost=np.zeros((n_sellers,1))
-        consumption=np.zeros((n_buyers,1)) 
-        production=np.zeros((n_sellers,1))
+        self.consumption=np.zeros((n_buyers,1)) 
+        self.production=np.zeros((n_sellers,1))
         buyer_P_mat=np.zeros((n_sellers,n_buyers)) 
         seller_P_mat=np.zeros((n_buyers,n_sellers))
         buyer_error=np.inf*np.ones((n_sellers,n_buyers))
@@ -50,7 +50,7 @@ class Trading():
                 buyer = Buyer()
                 buyer.optimize(buyer_info[(i,),:], phi_0[:,(i,)], PI[:,(i,)], fix_P[:,(i,)], np.transpose(rho[(i,),:]), np.array(nodal_price_b[i], ndmin=2))
                 buyer_cost[i]=buyer.op_cost
-                consumption[i] = buyer.consumption
+                self.consumption[i] = buyer.consumption
                 buyer_P_mat[:,(i,)] = buyer.power_buying
                 buyer_error[:,(i,)] = buyer.error
                 dual_var[i] = buyer.dual_var
@@ -60,7 +60,7 @@ class Trading():
                 seller = Seller()
                 seller.optimize(seller_info[(j,),:], np.transpose(phi_0[(j,),:]), np.transpose(PI[(j,),:]), np.transpose(fix_P[(j,),:]), rho[:,(j,)],  np.array(nodal_price_s[j], ndmin=2))
                 seller_cost[j] = seller.op_cost
-                production[j] = seller.production
+                self.production[j] = seller.production
                 phi[:,(j,)] = seller.phi
                 seller_P_mat[:,(j,)] = seller.power_selling
                 seller_error[:,(j,)] = seller.error
@@ -86,7 +86,7 @@ class Trading():
         print("Trading complete")
 
         # return something useful
-        return consumption
+        return self.consumption
     
 ##########################################
 ##################### Test

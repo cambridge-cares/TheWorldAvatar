@@ -2,14 +2,17 @@ from flask import Flask, jsonify, request
 from .trading import Trading
 import logging
 import numpy as np
+import random
+from flask_cors import CORS
 
 from .error_handling.exceptions import KGException, TSException
 from NTUP2PEnergyAgent.config.buses import BUYERS, SELLERS
 from NTUP2PEnergyAgent.data_retrieval.query_data import QueryData
-from NTUP2PEnergyAgent.data_retrieval.query_timeseries import query_latest_timeseries
+from NTUP2PEnergyAgent.data_retrieval.query_timeseries import query_latest_timeseries, query_timeseries_within_bounds
 
 # Create the Flask app object
 app = Flask(__name__)
+CORS(app)
 
 # Check whether it is running in a stack
 def check_stack_status():
@@ -44,13 +47,13 @@ def check_stack_status():
 def default():  
     check_stack_status()
     
-
     ################## some variables for testing
     max_iter=100
     nodal_price = 20
-    quad_cost_seller = 0.03
+    quad_cost_seller = 0.1
     quad_cost_buyer = -0.1
-    lin_cost = 4.5
+    lin_cost_buyer = 5.0
+    lin_cost_seller = 4.5
 
     #      bus max min a b c
  #   buyer_info_np = np.array([[4,	2.20000000000000,	0.0,	-0.100000000000000,	4.50000000000000],
@@ -69,16 +72,25 @@ def default():
  #                       [6,	3.50000000000000,	0.0,	0.0600000000000000,	3.80000000000000]])
 
 
+    try:
+        date = request.args['datetime']
+        logging.info("date-time: "+str(date))
+    except ValueError:
+        logging.error("Unable to parse date.")
+        return "Unable to parse date."
+
     #iterate over buses, get load
     logging.info("Getting buyer data. Buses: "+str(BUYERS))
     buyer_info = []
     for bus_number in BUYERS:
 
-        busNode_iri_response = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT, bus_number)
-
-        busNode_iri = busNode_iri_response[0]['busNode']
-
-        logging.info("Getting busnode:" + busNode_iri)
+        try:
+            busNode_iri_response = QueryData.query_busnode_iris(QUERY_ENDPOINT, UPDATE_ENDPOINT, bus_number)
+            busNode_iri = busNode_iri_response[0]['busNode']
+            logging.info("Getting busnode:" + busNode_iri)
+        except Exception as ex:
+            logging.error("SPARQL query for bus node IRI not successful.")
+            raise KGException("SPARQL query for bus node IRI not successful.") from ex
 
         try:
             P_iri = QueryData.query_P_iri(busNode_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
@@ -89,15 +101,14 @@ def default():
 
         try:
             # get latest
-            P_ts = query_latest_timeseries(P_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
-            
+            P_ts = query_timeseries_within_bounds(P_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD, date, date)
         except Exception as ex:
             logging.error("SPARQL query for P timeseries not successful.")
             raise KGException("SPARQL query for P timeseries not successful.") from ex
         
         P_values = [v for v in P_ts.getValues(P_iri)]
 
-        buyer_info_i = [bus_number, P_values[0], 0.0, quad_cost_buyer, lin_cost]
+        buyer_info_i = [bus_number, P_values[0], 0.0, quad_cost_buyer*random.random(), lin_cost_buyer**random.random()]
         buyer_info.append(buyer_info_i)
 
     #iterate over sellers, get production
@@ -123,14 +134,14 @@ def default():
 
         try:
             # get latest
-            pv_ts = query_latest_timeseries(pv_data_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
+            pv_ts = query_timeseries_within_bounds(pv_data_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD, date, date)
         except Exception as ex:
             logging.error("SPARQL query for PV generated timeseries not successful.")
             raise KGException("SPARQL query for PV generated timeseries not successful.") from ex
 
         pv_values = [v for v in pv_ts.getValues(pv_data_iri)]
 
-        seller_info_i = [bus_number, pv_values[0], 0.0, quad_cost_seller, lin_cost]
+        seller_info_i = [bus_number, pv_values[0], 0.0, quad_cost_seller*random.random(), lin_cost_seller*random.random()]
         seller_info.append(seller_info_i)
 
     buyer_info_np = np.array(buyer_info)
@@ -142,19 +153,17 @@ def default():
     try:
         trading = Trading(max_iter)
         result = trading.trade(buyer_info_np,seller_info_np,nodal_price)
-        logging.info(result)
-        return jsonify("Success")
+        logging.info("Buyer info: "+str(buyer_info_np))
+        logging.info("Seller info: "+str(seller_info_np))
+        logging.info("Consumption: "+str(trading.consumption))
+        logging.info("Production: "+str(trading.production))
+        consumption = []
+        size = np.shape(result)
+        for i in range(0, size[0]):
+            consumption.append(float(result[i]))
+        return jsonify(consumption)
     except ValueError as ex:
             return str(ex)
 
-
-    # Check arguments (query parameters)
-  #  logger.info("Checking arguments...")
-  #  if 'val' in request.args:
-  #      try:
-  #          val = float(request.args['val'])
-  #      except ValueError:
-  #          logger.error("Unable to parse number.")
-  #          return "Unable to interpret val ('%s') as a float." % request.args['val']
-  #  else:
-  #      return "Error: No 'val' parameter provided."
+    
+    
