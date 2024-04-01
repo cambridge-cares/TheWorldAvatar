@@ -20,11 +20,12 @@ class SGDispersionAgent:
 
         timestamps = res["time"]
         return QAData(
-            vars=["pollutant", "timeseries"],
+            vars=["pollutant", "timeseries", "unit"],
             bindings=[
                 {
                     "pollutant": key,
                     "timeseries": list(zip(timestamps, value)),
+                    "unit": "µg/m³"
                 }
                 for key, value in res.items()
                 if key != "time"
