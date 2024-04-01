@@ -1,13 +1,13 @@
-from importlib.resources import files
+from collections import defaultdict
+from functools import cache
+from typing import Annotated, Dict, List
+
+from fastapi import Depends
+
+from services.connectors.sg_land_lots.kg import get_sgLandLots_bgClient
+from services.core.kg import KgClient
 
 from .model import PlotNumAttrKey
-
-LAND_USE_TYPES = (
-    files("resources.zaha.sg_land_lots")
-    .joinpath("land_use_type_iris.txt")
-    .read_text()
-    .split()
-)
 
 
 LAND_USE_TYPE_PREDICATE = "ontozoning:hasLandUseType"
@@ -16,3 +16,4 @@ PLOT_NUM_ATTR_PREDICATES = {
     PlotNumAttrKey.PLOT_AREA: "ontoplot:hasPlotArea/om:hasValue",
     PlotNumAttrKey.GROSS_FLOOR_AREA: "ontoplot:hasMaximumPermittedGPR/om:hasValue",
 }
+

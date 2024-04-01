@@ -1,20 +1,8 @@
 from enum import Enum
 
-import pytest
 
-from model.constraint import (
-    ComparativeOperator,
-    CompoundComparativeConstraint,
-    ExtremeValueConstraint,
-    LogicalOperator,
-    UnaryComparativeConstraint,
-)
 from model.aggregate import AggregateOperator
-from services.core.parse import (
-    KeyAggregateParser,
-    MultiExtremeValueParser,
-    NumericalConstraintParser,
-)
+from services.core.parse import KeyAggregateParser
 
 
 class SampleEnum(Enum):
@@ -33,38 +21,3 @@ class TestKeyAggregateParser:
 
         # Assert
         assert actual == (SampleEnum.HEIGHT, AggregateOperator.AVG)
-
-
-@pytest.fixture(scope="class")
-def numerical_constraint_parser(schema_parser):
-    yield NumericalConstraintParser(schema_parser)
-
-
-class TestNumericalConstraintParser:
-    def test_parse_extremeValue(
-        self, numerical_constraint_parser: NumericalConstraintParser
-    ):
-        # Act
-        actual = numerical_constraint_parser.parse("lowest")
-
-        # Assert
-        assert actual == ExtremeValueConstraint.MIN
-
-    def test_parse_comparativeClauses(
-        self, numerical_constraint_parser: NumericalConstraintParser
-    ):
-        # Act
-        actual = numerical_constraint_parser.parse("between 100 and 120")
-
-        # Assert
-        assert actual == CompoundComparativeConstraint(
-            logical_operator=LogicalOperator.AND,
-            constraints=(
-                UnaryComparativeConstraint(
-                    operator=ComparativeOperator.GE, operand=100
-                ),
-                UnaryComparativeConstraint(
-                    operator=ComparativeOperator.LE, operand=120
-                ),
-            ),
-        )

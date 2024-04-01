@@ -6,7 +6,7 @@ from redis import Redis
 from services.core.embed import IEmbedder, get_embedder
 from services.core.redis import get_redis_client
 from services.core.align_enum import BiEnumAligner
-from .model import PlotAttrKey, PlotCatAttrKey, PlotNumAttrKey
+from .model import PlotCatAttrKey, PlotNumAttrKey
 
 
 def get_plotAttrKey_aligner(
