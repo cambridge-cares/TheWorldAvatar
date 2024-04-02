@@ -281,7 +281,7 @@ public class GDALClient extends ContainerClient {
             if (null != dateTimeFormat) {
                 filename = variableArrayName + "_" + timeArray.getString(index) + ".tif";
             } else {
-                filename = variableArrayName + "_" + index + ".tif";
+                filename = variableArrayName + "_" + (index + 1) + ".tif";
             }
             filenames.add(filename);
             String outputRasterFilePath = outputDirectory.resolve(filename).toString();
