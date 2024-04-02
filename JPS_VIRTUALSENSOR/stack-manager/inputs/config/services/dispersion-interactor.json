@@ -3,7 +3,7 @@
 		"Name": "dispersion-interactor",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.5-dev-live-ship-data-SNAPSHOT",
+				"Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.5-dev-live-ship-data-QUICKFIX-SNAPSHOT",
 				"Env": [
 					"DATABASE=postgres",
 					"SCOPE_TABLE_NAME=scopes",

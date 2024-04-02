@@ -3,49 +3,42 @@
     "groups": [
         {
             "name": "Dispersion",
-            "stack": "http://localhost:3838",
+            "stack": "https://theworldavatar.io/demos/ship-emission/",
             "expanded": true,
             "sources": [
                 {
                     "tiles": [
-                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
+                        "https://theworldavatar.io/demos/ship-emission/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
                     ],
                     "id": "dispersion-source",
                     "type": "vector"
                 },
                 {
                     "tiles": [
-                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
+                        "https://theworldavatar.io/demos/ship-emission/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
                     ],
                     "id": "weather-source",
                     "type": "vector"
                 },
                 {
                     "tiles": [
-                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
+                        "https://theworldavatar.io/demos/ship-emission/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
                     ],
                     "id": "ship-source",
                     "type": "vector"
                 },
                 {
                     "tiles": [
-                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
+                        "https://theworldavatar.io/demos/ship-emission/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
                     ],
                     "id": "sensor-source",
                     "type": "vector"
                 },
                 {
                     "tiles": [
-                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:building-pirmasens_gsl"
+                        "https://theworldavatar.io/demos/ship-emission/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:building-pirmasens_gsl"
                     ],
                     "id": "building-source",
-                    "type": "vector"
-                },
-                {
-                    "tiles": [
-                        "http://localhost:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:elevation_contours"
-                    ],
-                    "id": "elevation-source",
                     "type": "vector"
                 }
             ],
@@ -87,7 +80,7 @@
                 },
                 {
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "name": "Ships",
                     "paint": {
@@ -101,7 +94,7 @@
                 },
                 {
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "name": "Virtual sensors",
                     "paint": {
@@ -141,28 +134,6 @@
                             8
                         ]
                     }
-                },
-                {
-                    "layout": {
-                        "visibility": "none"
-                    },
-                    "name": "Elevation",
-                    "paint": {
-                        "fill-outline-color": [
-                            "get",
-                            "stroke"
-                        ],
-                        "fill-color": [
-                            "get",
-                            "fill"
-                        ],
-                        "fill-opacity": 0.3
-                    },
-                    "id": "elevation-layer",
-                    "source": "elevation-source",
-                    "source-layer": "elevation_contours",
-                    "type": "fill",
-                    "minzoom": 4
                 }
             ]
         }
