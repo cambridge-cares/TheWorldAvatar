@@ -577,6 +577,7 @@ public class AssetRetriever {
         Variable PersonNameLiteral = SparqlBuilder.var("PersonName");
         query.where(PersonIRI.has(hasName, PersonNameIRI));
         query.where(PersonNameIRI.has(RDFS.LABEL, PersonNameLiteral));
+        query.where(PersonIRI.isA(Person));
 
         return storeClientAsset.executeQuery(query.getQueryString());
     }
