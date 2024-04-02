@@ -51,6 +51,44 @@
     },
     {
       "type": "vector",
+      "table": "precision_engineering",
+      "skip": false,
+      "subdirectory": "precision_engineering",
+      "sql": "@/inputs/config/precision_engineering.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "printing",
+      "skip": false,
+      "subdirectory": "printing",
+      "sql": "@/inputs/config/printing.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
       "table": "jurong_island_city_furniture",
       "skip": false,
       "subdirectory": "jurong_island_city_furniture",
