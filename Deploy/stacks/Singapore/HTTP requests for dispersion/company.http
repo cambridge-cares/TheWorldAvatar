@@ -1,8 +1,45 @@
 POST http://localhost:3838/buildingidentificationagent/postgis
 content-type: application/json
+
 {
     "maxDistance": "300.0",
     "table": "data_centres",
+    "column": "wkb_geometry",
+    "oneToMany": "false",
+    "mapping": "industry_buildings.obda"
+}
+
+###
+POST http://localhost:3838/buildingidentificationagent/postgis
+content-type: application/json
+
+{
+    "maxDistance": "300.0",
+    "table": "precision_engineering",
+    "column": "wkb_geometry",
+    "oneToMany": "false",
+    "mapping": "industry_buildings.obda"
+}
+
+###
+POST http://localhost:3838/buildingidentificationagent/postgis
+content-type: application/json
+
+{
+    "maxDistance": "300.0",
+    "table": "printing",
+    "column": "wkb_geometry",
+    "oneToMany": "false",
+    "mapping": "industry_buildings.obda"
+}
+
+###
+POST http://localhost:3838/buildingidentificationagent/postgis
+content-type: application/json
+
+{
+    "maxDistance": "300.0",
+    "table": "factories",
     "column": "wkb_geometry",
     "oneToMany": "false",
     "mapping": "industry_buildings.obda"
