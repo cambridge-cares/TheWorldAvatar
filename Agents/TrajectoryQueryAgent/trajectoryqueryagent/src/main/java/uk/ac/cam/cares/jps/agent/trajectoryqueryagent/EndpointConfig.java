@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.trajectoryqueryagent;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
+import com.cmclinnovations.stack.clients.core.BasicEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
@@ -15,6 +16,7 @@ public class EndpointConfig {
     private String dbuser;
     private String dbpassword;
     private PostGISEndpointConfig postGISEndpointConfig;
+    private String userAgentUrl;
     
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
@@ -28,6 +30,9 @@ public class EndpointConfig {
                     PostGISEndpointConfig.class);
         this.dbuser = postGISEndpointConfig.getUsername();
         this.dbpassword = postGISEndpointConfig.getPassword();
+
+        BasicEndpointConfig userAgentConfig = containerClient.readEndpointConfig("useragent-useragent", BasicEndpointConfig.class);
+        userAgentUrl = userAgentConfig.getUrl();
     }
     public String getKgurl() {
         return this.kgurl;
@@ -43,5 +48,9 @@ public class EndpointConfig {
     }
     public String getDbpassword() {
         return this.dbpassword;
-    } 
+    }
+
+    public String getUserAgentUrl() {
+        return userAgentUrl;
+    }
 }

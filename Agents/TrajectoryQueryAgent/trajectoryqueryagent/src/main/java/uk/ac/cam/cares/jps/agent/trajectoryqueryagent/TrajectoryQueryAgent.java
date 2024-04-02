@@ -1,29 +1,23 @@
 package uk.ac.cam.cares.jps.agent.trajectoryqueryagent;
 
-import com.cmclinnovations.stack.clients.ontop.OntopClient;
-import org.apache.jena.graph.Node;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import java.sql.Connection;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Path;
-import java.time.OffsetDateTime;
-import org.apache.jena.graph.NodeFactory;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import javax.ws.rs.BadRequestException;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
+
+import javax.servlet.annotation.WebServlet;
+import javax.ws.rs.BadRequestException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -35,7 +29,8 @@ public class TrajectoryQueryAgent extends JPSAgent {
     private RemoteRDBStoreClient remoteRDBStoreClient;
     private final String USER_ID = "userID";
     private static final Logger LOGGER = LogManager.getLogger(TrajectoryQueryAgent.class);
-    private String userID; 
+    private String userID;
+    private String userAgentUrl;
 
 
     public void init() {
@@ -43,6 +38,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
         storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         kgQueryClient = new KGQueryClient(storeClient);
         remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        userAgentUrl = endpointConfig.getUserAgentUrl();
     }
 
     /**
@@ -63,8 +59,13 @@ public class TrajectoryQueryAgent extends JPSAgent {
         //Retrieve params (Although currently receiver deviceID)
         this.userID = requestParams.getString(USER_ID);
 
+        //Retrieve phoneId from User Agent with userId
+        String getPhoneIds = userAgentUrl + "getPhoneIds";
+        JSONObject phoneIdResponse = new JSONObject(AgentCaller.executeGet(getPhoneIds, "userId", userID));
+        String phoneIri = phoneIdResponse.getJSONArray("PhoneIds").getString(0);     // todo: assume each user only has 1 phone id for now
+
         //SPARQL query for pointIRI based on userID - Note currently userID is deviceID, needs to be changed
-        Node smartphoneIRI = NodeFactory.createURI(kgQueryClient.getIRIfromJSONarray(kgQueryClient.getSmartPhoneIRI(userID)));
+        Node smartphoneIRI = NodeFactory.createURI(phoneIri);
         String pointIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getPointIRIArray(smartphoneIRI));
         String altitudeIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getAltitudeIRIArray(smartphoneIRI));
         String speedIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getSpeedIRIArray(smartphoneIRI));
@@ -74,9 +75,13 @@ public class TrajectoryQueryAgent extends JPSAgent {
         //Create Geoserver layer
         createGeoserver(pointIRI,altitudeIRI,speedIRI,bearingIRI );
 
-        //Return pointIRI to app as response
+        //Return pointIRI, altitudeIRI, speedIRI, bearingIRI to app as response
         JSONObject response = new JSONObject();
-        response.put("message", "PointIRI is XXXX.");
+        response.put("message", "Layer created");
+        response.put("pointIRI", pointIRI);
+        response.put("altitudeIRI", altitudeIRI);
+        response.put("speedIRI", speedIRI);
+        response.put("bearingIRI", bearingIRI);
         return response;
     }
 

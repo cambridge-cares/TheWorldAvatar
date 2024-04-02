@@ -3,14 +3,7 @@
     "Name": "trajectoryqueryagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:1.0.0", 
-        "Mounts": [
-          {
-              "Type": "bind",
-              "Source": "../../../../../../Agents/TrajectoryQueryAgent/trajectoryqueryagent/src/main/resources",
-              "Target": "/resources"
-          }
-        ],
+        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:1.0.0",
         "Configs": [
           {
             "ConfigName": "blazegraph"
@@ -20,6 +13,9 @@
           },
           {
             "ConfigName": "geoserver"
+          },
+          {
+            "ConfigName": "useragent-useragent"
           }
         ],
         "Secrets": [

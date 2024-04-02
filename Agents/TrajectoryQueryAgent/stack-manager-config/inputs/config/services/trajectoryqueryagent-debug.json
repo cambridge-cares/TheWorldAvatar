@@ -4,13 +4,6 @@
       "TaskTemplate": {
         "ContainerSpec": {
           "Image": "trajectoryqueryagent:1.0.0",
-          "Mounts": [
-            {
-                "Type": "bind",
-                "Source": "../../../../../../Agents/TrajectoryQueryAgent/trajectoryqueryagent/src/main/resources",
-                "Target": "/resources"
-            }
-          ],
           "Env": [
             "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
           ],  
@@ -23,6 +16,9 @@
             },
             {
               "ConfigName": "geoserver"
+            },
+            {
+              "ConfigName": "useragent-useragent"
             }
           ],
           "Secrets": [
