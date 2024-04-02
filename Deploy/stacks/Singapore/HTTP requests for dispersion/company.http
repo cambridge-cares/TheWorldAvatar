@@ -1,3 +1,9 @@
 POST http://localhost:3838/buildingidentificationagent/postgis
-?table=company
-&column=wkb_geometry
+content-type: application/json
+{
+    "maxDistance": "300.0",
+    "table": "data_centres",
+    "column": "wkb_geometry",
+    "oneToMany": "false",
+    "mapping": "industry_buildings.obda"
+}

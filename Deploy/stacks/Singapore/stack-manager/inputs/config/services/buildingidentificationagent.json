@@ -4,6 +4,13 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/buildingidentificationagent:2.0.0-snapshot",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../companies_config/",
+                        "Target": "/resources"
+                    }
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
