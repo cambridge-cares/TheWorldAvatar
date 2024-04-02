@@ -2,8 +2,8 @@
 :               https://www.theworldavatar.com/kg/infrastructure/
 building:       https://www.theworldavatar.com/kg/Building/
 ontobim:        https://www.theworldavatar.com/kg/ontobim/
-ontocompany:    http://www.theworldavatar.com/kg/ontocompany#
-ontochemplant:  http://www.theworldavatar.com/kg/ontochemplant#
+ontocompany:    http://www.theworldavatar.com/kg/ontocompany/
+ontochemplant:  http://www.theworldavatar.com/kg/ontochemplant/
 ontocape:       http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/
 ontobuiltenv:   https://www.theworldavatar.com/kg/ontobuiltenv/
 cityfurniture:  https://www.theworldavatar.com/kg/CityFurniture/	
@@ -23,9 +23,11 @@ target          :company/{company_uuid} a ontocompany:Company;
                     ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
                     ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
                     ontocompany:hasDataCentre :datacenter/{facility_uuid}.
-                building:{building_uuid} ontobim:hasFacility :datacenter/{facility_uuid}.
+                :ictindustry/{industry_uuid} a ontocompany:InformationandCommunicationTechnologyIndustry;
+                    rdfs:label "InformationandCommunicationTechnologyIndustry".
                 :datacenter/{facility_uuid} a ontocompany:DataCentre;
                     rdfs:label "{data_centre_name}"^^xsd:string;
+                    ontocompany:belongsToIndustry :ictindustry/{industry_uuid};
                     ontocompany:hasMaximumITCapacity :itcapacity/{facility_uuid};
                     ontocompany:hasUtilizationRate :utilization/{facility_uuid};
                     ontocompany:hasFloorArea :floorarea/{facility_uuid};
@@ -51,8 +53,8 @@ target          :company/{company_uuid} a ontocompany:Company;
 source          SELECT
                     "company_uuid",
                     "facility_uuid",
+                    "industry_uuid",
                     "data_centre_name",
-                    "building_uuid",
                     "company",
                     "ssic_code",
                     "business_activity",
@@ -71,15 +73,15 @@ target          :company/{company_uuid} a ontocompany:Company;
                     ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
                     ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
                     ontocompany:isOwnerOf :chemplant/{facility_uuid}.
-                building:{building_uuid} ontobim:hasFacility :chemplant/{facility_uuid}.
+                :chemindustry/{industry_uuid} a ontocompany:ChemicalIndustry;
+                    rdfs:label "Chemical Industry"^^xsd:string.
                 :chemplant/{facility_uuid} a ontochemplant:ChemicalPlant;
                     rdfs:label "{plant_name}"^^xsd:string;
-                    ontocompany:belongsToIndustry ontocompany:ChemicalIndustry;
+                    ontocompany:belongsToIndustry :chemindustry/{industry_uuid};
                     ontocompany:hasDesignCapacity :designcapacity/{facility_uuid};
                     ontocompany:hasSpecificEnergyConsumption :energyconsumption/{facility_uuid};
                     ontocompany:hasGeneratedHeat :generatedheat/{facility_uuid};
                     ontocompany:hasThermalEfficiency :thermalefficiency/{facility_uuid}.
-                ontocompany:ChemicalIndustry rdfs:label "Chemical Industry"^^xsd:string.
                 :designcapacity/{facility_uuid} rdf:type ontocompany:DesignCapacity;
                     om:hasValue :designcapacitymeasure/{facility_uuid}.
                 :designcapacitymeasure/{facility_uuid} om:hasNumericalValue "{production_volume}"^^xsd:float;
@@ -101,8 +103,9 @@ target          :company/{company_uuid} a ontocompany:Company;
 source          SELECT
                     "company_uuid",
                     "facility_uuid",
+                    "industry_uuid",
                     "plant_name",
-                    "building_uuid",
+                    
                     "company",
                     "ssic_code",
                     "business_activity",
@@ -120,15 +123,15 @@ target          :company/{company_uuid} a ontocompany:Company;
                     ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
                     ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
                     ontocompany:isOwnerOf :waferPlant/{facility_uuid}.
-                building:{building_uuid} ontobim:hasFacility :waferPlant/{facility_uuid}.
+                :semiconindustry/{industry_uuid} a ontocompany:SemiconductorIndustry ;
+                    rdfs:label "Semiconductor Industry"^^xsd:string.
                 :waferPlant/{facility_uuid} a ontocompany:SemiconductorPlant;
                     rdfs:label "{plant_name}"^^xsd:string;
-                    ontocompany:belongsToIndustry ontocompany:SemiconductorIndustry;
+                    ontocompany:belongsToIndustry :semiconindustry/{industry_uuid};
                     ontocompany:hasDesignCapacity :designcapacity/{facility_uuid};
                     ontocompany:hasSpecificEnergyConsumption :energyconsumption/{facility_uuid};
                     ontocompany:hasGeneratedHeat :generatedheat/{facility_uuid};
                     ontocompany:hasThermalEfficiency :thermalefficiency/{facility_uuid}.
-                ontocompany:SemiconductorIndustry rdfs:label "Semiconductor Industry"^^xsd:string.
                 :designcapacity/{facility_uuid} rdf:type ontocompany:DesignCapacity;
                     om:hasValue :designcapacitymeasure/{facility_uuid}.
                 :designcapacitymeasure/{facility_uuid} om:hasNumericalValue "{production_volume}"^^xsd:float;
@@ -150,8 +153,9 @@ target          :company/{company_uuid} a ontocompany:Company;
 source          SELECT
                     "company_uuid",
                     "facility_uuid",
+                    "industry_uuid",
                     "plant_name",
-                    "building_uuid",
+                    
                     "company",
                     "ssic_code",
                     "business_activity",
@@ -169,15 +173,15 @@ target          :company/{company_uuid} a ontocompany:Company;
                     ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
                     ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
                     ontocompany:isOwnerOf :foodPlant/{facility_uuid}.
-                building:{building_uuid} ontobim:hasFacility :foodPlant/{facility_uuid}.
+                :foodindustry/{industry_uuid} a ontocompany:FoodIndustry;
+                    rdfs:label "Food Industry"^^xsd:string.
                 :foodPlant/{facility_uuid} a ontocompany:FoodPlant;
                     rdfs:label "{plant_name}"^^xsd:string;
-                    ontocompany:belongsToIndustry ontocompany:FoodIndustry;
+                    ontocompany:belongsToIndustry :foodindustry/{industry_uuid};
                     ontocompany:hasDesignCapacity :designcapacity/{facility_uuid};
                     ontocompany:hasSpecificEnergyConsumption :energyconsumption/{facility_uuid};
                     ontocompany:hasGeneratedHeat :generatedheat/{facility_uuid};
                     ontocompany:hasThermalEfficiency :thermalefficiency/{facility_uuid}.
-                ontocompany:FoodIndustry rdfs:label "Food Industry"^^xsd:string.
                 :designcapacity/{facility_uuid} rdf:type ontocompany:DesignCapacity;
                     om:hasValue :designcapacitymeasure/{facility_uuid}.
                 :designcapacitymeasure/{facility_uuid} om:hasNumericalValue "{production_volume}"^^xsd:float;
@@ -199,8 +203,8 @@ target          :company/{company_uuid} a ontocompany:Company;
 source          SELECT
                     "company_uuid",
                     "facility_uuid",
-                    "plant_name",
-                    "building_uuid",
+                    "industry_uuid",
+                    "plant_name",                    
                     "company",
                     "ssic_code",
                     "business_activity",
@@ -212,6 +216,139 @@ source          SELECT
                     "factories" 
                 WHERE "infrastructure_type" = 'Food Plant'
 
+mappingId       pharmaceuticalplants
+target          :company/{company_uuid} a ontocompany:Company;
+                    rdfs:label "{company}"^^xsd:string;
+                    ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
+                    ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
+                    ontocompany:isOwnerOf :pharmaPlant/{facility_uuid}.
+                :pharmaceuticalindustry/{industry_uuid} a ontocompany:PharmaceuticalIndustry;
+                    rdfs:label "Pharmaceutical Industry"^^xsd:string.
+                :pharmaPlant/{facility_uuid} a ontocompany:PharmaceuticalPlant;
+                    rdfs:label "{plant_name}"^^xsd:string;
+                    ontocompany:belongsToIndustry :pharmaceuticalindustry/{industry_uuid};
+                    ontocompany:hasDesignCapacity :designcapacity/{facility_uuid};
+                    ontocompany:hasSpecificEnergyConsumption :energyconsumption/{facility_uuid};
+                    ontocompany:hasGeneratedHeat :generatedheat/{facility_uuid};
+                    ontocompany:hasThermalEfficiency :thermalefficiency/{facility_uuid}.
+                :designcapacity/{facility_uuid} rdf:type ontocompany:DesignCapacity;
+                    om:hasValue :designcapacitymeasure/{facility_uuid}.
+                :designcapacitymeasure/{facility_uuid} om:hasNumericalValue "{production_volume}"^^xsd:float;
+                    om:hasUnit :designcapacityunit/{facility_uuid}. 
+                :designcapacityunit/{facility_uuid} skos:notation "USD/s"^^xsd:string.
+                :energyconsumption/{facility_uuid} rdf:type ontocompany:SpecificEnergyConsumption;
+                    om:hasValue :energyconsumptionmeasure/{facility_uuid}.
+                :energyconsumptionmeasure/{facility_uuid} om:hasNumericalValue "{specific_energy_consumption}"^^xsd:float;
+                    om:hasUnit :energyconsumptionunit/{facility_uuid}. 
+                :energyconsumptionunit/{facility_uuid} skos:notation "MJ/USD"^^xsd:string.
+                :thermalefficiency/{facility_uuid} rdf:type ontocompany:ThermalEfficiency;
+                        om:hasValue :thermalefficiencymeasure/{facility_uuid}.
+                :thermalefficiencymeasure/{facility_uuid} om:hasNumericalValue "{thermal_efficiency}"^^xsd:float.
+                :generatedheat/{facility_uuid} rdf:type ontocompany:GeneratedHeat;
+                    om:hasValue :generatedheatmeasure/{facility_uuid}.
+                :generatedheatmeasure/{facility_uuid} om:hasNumericalValue "{heat_emissions}"^^xsd:float;
+                    om:hasUnit :generatedheatunit/{facility_uuid}. 
+                :generatedheatunit/{facility_uuid} skos:notation "MW"^^xsd:string.
+source          SELECT
+                    "company_uuid",
+                    "facility_uuid",
+                    "industry_uuid",
+                    "plant_name",                    
+                    "company",
+                    "ssic_code",
+                    "business_activity",
+                    "specific_energy_consumption",
+                    "production_volume",
+                    "thermal_efficiency",
+                    "heat_emissions"
+                FROM
+                    "factories" 
+                WHERE "infrastructure_type" = 'Pharmaceutical Plant'
+
+mappingId       precisionplants
+target          :company/{company_uuid} a ontocompany:Company;
+                    rdfs:label "{company}"^^xsd:string;
+                    ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
+                    ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
+                    ontocompany:isOwnerOf :precisionPlant/{facility_uuid}.
+                :precisionindustry/{industry_uuid} a ontocompany:PrecisionEngineeringIndustry;
+                    rdfs:label "Precision Engineering Industry"^^xsd:string.
+                :precisionPlant/{facility_uuid} a ontocompany:PrecisionEngineeringPlant;
+                    rdfs:label "{plant_name}"^^xsd:string;
+                    ontocompany:belongsToIndustry :precisionindustry/{industry_uuid};
+                    ontocompany:hasFloorArea :floorarea/{facility_uuid};
+                    ontocompany:hasEnergyConsumptionPerUnitFloorArea :energyconsumption/{facility_uuid};
+                    ontocompany:hasGeneratedHeat :generatedheat/{facility_uuid};
+                    ontocompany:hasThermalEfficiency :thermalefficiency/{facility_uuid}.
+                :floorarea/{facility_uuid} rdf:type ontocompany:FloorArea;
+                    om:hasValue :floorareameasure/{facility_uuid}.
+                :floorareameasure/{facility_uuid} om:hasNumericalValue "{floor_area}"^^xsd:float;
+                    om:hasUnit :floorareaunit/{facility_uuid}. 
+                :floorareaunit/{facility_uuid} skos:notation "m^2"^^xsd:string.
+                :energyconsumption/{facility_uuid} rdf:type ontocompany:EnergyConsumptionPerUnitFloorArea;
+                    om:hasValue :energyconsumptionmeasure/{facility_uuid}.
+                :energyconsumptionmeasure/{facility_uuid} om:hasNumericalValue "{specific_energy_consumption}"^^xsd:float;
+                    om:hasUnit :energyconsumptionunit/{facility_uuid}. 
+                :energyconsumptionunit/{facility_uuid} skos:notation "MJ/m^2"^^xsd:string.
+                :thermalefficiency/{facility_uuid} rdf:type ontocompany:ThermalEfficiency;
+                        om:hasValue :thermalefficiencymeasure/{facility_uuid}.
+                :thermalefficiencymeasure/{facility_uuid} om:hasNumericalValue "{thermal_efficiency}"^^xsd:float.
+                :generatedheat/{facility_uuid} rdf:type ontocompany:GeneratedHeat;
+                    om:hasValue :generatedheatmeasure/{facility_uuid}.
+                :generatedheatmeasure/{facility_uuid} om:hasNumericalValue "{heat_emissions}"^^xsd:float;
+                    om:hasUnit :generatedheatunit/{facility_uuid}. 
+                :generatedheatunit/{facility_uuid} skos:notation "MW"^^xsd:string.
+source          SELECT
+                    "company_uuid",
+                    "facility_uuid",
+                    "industry_uuid",
+                    "plant_name",                   
+                    "company",
+                    "ssic_code",
+                    "business_activity",
+                    "specific_energy_consumption",
+                    "floor_area",
+                    "thermal_efficiency",
+                    "heat_emissions"
+                FROM
+                    "precision_engineering"
+
+mappingId       printingplants
+target          :company/{company_uuid} a ontocompany:Company;
+                    rdfs:label "{company}"^^xsd:string;
+                    ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
+                    ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
+                    ontocompany:isOwnerOf :printingPlant/{facility_uuid}.
+                :printingindustry/{industry_uuid} a ontocompany:PrintingIndustry;
+                    rdfs:label "Printing Industry"^^xsd:string.
+                :printingPlant/{facility_uuid} a ontocompany:PrintingPlant;
+                    rdfs:label "{plant_name}"^^xsd:string;
+                    ontocompany:belongsToIndustry :printingindustry/{industry_uuid};
+                    ontocompany:hasGeneratedHeatPerPrinter :heatperprinter/{facility_uuid};
+                    ontocompany:hasGeneratedHeat :generatedheat/{facility_uuid}.
+                :heatperprinter/{facility_uuid} rdf:type ontocompany:GeneratedHeatPerPrinter;
+                    om:hasValue :heatperprintermeasure/{facility_uuid}.
+                :heatperprintermeasure/{facility_uuid} om:hasNumericalValue "{heat_emissions_per_printer}"^^xsd:float;
+                    om:hasUnit :heatperprinterunit/{facility_uuid}. 
+                :heatperprinterunit/{facility_uuid} skos:notation "MW"^^xsd:string.
+                :generatedheat/{facility_uuid} rdf:type ontocompany:GeneratedHeat;
+                    om:hasValue :generatedheatmeasure/{facility_uuid}.
+                :generatedheatmeasure/{facility_uuid} om:hasNumericalValue "{heat_emissions}"^^xsd:float;
+                    om:hasUnit :generatedheatunit/{facility_uuid}. 
+                :generatedheatunit/{facility_uuid} skos:notation "MW"^^xsd:string.
+source          SELECT
+                    "company_uuid",
+                    "facility_uuid",
+                    "industry_uuid",
+                    "plant_name",
+                    "company",
+                    "ssic_code",
+                    "business_activity",
+                    "heat_emissions_per_printer",
+                    "heat_emissions"
+                FROM
+                    "printing" 
+
 
 mappingId       jurong_island_heat_sources
 target          :company/{company_uuid} a ontocompany:Company;
@@ -221,12 +358,11 @@ target          :company/{company_uuid} a ontocompany:Company;
                     ontocompany:isOwnerOf :chemPlant/{company_uuid}.
                 :chemPlant/{company_uuid} a ontochemplant:ChemicalPlant;
                     rdfs:label "Chemical_Plant_{company}"^^xsd:string;
-                    ontocompany:belongsToIndustry ontocompany:ChemicalIndustry;
                     geo:ehContains :plantitem/{plant_item_uuid}.               
                 :plantitem/{plant_item_uuid} a ontocape:PlantItem;
                     ontobuiltenv:hasOntoCityGMLRepresentation cityfurniture:{city_furniture_uuid};
                     ontochemplant:hasIndividualCO2Emission :co2/{plant_item_uuid};
-                    ontocompany:hasGeneratedHeat :generatedheat/{plant_item_uuid}.
+                    ontochemplant:hasGeneratedHeat :generatedheat/{plant_item_uuid}.
                 :co2/{plant_item_uuid} rdf:type ontochemplant:IndividualCO2Emission;
                     om:hasValue :co2measure/{plant_item_uuid}.
                 :co2measure/{plant_item_uuid} om:hasNumericalValue "{co2_emissions}"^^xsd:float;
