@@ -17,7 +17,7 @@ def get_factory_subclasses(
     bg_client: Annotated[KgClient, Depends(get_sgFactories_bgClient)]
 ):
     query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
 SELECT DISTINCT ?IRI WHERE {
 ?IRI rdfs:subClassOf* ontocompany:Factory .
@@ -32,8 +32,8 @@ def sgFactories_bindings_gen(
 ):
     query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
-PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
+PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>
 
 SELECT ?IRI ?label WHERE {{
     VALUES ?Type {{ {types} }}

@@ -13,7 +13,7 @@ from services.connectors.sg import get_sg_ontopClient
 def sgCompanies_bindings_gen(ontop_client: KgClient):
     query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
 SELECT DISTINCT ?IRI ?company ?label WHERE {
     ?IRI rdf:type ontocompany:Company .

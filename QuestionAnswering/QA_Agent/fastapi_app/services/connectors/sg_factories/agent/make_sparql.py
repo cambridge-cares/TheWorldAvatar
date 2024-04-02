@@ -68,7 +68,7 @@ class SGFactoriesSPARQLMaker:
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
 SELECT DISTINCT {vars} WHERE {{
 {patterns}
@@ -130,7 +130,7 @@ SELECT DISTINCT {vars} WHERE {{
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
 SELECT DISTINCT {vars} WHERE {{
 {patterns}
@@ -149,7 +149,7 @@ SELECT DISTINCT {vars} WHERE {{
 
         return """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
 SELECT {select_vars} WHERE {{
 {patterns}
@@ -195,8 +195,8 @@ SELECT {select_vars} WHERE {{
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany#>
-PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
+PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>
 
 SELECT {select_vars} WHERE {{
 {patterns}
