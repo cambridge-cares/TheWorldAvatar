@@ -12,22 +12,60 @@ import numpy as np
 import pytest
 
 # Self imports
-from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, compute_bbox, \
+from agent.ifc2tileset.tile_helper import append_content_metadata_schema, gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, compute_bbox, \
     make_tileset, make_root_tile, y_up_to_z_up
 from . import testconsts as C
-from .testutils import read_json
+from .testutils import gen_content_metadata, read_json
+
+TEST_BUILDING_IRI = "iri_test"
+TEST_BUILDING_NAME = "Building A"
+
+
+def test_append_content_metadata_schema():
+    # Arrange
+    root_tile = make_root_tile([])
+    tileset = make_tileset(root_tile)
+
+    # Act
+    append_content_metadata_schema(tileset)
+
+    # Assert
+    assert "asset" in tileset and tileset["asset"] == {"version": "1.1"}
+    assert "geometricError" in tileset and tileset["geometricError"] == 1024
+    assert "root" in tileset
+    assert "schema" in tileset
+
+    root = tileset["root"]
+    assert "geometricError" in root and root["geometricError"] == 512
+    assert "content" not in root
+    assert "contents" not in root
+
+    assert tileset["schema"] == C.expected_content_metadata_schema
 
 
 @pytest.mark.parametrize(
-    "bbox, kwargs",
+    "bbox, geometry_file_paths, building_data, kwargs",
     [
-        (list(range(12)), dict()),
-        (list(range(12)), dict(content={"uri": "./data/glb/building.glb"})),
-        (None, dict()),
-        (None, dict(contents=[{"uri": "./data/glb/building.glb"}, {"uri": "./data/glb/furniture.glb"}]))
+        # When there is only a bounding box and nothing else
+        (list(range(12)), [], [], dict()),
+        # When there is only a building with no name, ensure content is used with metadata attached
+        (list(range(12)), ["./data/glb/building.glb"], [TEST_BUILDING_IRI, ""],
+         dict(content={"uri": "./data/glb/building.glb", "metadata": gen_content_metadata(TEST_BUILDING_IRI)})),
+        # When there is only a building, ensure content is used with metadata attached
+        (list(range(12)), ["./data/glb/building.glb"], [TEST_BUILDING_IRI, TEST_BUILDING_NAME],
+         dict(content={"uri": "./data/glb/building.glb", "metadata": gen_content_metadata(TEST_BUILDING_IRI, TEST_BUILDING_NAME)})),
+        # When there is only a furniture, ensure content is used and no metadata is attached
+        (list(range(12)), ["./data/glb/furniture.glb"], [],
+         dict(content={"uri": "./data/glb/furniture.glb"})),
+        # When there is nothing
+        (None, None, [], dict()),
+        # When there are multiple contents including building, ensure contents is used
+        (None, ["./data/glb/building.glb", "./data/glb/furniture.glb"], [TEST_BUILDING_IRI, TEST_BUILDING_NAME],
+         dict(contents=[{"uri": "./data/glb/building.glb", "metadata": gen_content_metadata(TEST_BUILDING_IRI, TEST_BUILDING_NAME)},
+                        {"uri": "./data/glb/furniture.glb", "metadata": gen_content_metadata(TEST_BUILDING_IRI, TEST_BUILDING_NAME)}]))
     ]
 )
-def test_make_root_tile(bbox, kwargs):
+def test_make_root_tile(bbox, geometry_file_paths, building_data, kwargs):
     # Arrange
     expected = {
         **{
@@ -39,7 +77,7 @@ def test_make_root_tile(bbox, kwargs):
     }
 
     # Act
-    actual = make_root_tile(bbox, **kwargs)
+    actual = make_root_tile(bbox, geometry_file_paths, building_data)
 
     # Assert
     assert actual == expected
@@ -54,13 +92,41 @@ def test_make_tileset():
     }
     expected = {
         "asset": {"version": "1.1"},
-        "geometricError": 1024,
-        "root": {
-            "boundingVolume": {"box": []},
-            "geometricError": 512,
-            "refine": "ADD",
-        }
+        "geometricError": 1024
     }
+    expected["root"] = root_tile
+
+    # Act
+    actual = make_tileset(root_tile)
+
+    # Assert
+    assert expected == actual
+
+
+@pytest.mark.parametrize(
+    "contents, content_dict",
+    [
+        # When there is a content containing metadata
+        ("content", {"metadata": ""}),
+        # When there is contents containing a list of metadata
+        ("contents", [{"metadata": ""}]),
+    ]
+)
+def test_make_tileset_has_building_metadata(contents, content_dict):
+    # Arrange
+    root_tile = {
+        "boundingVolume": {"box": []},
+        "geometricError": 512,
+        "refine": "ADD",
+    }
+    root_tile[contents] = content_dict
+    expected = {
+        "asset": {"version": "1.1"},
+        "geometricError": 1024
+    }
+    expected["root"] = root_tile
+    # Both test cases should add the schema
+    expected["schema"] = C.expected_content_metadata_schema
 
     # Act
     actual = make_tileset(root_tile)
@@ -129,7 +195,7 @@ def test_jsonwriter():
     # Arrange
     sample_tileset = {"testkey": "testvalue"}
     sample_name = "jsontest"
-    
+
     # Act
     jsonwriter(sample_tileset, sample_name)
 
@@ -142,11 +208,37 @@ def test_jsonwriter():
 def test_gen_solarpanel_tileset_no_solarpanel():
     """Tests gen_solarpanel_tileset() when there is no solarpanel geometry output detected."""
     # Act
-    gen_solarpanel_tileset()
+    gen_solarpanel_tileset([])
 
     # Assert
     json_filepath = os.path.join("data", "tileset_solarpanel.json")
     assert not os.path.exists(json_filepath)
+
+
+def test_gen_solarpanel_tileset_with_metadata():
+    """Tests gen_solarpanel_tileset() when there is a solarpanel geometry output and metadata inputs."""
+    # Arrange
+    solarpanel_glb = os.path.join("data", "glb", "solarpanel.glb")
+    m = C.sample_box_gen()
+    m.export(solarpanel_glb)
+
+    # Act
+    gen_solarpanel_tileset([C.sample_solar_iri, C.sample_solar_name])
+
+    # Assert
+    json_filepath = os.path.join("data", "tileset_solarpanel.json")
+    assert os.path.exists(json_filepath)
+
+    tileset = read_json(json_filepath)
+    assert "root" in tileset
+    assert tileset["schema"] == C.expected_content_metadata_schema
+
+    root_tile = tileset["root"]
+    assert "content" in root_tile
+    assert root_tile["content"] == {"metadata": gen_content_metadata(C.sample_solar_iri, C.sample_solar_name),
+                                    "uri": "./glb/solarpanel.glb"}
+    assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
+        and np.allclose(root_tile["boundingVolume"]["box"], C.sample_box_bbox)
 
 
 def test_gen_solarpanel_tileset():
@@ -157,7 +249,7 @@ def test_gen_solarpanel_tileset():
     m.export(solarpanel_glb)
 
     # Act
-    gen_solarpanel_tileset()
+    gen_solarpanel_tileset([])
 
     # Assert
     json_filepath = os.path.join("data", "tileset_solarpanel.json")
@@ -167,7 +259,8 @@ def test_gen_solarpanel_tileset():
     assert "root" in tileset
 
     root_tile = tileset["root"]
-    assert "content" in root_tile and root_tile["content"] == {"uri": "./glb/solarpanel.glb"}
+    assert "content" in root_tile and root_tile["content"] == {
+        "uri": "./glb/solarpanel.glb"}
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_box_bbox)
 
@@ -177,9 +270,35 @@ def test_gen_sewagenetwork_tileset_no_sewage():
     Tests gen_sewagenetwork_tileset() when there is no sewagenetwork geometry output detected
     """
     # Execute method
-    gen_sewagenetwork_tileset()
+    gen_sewagenetwork_tileset([])
     json_filepath = os.path.join("data", "tileset_sewage.json")
     assert not os.path.exists(json_filepath)
+
+
+def test_gen_sewagenetwork_tileset_with_metadata():
+    """Tests gen_sewagenetwork_tileset() when there is a sewagenetwork geometry output and metadata input."""
+    # Arrange
+    sewage_glb = os.path.join("data", "glb", "sewagenetwork.glb")
+    m = C.sample_cone_gen()
+    m.export(sewage_glb)
+
+    # Act
+    gen_sewagenetwork_tileset([C.sample_sewage_iri, C.sample_sewage_name])
+
+    # Assert
+    json_filepath = os.path.join("data", "tileset_sewage.json")
+    assert os.path.exists(json_filepath)
+
+    tileset = read_json(json_filepath)
+    assert "root" in tileset
+    assert tileset["schema"] == C.expected_content_metadata_schema
+
+    root_tile = tileset["root"]
+    assert "content" in root_tile
+    assert root_tile["content"] == {"metadata": gen_content_metadata(C.sample_sewage_iri, C.sample_sewage_name),
+                                    "uri": "./glb/sewagenetwork.glb"}
+    assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
+        and np.allclose(root_tile["boundingVolume"]["box"], C.sample_cone_bbox)
 
 
 def test_gen_sewagenetwork_tileset():
@@ -190,7 +309,7 @@ def test_gen_sewagenetwork_tileset():
     m.export(sewage_glb)
 
     # Act
-    gen_sewagenetwork_tileset()
+    gen_sewagenetwork_tileset([])
 
     # Assert
     json_filepath = os.path.join("data", "tileset_sewage.json")
@@ -200,6 +319,7 @@ def test_gen_sewagenetwork_tileset():
     assert "root" in tileset
 
     root_tile = tileset["root"]
-    assert "content" in root_tile and root_tile["content"] == {"uri": "./glb/sewagenetwork.glb"}
+    assert "content" in root_tile and root_tile["content"] == {
+        "uri": "./glb/sewagenetwork.glb"}
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_cone_bbox)

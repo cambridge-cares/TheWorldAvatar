@@ -1,0 +1,61 @@
+{
+    "name": "NTU Digital Twin Layers",
+    "stack": "http://localhost",
+    "sources": [
+        {
+            "id": "3d-tiles-source",
+            "type": "tiles",
+            "uri": "./tileset.json"
+        },
+        {
+            "id": "NTUPower",
+            "type": "wms",
+            "uri": "http://128.199.151.149:3838/geoserver/the_world_avatar3/wms",
+            "wmsLayer": "the_world_avatar3:ntupowerfinal,the_world_avatar3:arrows1,the_world_avatar3:arrows2,the_world_avatar3:arrows3,the_world_avatar3:arrows4,the_world_avatar3:arrows5,the_world_avatar2:arrows6,the_world_avatar2:arrows7,the_world_avatar3:arrows8,the_world_avatar3:arrows9, the_world_avatar3:arrows10, the_world_avatar3:arrows11,the_world_avatar3:arrows12,the_world_avatar3:arrows13,the_world_avatar3:arrows14",
+            "transparency": true,
+            "format": "image/png"
+        },
+        {
+            "id": "ntu-street-geoserver",
+            "type": "wms",
+            "uri": "http://128.199.151.149:3838/geoserver/the_world_avatar/wms",
+            "wmsLayer": "the_world_avatar:ntu_street",
+            "transparency": true,
+            "format": "image/png"
+        },
+        {
+            "id": "ntu-venues",
+            "type": "wms",
+            "uri": "http://128.199.151.149:3838/geoserver/the_world_avatar/wms",
+            "wmsLayer": "the_world_avatar:ntu_venues",
+            "transparency": true,
+            "format": "image/png"
+        }
+    ],
+    "layers": [
+
+        {
+            "id": "3d-tiles-layer",
+            "name": "NTU buildings",
+            "source": "3d-tiles-source"
+        },
+        {
+            "id": "NTUPower",
+            "name": "NTU Power Network",
+            "source": "NTUPower",
+            "visibility": "none"
+        },
+        {
+            "id": "ntu-street-geoserver",
+            "name": "NTU Street (Geoserver)",
+            "source": "ntu-street-geoserver",
+            "visibility": "none"
+        },
+        {
+            "id": "ntu-venues",
+            "name": "NTU Venues",
+            "source": "ntu-venues",
+            "visibility": "none"
+        }
+    ]
+}

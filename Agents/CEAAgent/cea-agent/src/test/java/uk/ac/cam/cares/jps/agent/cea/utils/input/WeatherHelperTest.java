@@ -4,26 +4,28 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
+import uk.ac.cam.cares.jps.agent.cea.utils.FileReader;
 import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.nio.Buffer;
 import java.util.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -31,43 +33,67 @@ import java.time.OffsetDateTime;
 public class WeatherHelperTest {
     @Test
     public void testGetWeather() {
-        OntologyURIHelper ontologyURIHelper = new OntologyURIHelper("CEAAgentConfig");
+        String content = "uri.ontology.ontocitygml=test/\nuri.ontology.om=test/\nuri.ontology.ontoubemmp=test/\nuri.ontology.rdf=test/\nuri.ontology.owl=test/\n" +
+                "uri.ontology.bot=test/\nuri.ontology.ontobuiltenv=test/\nuri.ontology.ontobuiltstructure=test/\nuri.ontology.ontotimeseries=test/\nuri.ontology.ontoems=test/\n" +
+                "uri.ontology.geo=test/\nuri.ontology.geofunction=test/\nuri.ontology.bldg=test/\nuri.ontology.grp=test/\nuri.ontology.gml=test/\n" +
+                "uri.ontology.geoliteral=test/\nuri.ontology.geofunction=test/\nuri.opengis.epsg=test/\nuri.service.geo=test/";
+        InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
+        try (MockedStatic<uk.ac.cam.cares.jps.agent.cea.utils.FileReader> fileReaderMock = mockStatic(uk.ac.cam.cares.jps.agent.cea.utils.FileReader.class)) {
+            fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
+            WeatherHelper weatherHelper = spy(new WeatherHelper("", "", "", ""));
 
-        WeatherHelper weatherHelper = spy(new WeatherHelper("", "", "", "", ontologyURIHelper));
+            doReturn("").when(weatherHelper).runOpenMeteoAgent(anyString(), anyString(), anyString());
+            doReturn(1.0).when(weatherHelper).getStationOffset(anyDouble(), anyDouble(), any(), any());
 
-        doReturn("").when(weatherHelper).runOpenMeteoAgent(anyString(), anyString(), anyString());
-        doReturn(1.0).when(weatherHelper).getStationOffset(anyDouble(), anyDouble(), any(), any());
+            RemoteStoreClient mockStoreClient = mock(RemoteStoreClient.class);
+            RemoteRDBStoreClient mockRDBClient = mock(RemoteRDBStoreClient.class);
 
-        RemoteStoreClient mockStoreClient = mock(RemoteStoreClient.class);
-        RemoteRDBStoreClient mockRDBClient = mock(RemoteRDBStoreClient.class);
+            Map<String, Object> testMap = new HashMap<>();
+            testMap.put(WeatherHelper.STORE_CLIENT, mockStoreClient);
+            testMap.put(WeatherHelper.RDB_CLIENT, mockRDBClient);
 
-        Map<String, Object> testMap = new HashMap<>();
-        testMap.put(WeatherHelper.STORE_CLIENT, mockStoreClient);
-        testMap.put(WeatherHelper.RDB_CLIENT, mockRDBClient);
+            doReturn(testMap).when(weatherHelper).getWeatherClients(anyString());
 
-        doReturn(testMap).when(weatherHelper).getWeatherClients(anyString());
+            TimeSeries<Instant> mockTS = mock(TimeSeries.class);
 
-        TimeSeries<Instant> mockTS = mock(TimeSeries.class);
+            List<Instant> testTimesList = Collections.nCopies(8760, Instant.parse("2023-01-01T00:00:00.00Z"));
+            List<Double> testWeatherData = Collections.nCopies(8760, 0.00);
 
-        List<Instant> testTimesList = Collections.nCopies(8760, Instant.parse("2023-01-01T00:00:00.00Z"));
-        List<Double> testWeatherData = Collections.nCopies(8760, 0.00);
+            doReturn(testTimesList).when(mockTS).getTimes();
+            doReturn(testWeatherData).when(mockTS).getValuesAsDouble(anyString());
 
-        doReturn(testTimesList).when(mockTS).getTimes();
-        doReturn(testWeatherData).when(mockTS).getValuesAsDouble(anyString());
+            String testCRS = "4326";
 
-        String testCRS = "32633";
+            Coordinate[] coordinates = new Coordinate[]{
+                    new Coordinate(0, 0),
+                    new Coordinate(0, 5),
+                    new Coordinate(5, 5),
+                    new Coordinate(5, 0),
+                    new Coordinate(0, 0)
+            };
+            Coordinate[] coordinates1 = new Coordinate[]{
+                    new Coordinate(0.1, 0.1),
+                    new Coordinate(0.1, 5.1),
+                    new Coordinate(5.1, 5.1),
+                    new Coordinate(5.1, 0.1),
+                    new Coordinate(0.1, 0.1)
+            };
 
-        try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
-                // test when there are no retrievable weather data and request to OpenMeteoAgent fails
-                JSONArray envelope = new JSONArray();
-                envelope.put(new JSONObject().put("envelope", "555438.08#305587.27999#-0.6#555484.04#305587.27999#-0.6#555484.04#305614.87999#-0.6#555438.08#305614.87999#-0.6#555438.08#305587.27999#-0.6"));
+            GeometryFactory geometryFactory = new GeometryFactory();
 
-                accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
-                        .thenReturn(envelope).thenReturn(new JSONArray());
+            Polygon polygon = geometryFactory.createPolygon(coordinates);
+            Polygon polygon1 = geometryFactory.createPolygon(coordinates1);
 
+            CEAGeometryData testBuilding = new CEAGeometryData(Arrays.asList(polygon), testCRS, "10.0");
+            CEAGeometryData testBuilding1 = new CEAGeometryData(Arrays.asList(polygon1), testCRS, "10.0");
+
+            List<CEAGeometryData> testSurroundings = Arrays.asList(testBuilding, testBuilding1);
+
+            try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
+                // test when getWeather fails
                 List<Object> testList = new ArrayList<>();
 
-                assertFalse(weatherHelper.getWeather("", "", "", testCRS, testList));
+                assertFalse(weatherHelper.getWeather(new CEAGeometryData(), new ArrayList<>(), "", testCRS, testList));
                 assertEquals(0, testList.size());
 
 
@@ -75,21 +101,20 @@ public class WeatherHelperTest {
                 JSONArray station = new JSONArray();
                 station.put(new JSONObject().put("station", "testStation"));
                 JSONArray weatherIRIs = new JSONArray();
-                weatherIRIs.put(new JSONObject().put("weatherParameter", ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoems) + "testWeather").put("measure", "testMeasure").put("rdb", "testRDB"));
+                weatherIRIs.put(new JSONObject().put("weatherParameter", "test/testWeather").put("measure", "testMeasure").put("rdb", "testRDB"));
                 JSONArray coordinate = new JSONArray();
                 coordinate.put(new JSONObject().put("coordinate", "1.0#1.0"));
                 JSONArray elevation = new JSONArray();
                 elevation.put(new JSONObject().put("elevation", "1.0"));
 
-
                 accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
-                        .thenReturn(envelope).thenReturn(station).thenReturn(weatherIRIs).thenReturn(coordinate).thenReturn(elevation);
+                        .thenReturn(station).thenReturn(weatherIRIs).thenReturn(coordinate).thenReturn(elevation);
 
                 try (MockedStatic<TimeSeriesHelper> mockTSHelper = mockStatic(TimeSeriesHelper.class)) {
                     mockTSHelper.when(() -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any()))
                             .thenReturn(mockTS);
 
-                    assertTrue(weatherHelper.getWeather("", "", "", testCRS, testList));
+                    assertTrue(weatherHelper.getWeather(testBuilding, testSurroundings, "", testCRS, testList));
 
                     mockTSHelper.verify(
                             times(1), () -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any())
@@ -100,32 +125,39 @@ public class WeatherHelperTest {
                     assertTrue(((Map<String, List<String>>) testList.get(1)).containsKey("testWeather"));
                     assertEquals(((Map<String, List<String>>) testList.get(1)).get("testWeather").size(), ((List<OffsetDateTime>) testList.get(0)).size());
                     assertEquals(((List<OffsetDateTime>) testList.get(0)).size(), 8760);
+                }
             }
         }
     }
 
     @Test
     public void testRunOpenMeteoAgent() {
-        OntologyURIHelper ontologyURIHelper = new OntologyURIHelper("CEAAgentConfig");
+        String content = "uri.ontology.ontocitygml=test/\nuri.ontology.om=test/\nuri.ontology.ontoubemmp=test/\nuri.ontology.rdf=test/\nuri.ontology.owl=test/\n" +
+                "uri.ontology.bot=test/\nuri.ontology.ontobuiltenv=test/\nuri.ontology.ontobuiltstructure=test/\nuri.ontology.ontotimeseries=test/\nuri.ontology.ontotimeseries=test/\n" +
+                "uri.ontology.geo=test/\nuri.ontology.geofunction=test/\nuri.ontology.bldg=test/\nuri.ontology.grp=test/\nuri.ontology.gml=test/\n" +
+                "uri.ontology.geoliteral=test/\nuri.ontology.geofunction=test/\nuri.opengis.epsg=test/\nuri.service.geo=test/";
+        InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
+        try (MockedStatic<FileReader> fileReaderMock = mockStatic(FileReader.class)) {
+            fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
+            WeatherHelper weatherHelper = spy(new WeatherHelper("", "", "", ""));
 
-        WeatherHelper weatherHelper = spy(new WeatherHelper("", "", "", "", ontologyURIHelper));
+            try (MockedStatic<Unirest> unirestMock = mockStatic(Unirest.class, RETURNS_MOCKS)) {
 
-        try (MockedStatic<Unirest> unirestMock = mockStatic(Unirest.class, RETURNS_MOCKS)) {
+                HttpResponse<String> mockResponse = mock(HttpResponse.class);
 
-            HttpResponse<String> mockResponse = mock(HttpResponse.class);
+                doReturn(HttpURLConnection.HTTP_OK).when(mockResponse).getStatus();
 
-            doReturn(HttpURLConnection.HTTP_OK).when(mockResponse).getStatus();
+                unirestMock.when(() -> Unirest.post(anyString())
+                                .header(anyString(), anyString())
+                                .body(anyString())
+                                .socketTimeout(anyInt())
+                                .asString())
+                        .thenReturn(mockResponse);
 
-            unirestMock.when(() -> Unirest.post(anyString())
-                            .header(anyString(), anyString())
-                            .body(anyString())
-                            .socketTimeout(anyInt())
-                            .asString())
-                    .thenReturn(mockResponse);
+                String result = weatherHelper.runOpenMeteoAgent("", "", "");
 
-            String result = weatherHelper.runOpenMeteoAgent("", "", "");
-
-            assertEquals(result, "");
+                assertEquals(result, "");
+            }
         }
     }
 }

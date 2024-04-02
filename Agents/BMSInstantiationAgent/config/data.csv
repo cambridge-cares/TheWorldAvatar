@@ -1,0 +1,16 @@
+[REQUIRED]
+Pipe_label,Pipe-006
+CHW_label,CHW-006
+
+[OPTIONAL]
+TempSetpoint_IRI,https://www.theworldavatar.com/kg/ontobms/V_MAU_C7_1_P6_TempSetpoint
+
+PressureSetpoint_IRI,https://www.theworldavatar.com/kg/ontobms/V_MAU_C7_1_P6_PressureSetpoint
+
+WaterFlowRate_IRI,https://www.theworldavatar.com/kg/ontobms/V_MAU1_WaterFlowRate
+
+PressureSensor_label,Pressure P6 Sensor 1
+Pressure_IRI,https://www.theworldavatar.com/kg/ontobms/V_MAU_C7_1P6Pressure
+
+TemperatureSensor_label,Supply Temperature P6 Sensor
+Temperature_IRI,https://www.theworldavatar.com/kg/ontobms/V_MAU_C7_1P6Temperature

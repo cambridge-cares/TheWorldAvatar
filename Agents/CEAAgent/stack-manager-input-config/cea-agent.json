@@ -3,13 +3,23 @@
         "Name": "cea-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "cea-agent:2.1.0",
+                "Image": "ghcr.io/cambridge-cares/cea-agent:3.4.3",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/CEAAgent/cea-agent/src/main/resources/CEAAgentConfig.properties",
+                        "Target": "/resources/CEAAgentConfig.properties"
+                    }
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
                     },
                     {
                         "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "ontop"
                     }
                 ],
                 "Secrets": [

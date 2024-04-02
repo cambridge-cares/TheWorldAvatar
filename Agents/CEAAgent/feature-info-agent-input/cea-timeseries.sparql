@@ -1,0 +1,538 @@
+PREFIX ubem: <https://www.theworldavatar.com/kg/ontoubemmp/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?Measurement ?Name ?Unit
+WHERE
+{
+    {
+        [IRI] ubem:consumesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatingConsumption ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Building heating consumption" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] ubem:consumesEnergy ?quantity .
+        ?quantity rdf:type ubem:CoolingConsumption ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Building cooling consumption" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] ubem:consumesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricityConsumption ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Building electricity consumption" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] ubem:consumesEnergy ?quantity .
+        ?quantity rdf:type ubem:GridConsumption ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Building grid consumption" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:RoofFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVPanel ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Roof potential electricity generation from photovoltaic panels" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:NorthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVPanel ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("North wall potential electricity generation from photovoltaic panels" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:SouthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVPanel ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("South wall potential electricity generation from photovoltaic panels" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:WestWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVPanel ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("West wall potential electricity generation from photovoltaic panels" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:EastWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVPanel ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("East wall potential electricity generation from photovoltaic panels" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:RoofFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:ThermalPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Roof potential heat generation from plate type solar collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:NorthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:ThermalPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("North wall potential heat generation from plate type solar collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:SouthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:ThermalPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("South wall potential heat generation from plate type solar collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:WestWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:ThermalPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("West wall potential heat generation from plate type solar collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:EastWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:ThermalPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("East wall potential heat generation from plate type solar collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:RoofFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:ThermalTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Roof potential heat generation from tube type solar collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:NorthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:ThermalTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("North wall potential heat generation from tube type solar collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:SouthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:ThermalTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("South wall potential heat generation from tube type solar collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:WestWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:ThermalTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("West wall potential heat generation from tube type solar collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:EastWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:ThermalTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("East wall potential heat generation from tube type solar collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:RoofFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Roof potential electricity generation from plate type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:NorthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("North wall potential electricity generation from plate type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:SouthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("South wall potential electricity generation from plate type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:WestWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("West wall potential electricity generation from plate type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:EastWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("East wall potential electricity generation from plate type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:RoofFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Roof potential heat generation from plate type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:NorthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("North wall potential heat generation from plate type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:SouthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("South wall potential heat generation from plate type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:WestWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("West wall potential heat generation from plate type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:EastWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTPlateCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("East wall potential heat generation from plate type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:RoofFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Roof potential electricity generation from tube type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:NorthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("North wall potential electricity generation from tube type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:SouthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("South wall potential electricity generation from tube type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:WestWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("West wall potential electricity generation from tube type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:EastWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:ElectricitySupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("East wall potential electricity generation from tube type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:RoofFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("Roof potential heat generation from tube type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:NorthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("North wall potential heat generation from tube type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:SouthWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("South wall potential heat generation from tube type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:WestWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("West wall potential heat generation from tube type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+    UNION
+    {
+        [IRI] bs:hasFacade ?facade .
+        ?facade rdf:type bs:EastWallFacade ;
+            ubem:hasTheoreticalEnergyProduction ?device .
+        ?device rdf:type ubem:PVTTubeCollector ;
+            ubem:producesEnergy ?quantity .
+        ?quantity rdf:type ubem:HeatSupply ;
+            om:hasValue ?Measurement .
+        ?Measurement om:hasUnit om:kilowattHour .
+
+        BIND("East wall potential heat generation from tube type photovoltaic-thermal collectors" AS ?Name)
+        BIND("kWh" AS ?Unit)
+    }
+}

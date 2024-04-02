@@ -1,60 +1,435 @@
 {
-	"name": "All Layers",
-	"groups": [
-		{
-			"name": "Environment",
-			"groups": [
-				{
-					"name": "Forestry",
-					"stack": "http://localhost:38383",
-					"sources": [
-						{
-							"id": "forestry",
-							"type": "vector",
-							"tiles": [
-								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-							]
-						}
-					],
+    "name": "UK Base World",
+    "groups": [
+        {
+            "name": "Regions",
+            "sources": [
+                {
+                    "id": "gb-countries-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:countries_gb&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "ni-countries-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:countries_ni&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "gb-counties-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:counties_gb&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "ni-counties-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:counties_ni&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "gb-countries-fill-layer",
+                    "name": "Countries",
+                    "source": "gb-countries-source",
+                    "source-layer": "countries_gb",
+                    "interactions": "hover-only",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#31ff61",
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                            0.45,
+                            0.10
+                        ]
+                    }
+                },
+                {
+                    "id": "gb-countries-line-layer",
+                    "name": "Countries",
+                    "source": "gb-countries-source",
+                    "source-layer": "countries_gb",
+                    "interactions": "hover-only",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#31ff61",
+                        "line-width": 1,
+                        "line-opacity": 0.25
+                    }
+                },
+                {
+                    "id": "ni-countries-fill-layer",
+                    "name": "Countries",
+                    "source": "ni-countries-source",
+                    "source-layer": "countries_ni",
+                    "interactions": "hover-only",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#31ff61",
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                            0.25,
+                            0.10
+                        ]
+                    }
+                },
+                {
+                    "id": "ni-countries-line-layer",
+                    "name": "Countries",
+                    "source": "ni-countries-source",
+                    "source-layer": "countries_ni",
+                    "interactions": "hover-only",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#31ff61",
+                        "line-width": 1,
+                        "line-opacity": 0.25
+                    }
+                },
+                {
+                    "id": "gb-counties-fill-layer",
+                    "name": "Ceremonial counties",
+                    "source": "gb-counties-source",
+                    "source-layer": "counties_gb",
+                    "interactions": "hover-only",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#2edaff",
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                            0.25,
+                            0.10
+                        ]
+                    }
+                },
+                {
+                    "id": "gb-counties-line-layer",
+                    "name": "Ceremonial counties",
+                    "source": "gb-counties-source",
+                    "source-layer": "counties_gb",
+                    "interactions": "hover-only",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#2edaff",
+                        "line-width": 1,
+                        "line-opacity": 0.25
+                    }
+                },
+                {
+                    "id": "ni-counties-fill-layer",
+                    "name": "Ceremonial counties",
+                    "source": "ni-counties-source",
+                    "source-layer": "counties_ni",
+                    "interactions": "hover-only",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#2edaff",
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                            0.25,
+                            0.10
+                        ]
+                    }
+                },
+                {
+                    "id": "ni-counties-line-layer",
+                    "name": "Ceremonial counties",
+                    "source": "ni-counties-source",
+                    "source-layer": "counties_ni",
+                    "interactions": "hover-only",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#2edaff",
+                        "line-width": 1,
+                        "line-opacity": 0.25
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Population data",
+            "sources": [
+                {
+                    "id": "uk-population-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "uk-population-layer",
+                    "name": "UK population count",
+                    "source": "uk-population-source",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Forestry",
+            "stack": "http://localhost:38383",
+            "sources": [
+                {
+                    "id": "forestry",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "forestry-woodland",
+                    "type": "fill",
+                    "name": "Woodland",
+                    "source": "forestry",
+                    "source-layer": "forestry",
+                    "filter": ["==", "category", "Woodland"],
+                    "minzoom": 5,
+                    "paint": {
+                        "fill-color": ["get", "colour"]
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "forestry-non-woodland",
+                    "type": "fill",
+                    "name": "Non-Woodland",
+                    "source": "forestry",
+                    "source-layer": "forestry",
+                    "filter": ["==", "category", "Non woodland"],
+                    "minzoom": 5,
+                    "paint": {
+                        "fill-color": ["get", "colour"]
+                    },
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Power network",
+            "stack": "http://localhost:38383",
+            "groups": [
+                {
+                    "name": "Generation",
+                    "stack": "http://localhost:38383",
+                    "sources": [
+                        {
+                            "id": "uk-power-source",  
+                            "type": "vector",
+                            "tiles": [
+                                "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                            ]
+                        },
+                        {
+                            "id": "uk-power-radius-source",  
+                            "type": "vector",
+                            "tiles": [
+                                "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023_pop&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                            ]
+                        }
+                        
+                    ], 
                     "layers": [
                         {
-                            "id": "forestry-woodland",
-                            "type": "fill",
-                            "name": "Woodland",
-                            "source": "forestry",
-                            "source-layer": "forestry",
-                            "filter": ["==", "category", "Woodland"],
-                            "minzoom": 5,
-                            "paint": {
-                                "fill-color": ["get", "colour"]
-                            },
+                            "id": "power_renewable_layer",
+                            "name": "Renewable",
+                            "source": "uk-power-source",
+                            "source-layer": "dukes_2023",
+                            "type": "circle",
+                            "filter": [
+                                "!",
+                                [
+                                    "in",
+                                    ["get", "type"],
+                                    ["literal", ["Fossil Fuel", "Nuclear"]]
+                                ]
+                            ],
                             "layout": {
-                                "visibility": "none"
+                                "visibility": "visible",
+                                "circle-sort-key": [
+                                    "*", -1.0, ["get", "capacity"]
+                                ]
+                            },
+                            "paint": {
+                                "circle-stroke-color": "#000000",
+                                "circle-stroke-width": 1,
+                                "circle-opacity": [
+                                    "case",
+                                    ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                                    1.0,
+                                    0.65
+                                ],
+                                "circle-radius": [
+                                    "interpolate",
+                                    ["linear"],
+                                    ["get", "capacity"],
+                                    0, 4,
+                                    100, 8,
+                                    1000, 14,
+                                    2250, 28
+                                ],
+                                "circle-color": [
+                                    "case",
+                                    ["==", ["get", "primary_fuel"], "Biomass"], "#66ff66",
+                                    ["==", ["get", "primary_fuel"], "MSW"], "#006600",
+                                    ["==", ["get", "primary_fuel"], "Wind"], "#99ccff",
+                                    ["==", ["get", "primary_fuel"], "Hydro"], "#006699",
+                                    ["==", ["get", "primary_fuel"], "Pumped hydro"], "#006699",
+                                    ["==", ["get", "primary_fuel"], "Solar"], "#ffff99",
+                                    "#FFFFFF"
+                                ]
                             }
                         },
                         {
-                            "id": "forestry-non-woodland",
-                            "type": "fill",
-                            "name": "Non-Woodland",
-                            "source": "forestry",
-                            "source-layer": "forestry",
-                            "filter": ["==", "category", "Non woodland"],
-                            "minzoom": 5,
-                            "paint": {
-                                "fill-color": ["get", "colour"]
-                            },
+                            "id": "power_fossil_layer",
+                            "name": "Non-renewable",
+                            "source": "uk-power-source",
+                            "source-layer": "dukes_2023",
+                            "type": "circle",
+                            "filter": [
+                                "in",
+                                ["get", "type"],
+                                ["literal", ["Fossil Fuel", "Nuclear"]]
+                            ],
                             "layout": {
-                                "visibility": "none"
+                                "visibility": "visible",
+                                "circle-sort-key": [
+                                    "*", -1.0, ["get", "capacity"]
+                                ]
+                            },
+                            "paint": {
+                                "circle-stroke-color": "#000000",
+                                "circle-stroke-width": 1,
+                                "circle-opacity": [
+                                    "case",
+                                    ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                                    1.0,
+                                    0.65
+                                ],
+                                "circle-radius": [
+                                    "interpolate",
+                                    ["linear"],
+                                    ["get", "capacity"],
+                                    0, 4,
+                                    100, 8,
+                                    1000, 14,
+                                    2250, 28
+                                ],
+                                "circle-color": [
+                                    "case",
+                                    ["==", ["get", "primary_fuel"], "Diesel/Gas Oil"], "#cccccc",
+                                    ["==", ["get", "primary_fuel"], "Coal"], "#333333",
+                                    ["==", ["get", "primary_fuel"], "Sour Gas"], "#ff9999",
+                                    ["==", ["get", "primary_fuel"], "Natural Gas"], "#660000",
+                                    ["==", ["get", "primary_fuel"], "Nuclear"], "#999900",
+                                    "#FFFFFF"
+                                ]
+                            }
+                        },
+                        {
+                            "id": "power_renewable_radius_layer",
+                            "name": "Renewable",
+                            "source": "uk-power-radius-source",
+                            "source-layer": "dukes_2023_pop",
+                            "order": -1,
+                            "minzoom": 9,
+                            "treeable": false,
+                            "clickable": false,
+                            "type": "fill",
+                            "filter": [
+                                "all", 
+                                ["==", ["get", "iri"], "[SELECTED-IRI]"],
+                                [
+                                    "!", [
+                                        "in",
+                                        ["get", "type"],
+                                        ["literal", ["Fossil Fuel", "Nuclear"]]
+                                    ]
+                                ]
+                            ],
+                            "layout": {
+                                "visibility": "visible"
+                            },
+                            "paint": {
+                                "fill-outline-color": "#000000",
+                                "fill-color": "#000000",
+                                "fill-opacity": 0.10
+                            }
+                        },
+                        {
+                            "id": "power_fossil_radius_layer",
+                            "name": "Non-renewable",
+                            "source": "uk-power-radius-source",
+                            "source-layer": "dukes_2023_pop",
+                            "order": -1,
+                            "minzoom": 9,
+                            "treeable": false,
+                            "clickable": false,
+                            "type": "fill",
+                            "filter": [
+                                "all", 
+                                ["==", ["get", "iri"], "[SELECTED-IRI]"],
+                                [
+                                    "in",
+                                    ["get", "type"],
+                                    ["literal", ["Fossil Fuel", "Nuclear"]]
+                                ]
+                            ],
+                            "layout": {
+                                "visibility": "visible"
+                            },
+                            "paint": {
+                                "fill-outline-color": "#000000",
+                                "fill-color": "#000000",
+                                "fill-opacity": 0.10
                             }
                         }
                     ]
-				}
-            ]
-		},
-		{
-			"name": "Power Network",
-			"groups": [
-				{
+                },
+                {
 					"name": "National Grid",
 					"stack": "http://localhost:38383",
 					"sources": [
@@ -101,9 +476,9 @@
 							"name": "Poles",
 							"source": "national-grid-poles",
 							"source-layer": "ng_poles",
-							"treeable": true,
-							"minzoom": 10,
+							"minzoom": 8,
 							"layout": {
+                                "visibility": "none",
 								"icon-allow-overlap": true,
 								"icon-ignore-placement": true,
 								"icon-image": ["get", "icon"],
@@ -124,8 +499,8 @@
 							"name": "Towers",
 							"source": "national-grid-towers",
 							"source-layer": "ng_towers",
-							"treeable": true,
 							"layout": {
+                                "visibility": "none",
 								"icon-allow-overlap": true,
 								"icon-ignore-placement": true,
 								"icon-image": ["get", "icon"],
@@ -148,8 +523,8 @@
 							"name": "Substations",
 							"source": "substations-points",
 							"source-layer": "ng_substations",
-							"treeable": true,
 							"layout": {
+                                "visibility": "none",
 								"icon-allow-overlap": true,
 								"icon-ignore-placement": true,
 								"icon-image": ["get", "icon"],
@@ -169,11 +544,13 @@
 						{
 							"id": "national-grid-overhead-lines",
 							"type": "line",
-							"name": "Overhead Lines",
+							"name": "Overhead lines",
 							"source": "national-grid-overhead-lines",
 							"minzoom": 8,
 							"source-layer": "ng_overhead_lines",
-							"treeable": true,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": ["get", "line_colour"],
 								"line-width": [
@@ -190,11 +567,13 @@
 						{
 							"id": "national-grid-cables-outline",
 							"type": "line",
-							"name": "Underground Cables",
+							"name": "Underground cables",
 							"source": "national-grid-cables",
 							"minzoom": 8,
 							"source-layer": "ng_underground_cables",
-							"treeable": true,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": "#895a5a",
 								"line-width": [
@@ -261,11 +640,13 @@
 						{
 							"id": "high-overhead-lines",
 							"type": "line",
-							"name": "High Voltage OHL",
+							"name": "High voltage OHL",
 							"source": "high-overhead-lines",
 							"source-layer": "ukpn_overhead_lines_high",
-							"treeable": true,
 							"minzoom": 8,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": ["get", "line_colour"],
 								"line-width": [
@@ -282,11 +663,13 @@
 						{
 							"id": "medium-overhead-lines",
 							"type": "line",
-							"name": "Medium Voltage OHL",
+							"name": "Medium voltage OHL",
 							"source": "medium-overhead-lines",
 							"source-layer": "ukpn_overhead_lines_medium",
-							"treeable": true,
 							"minzoom": 8,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": ["get", "line_colour"],
 								"line-width": [
@@ -303,11 +686,13 @@
 						{
 							"id": "high-distribution-overhead-lines",
 							"type": "line",
-							"name": "High Distribution Voltage OHL",
+							"name": "High distribution voltage OHL",
 							"source": "high-distribution-overhead-lines",
 							"source-layer": "ukpn_overhead_lines_high_distribution",
-							"treeable": true,
 							"minzoom": 8,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": ["get", "line_colour"],
 								"line-width": [
@@ -324,11 +709,13 @@
 						{
 							"id": "low-distribution-overhead-lines",
 							"type": "line",
-							"name": "Low Distribution Voltage OHL",
+							"name": "Low distribution voltage OHL",
 							"source": "low-distribution-overhead-lines",
 							"source-layer": "ukpn_overhead_lines_low_distribution",
-							"treeable": true,
 							"minzoom": 8,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": ["get", "line_colour"],
 								"line-width": [
@@ -345,12 +732,12 @@
 						{
 							"id": "high-poles-towers",
 							"type": "symbol",
-							"name": "High Voltage Pole Towers",
+							"name": "High voltage pole towers",
 							"source": "high-poles-towers",
 							"source-layer": "ukpn_poles_towers_high",
-							"treeable": true,
-							"minzoom": 12,
+							"minzoom": 8,
 							"layout": {
+                                "visibility": "none",
 								"icon-allow-overlap": true,
 								"icon-ignore-placement": true,
 								"icon-image": ["get", "icon"],
@@ -370,12 +757,12 @@
 						{
 							"id": "medium-poles-towers",
 							"type": "symbol",
-							"name": "Medium Pole Towers",
+							"name": "Medium pole towers",
 							"source": "medium-poles-towers",
 							"source-layer": "ukpn_poles_towers_medium",
-							"treeable": true,
-							"minzoom": 13,
+							"minzoom": 8,
 							"layout": {
+                                "visibility": "none",
 								"icon-allow-overlap": true,
 								"icon-ignore-placement": true,
 								"icon-image": ["get", "icon"],
@@ -393,109 +780,9 @@
 							}
 						}
 					]
-				},
-				{
-					"name": "Power Generation",
-					"stack": "http://localhost:38383/",
-					"sources": [
-						{
-							"id": "uk-power-source",
-							"type": "vector",
-							"tiles": [
-								"http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-							]
-						}
-					],
-					"layers": [
-						{
-							"id": "power_renewable_layer",
-							"name": "Renewable Sites",
-							"source": "uk-power-source",
-							"source-layer": "dukes_2023",
-							"type": "circle",
-							"filter": [
-								"!",
-								[
-									"in",
-									["get", "type"],
-									["literal", ["Fossil Fuel", "Nuclear"]]
-								]
-							],
-							"layout": {
-								"visibility": "visible",
-								"circle-sort-key": [
-									"*", -1.0, ["get", "capacity"]
-								]
-							},
-							"paint": {
-								"circle-stroke-color": "#000000",
-								"circle-stroke-width": 1,
-								"circle-opacity": 0.65,
-								"circle-radius": [
-									"interpolate",
-									["linear"],
-									["get", "capacity"],
-									0, 4,
-									100, 8,
-									1000, 14,
-									2250, 28
-								],
-								"circle-color": [
-									"case",
-									["==", ["get", "primary_fuel"], "Biomass"], "#66ff66",
-									["==", ["get", "primary_fuel"], "MSW"], "#006600",
-									["==", ["get", "primary_fuel"], "Wind"], "#99ccff",
-									["==", ["get", "primary_fuel"], "Hydro"], "#006699",
-									["==", ["get", "primary_fuel"], "Pumped hydro"], "#006699",
-									["==", ["get", "primary_fuel"], "Solar"], "#ffff99",
-									"#FFFFFF"
-								]
-							}
-						},
-						{
-							"id": "power_fossil_layer",
-							"name": "Non-renewable Sites",
-							"source": "uk-power-source",
-							"source-layer": "dukes_2023",
-							"type": "circle",
-							"filter": [
-								"in",
-								["get", "type"],
-								["literal", ["Fossil Fuel", "Nuclear"]]
-							],
-							"layout": {
-								"visibility": "visible",
-								"circle-sort-key": [
-									"*", -1.0, ["get", "capacity"]
-								]
-							},
-							"paint": {
-								"circle-stroke-color": "#000000",
-								"circle-stroke-width": 1,
-								"circle-opacity": 0.65,
-								"circle-radius": [
-									"interpolate",
-									["linear"],
-									["get", "capacity"],
-									0, 4,
-									100, 8,
-									1000, 14,
-									2250, 28
-								],
-								"circle-color": [
-									"case",
-									["==", ["get", "primary_fuel"], "Diesel/Gas Oil"], "#cccccc",
-									["==", ["get", "primary_fuel"], "Coal"], "#333333",
-									["==", ["get", "primary_fuel"], "Sour Gas"], "#ff9999",
-									["==", ["get", "primary_fuel"], "Natural Gas"], "#660000",
-									["==", ["get", "primary_fuel"], "Nuclear"], "#999900",
-									"#FFFFFF"
-								]
-							}
-						}
-					]
 				}
-			]
-		}	
-	]
+            ]
+        }
+        
+    ]
 }

@@ -5,11 +5,6 @@
 class MapHandler_Cesium extends MapHandler {
 
     /**
-     * Mapbox popup element.
-     */
-    public static POPUP;
-
-    /**
      * Map of data source keyed by layer name.
      */
     public static DATA_SOURCES = {};
@@ -150,8 +145,6 @@ class MapHandler_Cesium extends MapHandler {
      * @param event mouse event
      */
     public handleClick(event) {
-        if(!MapHandler.ALLOW_CLICKS) return;
-
         // Get the feature at the click point
         let self = this;
         CesiumUtils.getFeature(event, function(feature) {
@@ -163,16 +156,29 @@ class MapHandler_Cesium extends MapHandler {
 
             window.currentFeature = feature;
 
+            // Try to get the layer object for the feature
+            let layerID = feature?.tileset?.layerID;
+            if(layerID == null) layerID = feature?.imageryLayer?.imageryProvider?.layerID
+            
+            // Prevent clicks if the layer is present and denys them
+            let layer = Manager.DATA_STORE.getLayerWithID(layerID);
+            let clickable = (layer == null) || (layer.interactions === "all" || layer.interactions === "click-only");
+            if (!clickable) {
+                return;
+            }
+
+            // Get feature properties
             if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                 // 2D WMS feature
                 let properties = {...feature.data.properties};
                 self.manager.showFeature(feature, properties);
+
             } else {
                 // 3D feature
                 let properties = {};
                 let contentMetadata = feature?.content?.metadata;
     
-                // Transform properties for compatability with manager code
+                // Transform properties for compatibility with manager code
                 if (Cesium.defined(contentMetadata)) {
                     properties = {...contentMetadata["_properties"]};
 
@@ -201,12 +207,29 @@ class MapHandler_Cesium extends MapHandler {
      * @param event mouse event
      */
     private handleMouse(event) {
-        if(!MapHandler.ALLOW_CLICKS) return;
+        document.getElementById("map").style.cursor = "default";
 
         // Get the feature at the click point
         CesiumUtils.getFeature(event, function(feature) {
             if(feature == null) {
                 PopupHandler.setVisibility(false);
+                return;
+            }
+
+            // Try to get the layer object for the feature
+            let layerID = feature?.tileset?.layerID;
+            if(layerID == null) layerID = feature?.imageryLayer?.imageryProvider?.layerID
+            let layer = Manager.DATA_STORE.getLayerWithID(layerID);
+
+            // Check if clicking is allowed on this layer
+            let clickable = (layer == null) || (layer.interactions === "all" || layer.interactions === "click-only");
+            if(clickable) {
+                document.getElementById("map").style.cursor = "pointer";
+            }
+
+            // Check if hover effects are allowed
+            let hoverable = (layer == null) || (layer.interactions === "all" || layer.interactions === "hover-only");
+            if(!hoverable) {
                 return;
             }
 

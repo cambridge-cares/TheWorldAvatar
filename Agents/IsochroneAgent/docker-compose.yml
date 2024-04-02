@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   isochroneagent:
-    image: isochroneagent:1.0.0
+    image: ghcr.io/cambridge-cares/isochroneagent:1.2.0
     build: .
     ports:
       - "10105:8080"

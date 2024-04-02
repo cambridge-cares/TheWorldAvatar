@@ -1,7 +1,7 @@
 # Install the Emission Agent in Docker container
 #==================================================================================================
 # Reference published Docker image for Stack-Client resources to use
-FROM docker.cmclinnovations.com/stack-client:1.6.2 AS stackclients
+FROM ghcr.io/cambridge-cares/stack-client:1.20.1 AS stackclients
 
 #------------------------------------------------------
 # Base image to be reused

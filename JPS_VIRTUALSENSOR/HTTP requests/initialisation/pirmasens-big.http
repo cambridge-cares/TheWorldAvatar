@@ -1,0 +1,7 @@
+# Contains both municipal district heating plant
+POST http://localhost:3838/dispersion-interactor/InitialiseSimulation
+?ewkt=SRID=32632;POLYGON((396000 5449000, 400000 5449000, 400000 5455000, 396000 5455000, 396000 5449000))
+&nx=100
+&ny=200
+&label=PirmasensBig
+&z=0

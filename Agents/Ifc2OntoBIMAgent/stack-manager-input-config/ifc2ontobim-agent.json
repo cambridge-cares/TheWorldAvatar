@@ -3,7 +3,10 @@
         "Name": "ifc2ontobim-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ifc2ontobim-agent:1.2.0",
+                "Image": "ifc2ontobim-agent:1.2.1",
+                "Env": [
+                    "JAVA_OPTS=-Xms16g -Xmx16g -XX:InitialRAMPercentage=10 -XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=90"
+                ],
                 "Mounts": [
                     {
                         "Type": "bind",

@@ -1,0 +1,272 @@
+<div id="sidePanelLegendContent">
+
+    <!-- Legend section -->
+    <div id="legend-regions" style="margin-bottom: 20px;">
+
+        <!-- Section header -->
+        <div id="header"
+            style="display: flex; flex-direction: row; margin-bottom: 15px; border-width: 0 0 2px 0 !important; border-style: solid; border-color: lightgray; cursor: pointer;"
+            onclick="toggleLegend('legend-regions')">
+            <h3 style="padding: 0px !important; margin: 0px !important; flex-grow: 1; line-height: 30px;">
+                Regions
+            </h3>
+            <i id="icon" class="fas fa-angle-up fa-lg" style="height: 30px; line-height: 30px; flex-grow: 0;"></i>
+        </div>
+
+        <!-- Section contents -->
+        <div id="contents" style="display: block;">
+            <div style="height: 30px; padding-bottom: 6px;">
+                <img height="30" width="30" style="float: left;" src="./legend/legend-countries.svg">
+                <p style="padding-left: 8px; line-height: 30px;">
+                    Countries
+                </p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px;">
+                <img height="30" width="30" style="float: left;" src="./legend/legend-counties.svg">
+                <p style="padding-left: 8px; line-height: 30px;">
+                    Ceremonial counties
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend section -->
+    <div id="legend-population" style="margin-bottom: 20px;">
+
+        <!-- Section header -->
+        <div id="header"
+            style="display: flex; flex-direction: row; margin-bottom: 15px; border-width: 0 0 2px 0 !important; border-style: solid; border-color: lightgray; cursor: pointer;"
+            onclick="toggleLegend('legend-population')">
+            <h3 style="padding: 0px !important; margin: 0px !important; flex-grow: 1; line-height: 30px;">
+                Population density
+            </h3>
+            <i id="icon" class="fas fa-angle-up fa-lg" style="height: 30px; line-height: 30px; flex-grow: 0;"></i>
+        </div>
+
+        <!-- Section contents -->
+        <div id="contents" style="display: block;">
+            <div style="height: 75px; padding-bottom: 6px;">
+                <img width="100%" src="./legend/legend-population.svg">
+                <table width="100%">
+                    <tr>
+                        <td width="50%" style="text-align: left; font-size: 10pt;">
+                            Low (0 per KM<sup>2</sup>)
+                        </td>
+                        <td width="50%" style="text-align: right; font-size: 10pt;">
+                            High (>500 per KM<sup>2</sup>)
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend section -->
+    <div id="legend-dukes" style="margin-bottom: 20px;">
+
+        <!-- Section header -->
+        <div id="header"
+            style="display: flex; flex-direction: row; margin-bottom: 15px; border-width: 0 0 2px 0 !important; border-style: solid; border-color: lightgray; cursor: pointer;"
+            onclick="toggleLegend('legend-dukes')">
+            <h3 style="padding: 0px !important; margin: 0px !important; flex-grow: 1; line-height: 30px;">
+                Power Generation Sites
+            </h3>
+            <i id="icon" class="fas fa-angle-up fa-lg" style="height: 30px; line-height: 30px; flex-grow: 0;"></i>
+        </div>
+
+        <!-- Section contents -->
+        <div id="contents" style="display: block;">
+            <p style="color: grey; font-size: 11pt; font-style: italic; padding-bottom: 15px;">
+                Power generation sites are primarily grouped by their main fuel as reported by the DUKES 2023 data set.
+                <br /><br />
+                The visual size of sites is representative of their reported Installed Capacity (MW).
+            </p>
+
+            <table>
+                <tr>
+                    <td width="50%">
+                        <div style="height: 30px; padding-bottom: 6px;">
+                            <svg height="30" width="30" style="float: left;">
+                                <circle cx="15" cy="15" r="12" stroke="black" stroke-width="1" fill="#66ff66" />
+                            </svg>
+                            <p style="font-size: 11pt; padding-left: 8px; line-height: 30px;">
+                                Biomass
+                            </p>
+                        </div>
+                    </td>
+                    <td width="50%">
+                        <div style="height: 30px; padding-bottom: 6px;">
+                            <svg height="30" width="30" style="float: left;">
+                                <circle cx="15" cy="15" r="12" stroke="black" stroke-width="1" fill="#006600" />
+                            </svg>
+                            <p style="font-size: 11pt; padding-left: 8px; line-height: 30px;">
+                                Municipal Solid Waste
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td width="50%">
+                        <div style="height: 30px; padding-bottom: 6px;">
+                            <svg height="30" width="30" style="float: left;">
+                                <circle cx="15" cy="15" r="12" stroke="black" stroke-width="1" fill="#cccccc" />
+                            </svg>
+                            <p style="font-size: 11pt; padding-left: 8px; line-height: 30px;">
+                                Diesel/Gas Oil
+                            </p>
+                        </div>
+                    </td>
+                    <td width="50%">
+                        <div style="height: 30px; padding-bottom: 6px;">
+                            <svg height="30" width="30" style="float: left;">
+                                <circle cx="15" cy="15" r="12" stroke="black" stroke-width="1" fill="#333333" />
+                            </svg>
+                            <p style="font-size: 11pt; padding-left: 8px; line-height: 30px;">
+                                Coal
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td width="50%">
+                        <div style="height: 30px; padding-bottom: 6px;">
+                            <svg height="30" width="30" style="float: left;">
+                                <circle cx="15" cy="15" r="12" stroke="black" stroke-width="1" fill="#ff9999" />
+                            </svg>
+                            <p style="font-size: 11pt; padding-left: 8px; line-height: 30px;">
+                                Sour Gas
+                            </p>
+                        </div>
+                    </td>
+                    <td width="50%">
+                        <div style="height: 30px; padding-bottom: 6px;">
+                            <svg height="30" width="30" style="float: left;">
+                                <circle cx="15" cy="15" r="12" stroke="black" stroke-width="1" fill="#660000" />
+                            </svg>
+                            <p style="font-size: 11pt; padding-left: 8px; line-height: 30px;">
+                                Natural Gas
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td width="50%">
+                        <div style="height: 30px; padding-bottom: 6px;">
+                            <svg height="30" width="30" style="float: left;">
+                                <circle cx="15" cy="15" r="12" stroke="black" stroke-width="1" fill="#99ccff" />
+                            </svg>
+                            <p style="font-size: 11pt; padding-left: 8px; line-height: 30px;">
+                                Wind
+                            </p>
+                        </div>
+                    </td>
+                    <td width="50%">
+                        <div style="height: 30px; padding-bottom: 6px;">
+                            <svg height="30" width="30" style="float: left;">
+                                <circle cx="15" cy="15" r="12" stroke="black" stroke-width="1" fill="#006699" />
+                            </svg>
+                            <p style="font-size: 11pt; padding-left: 8px; line-height: 30px;">
+                                Hydro
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td width="50%">
+                        <div style="height: 30px; padding-bottom: 6px;">
+                            <svg height="30" width="30" style="float: left;">
+                                <circle cx="15" cy="15" r="12" stroke="black" stroke-width="1" fill="#ffff99" />
+                            </svg>
+                            <p style="font-size: 11pt; padding-left: 8px; line-height: 30px;">
+                                Solar
+                            </p>
+                        </div>
+                    </td>
+                    <td width="50%">
+                        <div style="height: 30px; padding-bottom: 6px;">
+                            <svg height="30" width="30" style="float: left;">
+                                <circle cx="15" cy="15" r="12" stroke="black" stroke-width="1" fill="#999900" />
+                            </svg>
+                            <p style="font-size: 11pt; padding-left: 8px; line-height: 30px;">
+                                Nuclear
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+
+    <div id="legend-lines">
+        <!-- Section header -->
+        <div id="header"
+            style="display: flex; flex-direction: row; margin-bottom: 12px; border-width: 0 0 2px 0 !important; border-style: solid; border-color: lightgray; cursor: pointer;"
+            onclick="toggleLegend('legend-lines')">
+            <h3 style="padding: 0px !important; margin: 0px !important; flex-grow: 1; line-height: 30px;">
+                Power Network
+            </h3>
+            <i id="icon" class="fas fa-angle-up fa-lg" style="height: 30px; line-height: 30px; flex-grow: 0;"></i>
+        </div>
+
+        <!-- Contents -->
+        <div id="contents" style="display: block;">
+            <p style="color: grey; font-size: 11pt; font-style: italic; padding-bottom: 12px;">
+                Overhead lines within the network correspond to selectable layers marked "OHL" within 
+                the layer tree. 
+            </p>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/line_ng_superhigh_icon.png" style="float: left; height: 25px;">
+                <p>National Grid: Super-High Voltage Line</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/line_ng_high_icon.png" style="float: left; height: 25px;">
+                <p>National Grid: High Voltage Line</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/line_ng_medium_icon.png" style="float: left; height: 25px;">
+                <p>National Grid: Medium Voltage Pylon</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/cable_ng.png" style="float: left; height: 25px;">
+                <p>National Grid: Underground Cable</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/pylon_superhigh_icon.png" style="float: left; height: 25px;">
+                <p>National Grid: Pylon</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/substation_icon.png" style="float: left; height: 25px;">
+                <p>National Grid: Substation</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/line_ukpn_high_icon.png" style="float: left; height: 25px;">
+                <p>UKPN: High Voltage Line</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/line_ukpn_medium_icon.png" style="float: left; height: 25px;">
+                <p>UKPN: Medium Voltage Line</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/line_ukpn_distribution_high_icon.png" style="float: left; height: 25px;">
+                <p>UKPN: High Voltage Distribution Line</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/line_ukpn_distribution_low_icon.png" style="float: left; height: 25px;">
+                <p>UKPN: Low Voltage Distribution Line</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/pylon_high_icon.png" style="float: left; height: 25px;">
+                <p>UKPN: High Voltage Pylon</p>
+            </div>
+            <div style="height: 30px; padding-bottom: 6px; text-indent: 10px;">
+                <img src="http://localhost:38383/geoserver/www/icons/pylon_medium_icon.png" style="float: left; height: 25px;">
+                <p>UKPN: Medium Voltage Pylon</p>
+            </div>
+        </div>
+    </div>
+</div>

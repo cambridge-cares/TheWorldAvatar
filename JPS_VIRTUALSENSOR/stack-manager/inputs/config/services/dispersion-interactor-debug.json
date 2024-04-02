@@ -3,7 +3,7 @@
         "Name": "dispersion-interactor",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.2.3",
+                "Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.4",
                 "Env": [
                     "DATABASE=postgres",
                     "SCOPE_TABLE_NAME=scopes",
@@ -13,7 +13,14 @@
                     "SHIP_INPUT_AGENT=http://ship-stack-ship-input-agent:8080/ShipInputAgent/update",
                     "VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
                     "GEOSERVER_WORKSPACE=dispersion",
+					"STACK_URL=http://localhost:3838",
                     "SENSORS_TABLE_NAME=sensors",
+					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
+					"SHIPS_LAYER_NAME=ships",
+					"BUILDINGS_TABLE=buildings",
+					"STATIC_SOURCE_TABLE=static",
+					"VIRTUAL_SENSOR_AGENT_URL=http://ship-stack-virtual-sensor-agent:8080/VirtualSensorAgent/",
+					"ELEVATION_CONTOURS_TABLE=elevation_contours",
                     "JPDA_ADDRESS=0.0.0.0:5005",
                     "JPDA_TRANSPORT=dt_socket",
                     "DEBUG=ON"
@@ -55,7 +62,7 @@
                     "Name": "web",
                     "Protocol": "tcp",
                     "TargetPort": "5005",
-                    "PublishedPort": "5005"
+                    "PublishedPort": "5006"
                 }
             ]
         }

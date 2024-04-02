@@ -1,0 +1,40 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoSchool,TBox,https://www.theworldavatar.com/kg/ontoschool/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoSchool,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoSchool,TBox,"OntoSchool is an ontology to represent schools and their information such as (contact information, address, CCAs etc).",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoSchool,TBox,http://ontology.eil.utoronto.ca/icontact.owl,http://www.w3.org/2002/07/owl#imports,,,,,,
+OntoSchool,TBox,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl,http://www.w3.org/2002/07/owl#imports,,,,,,
+School,Class,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization,IS-A,,,,An educational institution designed to provide learning spaces and learning environments for the teaching of students under the direction of teachers.,https://www.theworldavatar.com/kg/ontoschool/,School
+GovernmentSchool,Class,School,IS-A,,,,Educational institutions funded and managed by the government.,https://www.theworldavatar.com/kg/ontoschool/,Government school
+GovernmentAidedSchool,Class,School,IS-A,,,,Educational institutions that receive partial funding from the government but are managed independently.,https://www.theworldavatar.com/kg/ontoschool/,Government aided school
+IndependentSchool,Class,School,IS-A,,,,Educational institutions that are not administered by the government.,https://www.theworldavatar.com/kg/ontoschool/,Independent school
+SpecialisedSchool,Class,School,IS-A,,,,Educational institutions that focus on a specific area of study or cater to students with particular needs or interests.,https://www.theworldavatar.com/kg/ontoschool/,Specialised school
+SpecialisedIndependentSchool,Class,School,IS-A,,,,Educational institutions that are not administered by the government and focuses on a specific area of study or cater to students with particular needs or interests.,https://www.theworldavatar.com/kg/ontoschool/,Specialised independent school
+CCAGroups,Class,,,,,,Groups for different types of CCAs (Co-Curricular Activities).,https://www.theworldavatar.com/kg/ontoschool/,CCA groups
+PhysicalSports,Class,CCAGroups,IS-A,,,,"Physical sports CCAs involve activities focused on physical fitness, teamwork, and competitive sportsmanship.",https://www.theworldavatar.com/kg/ontoschool/,Physical sports
+VisualAndPerformingArts,Class,CCAGroups,IS-A,,,,"Visual and performing arts CCAs encompass a wide range of creative activities including drawing, painting, sculpture, photography, dance, drama, music, and choir.",https://www.theworldavatar.com/kg/ontoschool/,Visual and performing arts
+ClubsAndSocieties,Class,CCAGroups,IS-A,,,,Clubs and societies CCAs cover a diverse array of interests and hobbies beyond sports and arts.,https://www.theworldavatar.com/kg/ontoschool/,Clubs and societies
+UniformedGroups,Class,CCAGroups,IS-A,,,,"Uniformed groups CCAs involve organizations that promote leadership, discipline, and community service through structured programs and activities.",https://www.theworldavatar.com/kg/ontoschool/,Uniformed groups
+StudentLeadership,Class,CCAGroups,IS-A,,,,"Student leadership CCAs focus on developing leadership skills, responsibility, and initiative among students.",https://www.theworldavatar.com/kg/ontoschool/,Student leadership
+CCA,Class,,,,,,An activity or program that complements the academic curriculum in educational institutions.,https://www.theworldavatar.com/kg/ontoschool/,CCA
+EducationLevel,Class,,,,,,A stage or phase of formal education that an individual has completed or is currently pursuing.,https://www.theworldavatar.com/kg/ontoschool/,Education level
+PrimaryEducation,Class,EducationLevel,IS-A,,,,"This level focuses on fundamental skills such as literacy, numeracy, and basic knowledge in subjects like science, social studies, and language arts.",https://www.theworldavatar.com/kg/ontoschool/,Primary education
+SecondaryEducation,Class,EducationLevel,IS-A,,,,This level builds upon the foundational knowledge acquired in primary school and offers more specialized subjects and opportunities for academic exploration.,https://www.theworldavatar.com/kg/ontoschool/,Secondary education
+JuniorCollege,Class,SecondaryEducation,IS-A,,,,"This level offers advanced coursework, preparation for college or university admissions, and opportunities for students to pursue specialized subjects or interests in preparation for further academic study.",https://www.theworldavatar.com/kg/ontoschool/,Junior college
+TertiaryEducation,Class,EducationLevel,IS-A,,,,This level provides specialized knowledge and skills in various academic disciplines or professional fields and prepares individuals for careers or advanced study.,https://www.theworldavatar.com/kg/ontoschool/,Tertiary education
+MixedLevels,Class,EducationLevel,IS-A,,,,This level integrate multiple education levels or age groups to provide a more flexible and inclusive learning environment.,https://www.theworldavatar.com/kg/ontoschool/,Mixed levels
+GenderComposition,Class,,,,,,The distribution of students based on their gender or sex.,https://www.theworldavatar.com/kg/ontoschool/,Gender composition
+Monogender,Class,GenderComposition,IS-A,,,,An educational setting or institution where students of only one gender are enrolled.,https://www.theworldavatar.com/kg/ontoschool/,Monogender
+AllBoys,Class,Monogender,IS-A,,,,An educational setting or institution where only male students are enrolled.,https://www.theworldavatar.com/kg/ontoschool/,All boys
+AllGirls,Class,Monogender,IS-A,,,,An educational setting or institution where only female students are enrolled.,https://www.theworldavatar.com/kg/ontoschool/,All girls
+Coeducational,Class,GenderComposition,IS-A,,,,An educational setting or institution where students of both genders—males and females—are enrolled together.,https://www.theworldavatar.com/kg/ontoschool/,Coeducational
+hasCCAGroups,Object Property,,,School,CCAGroups,,A relationship which decribes the CCA groups in a school.,https://www.theworldavatar.com/kg/ontoschool/,has CCA groups
+hasCCA,Object Property,,,CCAGroups,CCA,,A relationship which decribes the different activities or programmes under each CCA group.,https://www.theworldavatar.com/kg/ontoschool/,has CCA
+hasContactNumber,Object Property,,,School,http://ontology.eil.utoronto.ca/icontact.owl#PhoneNumber,,A relationship which describes the contact number of a school.,https://www.theworldavatar.com/kg/ontoschool/,has contact number
+hasEducationLevel,Object Property,,,School,EducationLevel,,A relationship which describes the education level that a school provides.,https://www.theworldavatar.com/kg/ontoschool/,has education level
+hasGenderComposition,Object Property,,,School,GenderComposition,,"A relationship which describes the gender composition of a school (Boys only, girls only, mixed).",https://www.theworldavatar.com/kg/ontoschool/,has gender composition
+hasProperty,Object Property,,,School,https://www.theworldavatar.com/kg/ontobuiltenv/Property,,A relationship that relates a school to its built structures.,https://www.theworldavatar.com/kg/ontoschool/,has property
+hasAddress,Object Property,,,School,http://ontology.eil.utoronto.ca/icontact.owl#Address,,A relationship that describes a school's address.,https://www.theworldavatar.com/kg/ontoschool/,has address
+offersProgramme,Data Property,,,School,String,,Programmes offered by the school.,https://www.theworldavatar.com/kg/ontoschool/,offers programme
+http://ontology.eil.utoronto.ca/icontact.owl#hasWebSite,Data Property,,,School,String,,Website of the school.,https://www.theworldavatar.com/kg/ontoschool/,hasWeb Site
+http://ontology.eil.utoronto.ca/icontact.owl#hasEmail,Data Property,,,School,String,,Email address of a school.,https://www.theworldavatar.com/kg/ontoschool/,has email

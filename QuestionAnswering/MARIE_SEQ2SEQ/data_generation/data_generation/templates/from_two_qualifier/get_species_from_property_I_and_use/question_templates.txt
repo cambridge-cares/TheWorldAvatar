@@ -1,0 +1,21 @@
+Give me a list of species that have {PropertyName} between {minvalue} and {maxvalue} and used as {Use}
+Provide a roster of chemical species exhibiting {PropertyName} within the range of {minvalue} to {maxvalue} and employed for {Use}.
+Enumerate the molecules manifesting {PropertyName} within {minvalue} and {maxvalue} and utilized for {Use}.
+List the compounds displaying {PropertyName} within the specified limits of {minvalue} through {maxvalue}, employed in the capacity of {Use}.
+Catalog the chemical entities demonstrating {PropertyName} falling within {minvalue} to {maxvalue} and put to use as {Use}.
+Enlist the species characterized by {PropertyName} within the range of {minvalue} to {maxvalue}, having applications as {Use}.
+Detail a compilation of molecules showcasing {PropertyName} in the range from {minvalue} to {maxvalue} and fulfilling the role of {Use}.
+Outline a record of compounds featuring {PropertyName} within {minvalue} - {maxvalue} range, utilized for {Use}.
+Jot down a summary of chemical species expressing {PropertyName} within {minvalue} to {maxvalue} and adopted for {Use}.
+Tabulate the molecules displaying {PropertyName} within the prescribed {minvalue} and {maxvalue} range, implemented for {Use}.
+Present a list of compounds with {PropertyName} ranging from {minvalue} to {maxvalue} and serving the purpose of {Use}.
+Provide an inventory of chemical species exhibiting {PropertyName} within {minvalue} through {maxvalue} and employed for {Use}.
+Offer a compilation of molecules showcasing {PropertyName} between {minvalue} and {maxvalue}, with utility as {Use}.
+Share a roster of compounds featuring {PropertyName} in the {minvalue} - {maxvalue} bracket, utilized in the role of {Use}.
+Display a catalog of chemical entities demonstrating {PropertyName} within {minvalue} to {maxvalue} range and put into action for {Use}.
+Present a list of species characterized by {PropertyName} within the range of {minvalue} to {maxvalue}, having applications as {Use}.
+Provide a summary of molecules displaying {PropertyName} within {minvalue} and {maxvalue}, applied as {Use}.
+Share an overview of compounds with {PropertyName} falling between {minvalue} and {maxvalue}, utilized for {Use}.
+List down the chemical species expressing {PropertyName} within the {minvalue} - {maxvalue} range and used as {Use}.
+Offer a catalog of molecules demonstrating {PropertyName} within {minvalue} to {maxvalue}, employed for {Use}.
+Provide an index of compounds showcasing {PropertyName} within the limits of {minvalue} to {maxvalue}, with practical use as {Use}.

@@ -1,0 +1,24 @@
+version: "3" 
+
+services:
+
+  example-nginx:
+    container_name: example-nginx
+    build:
+      context: "./"
+      dockerfile: "Dockerfile"
+    env_file:
+      - .env
+    ports:
+     - "80:80"
+     - "443:443"
+
+  example-service: 
+    image: httpd:alpine3.18
+    container_name: example-service
+    volumes:
+      - type: bind
+        source: ./example-service
+        target: /usr/local/apache2/htdocs
+    ports:
+     - "3000:80"

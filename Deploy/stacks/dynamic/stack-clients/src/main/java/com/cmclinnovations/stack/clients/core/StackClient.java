@@ -14,12 +14,14 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 public final class StackClient {
 
+    public static final String EXECUTABLE_KEY = "EXECUTABLE";
     public static final String STACK_NAME_KEY = "STACK_NAME";
     private static final String STACK_BASE_DIR_KEY = "STACK_BASE_DIR";
     public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
     public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
     public static final String SCRATCH_DIR = "/stack_scratch";
     public static final String GEOTIFFS_DIR = "/geotiffs";
+    public static final String MULTIDIM_GEOSPATIAL_DIR = "/multidim_geospatial";
     public static final Path STACK_CONFIG_DIR = Path.of("/inputs/config");
 
     private static final String stackName;
@@ -67,7 +69,7 @@ public final class StackClient {
     }
 
     public static String getContainerEngineName() {
-        return System.getenv().getOrDefault("EXECUTABLE", "docker");
+        return System.getenv().getOrDefault(EXECUTABLE_KEY, "docker");
     }
 
     private static Path getStackBaseDir() {
