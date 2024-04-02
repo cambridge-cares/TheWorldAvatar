@@ -1,8 +1,8 @@
 PREFIX bot: <https://w3id.org/bot#>
 PREFIX ontobuiltenv:<https://www.theworldavatar.com/kg/ontobuiltenv/>
 PREFIX ontobim:<https://www.theworldavatar.com/kg/ontobim/>
-PREFIX ontocompany:<http://www.theworldavatar.com/kg/ontocompany#>
-PREFIX ontochemplant:<http://www.theworldavatar.com/kg/ontochemplant#>
+PREFIX ontocompany:<http://www.theworldavatar.com/kg/ontocompany/>
+PREFIX ontochemplant:<http://www.theworldavatar.com/kg/ontochemplant/>
 PREFIX ontocarpark:<https://www.theworldavatar.com/kg/ontocarpark/>
 PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
