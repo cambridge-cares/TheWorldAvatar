@@ -1,7 +1,7 @@
 {
   "type": "basic-agent",
   "ServiceSpec": {
-    "Name": "user-agent",
+    "Name": "useragent",
     "TaskTemplate": {
       "ContainerSpec": {
         "Image": "ghcr.io/cambridge-cares/user-agent:1.0.0",
