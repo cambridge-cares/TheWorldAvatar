@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.gfaagent;
 
 import java.io.IOException;
+import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,13 +44,15 @@ public class CostCalculation {
                 "AND ccg.strval = mb.building_iri\r\n" + //
                 "AND mb.public_landplot_ogc_fid = pl.ogc_fid";
 
-    public CostCalculation (String postgisDb, String postgisUser, String postgisPassword) throws IOException {
+    public CostCalculation (String postgisDb, String postgisUser, String postgisPassword){
         this.dbUrl = postgisDb;
         this.user = postgisUser;
         this.password = postgisPassword;
 
         this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
+    }
 
+    public void calculationCost () throws IOException {
         //get matching from csv
         List<MatchingType> matchingType = new CsvToBeanBuilder(new FileReader(MATCHING_PATH))
                 .withType(MatchingType.class)
@@ -57,19 +60,23 @@ public class CostCalculation {
                 .parse();
 
         ResultSet buildingType = getBuildingType();
-        
-        while (buildingType.next()) {
-            String typeLand = buildingType.getString("LU_DESC");
-            String typeCost = null;
-            String keyCost = null;
-            for (int i = 0; i < matchingType.size(); i++){
-                if(typeLand == matchingType.get(i).getLUType()){
-                    typeCost = matchingType.get(i).getType();
-                    keyCost = matchingType.get(i).getKey();
+        try {
+            while (buildingType.next()) {
+                String typeLand = buildingType.getString("LU_DESC");
+                String typeCost = null;
+                String keyCost = null;
+                for (int i = 0; i < matchingType.size(); i++){
+                    if(typeLand == matchingType.get(i).getLUType()){
+                        typeCost = matchingType.get(i).getType();
+                        keyCost = matchingType.get(i).getKey();
+                    }
                 }
+                
             }
-            
+        }catch (SQLException e) {
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
+        
     }
 
     public ResultSet getBuildingType(){

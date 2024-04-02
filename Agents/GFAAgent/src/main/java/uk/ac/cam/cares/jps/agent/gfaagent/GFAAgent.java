@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet(urlPatterns = {"/calculation", "/floors"})
+@WebServlet(urlPatterns = {"/calculation", "/floors", "/cost"})
 public class GFAAgent extends JPSAgent{
     
     
@@ -58,6 +58,9 @@ public class GFAAgent extends JPSAgent{
                //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
                 IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint, osmPolygon);
                 integrateFloors.matchAddress(floorsCsv);
+            }else if (requestParams.getString("requestUrl").contains("/cost")){
+                CostCalculation costCalculation = new CostCalculation(dbUrl, dbUser, dbPassword);
+                costCalculation.calculationCost();
             }
 
 
