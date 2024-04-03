@@ -421,7 +421,7 @@ def data_treatment(df, arg_name, arg_value_in):
                 df_copy = df_copy.assign(**{f"{arg_name}": np.nan})
                 df_copy[f"{arg_name}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
                 df_copy.dropna(subset=[f"{arg_name}"], inplace=True)
-                
+        
         # ------------ This val_values is normally used for colorbar plot ------------------- #
         try:
             # Specify the value to plot
