@@ -194,7 +194,7 @@ class ZeoliteMaterial:
         output = []
 
         if "uuid" in self.data:
-            uuid_zeo = "ZeoliticMaterial_" + self.data["uuid"]
+            uuid_zeo = zeoOntoPrefix + "ZeoliticMaterial_" + self.data["uuid"]
         else:
             #print("Not specified uuid of a material")
             #print(self.data)
@@ -204,7 +204,7 @@ class ZeoliteMaterial:
             #uuid_zeo, _ = self.uuidDB.addUUID("ZeoliticMaterial",
             #                                  "Zeolite_" + self.data["safe_name"])
             self.data["uuid"] = str(uuid.uuid4())
-            uuid_zeo = "ZeoliticMaterial_" + self.data["uuid"]
+            uuid_zeo = zeoOntoPrefix + "ZeoliticMaterial_" + self.data["uuid"]
 
         self.material_iri = uuid_zeo
 
@@ -279,20 +279,20 @@ class ZeoliteMaterial:
                         uuid_tmp = str(uuid.uuid4())
                         comp_ind = crystOntoPrefix + "CompoundIndex_" + uuid_tmp
 
-                        output.append([comp_ind, "Instance", "GuestCompoundIndex", "", "", ""])
+                        output.append([comp_ind, "Instance", zeoOntoPrefix + "GuestCompoundIndex", "", "", ""])
 
-                        output.append([uuid_zeo, "Instance", comp_ind,
+                        output.append([uuid_zeo, "Instance", zeoOntoPrefix + comp_ind,
                                        crystOntoPrefix + "hasGuestCompoundIndex", "", ""])
 
                         index_value = 12  # FIXME
-                        output.append([crystOntoPrefix + "hasIndexValue", "Data Property",
+                        output.append([zeoOntoPrefix + "hasIndexValue", "Data Property",
                                        comp_ind, "", index_value, "xsd:integer"])
 
                         output.append([comp_ind, "Instance", guest_info["name_uuid"],
                                        crystOntoPrefix + "isCompoundIndexOf", "", ""])
 
                 elif isinstance(guest, dict):
-                    #print("Adding a single guest:", guest)
+                    #print("Adding a single guest (dict):", guest)
 
                     if "species_iri" in guest:
                         guest_iri = guest["species_iri"]
@@ -302,12 +302,12 @@ class ZeoliteMaterial:
                         # Add cound only if the compound exists.
                         if "count" in guest:
                             uuid_tmp = str(uuid.uuid4())
-                            comp_ind = crystOntoPrefix + "CompoundIndex_" + uuid_tmp
+                            comp_ind = zeoOntoPrefix + "CompoundIndex_" + uuid_tmp
 
-                            output.append([comp_ind, "Instance", "GuestCompoundIndex", "", "", ""])
+                            output.append([comp_ind, "Instance", zeoOntoPrefix + "GuestCompoundIndex", "", "", ""])
 
                             output.append([uuid_zeo, "Instance", comp_ind,
-                                           crystOntoPrefix + "hasGuestCompoundIndex", "", ""])
+                                           zeoOntoPrefix + "hasGuestCompoundIndex", "", ""])
 
                             index_value = guest["count"]
                             output.append([crystOntoPrefix + "hasIndexValue", "Data Property",
@@ -366,11 +366,11 @@ class ZeoliteMaterial:
 
         if value:
             # FIXME
-            #output += self._get_csv_arr_refmat(uuid_zeo)
+            #output += self._get_csv_arr_refmat(material_iri)
 #
             # IZA topology exists only for the reference material:
             # and is stored in the upper level: in class ZeoliteDB.
-            #output += self.izatopology.get_csv_arr_topology(uuid_zeo,
+            #output += self.izatopology.get_csv_arr_topology(material_iri,
             #          crystOntoPrefix + "hasTopologicalProperties", "ref_mat")
 
             pass
@@ -379,51 +379,58 @@ class ZeoliteMaterial:
         """
         output.append([self.zeoOntoPrefix + "isMineral",
                        "Data Property",
-                       uuid_zeo, "", False, "boolean"])
+                       material_iri, "", False, "boolean"])
 
         output.append([self.zeoOntoPrefix + "isSynthetic",
                        "Data Property",
-                       uuid_zeo, "", False, "boolean"])
+                       material_iri, "", False, "boolean"])
         """
 
         return output
         # === end of ZeoliteMaterial.get_csv_arr_material()
 
-    def _get_csv_arr_formula(self, uuid_zeo, predicate):
+    def _get_csv_arr_formula(self, material_iri, predicate):
         output = []
-        if "formula" in self.data:
-            if self.data["formula"] != "":
 
-                output.append([zeoOntoPrefix + "hasChemicalFormula",
-                               "Data Property", uuid_zeo, "",
-                               self.data["formula"], "string"])
+        if "formula" in self.data and self.data["formula"] != "":
+            output.append([zeoOntoPrefix + "hasChemicalFormula",
+                           "Data Property", material_iri, "",
+                           self.data["formula"], "string"])
 
-                form = genform.GenFormula()
-                form.fullFormula = self.data["formula"]
-                form.getFormula()
-                self.base_formula = form.formula
+            form = genform.GenFormula()
+            form.fullFormula = self.data["formula"]
 
-        if "formatted_formula" in self.data:
+            form.getFormula()
+            form.getGuest()
+            self.base_formula = form.formula
+            #print("==== Processing formula", self.data["formula"])
+            #print(self.base_formula, form.guest)
+
+        # formatted formula is similar to chemical formula.
+        #if "formatted_formula" in self.data and self.data["formatted_formula"].strip() != "":
+        #    output.append([zeoOntoPrefix + "hasFormattedFormula",
+        #                   "Data Property", material_iri, "",
+        #                   self.data["formatted_formula"], "string"])
+
+        if isinstance(self.base_formula, str) and self.base_formula.strip() != "":
+            #print("==== Adding frame formula", self.base_formula)
             output.append([zeoOntoPrefix + "hasFrameworkFormula",
-                           "Data Property", uuid_zeo, "",
-                           self.data["formatted_formula"], "string"])
-        else:
-            output.append([zeoOntoPrefix + "hasFrameworkFormula",
-                           "Data Property", uuid_zeo, "",
+                           "Data Property", material_iri, "",
                            self.base_formula, "string"])
 
-        if "guest" in self.data and self.data["guest"] != "":
+        if "guest" in self.data and self.data["guest"].strip() != "":
+            #print("==== Adding guest formula:", self.data["guest"])
             output.append([zeoOntoPrefix + "hasGuestFormula",
-                           "Data Property", uuid_zeo, "",
+                           "Data Property", material_iri, "",
                            self.data["guest"], "string"])
+        elif form.guest != "":
+            #print("==== Or is it guest formula:", form.guest)
+            output.append([zeoOntoPrefix + "hasGuestFormula",
+                           "Data Property", material_iri, "",
+                           form.guest, "string"])
         else:
-            form.getGuest()
-            guest_formula = form.guest
+            print("No guest available")
 
-            if guest_formula != "":
-                output.append([zeoOntoPrefix + "hasGuestFormula",
-                               "Data Property", uuid_zeo, "",
-                               guest_formula, "string"])
 
         if self.base_formula:
                 elements = genform.parse_formula(self.base_formula)
@@ -433,6 +440,7 @@ class ZeoliteMaterial:
                 for el, index in elements:
                     elem = el[0]
                     el_iri = get_element_iri(el)
+                    #print("   adding component", el_iri)
 
                     #uid = str(uuid.uuid4())
                     #uuid_atom, _ = self.uuidDB.addUUID("http://purl.org/gc/Atom",
@@ -441,29 +449,34 @@ class ZeoliteMaterial:
                     #output.append([uuid_atom, "Instance",
                     #               "http://purl.org/gc/Atom", "", "", ""])
 
-                    #output.append([uuid_zeo, "Instance", uuid_atom,
+                    #output.append([material_iri, "Instance", uuid_atom,
                     #               ontoSpeciesPrefix + "hasAtom", "", ""])
 
                     #output.append([uuid_atom, "Instance", el_iri,
                     #               ontoSpeciesPrefix + "isElement", "", ""])
 
-                    output.append([uuid_zeo, "Instance", el_iri,
-                                   crystOntoPrefix + "hasFrameworkComponent", "", ""])
+                    #print(el_iri)
+
+                    #output.append([el_iri, "Instance",
+                    #               zeoOntoPrefix + "FrameworkComponent", "", "", ""])
+
+                    output.append([material_iri, "Instance", el_iri,
+                                   zeoOntoPrefix + "hasFrameworkComponent", "", ""])
                                    #ontoSpeciesPrefix + "hasFrameworkComponent", "", ""])
 
                     uuid_tmp = str(uuid.uuid4())
                     el_ind = crystOntoPrefix + "ElementIndex_" + uuid_tmp
 
-                    output.append([el_ind, "Instance", "ElementIndex", "", "", ""])
+                    output.append([el_ind, "Instance", crystOntoPrefix + "ElementIndex", "", "", ""])
 
-                    output.append([uuid_zeo, "Instance", el_ind,
-                                   crystOntoPrefix + "hasElementIndex", "", ""])
+                    output.append([material_iri, "Instance", el_ind,
+                                   zeoOntoPrefix + "hasElementIndex", "", ""])
 
-                    output.append([crystOntoPrefix + "hasIndexValue", "Data Property",
-                                   el_iri, "", index, "xsd:integer"])
+                    output.append([zeoOntoPrefix + "hasIndexValue", "Data Property",
+                                   el_ind, "", index, "xsd:integer"])
 
                     output.append([el_ind, "Instance", el_iri,
-                                   crystOntoPrefix + "isElementIndexOf", "", ""])
+                                   zeoOntoPrefix + "isElementIndexOf", "", ""])
 
         '''
         elements = self._get_elements_iri()
@@ -505,7 +518,7 @@ class ZeoliteMaterial:
             output.append([uuid_atom, "Instance", 
                            "http://purl.org/gc/Atom", "", "", ""])
 
-            output.append([uuid_zeo, "Instance", uuid_atom,
+            output.append([material_iri, "Instance", uuid_atom,
                            #zeoOntoPrefix + "ChemicalComponent", "", "", ""])
                            ontoSpeciesPrefix + "hasAtom", "", ""])
 
@@ -515,7 +528,7 @@ class ZeoliteMaterial:
             # output.append([uuid_atom, "Instance", el_iri,
             #               ontoSpeciesPrefix + "isInstanceOf", "", ""])
 
-            # output.append([uuid_zeo, "Instance", uuid_atom,
+            # output.append([material_iri, "Instance", uuid_atom,
             #              zeoOntoPrefix + "hasChemicalComponent", "", ""])
 
             # Implementation of output.append([hasBibRef])
@@ -664,9 +677,10 @@ class ZeoliteMaterial:
         #                               "Zeolite_" + cif_line[0])
         #uuid_zeo, _ = self.uuidDB.addUUID("ZeoliticMaterial",
         #                                  "Zeolite_" + cif_line[0])
-        uuid_zeo, _ = self.uuidDB.addUUID("ZeoliticMaterial",
-                                          "Zeolite_" + self.data["safe_name"])
+        uuid_zeo, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliticMaterial",
+                                          zeoOntoPrefix + "Zeolite_" + self.data["safe_name"])
 
+        uuid_zeo = self.material_iri
         return uuid_zeo
         # === end of ZeoliteMaterial.get_material_UUID()
 
@@ -821,7 +835,7 @@ class ZeoliteDB:
             zeolite.data["formula"] = line_mat[2]  # FIXME remove -ABW
             #self.data["formula"] = line_mat[6]
             zeolite.data["frame"] = line_mat[3]
-            zeolite.data["guest"] = line_mat[4]
+            zeolite.data["guest"] = "" #line_mat[4]
 
             #print("Starting to detect chem in", line_mat[4])
             #zeolite.data["guest"] = line_mat[4]
@@ -1408,8 +1422,9 @@ class ZeoliteDB:
             logging.error(" In zeolite_db: Invalid frameworkCode '%s'",
                           framework_code)
 
-        uuid_zeoframe, _ = self.uuidDB.addUUID("ZeoliteFramework",
-                                               "ZeoFramework_" + _code)
+        uuid_zeoframe, _ = self.uuidDB.addUUID(crystOntoPrefix + "ZeoliteFramework",
+                                               zeoOntoPrefix + "ZeoFramework_" + _code)
+        #uuid_zeoframe = uuid_zeoframe.replace("-", "")
 
         output.append([uuid_zeoframe, "Instance", zeoOntoPrefix + "ZeoliteFramework",
                        "", "", ""])
@@ -1438,10 +1453,10 @@ class ZeoliteDB:
         """
         # uuid_zeoframe = self.uuidDB.getUUID("ZeoliteFramework",
         #                                     "Zeolite_" + frameworkCode)
-        uuid_zeoframe, _ = self.uuidDB.addUUID("ZeoliteFramework",
-                                               "ZeoFramework_" + frameworkCode)
+        zeoframe_iri, _ = self.uuidDB.addUUID(crystOntoPrefix + "ZeoliteFramework",
+                                              zeoOntoPrefix + "ZeoFramework_" + frameworkCode)
 
-        return uuid_zeoframe
+        return zeoframe_iri
         # === end of ZeoliteDB.get_framework_UUID()
 
     def get_csv_arr_topology(self, subject, predicate, code):

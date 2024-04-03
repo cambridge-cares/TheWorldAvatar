@@ -60,21 +60,21 @@ class IzaTopology:
 
         #print("topo_data ", topo_data["Framework"])
 
-        #uuid_zeotopo, _ = self.uuidDB.addUUID("ZeoliteTopology",
+        #zeotopo_iri, _ = self.uuidDB.addUUID("ZeoliteTopology",
         #                                      "ZeoTopology_" + code)
-        uuid_zeotopo, _ = self.uuidDB.addUUID("TopologicalProperties",
-                                              "TopologicalProperties_" + code)
+        zeotopo_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "TopologicalProperties",
+                                              zeoOntoPrefix + "TopologicalProperties_" + code)
 
-        output.append([uuid_zeotopo, "Instance", "TopologicalProperties",
-                       "", "", ""])
+        output.append([zeotopo_iri, "Instance",
+                       zeoOntoPrefix + "TopologicalProperties", "", "", ""])
 
-        output.append([subject, "Instance", uuid_zeotopo, predicate, "", ""])
+        output.append([subject, "Instance", zeotopo_iri, predicate, "", ""])
 
         if "RDLS" in topo_data["CellParameters"]:
             # Distance Least Squares
             dls = topo_data["CellParameters"]["RDLS"]
             output.append([zeoOntoPrefix + "hasRDLS",
-                       "Data Property", uuid_zeotopo, "",
+                       "Data Property", zeotopo_iri, "",
                        float(dls), "decimal"])
         else:
             logging.error(" Missing RDLS in the IZA-DATA file")
@@ -82,10 +82,10 @@ class IzaTopology:
 
         if "TAtoms" in topo_data:
             for ia, atom in enumerate(topo_data["TAtoms"]):
-                uuid_tatom, _ = self.uuidDB.addUUID("TAtom",
-                                "TAtom_" + code + "_" + str(ia))
-                output.append([uuid_tatom, "Instance", "TAtom", "", "", ""])
-                output.append([uuid_zeotopo, "Instance", uuid_tatom,
+                uuid_tatom, _ = self.uuidDB.addUUID(zeoOntoPrefix + "TAtom",
+                                zeoOntoPrefix + "TAtom_" + code + "_" + str(ia))
+                output.append([uuid_tatom, "Instance", zeoOntoPrefix + "TAtom", "", "", ""])
+                output.append([zeotopo_iri, "Instance", uuid_tatom,
                                zeoOntoPrefix + "hasTAtom", "", ""])
 
                 if "TAtomName" in atom:
@@ -118,7 +118,7 @@ class IzaTopology:
                                            unit="om:dimensionOne",
                                            uuidDB=self.uuidDB)
 
-                    vec2.addComponentList(valList=atom["CoordinateSequence"])
+                    vec2.addComponentList(val_list=atom["CoordinateSequence"])
 
                     output += vec2.get_csv_arr(uuid_tatom,
                                                zeoOntoPrefix + "hasCoordinateSequence")
@@ -130,11 +130,11 @@ class IzaTopology:
                 if "VertexSymbol" in atom:
                     for iv, vs in enumerate(atom["VertexSymbol"]):
                         uuid_vert_symb, _ = self.uuidDB.addUUID(
-                            "VertexSymbol",
-                            "vert_symb_" + code + "_" + str(ia) + "_" + str(iv))
+                            zeoOntoPrefix + "VertexSymbol",
+                            zeoOntoPrefix + "Vert_Symb_" + code + "_" + str(ia) + "_" + str(iv))
 
                         output.append([uuid_vert_symb, "Instance",
-                                       "VertexSymbol", "", "", ""])
+                                       zeoOntoPrefix + "VertexSymbol", "", "", ""])
 
                         output.append([uuid_tatom, "Instance", uuid_vert_symb,
                                        zeoOntoPrefix + "hasVertexSymbol",
@@ -197,7 +197,7 @@ class IzaTopology:
             else:
                 logging.error(" Missing 'c' SphereDiameter for '%s'.", code)
 
-            output += sphere_uuid.get_csv_arr(uuid_zeotopo,
+            output += sphere_uuid.get_csv_arr(zeotopo_iri,
                       zeoOntoPrefix + "hasSphereDiameter")
 
         else:
@@ -234,7 +234,7 @@ class IzaTopology:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasAccessibleVolumePerCell")
                 # logging.error(" >>>Writing data about AccessVolume %s", code)
 
@@ -264,7 +264,7 @@ class IzaTopology:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasAccessibleVolume")
                 # logging.error(" >>>Writing data about AccessVolume %s", code)
 
@@ -304,7 +304,7 @@ class IzaTopology:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasOccupiableVolumePerCell")
                 # logging.error(" >>>Writing data about AccessVolume %s", code)
 
@@ -334,7 +334,7 @@ class IzaTopology:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasOccupiableVolume")
                 # logging.error(" >>>Writing data about AccessVolume %s", code)
 
@@ -374,7 +374,7 @@ class IzaTopology:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasAccessibleAreaPerCell")
                 # logging.error(" >>Writing data about AccessVolume %s", code)
 
@@ -415,7 +415,7 @@ class IzaTopology:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasAccessibleAreaPerGram")
                 # logging.error(" >>Writing data about AccessArea %s", code)
 
@@ -456,7 +456,7 @@ class IzaTopology:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasOccupiableAreaPerCell")
                 # logging.error(" >Writing data about AccessAreaCell %s", code)
 
@@ -496,7 +496,7 @@ class IzaTopology:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasOccupiableAreaPerGram")
                 # logging.error(" >>Writing data about AccessArea %s", code)
 
@@ -539,7 +539,7 @@ class IzaTopology:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasSpecificOccupiableArea")
                 # logging.error(" >>>Writing about SpecifAccessArea %s", code)
 
@@ -582,7 +582,7 @@ class IzaTopology:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasSpecificAccessibleArea")
                 # logging.error(" >>Writing about SpecifAccessVol %s", code)
 
@@ -622,7 +622,7 @@ class IzaTopology:
                 dens.setValue(value=value, unit=unit)
 
                 # FIXME: delete from topology (this is backwards compatibility)
-                output += dens.get_csv_arr(uuid_zeotopo,
+                output += dens.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasDensity")
 
         elif "SpecificOccupiableArea" in topo_data and \
@@ -654,7 +654,7 @@ class IzaTopology:
                 output += dens.get_csv_arr(subject,
                           zeoOntoPrefix + "hasDensity")
 
-                output += dens.get_csv_arr(uuid_zeotopo,
+                output += dens.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasDensity")
         else:
             logging.error(" Broken IZA data, missing" +
@@ -677,7 +677,7 @@ class IzaTopology:
                                                       "CompositeBU_" + code)
                     output.append([uuid_cbu, "Instance", "CompositeBU",
                                    "", "", ""])
-                    output.append([uuid_zeotopo, "Instance", uuid_cbu,
+                    output.append([zeotopo_iri, "Instance", uuid_cbu,
                                    zeoOntoPrefix + "hasCompositeBU",
                                    "", ""])
 
@@ -731,7 +731,7 @@ class IzaTopology:
                     #print(">>>> sbu", sbu)
 
                     output.append([zeoOntoPrefix + "hasSecondaryBU",
-                                   "Data Property", uuid_zeotopo, "",
+                                   "Data Property", zeotopo_iri, "",
                                    sbu, "string"])
 
             else:
@@ -755,7 +755,7 @@ class IzaTopology:
 
                 abcs = topo_data["ABCSequence"][0]
                 output.append([zeoOntoPrefix + "hasABCSequence",
-                               "Data Property", uuid_zeotopo, "",
+                               "Data Property", zeotopo_iri, "",
                                abcs, "string"])
 
 #                rsize = ocdt.OntoVector(class_name="RingSizes",
@@ -766,7 +766,7 @@ class IzaTopology:
 #
 #                rsize.addComponentList(valList=topo_data["RingSizes"])
 
-#                output += rsize.get_csv_arr(uuid_zeotopo,
+#                output += rsize.get_csv_arr(zeotopo_iri,
 #                          zeoOntoPrefix + "hasRingSizes")
 
             else:
@@ -792,9 +792,9 @@ class IzaTopology:
                                         unit="om:dimensionOne",
                                         uuidDB=self.uuidDB)
 
-                rsize.addComponentList(valList=topo_data["RingSizes"])
+                rsize.addComponentList(val_list=topo_data["RingSizes"])
 
-                output += rsize.get_csv_arr(uuid_zeotopo,
+                output += rsize.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasRingSizes")
 
             else:
@@ -825,7 +825,7 @@ class IzaTopology:
                                         " FrameworkDensity %s", code)
 
                     fr_dens.setValue(value=density["value"], unit=unit)
-                    output += fr_dens.get_csv_arr(uuid_zeotopo,
+                    output += fr_dens.get_csv_arr(zeotopo_iri,
                               zeoOntoPrefix + "hasFrameworkDensity")
                 else:
                     logging.error(" xxxxxxxxxxxxx ontozeolite.py %s", code)
@@ -840,7 +840,7 @@ class IzaTopology:
                                                    "TopoDens_" + code)
                 output.append([uuid_tden, "Instance", "TopologicalDensity",
                                "", "", ""])
-                output.append([uuid_zeotopo, "Instance", uuid_tden,
+                output.append([zeotopo_iri, "Instance", uuid_tden,
                                zeoOntoPrefix + "hasTopologicalDensity",
                                "", ""])
 
