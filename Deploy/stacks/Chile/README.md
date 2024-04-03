@@ -11,6 +11,7 @@ Step 2. Populate the following folders with the files found in the corresponding
 https://www.dropbox.com/scl/fo/e54346qxk8juk9qm5u3cf/h?rlkey=85wdkgt2kaewaam5wsamx9ozm&dl=0 (here you will find the stack-data-uploader data files)
 https://www.dropbox.com/scl/fo/sgitoeiwa4wiisgmhorwx/h?rlkey=4jx5078qb3zhxox6daotxmq09&dl=0 (here you will find the stack-manager data files)
 TheWorldAvatar/Deploy/stacks/Chile/ (in the repository at GitHub)
+(Files are also in: https://www.dropbox.com/work/IRP3%20CAPRICORN%20shared%20folder/_TWA_Shared_Data/Chile)
 
 The folders to populate will be found in TheWorldAvatar/Deploy/stacks/dynamic/
 You must populate:
