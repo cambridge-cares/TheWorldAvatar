@@ -6,7 +6,7 @@
 
     <body>
         <h1>TWA Equipment Booking</h1>
-        <form action="/goal_reactivate" method="post">
+        <form action="booking" method="post">
 
             <!-- booker -->
             <fieldset class="user-def">
@@ -15,7 +15,7 @@
 
                 <select name="user_def" id="user_def" class="Input">
                     <option value="" disabled selected>Please select user</option>
-                    {% for u in lab_user_iri %}
+                    {% for u in lab_users %}
                     <option value="{{ u.iri }}">{{ u.display }}</option>
                     {% endfor %}
                 </select>
@@ -26,11 +26,11 @@
             <!-- equipment -->
             <fieldset class="equipment-def">
                 <legend>Equipment</legend>
-                <span class="equipment-def">Please equipment to be booked:</span><br><br>
+                <span class="equipment-def">Please select equipment to be booked:</span><br><br>
 
                 <select name="equipment_def" id="equipment_def" class="Input">
                     <option value="" disabled selected>Please select asset</option>
-                    {% for a in bookable_assets_iri %}
+                    {% for a in bookable_assets %}
                     <option value="{{ a.iri }}">{{ a.display }}</option>
                     {% endfor %}
                 </select>
@@ -42,20 +42,21 @@
             <fieldset class="restrictions">
                 <legend>Period</legend>
                 <span class="restrictions">Please specify the booking period:</span><br><br>
-                <!-- cycleAllowance -->
-                <label for="cycleAllowance">Start:</label>
-                <input type="datetime-local" id="deadline" name="deadline"><br><br>
 
-                <!-- deadline -->
-                <label for="deadline">End:</label>
-                <input type="datetime-local" id="deadline" name="deadline"><br><br>
+                <!-- bookingStart -->
+                <label for="bookingStart">Start:</label>
+                <input type="datetime-local" id="bookingStart" name="bookingStart"><br><br>
+
+                <!-- bookingEnd -->
+                <label for="bookingEnd">End:</label>
+                <input type="datetime-local" id="bookingEnd" name="bookingEnd"><br><br>
             </fieldset><br><br>
 
             <br><br>
 
             <!-- laboratories involved -->
-            <div class="laboratories">
-                <span class="laboratories">At the moment, only equipment with pre-existing booking system can be booked.
+            <div>
+                <span>At the moment, only equipment with pre-existing booking system can be booked.
                     <br>Please contact developers of TheWorldAvatar if more features needed.</span><br><br>
             </div><br><br>
 

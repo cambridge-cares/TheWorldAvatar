@@ -14,16 +14,23 @@ from equipmentbookingagent.data_model.base_ontology import BaseOntology
 
 
 class BookingSystem(BaseOntology):
-    hasBooking: Booking
+    hasBooking: Optional[Booking] = None
     clz: str = OAM_BOOKINGSYSTEM
-
-    def create_instance_for_kg(self, g: Graph) -> Graph:
-        # <BookingSystem> <rdf:type> <ontoassetmanagement:BookingSystem>
-        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
-        # <BookingSystem> <ontoassetmanagement:hasBooking> <ontoassetmanagement:Booking>
-        g.add((URIRef(self.instance_iri), URIRef(OAM_HASBOOKING), URIRef(self.hasBooking.instance_iri)))
-
-        return g
 
 class Booking(BaseOntology):
     clz: str = OAM_BOOKING
+    hasBooker: Fibo_Person
+    hasBookingPeriod: str #TIME_INTERVAL
+
+class Equipment(BaseOntology):
+    # can either be bot:Element (of which OntoDevice:Device is a subclass) or ssn:System
+    hasBookingSystem: BookingSystem
+    label: str
+    hasItemInventoryIdentifier: str
+    isManufacturedBy: str #FIBO_ORGANIZATION
+    isSuppliedBy: str #FIBO_ORGANIZATION
+    isLocatedIn: str #ONTOBIM_ROOM
+
+class Fibo_Person(BaseOntology):
+    clz : str = FIBO_PERSON
+    name : str

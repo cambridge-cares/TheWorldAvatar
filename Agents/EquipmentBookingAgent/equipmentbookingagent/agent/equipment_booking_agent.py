@@ -88,11 +88,8 @@ class EquipmentBookingAgent(ABC):
         # add the default routes for the flask app
         self.app.add_url_rule('/', 'root', self.booking_page, methods=['GET'])
 
-        # add the route for the rxn opt goal specification
-        self.app.add_url_rule('/booking', 'equipment_booking', self.booking_page, methods=['GET'])
-
-        # initialise the current_active_goal_set as None
-        self.current_active_goal_set = None
+        # add the route for the equipment booking
+        self.app.add_url_rule('/booking', 'equipment_booking', self.confirmation_page, methods=['GET','POST'])
 
     def default(self):
         """Instruction for the EquipmentBookingAgent usage."""
@@ -102,11 +99,66 @@ class EquipmentBookingAgent(ABC):
         return msg
 
 
+    def confirmation_page(self):
+        if request.method == 'POST':
+            parameters = request.form
+            self.logger.info(f"Received a goal request with parameters: {parameters}")
+
+            errors_list = list()
+            if "user_def" in parameters:
+                selected_user=parameters['user_def']
+            else:
+                selected_user = None
+                errors_list.append('No user was selected.')
+
+            if "equipment_def" in parameters:
+                selected_equipment=parameters['equipment_def']
+            else:
+                selected_equipment = None
+                errors_list.append('No equipment was selected.')
+
+            if parameters['bookingStart'] == '':
+                selected_start = 0
+                errors_list.append('No valid date and time for booking start were chosen.')
+            else:
+                selected_start = datetime.timestamp(datetime.fromisoformat(parameters['bookingStart']))
+            
+            if parameters['bookingEnd'] == '':
+                selected_end = 0
+                errors_list.append('No valid date and time for booking end were chosen.')
+            else:
+                selected_end = datetime.timestamp(datetime.fromisoformat(parameters['bookingEnd']))
+
+            if selected_start > 0 and selected_end > 0:
+                if selected_end <= selected_start:
+                    errors_list.append('The booking start needs to be before booking end.')
+
+            if len(errors_list) == 0:
+                conflicting_bookings = self.sparql_client.get_all_conflicting_bookings(selected_equipment,selected_start,selected_end)
+                print(conflicting_bookings)
+                if len(conflicting_bookings) > 0:
+                    return render_template('equipment_booking_confirm_booking.html',
+                                   header_text='Booking unavailable', content_primer='It conflicts with the following existing bookings:' , content_text=conflicting_bookings)
+                else:
+                    booking = self.sparql_client.create_booking_within_system(selected_equipment,selected_user,selected_start,selected_end)
+                    return render_template('equipment_booking_confirm_booking.html',
+                                   header_text='Booking successful', content_primer='A new booking was saved:' , content_text=booking)
+            else:
+                error_text = ""
+                for errs in errors_list:
+                    error_text = error_text + " " + errs
+                return render_template('equipment_booking_confirm_booking.html',
+                                   header_text='Faulty booking request', content_primer='The following errors occured:' , content_text=error_text)
+
+
+            #Faulty booking request
+            #Booking unavailable
+
     def booking_page(self):
         return render_template(
             'equipment_booking_make_booking.html',
-            lab_user_iri=[{'iri': usr, 'display': usr} for usr in self.sparql_client.get_all_users_iri()],
-            bookable_assets_iri=[{'iri': eq, 'display': eq} for eq in self.sparql_client.get_all_bookable_equipment_iri()],
+            lab_users=[{'iri': usr.instance_iri, 'display': usr.name} for usr in self.sparql_client.get_all_users()],
+            bookable_assets=[{'iri': eq.hasBookingSystem.instance_iri, 'display': eq.label} for eq in self.sparql_client.get_all_bookable_equipment()],
         )
 
 
