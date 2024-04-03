@@ -1,7 +1,9 @@
+import logging
 from typing import Optional
 
 from SPARQLWrapper import SPARQLWrapper, POST, JSON
 
+logger = logging.getLogger(__name__)
 
 class KgClient:
     def __init__(
@@ -15,5 +17,8 @@ class KgClient:
         self.sparql = sparql
 
     def query(self, query: str):
+        logger.info("Executing SPARQL query:\n" + query)
         self.sparql.setQuery(query)
-        return self.sparql.queryAndConvert()
+        res = self.sparql.queryAndConvert()
+        logger.info("Execution done")
+        return res
