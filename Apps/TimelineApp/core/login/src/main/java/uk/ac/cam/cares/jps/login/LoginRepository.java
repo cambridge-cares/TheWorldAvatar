@@ -50,14 +50,27 @@ public class LoginRepository {
     }
 
     public void getUserInfo(RepositoryCallback<User> repositoryCallback) {
+        LOGGER.info("retrieving user info");
         if (!loginSource.hasConfigurationChanged() && user != null) {
+            LOGGER.info("use preloaded user info");
             repositoryCallback.onSuccess(user);
             return;
         }
-        loginSource.getUserInfo(repositoryCallback);
+
+        RepositoryCallback<User> callback = new RepositoryCallback<User>() {
+            @Override
+            public void onSuccess(User result) {
+                user = result;
+                repositoryCallback.onSuccess(result);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                repositoryCallback.onFailure(error);
+            }
+        };
+        loginSource.getUserInfo(callback);
     }
-
-
 
     public Intent getLogOutIntent() {
         AuthorizationServiceConfiguration config = loginSource.authStateManager.getCurrent().getAuthorizationServiceConfiguration();

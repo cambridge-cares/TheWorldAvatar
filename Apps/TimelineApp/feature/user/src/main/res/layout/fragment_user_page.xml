@@ -35,11 +35,11 @@
             android:id="@+id/profile_pic"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="40dp"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
             app:shapeAppearanceOverlay="@style/RoundedImageView"
             app:srcCompat="@drawable/timeline_icon" />
 
