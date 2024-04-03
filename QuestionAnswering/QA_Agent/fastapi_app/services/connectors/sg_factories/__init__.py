@@ -142,7 +142,7 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             self.factory_num_attr_key_aligner.align_with_score(attribute)
         )
 
-        if industry_score > num_attr_score:
+        if industry_score < num_attr_score:  # smaller is closer
             attr_key = industry_key
         else:
             attr_key = num_attr_key
@@ -224,11 +224,13 @@ class SGFactoriesAgentConnector(AgentConnectorBase):
             parsed_constraints = dict()
             unpacked_parsed_constraints = dict()
 
+        logger.info("Calling agent to find factories")
         timestamp = time.time()
         data = self.agent.find_factories(
             industry=aligned_industry, numattr_constraints=parsed_constraints, limit=limit
         )
         latency = time.time() - timestamp
+        logger.info("Agent finishes execution")
         steps.append(
             QAStep(
                 action="find_factories",

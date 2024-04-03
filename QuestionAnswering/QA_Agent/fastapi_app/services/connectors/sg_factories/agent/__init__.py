@@ -1,4 +1,5 @@
-from functools import lru_cache
+from collections import defaultdict
+import logging
 from typing import Annotated, Callable, Dict, List, Optional, Tuple
 
 from fastapi import Depends
@@ -15,6 +16,8 @@ from .label_store import get_sgFactories_labelStore
 from .make_sparql import SGFactoriesSPARQLMaker, get_sgFactories_sparqlmaker
 
 
+logger = logging.getLogger(__name__)
+
 class SGFactoriesAgent:
 
     def __init__(
@@ -27,24 +30,28 @@ class SGFactoriesAgent:
         self.label_store = label_store
         self.sparql_maker = sparql_maker
 
-    @lru_cache(maxsize=128)
-    def _lookup_company_name(self, factory_iri: str):
+    def _lookup_company_names(self, factory_iris: List[str]):
+        # TODO: cache mappings that have already been looked up before
+        # and only query for unseen factories
         query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
-SELECT ?CompanyLabel WHERE {{
-VALUES ?Factory {{ <{iri}> }}
+SELECT ?CompanyLabel ?Factory WHERE {{
+FILTER ( ?Factory IN ( {values} ) )
 ?Company ontocompany:isOwnerOf ?Factory .
 ?Company rdfs:label ?CompanyLabel .
 }}""".format(
-            iri=factory_iri
+            values=", ".join("<{iri}>".format(iri=iri) for iri in factory_iris)
         )
         res = self.ontop_client.query(query)
-        bindings = res["results"]["bindings"]
-        if bindings:
-            return bindings[0]["CompanyLabel"]["value"]
-        return None
+        bindings = [{k: v["value"] for k, v in binding.items()} for binding in res["results"]["bindings"]]
+        
+        factory2company = defaultdict(lambda: None)
+        for binding in bindings:
+            factory2company[binding["Factory"]] = binding["CompanyLabel"]
+        
+        return [factory2company[factory] for factory in factory_iris]
 
     def _add_company_label(self, vars: List[str], bindings: List[dict]):
         try:
@@ -53,8 +60,9 @@ VALUES ?Factory {{ <{iri}> }}
             raise ValueError("IRI must be present, found: " + str(vars))
 
         vars.insert(iri_idx + 1, "Company")
-        for binding in bindings:
-            binding["Company"] = self._lookup_company_name(binding["IRI"])
+        companies = self._lookup_company_names([binding["IRI"] for binding in bindings])
+        for binding, company in zip(bindings, companies):
+            binding["Company"] = company
 
     def lookup_factory_attribute(self, name: str, attr_key: FactoryAttrKey):
         iris = self.label_store.link_entity(name)
