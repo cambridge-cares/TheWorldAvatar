@@ -3,34 +3,34 @@ OntoFHRS,TBox,http://www.theworldavatar.com/ontology/OntoFHRS/,https://www.w3.or
 OntoFHRS,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoFHRS,TBox,OntoFHRS is an ontology developed for representing food hygiene ratings of business establishments.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoFHRS,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
-Business Establishment,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment
-Restaurant,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Restaurant
-Cafe,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Cafe
-Canteen,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Canteen
-Pub,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Pub
-Bar,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Bar
-Supermarket,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Supermarket
-Hypermarket,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Hypermarket
+Business Establishment,Class,,,,,,"An establishment dedicated to commercial activities, goods production, processing, storage, or offering services.",http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment
+Restaurant,Class,Business Establishment,IS-A,,,,A business establishment where people can consume food and drinks.,http://www.theworldavatar.com/ontology/OntoFHRS/,Restaurant
+Cafe,Class,Business Establishment,IS-A,,,,"A business establishment where people can drink coffee, tea, and other beverages and eat light meals and snacks.",http://www.theworldavatar.com/ontology/OntoFHRS/,Cafe
+Canteen,Class,Business Establishment,IS-A,,,,"A business establishment that serves food and drinks in educational institutions, workplaces, or other organisations.",http://www.theworldavatar.com/ontology/OntoFHRS/,Canteen
+Pub,Class,Business Establishment,IS-A,,,,"A business establishment that serves alcoholic drinks, especially beer, as well as other beverages, and often offers light meals.",http://www.theworldavatar.com/ontology/OntoFHRS/,Pub
+Bar,Class,Business Establishment,IS-A,,,,A business establishment that serves alcoholic drinks.,http://www.theworldavatar.com/ontology/OntoFHRS/,Bar
+Supermarket,Class,Business Establishment,IS-A,,,,"A business establishment that sells groceries, food, dairy products and household items.",http://www.theworldavatar.com/ontology/OntoFHRS/,Supermarket
+Hypermarket,Class,Business Establishment,IS-A,,,,"A large-scale supermarket often located on the outskirts of a city, offering a vast array of goods including groceries, clothes, furniture, and household items.",http://www.theworldavatar.com/ontology/OntoFHRS/,Hypermarket
 Farmer Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Farmer Food Facility
 Grower Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Grower Food Facility
-Mobile Caterer,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Mobile Caterer
-School Canteen,Class,Canteen,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,School Canteen
-College Canteen,Class,Canteen,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,College Canteen
-University Canteen,Class,Canteen,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,University Canteen
-Hospital Premise Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Hospital Premise Food Facility
-Childcare Premise Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Childcare Premise Food Facility
-Caring Premise Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Caring Premise Food Facility
-Night Club,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Night Club
-Food Manufacturer,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Manufacturer
-Food Packer,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Packer
-Food Retailer,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Retailer
-Food Distributor,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Distributor
-Food Transporter,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Transporter
-Hotel,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Hotel
-Bed and Breakfast,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Bed and Breakfast
-Guest House,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Guest House
-Takeaway,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Takeaway
-Sandwich Shop,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Sandwich Shop
+Mobile Caterer,Class,Business Establishment,IS-A,,,,A business establishment that serves food and drinks from a vehicle that can move from one location to another.,http://www.theworldavatar.com/ontology/OntoFHRS/,Mobile Caterer
+School Canteen,Class,Canteen,IS-A,,,,A canteen that offers food and drinks to students and staff in a school.,http://www.theworldavatar.com/ontology/OntoFHRS/,School Canteen
+College Canteen,Class,Canteen,IS-A,,,,"A canteen that offers food and drinks to students, faculty and staff on a college campus.",http://www.theworldavatar.com/ontology/OntoFHRS/,College Canteen
+University Canteen,Class,Canteen,IS-A,,,,"A canteen located on a university campus that offers food and beverages to students, faculty, staff, and sometimes visitors.",http://www.theworldavatar.com/ontology/OntoFHRS/,University Canteen
+Hospital Premise Food Facility,Class,Business Establishment,IS-A,,,,"A business establishment within a hospital that serves food and beverages to patients, staff, and visitors.",http://www.theworldavatar.com/ontology/OntoFHRS/,Hospital Premise Food Facility
+Childcare Premise Food Facility,Class,Business Establishment,IS-A,,,,A food facility within a childcare centre serving meals and snacks to children.,http://www.theworldavatar.com/ontology/OntoFHRS/,Childcare Premise Food Facility
+Caring Premise Food Facility,Class,Business Establishment,IS-A,,,,A food facility within a caring premise that provides meals and snacks tailored to the dietary needs of residents.,http://www.theworldavatar.com/ontology/OntoFHRS/,Caring Premise Food Facility
+Night Club,Class,Business Establishment,IS-A,,,,"A business establishment that remains open until late at night, offering food and drink alongside entertainment such as live music, dance performances, and dancing opportunities.",http://www.theworldavatar.com/ontology/OntoFHRS/,Night Club
+Food Manufacturer,Class,Business Establishment,IS-A,,,,A business establishment that processes raw ingredients into consumable food products.,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Manufacturer
+Food Packer,Class,Business Establishment,IS-A,,,,"A business establishment that packages food products for shipment, distribution, delivery and consumption.",http://www.theworldavatar.com/ontology/OntoFHRS/,Food Packer
+Food Retailer,Class,Business Establishment,IS-A,,,,"A business establishment that sells food products directly to the public, end users or consumers.",http://www.theworldavatar.com/ontology/OntoFHRS/,Food Retailer
+Food Distributor,Class,Business Establishment,IS-A,,,,"A business establishment that distributes food products from manufacturers and producers to retailers, restaurants and other outlets.",http://www.theworldavatar.com/ontology/OntoFHRS/,Food Distributor
+Food Transporter,Class,Business Establishment,IS-A,,,,"A business establishment that transports food products from manufacturers and producers to retailers, restaurants and other outlets.",http://www.theworldavatar.com/ontology/OntoFHRS/,Food Transporter
+Hotel,Class,Business Establishment,IS-A,,,,"A business establishment that provides travellers lodging, meals and other services.",http://www.theworldavatar.com/ontology/OntoFHRS/,Hotel
+Bed and Breakfast,Class,Business Establishment,IS-A,,,,"A small-scale lodging establishment, typically in a private home, that provides overnight stay and breakfast to travellers.",http://www.theworldavatar.com/ontology/OntoFHRS/,Bed and Breakfast
+Guest House,Class,Business Establishment,IS-A,,,,"A lodging establishment in a private house, usually smaller than a hotel, that offers travellers overnight stays and occasionally meals.",http://www.theworldavatar.com/ontology/OntoFHRS/,Guest House
+Takeaway,Class,Business Establishment,IS-A,,,,"A food establishment that sells cooked food to be eaten elsewhere, away from its premises.",http://www.theworldavatar.com/ontology/OntoFHRS/,Takeaway
+Sandwich Shop,Class,Business Establishment,IS-A,,,,"A food establishment that generally sells a variety of sandwiches, often prepared on the premises.",http://www.theworldavatar.com/ontology/OntoFHRS/,Sandwich Shop
 Catering Premise,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Catering Premise
 Address,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Address
 Rating,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating
