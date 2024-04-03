@@ -557,7 +557,7 @@ public class GDALClient extends ContainerClient {
                         + " | psql -U " + postgreSQLEndpoint.getUsername() + " -d " + database + " -w")
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
-                .withEvaluationTimeout(300)
+                .withEvaluationTimeout(3600)
                 .exec();
 
         handleErrors(errorStream, execId, logger);
