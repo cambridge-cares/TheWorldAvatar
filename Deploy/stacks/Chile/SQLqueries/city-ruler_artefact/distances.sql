@@ -1,4 +1,4 @@
--- Note: The following file has been developed to copy and paste the queries on the adminer screen.
+-- Note: The following file has been developed to copy and paste the queries on the adminer screen, and later commented to form an sql file.
 
 SELECT *, 
        ST_X(geom) AS lat2, 
@@ -26,29 +26,31 @@ FROM "ine_asentamientos") AS foo
 --TABLE MUST BE UPLOADED AS VECTOR WITH STACK-DATA UPLOADER
 
 --cities.json
---{
---    "database": "postgres",
---    "workspace": "the_world_avatar",
---    "datasetDirectory": "cities",
---    "dataSubsets": [
---        {
---            "type": "vector",
---            "skip": false,
---            "schema": "public",
---            "table": "cities",
---            "subdirectory": "vector",
---            "ogr2ogrOptions": {
---                "sridIn": "EPSG:4326",
---                "sridOut": "EPSG:4326",
---                "inputDatasetOpenOptions": {
---                    "X_POSSIBLE_NAMES": "lon",
---                    "Y_POSSIBLE_NAMES": "lat",
---                    "GEOM_POSSIBLE_NAMES": "wkb_geometry"
---                }
---            }
---        }
---    ]
---}
+/*
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "cities",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "cities",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "lon",
+                    "Y_POSSIBLE_NAMES": "lat",
+                    "GEOM_POSSIBLE_NAMES": "wkb_geometry"
+                }
+            }
+        }
+    ]
+}
+*/
 
 -- data/cities/vector/cities_ruler_distances.cvs:
 
