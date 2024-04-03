@@ -213,7 +213,7 @@ WHERE {
             ?unit_iri skos:notation ?Unit.       	
         }
     }
-	?type rdfs:subClassOf* ontocompany:IndustrialFacilityProperty.
+	?type rdfs:subClassOf/rdfs:subClassOf ontocompany:IndustrialFacilityProperty.
     ?type rdfs:label ?Property.
     } UNION {
         SERVICE [ONTOP] {    
