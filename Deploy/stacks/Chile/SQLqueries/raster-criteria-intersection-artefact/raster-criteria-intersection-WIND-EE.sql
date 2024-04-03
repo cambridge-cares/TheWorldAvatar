@@ -1,13 +1,14 @@
-***************************
-CREATE AREAS EXCELLENT FOR WIND SPEED, CAPACITY FACTOR AND ELEVATION (Area EE)
+-- Note: The following file has been developed to copy and paste the queries on the adminer screen, and later commented to form an sql file.
 
-***************************
+-- ***************************
+-- CREATE AREAS EXCELLENT FOR WIND SPEED, CAPACITY FACTOR AND ELEVATION (Area EE)
+-- ***************************
 
-Initial rasters: atlaswind50m, atlas_elevationwithbathymetry, atlas_capacity_iec1
-Criteria: 7.5000000001-12.5:5-5, 20-500:5-5, 0.5000000001-0.95:5-5
-***********************************
-RUN IN ADMINER:
-***********************************
+-- Initial rasters: atlaswind50m, atlas_elevationwithbathymetry, atlas_capacity_iec1
+-- Criteria: 7.5000000001-12.5:5-5, 20-500:5-5, 0.5000000001-0.95:5-5
+-- ***********************************
+-- RUN IN ADMINER:
+-- ***********************************
 
 CREATE TABLE windchile4 AS (SELECT * FROM "atlaswind50m");
 CREATE TABLE windchile4neg AS (SELECT * FROM "atlaswind50m");
@@ -70,6 +71,7 @@ SELECT ST_Area(geom::geography, true)/1000000 as km2
 FROM "intersection_ee"
 
 
-***********************************
-"intersection_ee" can be downloaded and uploaded with the Data Uploader to be visualized
-***********************************
+-- ***********************************
+-- "intersection_ee" can be downloaded and uploaded with the Data Uploader to be visualized
+-- ***********************************
+

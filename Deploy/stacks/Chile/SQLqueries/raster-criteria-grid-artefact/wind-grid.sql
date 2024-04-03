@@ -1,19 +1,21 @@
-++++++++++++++++++
-+___________
+-- Note: The following file has been developed to copy and paste the queries on the adminer screen, and later commented to form an sql file.
 
-GRID USING REDUCED RESOLUTIONS
-__________________
+-- ++++++++++++++++++
+-- __________________
 
-++++++++++++++++++++
+-- GRID USING REDUCED RESOLUTIONS
+-- __________________
+
+-- ++++++++++++++++++
 
 
 
 SELECT  ST_CreateOverview('atlas_elevationwithbathymetry'::regclass, 'rast', 4, 'NearestNeighbor');
 SELECT  ST_CreateOverview('atlas_capacity_iec1'::regclass, 'rast', 4, 'NearestNeighbor');
 SELECT  ST_CreateOverview('atlaswind50m'::regclass, 'rast', 4, 'NearestNeighbor');
-o_4_atlas_elevationwithbathymetry
-o_4_atlas_capacity_iec1
-o_4_atlaswind50m
+-- o_4_atlas_elevationwithbathymetry
+-- o_4_atlas_capacity_iec1
+-- o_4_atlaswind50m
 
 
 
@@ -397,9 +399,9 @@ CREATE TABLE xele4addpolydis AS SELECT ST_UNION(ST_MAKEVALID(geom)) AS geom
 FROM "xele4addpoly"
 
 
-++++++++++
-INTERSECTION ELEVATION AND CAPACITY FACTOR
-+++++++++++
+-- ++++++++++
+-- INTERSECTION ELEVATION AND CAPACITY FACTOR
+-- +++++++++++
 
 CREATE TABLE inter_95ele AS (SELECT ST_Intersection(a.geom, b.geom) as geom
 FROM "xele4addpolydis" AS a, "cap95addpolydis" AS b);
@@ -434,9 +436,9 @@ FROM "xele4addpolydis" AS a, "cap30addpolydis" AS b);
 
 
 
-++++++++++
-INTERSECTION ELEVATION AND WIND SPEED
-+++++++++++
+-- ++++++++++
+-- INTERSECTION ELEVATION AND WIND SPEED
+-- +++++++++++
 
 
 CREATE TABLE inter_s5ele AS (SELECT ST_Intersection(a.geom, b.geom) as geom
@@ -458,9 +460,9 @@ FROM "xele4addpolydis" AS a, "xwchiles12addpolydis" AS b);
 
 
 
-++++++++++
-INTERSECTION (ELEVATION AND WIND SPEED) and (ELEVATION AND CAPACITY FACTOR)
-+++++++++++
+-- ++++++++++
+-- INTERSECTION (ELEVATION AND WIND SPEED) and (ELEVATION AND CAPACITY FACTOR)
+-- +++++++++++
 
 
 

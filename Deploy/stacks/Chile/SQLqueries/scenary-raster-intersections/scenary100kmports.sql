@@ -1,8 +1,9 @@
+-- Note: The following file has been developed to copy and paste the queries on the adminer screen, and later commented to form an sql file.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  AREA OF INTERSECTION BETWEEN EE (BEST WIND AREAS AND CIRCLE AROUND PORTS OF 100 KM IN MAGALLANES): result 20360 km2
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %  AREA OF INTERSECTION BETWEEN EE (BEST WIND AREAS AND CIRCLE AROUND PORTS OF 100 KM IN MAGALLANES): result 20360 km2
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 SELECT ST_Area(geom::geography, true)/1000000 as km2
 FROM (select ST_Union(a.geom) as geom, 
@@ -23,9 +24,9 @@ WHERE a.region = 'REGION DE MAGALLANES Y ANTARTICA CHILENA'
 ) as a) as foo;
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  AREA OF INTERSECTION BETWEEN EE (BEST WIND AREAS AND CIRCLE AROUND PORTS OF 100 KM IN CHILE): result 20985 km2
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %  AREA OF INTERSECTION BETWEEN EE (BEST WIND AREAS AND CIRCLE AROUND PORTS OF 100 KM IN CHILE): result 20985 km2
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 SELECT ST_Area(geom::geography, true)/1000000 as km2
 FROM (select ST_Union(a.geom) as geom, 
@@ -44,9 +45,9 @@ FROM (  SELECT ST_Transform(ST_Buffer(a.wkb_geometry, 100000, 'quad_segs=8') ,43
 )
 ) as a) as foo;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  AREA OF INTERSECTION BETWEEN EE (BEST WIND AREAS AND CIRCLE AROUND PORTS OF 100 KM IN CHILE): GROUPED BY REGION
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %  AREA OF INTERSECTION BETWEEN EE (BEST WIND AREAS AND CIRCLE AROUND PORTS OF 100 KM IN CHILE): GROUPED BY REGION
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 SELECT region, ST_Area(geom::geography, true)/1000000 as km2
 FROM (select ST_Union(a.geom) as geom, 
@@ -68,9 +69,9 @@ FROM (  SELECT ST_Transform(ST_Buffer(a.wkb_geometry, 100000, 'quad_segs=8') ,43
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  CHECK GEOMETRY TYPE
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %  CHECK GEOMETRY TYPE
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 SELECT GeometryType(geom), 100 as diameter
@@ -79,11 +80,12 @@ FROM "intersec_ee_portsv100unionv2" ) as foo
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  SELECT BY GEOMETRY TYPE
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %  SELECT BY GEOMETRY TYPE
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 SELECT path, geom, GeometryType(geom), 100 as diameter
 FROM (SELECT (ST_dump(geom)).*, 100 as diameter
 FROM "intersec_ee_portsv100unionv2" ) as foo
 WHERE  GeometryType(geom) = 'POLYGON'
+

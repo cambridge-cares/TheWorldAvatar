@@ -1,19 +1,21 @@
-*********************************
-********************************
-SOLAR
-********************************
-*********************************
+-- Note: The following file has been developed to copy and paste the queries on the adminer screen, and later commented to form an sql file.
+
+-- *********************************
+-- ********************************
+-- SOLAR
+-- ********************************
+-- *********************************
 
 
 
 SELECT  ST_CreateOverview('solar_atlas_dni'::regclass, 'rast', 4, 'NearestNeighbor')
 SELECT  ST_CreateOverview('atlas_elevationwithbathymetry'::regclass, 'rast', 4, 'NearestNeighbor')
 
-+++++++++
-RESULTS: 
-o_4_solar_atlas_dni
-o_4_atlas_elevationwithbathymetry
-++++++++++
+-- +++++++++
+-- RESULTS: 
+-- o_4_solar_atlas_dni
+-- o_4_atlas_elevationwithbathymetry
+-- ++++++++++
 
 
 
@@ -77,9 +79,9 @@ CREATE TABLE inter_soleele AS (SELECT ST_Intersection(a.geom, b.geom) as geom
 FROM "ysole4addpolydis" AS a, "yelesol4addpolydis" AS b);
 
 
-+++++++++++++
-INFO ABOUT Tmed
-++++++++++++
+-- +++++++++++++
+-- INFO ABOUT Tmed
+-- +++++++++++++
 
 
 

@@ -1,6 +1,8 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-EXAMPLE 3  MEAN WIND SPEED AT EXISTING WIND PLANTS (2018)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- Note: The following file has been developed to copy and paste the queries on the adminer screen, and later commented to form an sql file.
+
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--EXAMPLE 3  MEAN WIND SPEED AT EXISTING WIND PLANTS (2018)
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 SELECT rid,
     ST_Value(rast, geom, true) AS value,
@@ -21,17 +23,17 @@ WHERE
 
 
 
-"windfullchile05": raster
-gov_centraleolic: vector (points)
+-- "windfullchile05": raster
+-- gov_centraleolic: vector (points)
 
-Then upload results with data uploader.
-
-
+-- Then upload results with data uploader.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-EXAMPLE 3  ELEVATION OF EXISTING HYDRO PLANTS (2018)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+-- EXAMPLE 3  ELEVATION OF EXISTING HYDRO PLANTS (2018)
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 SELECT rid,
     ST_Value(rast, geom, true) AS value,
@@ -51,15 +53,14 @@ WHERE
     ST_Value(rast, geom, true) IS NOT NULL
 
 
-"atlas_elevationwithbathymetry": raster
+-- "atlas_elevationwithbathymetry": raster
+-- gov_centralhydro: vector (points)
 
-gov_centralhydro: vector (points)
+-- Then upload results with data uploader.
 
-Then upload results with data uploader.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-EXAMPLE 3  ELEVATION OF EXISTING SOLAR PLANTS (2018)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- EXAMPLE 3  ELEVATION OF EXISTING SOLAR PLANTS (2018)
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 SELECT rid,
     ST_Value(rast, geom, true) AS value,
@@ -82,9 +83,9 @@ WHERE
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-EXAMPLE 4  ELEVATION OF EXISTING SOLAR PLANTS (2023-dataset)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- EXAMPLE 4  ELEVATION OF EXISTING SOLAR PLANTS (2023-dataset)
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 SELECT rid,
     ST_Value(rast, geom, true) AS value,
@@ -117,17 +118,16 @@ ORDER BY anio_servicio_central;
 
 
 
-% ORDER BY potencia_neta_mw;
+-- % ORDER BY potencia_neta_mw;
+
+-- "capacidad6" : vector (points) DATA 2023
+
+-- Then upload results with data uploader.
 
 
-"capacidad6" : vector (points) DATA 2023
-
-Then upload results with data uploader.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-EXAMPLE 5  RELEVANT VARIABLES (2023-dataset)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-- EXAMPLE 5  RELEVANT VARIABLES (2023-dataset)
+-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 SELECT rid,

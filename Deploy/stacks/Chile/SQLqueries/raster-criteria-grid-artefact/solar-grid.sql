@@ -1,23 +1,23 @@
+-- Note: The following file has been developed to copy and paste the queries on the adminer screen, and later commented to form an sql file.
 
 
 
-+++++++++++++++++++++++++++++
-++++++++++++++++++++++++++++
-+++++++++++++++++++++++++++
-
-SOLAR GRID
-++++++++++++++++++++++++++++
+-- +++++++++++++++++++++++++++
+-- +++++++++++++++++++++++++++
+-- +++++++++++++++++++++++++++
+-- SOLAR GRID
+-- +++++++++++++++++++++++++++
 
 SELECT  ST_CreateOverview('solar_atlas_dni'::regclass, 'rast', 4, 'NearestNeighbor')
 SELECT  ST_CreateOverview('atlas_elevationwithbathymetry'::regclass, 'rast', 4, 'NearestNeighbor')
 
-+++++++++
-RESULTS: 
-o_4_solar_atlas_dni
-o_4_atlas_elevationwithbathymetry
+-- +++++++++
+-- RESULTS: 
+-- o_4_solar_atlas_dni
+-- o_4_atlas_elevationwithbathymetry
 
-++++++++++ Note: Climate "IDE_climate" is Multipolygon
-++++++++++++++++++++++++++++
+-- ++++++++++ Note: Climate "IDE_climate" is Multipolygon
+-- ++++++++++++++++++++++++++++
 
 
 
@@ -382,9 +382,9 @@ FROM "ysole439addpoly"
 
 
 
-+++++++++++++
-INTERSECTIONS: solar interval + poligon E o poligon G (with elevation and T considered)
-++++++++++++++
+-- +++++++++++++
+-- INTERSECTIONS: solar interval + poligon E o poligon G (with elevation and T considered)
+-- ++++++++++++++
 
 CREATE TABLE inter_solgeleclimateun AS (SELECT ST_Union(a.geom) as geom
 FROM "inter_solgeleclimate" AS a);
