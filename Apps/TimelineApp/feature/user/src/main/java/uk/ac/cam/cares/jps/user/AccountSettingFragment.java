@@ -27,6 +27,7 @@ public class AccountSettingFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        accountViewModel.registerForLogoutResult(this);
 
         binding = FragmentAccountSettingBinding.inflate(inflater);
         binding.setLifecycleOwner(this);
@@ -39,11 +40,11 @@ public class AccountSettingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.mapTopAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
+        binding.signOut.setOnClickListener(view1 -> accountViewModel.logout());
 
         // todo: unimplemented button
         binding.editProfile.setOnClickListener(view1 -> UiUtils.showNotImplementedDialog(requireContext()));
         binding.updatePassword.setOnClickListener(view1 -> UiUtils.showNotImplementedDialog(requireContext()));
-        binding.signOut.setOnClickListener(view1 -> UiUtils.showNotImplementedDialog(requireContext()));
         binding.deleteAccount.setOnClickListener(view1 -> UiUtils.showNotImplementedDialog(requireContext()));
 
         accountViewModel.getUserInfo();

@@ -3,6 +3,10 @@ package uk.ac.cam.cares.jps.user.viewmodel;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.NO_UER_INFO_RETRIEVED;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SESSION_EXPIRED;
 
+import android.content.Intent;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -30,6 +34,8 @@ public class AccountViewModel extends ViewModel {
     public LiveData<String> email = _email;
     public LiveData<Boolean> shouldShowSessionExpired = _shouldShowSessionExpired;
 
+    private ActivityResultLauncher<Intent> logoutLauncher;
+
     @Inject
     public AccountViewModel(LoginRepository loginRepository) {
         this.loginRepository = loginRepository;
@@ -50,6 +56,14 @@ public class AccountViewModel extends ViewModel {
                 }
             }
         });
+    }
+
+    public void registerForLogoutResult(Fragment fragment) {
+        logoutLauncher = loginRepository.getLogoutLauncher(fragment);
+    }
+
+    public void logout() {
+        logoutLauncher.launch(loginRepository.getLogOutIntent());
     }
 
 }
