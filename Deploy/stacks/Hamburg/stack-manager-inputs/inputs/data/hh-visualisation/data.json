@@ -4,7 +4,7 @@
     "groups": [
         {
             "name": "Schulen",
-            "expanded": true,
+            "expanded": false,
             "sources": [
                 {
                     "id": "nicht-staatliche-schulen-source",
@@ -31,7 +31,7 @@
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
                     }
-		},
+                },
                 {
                     "id": "staatliche-schulen-layer",
                     "name": "Staatliche Schulen",
@@ -45,12 +45,12 @@
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
                     }
-		}
+                }
             ]
         },
         {
             "name": "Verwaltung",
-            "expanded": true,
+            "expanded": false,
             "sources": [
                 {
                     "id": "verwaltungsgrenzen-source",
@@ -59,7 +59,7 @@
                         "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Averwaltungsgrenzen&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
-	    ],
+            ],
             "layers": [
                 {
                     "id": "verwaltungsgrenzen-layer",
@@ -76,6 +76,10 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "Dispersion",
+            "expanded": false
         }
     ]
 }

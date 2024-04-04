@@ -1,0 +1,22 @@
+{
+    "services": {
+        "includes": [
+            "aermod-agent",
+            "dispersion-interactor",
+            "emissions-agent",
+            "file-server",
+            "python-service",
+            "ship-input-agent",
+            "virtual-sensor-agent",
+            "weather-agent",
+            "visualisation"
+        ],
+        "excludes": [
+            "citydbimpexp",
+            "citytiler"
+        ]
+    },
+    "volumes": {
+        "vis-files": "hh-visualisation"
+    }
+}
