@@ -1,0 +1,633 @@
+{
+    "name": "Pirmasens",
+    "groups": [
+        {
+            "name": "Isochrone",
+            "stack": "http://localhost:3838",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "walk",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/isochrone/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=isochrone%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Walk%27"
+                },
+                {
+                    "id": "bicycle",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/isochrone/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=isochrone%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Cycle%27"
+                },
+                {
+                    "id": "car",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/isochrone/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=isochrone%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Drive%27"
+                }
+            ],
+
+
+            "groups": [
+                {
+                    "name": "Pharmacy",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": ["in", "Pharmacy", ["get", "poi_type"]],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#0074E4",
+                                    30, "#00C86F"
+                                ]],             
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": ["in", "Pharmacy", ["get", "poi_type"]],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#9C27B0",
+                                    30, "#E91E63"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["in", "Pharmacy", ["get", "poi_type"]],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "School",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": ["in", "School", ["get", "poi_type"]],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#0074E4",
+                                    30, "#00C86F"
+                                ]],             
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": ["in", "School", ["get", "poi_type"]],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#9C27B0",
+                                    30, "#E91E63"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["in", "School", ["get", "poi_type"]],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Bank",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": ["in", "Bank", ["get", "poi_type"]],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#0074E4",
+                                    30, "#00C86F"
+                                ]],             
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": ["in", "Bank", ["get", "poi_type"]],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#9C27B0",
+                                    30, "#E91E63"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["in", "Bank", ["get", "poi_type"]],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Hospital",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": ["in", "Hospital", ["get", "poi_type"]],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#0074E4",
+                                    30, "#00C86F"
+                                ]],             
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": ["in", "Hospital", ["get", "poi_type"]],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#9C27B0",
+                                    30, "#E91E63"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["in", "Hospital", ["get", "poi_type"]],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Clinic",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": ["in", "Clinic", ["get", "poi_type"]],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#0074E4",
+                                    30, "#00C86F"
+                                ]],             
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": ["in", "Clinic", ["get", "poi_type"]],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#9C27B0",
+                                    30, "#E91E63"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["in", "Clinic", ["get", "poi_type"]],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "PoliceStation",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": ["in", "PoliceStation", ["get", "poi_type"]],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#0074E4",
+                                    30, "#00C86F"
+                                ]],             
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": ["in", "PoliceStation", ["get", "poi_type"]],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#9C27B0",
+                                    30, "#E91E63"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["in", "PoliceStation", ["get", "poi_type"]],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "EatingEstablishment",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": ["in", "EatingEstablishment", ["get", "poi_type"]],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#0074E4",
+                                    30, "#00C86F"
+                                ]],             
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": ["in", "EatingEstablishment", ["get", "poi_type"]],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#9C27B0",
+                                    30, "#E91E63"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["in", "EatingEstablishment", ["get", "poi_type"]],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                }
+                ,
+                {
+                    "name": "ReligiousFacility",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": ["in", "ReligiousFacility", ["get", "poi_type"]],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#0074E4",
+                                    30, "#00C86F"
+                                ]],             
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": ["in", "ReligiousFacility", ["get", "poi_type"]],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#9C27B0",
+                                    30, "#E91E63"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": ["in", "ReligiousFacility", ["get", "poi_type"]],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case", 
+                                    ["==", ["get", "minute"], null], "#000000", [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "minute"]],
+                                    0, "#FF9800",
+                                    30, "#FFEB3B"
+                                ]],             
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

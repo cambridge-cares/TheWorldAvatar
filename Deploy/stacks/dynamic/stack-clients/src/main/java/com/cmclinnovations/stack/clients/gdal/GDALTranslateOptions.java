@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GDALTranslateOptions extends CommonOptions<GDALTranslateOptions> {
 
+    @JsonProperty
     private final Map<String, String> creationOptions = new HashMap<>();
 
     public GDALTranslateOptions addCreationOption(String name, String value) {

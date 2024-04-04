@@ -13,7 +13,7 @@ Please note that it is not the intention for this EmailAgent to be used to send 
 
 
 ## Building the Image
-The agent directory contains the required files to build a Docker Image for the EmailAgent service; the `Dockerfile` file contains the instructions to build an Image; before making any changes to it, please consult the application's developer or the system administrators at CMCL. Files have also been added to ensure the agent is compatable for deplyment in a [stack environment](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md).
+The agent directory contains the required files to build a Docker Image for the EmailAgent service; the `Dockerfile` file contains the instructions to build an Image; before making any changes to it, please consult the application's developer or the system administrators at CMCL. Files have also been added to ensure the agent is compatible for deplyment in a [stack environment](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md).
 
 Please note the caveats below before attempting to build the service using Docker:
 
@@ -52,6 +52,10 @@ Once the requirements have been addressed, the Image can be built using the foll
 + To generate a Container (i.e. run the Image):
   + `docker-compose -f docker-compose.yml up -d --force-recreate`
 
+### Deployment in the stack
+1. After building the image, copy the `email-agent.json` under the `stack-manager-input-config` folder and paste it in the `services` folder under your stack-manager directory.
+2. Open `email-agent.json` and under the `Mounts` section, modify `Source` according to where your `email-agent.properties` file is located at.
+3. Open your `<stack-name>.json` file and add "email-agent" to the `includes` section under the `services` section, start up the stack.
 
 ## Calling the Email Agent
 To make use of the Email Agent from your own code, follow the below steps:
@@ -59,6 +63,7 @@ To make use of the Email Agent from your own code, follow the below steps:
 - Ensure you're using the latest version of the JPS base library.
 - Set the value of the `EMAIL_AGENT_URL` environment variable to the base URL of the remote EmailAgent.
   - This should be the base URL of the agent, without a route `e.g. http://my-website.com/email_agent`
+  - The internal URL of the agent within the stack should follow this format: `e.g. http://<stack-name>-email-agent:8080/email_agent`
 - Use the `sendEmail(subject, body)` method of the `EmailSender` class in JPS Base Library to generate a notification email.
 
 For an example of this, or to quickly test that your remote EmailAgent is up and running, see the `SubmissionTest` class within the EmailAgent.

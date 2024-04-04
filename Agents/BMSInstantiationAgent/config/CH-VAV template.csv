@@ -1,0 +1,14 @@
+CH_label,CH-7-5-VAV-E7-05
+LowLevelState_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_05_CanopyHood_Low
+LowLevelState_IRI_label,CH-7-5-VAV-E7-05 low level state
+MediumLevelState_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_05_CanopyHood_Med
+MediumLevelState_IRI_label,CH-7-5-VAV-E7-05 medium level state
+HighLevelState_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_05_CanopyHood_High
+HighLevelState_IRI_label,CH-7-5-VAV-E7-05 high level state
+VAV_label,VAV_E7_05
+DamperState_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_05_DamperActuator
+DamperState_IRI_label,CH-7-5-VAV-E7-05 damper state
+AirFlow_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_05_FlowSensor
+AirFlow_IRI_label,CH-7-5-VAV-E7-05 airflow rate
+Setpoint_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_05_AirflowSetPoint
+Setpoint_IRI_label,CH-7-5-VAV-E7-05 airflow setpoint

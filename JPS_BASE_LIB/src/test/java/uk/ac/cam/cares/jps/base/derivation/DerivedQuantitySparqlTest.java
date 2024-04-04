@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.base.derivation;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +21,6 @@ import java.util.stream.Stream;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
@@ -370,7 +368,7 @@ public class DerivedQuantitySparqlTest {
 		String errMsg = testKG.getProperty(ResourceFactory.createResource(statusIRI),
 				 ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
 				 .asLiteral().getString();
-		Assert.assertEquals(excComment, DerivationSparql.escapeSequences(errMsg));
+		Assert.assertEquals(excComment, errMsg);
 
 		Assert.assertTrue(errMsg.contains(exc.getClass().toString()));
 		Assert.assertTrue(errMsg.contains(exc.getMessage()));
@@ -401,7 +399,7 @@ public class DerivedQuantitySparqlTest {
 				 ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
 				 .asLiteral().getString();
 		// the returned value from devClient.markAsError should match the added to triple store
-		Assert.assertEquals(excComment, DerivationSparql.escapeSequences(errMsg));
+		Assert.assertEquals(excComment, errMsg);
 	}
 
 	@Test

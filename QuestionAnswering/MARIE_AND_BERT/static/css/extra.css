@@ -1,0 +1,80 @@
+.row {
+  display: flex;
+}
+
+.column_1 {
+  flex: 30%;
+  padding: 5px;
+}
+.column_2 {
+  flex: 70%;
+  padding: 5px;
+}
+
+.table-custom  th {
+font-size: 1rem;
+background: #d0cccc;
+    color: #333;
+  position: sticky;
+  top: 0;
+}
+.table-custom  tr {
+    color: #333;
+    font-weight: 500;
+    border-top: 2px solid #b5b5b5;
+}
+
+.tooltip {
+  padding-left: 10px;
+  opacity: 100;
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 180px;
+  background-color: lightgrey;
+  color: black;
+  text-align: left;
+  padding: 5px;
+  border-radius: 6px;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  border: black;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.result-container
+{
+  /*float:right;*/
+  height: 50%;
+  /*width:250px;*/
+  /*padding:3px;*/
+  /*background:#f00;*/
+}
+
+.results-scroll
+{
+  height:400px;
+  overflow:auto;
+  background:#fff;
+}
+
+/*tbody {*/
+
+/*  height:400px;*/
+/*  overflow:auto;*/
+/*  background:#fff;*/
+
+/*}*/

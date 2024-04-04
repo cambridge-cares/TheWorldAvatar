@@ -4,13 +4,14 @@ prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 prefix ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
 prefix ontobms: <https://www.theworldavatar.com/kg/ontobms/>
+prefix ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+prefix bot: <https://w3id.org/bot#>
 prefix saref: <https://saref.etsi.org/core/>
 prefix ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
 prefix : <https://www.theworldavatar.com/kg/ontobms/>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
-# not include: hasFunction
     {
         [IRI] ontodevice:hasLength|ontodevice:hasWidth|ontodevice:hasHeight ?property.
         ?property om:hasValue/om:hasNumericalValue ?Value;
@@ -25,10 +26,19 @@ WHERE {
         BIND("Model" AS ?Property).
         BIND("-" AS ?Unit) .
     } UNION {
-        [IRI] ontodevice:hasPrice ontodevice:hasPrice ?price.
+        [IRI] ontodevice:hasPrice ?price.
         ?price om:hasValue/om:hasNumericalValue ?Value;
-        BIND("Singapore dollar" AS ?Unit).
+        BIND("SGD" AS ?Unit).
         BIND(REPLACE(STRAFTER(STR(?price), "-"), "^[0-9]+", "") as ?Property).
-    }
-
+    } UNION {
+      SERVICE <http://10.25.188.58:3838/blazegraph/namespace/lab/sparql>{
+    BIND ("Located in" AS ?Property )
+    ?building bot:hasStorey ?storey;
+    	ontobim:hasIfcRepresentation/rdfs:label ?buildingname.
+    ?storey ontobim:hasRoom ?room;
+    	ontobim:hasIfcRepresentation/rdfs:label ?storeyname.
+    ?room bot:containsElement [IRI];
+    	ontobim:hasIfcRepresentation/rdfs:label ?roomname.
+    BIND(CONCAT(STR(?roomname), " at ", STR(?storeyname), " of the ", STR(?buildingname)) AS ?Value)
+  }  }
 }

@@ -1,0 +1,8 @@
+mapbox_api_key
+mapbox_username
+grafana_api_key
+
+*.log
+*.xlsx
+*.temp
+*.tif

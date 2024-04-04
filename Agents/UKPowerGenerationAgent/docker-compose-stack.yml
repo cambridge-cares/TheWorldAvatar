@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  ukpowergeneration_agent:
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - "STACK_NAME=${STACK_NAME}"
+    security_opt:
+      - label=disable
+    volumes:
+      - scratch:/stack_scratch
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - stack
+
+volumes:
+  scratch:
+    name: ${STACK_NAME}_scratch
+    labels:
+      - com.docker.stack.namespace:${STACK_NAME}
+
+configs:
+  blazegraph:
+    name: ${STACK_NAME}_blazegraph
+    external: true
+  geoserver:
+    name: ${STACK_NAME}_geoserver
+    external: true
+  ontop:
+    name: ${STACK_NAME}_ontop
+    external: true
+  postgis:
+    name: ${STACK_NAME}_postgis
+    external: true
+
+networks:
+  stack:
+    name: ${STACK_NAME}
+    driver: overlay
+    external: true
+
+secrets:
+  geoserver_password:
+    name: ${STACK_NAME}_geoserver_password
+    external: true
+  postgis_password:
+    name: ${STACK_NAME}_postgis_password
+    external: true

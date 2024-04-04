@@ -1,26 +1,31 @@
 from setuptools import setup, find_namespace_packages 
 
 setup(
-    name='forecasting',
-    version='1.1.0',
+    name='forecastingagent',
+    version='2.2.1',
     author='Markus Hofmeister, Magnus Mueller',
     author_email='mh807@cam.ac.uk',
     license='MIT',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    description="The `Forecasting Agent` predicts a time series and instantiates the forecast into a given KG as part of The World Avatar project.",
+    description="The `Forecasting Agent` predicts a time series and instantiates the forecast as part of The World Avatar project.",
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ForecastingAgent/",
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
-        'flask~=2.2.2',
+        'flask~=2.1.0',
         'pandas~=1.5.1',
-        'py4jps~=1.0.30', 
         'requests~=2.28.1',
-        'darts~=0.21.0',
         'configobj~=5.0.6',
-        'fire~=0.4.0'
+        'fire~=0.4.0',
+        'py4jps~=1.0.38', 
+        'pyderivationagent~=1.6.0',
+        # To ensure loading of GPU-trained model on CPU-only machines, specific 
+        # versions of darts, torchmetrics and pytorch-lightning are required.
+        'darts==0.21.0',
+        'torchmetrics==0.9.3',
+        'pytorch-lightning==1.7.7',
     ],
     extras_require={
         "dev": [

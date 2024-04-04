@@ -45,7 +45,7 @@ public class EditableAttribute {
     // TODO: need to review how to get the data type from the knowledge graph
     public int getInputType() {
         if (type.equals("double")) {
-            return InputType.TYPE_CLASS_NUMBER;
+            return InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
         } else {
             return InputType.TYPE_CLASS_TEXT;
         }

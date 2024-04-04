@@ -1,5 +1,8 @@
 # The Stack Data Uploader
 
+<img align="right" width="250" height="500" src="./img/twa-uploader-logo-padded.svg">
+
+
 > :memo: **Note:** In the commands and file snippets below placeholders are indicated using angled brackets, for example `<STACK NAME>`.
 You will need to substitute in appropriate values before running any commands.
 
@@ -15,9 +18,10 @@ You will need to substitute in appropriate values before running any commands.
 7. [OBDA Mapping file](#obda-mapping-file)
 8. [Using Specific Data Sets](#using-specific-data-sets)
 9. [Value by File Name](#value-by-file-name)
-10. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
-11. [Developing the Stack Data Uploader in VSCode](#developing-the-stack-data-uploader-in-vscode)
-12. [Troubleshooting](#troubleshooting)
+10. [Processing Data Without Upload](#processing-without-upload)
+11. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
+12. [Developing the Stack Data Uploader in VSCode](#developing-the-stack-data-uploader-in-vscode)
+13. [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
@@ -38,7 +42,7 @@ Descriptions of each example can be found in the [Example datasets](#example-dat
 #### 3. Copy in data files
 
 The source files need to be copied into the [`inputs/data/`](./inputs/data/) directory.
-The structure of this directory is described in the [Datasets and subsets](#datasets-and-subsets) section.
+The structure of this directory is described in the [Datasets and subsets](#datasets-and-subsets) section. All data must be in a subdirectory two levels below `data` folder.
 
 #### 4. Create a configuration file
 Create a JSON file in the [`inputs/config/`](./inputs/config/) directory to define how the data is to be uploaded.
@@ -59,7 +63,7 @@ By default all dataset configuration files in the [`inputs/configs/`](./inputs/c
 When a dataset's name matches with that of the stack then only that configuration file and its *external datasets* will be loaded.
 
 Below is an example where there are two datasets.
-One of which (*dataset1*) contains one data subset and another (*dataset2*) that contains two data subsets, each with their own subdirectory.
+One of which (*dataset1*) contains one data subset and another (*dataset2*) that contains two data subsets, each with their own subdirectory. Note that every data file exists in a subdirectory, even if there are no sibling data on the same level. Data will not be uploaded unless it is two levels below `data` in a subdirectory.
 ```sh
 inputs/
   config/               # Directory in which the dataset configuration files should be stored
@@ -67,10 +71,11 @@ inputs/
     dataset2.json       # Configuration file for dataset2
   data/                 # Directory in which the data files should be stored
     dataset1/           # Data directory for dataset1
-      data.csv          # Only one data subset so no need for a subdirectory
+      datasubset1/     # Data subdirectory for data subset1
+        data.csv        # Data file for dataset1
     dataset2/           # Data directory for dataset2
-      datasubset1/      # Data directory for data subset1
-        polygon.geojson # Data file 
+      datasubset2/      # Data subdirectory for data subset2
+        polygon.geojson # Data file for dataset2
       datasubset2/      # Data directory for data subset2
         table.csv
 ```
@@ -81,22 +86,25 @@ There are several example configuration files in the [`examples/datasets`](../ex
 You can follow the instructions in the [README.md](../examples/datasets/README.md) to load in one of the example datasets.
 The following table provides a description of each example:
 
-| Example                                                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [cropmap-reduced](../examples/datasets/inputs/config/cropmap-reduced.json)   | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer. This is a reduced styling ([cropmap-reduced.sld](../examples/datasets/inputs/config/cropmap-reduced.sld)) of the cropmap to make it clearer to view with pylon data.                                                                                                                                                                                                                                                                                                                                                                                              |
-| [cropmap-simple](../examples/datasets/inputs/config/cropmap-simple.json)     | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| [cropmap](../examples/datasets/inputs/config/cropmap.json)                   | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer along with several [.csv files](../examples/datasets/inputs/data/cropmap/tabular/) that contain auxiliary data. Some of the auxiliary data is then used by a custom style ([cropmap.sld](../examples/datasets/inputs/config/cropmap.sld)) to dynamically colour the polygons when served through GeoServer. There is also a OBDA mapping file ([ontop_with_comments.obda](../examples/datasets/inputs/data/cropmap/ontop_with_comments.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint. Uses [reference to file name](#value-by-file-name) for SQL query. |
-| [elevation](../examples/datasets/inputs/config/elevation.json)               | Uploads a set of [GeoTiff files](../examples/datasets/inputs/data/elevation/README.md) into the stack as a single raster layer, which is served using the custom [`elevation`](../examples/datasets/inputs/config/elevation.sld) style via GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| [forestry](../examples/datasets/inputs/config/forestry.json)                 | Uploads [a ShapeFile](../examples/datasets/inputs/data/forestry/vector/README.md) into the stack as a vector layer, along with a [.csv file](../examples/datasets/inputs/data/forestry/tabular/forestry_colours.csv) that defines a colour for each category. The layer is served using the colour mapping and a custom style ([forestry.sld](../examples/datasets/inputs/config/forestry.sld)) through GeoServer.                                                                                                                                                                                                                                                                                                                                      |
-| [forestry-reduced](../examples/datasets/inputs/config/forestry-reduced.json) | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/forestry/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer. This is a reduced styling ([forestry-reduced.sld](../examples/datasets/inputs/config/forestry-reduced.sld)) of the forestry data to make it clearer to view with pylon data.                                                                                                                                                                                                                                                                                                                                                                                     |
-| [ng-pylons](../examples/datasets/inputs/config/ng-pylons.json)               | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/ng_pylons/vector/) into the stack as multiple vector layers along a [.csv file](../examples/datasets/inputs/data/ng_pylons/tabular/ng_styling.csv) that contain auxiliary data. Some of the auxiliary data is then used by custom styles ([overhead-lines.sld](../examples/datasets/inputs/config/overhead-lines.sld) and [underground-cables.sld](../examples/datasets/inputs/config/underground-cables.sld)) to dynamically style the lines, towers, and underground cables when served through GeoServer.                                                                                                                                                                             |
-| [population](../examples/datasets/inputs/config/population.json)             | Uploads [a GeoTiff file](../examples/datasets/inputs/data/population/README.md) into the stack as a raster layer, which is served using the default style via GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| [pylons](../examples/datasets/inputs/config/pylons.json)                     | An example of how to use the `"externalDatasets"` node to load multiple datasets by name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| [pylons-and-veg](../examples/datasets/inputs/config/pylons-and-veg.json)     | An example of how to use the `"externalDatasets"` node to load multiple datasets by name of another config referencing other `"externalDatasets".                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| [treesAndHills](../examples/datasets/inputs/config/treesAndHills.json)       | An example of how to use the `"externalDatasets"` node to load multiple datasets by name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| [ukpn-pylons](../examples/datasets/inputs/config/ukpn-pylons.json)           | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/ukpn_pylons/vector/) into the stack as multiple vector layers along with a [.csv file](../examples/datasets/inputs/data/ukpn_pylons/tabular/ukpn_styling.csv) that contain auxiliary data. Some of the auxiliary data is then used by a custom style ([overhead-lines.sld](../examples/datasets/inputs/config/overhead-lines.sld) to dynamically style the lines and towers when served through GeoServer. There is also a OBDA mapping file ([ukpn_ontop.obda](../examples/datasets/inputs/data/ukpn_pylons/ukpn_ontop.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint.                                                  |
-| [rdf](../examples/datasets/inputs/config/rdf.json)                           | A wrapper around a collection of examples of loading in [RDF](#rdf-data) data. This includes triples [with](../examples/datasets/inputs/config/triples_with_inference.json) and [without](../examples/datasets/inputs/config/triples.json) inference; [quads](../examples/datasets/inputs/config/quads.json); and [using a properties file](../examples/datasets/inputs/config/triples_using_properties_file.json).                                                                                                                                                                                                                                                                                                                                     |
-| [tboxcsv](../examples/datasets/inputs/config/tboxcsv.json)                   | An example of loading a TBox from a CSV file into a custom Blazegraph namespace.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Example                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [building-bavaria](../examples/datasets/inputs/config/building-bavaria.json)     | Uploads a [set of CityGML files](../examples/datasets/inputs/data/buildings/bavaria/README.md) into the Postgres database of the stack. [b3dm files] and [a geoserver layer] are generated automatically with default settings for visualisation. There is also a OBDA mapping file ([citydbOntop.obda](../examples/datasets/inputs/data/buildings/citydbOntop.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint.                                                                                                                                                                                                                                                                          |
+| [building-cambridge](../examples/datasets/inputs/config/building-cambridge.json) | Uploads a [set of GDB folders](../examples/datasets/inputs/data/building-cambridge/vector/README.md) and a [CSV file](../examples/datasets/inputs/data/building-cambridge/tabular/README.md) into the Postgres database of the stack. [b3dm files] and [a geoserver layer] are generated automatically with default settings for visualisation. There is also a OBDA mapping file ([ontop_v2.obda](../examples/datasets/inputs/data/building-cambridge/ontop_v2.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint.                                                                                                                                                                         |
+| [building-hongkong](../examples/datasets/inputs/config/building-hongkong.json)   | Uploads a [GeoJSON file](../examples/datasets/inputs/data/buildings/hongkong/README.md) into the Postgres database of the stack. [b3dm files] and [a geoserver layer] are generated automatically with default settings for visualisation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| [cropmap-reduced](../examples/datasets/inputs/config/cropmap-reduced.json)       | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer. This is a reduced styling ([cropmap-reduced.sld](../examples/datasets/inputs/config/cropmap-reduced.sld)) of the cropmap to make it clearer to view with pylon data.                                                                                                                                                                                                                                                                                                                                                                                              |
+| [cropmap-simple](../examples/datasets/inputs/config/cropmap-simple.json)         | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| [cropmap](../examples/datasets/inputs/config/cropmap.json)                       | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer along with several [.csv files](../examples/datasets/inputs/data/cropmap/tabular/) that contain auxiliary data. Some of the auxiliary data is then used by a custom style ([cropmap.sld](../examples/datasets/inputs/config/cropmap.sld)) to dynamically colour the polygons when served through GeoServer. There is also a OBDA mapping file ([ontop_with_comments.obda](../examples/datasets/inputs/data/cropmap/ontop_with_comments.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint. Uses [reference to file name](#value-by-file-name) for SQL query. |
+| [elevation](../examples/datasets/inputs/config/elevation.json)                   | Uploads a set of [GeoTiff files](../examples/datasets/inputs/data/elevation/README.md) into the stack as a single raster layer, which is served using the custom [`elevation`](../examples/datasets/inputs/config/elevation.sld) style via GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| [forestry](../examples/datasets/inputs/config/forestry.json)                     | Uploads [a ShapeFile](../examples/datasets/inputs/data/forestry/vector/README.md) into the stack as a vector layer, along with a [.csv file](../examples/datasets/inputs/data/forestry/tabular/forestry_colours.csv) that defines a colour for each category. The layer is served using the colour mapping and a custom style ([forestry.sld](../examples/datasets/inputs/config/forestry.sld)) through GeoServer.                                                                                                                                                                                                                                                                                                                                      |
+| [forestry-reduced](../examples/datasets/inputs/config/forestry-reduced.json)     | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/forestry/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer. This is a reduced styling ([forestry-reduced.sld](../examples/datasets/inputs/config/forestry-reduced.sld)) of the forestry data to make it clearer to view with pylon data.                                                                                                                                                                                                                                                                                                                                                                                     |
+| [ng-pylons](../examples/datasets/inputs/config/ng-pylons.json)                   | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/ng_pylons/vector/) into the stack as multiple vector layers along a [.csv file](../examples/datasets/inputs/data/ng_pylons/tabular/ng_styling.csv) that contain auxiliary data. Some of the auxiliary data is then used by custom styles ([overhead-lines.sld](../examples/datasets/inputs/config/overhead-lines.sld) and [underground-cables.sld](../examples/datasets/inputs/config/underground-cables.sld)) to dynamically style the lines, towers, and underground cables when served through GeoServer.                                                                                                                                                                             |
+| [population](../examples/datasets/inputs/config/population.json)                 | Uploads [a GeoTiff file](../examples/datasets/inputs/data/population/population/README.md) into the stack as a raster layer, which is served using the default style via GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| [pylons](../examples/datasets/inputs/config/pylons.json)                         | An example of how to use the `"externalDatasets"` node to load multiple datasets by name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| [pylons-and-veg](../examples/datasets/inputs/config/pylons-and-veg.json)         | An example of how to use the `"externalDatasets"` node to load multiple datasets by name of another config referencing other `"externalDatasets".                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| [treesAndHills](../examples/datasets/inputs/config/treesAndHills.json)           | An example of how to use the `"externalDatasets"` node to load multiple datasets by name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| [ukpn-pylons](../examples/datasets/inputs/config/ukpn-pylons.json)               | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/ukpn_pylons/vector/) into the stack as multiple vector layers along with a [.csv file](../examples/datasets/inputs/data/ukpn_pylons/tabular/ukpn_styling.csv) that contain auxiliary data. Some of the auxiliary data is then used by a custom style ([overhead-lines.sld](../examples/datasets/inputs/config/overhead-lines.sld) to dynamically style the lines and towers when served through GeoServer. There is also a OBDA mapping file ([ukpn_ontop.obda](../examples/datasets/inputs/data/ukpn_pylons/ukpn_ontop.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint.                                                  |
+| [rdf](../examples/datasets/inputs/config/rdf.json)                               | A wrapper around a collection of examples of loading in [RDF](#rdf-data) data. This includes triples [with](../examples/datasets/inputs/config/triples_with_inference.json) and [without](../examples/datasets/inputs/config/triples.json) inference; [quads](../examples/datasets/inputs/config/quads.json); and [using a properties file](../examples/datasets/inputs/config/triples_using_properties_file.json).                                                                                                                                                                                                                                                                                                                                     |
+| [tboxcsv](../examples/datasets/inputs/config/tboxcsv.json)                       | An example of loading a TBox from a CSV file into a custom Blazegraph namespace.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ## The Dataset Configuration File
 
@@ -210,7 +218,7 @@ More information about the different data types can be found [here](#data-types)
 
 ##### `"subdirectory"`
 If there are multiple data subsets then each one must have a separate subdirectory set.
-If there is only one data subset then this may be left unset and the files placed directly in the dataset directory.
+If there is only one data subset, this still have to be set, otherwise no upload will be performed.
 
 #### `"styles"`
 A list of GeoServer style file definition objects.
@@ -245,8 +253,8 @@ The OBDA file for the cropmap example ([ontop_with_comments.obda](../examples/da
 The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
 
 #### `"staticGeoServerData"`
-A description of static data to be loaded into and served by GeoServer. 
-These are served with the base directory `GEOSERVER_URL/www/icons`. 
+A description of static data to be loaded into and served by GeoServer.
+These are served with the base directory `GEOSERVER_URL/www/icons`.
 The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being any regular files or folders) can be found at `GEOSERVER_URL/www/static_data`.
 
 | Key            | Description                                                                                                                                                                                                                   |
@@ -266,15 +274,23 @@ The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being
 }
 ```
 
+Note: If you want to reference icons uploaded in this way from a GeoServer `.sld` file, you will need to use stack-internal URLs, e.g.:
+```
+<OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/www/icons/myicon.png" />
+```
+Relative file-system paths containing `..` are not supported.
+
+> :warning: **Warning:** If you upload any static data in this way, you _must_ make sure that your `dataSubsets` are stored within their own `subdirectory`, even if you have only a single dataset. Otherwise, the data uploader will consider your static files as part of the dataset and not only upload them to GeoServer, but also attempt to upload them to PostGIS etc. and either fail or create unnecessary duplicate uploads.
+
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).
+The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data), [`tboxcsv`](#tbox-csv-data), and [`osmrouting`](#osm-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
 
 The `"vector"` data type should be used to load 2D point, line or polygon geospatial data.
-The data loader does two things when uploading vector data: 
+The data loader does two things when uploading vector data:
 1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
 The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
 2. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries.
@@ -288,12 +304,13 @@ These can be specified within an `"ogr2ogrOptions"` object under the following k
 
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-a_srs`][ogr2ogr-a_srs] argument passed to `ogr2ogr`.
+ If an SRID is set with this node, the uploader will not use GDAL to try attempt incoming SRID automatically.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-t_srs`][ogr2ogr-t_srs] argument passed to `ogr2ogr`.
 It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`][ogr2ogr-s_srs] argument, rather than `-a_srs`.
 
@@ -347,7 +364,7 @@ Within that the following nodes can be added.
     - `"type"` one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
     - `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`.
       Note that this is different from the GDAL Options.
-  - `"parameter"` specify individual [parameters][geoserver-sql-params] with the following `key:value` pairs.
+  - `"parameters"` specify individual [parameters][geoserver-sql-params] as a list of nodes with the following `key:value` pairs.
     - `"name"` parameter name.
     - `"defaultValue"` default value of parameter.
     - `"regexpValidator"` validation regular expression.
@@ -355,10 +372,116 @@ Within that the following nodes can be added.
 
 These are the most commonly used options, for more see the examples [here][geoserver-rest] and [here][geoserver-rest-layers].
 
+### CityDB Data
+
+The `"CityDB"` data type should be used to load CityGML and CityJSON data.
+The data loader does the following things by default when uploading data:
+1. It uses the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool to read in data from CityGML and CityJSON files and output it to the PostgreSQL database in the stack using the 3DCityDB schema.
+The full list of file formats that `impexp import` supports is given [here][3dcitydb-importer-formats].
+2. Building footprints and heights are added to the uploaded data if they do not exist.
+3. It writes the processed data that has been uploaded to PostgreSQL out to a compressed CityGML file using the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool.
+4. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries (in Mapbox).
+5. It uses the [`py3dtiler`][py3dtiler] tool to create 3DTile sets that can be used to visualise the newly uploaded geometries (in Cesium).
+
+These tilesets are written to folders in a Docker volume and served on the `/3dtiles` path of the stack.
+The full URL for a `tileset.json` file, which should be specified in the data.json visualisation file, is `<server base address>/3dtiles/<database name>/<database schema>/<spec>/tileset.json`.
+The components of this are as follows:
+
+| Placeholder             | Description                                                                                                                                                                                        |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<server base address>` | e.g. `http://localhost:3838`                                                                                                                                                                       |
+| `<database name>`       | The name of the database, as specified at the top-level of the dataset config file                                                                                                                 |
+| `<database schema>`     | The database schema, this is fixed as `citydb` for now.                                                                                                                                            |
+| `<spec>`                | There are currently three hardcoded specs: `lod2-features`, `lod2-buildings` and `lod1_lod2-buildings`. Each one is generated using different options passed to the [`py3dtiler`][py3dtiler] tool. |
+
+The options for these processes are set using the following json objects within the respective data subset object in the dataset configuration file:
+
+#### Import Options
+
+The only option that is required is `"sridIn"`.
+Other than `"sridIn"`, in most situations the default `impexp import` settings will be sufficient to upload the data but sometimes some extra options need to be supplied.
+Options can be specified within an `"importOptions"` object under the following keys:
+
+##### `"sridIn"` (Required)
+
+The SRID/CRS/SRS of the input dataset does not get picked up automatically so needs to be specified as the value for the `"sridIn"` key.
+When specifying an EPSG code for the SRS just the ID is required as a string, for example `"4296"` rather than `4296` or `"EPSG:4296"`.
+Because the SRID is set for each database schema Each dataset should write to its own PostgreSQL database and all of the city data in a dataset must use the same SRID.
+The 3DCityDB importer doesn't support reprojection but this could be added in the future.
+
+##### `"options"`
+
+An `"options"` node can be added with a map of options to be passed to the `impexp import` command-line interface.
+The format is the same as the one used for [ogr2ogr otheroptions](#otheroptions).
+The list of avaliable options can be found [here][3dcitydb-importer-cli].
+The "Database connection options" are set automatically by the `stack-data-uploader` so can be ignored.
+
+#### `"augmentData"`
+
+This boolean flag controls whether footprint and height will be calculated and added to the existing data, if not already present. It is assumed to be `true` if omitted.
+
+#### `"discoverThematicSurface"`
+
+If this boolean flag is set to `true`, the uploader will attempt to identify untagged surfaces as roof, wall or ground surfaces. It is assumed to be `false`. Note that this is dependent on ["augmentData"](#augmentData).
+
+#### `"createTile"`
+
+This boolean flag controls whether 3D tiles will be generated for uploaded building data. It is assumed to be `true` if omitted.
+
+#### `"parallelTiling"`
+
+Three sets of 3D tiles with different settings will be generated by the tiler. This boolean flag controls whether the tiling process will be run in parallel or not. Running in parallel will be faster but more suspectible to running out of memory. It is assumed to be `true` if omitted. Note that this is dependent on ["createTile"](#createtile).
+
+### X building data
+
+The `"XtoCityDB"` data type should be used to load LoD1 (footprint with height) building data that are not CityGML or CityJSON.
+The data loader does the following when uploading data:
+1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
+The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
+2. It uses the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool to initialise the 3DCityDB schema in the PostgreSQL database in the stack.
+3. It uses two SQL scripts to convert the building data uploaded by GDAL and populate the 3DCityDB tables sequentially. The building data will be instantiated as LoD2 buildings with thematic surfaces.
+4. Building footprints and heights are added to the uploaded data.
+5. It writes the processed data that has been uploaded to PostgreSQL out to a compressed CityGML file using the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool.
+6. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries (in Mapbox).
+7. It uses the [`py3dtiler`][py3dtiler] tool to create 3DTile sets that can be used to visualise the newly uploaded geometries (in Cesium).
+
+Check [`here`](#gdal-options) for details about configuring the GDAL, [`here`](#citydb-data) for details about the 3DTile set and [`here`](#geoserver-options) for details about the Geoserver layer. `"sridIn"` and `"augmentData"` for the 3DCityDB Importer are read.
+
+`"table"` will be the name of the resulting table of the GDAL [`ogr2ogr`][ogr2ogr] tool, whereas `"name"` will be the name of the GeoServer layer.
+
+#### Building data processing with SQL
+
+Two SQL scripts are executed to convert the building data to conform with the 3DCityDB schema. The following information must be contained by (or can be derived from) the table uploaded by GDAL:
+
+1. `"IDname"`, `"IDval"`: an ID for each building
+2. `"footprint"`: the footprint of each building
+3. `"elevation"`: the ground height of each building
+4. `"height"`: the height of each building
+
+A `"columnMap"` can be specified in the input configuration to inform the stack which columns to look for these information. `"IDval"` is the name of the column that contains the building ID, whereas `"IDname"` is the name of the ID that will be stored in the 3DCityDB tables.
+
+The first SQL script creates two tables from the original table: `"raw_building_XtoCityDB"` and `"raw_surface_XtoCityDB"`. It assumes that the original data is uploaded to the public schema. The `"raw_building_XtoCityDB"` table has the following columns:
+
+1. `"IDval"`: the ID of each building from the original data
+2. `"gmlid"`: a randomly generated GML ID of each building
+3. `"geom"`: the 3D solid geometry of each building, generated by extruding the `"footprint"` with `"height"` and shifting it with `"elevation"`
+5. `"mh"`: the height of each building
+
+The `"raw_surface_XtoCityDB"` table has the following columns:
+
+1. `"building_gmlid"`: the GML ID of the parent building of a surface
+2. `"gmlid"`: a randomly generated GML ID of each surface of each building
+3. `"class"`: an integer indicating whether a surface is a roof, wall or ground
+4. `"geom"`: the 3D polygon geometry of each surface
+
+In some cases, the original data require more sophisticated processing. Users can supply a custom SQL script with the `"preprocessSql"` keyword using [File by Value Name](#value-by-file-name). The query must create the `"raw_building_XtoCityDB"` and `"raw_surface_XtoCityDB"` tables in the public schema from the uploaded original data with the column names stated above. In this case, only `"IDname"` and `"IDval"` will take effect and needed to be specified in `"columnMap"`.
+
+The second SQL script populates the 3DcityDB schema with preprocessed building data.
+
 ### Raster Data
 
 The `"raster"` data type should be used to load raster/coverage geospatial data.
-The data loader does three things when uploading raster data: 
+The data loader does three things when uploading raster data:
 1. It uses the GDAL [`gdal_translate`][gdal-translate] tool to read in data from a wide variety of file formats and output it to [Cloud Optimized GeoTIFF (COG)][raster-cog] files stored in the stack.
   This is an extension of the GeoTIFF format and both are very efficient to read.
   The full list of file formats that `gdal_translate` supports is given [here][raster-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
@@ -373,16 +496,20 @@ These can be specified within an `"gdalTranslateOptions"` object (previously jus
 
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
 This sets the value of the [`-a_srs`][raster-common-a_srs] argument passed to `gdal_translate`.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
 This sets the value of the [`TARGET_SRS`][gdal-cog-t_srs] creation option passed to `gdal_translate`.
 This is an option specific to the [COG][gdal-cog] raster driver when using `gdal_translate`, although we could use `gdalwarp` to handle this more efficiently in the future.
+
+ If there is no `sridIn` set in config file and gdal does not recognise the EPSG SRID (i.e. `gdalsrsinfo` returns an EPSG:-1), then the projection is assumed to be a custom one and will be appended to the spatial ref system in postGIS and GeoServer. = This must still include an authority (although not EPSG) and a new number. The uploader will throw an error if the number exists already in the table.
+ 
+ e.g. if the `sridOut` is set to `TWA:101000` and the projection is not recognised, this will be used as the SRID and authority in the newly specified custom projection.
 
 ##### `"inputDatasetOpenOptions"`
 Some data source formats require additional options to be set for the geometries and their metadata to be loaded correctly.
@@ -404,9 +531,24 @@ These can be set as key-array-valued pairs within an `"otherOptions"` object.
 This allows for multiple values per option (`["value1", "value2"]`) but requires that single values are still placed within an array  (`["value"]`) and valueless flags are paired with an empty array (`[]`).
 A list of possible options can be found on the [raster common options][raster-common] and [gdal_translate options][gdal-translate] pages.
 
+##### `"mdimSettings"`
+This is for specific info about multidimensional geospatial files. Consider running `gdalinfo` and `gdalmdiminfo` on your file to get these parameters if they are not known.
+
+- `"layerArrayName"` is the array of the multidimensional file with the required data to iterate over and generate rasters
+- `"timeOptions"` contains information for geoserver to parse the time dimension. `"arrayName"` should have the name of the array with times.
+  - The `"format"` needs to be set to the [standard format][time-formatting] understood by java and geoserver e.g. `"yyyyMMddHH`".
+  Be careful that `m` is minute and `M` is month etc.
+  See above link to correctly format your datetime string.
+  This can include a timezone offset but will be overridden by `timeZone` parameter.
+  - The regex should be used in conjuction with the format to parse the filename. e.g. `"regex": ".*([0-9]{10}).*" will parse 10 digits beside each other anywhere in the filename.`
+  - The `timeZone` is passed as a `ZoneId` in java and can be something like `"GMT"` or `"Europe/Paris"`, see more [here][zone-id].
+
 ##### Common Drivers
 - [GeoTIFF][raster-geotiff]
 - [COG – Cloud Optimized GeoTIFF][raster-cog] (mainly as the output)
+
+##### netCDF Files
+netCDF files are commonly used in climate science projection data. The uploader can recognise these and will copy them into postgis and subsequently iterate over internal bands to create individual geotiffs for each value in the time series band. It is important to set [mdimSettings](#mdimSettings)
 
 #### GeoServer Options
 
@@ -418,7 +560,7 @@ Within that the following nodes can be added.
 ### Tabular Data
 
 The `"tabular"` data type should be used to load non-geospatial data.
-The data loader just does one thing when uploading tabular data: 
+The data loader just does one thing when uploading tabular data:
 1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
 As the data is intended to be non-geospatial, this is most useful for reading in data from [comma separated value (.csv)][vector-csv], and Microsoft Excel's [XLS][vector-xls] and [XLSX][vector-xlsx] formatted files.
 The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
@@ -437,7 +579,7 @@ These are the same as listed in the vector [GDAL Options](#gdal-options) althoug
 
 The `"rdf"` data type should be used to load RDF data (triples or quads) from common file formats.
 The full list of file formats that are supported is given [here][RSC-uploader].
-The data loader does the following when uploading RDF data: 
+The data loader does the following when uploading RDF data:
 1. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to read in RDF triple and quad data to the Blazegraph database in the stack.
 
 There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
@@ -451,6 +593,24 @@ The data loader does the following when uploading RDF data:
 2. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to uploads the contents of the OWL file to the Blazegraph database in the stack.
 
 There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
+
+### OSM Data
+
+The `"osmrouting"` data type should be used to load Open Street Map (OSM) files in a form that is compatible with [pgRouting][pgrouting].
+These can be `.osm` or `.pbf` files.
+By default, three tables and three GeoServer layers are created; `DATA_SUBSET_NAME_ways`, `DATA_SUBSET_NAME_ways_vertices_pgr`, and `DATA_SUBSET_NAME_pointsofinterest`.
+
+#### osm2pgrouting Options
+
+For OSM data you can add a `osm2PGRoutingOptions` node within the relevant data subset in the configuration json.
+This can be used to configure the osm2pgrouting tool as specified [here][osm2pgrouting-how-to-use].
+- `"flags"`: a list of flags without arguments e.g. `[--attributes, --addnodes]`
+- `"options"`: a node containing the key value pairs of options with arguments e.g. `{"--chunk": "40000"}`
+
+#### OSM GeoServer Options
+
+For OSM data you can add the nodes `waysGeoServerSettings`, `verticesGeoServerSettings`, and `poiGeoServerSettings` nodes within the relevant data subset in the configuration json.
+The nodes that can be added within each are the same as the GeoServer options for [vector data](#vector-data).
 
 ## OBDA Mapping File
 
@@ -548,6 +708,10 @@ For example one can avoid long SQL queries in their configs by putting them in a
     }
   ```
 Note that this file path is the path inside the container.
+
+## Processing Without Upload
+
+If a subdirectory is not specified in a `dataSubset` node, no data will be uploaded, however for some types of data this is useful to run only the post processing. For example it is possible to run arbitrary sql by specifying sql queries or pointing to `.sql` files and specifying a table. It is also useful to create layers in GeoServer on already uploaded data.
 
 ## Debugging the Stack Data Uploader in VSCode
 
@@ -651,6 +815,7 @@ This way you can look at look at the user interfaces of the various services (se
 [geoserver-sql-params]:  https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters
 [geoserver-rest]:        https://docs.geoserver.org/stable/en/user/rest/
 [geoserver-rest-layers]: https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer
+[time-formatting]:       https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#:~:text=All%20letters%20%27A%27%20to%20%27Z,use%0A%20%20%20%7D%20%20%20%20%20%20%20reserved%20for%20future%20use
 [sld-cookbook]:          https://docs.geoserver.org/stable/en/user/styling/sld/cookbook/index.html
 
 [gdal-translate]:       https://gdal.org/programs/gdal_translate.html#gdal-translate
@@ -669,4 +834,15 @@ This way you can look at look at the user interfaces of the various services (se
 
 [postgis-raster-loader]: https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
 
+[pgrouting]: http://pgrouting.org/
+[osm2pgrouting-how-to-use]: https://github.com/pgRouting/osm2pgrouting#how-to-use
+
+[3dcitydb-importer]:         https://3dcitydb-docs.readthedocs.io/en/version-2022.2/impexp/cli/import.html
+[3dcitydb-importer-formats]: https://3dcitydb-docs.readthedocs.io/en/version-2022.2/impexp/import.html#import-supported-file-formats
+[3dcitydb-importer-cli]: https://3dcitydb-docs.readthedocs.io/en/latest/impexp/cli/import.html#import-command
+
+[py3dtiler]: https://github.com/VCityTeam/py3dtilers
+
 [crome-2020]: https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020
+
+[zone-id]: https://docs.oracle.com/javase/8/docs/api/java/time/ZoneId.html

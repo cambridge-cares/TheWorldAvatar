@@ -1,0 +1,115 @@
+{
+  "asset": {
+    "version": "1.0",
+    "extras": {
+      "$schema": "http://json-schema.org/draft-04/schema",
+      "title": "Extras",
+      "description": "This tileset is the result of Py3DTiles /py3dtilers.git/py3dtilers/CityTiler/CityTiler.py script run with data extracted from database sg_ntu  obtained from server 10.0.8.23."
+    }
+  },
+  "geometricError": 500,
+  "root": {
+    "boundingVolume": {
+      "box": [
+        -1508521.6893465947,
+        6195380.1686728895,
+        149021.5103758691,
+        1189.7537095898297,
+        0,
+        0,
+        0,
+        295.5411696578376,
+        0,
+        0,
+        0,
+        945.4587874276185
+      ]
+    },
+    "geometricError": 500,
+    "refine": "ADD",
+    "children": [
+      {
+        "boundingVolume": {
+          "box": [
+            178.95878106856253,
+            35.47638917667791,
+            72.88118417936494,
+            714.6945819264511,
+            0,
+            0,
+            0,
+            186.37445336999372,
+            0,
+            0,
+            0,
+            911.8072432079352
+          ]
+        },
+        "geometricError": 1,
+        "refine": "REPLACE",
+        "content": {
+          "uri": "tiles/0.b3dm"
+        },
+        "transform": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          -1508225.589,
+          6195453.859,
+          148920.834,
+          1
+        ]
+      },
+      {
+        "boundingVolume": {
+          "box": [
+            -93.73801307147369,
+            -12.304911654442549,
+            211.04237586913223,
+            503.144043113105,
+            0,
+            0,
+            0,
+            143.33058511465788,
+            0,
+            0,
+            0,
+            945.4587874276185
+          ]
+        },
+        "geometricError": 1,
+        "refine": "REPLACE",
+        "content": {
+          "uri": "tiles/1.b3dm"
+        },
+        "transform": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          -1509114.561,
+          6195240.263,
+          148810.468,
+          1
+        ]
+      }
+    ]
+  }
+}

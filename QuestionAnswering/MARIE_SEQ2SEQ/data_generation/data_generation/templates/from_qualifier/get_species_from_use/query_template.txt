@@ -1,0 +1,12 @@
+SELECT DISTINCT ?label ?IUPACNameValue 
+WHERE {{
+    ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
+
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameIRI .
+    ?IUPACNameIRI os:value ?IUPACNameValue .
+
+    ?SpeciesIRI os:hasUse ?UseIRI .
+    ?UseIRI rdfs:label ?UseValue .
+
+    FILTER( ?UseValue = "{Use}")
+}}
