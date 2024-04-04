@@ -2,7 +2,7 @@
 
 <head>
     <!-- ===== CUSTOMISABLE ===== -->
-    <title>Dispersion of pollutants</title>
+    <title>Digital twin of Hamburg</title>
     <!-- ===== CUSTOMISABLE ===== -->
 
     <!-- JS -->
@@ -208,9 +208,15 @@
 
             // ===== CUSTOMISABLE =====
             // Set the default content in the "General" tab of the side panel
-            manager.getPanelHandler().setTitle("<h1>Digital Twin of Hamburg</h1>");
+            manager.getPanelHandler().setTitle("<h1>Digital twin of Hamburg</h1>");
             manager.getPanelHandler().setContent(`
-                    <p></p>
+            <p>This interface shows Hamburg represented in The World Avatar. Visualised applications include:</p>
+                    <b>1) Administrative limits </b><br>
+                    <b>2) Schools </b><br>
+                    <b>3) Visualisation of pollutant plumes from ships </b><br>
+                    The plumes are generated from a software called AERMOD using weather and ship data.
+                    <br><br>
+                </p>
                 `);
 
             manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
