@@ -11,8 +11,8 @@ Pub,Class,Business Establishment,IS-A,,,,"A business establishment that serves a
 Bar,Class,Business Establishment,IS-A,,,,A business establishment that serves alcoholic drinks.,http://www.theworldavatar.com/ontology/OntoFHRS/,Bar
 Supermarket,Class,Business Establishment,IS-A,,,,"A business establishment that sells groceries, food, dairy products and household items.",http://www.theworldavatar.com/ontology/OntoFHRS/,Supermarket
 Hypermarket,Class,Business Establishment,IS-A,,,,"A large-scale supermarket often located on the outskirts of a city, offering a vast array of goods including groceries, clothes, furniture, and household items.",http://www.theworldavatar.com/ontology/OntoFHRS/,Hypermarket
-Farmer Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Farmer Food Facility
-Grower Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Grower Food Facility
+Farmer Food Facility,Class,Business Establishment,IS-A,,,,"A business establishment where farmers process, package and sell locally produced food or drink.",http://www.theworldavatar.com/ontology/OntoFHRS/,Farmer Food Facility
+Grower Food Facility,Class,Business Establishment,IS-A,,,,A business establishment where growers sell locally produced food products or drink.,http://www.theworldavatar.com/ontology/OntoFHRS/,Grower Food Facility
 Mobile Caterer,Class,Business Establishment,IS-A,,,,A business establishment that serves food and drinks from a vehicle that can move from one location to another.,http://www.theworldavatar.com/ontology/OntoFHRS/,Mobile Caterer
 School Canteen,Class,Canteen,IS-A,,,,A canteen that offers food and drinks to students and staff in a school.,http://www.theworldavatar.com/ontology/OntoFHRS/,School Canteen
 College Canteen,Class,Canteen,IS-A,,,,"A canteen that offers food and drinks to students, faculty and staff on a college campus.",http://www.theworldavatar.com/ontology/OntoFHRS/,College Canteen
@@ -31,24 +31,24 @@ Bed and Breakfast,Class,Business Establishment,IS-A,,,,"A small-scale lodging es
 Guest House,Class,Business Establishment,IS-A,,,,"A lodging establishment in a private house, usually smaller than a hotel, that offers travellers overnight stays and occasionally meals.",http://www.theworldavatar.com/ontology/OntoFHRS/,Guest House
 Takeaway,Class,Business Establishment,IS-A,,,,"A food establishment that sells cooked food to be eaten elsewhere, away from its premises.",http://www.theworldavatar.com/ontology/OntoFHRS/,Takeaway
 Sandwich Shop,Class,Business Establishment,IS-A,,,,"A food establishment that generally sells a variety of sandwiches, often prepared on the premises.",http://www.theworldavatar.com/ontology/OntoFHRS/,Sandwich Shop
-Catering Premise,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Catering Premise
-Address,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Address
-Rating,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating
-Local Authority,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Local Authority
-Score,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Score
-Hygiene Score,Class,Score,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Hygiene Score
-Structural Score,Class,Score,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Structural Score
-Confidence Management Score,Class,Score,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Confidence Management Score
-City,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,City
-Region,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Region
-Country,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Country
-Rating Scheme,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Scheme
+Catering Premise,Class,Business Establishment,IS-A,,,,A food establishment that generally serves food to be consumed on its premises.,http://www.theworldavatar.com/ontology/OntoFHRS/,Catering Premise
+Address,Class,,,,,,A collection of information required to identify the exact place or location of a business establishment.,http://www.theworldavatar.com/ontology/OntoFHRS/,Address
+Rating,Class,,,,,,"The level of standard maintained by a business establishment for food safety and preparation,  on a scale from 5, indicating very good, to 0 indicating urgent improvement required.",http://www.theworldavatar.com/ontology/OntoFHRS/,Rating
+Local Authority,Class,,,,,,"An organisation that is officially responsible for overseeing all public services and amenities within a specific region, guided by the local government.",http://www.theworldavatar.com/ontology/OntoFHRS/,Local Authority
+Score,Class,,,,,,"A quantitative measure indicating the overall quality, including food safety and hygiene, structural adequacy, and food safety management procedure of a business establishment that serves or sells food and drinks.",http://www.theworldavatar.com/ontology/OntoFHRS/,Score
+Hygiene Score,Class,Score,IS-A,,,,A score indicating the food safety and hygiene of a business establishment that serves or sells food and drinks.,http://www.theworldavatar.com/ontology/OntoFHRS/,Hygiene Score
+Structural Score,Class,Score,IS-A,,,,A score indicating the level of structural adequacy required to operate safely and the design layout that prevents cross-contamination in a business establishment that serves or sells food and drinks.,http://www.theworldavatar.com/ontology/OntoFHRS/,Structural Score
+Confidence In Management Score,Class,Score,IS-A,,,,"A score indicating the adequacy of implementing food safety management procedures, staff training, and awareness of potential hazards in a business establishment that serves or sells food and drinks.",http://www.theworldavatar.com/ontology/OntoFHRS/,Confidence In Management Score
+https://dbpedia.org/ontology/City,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,City
+https://dbpedia.org/ontology/Region,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Region
+https://dbpedia.org/ontology/Country,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Country
+Rating Scheme,Class,,,,,,"A scheme to assess hygiene practices, food handling, structural conditions, and management procedures of business establishments serving or selling food and drinks.",http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Scheme
 http://ies.data.gov.uk/ontology/ies4#BoundingState,Class,,,,,,,http://ies.data.gov.uk/ontology/ies4,Bounding State
-BusinessEstablishmentStart,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment Start
-BusinessEstablishmentEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment End
+BusinessEstablishmentStart,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,Tthe official date when the business began operations or was inaugurated.,http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment Start
+BusinessEstablishmentEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,The date of decommissioning or closure of a business establishment.,http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment End
 http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,Class,,,,,,,http://ies.data.gov.uk/ontology/ies4,Particular Period
-RatingStart,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Start
-RatingEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating End
+RatingStart,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,The initial date when a rating became effective for a business establishment.,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Start
+RatingEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,The date on which a rating of a business establishment expired.,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating End
 has Address,Object Property,,,Business Establishment,Address,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has address
 has Rating,Object Property,,,Business Establishment,Rating,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has rating
 has Local Authority,Object Property,,,Business Establishment,Local Authority,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has local authority
