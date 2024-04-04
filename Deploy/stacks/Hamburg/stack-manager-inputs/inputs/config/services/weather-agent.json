@@ -1,44 +1,44 @@
 {
-	"ServiceSpec": {
-		"Name": "weather-agent",
-		"TaskTemplate": {
-			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/weatheragent:1.3-dev-live-ship-data-SNAPSHOT",
-				"Env": [
-					"DATABASE=postgres",
-					"LAYERNAME=weatherstations",
-					"GEOSERVER_WORKSPACE=weatherstations",
-					"API_KEY=21db8f6413957d7fdb6cfd98e05e03eb"
-				],
-				"Configs": [
-					{
-						"ConfigName": "postgis"
-					},
-					{
-						"ConfigName": "blazegraph"
-					},
-					{
-						"ConfigName": "geoserver"
-					},
-					{
-						"ConfigName": "ontop"
-					}
-				],
-				"Secrets": [
-					{
-						"SecretName": "postgis_password"
-					},
-					{
-						"SecretName": "geoserver_password"
-					}
-				]
-			}
-		}
-	},
-	"endpoints": {
-		"weather-agent": {
-			"url": "http://localhost:8080/WeatherAgent/",
-			"externalPath": "/weather-agent/"
-		}
-	}
+    "ServiceSpec": {
+        "Name": "weather-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/weatheragent:1.3-dev-live-ship-data-SNAPSHOT",
+                "Env": [
+                    "DATABASE=postgres",
+                    "LAYERNAME=weatherstations",
+                    "GEOSERVER_WORKSPACE=weatherstations",
+                    "API_KEY="
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "weather-agent": {
+            "url": "http://localhost:8080/WeatherAgent/",
+            "externalPath": "/weather-agent/"
+        }
+    }
 }
