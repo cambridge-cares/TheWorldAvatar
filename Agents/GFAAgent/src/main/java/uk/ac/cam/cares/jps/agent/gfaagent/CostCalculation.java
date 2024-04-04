@@ -67,29 +67,27 @@ public class CostCalculation {
                             break;
                         }
                     } 
-                    // if(floors == null){
-                    //     costQuery = "SELECT MIN(cost) AS cost FROM cost WHERE cost.\"" + keyCost + "\" = " + typeCost + " AND floorscat IS NULL";
-                    // }else{
-                        
-                    // }
-                    String costQuery ="SELECT cost FROM cost WHERE cost.\"Type\" = '" + typeCost + "' AND floorscat > " + floors + 
+                    if(!typeCost.isEmpty() && !keyCost.isEmpty()){
+                        String costQuery ="SELECT cost FROM cost WHERE cost.\"Type\" = '" + typeCost + "' AND floorscat > " + floors + 
                                         " union all select MIN(cost) from cost " +//
                                         "where cost.\"" + keyCost + "\" = '" + typeCost + "' AND floorscat IS NULL " + //
                                         "LIMIT 1";
 
-                    String gfaQuery = "SELECT realval AS gfa, cityobject_id\r\n" + //
-                                        "FROM citydb.cityobject_genericattrib\r\n" + //
-                                        "WHERE attrname = 'GFA' AND cityobject_id= " + buildingId;
+                        String gfaQuery = "SELECT realval AS gfa, cityobject_id\r\n" + //
+                                            "FROM citydb.cityobject_genericattrib\r\n" + //
+                                            "WHERE attrname = 'GFA' AND cityobject_id= " + buildingId;
 
-                    String costCal = "with cost_table as (" + costQuery + "), gfa_table as ( " + gfaQuery + ")\n" + //
-                                "INSERT INTO citydb.cityobject_genericattrib (cityobject_id, attrname, realval)\n" +
-                                "SELECT DISTINCT ON (cityobject_id, attrname) * FROM(\n" +
-                                "SELECT gfa_table.cityobject_id,'cost', gfa_table.gfa * cost_table.cost\n" +
-                                "FROM gfa_table, cost_table) AS cg(cityobject_id, attrname, realval) " +
-                                "ON CONFLICT (attrname, cityobject_id) DO UPDATE SET realval= cityobject_genericattrib.realval;";
+                        String costCal = "with cost_table as (" + costQuery + "), gfa_table as ( " + gfaQuery + ")\n" + //
+                                    "INSERT INTO citydb.cityobject_genericattrib (cityobject_id, attrname, realval)\n" +
+                                    "SELECT DISTINCT ON (cityobject_id, attrname) * FROM(\n" +
+                                    "SELECT gfa_table.cityobject_id,'cost', gfa_table.gfa * cost_table.cost\n" +
+                                    "FROM gfa_table, cost_table) AS cg(cityobject_id, attrname, realval) " +
+                                    "ON CONFLICT (attrname, cityobject_id) DO UPDATE SET realval= cityobject_genericattrib.realval;";
+                        
+                        Statement stmtupdate = srcConn.createStatement();
+                        stmtupdate.executeUpdate(costCal);
+                    }
                     
-                    Statement stmtupdate = srcConn.createStatement();
-                    stmtupdate.executeUpdate(costCal);
                 }
             }
         }catch (SQLException e) {
