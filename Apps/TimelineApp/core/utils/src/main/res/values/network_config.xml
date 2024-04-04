@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="host_with_port"></string>
+
+    <string name="trajectoryqueryagent_createlayer">trajectoryqueryagent/createlayer</string>
+    <string name="useragent_registerphone">user-agent/registerPhone</string>
+    <string name="geoserver_twa_ows">geoserver/twa/ows</string>
+</resources>

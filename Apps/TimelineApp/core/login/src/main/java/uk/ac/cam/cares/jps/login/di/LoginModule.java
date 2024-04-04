@@ -2,7 +2,7 @@ package uk.ac.cam.cares.jps.login.di;
 
 import android.content.Context;
 
-import net.openid.appauth.AuthorizationService;
+import com.android.volley.RequestQueue;
 
 import javax.inject.Singleton;
 
@@ -15,7 +15,6 @@ import uk.ac.cam.cares.jps.login.AuthServerConfiguration;
 import uk.ac.cam.cares.jps.login.AuthStateManager;
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.login.LoginSource;
-import uk.ac.cam.cares.jps.network.Connection;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -35,8 +34,8 @@ public class LoginModule {
 
     @Provides
     @Singleton
-    public LoginSource provideLoginSource(@ApplicationContext Context context, AuthStateManager authStateManager, AuthServerConfiguration configuration, Connection connection) {
-        return new LoginSource(context, authStateManager, configuration, connection);
+    public LoginSource provideLoginSource(@ApplicationContext Context context, AuthStateManager authStateManager, AuthServerConfiguration configuration, RequestQueue requestQueue) {
+        return new LoginSource(context, authStateManager, configuration, requestQueue);
     }
 
     @Provides

@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.network;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 
@@ -11,24 +14,29 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 
+import okhttp3.HttpUrl;
+
 
 public class TrajectoryNetworkSource {
 
     private static final Logger LOGGER = Logger.getLogger(TrajectoryNetworkSource.class);
-    Connection connection;
-    public TrajectoryNetworkSource(Connection connection) {
-        this.connection = connection;
+    private RequestQueue requestQueue;
+    private Context context;
+
+    public TrajectoryNetworkSource(RequestQueue requestQueue, Context context) {
+        this.requestQueue = requestQueue;
+        this.context = context;
     }
 
-    public void getTrajectory(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper) {
-        // todo: should fetch the userId from the user module
-        String createLayerUri = NetworkConfiguration.constructUrlBuilder("trajectoryqueryagent/createlayer")
-                .addQueryParameter("userID", "487a672a-032a-4364-9dff-5651fa046a7c")
+    public void getTrajectory(String userId, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper) {
+        String createLayerUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
+                .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryqueryagent_createlayer))
+                .addQueryParameter("userID", userId)
                 .build().toString();
         LOGGER.info(createLayerUri);
 
         StringRequest createLayerRequest = buildCreateLayerRequest(onSuccessUpper, onFailureUpper, createLayerUri);
-        connection.addToRequestQueue(createLayerRequest);
+        requestQueue.add(createLayerRequest);
     }
 
     @NonNull
@@ -38,7 +46,7 @@ public class TrajectoryNetworkSource {
                 JSONObject rawResponse = new JSONObject(s);
 
                 StringRequest getTrajectoryRequest = buildGetTrajectoryRequest(onSuccessUpper, onFailureUpper, rawResponse);
-                connection.addToRequestQueue(getTrajectoryRequest);
+                requestQueue.add(getTrajectoryRequest);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -49,13 +57,14 @@ public class TrajectoryNetworkSource {
     }
 
     @NonNull
-    private static StringRequest buildGetTrajectoryRequest(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse) throws JSONException {
+    private StringRequest buildGetTrajectoryRequest(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse) throws JSONException {
         String speedIRI = rawResponse.getString("speedIRI");
         String bearingIRI = rawResponse.getString("bearingIRI");
         String altitudeIRI = rawResponse.getString("altitudeIRI");
         String pointIRI = rawResponse.getString("pointIRI");
 
-        String getTrajectoryUri = NetworkConfiguration.constructUrlBuilder("geoserver/twa/ows")
+        String getTrajectoryUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
+                .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_twa_ows))
                 .addQueryParameter("service", "WFS")
                 .addQueryParameter("version", "1.0.0")
                 .addQueryParameter("request", "GetFeature")

@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 
 import net.openid.appauth.AppAuthConfiguration;
@@ -43,8 +44,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
-import uk.ac.cam.cares.jps.network.Connection;
-
 public class LoginSource {
     private static final Logger LOGGER = LogManager.getLogger(LoginSource.class);
 
@@ -60,7 +59,7 @@ public class LoginSource {
     private final AtomicReference<AuthorizationRequest> authRequest = new AtomicReference<>();
     private CountDownLatch authIntentLatch = new CountDownLatch(1);
     private final AtomicReference<CustomTabsIntent> authIntent = new AtomicReference<>();
-    private Connection connection;
+    private RequestQueue requestQueue;
 
     private class  AuthConfigurationCallback implements AuthorizationServiceConfiguration.RetrieveConfigurationCallback {
         RepositoryCallback<Boolean> callback;
@@ -82,11 +81,11 @@ public class LoginSource {
     }
 
     @Inject
-    public LoginSource(Context context, AuthStateManager authStateManager, AuthServerConfiguration configuration, Connection connection) {
+    public LoginSource(Context context, AuthStateManager authStateManager, AuthServerConfiguration configuration, RequestQueue requestQueue) {
         this.authStateManager = authStateManager;
         this.configuration = configuration;
         this.context = context;
-        this.connection = connection;
+        this.requestQueue = requestQueue;
         executor = Executors.newSingleThreadExecutor();
 
         if (this.configuration.hasConfigurationChanged()) {
@@ -265,7 +264,9 @@ public class LoginSource {
                     response -> {
                         try {
                             JSONObject jsonResponse = new JSONObject(response);
-                            User user = new User(jsonResponse.optString("name"), jsonResponse.optString("email"));
+                            User user = new User(jsonResponse.optString("name"),
+                                    jsonResponse.optString("email"),
+                                    jsonResponse.optString("sub"));
                             callback.onSuccess(user);
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
@@ -282,7 +283,7 @@ public class LoginSource {
                     return params;
                 }
             };
-            connection.addToRequestQueue(request);
+            requestQueue.add(request);
         };
         performActionWithFreshTokens(getUserInfoAction);
     }

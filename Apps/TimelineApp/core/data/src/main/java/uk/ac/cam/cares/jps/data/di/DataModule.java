@@ -6,37 +6,17 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
-import uk.ac.cam.cares.jps.data.RouteRepository;
-import uk.ac.cam.cares.jps.data.ToiletRepository;
 import uk.ac.cam.cares.jps.data.TrajectoryRepository;
+import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.network.TrajectoryNetworkSource;
-import uk.ac.cam.cares.jps.network.toilet.ToiletBuildingInfoNetworkSource;
-import uk.ac.cam.cares.jps.network.toilet.ToiletInfoNetworkSource;
-import uk.ac.cam.cares.jps.network.toilet.ToiletNetworkSource;
-import uk.ac.cam.cares.jps.network.route.RouteNetworkSource;
-import uk.ac.cam.cares.jps.network.route.VertexNetworkSource;
 
 @Module
 @InstallIn(SingletonComponent.class)
 public class DataModule {
-
     @Provides
     @Singleton
-    public RouteRepository provideRouteRepository(VertexNetworkSource vertexNetworkSource, RouteNetworkSource routeNetworkSource) {
-        return new RouteRepository(vertexNetworkSource, routeNetworkSource);
-    }
-
-    @Provides
-    @Singleton
-    public ToiletRepository provideToiletRepository(ToiletNetworkSource toiletNetworkSource,
-                                                    ToiletInfoNetworkSource toiletInfoNetworkSource,
-                                                    ToiletBuildingInfoNetworkSource toiletBuildingInfoNetworkSource) {
-        return new ToiletRepository(toiletNetworkSource, toiletInfoNetworkSource, toiletBuildingInfoNetworkSource);
-    }
-
-    @Provides
-    @Singleton
-    public TrajectoryRepository provideTrajectoryRepository(TrajectoryNetworkSource trajectoryNetworkSource) {
-        return new TrajectoryRepository(trajectoryNetworkSource);
+    public TrajectoryRepository provideTrajectoryRepository(TrajectoryNetworkSource trajectoryNetworkSource,
+                                                            LoginRepository loginRepository) {
+        return new TrajectoryRepository(trajectoryNetworkSource, loginRepository);
     }
 }

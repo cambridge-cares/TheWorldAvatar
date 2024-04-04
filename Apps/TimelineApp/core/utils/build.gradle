@@ -5,3 +5,8 @@ apply from: "${project.rootDir}/ui.gradle"
 android {
     namespace 'uk.ac.cam.cares.jps.utils'
 }
+
+dependencies {
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.android.volley:volley:1.2.1'
+}
