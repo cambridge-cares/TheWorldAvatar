@@ -15,7 +15,7 @@
 					"PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000",
 					"PARALLELISE_CALCULATIONS=true",
 					"USE_LIVE_DATA=false",
-					"API_KEY=4f3ece53d2388164566c619b660e2c764e8b030f",
+					"API_KEY=",
 					"BOUNDING_BOXES=[[[53.489, 9.881], [53.596, 10.06]]]",
 					"UPLOAD_INTERVAL_MINUTES=10"
 				],
