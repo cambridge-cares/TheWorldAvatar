@@ -67,7 +67,7 @@ public abstract class CameraFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         view.findViewById(R.id.topActionBar).findViewById(R.id.close_button).setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
-        view.findViewById(R.id.topActionBar).findViewById(R.id.flash_button).setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
+        view.findViewById(R.id.topActionBar).findViewById(R.id.flash_button).setOnClickListener(v -> viewModel.toggleFlashState());
         previewView = view.findViewById(R.id.previewView);
         focusCircleView = view.findViewById(R.id.focusCircleView);
 
