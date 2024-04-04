@@ -212,6 +212,20 @@ globalState.registerWatcher("chatbotLatency", (oldVal, newVal) => {
     }
 })
 
+function hideEndpoint(sparqlQuery) {
+    const ltIdx = sparqlQuery.indexOf("<")
+    if (ltIdx < 0) {
+        return sparqlQuery
+    }
+
+    const gtIdx = sparqlQuery.indexOf(">", ltIdx)
+    if (gtIdx < 0) {
+        return sparqlQuery
+    }
+
+    return sparqlQuery.slice(0, ltIdx + 1) + sparqlQuery.slice(gtIdx)
+}
+
 const sparqlContainer = (function () {
     const elem = document.getElementById("sparql-container")
     const sparqlQueryPredictedDiv = document.getElementById("sparql-query-predicted")
@@ -220,12 +234,16 @@ const sparqlContainer = (function () {
     const sparqlQueryPostprocessedContainer = document.getElementById('sparql-query-postprocessed-container')
 
     function displaySparqlQueryPredicted(sparql_query) {
-        sparqlQueryPredictedDiv.innerHTML = sparql_query
+        sparqlQueryPredictedDiv.innerHTML = ""
+        const text = document.createTextNode(hideEndpoint(sparql_query))
+        sparqlQueryPredictedDiv.appendChild(text)
         sparqlQueryPredictedContainer.style.display = "block";
     }
 
     function displaySparqlQueryPostProcessed(sparql_query) {
-        sparqlQueryPostprocessedDiv.innerHTML = sparql_query;
+        sparqlQueryPostprocessedDiv.innerHTML = ""
+        const text = document.createTextNode(hideEndpoint(sparql_query))
+        sparqlQueryPostprocessedDiv.appendChild(text)
         sparqlQueryPostprocessedContainer.style.display = "block";
     }
 

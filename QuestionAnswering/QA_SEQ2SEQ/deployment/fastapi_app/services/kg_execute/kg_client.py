@@ -1,25 +1,9 @@
-from abc import abstractmethod
 from typing import Optional
 
 from SPARQLWrapper import SPARQLWrapper, POST, JSON
-from SPARQLWrapper.Wrapper import QueryResult
-from pydantic.dataclasses import dataclass
 
 
-class IKgClient:
-    @abstractmethod
-    def query(self, query: str) -> QueryResult.ConvertResult:
-        pass
-
-
-@dataclass
-class KgClientConfig:
-    endpoint: str
-    user: Optional[str] = None
-    password: Optional[str] = None
-
-
-class KgClient(IKgClient):
+class KgClient:
     QUERY_PREFIXES = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -40,11 +24,11 @@ PREFIX oplnrgl: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
 PREFIX oplt: <https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX ozng: <https://www.theworldavatar.com/kg/ontozoning/>"""
 
-    def __init__(self, config: KgClientConfig):
-        sparql = SPARQLWrapper(config.endpoint)
+    def __init__(self, endpoint: str, user: Optional[str] = None, password: Optional[str] = None):
+        sparql = SPARQLWrapper(endpoint)
         sparql.setReturnFormat(JSON)
-        if config.user is not None and config.password is not None:
-            sparql.setCredentials(user=config.user, passwd=config.password)
+        if user is not None and password is not None:
+            sparql.setCredentials(user=user, passwd=password)
         sparql.setMethod(POST)
         self.sparql = sparql
 

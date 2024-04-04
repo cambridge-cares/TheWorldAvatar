@@ -1,13 +1,18 @@
+import os
 from services.translate.sparql.query_form import SelectClause
 from services.translate.sparql.where_clause import WhereClause
 from services.translate.sparql import SparqlQuery
 from services.translate.sparql.graph_pattern import (
     OptionalClause,
+    ServicePattern,
     TriplePattern,
 )
 
 
 class OZCompact2VerboseConverter:
+    def __init__(self, ontospecies_endpoint: str):
+        self.ontospecies_endpoint = ontospecies_endpoint
+
     def _try_convert_hasAtomicStructure_triple(self, subj: str, pred: str, obj: str):
         """
         ?Zeolite ocr:hasCrystalInformation/ocr:hasAtomicStructure ?AtomicStructure .
@@ -289,7 +294,7 @@ class OZCompact2VerboseConverter:
 
     def _try_convert_hasZeoTopoScalar_triple(self, subj: str, pred: str, obj: str):
         """
-        ?Zeolite zeo:hasTopologicalProperties/zeo:has{key} ?{key} . 
+        ?Zeolite zeo:hasTopologicalProperties/zeo:has{key} ?{key} .
         OR
         ?Zeolite zeo:hasTopologicalProperties/zeo:has{key}/om:hasNumericalValue ?{key}NumericalValue
         """
@@ -298,7 +303,7 @@ class OZCompact2VerboseConverter:
 
         key = pred[len("zeo:hasTopologicalProperties/zeo:has") :]
         if key.endswith("/om:hasNumericalValue"):
-            key = key[:-len("/om:hasNumericalValue")]
+            key = key[: -len("/om:hasNumericalValue")]
         if not (
             key
             in [
@@ -330,7 +335,9 @@ class OZCompact2VerboseConverter:
             numval = obj + "NumericalValue"
             unitlabel = obj + "UnitLabel"
         patterns = [
-            TriplePattern.from_triple(subj, "zeo:hasTopologicalProperties/zeo:has" + key, "?" + key),
+            TriplePattern.from_triple(
+                subj, "zeo:hasTopologicalProperties/zeo:has" + key, "?" + key
+            ),
             TriplePattern(
                 "?" + key,
                 tails=[
@@ -473,6 +480,66 @@ class OZCompact2VerboseConverter:
         vars = ["?TAtomIndex", "?TAtomName", "?VertexSymbol"]
         return vars, patterns
 
+    def _try_convert_hasGuestCompoundUngrounded_triple(
+        self, subj: str, pred: str, obj: str
+    ):
+        """?Material zeo:hasGuestCompound/os:formula ?GuestCompoundFormula ."""
+        if pred != "zeo:hasGuestCompound/os:formula" or obj != "?GuestCompoundFormula":
+            return None
+
+        """
+        ?Material zeo:hasGuestCompound ?GuestCompound .
+        SERVICE <{ONTOSPECIES_ENDPOINT}> {
+            ?GuestCompound rdfs:label ?GuestCompoundFormula
+        }
+        """
+        triples = [
+            TriplePattern.from_triple(subj, "zeo:hasGuestCompound", "?GuestCompound"),
+            ServicePattern(
+                endpoint=self.ontospecies_endpoint,
+                graph_patterns=[
+                    TriplePattern.from_triple(
+                        "?GuestCompound", "rdfs:label", "?GuestCompoundFormula"
+                    )
+                ],
+            ),
+        ]
+        return [], triples
+
+    def _try_convert_hasGuestCompoundGrounded_triple(
+        self, subj: str, pred: str, obj: str
+    ):
+        """?Material zeo:hasGuestCompound/os:formula "Li" ."""
+        if not (
+            pred == "zeo:hasGuestCompound/os:formula"
+            and obj.startswith('"')
+            and obj.endswith('"')
+        ):
+            return None
+
+        """
+        ?Material zeo:hasGuestCompound ?GuestCompound .
+        SERVICE <{ONTOSPECIES_ENDPOINT}> {
+            ?GuestCompound ?hasIdentifier [ a/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ] .
+        } 
+        """
+        triples = [
+            TriplePattern.from_triple(subj, "zeo:hasGuestCompound", "?GuestCompound"),
+            ServicePattern(
+                endpoint=self.ontospecies_endpoint,
+                graph_patterns=[
+                    TriplePattern.from_triple(
+                        "?GuestCompound",
+                        "?hasIdentifier",
+                        "[ a/rdfs:subClassOf os:Identifier ; os:value {value} ]".format(
+                            value=obj
+                        ),
+                    )
+                ],
+            ),
+        ]
+        return [], triples
+
     def convert(self, sparql_compact: SparqlQuery):
         select_vars_verbose = list(sparql_compact.select_clause.vars)
         patterns_verbose = []
@@ -511,7 +578,7 @@ class OZCompact2VerboseConverter:
                 continue
 
             flag = False
-            for func in [
+            for func in (
                 self._try_convert_hasAtomicStructure_triple,
                 self._try_convert_hasUnitCell_triple,
                 self._try_convert_hasTiledStructure_triple,
@@ -522,7 +589,9 @@ class OZCompact2VerboseConverter:
                 self._try_convert_hasCompositeBU_triple,
                 self._try_convert_hasSphereDiameter_triple,
                 self._try_convert_hasTAtom_triple,
-            ]:
+                self._try_convert_hasGuestCompoundUngrounded_triple,
+                self._try_convert_hasGuestCompoundGrounded_triple,
+            ):
                 optional = func(pattern.subj, *pattern.tails[0])
                 if optional is not None:
                     vars, patterns = optional
