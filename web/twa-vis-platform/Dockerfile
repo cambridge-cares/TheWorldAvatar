@@ -37,9 +37,7 @@ ENV NODE_ENV production
 # Copy the required code
 COPY ./code/ /twa/
 # Transfer the uploads so that the building process can complete
-COPY ./uploads/config /twa/uploads/config
-COPY ./uploads/optional-pages /twa/uploads/optional-pages
-COPY ./uploads/style-overrides.css /twa/uploads/style-overrides.css
+COPY ./uploads /twa/public
 
 # Compile the files
 RUN npm run build

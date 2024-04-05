@@ -5,7 +5,7 @@ import styles from './loader.module.css';
 export default function Loader() {
   return <div className={styles.loadingContainer}>
     <img
-      src="/img/loading.gif"
+      src="/images/defaults/loading.gif"
       width="500px"
       height="500px"
     />

@@ -24,7 +24,7 @@
         --border-tertiary:  #9898af;
 
         /** Images **/
-        --background-image: url("/img/background-light.svg");
+        --background-image: url("/images/defaults/background-light.svg");
     }
 }
 
@@ -54,7 +54,7 @@
         --border-tertiary:  #7f8ea1;
 
         /** Images **/
-        --background-image: url("/img/background-dark.svg");
+        --background-image: url("/images/defaults/background-dark.svg");
     }
 }
 

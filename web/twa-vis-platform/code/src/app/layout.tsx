@@ -47,7 +47,7 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
                 {
                     styleOverrides &&
-                    <link rel="stylesheet" href="/uploads/style-overrides.css" />
+                    <link rel="stylesheet" href="/style-overrides.css" />
                 }
             </head>
             <body>

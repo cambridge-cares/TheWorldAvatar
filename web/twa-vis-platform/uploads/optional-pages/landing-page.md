@@ -3,7 +3,7 @@ title: CReDo
 slug: landing
 ---
 
-<img src="/img/credo-logo.svg" style="max-width:200px; max-height:100px" />
+<img src="/images/credo-logo.svg" style="max-width:200px; max-height:100px" />
 
 ---
 

@@ -14,7 +14,7 @@ export default function LegendTree() {
       {/* Sample Legend Items */}
       <div className={styles.legendItem}>
         <SVG
-          src="/uploads/images/icons/catherine.png"
+          src="/images/defaults/icons/map.svg"
           className={styles.legendIcon}
         />
         <span className={styles.legendText}>Layer Type 1</span>
