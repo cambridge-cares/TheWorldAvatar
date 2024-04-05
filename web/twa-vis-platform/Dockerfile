@@ -10,7 +10,7 @@
 # so that volumed data can be used.
 #
 
-FROM node:18.18-slim as base
+FROM node:18.18-slim AS base
 
 # Make directory to house application
 RUN mkdir -p /twa
@@ -24,13 +24,13 @@ RUN npm install
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # ---- Development Image ----
-FROM base as develop
+FROM base AS develop
 
 CMD [ "/bin/bash", "-c", "npm run dev" ]
 
 # ---- For production ----
 # Building the code
-FROM base as builder
+FROM base AS builder
 
 ENV NODE_ENV production
 

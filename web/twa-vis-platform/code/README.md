@@ -13,14 +13,14 @@ The code architecture adheres to industry-standard practices for Next.js and Rea
 The project structure should match the recommended Next.js project structure (you can read about that [here](https://nextjs.org/docs/getting-started/project-structure)), utilising the optional `src` directory. More details can be found on the Next.js website, but a brief rundown is presented below.
 
 * `src/`: Contains the application's source code, primarily in Typescript.
-   * `_tests/`: Jest based unit tests
-   * `app`: The app router directory contains publicly discoverable pages and API routes
-   * `io`: Logic classes for input/output handling
-   * `map`: Map container and their related utility methods
-   * `state`: State management container based on Redux to ensure consistent application behaviour
-   * `types`: Custom data types used in the project
-   * `ui`: Custom UI components
-   * `utils`: Common utilities
+  * `_tests/`: Jest based unit tests
+  * `app`: The app router directory contains publicly discoverable pages and API routes
+  * `io`: Logic classes for input/output handling
+  * `map`: Map container and their related utility methods
+  * `state`: State management container based on Redux to ensure consistent application behaviour
+  * `types`: Custom data types used in the project
+  * `ui`: Custom UI components
+  * `utils`: Common utilities
 * `.eslintrc.js`: Configuration for ESLint
 * `next-env.d.ts`: Exports Next.js types for the Typescript compiler
 * `next.config.js`: Configuration module for Next.js projects
@@ -32,7 +32,7 @@ The project structure should match the recommended Next.js project structure (yo
 
 Following Next.js' current routing system (known as the `AppRouter`), rather that the older `PagesRouter`, the [app/page.tsx](./src/app/page.tsx) file acts as the entry point to the application when accessed by the user via a web browser. This reads the UI settings file on the server and then proceeds to load the Landing Page or, if disabled, the Map container.
 
-The current design of the application presents a number of different pages, each with their own URL route. This includes pages such as the landing page, the visualisation page, and a number of optional additional pages (generated from user-provided Markdown files). It's worth noting, however, that this could also be accomplished by presenting the application as a single page, with these components swapping in and out. Whilst this would remove the ability to bookmark/provide a link for a particular page, it may be more efficient and should be investigated. 
+The current design of the application presents a number of different pages, each with their own URL route. This includes pages such as the landing page, the visualisation page, and a number of optional additional pages (generated from user-provided Markdown files). It's worth noting, however, that this could also be accomplished by presenting the application as a single page, with these components swapping in and out. Whilst this would remove the ability to bookmark/provide a link for a particular page, it may be more efficient and should be investigated.
 
 The [LandingPage](./src/ui/pages/landing.tsx) child component contains a landing page with static content pulled from an optional markdown file (which can be provided at runtime, e.g. in a Docker volume) along with links to [StaticContentPage](./src/ui/content/static-content-page.tsx) instances each also reading from optional markdown files.
 
@@ -62,13 +62,23 @@ Note that this may not be the optimal solution. Some further research is warrant
 
 ### 1.5 Runtime Resources
 
-Next.js uses the `public` directory by default to house resources such as images, videos, configuration files etc. Unfortunately, Next requires this directory and its contents to be present at build time. In circumventing this for Docker builds, the `uploads` directory aims to be the target for mounting Docker volumes so that deploying developers can add their context-specific images & configurations. The Docker build process is set up to automatically map the `uploads` directory to the `public` directory within a Docker container. BUT local developments will require manual modification. Detailed documentation of the contents can be found within the [directory](../uploads/).
+Next.js uses the `public` directory by default to house resources such as images, videos, configuration files etc. Unfortunately, Next requires this directory and its contents to be present at build time. To provide a location in which deploying developers can add their context-specific images & configurations, the `uploads` directory aims to be the target for mounting Docker volumes. Do note that this directory will be mapped automatically within a Docker container to the corresponding location for server or client interactions, but requires manual modification for local development.
+
+The uploaded content provided by the deploying developer should match the directory structure below.
+
+* `config/`: Should contain config/settings files.
+  * `data.json`: Specifies data sources and layers to be mapped.
+  * `map-settings.json`: Non-data specific configuration for maps. The format is documented [here](../docs/map-settings.md)
+  * `ui-settings.json`: UI configuration settings, format is documented [here](../docs/ui-settings.json).
+* `images/`: Custom image files.
+* `optional-pages/`: Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
+* `style-overrides.css`: Optional CSS overrides.
 
 ## 2. Local Development Workflow
 
 ### 2.1 Requirements
 
-Before attempting local development with the platform, the below software needs to be installed and configured. 
+Before attempting local development with the platform, the below software needs to be installed and configured.
 
 * Node.js & npm
 * `MAPBOX_USER` environment variable
@@ -98,11 +108,11 @@ In order to ensure that the code runs as expected, set the contents of the `uplo
 
 ## 2.4 Execution
 
-Once installed and the required configuration files are provided, the project can be run in development mode by using the `npm run dev` command, again from within the `code` directory. 
+Once installed and the required configuration files are provided, the project can be run in development mode by using the `npm run dev` command, again from within the `code` directory.
 
 On some Windows machines, this may cause the below error to appear; if this does happen, run the `npm install -g win-node-env` command to address it.
 
-```
+```bash
 "NODE_ENV" is not recognized as an internal or external command, operable command or batch file.
 ```
 
