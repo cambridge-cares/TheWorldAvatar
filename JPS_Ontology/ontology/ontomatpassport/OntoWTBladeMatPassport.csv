@@ -1,0 +1,10 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoWTBladeMatPassport,TBox,http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladematpassport/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoWTBladeMatPassport,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoWTBladeMatPassport,TBox,OntoWTBladeMatPassport is an ontology designed to represent data contained in material passports for wind turbine blades.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoWTBladeMatPassport,TBox,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/dev-composite-materials-ontology/JPS_Ontology/ontology/ontomatpassport/OntoMatPassport.owl,http://www.w3.org/2002/07/owl#imports,,,,,,
+http://www.theworldavatar.com/kg/ontomatpassport/Dimension,Class,,,,,,,,
+Maximum Chord,Class,http://www.theworldavatar.com/kg/ontomatpassport/Dimension,IS-A,,,,The longest width of a wind turbine blade.,http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladematpassport,Maximum chord
+Maximum Laminate Thickness,Class,http://www.theworldavatar.com/kg/ontomatpassport/Dimension,IS-A,,,,The thickest position of the laminated materials in the wind turbine blade.,http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladematpassport,Maximum laminate thickness
+Maximum Thickness,Class,http://www.theworldavatar.com/kg/ontomatpassport/Dimension,IS-A,,,,The thickness of the blade at the thickest position.,http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladematpassport,Maximum thickness
+Root Diametre,Class,http://www.theworldavatar.com/kg/ontomatpassport/Dimension,IS-A,,,,The diameter of the wind turbine blade's root or base inserted into the turbine hub.,http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladematpassport,Root diametre
