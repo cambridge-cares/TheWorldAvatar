@@ -77,32 +77,24 @@ class MapHandler_Mapbox extends MapHandler {
       );
     });
 
-    // Filter out duplicates (Mapbox can return these if a feature is split across a tile boundary)
-    features = MapboxUtils.deduplicate(features);
-
-    if (features.length > 1) {
-      // Click on overlapping, individual features or clusters
-      this.clickMultiple(features);
-    } else if (features.length === 1) {
-      // Click on a single, non-overlapping, feature or cluster
-      let feature = features[0];
-
-      if (MapboxUtils.isCluster(feature)) {
-        // Clicked on a clustered feature, handle as if multiple
-        this.clickMultiple(features);
-      } else {
-        // Click on single feature
-        this.manager.showFeature(feature);
-
-        // Update the layer properties based on the new selection
-        if (feature?.properties?.iri) {
-          MapboxUtils.updateStyleFilterInjections(
-            null,
-            feature?.properties?.iri
-          );
+    let leafs = [];
+    MapboxUtils.recurseFeatures(leafs, features).then(
+      () => {
+        // Filter out duplicates (Mapbox can return these if a feature is split across a tile boundary)
+        leafs = MapboxUtils.deduplicate(leafs);
+        if (leafs.length > 1) {
+          this.clickMultiple(leafs);
+        } else if (leafs.length === 1) {
+          let feature = leafs[0];
+          this.manager.showFeature(feature);
+          if (feature?.properties?.iri) {
+            MapboxUtils.updateStyleFilterInjections(
+              null,
+              feature?.properties?.iri
+            );
+          }
         }
-      }
-    }
+      });
   }
 
   /**
