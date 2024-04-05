@@ -3,7 +3,7 @@
         "Name": "emissions-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/emissions-agent:1.4-dev-live-ship-data-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/emissions-agent:1.4",
                 "Env": [
                     "DATABASE=postgres",
                     "PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000",
