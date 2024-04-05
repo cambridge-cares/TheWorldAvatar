@@ -24,6 +24,7 @@ class Booking(BaseOntology):
 
 class Equipment(BaseOntology):
     # can either be bot:Element (of which OntoDevice:Device is a subclass) or ssn:System
+    clz: str
     hasBookingSystem: BookingSystem
     label: str
     hasItemInventoryIdentifier: str

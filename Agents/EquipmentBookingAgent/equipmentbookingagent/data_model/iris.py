@@ -29,10 +29,6 @@ OAM_ISMANUFACTUREDBY = ONTOASSETMANAGEMENT + 'isManufacturedBy'
 OAM_ISSUPPLIEDBY = ONTOASSETMANAGEMENT + 'isSuppliedBy'
 OAM_HASITEMINVENTORYIDENTIFIER = ONTOASSETMANAGEMENT + 'hasItemInventoryIdentifier'
 
-###--- Some IRIs from ONTOBIM ---###
-ONTOBIM_ROOM = ONTOBIM + 'Room'
-BOT_CONTAINSELEMENT = BOT + 'containsElement'
-
 ###--- Some IRIs from TIME ---###
 TIME_INSTANT = W3C_TIME + 'Instant'
 TIME_INTERVAL = W3C_TIME + 'Interval'
@@ -40,9 +36,12 @@ TIME_TIMEPOSITION = W3C_TIME + 'TimePosition'
 TIME_HASBEGINNING = W3C_TIME + 'hasBeginning'
 TIME_HASEND = W3C_TIME + 'hasEnd'
 
-###--- Some IRIs from DBPEDIA ---#
+###--- Some other IRIs ---#
 DBPEDIA_UNIX = 'http://dbpedia.org/resource/Unix_time'
 FIBO_PERSON = FIBO_P + 'Person'
 OMG_HASNAME = OMG + 'hasName'
 FIBO_ORGANIZATION = FIBO_O + 'FormalOrganization'
 BOT_CONTAINSELEMENT = BOT + 'containsElement'
+ONTOCAPE_TECHNICALSYSTEM = 'http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem'
+ONTOBIM_ROOM = ONTOBIM + 'Room'
+OTS_COMPOSEDOF = ONTOTECHNICALSYSTEM + 'composedOf'

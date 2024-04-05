@@ -16,7 +16,7 @@ sparql_client = EquipmentBookingSparqlClient(
         )
 
 
-equipment_iri : str = "<https://www.theworldavatar.com/kg/ontolab/TechnicalSystem_e91e7a6f-8119-493a-a24b-9dbb74043809>"
-booking_system_label: str = "CARES Lab User Equipment Booking System"
+equipment_iris : list
+technicalsystem_label: str
 
-sparql_client.create_booking_system_for_equipment(equipment_iri,booking_system_label)
+sparql_client.create_technicalystem_of_devices(equipment_iris=equipment_iris,system_label=technicalsystem_label)
