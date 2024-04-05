@@ -105,10 +105,10 @@ The script generates the corresponding colours for each value range (population_
 [stack-data-uploader]: ./stack-data-uploader/
 [ship-input-agent.json]: ./stack-manager/inputs/config/services/ship-input-agent.json
 [weather-agent.json]: ./stack-manager/inputs/config/services/weather-agent.json
-[company.http]: <./HTTP requests for dispersion/company.http>
-[start-live-updates.http]: <./HTTP requests for dispersion/start-live-updates.http>
-[jurong-live.http]: <./HTTP requests for dispersion/jurong-live.http>
-[mbs-live.http]: <./HTTP requests for dispersion/mbs-live.http>
+[company.http]: <./HTTP_requests/company.http>
+[start-live-updates.http]: <./HTTP_requests/start-live-updates.http>
+[jurong-live.http]: <./HTTP_requests/jurong-live.http>
+[mbs-live.http]: <./HTTP_requests/mbs-live.http>
 [dispersion-interactor.json]: ./stack-manager/inputs/config/services/dispersion-interactor.json
 [client.properties]: ./carpark_config/client.properties
 [cityfurniture-footprint-height.sql]: ./custom_sql_scripts/cityfurniture-footprint-height.sql
