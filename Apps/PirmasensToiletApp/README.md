@@ -2,12 +2,12 @@
 
 ## Ontology
 Entities are defined in Miro board
-![image](https://github.com/cambridge-cares/TheWorldAvatar/assets/115569120/83aa5fc0-6a73-44c5-96cd-60855469aa23)
+
 
 
 ## Screenshots
 
-![image](https://github.com/cambridge-cares/TheWorldAvatar/assets/115569120/575660d0-183b-4e1a-8ec5-db6ed235efbf)
+
 
 
 ## Mapbox token
@@ -28,5 +28,5 @@ For spinning up a stack and uploading the data follow the instructions in [Stack
 ## Web Visualization
 If you run the backend of the android application, you can also see the following web visualization at http://localhost:3838/visualisation/:
 
-![image](https://github.com/cambridge-cares/TheWorldAvatar/assets/115569120/e3402978-26bb-40f4-a6f2-7e1bb52f99e2)
+
 
