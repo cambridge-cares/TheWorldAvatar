@@ -9,6 +9,7 @@
     "routing",
     "tree",
     "tbox",
-	"tbox-carpark"
+    "tbox-carpark",
+    "osm"
   ]
 }
