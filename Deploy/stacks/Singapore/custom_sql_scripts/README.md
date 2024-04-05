@@ -1,1 +1,1 @@
-Run this SQL command after uploading the full SG buildings dataset to add height and footprint into the cityobject_genericattrib table. This is required because height and footprint cannot be queried directly from the city_furniture data, unlike building with lod0 footprints data available 
+Refer to main README on when to run these scripts
