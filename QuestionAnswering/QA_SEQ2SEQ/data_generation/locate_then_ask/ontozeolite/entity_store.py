@@ -18,6 +18,11 @@ class OZEntityStore:
             material_iris = (
                 self._retrieve_by_property(entity_iri, "zeo:hasZeoliticMaterial"),
             )
+            framework_components = [
+                species
+                for material_iri in material_iris
+                for species in self.get_material(material_iri).framework_components
+            ]
             guest_species_iris = [
                 guest_species_iri
                 for material_iri in material_iris
@@ -35,10 +40,10 @@ class OZEntityStore:
                 framework_code=self._retrieve_by_property(
                     entity_iri, "zeo:hasFrameworkCode"
                 )[0],
-                framework_components=self._retrieve_framework_components(entity_iri),
                 crystal_info=self._retrieve_crystal_info(entity_iri),
                 topo_scalar=self._retrieve_topomeasures(entity_iri),
                 material_iris=material_iris,
+                framework_components=framework_components,
                 guest_species_iris=guest_species_iris,
                 guest_formulae=guest_formulae,
             )
@@ -58,9 +63,10 @@ class OZEntityStore:
                 framework_iri=self._retrieve_by_property(
                     entity_iri, "^zeo:hasZeoliticMaterial"
                 )[0],
-                formulae=self._retrieve_by_property(
+                formula=self._retrieve_by_property(
                     entity_iri, "zeo:hasChemicalFormula"
-                ),
+                )[0],
+                framework_components=self._retrieve_framework_components(entity_iri),
                 guest_species_iris=self._retrieve_by_property(
                     entity_iri, "zeo:hasGuestCompound"
                 ),
@@ -96,7 +102,7 @@ SELECT ?x WHERE {{
             for row in self.ontozeolite_client.query(query)["results"]["bindings"]
         ]
 
-    def _retrieve_framework_components(self, framework_iri: str):
+    def _retrieve_framework_components(self, material_iri: str):
         query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 
@@ -106,7 +112,7 @@ SELECT ?ElementSymbol WHERE {{
         ?Element os:hasElementSymbol/os:value ?ElementSymbol .
     }}
 }}""".format(
-            IRI=framework_iri,
+            IRI=material_iri,
             ontospecies_endpoint=self.ontospecies_client.client.endpoint,
         )
         return [
