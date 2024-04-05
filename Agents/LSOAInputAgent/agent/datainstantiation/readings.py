@@ -69,53 +69,133 @@ def read_from_pickle(pathname: str):
     logger.info('ONS geographic data successfully retrieved from pickle file')
     return results
 
-# ------------------------- Upload data to KG ------------------------------------ #
-def upload_elec_data_to_KG (year: str = YEAR,
-                query_endpoint: str = QUERY_ENDPOINT,
-                update_endpoint: str = UPDATE_ENDPOINT,
-                path: str = None):
+# ------------------------- Retrieve data from local path------------------------------------ #
+def retrieve_elec_data(year: str = YEAR):
     '''
-        perform SPARQL update to upload the Electricity consumption/meters data into Blazegraph
+        Read the data from the local xlsx file
         
         Arguments:
         year: the number of year of which the data you may want to read
-        query_endpoint: str = QUERY_ENDPOINT,
-        update_endpoint: str = UPDATE_ENDPOINT
-        path: mainly for testing reason, provide an path to a json/xslx file which can be read and upload to knowledge graph
-              example json files can be seen in ./tests/data folder
     '''
 # Retrieve reading from web
     logger.info('Retrieving Electricity consumption data from Excel ...')
     try:
-        # Try the default path
-        if path is None:
-            data = pd.read_excel(
-                f'./data/LSOA_domestic_elec_2010-{year[2:3]}.xlsx',
-                sheet_name=year,
-                skiprows=4,
-                skipfooter=1
-            )
-        # Try the specified path
-        else:
-            if os.path.isfile(path):
-                file_extension = os.path.splitext(path)[1].lower()
-                if file_extension == '.xlsx':
-                    data = pd.read_excel(
-                        path,
-                        sheet_name=year,
-                        skiprows=4,
-                        skipfooter=1
-                    )
-                elif file_extension == '.json':
-                    # Try the JSON file
-                    with open(path, 'r') as file:
-                        data = json.load(file)
-                else:
-                    logger.info("Specified path file can't be found or not valid, try to get the data from web...")
+        data = pd.read_excel(
+            f'./data/LSOA_domestic_elec_2010-{year[2:3]}.xlsx',
+            sheet_name=year,
+            skiprows=4,
+            skipfooter=1
+        )
+        
     except Exception as ex:
         print(ex)
         logger.error(f"Excel file fail to be found -- electricity consumption")
         raise InvalidInput(f'Excel file fail to be found, please check if the electricity consumption xlsx has been placed in ./data folder') from ex
+    
+    return data
+
+def retrieve_gas_data(year: str = YEAR):
+    '''
+        Read the data from the local xlsx file
+        
+        Arguments:
+        year: the number of year of which the data you may want to read
+    '''
+# Retrieve reading from web
+    logger.info('Retrieving Gas consumption data from Excel ...')
+    try:
+        data = pd.read_excel(
+            f'./data/LSOA_domestic_gas_2010-{year[2:3]}.xlsx',
+            sheet_name=YEAR,
+            skiprows=4,
+            skipfooter=1
+        )
+        
+    except Exception as ex:
+        print(ex)
+        logger.error(f"Excel file fail to be found -- gas consumption")
+        raise InvalidInput(f'Excel file fail to be found, please check if the gas consumption xlsx has been placed in ./data folder') from ex
+    
+    return data
+
+def retrieve_geo_data():
+    '''
+    Read the data from the local shape file
+    '''
+    logger.info('Retrieving ONS geographic data from local pickle file ...')
+    try:
+        LSOA_codes, wkt_codes = read_from_pickle('./data/shapes_array')
+    except Exception as ex:
+        print(ex)
+        logger.error(f"shape pickle file fail to be found -- electricity consumption")
+        raise InvalidInput(f'shape pickle file fail to be found, please check if the shape pickle file has been placed in ./data folder') from ex
+    
+    return LSOA_codes, wkt_codes
+
+def retrieve_fuel_poverty_data(year: str = YEAR):
+    '''
+        Read the data from the local xlsx file
+        
+        Arguments:
+        year: the number of year of which the data you may want to read
+    '''
+# Retrieve reading from web
+    logger.info('Retrieving fuel poverty data from Excel ...')
+    try:
+        year_published = str(int(year) + 2)
+        data = pd.read_excel(
+            f'./data/sub-regional-fuel-poverty-{year_published}-tables.xlsx',
+            sheet_name="Table 3",
+            skiprows=2,
+            skipfooter=8
+        )
+    except Exception as ex:
+        print(ex)
+        logger.error(f"Excel file fail to be found -- fuel poverty")
+        raise InvalidInput(f'Excel file fail to be found, please check if the fuel poverty xlsx has been placed in ./data folder') from ex
+    
+    return data
+
+def read_nc(var_name, year, loc=True):
+    '''
+    Given a variable in the specified year of HadUK Grid dataset, reads the file
+    and returns the grid of observations.
+    '''
+    try:
+        fn = f'./data/{var_name}_hadukgrid_uk_1km_mon_{year}01-{year}12.nc'
+    except Exception as ex:
+        print(ex)
+        logger.error(f"nc file fail to be found -- climate temperature")
+        raise InvalidInput(f'nc file fail to be found, please check if the climate temperature data has been placed in ./data folder') from ex
+
+    ds = nc.Dataset(fn)
+    var_grid = ds.variables[var_name][:]
+    logger.info(f'{year} {var_name}: hadUK climate data from {fn} succesfully retrieved and calculated')
+    if loc == True:
+        lon = ds.variables['longitude'][:]
+        lat = ds.variables['latitude'][:]
+        ds.close()
+        return lon, lat, var_grid
+    else:
+        ds.close()
+        return var_grid
+
+# ------------------------- Upload data to KG ------------------------------------ #
+def upload_elec_data_to_KG (
+                data: pd.DataFrame,
+                year: str = YEAR,
+                query_endpoint: str = QUERY_ENDPOINT,
+                update_endpoint: str = UPDATE_ENDPOINT,
+):
+    '''
+        perform SPARQL update to upload the Electricity consumption/meters data into Blazegraph
+        
+        Arguments:
+        data: The dataframe retrieved from the Excel 
+        year: the number of year of which the data you may want to read
+        query_endpoint: str = QUERY_ENDPOINT,
+        update_endpoint: str = UPDATE_ENDPOINT
+    '''
 
     LSOA_codes = data["LSOA code"].values
     met_num = data["Number\nof meters\n"].values
@@ -217,52 +297,20 @@ def upload_elec_data_to_KG (year: str = YEAR,
 
     return total
 
-def upload_gas_data_to_KG (year: str = YEAR,
+def upload_gas_data_to_KG (
+                data: pd.DataFrame,
+                year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
-                update_endpoint: str = UPDATE_ENDPOINT,
-                path: str = None):
+                update_endpoint: str = UPDATE_ENDPOINT):
     '''
         perform SPARQL update to upload the gas consumption/meter/nonmeter data into Blazegraph
         
         Arguments:
+        data: The dataframe retrieved from the Excel 
         year: the number of year of which the data you may want to read
         query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
-        path: mainly for testing reason, provide an path to a json/xslx file which can be read and upload to knowledge graph
-              example json files can be seen in ./tests/data folder
     '''
-# Retrieve reading from web
-    logger.info('Retrieving Gas consumption data from Excel ...')
-    try:
-        # Try the default path
-        if path is None:
-            data = pd.read_excel(
-                f'./data/LSOA_domestic_gas_2010-{year[2:3]}.xlsx',
-                sheet_name=YEAR,
-                skiprows=4,
-                skipfooter=1
-            )
-        # Try the specified path
-        else:
-            if os.path.isfile(path):
-                file_extension = os.path.splitext(path)[1].lower()
-                if file_extension == '.xlsx':
-                    data = pd.read_excel(
-                        path,
-                        sheet_name=year,
-                        skiprows=4,
-                        skipfooter=1
-                    )
-                elif file_extension == '.json':
-                    # Try the JSON file
-                    with open(path, 'r') as file:
-                        data = json.load(file)
-                else:
-                    logger.info("Specified path file can't be found or not valid, try to get the data from web...")
-    except Exception as ex:
-        print(ex)
-        logger.error(f"Excel file fail to be found -- gas consumption")
-        raise InvalidInput(f'Excel file fail to be found, please check if the gas consumption xlsx has been placed in ./data folder') from ex
 
     LSOA_codes = data["LSOA code"].values
     met_num = data["Number\nof meters\n"].values
@@ -344,23 +392,19 @@ def upload_gas_data_to_KG (year: str = YEAR,
 
     return total
 
-def upload_Geoinfo_to_KG(query_endpoint: str = QUERY_ENDPOINT,
+def upload_Geoinfo_to_KG(
+                         LSOA_codes:list,
+                         wkt_codes:list,
+                         query_endpoint: str = QUERY_ENDPOINT,
                          update_endpoint: str = UPDATE_ENDPOINT):
     '''
         perform SPARQL update to upload the geo data of LSOA regions into Blazegraph
         
         Arguments:
+        data: The dataframe retrieved from the Excel 
         query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
     '''
-    logger.info('Retrieving ONS geographic data from local pickle file ...')
-    try:
-        LSOA_codes, wkt_codes = read_from_pickle('./data/shapes_array')
-    except Exception as ex:
-        print(ex)
-        logger.error(f"shape pickle file fail to be found -- electricity consumption")
-        raise InvalidInput(f'shape pickle file fail to be found, please check if the shape pickle file has been placed in ./data folder') from ex
-
     # Split the queries into Batches
     # Perform SPARQL update query in chunks to avoid heap size/memory issues
     total = len(LSOA_codes)
@@ -406,10 +450,11 @@ def upload_Geoinfo_to_KG(query_endpoint: str = QUERY_ENDPOINT,
     
     return total
 
-def upload_fuel_poverty_to_KG (year: str = YEAR,
+def upload_fuel_poverty_to_KG (
+                data:pd.DataFrame,
+                year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
-                update_endpoint: str = UPDATE_ENDPOINT,
-                path: str = None):
+                update_endpoint: str = UPDATE_ENDPOINT):
     '''
         perform SPARQL update to upload the fuel poor number, total household number data into Blazegraph
         
@@ -420,41 +465,7 @@ def upload_fuel_poverty_to_KG (year: str = YEAR,
         path: mainly for testing reason, provide an path to a json/xslx file which can be read and upload to knowledge graph
               example json files can be seen in ./tests/data folder
     '''
-    # Retrieve reading from web
-    logger.info('Retrieving Fuel poverty data from Excel ...')
     
-    try:
-        year_published = str(int(year) + 2)
-        # Try the default path
-        if path is None:
-            data = pd.read_excel(
-                f'./data/sub-regional-fuel-poverty-{year_published}-tables.xlsx',
-                sheet_name="Table 3",
-                skiprows=2,
-                skipfooter=8
-            )
-        # Try the specified path
-        else:
-            if os.path.isfile(path):
-                file_extension = os.path.splitext(path)[1].lower()
-                if file_extension == '.xlsx':
-                    data = pd.read_excel(
-                        path,
-                        sheet_name="Table 3",
-                        skiprows=2,
-                        skipfooter=8
-                    )
-                elif file_extension == '.json':
-                    # Try the JSON file
-                    with open(path, 'r') as file:
-                        data = json.load(file)
-                else:
-                    logger.info("Specified path file can't be found or not valid, try to get the data from web...")
-    except Exception as ex:
-        print(ex)
-        logger.error(f"Excel file fail to be found -- fuel poverty")
-        raise InvalidInput(f'Excel file fail to be found, please check if the fuel poverty xlsx has been placed in ./data folder') from ex
-
     LSOA_codes = data["LSOA Code"].values
     house_num = data["Number of households"].values
     poor_num = data["Number of households in fuel poverty"].values
@@ -518,10 +529,11 @@ def upload_fuel_poverty_to_KG (year: str = YEAR,
 
     return total
 
-def upload_hadUK_climate_to_KG (year: str = YEAR,
+def upload_hadUK_climate_to_KG (
+                data:pd.DataFrame,
+                year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
-                update_endpoint: str = UPDATE_ENDPOINT,
-                path: str = None):
+                update_endpoint: str = UPDATE_ENDPOINT):
     '''
         perform SPARQL update to upload the Climate data into Blazegraph
         The climate data for each LSOA is calculated based on hadUK grid climate data
@@ -546,34 +558,6 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
       month = months[month_str]
       month_end = month_ends[month_str]
       return month, month_end
-
-    def read_nc(var_name,year,loc=True):
-        '''
-        Given a variable in the specified year of HadUK Grid dataset, reads the file
-        and returns the grid of observations.
-        '''
-        try:
-            # Try the default path
-            if path is None:
-                fn = f'./data/{var_name}_hadukgrid_uk_1km_mon_{year}01-{year}12.nc'
-            else:
-                fn = path
-        except Exception as ex:
-            print(ex)
-            logger.error(f"nc file fail to be found -- climate temperature")
-            raise InvalidInput(f'nc file fail to be found, please check if the climate temperature data has been placed in ./data folder') from ex
-
-        ds = nc.Dataset(fn)
-        var_grid = ds.variables[var_name][:]
-        logger.info(f'{year} {var_name}: hadUK climate data from {fn} succesfully retrieved and calculated')
-        if loc == True:
-            lon = ds.variables['longitude'][:]
-            lat = ds.variables['latitude'][:]
-            ds.close()
-            return lon, lat, var_grid
-        else:
-            ds.close()
-            return var_grid
 
     def gridded_data_to_array(lon,lat,nc_vars,month):
         '''
@@ -776,7 +760,8 @@ def upload_all(year: str = YEAR, query_endpoint: str = QUERY_ENDPOINT, update_en
     print("\nUploading the Electricity consumption data:")
     logger.info("Uploading the Electricity consumption data...")
     t1 = time.time()
-    num_elec = upload_elec_data_to_KG(year, query_endpoint, update_endpoint)
+    data = retrieve_elec_data(year)
+    num_elec = upload_elec_data_to_KG(data, year, query_endpoint, update_endpoint)
     print(f"Number of LOSA output area with instantiated Electricity consumption/meter data: {num_elec}")
     t2= time.time()
     diff = t2 - t1
@@ -787,7 +772,8 @@ def upload_all(year: str = YEAR, query_endpoint: str = QUERY_ENDPOINT, update_en
     print("\nUploading the Gas consumption data:")
     logger.info("Uploading the Gas consumption data...")
     t1 = time.time()
-    num_gas = upload_gas_data_to_KG(year, query_endpoint, update_endpoint)
+    data = retrieve_gas_data(year)
+    num_gas = upload_gas_data_to_KG(data, year, query_endpoint, update_endpoint)
     print(f"Number of LOSA output area with instantiated Gas consumption data: {num_elec}")
     t2= time.time()
     diff = t2 - t1
@@ -798,7 +784,8 @@ def upload_all(year: str = YEAR, query_endpoint: str = QUERY_ENDPOINT, update_en
     print("\nUploading the ONS geographic data:")
     logger.info("Uploading the ONS geographic data...")
     t1 = time.time()
-    num_shape = upload_Geoinfo_to_KG(query_endpoint, update_endpoint)
+    LSOA_codes, wkt_codes = retrieve_geo_data(year)
+    num_shape = upload_Geoinfo_to_KG(LSOA_codes, wkt_codes, query_endpoint, update_endpoint)
     print(f"Number of LOSA output area with instantiated ONS geographic data: {num_elec}")
     t2= time.time()
     diff = t2 - t1
@@ -809,7 +796,8 @@ def upload_all(year: str = YEAR, query_endpoint: str = QUERY_ENDPOINT, update_en
     print("\nUploading the Fuel poverty data:")
     logger.info("Uploading the Fuel poverty data...")
     t1 = time.time()
-    num_fuelpoor = upload_fuel_poverty_to_KG(year, query_endpoint, update_endpoint)
+    data = retrieve_fuel_poverty_data(year)
+    num_fuelpoor = upload_fuel_poverty_to_KG(data, year, query_endpoint, update_endpoint)
     print(f"Number of LOSA output area with instantiated Fuel poverty data: {num_elec}")
     t2= time.time()
     diff = t2 - t1

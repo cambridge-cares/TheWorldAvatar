@@ -125,17 +125,17 @@ Agent start-up will automatically register a recurring task to assimilate latest
 
 <center>-------- Data Instantiation ------------</center>
 
-- GET request to download and instantiate all Electricity Consumption/meter data to KG
+- GET request to instantiate all electricity consumption/meter data to KG
 > /api/lsoainputagent/instantiate/electricity
-- GET request to download and instantiate all UK subregional (LSOA) Gas Consumption/meter/nonmeter data to KG
+- GET request to instantiate all UK subregional (LSOA) gas consumption/meter/nonmeter data to KG
 > /api/lsoainputagent/instantiate/gas
-- GET request to download and instantiate all UK subregional (LSOA) fuel poverty data to KG
+- GET request to instantiate all UK subregional (LSOA) fuel poverty data to KG
 > /api/lsoainputagent/instantiate/fuelpoverty
-- GET request to download and instantiate all hadUK climate data in 1km grid to KG (GET request)
+- GET request to instantiate all hadUK climate data in 1km grid to KG (GET request)
 > /api/lsoainputagent/instantiate/temperature
-- GET request to download and instantiate all LSOA geometric shape to KG (GET request)
+- GET request to instantiate all LSOA geometric shape to KG (GET request)
 > /api/lsoainputagent/instantiate/shape
-- GET request to download and instantiate all data as mentioned above to KG
+- GET request to instantiate all data as mentioned above to KG
 > /api/lsoainputagent/instantiate/all
 
 
