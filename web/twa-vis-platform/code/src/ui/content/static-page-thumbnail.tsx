@@ -23,7 +23,7 @@ interface Props {
 export default function StaticPageThumbnail({ page }: Readonly<Props>) {
 
     const tooltipText = "Click to open the '" + page.title + "' page.";
-    const thumbnail = page.thumbnail ?? "/img/icons/info.svg";
+    const thumbnail = page.thumbnail ?? "/images/defaults/icons/info.svg";
     const url = "/posts/" + page.slug;
 
     return (

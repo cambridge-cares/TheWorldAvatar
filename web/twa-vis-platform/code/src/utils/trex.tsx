@@ -17,7 +17,7 @@ type Props = {
 export default class Trex extends PureComponent<Props> {
 
     // Audio player
-    audio = new Audio("/utils/trex.wav");
+    audio = new Audio("/images/utils/trex.wav");
 
     // Runs once component is added
     componentDidMount() {
@@ -77,7 +77,7 @@ export default class Trex extends PureComponent<Props> {
                             ease: easeInOut
                         }}
                         style={{
-                            backgroundImage: "url('/utils/trex.png')",
+                            backgroundImage: "url('/images/utils/trex.png')",
                             backgroundSize: "cover",
                             width: "400px",
                             height: "400px"

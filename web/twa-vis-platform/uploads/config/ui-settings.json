@@ -1,7 +1,7 @@
 {
     "branding": {
-        "logo": "/img/whatever.svg",
-        "toolbarLogo": "/uploads/images/toolbar-logo.svg"
+        "logo": "/images/whatever.svg",
+        "toolbarLogo": "/images/defaults/toolbar-logo.svg"
     },
     "modules": {
         "landing": true,

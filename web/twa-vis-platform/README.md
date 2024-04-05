@@ -26,7 +26,7 @@ For a standalone deployment, first create files within this directory (containin
 ### 2.2 Stack Deployment
 For deployment on the [TWA stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager), please spin up the stack with the `visualisation` service as documented [here][https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation]. The key steps are as follows:
 
-1) The `mapbox_user` and `mapbox_api_key` are available as Docker secrets
+1) The `mapbox_username` and `mapbox_api_key` are available as Docker secrets
 2) In the stack config file, `visualisation` is included as part of the `services` `includes` list
 3) Specify the directory holding the configuration files that should be mapped to a volume called `uploads`
 4) Populate this directory with your require visualisation configuration files

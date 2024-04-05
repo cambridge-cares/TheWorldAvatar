@@ -14,10 +14,10 @@ import { MapSettings } from 'types/settings';
 export default class SettingsStore {
 
   // Location of all configuration files
-  private static readonly DEFAULT_SETTINGS_FILE: string = path.join(process.cwd(), "uploads/config/ui-settings.json");
-  private static readonly DATA_SETTINGS_FILE: string = path.join(process.cwd(), "uploads/config/data.json");
-  private static readonly MAP_SETTINGS_FILE: string = path.join(process.cwd(), "uploads/config/map-settings.json");
-  private static readonly CSS_OVERRIDE_FILE: string = path.join(process.cwd(), "uploads/style-overrides.css");
+  private static readonly DEFAULT_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/ui-settings.json");
+  private static readonly DATA_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/data.json");
+  private static readonly MAP_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/map-settings.json");
+  private static readonly CSS_OVERRIDE_FILE: string = path.join(process.cwd(), "public/style-overrides.css");
 
   // Cached settings
   private static DEFAULT_SETTINGS: string | null = null;
@@ -80,7 +80,7 @@ export default class SettingsStore {
   public static getCredentials(): { username: string, key: string } {
     try {
       // Assuming these files exist in your Docker environment
-      const username = this.readFile("/run/secrets/mapbox_user").trim();
+      const username = this.readFile("/run/secrets/mapbox_username").trim();
       const key = this.readFile("/run/secrets/mapbox_api_key").trim();
       return { username, key };
     } catch (error) {

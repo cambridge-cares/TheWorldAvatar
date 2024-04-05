@@ -11,7 +11,7 @@ services:
     container_name: "twa-vis-platform"
     restart: "no"
     secrets:
-      - mapbox_user
+      - mapbox_username
       - mapbox_api_key
     build:
       context: "./"
@@ -21,15 +21,11 @@ services:
         authors: "support@cmcl.io"
         description: "TWA Visualisation Platform image."
     volumes:
-      - ./uploads/config:/twa/uploads/config
-      - ./uploads/optional-pages:/twa/uploads/optional-pages
-      - ./uploads/style-overrides.css:/twa/uploads/style-overrides.css
-      - ./uploads/data:/twa/public/uploads/data
-      - ./uploads/images:/twa/public/uploads/images
+      - ./uploads:/twa/public/
     ports:
       - "80:3000" 
 secrets:
-    mapbox_user: 
-      file: ./mapbox_user
+    mapbox_username: 
+      file: ./mapbox_username
     mapbox_api_key:
       file: ./mapbox_api_key

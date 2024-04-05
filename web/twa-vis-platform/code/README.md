@@ -12,7 +12,6 @@ The code architecture adheres to industry-standard practices for Next.js and Rea
 
 The project structure should match the recommended Next.js project structure (you can read about that [here](https://nextjs.org/docs/getting-started/project-structure)), utilising the optional `src` directory. More details can be found on the Next.js website, but a brief rundown is presented below.
 
-* `public/`: Contains static, build-time resources (icons, fonts etc.)
 * `src/`: Contains the application's source code, primarily in Typescript.
    * `_tests/`: Jest based unit tests
    * `app`: The app router directory contains publicly discoverable pages and API routes
@@ -63,7 +62,7 @@ Note that this may not be the optimal solution. Some further research is warrant
 
 ### 1.5 Runtime Resources
 
-Next.js uses the `public` directory by default to house resources such as images, videos, configuration files etc. Unfortunately, Next requires this directory and its contents to be present at build time. To provide a location in which deploying developers can add their context-specific images & configurations, the `uploads` directory aims to be the target for mounting Docker volumes. Do note that this directory will be mapped automatically within a Docker container to the corresponding location for server or client interactions, but requires manual modification for local development.
+Next.js uses the `public` directory by default to house resources such as images, videos, configuration files etc. Unfortunately, Next requires this directory and its contents to be present at build time. In circumventing this for Docker builds, the `uploads` directory aims to be the target for mounting Docker volumes so that deploying developers can add their context-specific images & configurations. The Docker build process is set up to automatically map the `uploads` directory to the `public` directory within a Docker container. BUT local developments will require manual modification. 
 
 The uploaded content provided by the deploying developer should match the directory structure below. 
 
@@ -71,7 +70,7 @@ The uploaded content provided by the deploying developer should match the direct
   * `data.json`: Specifies data sources and layers to be mapped.
   * `map-settings.json`: Non-data specific configuration for maps. The format is documented [here](../docs/map-settings.md)
   * `ui-settings.json`: UI configuration settings, format is documented [here](../docs/ui-settings.json).
-* `images/`: Custom image files.
+* `images/`: Custom image files. The `defaults` directory hosts default images and icons, which should not be removed for it to function properly.
 * `optional-pages/`: Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
 * `style-overrides.css`: Optional CSS overrides.
 
@@ -106,7 +105,7 @@ To install on the host machine, navigate to the `code` directory and run the `np
 
 ## 2.3 Configuration
 
-In order to ensure that the code runs as expected, set the `uploads\config`, `uploads\optional-pages`, and `uploads\style-overrides.css` to their corresponding subdirectories in `<root>\code\uploads`. The `uploads\images` and `uploads\data` directories should also be set inside `<root>\code\public\uploads`.
+In order to ensure that the code runs as expected, set the contents of the `uploads` directory to `<root>\code\public\`.
 
 ## 2.4 Execution
 

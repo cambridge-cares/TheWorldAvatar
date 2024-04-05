@@ -21,7 +21,7 @@ export type OptionalPage = {
 export default class OptionalPages {
 
     // Location of optional pages directory.
-    private static readonly DIRECTORY:string = "uploads/optional-pages";
+    private static readonly DIRECTORY:string = "public/optional-pages";
 
     /**
      * 

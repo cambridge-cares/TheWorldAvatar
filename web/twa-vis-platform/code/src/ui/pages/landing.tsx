@@ -42,7 +42,7 @@ export default function LandingPage() {
     const mapButton = buildButton(
         "Geospatial map",
         "Explore assets, connections, and failures visually.",
-        "/img/icons/map.svg",
+        "/images/defaults/icons/map.svg",
         "/visualisation"
     );
 
@@ -50,7 +50,7 @@ export default function LandingPage() {
     const dashButton = buildButton(
         "Analytics dashboard",
         "Investigate all data across all scenarios.",
-        "/img/icons/dash.svg",
+        "/images/defaults/icons/dash.svg",
         "/analytics"
     );
 

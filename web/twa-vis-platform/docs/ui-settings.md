@@ -15,8 +15,8 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 ```json
 {
     "branding": {
-        "logo": "/img/whatever.svg", // Custom branding logo
-        "toolbarLogo": "/uploads/images/toolbar-logo.svg"  // Custom logo for the toolbar (should be 5:1 aspect ratio)
+        "logo": "/images/whatever.svg", // Custom branding logo
+        "toolbarLogo": "/images/defaults/toolbar-logo.svg"  // Custom logo for the toolbar (should be 5:1 aspect ratio)
     },
     "modules": {
         "landing": true,  // Should the landing page be enabled
