@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.timeline;
 
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +29,8 @@ import com.mapbox.maps.plugin.scalebar.ScaleBarPlugin;
 import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
+import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
@@ -36,19 +39,26 @@ import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
 public class TimelineFragment extends Fragment {
     private FragmentTimelineBinding binding;
     private MapView mapView;
+    private BottomSheet bottomSheet;
     private Logger LOGGER = Logger.getLogger(TimelineFragment.class);
+    private ConnectivityManager connectivityManager;
 
     private final int MAP_BOTTOM_FLOATING_COMPONENT_MARGIN = 100;
     private BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
     private ScaleBarPlugin scaleBarPlugin;
     private CompassPlugin compassPlugin;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        connectivityManager = requireContext().getSystemService(ConnectivityManager.class);
+
         binding = FragmentTimelineBinding.inflate(inflater);
         setupMenu();
         setupBackPress();
+
+        bottomSheet = new NormalBottomSheet(requireContext(), binding.getRoot());
         return binding.getRoot();
     }
 
@@ -56,7 +66,8 @@ public class TimelineFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheetWidget.bottomSheet);
+        bottomSheetBehavior = (BottomSheetBehavior<LinearLayoutCompat>) bottomSheet.getBehavior();
+//        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheetWidget.bottomSheet);
 
         mapView = binding.mapView;
         mapView.getMapboxMap().addOnStyleLoadedListener(style -> {

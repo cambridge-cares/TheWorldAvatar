@@ -14,13 +14,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.EndSessionRequest;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 
