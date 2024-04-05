@@ -1,7 +1,7 @@
 import random
 import uuid
 import pytest
-from py4jps.resources import JpsBaseLib
+from twa.resources import JpsBaseLib
 from py4j.java_gateway import GatewayParameters
 from os import path
 import json

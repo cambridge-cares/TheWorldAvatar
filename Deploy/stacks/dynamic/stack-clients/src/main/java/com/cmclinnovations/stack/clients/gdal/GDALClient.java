@@ -28,6 +28,7 @@ import com.cmclinnovations.stack.clients.geoserver.MultidimSettings;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.DateTimeParser;
+import com.cmclinnovations.stack.clients.utils.DateStringFormatter;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.clients.utils.TempDir;
 import com.google.common.collect.ArrayListMultimap;
@@ -280,8 +281,9 @@ public class GDALClient extends ContainerClient {
             timeSqlType = "TIMESTAMPTZ";
         } else {
             for (int index = 0; index < timeArray.length(); index++) {
-                dateTimes.add(timeArray.getString(index));
-
+                String timeStringUnFormatted = timeArray.getString(index);
+                String timeStringFormatted = DateStringFormatter.customDateStringFormatter(timeStringUnFormatted, mdimSettings.getTimeOptions().getArrayName());
+                dateTimes.add(timeStringFormatted);
             }
             timeSqlType = "TEXT";
         }
@@ -308,9 +310,9 @@ public class GDALClient extends ContainerClient {
             errorStream.reset();
         }
 
-        String hereDocument = "CREATE TABLE IF NOT EXISTS " + layername
-                + "_times (bands SERIAL, time " + timeSqlType + " PRIMARY KEY); " +
-                "INSERT INTO " + layername + "_times (time) VALUES " + dateTimes.toString() + ";";
+        String hereDocument = "CREATE TABLE IF NOT EXISTS \"" + layername
+                + "_times\" (bands SERIAL, time " + timeSqlType + " PRIMARY KEY); " +
+                "INSERT INTO \"" + layername + "_times\" (time) VALUES " + dateTimes.toString() + ";";
         String execId = createComplexCommand(postGISContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
                 .withHereDocument(hereDocument)
@@ -335,8 +337,10 @@ public class GDALClient extends ContainerClient {
             String inputFormat = fileTypeEntry.getKey();
             for (String filePath : fileTypeEntry.getValue()) {
 
-                addCustomCRStoPostGis(geoserverContainerId, postGISContainerId, gdalContainerId, filePath, databaseName,
-                        options.getSridOut());
+                if (null == options.getSridIn()) {
+                    addCustomCRStoPostGis(geoserverContainerId, postGISContainerId, gdalContainerId, filePath,
+                            databaseName, options.getSridOut());
+                }
 
                 postgresFiles.add(processFile(gdalContainerId, inputFormat, filePath, databaseName, schemaName,
                         layerName, tempDir, options, mdimSettings, createdDirectories));
@@ -439,7 +443,7 @@ public class GDALClient extends ContainerClient {
         String execId = createComplexCommand(postGISContainerId, "bash", "-c",
                 "(which raster2pgsql || (apt update && apt install -y postgis && rm -rf /var/lib/apt/lists/*)) && " +
                 // https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
-                        "raster2pgsql " + mode + " -C -t auto -R -F -I -M -Y"
+                        "raster2pgsql " + mode + " -C -t auto -R -F -q -I -M -Y"
                         + geotiffFiles.stream().collect(Collectors.joining("' '", " '", "' "))
                         + layerName
                         + " | psql -U " + postgreSQLEndpoint.getUsername() + " -d " + database + " -w")

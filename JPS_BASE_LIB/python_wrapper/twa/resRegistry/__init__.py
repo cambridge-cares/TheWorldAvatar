@@ -1,0 +1,1 @@
+from twa.resRegistry.resRegistry import resRegistry

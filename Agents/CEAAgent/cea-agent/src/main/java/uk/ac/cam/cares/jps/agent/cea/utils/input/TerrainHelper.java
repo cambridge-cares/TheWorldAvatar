@@ -36,8 +36,6 @@ public class TerrainHelper {
      * @return terrain data as byte[]
      */
     public byte[] getTerrain(ArrayList<CEABuildingData> buildings, List<CEAGeometryData> surroundings, String table) {
-        RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
-
         // query for the coordinate reference system used by the terrain data
         String sridQuery = String.format("SELECT ST_SRID(rast) as srid FROM %s LIMIT 1", table);
 
@@ -49,15 +47,18 @@ public class TerrainHelper {
 
         Envelope envelope = new Envelope();
 
-        JSONArray sridResult = postgisClient.executeQuery(sridQuery);
-
-        if (sridResult.isEmpty()) {
-            return null;
-        }
-
-        Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
-
         try {
+            RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
+
+            JSONArray sridResult = postgisClient.executeQuery(sridQuery);
+
+            if (sridResult.isEmpty()) {
+                System.out.println("No terrain data retrieved, agent will run CEA with CEA's default terrain.");
+                return null;
+            }
+
+            Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
+
             if (!surroundings.isEmpty()) {
                 for (CEAGeometryData ceaGeometryData : surroundings) {
                     for (Geometry geometry : ceaGeometryData.getFootprint()) {
