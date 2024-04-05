@@ -14,10 +14,14 @@
 					"EMISSIONS_AGENT_IRI=https://www.theworldavatar.com/kg/dispersion/EmissionsAgent",
 					"PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000",
 					"PARALLELISE_CALCULATIONS=true",
+					"SHIPS_LAYER_NAME=ships",
 					"USE_LIVE_DATA=false",
 					"API_KEY=",
-					"BOUNDING_BOXES=[[[1.219097, 103.776165], [1.3096076, 103.9019436]], [[1.2162967, 103.6518113], [1.3067911, 103.741632]]]",
-					"UPLOAD_INTERVAL_MINUTES=10"
+					"BOUNDING_BOXES=[[[1.219097, 103.776165], [1.3096076, 103.9019436]]]",
+					"UPLOAD_INTERVAL_MINUTES=1",
+					"JPDA_ADDRESS=0.0.0.0:5005",
+					"JPDA_TRANSPORT=dt_socket",
+					"DEBUG=ON"
 				],
 				"Configs": [
 					{
@@ -49,7 +53,17 @@
                     }
                 ]
             }
-        }
+        },
+		"EndpointSpec": {
+			"Ports": [
+				{
+					"Name": "web",
+					"Protocol": "tcp",
+					"TargetPort": "5005",
+					"PublishedPort": "5008"
+				}
+			]
+		}
     },
     "endpoints": {
         "ship-input-agent": {

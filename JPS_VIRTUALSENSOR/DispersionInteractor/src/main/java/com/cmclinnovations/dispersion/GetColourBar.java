@@ -29,11 +29,11 @@ public class GetColourBar extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String pollutant = req.getParameter("pollutant");
-        String timestep = req.getParameter("timestep");
+        long timestep = Long.parseLong(req.getParameter("timestep"));
         String derivationIri = req.getParameter("derivationIri");
         String zIri = req.getParameter("zIri");
 
-        String colourBarUrl = queryClient.getColourBarURL(pollutant, Instant.parse(timestep).getEpochSecond(),
+        String colourBarUrl = queryClient.getColourBarURL(pollutant, timestep,
                 derivationIri, zIri);
 
         HttpGet httpGet = new HttpGet(colourBarUrl);

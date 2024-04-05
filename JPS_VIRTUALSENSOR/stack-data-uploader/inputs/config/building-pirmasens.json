@@ -1,6 +1,6 @@
 {
     "database": "postgres",
-	"skip": false,
+	"skip": true,
     "workspace": "dispersion",
     "datasetDirectory": "pirmasens_final_citygml",
     "dataSubsets": [

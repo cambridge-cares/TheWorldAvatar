@@ -128,5 +128,11 @@
             <artifactId>stack-clients</artifactId>
             <version>1.14.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.5</version>
+        </dependency>
 	</dependencies>	
 </project>
