@@ -62,18 +62,7 @@ Note that this may not be the optimal solution. Some further research is warrant
 
 ### 1.5 Runtime Resources
 
-Next.js uses the `public` directory by default to house resources such as images, videos, configuration files etc. Unfortunately, Next requires this directory and its contents to be present at build time. In circumventing this for Docker builds, the `uploads` directory aims to be the target for mounting Docker volumes so that deploying developers can add their context-specific images & configurations. The Docker build process is set up to automatically map the `uploads` directory to the `public` directory within a Docker container. BUT local developments will require manual modification. 
-
-The uploaded content provided by the deploying developer should match the directory structure below. 
-
-* `config/`: Should contain config/settings files.
-  * `data.json`: Specifies data sources and layers to be mapped.
-  * `map-settings.json`: Non-data specific configuration for maps. The format is documented [here](../docs/map-settings.md)
-  * `ui-settings.json`: UI configuration settings, format is documented [here](../docs/ui-settings.json).
-* `images/`: Custom image files. The `defaults` directory hosts default images and icons, which should not be removed for it to function properly.
-* `optional-pages/`: Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
-* `style-overrides.css`: Optional CSS overrides.
-
+Next.js uses the `public` directory by default to house resources such as images, videos, configuration files etc. Unfortunately, Next requires this directory and its contents to be present at build time. In circumventing this for Docker builds, the `uploads` directory aims to be the target for mounting Docker volumes so that deploying developers can add their context-specific images & configurations. The Docker build process is set up to automatically map the `uploads` directory to the `public` directory within a Docker container. BUT local developments will require manual modification. Detailed documentation of the contents can be found within the [directory](../uploads/).
 
 ## 2. Local Development Workflow
 
