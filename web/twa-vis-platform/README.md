@@ -13,7 +13,7 @@ The development process can occur locally or in a Docker container. Please do no
 On the other hand, Docker deployment is simplified and requires minimal setup. In order to start a Docker container, please ensure the following:
 
 1) Docker is installed
-2) Update the `MAPBOX_USERNAME` and `MAPBOX_API_KEY` environment variables in the `docker-compose.dev.yml` accordingly to your [Mapbox](https://www.mapbox.com/) credentials
+2) Create files within this directory (containing the docker configurations) for `mapbox_username` and `mapbox_api_key` according to your [Mapbox](https://www.mapbox.com/) credentials. This will be passed as Docker secrets when the container is started.
 
 Once the above steps have been completed, run the command `docker compose -f 'docker-compose.dev.yml' up -d` in this directory. The development server will be set up at `port 3000` on your local machine at `localhost:3000`. Any code changes will be propagated, but may require a browser refresh from time to time.
 

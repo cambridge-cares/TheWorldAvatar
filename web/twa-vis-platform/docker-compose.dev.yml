@@ -14,8 +14,9 @@ services:
     restart: "no"
     environment:
       WATCHPACK_POLLING: true
-      MAPBOX_USER: user
-      MAPBOX_API_KEY: api_key
+    secrets:
+      - mapbox_username
+      - mapbox_api_key
     build:
       context: "./"
       dockerfile: "Dockerfile"
@@ -28,3 +29,8 @@ services:
       - ./uploads:/twa/public
     ports:
       - "3000:3000" 
+secrets:
+    mapbox_username: 
+      file: ./mapbox_username
+    mapbox_api_key:
+      file: ./mapbox_api_key
