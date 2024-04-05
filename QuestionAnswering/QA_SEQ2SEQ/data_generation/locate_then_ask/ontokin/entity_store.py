@@ -1,5 +1,5 @@
-from typing import Dict, Type, Union
-from constants.namespaces import OKIN, OS
+from typing import Dict
+
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontokin.model import (
     OKMechanism,
@@ -11,45 +11,24 @@ from locate_then_ask.ontokin.model import (
 class OKEntityStore:
     def __init__(self, kg_endpoint: str, **kwargs):
         self.kg_client = KgClient(kg_endpoint, **kwargs)
-        self.iri2cls: Dict[
-            str, Union[Type[OKSpecies], Type[OKGasPhaseReaction], Type[OKMechanism]]
-        ] = dict()
-        self.iri2entity: Dict[
-            str, Union[OKSpecies, OKGasPhaseReaction, OKMechanism]
-        ] = dict()
+        self.iri2mechanism: Dict[str, OKMechanism] = dict()
+        self.iri2rxn: Dict[str, OKGasPhaseReaction] = dict()
+        self.iri2species: Dict[str, OKSpecies] = dict()
 
-    def get_cls(self, entity_iri: str):
-        if entity_iri not in self.iri2cls:
-            query_template = (
-                """SELECT DISTINCT * WHERE {{ <{IRI}> a/rdfs:subClassOf* ?Type }}"""
-            )
-            query = query_template.format(IRI=entity_iri)
-            response_bindings = self.kg_client.query(query)["results"]["bindings"]
-            types = [binding["Type"]["value"] for binding in response_bindings]
-            if OKIN + "ReactionMechanism" in types:
-                self.iri2cls[entity_iri] = OKMechanism
-            elif OKIN + "GasPhaseReaction" in types:
-                self.iri2cls[entity_iri] = OKGasPhaseReaction
-            elif OS + "Species" in types:
-                self.iri2cls[entity_iri] = OKSpecies
-            else:
-                raise ValueError(
-                    "The provided entity {iri} does not posess any expected types.\n Actual types: {types}.\nExpected types: okin:ReactionMechanism, okin:GasPhaseReaction, os:Species".format(
-                        iri=entity_iri, types=types
-                    )
-                )
-        return self.iri2cls[entity_iri]
+    def get_mechanism(self, entity_iri: str):
+        if entity_iri not in self.iri2mechanism:
+            self.iri2mechanism[entity_iri] = self.create_mechanism(entity_iri)
+        return self.iri2mechanism[entity_iri]
 
-    def get(self, entity_iri: str):
-        if entity_iri not in self.iri2entity:
-            cls = self.get_cls(entity_iri)
-            if cls == OKMechanism:
-                self.iri2entity[entity_iri] = self.create_mechanism(entity_iri)
-            elif cls == OKGasPhaseReaction:
-                self.iri2entity[entity_iri] = self.create_rxn(entity_iri)
-            else:
-                self.iri2entity[entity_iri] = self.create_species(entity_iri)
-        return self.iri2entity[entity_iri]
+    def get_rxn(self, entity_iri: str):
+        if entity_iri not in self.iri2rxn:
+            self.iri2rxn[entity_iri] = self.create_rxn(entity_iri)
+        return self.iri2rxn[entity_iri]
+
+    def get_species(self, entity_iri: str):
+        if entity_iri not in self.iri2species:
+            self.iri2species[entity_iri] = self.create_species(entity_iri)
+        return self.iri2species[entity_iri]
 
     def create_mechanism(self, entity_iri: str):
         doi = self.retrieve_mechanism_doi(entity_iri)

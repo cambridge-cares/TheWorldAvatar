@@ -5,8 +5,8 @@ from typing import List
 @dataclass
 class OCCMolecularComputation:
     iri: str
-    species_iri: str
-    level_of_theory: str
+    species_iri: str # occ:hasSpeciesModel/occ:hasSpecies
+    level_of_theory: str # occ:hasMethodology/occ:hasLevelOfTheory/rdfs:label
     basis_set: str
 
 @dataclass

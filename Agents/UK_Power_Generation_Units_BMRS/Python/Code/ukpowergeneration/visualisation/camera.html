@@ -1,0 +1,70 @@
+<div id="animationIntro">
+    <h2>Animation Controls</h2>
+    <p>
+        This dialog contains controls to animate the map's camera via the fly-to-point methods that the MapBox API provides; it is only intended for use by developers.
+        <br><br>
+        For more details on the animation parameters, view the MapBox documentation <a href="https://docs.mapbox.com/mapbox-gl-js/api/map/#map#flyto" target="_blank">here</a>.
+    </p>
+</div>
+<div id="animationContainer">
+    <div id="animationLeft">
+        <h4>Starting Conditions</h4>
+        <p style="font-size: 9pt; font-style: italic;">
+            These controls define the starting (i.e. current) parameters of the Map.
+            <br>
+        </p>
+        <hr/>
+        <table width="90%">
+            <tr>
+                <td width="40%">Longitude:</td>
+                <td width="60%"><input type="number" id="lngInput"></td>
+            </tr>
+            <tr>
+                <td width="40%">Latitude:</td>
+                <td width="60%"><input type="number" id="latInput"></td>
+            </tr>
+            <tr>
+                <td width="40%">Pitch:</td>
+                <td width="60%"><input type="number" id="pitchInput"></td>
+            </tr>
+            <tr>
+                <td width="40%">Bearing:</td>
+                <td width="60%"><input type="number" id="bearingInput"></td>
+            </tr>
+            <tr>
+                <td width="40%">Zoom:</td>
+                <td width="60%"><input type="number" id="zoomInput"></td>
+            </tr>
+            <tr>
+                <td width="40%">Show Controls:</td>
+                <td width="60%"><input type="checkbox" id="overlayCheck" checked></td>
+            </tr>
+            <tr>
+                <td width="40%">Fullscreen:</td>
+                <td width="60%"><input type="checkbox" id="fullscreenCheck"></td>
+            </tr>
+            <tr>
+                <td width="40%">Greenscreen:</td>
+                <td width="60%"><input type="checkbox" id="greenscreenCheck"></td>
+            </tr>
+        </table>
+    </div>
+    <div id="animationRight">
+        <h4>Animation Parameters</h4>
+        <p style="font-size: 9pt; font-style: italic;">
+            Fly: Longitude, Latitude, Pitch, Bearing, Zoom, Initial Delay (ms), Curve, Speed
+            <br>
+            Rotate: Longitude, Latitude, Pitch, Zoom, Initial Delay (ms), Duration (ms), Speed
+        </p>
+        <hr/>
+        <div id="animationRowContainer"></div>
+        <div id="animationAddButton" onclick="addRow()">+</div>
+    </div>
+</div>
+<div id="animationBottom">
+    <p>
+        Click the "Animate" button to start the animation process.
+    </p>
+    <button type="button" onclick="startAnimation()">Animate</button>
+    <button type="button" onclick="cancelAnimation()">Cancel</button>
+</div>

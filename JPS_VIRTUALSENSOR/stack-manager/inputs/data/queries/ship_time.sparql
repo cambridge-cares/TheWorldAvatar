@@ -1,0 +1,39 @@
+PREFIX disp: <https://www.theworldavatar.com/kg/ontodispersion/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?Measurement ?Name ?Unit
+WHERE {
+{
+[IRI] disp:hasProperty ?property.
+?property rdf:type disp:CourseOverGround.
+disp:CourseOverGround rdfs:label ?Name.
+?property om:hasValue ?Measurement.
+BIND ("Degree" as ?Unit)
+}
+UNION
+{
+[IRI] disp:hasProperty ?property.
+?property rdf:type disp:Speed.
+disp:Speed rdfs:label ?Name.
+?property om:hasValue ?Measurement.
+BIND ("knot" as ?Unit)
+}
+UNION
+{
+[IRI] disp:hasProperty ?property.
+?property rdf:type disp:Latitude.
+disp:Latitude rdfs:label ?Name.
+?property om:hasValue ?Measurement.
+BIND ("degree" as ?Unit)
+}
+UNION
+{
+[IRI] disp:hasProperty ?property.
+?property rdf:type disp:Longitude.
+disp:Longitude rdfs:label ?Name.
+?property om:hasValue ?Measurement.
+BIND ("degree" as ?Unit)
+}
+}

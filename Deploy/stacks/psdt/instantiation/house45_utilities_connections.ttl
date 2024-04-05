@@ -1,0 +1,51 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ps: <https://www.theworldavatar.com/kg/ps/> .
+@prefix es: <https://www.theworldavatar.com/kg/ps/erlenbrunnerstr45/> .
+@prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+
+ps:WaterMeter_3qvrJQ9oHAo87hMEKIxXZ_ a ps:WaterMeter ;
+	ps:hasQuantity es:MonthlyWaterConsumption ;
+	ps:hasQuantity es:WaterConsumption_Sensordisplay .
+
+es:MonthlyWaterConsumption rdfs:label "Monatlicher Wasserverbrauch"^^xsd:string ;
+	om:hasUnit om:cubicMetre .
+
+es:WaterConsumption_Sensordisplay rdfs:label "Zählerstand"^^xsd:string ;
+	om:hasUnit om:cubicMetre .
+
+ps:OilMeter_3qvrJQ9oHAo87hMEKIxWlS a ps:OilMeter ;
+	ps:hasQuantity es:MonthlyOilConsumption ;
+	ps:hasQuantity es:OilConsumption_Sensordisplay .
+
+es:MonthlyOilConsumption rdfs:label "Monatlicher Ölverbrauch"^^xsd:string ;
+	om:hasUnit om:litre .
+
+es:OilConsumption_Sensordisplay rdfs:label "Füllstand"^^xsd:string ;
+	om:hasUnit om:litre .
+
+ps:ElectricalMeter_2E0DBzV7T9uAtptj7_0O5u a ps:ElectricityMeter ;
+	ps:hasQuantity es:GroundFloor_ElectricityConsumption_Sensordisplay ;
+	ps:hasQuantity es:GroundFloor_MonthlyElectricityConsumption ;
+	ps:hasQuantity es:FirstFloor_ElectricityConsumption_Sensordisplay ;
+	ps:hasQuantity es:FirstFloor_MonthlyElectricityConsumption ;
+	ps:hasQuantity es:Attic_ElectricityConsumption_Sensordisplay ;
+	ps:hasQuantity es:Attic_MonthlyElectricityConsumption .
+
+es:GroundFloor_ElectricityConsumption_Sensordisplay rdfs:label "Zählerstand - Erdgeschoss"^^xsd:string ;
+	om:hasUnit om:kilowattHour .
+
+es:GroundFloor_MonthlyElectricityConsumption rdfs:label "Mtl. Verbrauch - Erdgeschoss"^^xsd:string ;
+	om:hasUnit om:kilowattHour .
+
+es:FirstFloor_ElectricityConsumption_Sensordisplay rdfs:label "Zählerstand - 1. Obergeschoss"^^xsd:string ;
+	om:hasUnit om:kilowattHour .
+
+es:FirstFloor_MonthlyElectricityConsumption rdfs:label "Mtl. Verbrauch - 1. Obergeschoss"^^xsd:string ;
+	om:hasUnit om:kilowattHour .
+
+es:Attic_ElectricityConsumption_Sensordisplay rdfs:label "Zählerstand - Dachgeschoss"^^xsd:string ;
+	om:hasUnit om:kilowattHour .
+
+es:Attic_MonthlyElectricityConsumption rdfs:label "Mtl. Verbrauch - Dachgeschoss"^^xsd:string ;
+	om:hasUnit om:kilowattHour .

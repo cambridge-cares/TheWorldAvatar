@@ -43,6 +43,7 @@ import org.locationtech.jts.geom.Polygon;
 import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Pollutant;
+import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
@@ -104,7 +105,7 @@ public class Aermod {
             String inputLine = "\'Build" + i + "\' " + "1 " + build.getElevation();
             sb.append(inputLine).append(System.lineSeparator());
             LinearRing base = build.getFootprint();
-            String originalSrid = "EPSG:" + base.getSRID();
+            String originalSrid = build.getSrid();
             inputLine = base.getNumPoints() + " " + build.getHeight();
             sb.append(inputLine).append(System.lineSeparator());
 
@@ -240,6 +241,51 @@ public class Aermod {
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.STATIC_SOURCE_TABLE, new GeoServerVectorSettings());
+    }
+
+    void createShipsLayer(List<Ship> pointSources, long simulationTime, String derivationIri) {
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+        JSONArray features = new JSONArray();
+
+        pointSources.forEach(pointSource -> {
+            String originalSrid = "EPSG:" + pointSource.getLocation().getSRID();
+            double[] xyOriginal = { pointSource.getLocation().getX(), pointSource.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:4326", xyOriginal);
+
+            JSONObject geometry = new JSONObject();
+            geometry.put("type", "Point");
+            geometry.put("coordinates", new JSONArray().put(xyTransformed[0]).put(xyTransformed[1]));
+            JSONObject feature = new JSONObject();
+            feature.put("type", "Feature");
+            feature.put("geometry", geometry);
+
+            JSONObject properties = new JSONObject();
+            properties.put("iri", pointSource.getIri());
+            properties.put("time", simulationTime);
+            properties.put("derivation", derivationIri);
+
+            if (pointSource.getLabel() != null) {
+                properties.put("name", pointSource.getLabel());
+            } else {
+                properties.put("name", "Ship");
+            }
+
+            feature.put("properties", properties);
+
+            features.put(feature);
+        });
+
+        featureCollection.put("features", features);
+
+        GDALClient gdalClient = GDALClient.getInstance();
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SHIPS_LAYER_NAME,
+                featureCollection.toString(), new Ogr2OgrOptions(), true);
+        geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                EnvConfig.SHIPS_LAYER_NAME, new GeoServerVectorSettings());
     }
 
     public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
@@ -691,47 +737,6 @@ public class Aermod {
             LOGGER.error(outputFileURL);
             throw new RuntimeException(e);
         }
-    }
-
-    JSONObject getBuildingsGeoJSON(List<Building> buildings) {
-        JSONObject featureCollection = new JSONObject();
-        featureCollection.put("type", "FeatureCollection");
-
-        JSONArray features = new JSONArray();
-        buildings.stream().forEach(building -> {
-            JSONObject feature = new JSONObject();
-            feature.put("type", "Feature");
-
-            JSONObject properties = new JSONObject();
-            properties.put("color", "#666666");
-            properties.put("opacity", 0.66);
-            properties.put("base", 0);
-            properties.put("height", building.getHeight());
-            feature.put("properties", properties);
-
-            JSONObject geometry = new JSONObject();
-            geometry.put("type", "Polygon");
-            JSONArray coordinates = new JSONArray();
-
-            JSONArray footprintPolygon = new JSONArray();
-            String srid = building.getSrid();
-            for (Coordinate coordinate : building.getFootprint().getCoordinates()) {
-                JSONArray point = new JSONArray();
-                double[] xyOriginal = { coordinate.getX(), coordinate.getY() };
-                double[] xyTransformed = CRSTransformer.transform(srid, "EPSG:4326", xyOriginal);
-                point.put(xyTransformed[0]).put(xyTransformed[1]);
-                footprintPolygon.put(point);
-            }
-            coordinates.put(footprintPolygon);
-            geometry.put("coordinates", coordinates);
-
-            feature.put("geometry", geometry);
-            features.put(feature);
-        });
-
-        featureCollection.put("features", features);
-
-        return featureCollection;
     }
 
     void createSimulationSubDirectory(PollutantType pollutantType, int z) {

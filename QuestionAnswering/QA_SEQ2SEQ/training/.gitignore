@@ -3,6 +3,7 @@ data/
 predictions/
 models/
 wandb/
+scripts/*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

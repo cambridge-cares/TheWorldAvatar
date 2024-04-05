@@ -22,7 +22,7 @@ import java.io.InputStream;
 public class OSMAgentTest {
     @Test
     public void testProcessRequestParameters() throws ParseException {
-        String content = "db.name=test\nosm.schema=test\nlanduse.table=test\nlanduse.csv=test";
+        String content = "db.name=test\nosm.schema=test\nlanduse.table=test\nlanduse.geometry=test\nlanduse.csv=test";
 
         InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
 
@@ -48,15 +48,11 @@ public class OSMAgentTest {
                                             verify(endpointConfigMock.constructed().get(0), times(1)).getDbUrl(anyString());
                                             verify(endpointConfigMock.constructed().get(0), times(1)).getDbUser();
                                             verify(endpointConfigMock.constructed().get(0), times(1)).getDbPassword();
+                                            verify(geometryMatcherMock.constructed().get(0), times(1)).matchGeometry(anyString(), anyString(), eq(null), eq(null));
                                             verify(usageMatcherMock.constructed().get(0), times(1)).checkAndAddColumns(anyString(), anyString());
                                             verify(usageMatcherMock.constructed().get(0), times(1)).updateOntoBuilt(anyString(), anyString());
-                                            verify(geometryMatcherMock.constructed().get(0), times(2)).matchGeometry(anyString());
                                             verify(usageMatcherMock.constructed().get(0), times(1)).copyFromOSM(anyString(), anyString(), anyString());
-                                            if (agent.landUseTable.isEmpty()) {
-                                                verify(usageShareCalculatorMock.constructed().get(0), times(0)).updateLandUse(anyString(), anyString(), anyString());
-                                            } else {
-                                                verify(usageShareCalculatorMock.constructed().get(0), times(1)).updateLandUse(anyString(), anyString(), anyString());
-                                            }
+
                                             verify(usageShareCalculatorMock.constructed().get(0), times(1)).updateUsageShare(anyString());
                                         }
                                     }
