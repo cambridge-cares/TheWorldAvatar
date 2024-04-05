@@ -183,11 +183,12 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasSpecificHeat -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasSpecificHeatCapacity -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasSpecificHeat">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasSpecificHeatCapacity">
         <rdfs:domain rdf:resource="http://emmo.info/emmo#EMMO_4207e895_8b83_4318_996a_72cfb32acd94"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#SpecificHeat"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity"/>
+        <rdfs:comment xml:lang="en">An object property referring to the specific heat of a material.</rdfs:comment>
         <rdfs:label xml:lang="en">Specific heat</rdfs:label>
     </owl:ObjectProperty>
     
@@ -205,6 +206,7 @@
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Supplier"/>
+        <rdfs:comment xml:lang="en">An object property referring to the supplier of a product or component.</rdfs:comment>
         <rdfs:label xml:lang="en">Supplier</rdfs:label>
     </owl:ObjectProperty>
     
@@ -614,6 +616,17 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasSymbol -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasSymbol">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment xml:lang="en">A character or group of characters indicating the unit of measurement.</rdfs:comment>
+        <rdfs:label xml:lang="en">Symbol</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasTotalMassInKg -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasTotalMassInKg">
@@ -814,6 +827,15 @@
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity">
         <rdfs:comment xml:lang="en">A quantifiable aspect of a real-world concept.</rdfs:comment>
         <rdfs:label xml:lang="en">Quantity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity">
+        <rdfs:comment xml:lang="en">The quantity of heat needed to increase the temperature of a material&apos;s unit mass by one unit.</rdfs:comment>
+        <rdfs:label xml:lang="en">Specific heat</rdfs:label>
     </owl:Class>
     
 
@@ -1466,15 +1488,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ShearStrength">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Resistance"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport#SpecificHeat -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#SpecificHeat">
-        <rdfs:comment xml:lang="en">The quantity of heat needed to increase the temperature of a material&apos;s unit mass by one unit.</rdfs:comment>
-        <rdfs:label xml:lang="en">Specific heat</rdfs:label>
     </owl:Class>
     
 
@@ -2351,7 +2364,7 @@
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#DimensionLessQuantity">
         <rdfs:comment xml:lang="en">A quantity that cannot be associated with a unit of measure.</rdfs:comment>
-        <rdfs:label xml:lang="en">Dimensionless Quantity</rdfs:label>
+        <rdfs:label xml:lang="en">Dimensionless quantity</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ExpectedLifetime">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
@@ -2467,7 +2480,7 @@
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasProperty">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">12</hasGUIPosition>
-        <rdfs:comment xml:lang="en">An object property referring to different properties of a component or product.</rdfs:comment>
+        <rdfs:comment xml:lang="en">An object property referring to a property or characteristic of a component or product.</rdfs:comment>
         <rdfs:label xml:lang="en">Property</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasRegistrationCountry">
@@ -2523,7 +2536,7 @@
     <rdf:Description rdf:about="https://w3id.org/mdo/core/PhysicalProperty">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:comment xml:lang="en">A property to express the physical aspect of an object.</rdfs:comment>
-        <rdfs:label xml:lang="en">Physical Property</rdfs:label>
+        <rdfs:label xml:lang="en">Physical property</rdfs:label>
     </rdf:Description>
     
 
