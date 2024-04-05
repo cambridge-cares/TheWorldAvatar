@@ -4,12 +4,20 @@ from mycolorpy import colorlist as mcp
 
 
 def create_colors():
+    # Heat emissions
     bounds = range(0, 31, 5)
 
     fig, ax = plt.subplots(figsize=(6, 1))
     fig.subplots_adjust(bottom=0.5)
     color1 = mcp.gen_color(cmap="cool", n=len(bounds))
-    print(color1)
+
+    colour_dict = {}
+    for i in range(len(bounds)):
+        colour_dict[bounds[i]] = color1[i]
+
+    f = open("heat_emissions_colours.txt", "w")
+    f.write(str(colour_dict))
+    f.close()
 
     cmap = mpl.colors.ListedColormap(color1)
 
@@ -21,13 +29,22 @@ def create_colors():
                                     spacing='proportional',
                                     orientation='horizontal')
     cb2.set_label('Heat emissions (MW)')
-    fig.show()
+    plt.savefig("heat_emissions_colorbar.png", bbox_inches='tight',
+                transparent=True, dpi=300)
 
+    # Population
     bounds = range(0, 51000, 5000)
     fig2, ax = plt.subplots(figsize=(6, 1))
     fig2.subplots_adjust(bottom=0.5)
     color1 = mcp.gen_color(cmap="Reds", n=len(bounds))
-    print(color1)
+
+    colour_dict = {}
+    for i in range(len(bounds)):
+        colour_dict[bounds[i]] = color1[i]
+
+    f = open("population_density_colours.txt", "w")
+    f.write(str(colour_dict))
+    f.close()
 
     cmap = mpl.colors.ListedColormap(color1)
 
@@ -38,9 +55,8 @@ def create_colors():
                                     spacing='proportional',
                                     orientation='horizontal')
     cb2.set_label('Population density (#/km$^2$)')
-    fig2.show()
-
-    x = 2
+    plt.savefig("population_density.png", bbox_inches='tight',
+                transparent=True, dpi=300)
 
 
 if __name__ == "__main__":

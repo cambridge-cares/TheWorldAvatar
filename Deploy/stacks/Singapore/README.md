@@ -26,7 +26,7 @@ Important note: Instances where 'sg' is committed - [access-agent.json], [sg.jso
 ```
 
 ### Stack data uploader
-1) The full dataset is available on Dropbox https://www.dropbox.com/scl/fo/j4pry0134ewsqzzk88hg8/h?rlkey=at1l7s7jz62fjsg7qao62vcbs&dl=0 (only CARES members can access this link). Important note for buildings dataset: it is stored in a separate folder from the shared folder link, and due to the large size, you may need to upload the data in separate chunks.
+1) The full dataset is available on Dropbox https://www.dropbox.com/scl/fo/p48nv63fdw1tmzqo9p2ja/h?rlkey=cgk3svzuj1jxds168qstla0pl&dl=0 (only CARES members can access this link). Important note for buildings dataset: it is stored in a separate folder from the shared folder link, and due to the large size, you may need to upload the data in separate chunks.
 2) Modify [sg.json (uploader)] to skip/include any datasets.
 3) Run the following command in 
 ```
@@ -34,7 +34,7 @@ Important note: Instances where 'sg' is committed - [access-agent.json], [sg.jso
 ```
 
 ### Company data
-The "buildings" and "company" datasets need to be uploaded for this step. 
+The "buildings" and "company" datasets need to be present for this step. 
 - Execute [company.http] to match building IRIs to factories and data centres. This will add a `building_uuid` column to the tables `data_centres` and `factories`.
 
 ### City furniture footprint
@@ -66,7 +66,17 @@ curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"in
 ```
 curl -X POST http://localhost:3838/carpark-agent/create
 ```
-### GeoServer layer
+
+### GFA data
+Make sure ./gfa_config is populated with data. A copy of the data can be obtained from https://www.dropbox.com/scl/fo/9jl3cmee0h26uhm7zyy0f/h?rlkey=mm2wd0al9zrydqxrybbouxzun&dl=0 (only CARES members have access).
+
+Execute the following request to the GFA agent
+```
+curl -X POST http://localhost:3838/gfaagent/calculation
+```
+Check contents of the table citydb.cityobject_genericattrib, there should be rows with attrname=GFA.
+
+### GeoServer layer for buildings
 Currently the creation of the layer is not automated through the data uploader because it requires data from different sources (city furniture, heat emissions from companies etc.).
 
 Execute [geoserver_layer.sql] to create the materialised view manually. Edit the SQL view of building_usage layer to
@@ -74,11 +84,15 @@ Execute [geoserver_layer.sql] to create the materialised view manually. Edit the
 select * from usage.buildingusage_geoserver_sg
 ```
 
+## Generating colourbars for visualisation
+It is not necessary to execute the following steps unless the colours need to be editted.
+This section documents how the colours for population density and heat emissions were generated. The script [colourbar.py] generates two colourbars in the visualisation:
+1) Colourbar for heat emissions
+The script generates the corresponding colours for each value range (heat_emissions_colours.txt) as well as the colourbar image (heat_emissions_colorbar.png). The colour codes are then used to edit [data.json (MapBox)] to assign the correct colours for the heat emission values.
 
-## 3. Miscellaneous Functions
-### Legend
-The mapbox visualisation can currently generate legends for different parameters manually. Please  check out the `manager.getPanelHandler().setLegend(htmlContent);` line at the `./stack-manager/inputs/data/webspace/index.html`.
-New sets of gradient bars can be generated in the `./stack-manager/inputs/data/webspace/component/legend.css`.
+2) Colourbar for population density
+The script generates the corresponding colours for each value range (population_density_colours.txt) and the colourbar (population_density.png). The colour codes are used in [uk-population-style.sld].
+ 
 
 [access-agent.json]: ./stack-manager/inputs/config/services/access-agent.json
 [sg.json (manager)]: ./stack-manager/inputs/config/sg.json
@@ -97,5 +111,7 @@ New sets of gradient bars can be generated in the `./stack-manager/inputs/data/w
 [mbs-live.http]: <./HTTP requests for dispersion/mbs-live.http>
 [dispersion-interactor.json]: ./stack-manager/inputs/config/services/dispersion-interactor.json
 [client.properties]: ./carpark_config/client.properties
-[cityfurniture-footprint-height.sql]: ./cityfurniture/cityfurniture-footprint-height.sql
-[geoserver_layer.sql]: ./cityfurniture/geoserver_layer.sql
+[cityfurniture-footprint-height.sql]: ./custom_sql_scripts/cityfurniture-footprint-height.sql
+[geoserver_layer.sql]: ./custom_sql_scripts/geoserver_layer.sql
+[colourbar.py]: ./colorbar_generator/colourbar.py
+[uk-population-style.sld]: ./stack-data-uploader/inputs/config/uk-population-style.sld
