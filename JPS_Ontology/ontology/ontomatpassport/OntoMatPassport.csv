@@ -1,5 +1,5 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
-OntoMatPassport,TBox,http://www.theworldavatar.com/kg/ontomatpassport,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoMatPassport,TBox,http://www.theworldavatar.com/kg/ontomatpassport/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoMatPassport,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoMatPassport,TBox,OntoMatPassport is an ontology developed for representing material passport of products and components.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoMatPassport,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
