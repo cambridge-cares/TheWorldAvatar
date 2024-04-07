@@ -26,14 +26,19 @@
             <!-- equipment -->
             <fieldset class="equipment-def">
                 <legend>Equipment</legend>
-                <span class="equipment-def">Please select equipment to be booked:</span><br><br>
+                <span class="equipment-def">Please select equipment to be booked:</span><br>
 
                 <select name="equipment_def" id="equipment_def" class="Input">
                     <option value="" disabled selected>Please select asset</option>
                     {% for a in bookable_assets %}
-                    <option value="{{ a.iri }}">{{ a.display }}</option>
+                    <option value="{{ a.iri }}" id_info="{{a.id}}" supp_info="{{a.supplier}}" manu_info="{{a.manufacturer}}" loc_info="{{a.location}}">{{ a.display }}</option>
                     {% endfor %}
                 </select>
+                <br><br>
+                <span id="equipment_id_display"></span><br>
+                <span id="equipment_supp_display"></span><br>
+                <span id="equipment_manu_display"></span><br>
+                <span id="equipment_loc_display"></span><br>
             </fieldset><br><br>
 
             <br><br>
@@ -67,3 +72,18 @@
         </form>
     </body>
 </html>
+
+<script>
+    document.getElementById('equipment_def').addEventListener('change', function() {
+        var selectedIndex = this.selectedIndex;
+        var selectedOption = this.options[selectedIndex];
+        var equipmentId = selectedOption.getAttribute('id_info');
+        var equipmentSupplier = selectedOption.getAttribute('supp_info');
+        var equipmentManufacturer = selectedOption.getAttribute('manu_info');
+        var equipmentLocation = selectedOption.getAttribute('loc_info');
+        document.getElementById('equipment_id_display').textContent = 'Equipment with ID: ' + equipmentId;
+        document.getElementById('equipment_supp_display').textContent = 'Supplier: ' + equipmentSupplier;
+        document.getElementById('equipment_manu_display').textContent = 'Manufacturer: ' + equipmentManufacturer;
+        document.getElementById('equipment_loc_display').textContent = 'Location: ' + equipmentLocation;
+    });
+</script>

@@ -30,23 +30,28 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         return [list(res.values())[0] for res in response]
     
     def get_all_bookable_equipment(self):
-        query = f"""{PREFIX_RDFS} SELECT ?bs ?eqIri ?eqInventoryId ?eqLabel ?eqManufacturer ?eqSupplier ?eqLocation WHERE {{ 
+        query = f"""{PREFIX_RDFS} {PREFIX_RDF} SELECT ?bs ?eqIri ?eqInventoryId ?eqLabel ?eqManufacturer ?eqSupplier ?eqLocation ?eqType WHERE {{ 
                         ?eqIri <{OAM_HASBOOKINGSYSTEM}> ?bs ;
                                 rdfs:label ?eqLabel ;
-                                <{OAM_HASITEMINVENTORYIDENTIFIER}> ?eqInventoryId . 
-                        OPTIONAL {{ ?eqIri <{OAM_ISMANUFACTUREDBY}> ?eqManufacturer . }}
-                        OPTIONAL {{ ?eqIri <{OAM_ISSUPPLIEDBY}> ?eqSupplier . }}
+                                rdf:type ?eqType .
+                        OPTIONAL {{ ?eqIri <{OAM_HASITEMINVENTORYIDENTIFIER}> ?eqInventoryId . }} 
+                        OPTIONAL {{ ?eqIri <{OAM_ISMANUFACTUREDBY}>/<{OMG_HASNAME}>/rdfs:label ?eqManufacturer . }}
+                        OPTIONAL {{ ?eqIri <{OAM_ISSUPPLIEDBY}>/<{OMG_HASNAME}>/rdfs:label ?eqSupplier . }}
                         OPTIONAL {{ ?eqIri ^<{BOT_CONTAINSELEMENT}> ?eqLocation. }}
-                    }}"""
+                    }}
+                    ORDER BY ASC(?eqLabel)"""
         response = self.performQuery(query)
         equipment_list = list()
         for res in response:
             res['eqManufacturer'] = 'unknown' if not('eqManufacturer' in res) else res['eqManufacturer']
             res['eqSupplier'] = 'unknown' if not('eqSupplier' in res) else res['eqSupplier']
             res['eqLocation'] = 'unknown' if not('eqLocation' in res) else res['eqLocation']
-            
+            res['eqInventoryId'] = 'unknown' if not('eqInventoryId' in res) else res['eqInventoryId']
+            res['eqType'] = trimIRI(res['eqType'])
+
             equipment_list.append(Equipment(
                 instance_iri=res['eqIri'],
+                clz=res['eqType'],
                 label=res['eqLabel'],
                 hasItemInventoryIdentifier=res['eqInventoryId'],
                 hasBookingSystem=BookingSystem(instance_iri=res['bs']),
@@ -60,7 +65,8 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         query = f"""{PREFIX_RDFS} SELECT ?userIri ?userName WHERE {{
              ?userIri a <{FIBO_PERSON}> ;
                     <{OMG_HASNAME}>/rdfs:label  ?userName .
-             }}"""
+             }}
+             ORDER BY ASC(?userName)"""
         response = self.performQuery(query)
         user_list = list()
         for res in response:
@@ -87,6 +93,28 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         response = self.performQuery(query)
         return [list(res.values())[0] for res in response]
 
+    def create_technicalystem_of_devices(self, equipment_iris: list, system_label):
+        g=Graph()
+        namespace_iri = getNameSpace(equipment_iris[0])
+        system_iri=initialiseInstanceIRI(namespace_iri,ONTOCAPE_TECHNICALSYSTEM)
+        g.add((URIRef(system_iri), RDF.type, URIRef(ONTOCAPE_TECHNICALSYSTEM)))
+
+        composed_string = ""
+        for equipment_iri in equipment_iris:
+            equipment_iri = trimIRI(equipment_iri)
+            composed_string = composed_string + "<" + OTS_COMPOSEDOF + "> <" + equipment_iri + "> ; "
+            g.add((URIRef(system_iri), URIRef(OTS_COMPOSEDOF), URIRef(equipment_iri)))
+
+        update = f"""{PREFIX_RDF} {PREFIX_RDFS} INSERT DATA {{
+            <{system_iri}> rdf:type <{ONTOCAPE_TECHNICALSYSTEM}> ;
+                {composed_string} 
+                rdfs:label "{system_label}" .
+        }}"""
+        self.performUpdate(update)
+        logger.info(f"Created technical system {system_iri}.")
+        return g
+
+
     def create_booking_system_for_equipment(self, equipment_iri: str, booking_system_label: str):
         g=Graph()
         equipment_iri = trimIRI(equipment_iri)
@@ -101,7 +129,7 @@ class EquipmentBookingSparqlClient(PySparqlClient):
             <{equipment_iri}> <{OAM_HASBOOKINGSYSTEM}> <{booking_system_iri}> .
         }}"""
         self.performUpdate(update)
-        logger.info(f"Booking system {booking_system_iri} to equipment {equipment_iri}.")
+        logger.info(f"Booking system {booking_system_iri} created for equipment {equipment_iri}.")
         return g
 
     def create_booking_within_system(self, booking_system_iri: str, booker_person_iri: str, booking_start: str, booking_end: str):
