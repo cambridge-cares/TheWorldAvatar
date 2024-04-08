@@ -62,7 +62,8 @@ class OZFrameworkAttrKey(Enum):
 class OZMaterialAttrKey(Enum):
     FRAMEWORK = 0
     CRYSTAL_INFO = 1
-    GUEST_COMPOUND = 2
+    FRAMEWORK_COMPONENTS = 2
+    GUEST_SPECIES = 3
 
 
 CRYSTAL_ATTR_LABELS = {
@@ -97,5 +98,5 @@ ZEOTOPO_ATTR_LABELS = {
 }
 
 ZEOMATERIAL_ATTR_LABELS = {
-    OZMaterialAttrKey.GUEST_COMPOUND: ["guest compound", "guest species", "OSDA"]
+    OZMaterialAttrKey.GUEST_SPECIES: ["guest compound", "guest species", "OSDA"]
 }
