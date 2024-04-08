@@ -5,6 +5,7 @@ from typing import Dict, List
 
 from constants.functions import BASIC_NUM_OPS
 from constants.ontozeolite import (
+    CRYSTAL_SCALAR_KEYS,
     ZEOTOPO_ATTR_LABELS,
     OZCrystalInfoAttrKey,
     OZFrameworkAttrKey,
@@ -62,8 +63,8 @@ class OZFrameworkLocator:
             ]
         )
 
-        return "{contain} {elements}".format(
-            contain=random.sample(["contain", "built by"]),
+        return "which {contain} {elements}".format(
+            contain=random.choice(["contain", "are built by"]),
             elements=" and ".join(
                 "[{literal}]".format(literal=literal) for literal in elements
             ),
@@ -72,7 +73,7 @@ class OZFrameworkLocator:
     def _locate_crystal_info(
         self, query_graph: QueryGraph, crystal_info: OZCrystalInfo, freq: int
     ):
-        keys = random.sample(tuple(OZCrystalInfoAttrKey), k=freq)
+        keys = random.sample(CRYSTAL_SCALAR_KEYS, k=freq)
         conds = []
         for k in keys:
             if k is OZCrystalInfoAttrKey.UNIT_CELL:
@@ -108,9 +109,13 @@ class OZFrameworkLocator:
                     key=OZFrameworkAttrKey.CRYSTAL_INFO,
                     subkey=k,
                 )
+
                 cond = "whose tile code is [{label}]".format(
                     label=crystal_info.tile_code
                 )
+            else:
+                raise ValueError("Unexpected crystal info key: " + str(k))
+            
             conds.append(cond)
 
         return conds
@@ -195,7 +200,7 @@ class OZFrameworkLocator:
             ]
         )
 
-        return "{incorporate} {guests}".format(
+        return "which {incorporate} {guests}".format(
             incorporate=random.choice(["incorporate", "have guest species"]),
             guests=" and ".join(guests),
         )
@@ -206,11 +211,11 @@ class OZFrameworkLocator:
         entity = self.store.get_framework(entity_iri)
 
         attr_key_counts = {
-            OZFrameworkAttrKey.FRAMEWORK_COMPONENTS: 3,
+            OZFrameworkAttrKey.FRAMEWORK_COMPONENTS: 6,
             OZFrameworkAttrKey.CRYSTAL_INFO: 2 if entity.crystal_info.tile_code else 1,
             OZFrameworkAttrKey.TOPO_ATTR: 10,
             OZFrameworkAttrKey.MATERIALS: 1,
-            OZFrameworkAttrKey.GUEST_SPECIES: 5,
+            OZFrameworkAttrKey.GUEST_SPECIES: 10,
         }
         attr2freq: defaultdict[OZFrameworkAttrKey, int] = defaultdict(lambda: 0)
         for k in random.sample(
