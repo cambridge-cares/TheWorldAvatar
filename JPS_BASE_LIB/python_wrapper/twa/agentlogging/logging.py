@@ -107,5 +107,17 @@ def shutdown():
     logging.shutdown()
 
 
+def clear_loggers():
+    """
+    Remove handlers from all loggers. Method adopted from
+    [this comment](https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873).
+    """
+    loggers = [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values())
+    for logger in loggers:
+        handlers = getattr(logger, 'handlers', [])
+        for handler in handlers:
+            logger.removeHandler(handler)
+
+
 # Perform configuration on module import
 _config_logging()
