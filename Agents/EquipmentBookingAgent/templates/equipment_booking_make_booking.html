@@ -31,7 +31,7 @@
                 <select name="equipment_def" id="equipment_def" class="Input">
                     <option value="" disabled selected>Please select asset</option>
                     {% for a in bookable_assets %}
-                    <option value="{{ a.iri }}" id_info="{{a.id}}" supp_info="{{a.supplier}}" manu_info="{{a.manufacturer}}" loc_info="{{a.location}}">{{ a.display }}</option>
+                    <option value="{{ a.iri }}" id_info="{{a.id}}" supp_info="{{a.supplier}}" manu_info="{{a.manufacturer}}" loc_info="{{a.location}}" assi_info="{{a.assignee}}" clz_info="{{a.type}}">{{ a.display }}</option>
                     {% endfor %}
                 </select>
                 <br><br>
@@ -39,6 +39,7 @@
                 <span id="equipment_supp_display"></span><br>
                 <span id="equipment_manu_display"></span><br>
                 <span id="equipment_loc_display"></span><br>
+                <span id="equipment_assi_display"></span><br>
             </fieldset><br><br>
 
             <br><br>
@@ -77,13 +78,27 @@
     document.getElementById('equipment_def').addEventListener('change', function() {
         var selectedIndex = this.selectedIndex;
         var selectedOption = this.options[selectedIndex];
-        var equipmentId = selectedOption.getAttribute('id_info');
-        var equipmentSupplier = selectedOption.getAttribute('supp_info');
-        var equipmentManufacturer = selectedOption.getAttribute('manu_info');
-        var equipmentLocation = selectedOption.getAttribute('loc_info');
-        document.getElementById('equipment_id_display').textContent = 'Equipment with ID: ' + equipmentId;
-        document.getElementById('equipment_supp_display').textContent = 'Supplier: ' + equipmentSupplier;
-        document.getElementById('equipment_manu_display').textContent = 'Manufacturer: ' + equipmentManufacturer;
-        document.getElementById('equipment_loc_display').textContent = 'Location: ' + equipmentLocation;
+        var optionClass = selectedOption.getAttribute('clz_info');
+
+        if (optionClass == 'http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem' ){
+            document.getElementById('equipment_id_display').textContent = 'Technical system consisting of multiple devices' ;
+            document.getElementById('equipment_supp_display').textContent = '';
+            document.getElementById('equipment_manu_display').textContent = '';
+            document.getElementById('equipment_loc_display').textContent = '';
+            document.getElementById('equipment_assi_display').textContent = '';
+        }
+        else {
+            var equipmentId = selectedOption.getAttribute('id_info');
+            var equipmentSupplier = selectedOption.getAttribute('supp_info');
+            var equipmentManufacturer = selectedOption.getAttribute('manu_info');
+            var equipmentLocation = selectedOption.getAttribute('loc_info');
+            var equipmentAssignee = selectedOption.getAttribute('assi_info');
+            document.getElementById('equipment_id_display').textContent = 'Device with ID: ' + equipmentId;
+            document.getElementById('equipment_supp_display').textContent = 'Supplier: ' + equipmentSupplier;
+            document.getElementById('equipment_manu_display').textContent = 'Manufacturer: ' + equipmentManufacturer;
+            document.getElementById('equipment_loc_display').textContent = 'Location: ' + equipmentLocation;
+            document.getElementById('equipment_assi_display').textContent = 'Assigned to: ' + equipmentAssignee;
+        }
+        
     });
 </script>

@@ -16,7 +16,6 @@ from flask import render_template
 from urllib.parse import unquote
 from urllib.parse import urlparse
 from rdflib import Graph, URIRef, Literal
-from datetime import datetime
 import pandas as pd
 import yagmail
 import base64
@@ -24,6 +23,7 @@ import json
 import time
 import os
 import io
+from datetime import timedelta
 
 from py4jps import agentlogging
 from pyderivationagent import PyDerivationClient
@@ -91,12 +91,43 @@ class EquipmentBookingAgent(ABC):
         # add the route for the equipment booking
         self.app.add_url_rule('/booking', 'equipment_booking', self.confirmation_page, methods=['GET','POST'])
 
+        # add the route for booking overview
+        self.app.add_url_rule('/overview', 'booking_overview', self.booking_overview, methods=['GET'])
+
     def default(self):
         """Instruction for the EquipmentBookingAgent usage."""
         msg = "Welcome to the EquipmentBookingAgent!<BR>"
         msg += "This is a booking agent that is capable of making bookings for equipment.<BR>"
         msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar<BR>"    
         return msg
+
+    def booking_overview(self):
+        this_date = datetime.today()
+        this_date = this_date.replace(hour=0,minute=0,second=0,microsecond=0)
+
+        start_time = '08:00'
+        end_time = '19:00'
+        time_slots = []
+        current_time = start_time
+        while current_time <= end_time:
+            time_slots.append(current_time)
+            current_time = (datetime.strptime(current_time, '%H:%M') + timedelta(minutes=15)).strftime('%H:%M')
+
+        
+        equipments = self.sparql_client.get_all_bookable_equipment()
+        booking_data = {}
+        for equipment in equipments:
+            bookings = self.sparql_client.get_all_bookings_of_date(booking_system_iri=equipment.hasBookingSystem.instance_iri,
+                                                                   this_day=datetime.timestamp(this_date),next_day=datetime.timestamp(this_date+ timedelta(1)))
+            equipment_name = equipment.label
+            booking_data[equipment_name] = {}
+            for booking in bookings:
+                for time_slot in time_slots:
+                    current_slot = datetime.strptime(time_slot+ ' ' + this_date.strftime('%Y-%m-%d') , '%H:%M %Y-%m-%d')
+                    if current_slot >= booking.hasBookingStart and current_slot < booking.hasBookingEnd:
+                        booking_data[equipment_name][current_slot.strftime('%H:%M')] = booking.hasBooker
+                                            
+        return render_template('equipment_booking_overview.html', time_slots=time_slots, booking_data=booking_data, selected_date=this_date.strftime('%d.%m.%Y'))
 
 
     def confirmation_page(self):
@@ -159,7 +190,8 @@ class EquipmentBookingAgent(ABC):
             'equipment_booking_make_booking.html',
             lab_users=[{'iri': usr.instance_iri, 'display': usr.name} for usr in self.sparql_client.get_all_users()],
             bookable_assets=[{'iri': eq.hasBookingSystem.instance_iri, 'display': eq.label, 'id': eq.hasItemInventoryIdentifier,
-                              'supplier': eq.isSuppliedBy, 'manufacturer': eq.isManufacturedBy, 'location': eq.isLocatedIn} for eq in self.sparql_client.get_all_bookable_equipment()],
+                              'supplier': eq.isSuppliedBy, 'manufacturer': eq.isManufacturedBy, 'location': eq.isLocatedIn, 
+                              'assignee': eq.assignedTo, 'type': eq.clz} for eq in self.sparql_client.get_all_bookable_equipment()],
         )
 
 

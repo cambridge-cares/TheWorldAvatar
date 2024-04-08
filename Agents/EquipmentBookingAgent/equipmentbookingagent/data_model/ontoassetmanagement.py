@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pydantic
 from typing import Optional, List
+from datetime import datetime
 
 from equipmentbookingagent.data_model.iris import *
 from pyderivationagent.data_model.utils import *
@@ -19,8 +20,10 @@ class BookingSystem(BaseOntology):
 
 class Booking(BaseOntology):
     clz: str = OAM_BOOKING
-    hasBooker: Fibo_Person
-    hasBookingPeriod: str #TIME_INTERVAL
+    hasBooker: str #FIBO_PERSON
+    #hasBookingPeriod: str #TIME_INTERVAL
+    hasBookingStart: datetime
+    hasBookingEnd: datetime
 
 class Equipment(BaseOntology):
     # can either be bot:Element (of which OntoDevice:Device is a subclass) or ssn:System
@@ -30,6 +33,7 @@ class Equipment(BaseOntology):
     hasItemInventoryIdentifier: str
     isManufacturedBy: str #FIBO_ORGANIZATION
     isSuppliedBy: str #FIBO_ORGANIZATION
+    assignedTo: str #FIBO_PERSON
     isLocatedIn: str #ONTOBIM_ROOM
 
 class Fibo_Person(BaseOntology):

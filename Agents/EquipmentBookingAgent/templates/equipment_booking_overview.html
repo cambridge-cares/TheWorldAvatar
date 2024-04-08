@@ -1,0 +1,43 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+        <title>TWA Equipment Booking</title>
+        <style>
+            table {
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 5px;
+                text-align: center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Equipment bookings for {{selected_date}}</h1>
+        <label for="date-picker">Select Date:</label>
+        <input type="date" id="date-picker">
+        <br> <br>  <br> <br> 
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    {% for time in time_slots %}
+                        <th>{{ time }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for equipment, bookings in booking_data.items() %}
+                    <tr>
+                        <td>{{ equipment }}</td>
+                        {% for time in time_slots %}
+                            <td>{{ bookings.get(time, '') }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>

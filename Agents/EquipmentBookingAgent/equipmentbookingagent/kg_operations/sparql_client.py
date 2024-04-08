@@ -30,11 +30,12 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         return [list(res.values())[0] for res in response]
     
     def get_all_bookable_equipment(self):
-        query = f"""{PREFIX_RDFS} {PREFIX_RDF} SELECT ?bs ?eqIri ?eqInventoryId ?eqLabel ?eqManufacturer ?eqSupplier ?eqLocation ?eqType WHERE {{ 
+        query = f"""{PREFIX_RDFS} {PREFIX_RDF} SELECT ?bs ?eqIri ?eqInventoryId ?eqLabel ?eqManufacturer ?eqSupplier ?eqLocation ?eqType ?eqAssignee WHERE {{ 
                         ?eqIri <{OAM_HASBOOKINGSYSTEM}> ?bs ;
                                 rdfs:label ?eqLabel ;
                                 rdf:type ?eqType .
                         OPTIONAL {{ ?eqIri <{OAM_HASITEMINVENTORYIDENTIFIER}> ?eqInventoryId . }} 
+                        OPTIONAL {{ ?eqIri <{OAM_ASSIGNEDTO}>/<{OMG_HASNAME}>/rdfs:label ?eqAssignee  }}
                         OPTIONAL {{ ?eqIri <{OAM_ISMANUFACTUREDBY}>/<{OMG_HASNAME}>/rdfs:label ?eqManufacturer . }}
                         OPTIONAL {{ ?eqIri <{OAM_ISSUPPLIEDBY}>/<{OMG_HASNAME}>/rdfs:label ?eqSupplier . }}
                         OPTIONAL {{ ?eqIri ^<{BOT_CONTAINSELEMENT}> ?eqLocation. }}
@@ -46,6 +47,7 @@ class EquipmentBookingSparqlClient(PySparqlClient):
             res['eqManufacturer'] = 'unknown' if not('eqManufacturer' in res) else res['eqManufacturer']
             res['eqSupplier'] = 'unknown' if not('eqSupplier' in res) else res['eqSupplier']
             res['eqLocation'] = 'unknown' if not('eqLocation' in res) else res['eqLocation']
+            res['eqAssignee'] = 'unknown' if not('eqAssignee' in res) else res['eqAssignee']
             res['eqInventoryId'] = 'unknown' if not('eqInventoryId' in res) else res['eqInventoryId']
             res['eqType'] = trimIRI(res['eqType'])
 
@@ -57,7 +59,8 @@ class EquipmentBookingSparqlClient(PySparqlClient):
                 hasBookingSystem=BookingSystem(instance_iri=res['bs']),
                 isManufacturedBy=res['eqManufacturer'],
                 isSuppliedBy=res['eqSupplier'],
-                isLocatedIn=res['eqLocation']
+                isLocatedIn=res['eqLocation'],
+                assignedTo=res['eqAssignee']
             ))
         return equipment_list
     
@@ -78,9 +81,42 @@ class EquipmentBookingSparqlClient(PySparqlClient):
 
     def get_all_bookings_in_system(self, booking_system_iri: str):
         booking_system_iri = trimIRI(booking_system_iri)
-        query = f"""SELECT ?booking WHERE {{ <{booking_system_iri}> <{OAM_HASBOOKING}>  ?booking . }}"""
+        query = f"""{PREFIX_RDFS} SELECT ?booking ?bookingStart ?bookingEnd ?booker WHERE {{ 
+            <{booking_system_iri}> <{OAM_HASBOOKING}>  ?booking . 
+            ?booking <{OAM_HASBOOKINGPERIOD}>/<{TIME_HASBEGINNING}>/<{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?bookingStart ;
+                    <{OAM_HASBOOKINGPERIOD}>/<{TIME_HASEND}>/<{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?bookingEnd ;
+                    <{OAM_HASBOOKER}>/<{OMG_HASNAME}>/rdfs:label ?booker .
+            }}"""
         response = self.performQuery(query)
-        return [list(res.values())[0] for res in response]
+        booking_list = list()
+        for res in response:
+            booking_list.append(Booking(
+                instance_iri=res['booking'],
+                hasBookingStart=datetime.fromtimestamp(res['bookingStart']),
+                hasBookingEnd=datetime.fromtimestamp(res['bookingEnd']),
+                hasBooker=res['booker']
+            ))
+        return booking_list
+
+    def get_all_bookings_of_date(self, booking_system_iri: str, this_day: int, next_day: int):
+        booking_system_iri = trimIRI(booking_system_iri)
+        query = f"""{PREFIX_RDFS} SELECT ?booking ?bookingStart ?bookingEnd ?booker WHERE {{ 
+            <{booking_system_iri}> <{OAM_HASBOOKING}>  ?booking . 
+            ?booking <{OAM_HASBOOKINGPERIOD}>/<{TIME_HASBEGINNING}>/<{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?bookingStart ;
+                    <{OAM_HASBOOKINGPERIOD}>/<{TIME_HASEND}>/<{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?bookingEnd .
+            FILTER ( ?bookingStart <= {next_day} && ?bookingEnd >= {this_day} )
+            ?booking <{OAM_HASBOOKER}>/<{OMG_HASNAME}>/rdfs:label ?booker .
+            }}"""
+        response = self.performQuery(query)
+        booking_list = list()
+        for res in response:
+            booking_list.append(Booking(
+                instance_iri=res['booking'],
+                hasBookingStart=datetime.fromtimestamp(int(res['bookingStart'])),
+                hasBookingEnd=datetime.fromtimestamp(int(res['bookingEnd'])),
+                hasBooker=res['booker']
+            ))
+        return booking_list
     
     def get_all_conflicting_bookings(self, booking_system_iri: str, bookingStart: int, bookingEnd: int):
         booking_system_iri = trimIRI(booking_system_iri)
@@ -88,7 +124,7 @@ class EquipmentBookingSparqlClient(PySparqlClient):
             <{booking_system_iri}> <{OAM_HASBOOKING}> ?booking .
             ?booking <{OAM_HASBOOKINGPERIOD}>/<{TIME_HASBEGINNING}>/<{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?bookingStart ;
                     <{OAM_HASBOOKINGPERIOD}>/<{TIME_HASEND}>/<{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?bookingEnd .
-            FILTER ( ( ?bookingEnd >= {bookingStart} && ?bookingEnd <= {bookingEnd} ) || ( ?bookingStart <= {bookingEnd} && ?bookingStart >= {bookingStart}) || (?bookingStart < {bookingStart} && ?bookingEnd > {bookingEnd}) )
+            FILTER ( ?bookingStart <= {bookingEnd} && ?bookingEnd >= {bookingStart}  )
          }}"""
         response = self.performQuery(query)
         return [list(res.values())[0] for res in response]
@@ -132,7 +168,7 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         logger.info(f"Booking system {booking_system_iri} created for equipment {equipment_iri}.")
         return g
 
-    def create_booking_within_system(self, booking_system_iri: str, booker_person_iri: str, booking_start: str, booking_end: str):
+    def create_booking_within_system(self, booking_system_iri: str, booker_person_iri: str, booking_start: int, booking_end: int):
         g = Graph()
         booking_system_iri = trimIRI(booking_system_iri)
         booker_person_iri = trimIRI(booker_person_iri)
