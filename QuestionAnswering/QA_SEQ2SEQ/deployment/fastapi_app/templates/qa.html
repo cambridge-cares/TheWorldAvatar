@@ -153,7 +153,7 @@
                         {% for input in input_row %}
                         <div>
                             <label for="{{ input.entry }}">{{ input.label }}</label>
-                            <input type="text" id="{{ input.entry }}" name="{{ input.entry }}">
+                            <input type="text" id="{{ input.entry }}" name="{{ input.entry }}" placeholder="{{ input.description }}">
                         </div>
                         {% endfor %}
                     </div>

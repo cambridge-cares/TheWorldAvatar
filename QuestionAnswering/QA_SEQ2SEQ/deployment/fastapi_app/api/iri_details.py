@@ -48,10 +48,10 @@ def fetch_iri_details(iri: str) -> dict:
         for binding in data['results']['bindings']:
             p_value = binding['type']['value'].split('/')[-1].split('#')[-1]
             if p_value != 'InChI' and p_value != 'IUPACName':
-                p_value = re.sub(r"(\B[A-Z])", r" \1", p_value)
+                p_value = re.sub(r"(\B[A-Z])", r" \1", p_value).replace('has ', '')
             o_value = binding['o']['value']
             if binding.get('u'):
-                u_value = binding['u']['value']
+                u_value = binding['u']['value'].split('/')[-1]
             else:
                 u_value = ''
             simplified_format[p_value] = str(o_value) + ' ' + str(u_value)
@@ -91,13 +91,53 @@ def iri_info_query(iri):
         
         SELECT DISTINCT ?type ?o ?u
         WHERE {{ 
+        {{
             <{iri}> zeo:hasTopologicalProperties ?x .
             ?x ?y ?z .
             ?z rdf:type ?type .
           	?z om:hasNumericalValue ?o .
-          	?z om:hasUnit ?unit .
-            ?unit rdfs:label ?u .
+            OPTIONAL{{
+            ?z om:hasUnit ?u .  
+            }}     
+        }}
+        UNION
+        {{
+            ?framework zeo:hasFrameworkCode ?o .
+            ?framework rdf:type ?type .
+        }}
         }} 
+        """
+        makeCifFile(iri)
+        filename = 'result.cif'
+
+    if 'ontozeolite/ZeoliticMaterial_' in iri:
+        query = f"""
+        PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+        PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+        PREFIX bibo: <http://purl.org/ontology/bibo/>
+
+        SELECT DISTINCT ?type ?o
+        WHERE {{
+        {{
+            <{iri}> ocr:hasCitation ?citation .
+            ?citation bibo:doi ?o .
+            BIND(bibo:doi AS ?type)
+        }}
+        UNION
+        {{
+            <{iri}> zeo:hasChemicalFormula ?o .
+            BIND(zeo:hasChemicalFormula AS ?type)
+        }}
+        UNION 
+        {{
+            ?framework zeo:hasZeoliticMaterial <{iri}> .
+            ?framework zeo:hasFrameworkCode ?o .
+            ?framework rdf:type ?type .
+        }}
+        }}
+
+
         """
         makeCifFile(iri)
         filename = 'result.cif'
@@ -114,9 +154,9 @@ def makeCifFile(iri):
             PREFIX ocr:   <http://www.theworldavatar.com/kg/ontocrystal/>
             PREFIX om:    <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
-            SELECT ?zeoName ?a ?b ?c ?alpha ?beta ?gamma ?afx ?afy ?afz ?alb
+            SELECT ?zeoName ?a ?b ?c ?alpha ?beta ?gamma ?afx ?afy ?afz ?alb ?occupancy
             WHERE {{
-            ?zeo       zeo:hasFrameworkCode    ?zeoName .
+            ?zeo       zeo:hasFrameworkCode|zeo:hasChemicalFormula   ?zeoName .
             ?zeo       ocr:hasCrystalInformation  ?cifdata .
             ?cifdata   ocr:hasUnitCell            ?unitcell .
             ?cifdata   ocr:hasAtomicStructure     ?atomic.
@@ -134,7 +174,7 @@ def makeCifFile(iri):
             ?abg_g     ocr:hasComponentLabel     "gamma"; ocr:hasComponentValue ?gamma .
 
             ?atomic    ocr:hasAtomSite            ?a1 .
-            ?a1        ocr:hasFractionalPosition  ?aF_xyz.
+            ?a1        ocr:hasFractionalPosition  ?aF_xyz .
             ?aF_xyz    ocr:hasVectorComponent     ?aF_x, ?aF_y, ?aF_z .
             ?aF_x      ocr:hasComponentValue      ?afx ; ocr:hasComponentLabel "x" .
             ?aF_y      ocr:hasComponentValue      ?afy ; ocr:hasComponentLabel "y" .
@@ -142,6 +182,9 @@ def makeCifFile(iri):
             OPTIONAL {{
             ?a1       ocr:hasAtomSiteLabel        ?alb .
                 }}
+            OPTIONAL {{
+            ?a1       ocr:hasOccupancy            ?occupancy .
+            }}
             FILTER(?zeo = <{iri}>) .
             }}
             
@@ -179,6 +222,14 @@ def makeCifFile(iri):
             output.append("_atom_site_fract_z")
 
             for res in results["results"]["bindings"]:
+                print(res)
+                res_alb_value = str(res["alb"]["value"])  # Your original string with letters and numbers
+                res["alb"]["value"] = ''.join(char for char in res_alb_value if not char.isdigit())
+                print(res["alb"]["value"] + 'a')
+
+                if res["alb"]["value"] == 'T':
+                    res["alb"]["value"] = 'Si'
+
                 output.append(str(res["alb"]["value"]) + "\t" +
                             str(res["afx"]["value"]) + "\t" +
                             str(res["afy"]["value"]) + "\t" +
@@ -189,7 +240,11 @@ def makeCifFile(iri):
             with open(cif_file_path, "w", encoding="utf-8") as fp:
                 for line in output:
                     fp.write(line + "\n")
-
+        else: 
+            static_dir = os.path.join(os.getcwd(), 'static')
+            cif_file_path = os.path.join(static_dir, 'result.cif')
+            with open(cif_file_path, "w", encoding="utf-8") as fp:
+                fp.write('')
 
 def makeXYZFile(iri):
         
