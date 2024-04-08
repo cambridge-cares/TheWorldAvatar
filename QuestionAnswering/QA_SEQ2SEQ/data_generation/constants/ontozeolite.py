@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class OZCrystalInfoAttrKey(Enum):
+class OZCrystalInfoAttrKey(str, Enum):
     ATOMIC_STRUCTURE = "AtomicStructure"
     UNIT_CELL = "UnitCell"
     TILED_STRUCTURE = "TiledStructure"
@@ -14,7 +14,7 @@ CRYSTAL_SCALAR_KEYS = [
 ]
 
 
-class OZZeoTopoAttrKey(Enum):
+class OZZeoTopoAttrKey(str, Enum):
     ACCESSIBLE_AREA_PER_CELL = "AccessibleAreaPerCell"
     ACCESSIBLE_AREA_PER_GRAM = "AccessibleAreaPerGram"
     ACCESSIBLE_VOLUME = "AccessibleVolume"

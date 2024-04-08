@@ -10,6 +10,7 @@ from constants.plot import OPltPlotAttrKey
 
 
 PUBLIC_ENUMS = {
+    "Decimal": Decimal,
     "StrOp": StrOp,
     "NumOp": NumOp,
     "AggOp": AggOp,
