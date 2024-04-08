@@ -1,7 +1,9 @@
 ###--- TheWorldAvatar Base URL ---###
-# To be used by attaching specific namespace and class name to it
-# e.g. https://www.theworldavatar.com/kg/namespace/ClassName
 TWA_BASE_URL = 'https://www.theworldavatar.com/kg/'
+"""
+To be used by attaching specific namespace and class name to it
+e.g. https://www.theworldavatar.com/kg/ontolab/LabEquipment
+"""
 
 ###--- Common Base URL ---###
 RDFS_BASE_URL = 'http://www.w3.org/2000/01/rdf-schema#'
