@@ -98,5 +98,14 @@ ZEOTOPO_ATTR_LABELS = {
 }
 
 ZEOMATERIAL_ATTR_LABELS = {
-    OZMaterialAttrKey.GUEST_SPECIES: ["guest compound", "guest species", "OSDA"]
+    OZMaterialAttrKey.FRAMEWORK_COMPONENTS: [
+        "building elements", "framework components"
+    ],
+    OZMaterialAttrKey.GUEST_SPECIES: [
+        "guest",
+        "guest compound",
+        "guest species",
+        "incorporated species",
+        "OSDA",
+    ]
 }

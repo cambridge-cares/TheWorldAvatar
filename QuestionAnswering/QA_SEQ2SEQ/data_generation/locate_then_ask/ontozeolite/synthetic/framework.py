@@ -1,10 +1,9 @@
-from collections import defaultdict
 from dataclasses import asdict, dataclass
 from decimal import Decimal
 import json
 import os
 import random
-from typing import DefaultDict, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from constants.fs import ROOTDIR
 from constants.ontozeolite import (
@@ -14,7 +13,11 @@ from constants.ontozeolite import (
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontozeolite.model import OZCrystalInfo, OZFramework
 from utils.json import EnumEncoder, as_enum
-from .crystal_info import retrieve_seed_crystalInfo
+from .helpers import (
+    retrieve_seed_crystalInfo,
+    retrieve_seed_frameworkComponents,
+    retrieve_seed_guestSpeciesCounts,
+)
 
 
 @dataclass
@@ -76,45 +79,6 @@ LIMIT 100"""
             for binding in kg_client.query(query)["results"]["bindings"]
         ]
 
-    @classmethod
-    def _retrieve_seed_frameworkComponents(
-        cls, kg_client: KgClient, ontospecies_endpoint: str
-    ):
-        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
-        
-SELECT DISTINCT ?Framework (SAMPLE(?ElementLabel) AS ?ElementLabelSample) WHERE {{
-    ?Framework zeo:hasZeoliticMaterial/zeo:hasFrameworkComponent ?Element .
-    SERVICE <{ontospecies_endpoint}> {{
-        ?Element (os:hasElementName|os:hasElementSymbol)/os:value ?ElementLabel
-    }}
-}}
-GROUP BY ?Framework ?Element
-LIMIT 100""".format(
-            ontospecies_endpoint=ontospecies_endpoint
-        )
-        framework2elements: DefaultDict[str, List[str]] = defaultdict(list)
-        for binding in kg_client.query(query)["results"]["bindings"]:
-            framework2elements[binding["Framework"]["value"]].append(
-                binding["ElementLabelSample"]["value"]
-            )
-
-        return list(framework2elements.values())
-
-    @classmethod
-    def _retrieve_seed_guestSpeciesCounts(cls, kg_client: KgClient):
-        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
-
-SELECT (COUNT(?Guest) AS ?Count) WHERE {
-    ?Framework zeo:hasZeoliticMaterial/zeo:hasGuestCompound ?Guest .
-}
-GROUP BY ?Framework
-LIMIT 100"""
-        return [
-            int(binding["Count"]["value"])
-            for binding in kg_client.query(query)["results"]["bindings"]
-        ]
-
     def __init__(
         self,
         kg_endpoint: Optional[str] = None,
@@ -136,18 +100,22 @@ LIMIT 100"""
             kg_client = KgClient(kg_endpoint, user, pw)
             seed_data = OZFrameworkSeed(
                 framework_codes=self._retrieve_seed_frameworkCodes(kg_client),
-                crystal_scalars=retrieve_seed_crystalInfo(kg_client, "Framework"),
+                crystal_scalars=retrieve_seed_crystalInfo(
+                    kg_client, clsname="Framework"
+                ),
                 topo_scalars=self._retrieve_seed_topoScalars(kg_client),
                 material_counts=self._retrieve_seed_materialCounts(kg_client),
-                framework_components=self._retrieve_seed_frameworkComponents(
-                    kg_client, ontospecies_endpoint
+                framework_components=retrieve_seed_frameworkComponents(
+                    kg_client, ontospecies_endpoint, clsname="Framework"
                 ),
-                guest_species_counts=self._retrieve_seed_guestSpeciesCounts(kg_client),
+                guest_species_counts=retrieve_seed_guestSpeciesCounts(
+                    kg_client, clsname="Framework"
+                ),
             )
 
             os.makedirs(os.path.dirname(self.FILEPATH), exist_ok=True)
             with open(self.FILEPATH, "w") as f:
-                json.dump(asdict(seed_data), f, indent=4,  cls=EnumEncoder)
+                json.dump(asdict(seed_data), f, indent=4, cls=EnumEncoder)
         else:
             with open(self.FILEPATH, "r") as f:
                 seed_data = OZFrameworkSeed(**json.load(f, object_hook=as_enum))
