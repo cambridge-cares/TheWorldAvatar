@@ -261,10 +261,11 @@ public class GeoServerClient extends ContainerClient {
                         String regex = timeOptions.getRegex();
                         String format = timeOptions.getFormat();
 
-                        indexerProperties = "TimeAttribute=time\nSchema=location:String,time:java.util.Date,*the_geom:Polygon\nPropertyCollectors=TimestampFileNameExtractorSPI[timeregex](time)";
                         if (null != format) {
+                            indexerProperties = "TimeAttribute=time\nSchema=location:String,time:java.util.Date,*the_geom:Polygon\nPropertyCollectors=TimestampFileNameExtractorSPI[timeregex](time)";
                             files.put("timeregex.properties", ("regex=" + regex + ",format=" + format).getBytes());
                         } else {
+                            indexerProperties = "AdditionalDomainAttributes=time_index(time_index)\nSchema=location:String,time_index:String,*the_geom:Polygon\nPropertyCollectors=StringFileNameExtractorSPI[timeregex](time_index)";
                             files.put("timeregex.properties", ("regex=" + regex).getBytes());
                         }
                     }

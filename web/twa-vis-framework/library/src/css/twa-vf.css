@@ -6,19 +6,22 @@
 * a tool that can do it for me, looks like it'll beed to be done manually.
 */
 
-@media (prefers-color-scheme: light) {
-    :root {
-        /* Background colors */
-        --cmcl-blue: #18677a;
-    }
+/* @media (prefers-color-scheme: light) { */
+:root {
+    --cmcl-blue: #18677a;
+    --text-color: #3f464f;
+    --background-color: #f6f8fa;
 }
 
+/* } */
+/* 
 @media (prefers-color-scheme: dark) {
     :root {
-        /* Background colors */
         --cmcl-blue: #18677a;
+        --text-color: #adbac7;
+        --background-color: #22272e;
     }
-}
+} */
 
 html,
 body {
@@ -47,7 +50,8 @@ h6 {
     height: 100%;
     float: left;
     z-index: 0;
-    background-color: #cad2d3
+    background-color: #cad2d3;
+    flex-grow: 1;
 }
 
 .mapboxgl-popup-content {
@@ -185,6 +189,7 @@ h6 {
     width: 100%;
     display: flex;
     flex-direction: column;
+    position: absolute;
     height: calc(100% - 27px)
 }
 
@@ -241,7 +246,8 @@ p {
     position: absolute;
     bottom: 30;
     left: 0;
-    right: 0
+    right: 0;
+    z-index: 1
 }
 
 #returnContainer {
@@ -1005,7 +1011,8 @@ label[for=select-feature] {
     bottom: 0;
     border: none;
     padding-top: 0;
-    height: 35px
+    height: 35px;
+    z-index: 2;
 }
 
 .ui-widget-content {
@@ -1045,23 +1052,19 @@ label[for=select-feature] {
 #sidePanelFailure {
     position: relative;
     overflow: auto;
-    /* background: linear-gradient(white, rgba(255, 255, 255, 0));
+    /* TODO
+
+    background: linear-gradient(white, rgba(255, 255, 255, 0));
     -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);        <-- nice effect but messing with the scroll bar. Can't rn figure how to fix 
     mask-image: linear-gradient(to bottom, black 95%, transparent); 
     margin-bottom: 35px; */
-    padding: 1em 1em 3em
+    padding-bottom: 10em;
 }
 
 #contentContainer {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    padding-bottom: 150px;
-}
-
-#sidePanelLinks {
-    height: calc(100% - 50px);
-    font-size: 10pt
 }
 
 #sidePanelLinks a {
@@ -1519,7 +1522,7 @@ li {
 }
 
 #helpandsearch {
-    display: flex
+    display: flex;
 }
 
 #searchIconContainer {

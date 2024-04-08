@@ -20,7 +20,7 @@ echo "Will write 'settings.xml' file to directory at $TARGET_DIR"
 # Get the MAVEN_USERNAME environment variable
 if [[ -z "${MAVEN_USERNAME}" ]]; then
   echo "ERROR: The environment variable 'MAVEN_USERNAME' has not been set."
-  exit -1
+  exit 1
 else
   MAVEN_USERNAME="${MAVEN_USERNAME}"
   echo "Retrieved the 'MAVEN_USERNAME' environment variable."
@@ -29,7 +29,7 @@ fi
 # Get the MAVEN_PASSWORD environment variable
 if [[ -z "${MAVEN_PASSWORD}" ]]; then
   echo "ERROR: The environment variable 'MAVEN_PASSWORD' has not been set."
-  exit -1
+  exit 1
 else
   MAVEN_PASSWORD="${MAVEN_PASSWORD}"
   echo "Retrieved the 'MAVEN_PASSWORD' environment variable."
