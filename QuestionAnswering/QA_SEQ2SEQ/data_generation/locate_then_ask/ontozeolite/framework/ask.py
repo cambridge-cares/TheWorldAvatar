@@ -4,9 +4,11 @@ import numpy as np
 
 from constants.ontozeolite import (
     CRYSTAL_ATTR_LABELS,
+    ZEOMATERIAL_ATTR_LABELS,
     ZEOTOPO_ATTR_LABELS,
     OZCrystalInfoAttrKey,
     OZFrameworkAttrKey,
+    OZMaterialAttrKey,
     OZZeoTopoAttrKey,
 )
 from utils.numerical import normalize_1d
@@ -14,28 +16,20 @@ from locate_then_ask.graph2sparql import Graph2Sparql
 from locate_then_ask.query_graph import QueryGraph
 
 
-FRAMEWORK_ATTRS_FOR_ASKING = {
-    OZFrameworkAttrKey.FRAMEWORK_COMPONENTS: 2,
-    OZFrameworkAttrKey.CRYSTAL_INFO: 2,
-    OZFrameworkAttrKey.TOPO_ATTR: 10,
-    OZFrameworkAttrKey.GUEST_SPECIES: 2,
-}
-
 class OZFrameworkAsker:
+    ATTR_WEIGHTS = {
+        OZFrameworkAttrKey.FRAMEWORK_COMPONENTS: 2,
+        OZFrameworkAttrKey.CRYSTAL_INFO: 2,
+        OZFrameworkAttrKey.TOPO_ATTR: 10,
+        OZFrameworkAttrKey.GUEST_SPECIES: 2,
+    }
+
     def __init__(self):
         self.graph2sparql = Graph2Sparql()
 
     def _get_unsampled_keys(self, query_graph: QueryGraph):
-        sampled_keys = set(
-            [key for _, _, key in query_graph.edges.data("key")]
-        )
-        return tuple(
-            [
-                key
-                for key in FRAMEWORK_ATTRS_FOR_ASKING
-                if key not in sampled_keys
-            ]
-        )
+        sampled_keys = set([key for _, _, key in query_graph.edges.data("key")])
+        return [key for key in self.ATTR_WEIGHTS if key not in sampled_keys]
 
     def ask_name(self, query_graph: QueryGraph, verbalization: str):
         query_graph.add_question_node("Framework")
@@ -44,15 +38,26 @@ class OZFrameworkAsker:
 
     def ask_attr(self, query_graph: QueryGraph, verbalization: str):
         unsampled_keys = self._get_unsampled_keys(query_graph)
-        key = np.random.choice(unsampled_keys, p=normalize_1d([FRAMEWORK_ATTRS_FOR_ASKING[k] for k in unsampled_keys]))
+        key = np.random.choice(
+            unsampled_keys,
+            p=normalize_1d([self.ATTR_WEIGHTS[k] for k in unsampled_keys]),
+        )
 
         if key is OZFrameworkAttrKey.FRAMEWORK_COMPONENTS:
-            query_graph.add_triples([
-                "Framework", "zeo:hasZeoliticMaterial", "Material",
-                "Material", "zeo:hasFrameworkComponent/rdfs:label", "FrameworkComponent"
-            ])
-            query_graph.add_question_node("FrameworkComponent")
-            qnode_verbn = random.choice(["building elements", "framework components"])
+            query_graph.add_triples(
+                [
+                    ("Framework", "zeo:hasZeoliticMaterial", "Material"),
+                    (
+                        "Material",
+                        "zeo:hasFrameworkComponent/rdfs:label",
+                        "FrameworkComponentLabel",
+                    ),
+                ]
+            )
+            query_graph.add_question_node("FrameworkComponentLabel")
+            qnode_verbn = random.choice(
+                ZEOMATERIAL_ATTR_LABELS[OZMaterialAttrKey.FRAMEWORK_COMPONENTS]
+            )
         elif key is OZFrameworkAttrKey.CRYSTAL_INFO:
             crystal_key = random.choice(tuple(OZCrystalInfoAttrKey))
             if crystal_key is OZCrystalInfoAttrKey.COORD_TRANSFORM:
@@ -97,12 +102,20 @@ class OZFrameworkAsker:
             qnode_verbn = random.choice(ZEOTOPO_ATTR_LABELS[topo_key])
             query_graph.add_triple("Framework", pred, qnode)
         elif key is OZFrameworkAttrKey.GUEST_SPECIES:
-            query_graph.add_triples([
-                "Framework", "zeo:hasZeoliticMaterial", "Material",
-                "Material", "zeo:hasGuestCompound/rdfs:label", "GuestCompound"
-            ])
-            query_graph.add_question_node("GuestCompound")
-            qnode_verbn = random.choice(["guest", "guest compound", "guest species", "incorporated species"])
+            query_graph.add_triples(
+                [
+                    ("Framework", "zeo:hasZeoliticMaterial", "Material"),
+                    (
+                        "Material",
+                        "zeo:hasGuestCompound/rdfs:label",
+                        "GuestCompoundLabel",
+                    ),
+                ]
+            )
+            query_graph.add_question_node("GuestCompoundLabel")
+            qnode_verbn = random.choice(
+                ZEOMATERIAL_ATTR_LABELS[OZMaterialAttrKey.GUEST_SPECIES]
+            )
 
         query_sparql = self.graph2sparql.convert(query_graph)
 
