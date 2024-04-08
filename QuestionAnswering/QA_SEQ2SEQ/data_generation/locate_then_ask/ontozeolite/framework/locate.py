@@ -51,11 +51,22 @@ class OZFrameworkLocator:
 
         query_graph.add_triple("Framework", "zeo:hasZeoliticMaterial", "Material")
         query_graph.add_triples(
-            [("Material", pred, literal_node) for literal_node in literal_nodes]
+            [
+                (
+                    "Material",
+                    pred,
+                    literal_node,
+                    dict(key=OZFrameworkAttrKey.FRAMEWORK_COMPONENTS),
+                )
+                for literal_node in literal_nodes
+            ]
         )
 
-        return "built by " + " and ".join(
-            "[{literal}]".format(literal=literal) for literal in elements
+        return "{contain} {elements}".format(
+            contain=random.sample(["contain", "built by"]),
+            elements=" and ".join(
+                "[{literal}]".format(literal=literal) for literal in elements
+            ),
         )
 
     def _locate_crystal_info(
@@ -72,7 +83,8 @@ class OZFrameworkLocator:
                     "Framework",
                     "ocr:hasCrystalInformation/ocr:hasUnitCell/ocr:hasUnitCellVolume/om:hasNumericalValue",
                     val_node,
-                    key=k,
+                    key=OZFrameworkAttrKey.CRYSTAL_INFO,
+                    subkey=k,
                 )
 
                 operator = random.choice(BASIC_NUM_OPS)
@@ -93,7 +105,8 @@ class OZFrameworkLocator:
                     "Framework",
                     "ocr:hasCrystalInformation/ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode",
                     literal_node,
-                    key=k,
+                    key=OZFrameworkAttrKey.CRYSTAL_INFO,
+                    subkey=k,
                 )
                 cond = "whose tile code is [{label}]".format(
                     label=crystal_info.tile_code
@@ -116,7 +129,9 @@ class OZFrameworkLocator:
             val_node = attr_key + "NumericalValue"
 
             query_graph.add_literal_node(val_node)
-            query_graph.add_triple("Framework", pred, val_node, key=k)
+            query_graph.add_triple(
+                "Framework", pred, val_node, key=OZFrameworkAttrKey.TOPO_ATTR, subkey=k
+            )
 
             operator = random.choice(BASIC_NUM_OPS)
             operand, op_verbn = make_operand_and_verbn(
@@ -141,7 +156,12 @@ class OZFrameworkLocator:
         query_graph.add_triples(
             [
                 ("Framework", "zeo:hasZeoliticMaterial", "Material"),
-                ("Material", "zeo:hasChemicalFormula", literal_node),
+                (
+                    "Material",
+                    "zeo:hasChemicalFormula",
+                    literal_node,
+                    dict(key=OZFrameworkAttrKey.MATERIALS),
+                ),
             ]
         )
 
@@ -165,7 +185,12 @@ class OZFrameworkLocator:
         query_graph.add_triple("Framework", "zeo:hasZeoliticMaterial", "Material")
         query_graph.add_triples(
             [
-                ("Material", "zeo:hasGuestCompound/rdfs:label", literal)
+                (
+                    "Material",
+                    "zeo:hasGuestCompound/rdfs:label",
+                    literal,
+                    dict(key=OZFrameworkAttrKey.GUEST_SPECIES),
+                )
                 for literal in literal_nodes
             ]
         )
@@ -186,7 +211,6 @@ class OZFrameworkLocator:
             OZFrameworkAttrKey.TOPO_ATTR: 10,
             OZFrameworkAttrKey.MATERIALS: 1,
             OZFrameworkAttrKey.GUEST_SPECIES: 5,
-            OZFrameworkAttrKey.GUEST_FORMULA: 2,
         }
         attr2freq: defaultdict[OZFrameworkAttrKey, int] = defaultdict(lambda: 0)
         for k in random.sample(
@@ -218,8 +242,7 @@ class OZFrameworkLocator:
                 _cond = self._locate_guest_species(
                     query_graph, entity.guest_species_iris, freq
                 )
-            elif attr is OZFrameworkAttrKey.GUEST_FORMULA:
-                pass
+                conds.append(_cond)
             else:
                 raise Exception("Unexpected attr: " + str(attr))
 
