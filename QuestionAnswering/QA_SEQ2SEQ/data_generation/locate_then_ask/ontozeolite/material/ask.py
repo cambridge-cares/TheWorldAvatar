@@ -23,7 +23,7 @@ class OZMaterialAsker:
     def __init__(self):
         self.graph2sparql = Graph2Sparql()
 
-    def _get_unsampled_keys(self, query_graph: QueryGraph):
+    def get_unsampled_keys(self, query_graph: QueryGraph):
         sampled_keys = set([key for _, _, key in query_graph.edges.data("key")])
         return [key for key in self.ATTR_WEIGHT if key not in sampled_keys]
 
@@ -33,7 +33,7 @@ class OZMaterialAsker:
         return query_sparql, "what are the {located}?".format(located=verbalization)
 
     def ask_attr(self, query_graph: QueryGraph, verbalization: str):
-        unsampled_keys = self._get_unsampled_keys(query_graph)
+        unsampled_keys = self.get_unsampled_keys(query_graph)
         key = np.random.choice(
             unsampled_keys,
             p=normalize_1d([self.ATTR_WEIGHT[x] for x in unsampled_keys]),

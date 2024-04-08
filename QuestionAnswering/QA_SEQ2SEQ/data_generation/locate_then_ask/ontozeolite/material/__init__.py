@@ -16,17 +16,24 @@ class OZMaterialExampleMaker(ExampleMakerBase):
         locate_strategy = np.random.choice(["name", "attr"], p=normalize_1d([1, 2]))
         if locate_strategy == "name":
             query_graph, verbn = self.locator.locate_name(entity_iri)
-            ask_strategies, ask_weights = ["attr"], [1]
+            ask_strategy_weights = {"attr": 1}
         elif locate_strategy == "attr":
-            cond_num = np.random.choice([1, 2], p=normalize_1d([2, 1]))
+            cond_num = np.random.choice([1, 2, 3, 4], p=normalize_1d([3, 4, 2, 1]))
             query_graph, verbn = self.locator.locate_concept_and_literal_multi(
                 entity_iri, cond_num=cond_num
             )
-            ask_strategies, ask_weights = ["name", "attr"], [1, 5]
+
+            if self.asker.get_unsampled_keys(query_graph):
+                ask_strategy_weights = {"name": 1, "attr": 1}
+            else:
+                ask_strategy_weights = {"name": 1}
         else:
             raise Exception("Unexpected `locate_strategy`: " + locate_strategy)
 
-        ask_strategy = np.random.choice(ask_strategies, p=normalize_1d(ask_weights))
+        ask_strategy = np.random.choice(
+            list(ask_strategy_weights.keys()),
+            p=normalize_1d(list(ask_strategy_weights.values())),
+        )
         if ask_strategy == "name":
             query_sparql, verbn = self.asker.ask_name(query_graph, verbn)
         elif ask_strategy == "attr":

@@ -5,7 +5,12 @@ import json
 from constants.functions import AggOp, NumOp, StrOp
 from constants.ontobuiltenv import OBEAttrKey
 from constants.ontospecies import OSIdentifierKey, OSPropertyKey, OSSpeciesAttrKey
-from constants.ontozeolite import OZCrystalInfoAttrKey, OZMaterialAttrKey, OZZeoTopoAttrKey
+from constants.ontozeolite import (
+    OZCrystalInfoAttrKey,
+    OZFrameworkAttrKey,
+    OZMaterialAttrKey,
+    OZZeoTopoAttrKey,
+)
 from constants.plot import OPltPlotAttrKey
 
 
@@ -21,7 +26,8 @@ PUBLIC_ENUMS = {
     "OPltPlotAttrKey": OPltPlotAttrKey,
     "OZCrystalInfoAttrKey": OZCrystalInfoAttrKey,
     "OZZeoTopoAttrKey": OZZeoTopoAttrKey,
-    "OZMaterialAttrKey": OZMaterialAttrKey
+    "OZMaterialAttrKey": OZMaterialAttrKey,
+    "OZFrameworkAttrKey": OZFrameworkAttrKey,
 }
 
 
