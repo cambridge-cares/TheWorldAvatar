@@ -86,10 +86,13 @@ class EquipmentBookingAgent(ABC):
         self.logger = agentlogging.get_logger(logger_name)
 
         # add the default routes for the flask app
-        self.app.add_url_rule('/', 'root', self.booking_page, methods=['GET'])
+        self.app.add_url_rule('/', 'root', self.start_page, methods=['GET'])
 
         # add the route for the equipment booking
-        self.app.add_url_rule('/booking', 'equipment_booking', self.confirmation_page, methods=['GET','POST'])
+        self.app.add_url_rule('/booking', 'equipment_booking', self.booking_page, methods=['GET'])
+
+        # add the route for the booking confirmation
+        self.app.add_url_rule('/confirmation', 'booking_confirmation', self.confirmation_page, methods=['GET','POST'])
 
         # add the route for booking overview
         self.app.add_url_rule('/overview', 'booking_overview', self.booking_overview, methods=['GET'])
@@ -101,9 +104,16 @@ class EquipmentBookingAgent(ABC):
         msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar<BR>"    
         return msg
 
+    def start_page(self):
+        return render_template('equipment_booking_main.html')
+
     def booking_overview(self):
-        this_date = datetime.today()
-        this_date = this_date.replace(hour=0,minute=0,second=0,microsecond=0)
+        try:
+            selected_date = request.args.get('date')
+            this_date = datetime.strptime(selected_date, '%Y-%m-%d')
+        except:
+            this_date = datetime.today()
+            this_date = this_date.replace(hour=0,minute=0,second=0,microsecond=0)
 
         start_time = '08:00'
         end_time = '19:00'
@@ -113,7 +123,6 @@ class EquipmentBookingAgent(ABC):
             time_slots.append(current_time)
             current_time = (datetime.strptime(current_time, '%H:%M') + timedelta(minutes=15)).strftime('%H:%M')
 
-        
         equipments = self.sparql_client.get_all_bookable_equipment()
         booking_data = {}
         for equipment in equipments:
@@ -127,7 +136,7 @@ class EquipmentBookingAgent(ABC):
                     if current_slot >= booking.hasBookingStart and current_slot < booking.hasBookingEnd:
                         booking_data[equipment_name][current_slot.strftime('%H:%M')] = booking.hasBooker
                                             
-        return render_template('equipment_booking_overview.html', time_slots=time_slots, booking_data=booking_data, selected_date=this_date.strftime('%d.%m.%Y'))
+        return render_template('equipment_booking_overview.html', time_slots=time_slots, booking_data=booking_data, selected_date=this_date.strftime('%Y-%m-%d'))
 
 
     def confirmation_page(self):
