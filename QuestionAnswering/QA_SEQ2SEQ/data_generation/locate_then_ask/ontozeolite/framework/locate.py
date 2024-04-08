@@ -1,7 +1,9 @@
 from collections import defaultdict
 from decimal import Decimal
 import random
-from typing import Dict, List
+from typing import DefaultDict, Dict, List
+
+import numpy as np
 
 from constants.functions import BASIC_NUM_OPS
 from constants.ontozeolite import (
@@ -12,7 +14,7 @@ from constants.ontozeolite import (
     OZZeoTopoAttrKey,
 )
 from locate_then_ask.ontozeolite.model import OZCrystalInfo
-from utils.numerical import make_operand_and_verbn
+from utils.numerical import make_operand_and_verbn, normalize_1d
 from locate_then_ask.query_graph import QueryGraph
 from locate_then_ask.ontozeolite.entity_store import OZEntityStore
 
@@ -24,7 +26,7 @@ class OZFrameworkLocator:
     def locate_concept_name(self, entity_iri: str):
         query_graph = QueryGraph()
         query_graph.add_topic_node("Framework", iri=entity_iri)
-        return query_graph, random.choice(["zeolite framework", "zeolite"])
+        return query_graph, np.random.choice(["zeolite framework", "zeolite"], p=normalize_1d([4, 1]))
 
     def locate_name(self, entity_iri):
         query_graph, concept = self.locate_concept_name(entity_iri)
@@ -64,7 +66,7 @@ class OZFrameworkLocator:
         )
 
         return "which {contain} {elements}".format(
-            contain=random.choice(["contain", "are built by"]),
+            contain=random.choice(["contain", "are built by"]) + " only" if only else "",
             elements=" and ".join(
                 "[{literal}]".format(literal=literal) for literal in elements
             ),
@@ -73,7 +75,11 @@ class OZFrameworkLocator:
     def _locate_crystal_info(
         self, query_graph: QueryGraph, crystal_info: OZCrystalInfo, freq: int
     ):
-        keys = random.sample(CRYSTAL_SCALAR_KEYS, k=freq)
+        frame = [OZCrystalInfoAttrKey.UNIT_CELL]
+        if crystal_info.tile_code:
+            frame.append(OZCrystalInfoAttrKey.TILED_STRUCTURE)
+            
+        keys = random.sample(frame, k=freq)
         conds = []
         for k in keys:
             if k is OZCrystalInfoAttrKey.UNIT_CELL:
@@ -217,11 +223,11 @@ class OZFrameworkLocator:
             OZFrameworkAttrKey.MATERIALS: 1,
             OZFrameworkAttrKey.GUEST_SPECIES: 10,
         }
-        attr2freq: defaultdict[OZFrameworkAttrKey, int] = defaultdict(lambda: 0)
+        attr2freq: DefaultDict[OZFrameworkAttrKey, int] = defaultdict(lambda: 0)
         for k in random.sample(
-            tuple(attr_key_counts.keys()),
-            k=min(cond_num, len(attr_key_counts)),
-            counts=tuple(attr_key_counts.values()),
+            attr_key_counts.keys(),
+            k=min(cond_num, sum(attr_key_counts.values())),
+            counts=attr_key_counts.values(),
         ):
             attr2freq[k] += 1
 

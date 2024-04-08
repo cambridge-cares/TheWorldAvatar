@@ -102,7 +102,7 @@ class OZFrameworkAsker:
                 "Material", "zeo:hasGuestCompound/rdfs:label", "GuestCompound"
             ])
             query_graph.add_question_node("GuestCompound")
-            qnode_verbn = random.chocie(["guest", "guest compound", "guest species"])
+            qnode_verbn = random.choice(["guest", "guest compound", "guest species", "incorporated species"])
 
         query_sparql = self.graph2sparql.convert(query_graph)
 
