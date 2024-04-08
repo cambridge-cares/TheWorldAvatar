@@ -105,3 +105,4 @@ CREATE INDEX usage_index ON usage.buildingusage_geoserver_sg (ontobuilt);
 CREATE INDEX geometry_index ON usage.buildingusage_geoserver_sg USING GIST (geom);
 CREATE INDEX classname_index ON usage.buildingusage_geoserver_sg (objectclass);
 CREATE INDEX infra_index ON usage.buildingusage_geoserver_sg (infrastructure_type);
+CREATE INDEX heat_index ON usage.buildingusage_geoserver_sg (heat_emissions);
