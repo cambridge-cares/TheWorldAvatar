@@ -75,10 +75,12 @@ class OZEntityStore:
         return self.iri2material[entity_iri]
 
     def get_guest_species_identifiers(self, entity_iri: str):
-        query = """
+        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
 SELECT ?SpeciesIdentifier {{
-    <{IRI}> ?hasIdentifier [ a/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifier ] .
-}""".format(
+    VALUES ?hasIdentifier {{ os:hasInChI os:hasIUPACName os:hasMolecularFormula os:hasSMILES }}
+    <{IRI}> ?hasIdentifier [ os:value ?SpeciesIdentifier ] .
+}}""".format(
             IRI=entity_iri
         )
         return [

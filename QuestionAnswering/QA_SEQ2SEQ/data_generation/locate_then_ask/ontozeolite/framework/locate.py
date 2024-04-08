@@ -41,7 +41,7 @@ class OZFrameworkLocator:
         self, query_graph: QueryGraph, framework_components: List[str], freq: int
     ):
         elements = random.sample(
-            framework_components, k=min(len(framework_components, freq))
+            framework_components, k=min(len(framework_components), freq)
         )
         literal_nodes = [query_graph.make_literal_node(elem) for elem in elements]
         only = random.getrandbits(1)
@@ -116,7 +116,7 @@ class OZFrameworkLocator:
         return conds
 
     def _locate_topo_attr(
-        query_graph: QueryGraph, topo_scalar: Dict[OZZeoTopoAttrKey, Decimal], freq: int
+        self, query_graph: QueryGraph, topo_scalar: Dict[OZZeoTopoAttrKey, Decimal], freq: int
     ):
         conds = []
 
@@ -174,7 +174,7 @@ class OZFrameworkLocator:
         self, query_graph: QueryGraph, guest_species_iris: List[str], freq: int
     ):
         guest_iris = random.sample(
-            guest_species_iris, k=min(len(guest_species_iris, freq))
+            guest_species_iris, k=min(len(guest_species_iris), freq)
         )
         guests = [
             random.choice(self.store.get_guest_species_identifiers(iri))
