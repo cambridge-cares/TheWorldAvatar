@@ -36,13 +36,16 @@ def adv_search(search_form:SearchInput, domain):
     logger.info(search_form)
     
     KG_URL_CHEMISTRY = os.getenv("KG_URL_CHEMISTRY")
-    sparql_service = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/{domain}/sparql")
+    sparql_service = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/{domain.split('_')[0]}/sparql")
 
     logger.info("Sending query to KG")  
     start = time.time()
     try:
         if 'ontozeolite' in domain: 
-            query = zeolite_adv_search_query(search_form)
+            if 'framework' in domain:
+                query = zeolite_framework_adv_search_query(search_form)
+            if 'material' in domain:
+                query = zeolite_material_adv_search_query(search_form)
         end = time.time()
         logger.info("Results from KG received")
         data = sparql_service.execute_query(query=query)
@@ -53,7 +56,7 @@ def adv_search(search_form:SearchInput, domain):
         logger.error(e)
         raise HTTPException(status_code=400, detail=str(e))
     
-def zeolite_adv_search_query(params):
+def zeolite_framework_adv_search_query(params):
 
     base_query = """
         PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
@@ -189,3 +192,178 @@ def zeolite_adv_search_query(params):
     print(base_query)
 
     return base_query
+
+
+def zeolite_material_adv_search_query(params):
+
+    base_query = """
+        PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+        PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+        PREFIX foaf: <http://xmlns.com/foaf/0.1/>     
+        PREFIX bibo: <http://purl.org/ontology/bibo/>
+        PREFIX dcterm: <http://purl.org/dc/terms/>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
+        SELECT DISTINCT ?zeo_material ?name ?framework #SELECTSTATEMENT#
+        WHERE {
+            ?zeo_framework zeo:hasZeoliticMaterial ?zeo_material ;
+                zeo:hasFrameworkCode ?framework .
+            ?zeo_material rdf:type zeo:ZeoliticMaterial .
+        """
+    
+    unitcell_section_added = False
+    select_statement = ''
+    filters = []
+
+    framework = getattr(params, "framework")
+    if framework:
+        filters.append(f"?framework = \"{framework}\"")
+
+    label = getattr(params, "label")
+    if label:
+        base_query += f"""
+            ?zeo_material os:name ?label .
+        """
+        filters.append(f"?label = \"{label}\"")
+        select_statement += f" ?label"
+    
+    formula = getattr(params, "formula")
+    if formula:
+        base_query += f"""
+            ?zeo_material zeo:hasChemicalFormula ?formula .
+        """
+        filters.append(f"CONTAINS(?formula, \"{formula}\" )")
+        select_statement += f" ?formula"
+
+    # Unit cell parameters
+    for param in ['A', 'B', 'C', 'ALPHA', 'BETA', 'GAMMA']:
+        attr_min_val = f"uc{param}min"
+        min_val = getattr(params, attr_min_val)
+        attr_max_val = f"uc{param}max"
+        max_val = getattr(params, attr_max_val)
+        if min_val or max_val:
+            if not unitcell_section_added:
+                base_query += f"""
+                ?zeo_material ocr:hasCrystalInformation ?cifdata .
+                ?cifdata ocr:hasUnitCell ?unitcell .
+                ?unitcell ocr:hasUnitCellLengths ?abc .
+                ?abc ocr:hasVectorComponent ?abc_a, ?abc_b, ?abc_c .
+                ?abc_a ocr:hasComponentLabel "a"; ocr:hasComponentValue ?a .
+                ?abc_b ocr:hasComponentLabel "b"; ocr:hasComponentValue ?b .
+                ?abc_c ocr:hasComponentLabel "c"; ocr:hasComponentValue ?c .
+                ?unitcell ocr:hasUnitCellAngles ?abg .
+                ?abg ocr:hasVectorComponent ?abg_a, ?abg_b, ?abg_g .
+                ?abg_a ocr:hasComponentLabel "alpha"; ocr:hasComponentValue ?alpha .
+                ?abg_b ocr:hasComponentLabel "beta"; ocr:hasComponentValue ?beta .
+                ?abg_g ocr:hasComponentLabel "gamma"; ocr:hasComponentValue ?gamma .
+                """
+                unitcell_section_added = True
+            
+            if min_val and max_val:
+                filters.append(f"xsd:decimal(xsd:string(?{param.lower()})) >= {min_val} && xsd:decimal(xsd:string(?{param.lower()})) <= {max_val}")
+            elif min_val and not max_val:
+                filters.append(f"xsd:decimal(xsd:string(?{param.lower()})) >= {min_val}")
+            elif max_val and not min_val:
+                filters.append(f"xsd:decimal(xsd:string(?{param.lower()})) <= {max_val}") 
+            select_statement += f" ?{param.lower()}"   
+
+    author = getattr(params, "author")
+    year = getattr(params, "year")
+    journal = getattr(params, "journal")
+    doi = getattr(params, "doi")
+    if author or year or journal or doi:
+        base_query += f"""
+        ?zeo_material ocr:hasCitation ?citation .
+        """
+        if author:
+            base_query += f"""
+            ?citation ocr:hasAuthor/foaf:family_name "{author}" .
+            """
+        if doi:
+            base_query += f"""
+            ?citation bibo:doi "{doi}" .
+            """
+        if year:
+            base_query += f"""
+            ?citation dcterm:isPartOf ?journalversion .
+            ?journalversion dcterm:issued ?year .
+            FILTER(xsd:string(?year) = "{year}")
+            """
+        if journal:
+            base_query += f"""
+            ?citation dcterm:isPartOf ?journalversion .
+            ?journalversion dcterm:isPartOf ?journal .
+            ?journal dcterm:title "{journal}" .
+            """
+    
+    for i in range(1, 6):  # up to 5 elements
+        attr_el = f"el{i}"
+        el_symbol = getattr(params, attr_el)
+        if el_symbol:
+            iri = query_element(el_symbol)
+            base_query += f"""
+            ?zeo_material zeo:hasFrameworkComponent <{iri}> .
+            """
+
+    for i in range(1, 4):  # up to 3 elements
+        attr_guest = f"guest{i}"
+        guest_id = getattr(params, attr_guest)
+        if guest_id:
+            iri = query_species(guest_id)
+            base_query += f"""
+            ?zeo_material zeo:hasGuestCompound <{iri}> .
+            """
+   
+    if filters:
+        base_query += "FILTER (" + " && ".join(filters) + ")\n"
+
+    print(select_statement)
+
+    base_query += "} ORDER BY ?name"
+    base_query = base_query.replace('#SELECTSTATEMENT#', select_statement)
+
+    print(base_query)
+
+    return base_query
+
+def query_element(el_symbol):
+    query = f"""
+    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable#>
+
+    SELECT ?element
+    WHERE {{
+        ?element rdf:type pt:Element .
+        ?element os:hasElementSymbol ?symbol .
+        ?symbol os:value "{el_symbol}" .
+        }}
+    """
+    KG_URL_CHEMISTRY = os.getenv("KG_URL_CHEMISTRY")
+    sparql_service_el = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/ontospecies/sparql")
+    data = sparql_service_el.execute_query(query=query)
+    iri = data['results']['bindings'][0]['element']['value']
+    return iri
+
+def query_species(species_id):
+    query = f"""
+    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable#>
+
+    SELECT DISTINCT ?species 
+    WHERE {{
+    ?species a os:Species .
+    VALUES ?SpeciesIdentifierValue {{ "{species_id}" }}
+    ?species ?hasIdentifier [ a/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ] .
+    }}
+    """
+    KG_URL_CHEMISTRY = os.getenv("KG_URL_CHEMISTRY")
+    sparql_service_el = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/ontospecies/sparql")
+    data = sparql_service_el.execute_query(query=query)
+    iri = data['results']['bindings'][0]['species']['value']
+    return iri
+
+
+
+

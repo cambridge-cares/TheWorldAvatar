@@ -292,17 +292,41 @@ function displayIRIDetails(data, iri, filename) {
         addSelectionOptions: false,
         use: "HTML5",
         j2sPath: "./static/jmol-16.1.41/jsmol/j2s",
-        script: `load ./static/${filename};` 
+        script: `load ./static/${filename} {1 1 1}; 
+        select Gd*; 
+        connect (selected) (all) DELETE;
+        connect 0.0 2.8 (selected) (all) CREATE; 
+        select Al*; 
+        connect (selected) (all) DELETE;
+        connect 0.0 2.0 (selected) (all) CREATE; 
+        select Si*; 
+        connect (selected) (all) DELETE;
+        connect 0.0 2.0 (selected) (all) CREATE; `
     };
 
     Jmol.setDocument(0);
 
     var jsmolApplet = Jmol.getApplet("jsmolApplet", Info);
 
-    jsmolContainer.innerHTML = Jmol.getAppletHtml(jsmolApplet);
+    // var script = `
+    // select all
+    // n = {*}.length
+    // for (var i = 1; i <= n; i++) {
+    //     for (var j = i + 1;j <= n; j++) {
+    //         var dis = {*}[i].distance({*}[j]);
+    //         if (dis < 1.23) {
+    //             hide {atomno=j}
+    //         }
+    //     }
+    // }
+    // `;
+    
+    // Jmol.script(jsmolApplet, script);
 
-    Jmol.script(jsmolApplet, `load "./static/${filename}";`);
+    jsmolContainer.innerHTML = Jmol.getAppletHtml(jsmolApplet);
 }
+
+
 
 async function handleIRIClick(iri) {
     const iriInfoContainer = document.getElementById("iri-info-card")
