@@ -138,14 +138,41 @@ class OZFrameworkLocator:
         material = self.store.get_material(material_iri)
 
         literal_node = query_graph.make_literal_node(material.formula)
-        query_graph.add_triples([
-            ("Framework", "zeo:hasZeoliticMaterial", "Material"),
-            ("Material", "zeo:hasChemicalFormula", literal_node)
-        ])
+        query_graph.add_triples(
+            [
+                ("Framework", "zeo:hasZeoliticMaterial", "Material"),
+                ("Material", "zeo:hasChemicalFormula", literal_node),
+            ]
+        )
 
         return "corresponding to {material} {formula}".format(
             material=random.choice(["material", "zeolitic material", "zeolite"]),
-            formula=random.choice(["formula ", "with formula ", ""]) + material.formula
+            formula=random.choice(["formula ", "with formula ", ""]) + material.formula,
+        )
+
+    def _locate_guest_species(
+        self, query_graph: QueryGraph, guest_species_iris: List[str], freq: int
+    ):
+        guest_iris = random.sample(
+            guest_species_iris, k=min(len(guest_species_iris, freq))
+        )
+        guests = [
+            random.choice(self.store.get_guest_species_identifiers(iri))
+            for iri in guest_iris
+        ]
+        literal_nodes = [query_graph.make_literal_node(guest) for guest in guests]
+
+        query_graph.add_triple("Framework", "zeo:hasZeoliticMaterial", "Material")
+        query_graph.add_triples(
+            [
+                ("Material", "zeo:hasGuestCompound/rdfs:label", literal)
+                for literal in literal_nodes
+            ]
+        )
+
+        return "{incorporate} {guests}".format(
+            incorporate=random.choice(["incorporate", "have guest species"]),
+            guests=" and ".join(guests),
         )
 
     def locate_concept_and_literal_multi(self, entity_iri: str, cond_num: int):
@@ -172,7 +199,9 @@ class OZFrameworkLocator:
         conds = []
         for attr, freq in attr2freq.items():
             if attr is OZFrameworkAttrKey.FRAMEWORK_COMPONENTS:
-                _cond = self._locate_framework_components(query_graph, entity.framework_components, freq)
+                _cond = self._locate_framework_components(
+                    query_graph, entity.framework_components, freq
+                )
                 conds.append(_cond)
             elif attr is OZFrameworkAttrKey.CRYSTAL_INFO:
                 _conds = self._locate_crystal_info(
@@ -186,7 +215,9 @@ class OZFrameworkLocator:
                 _cond = self._locate_material(query_graph, entity.material_iris)
                 conds.append(_cond)
             elif attr is OZFrameworkAttrKey.GUEST_SPECIES:
-                pass
+                _cond = self._locate_guest_species(
+                    query_graph, entity.guest_species_iris, freq
+                )
             elif attr is OZFrameworkAttrKey.GUEST_FORMULA:
                 pass
             else:
