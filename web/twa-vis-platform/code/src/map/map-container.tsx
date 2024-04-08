@@ -6,6 +6,7 @@ import styles from './map-container.module.css';
 import React from 'react';
 
 import { MapSettings } from 'types/settings';
+import { JsonObject } from 'types/json';
 import { DataStore } from 'io/data/data-store';
 import { parseMapDataSettings } from 'utils/client-utils';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
@@ -15,6 +16,7 @@ import FloatingPanelContainer from 'ui/tree/floating-panel';
 // Type definition of incoming properties
 interface MapContainerProps {
   settings: string;
+  data: string;
 }
 
 /**
@@ -22,7 +24,8 @@ interface MapContainerProps {
  */
 export default function MapContainer(props: MapContainerProps) {
   const mapSettings: MapSettings = JSON.parse(props.settings);
-  const dataStore: DataStore = parseMapDataSettings(mapSettings.data, mapSettings?.type);
+  const mapData: JsonObject = JSON.parse(props.data);
+  const dataStore: DataStore = parseMapDataSettings(mapData, mapSettings?.type);
 
   return (
     <>

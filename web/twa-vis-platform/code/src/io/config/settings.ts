@@ -5,6 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { MapSettings } from 'types/settings';
+import { JsonObject } from "types/json";
 
 /**
  * Handles the retrieval and storage of settings from the user provided configuration files.
@@ -22,6 +23,7 @@ export default class SettingsStore {
   // Cached settings
   private static DEFAULT_SETTINGS: string | null = null;
   private static MAP_SETTINGS: string | null = null;
+  private static MAP_DATA_SETTINGS: string | null = null;
 
   /**
  * Returns true if the "style-overrides.css" file exists within
@@ -42,13 +44,23 @@ export default class SettingsStore {
   }
 
   /**
-  * Retrieves default settings
-  */
+   * Retrieves default map settings
+   */
   public static getMapSettings(): string {
     if (!this.MAP_SETTINGS) {
       this.readMapSettings();
     }
     return this.MAP_SETTINGS;
+  }
+
+  /**
+   * Retrieves data settings for populating map.
+   */
+  public static getMapDataSettings(): string {
+    if (!this.MAP_DATA_SETTINGS) {
+      this.readMapDataSettings();
+    }
+    return this.MAP_DATA_SETTINGS;
   }
 
   /**
@@ -61,15 +73,21 @@ export default class SettingsStore {
   }
 
   /**
-   * Reads the map-related settings including the data and map.
+   * Reads the map settings.
    */
   public static readMapSettings(): void {
     const settings: string = this.readFile(this.MAP_SETTINGS_FILE);
-    const dataSettings: string = this.readFile(this.DATA_SETTINGS_FILE);
-    const mapSettings: MapSettings = JSON.parse(settings);
-    mapSettings.data = JSON.parse(dataSettings);
-    this.MAP_SETTINGS = JSON.stringify(mapSettings);
+    this.MAP_SETTINGS = settings;
     console.info("Map settings have been read and cached.");
+  }
+
+  /**
+ * Reads the data settings for populating the map.
+ */
+  public static readMapDataSettings(): void {
+    const dataSettings: string = this.readFile(this.DATA_SETTINGS_FILE);
+    this.MAP_DATA_SETTINGS = dataSettings;
+    console.info("Map data settings have been read and cached.");
   }
 
   /**

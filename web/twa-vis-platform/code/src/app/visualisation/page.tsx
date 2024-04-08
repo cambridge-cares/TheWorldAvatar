@@ -9,7 +9,11 @@ import MapContainer from 'map/map-container';
  */
 export default function VisualisationPage() {
   SettingsStore.readMapSettings();
+  SettingsStore.readMapDataSettings();
   return (
-    <MapContainer settings={SettingsStore.getMapSettings()} />
+    <MapContainer
+      settings={SettingsStore.getMapSettings()}
+      data={SettingsStore.getMapDataSettings()}
+    />
   )
 }

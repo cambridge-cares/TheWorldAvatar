@@ -1,5 +1,3 @@
-import { JsonObject } from "./json";
-
 /**
  * Interface of default settings for landing page.
  */
@@ -18,7 +16,6 @@ export interface MapSettings {
   camera: CameraSettings,
   imagery: ImagerySettings,
   icons: IconSettings,
-  data: JsonObject,
 }
 
 // Icon settings object
