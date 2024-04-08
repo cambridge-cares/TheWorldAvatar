@@ -4,7 +4,7 @@
 
 from io import TextIOBase
 import concurrent_log_handler
-import logging
+import logging.config
 import sys
 import os
 
@@ -112,6 +112,7 @@ def clear_loggers():
     Remove handlers from all loggers. Method adopted from
     [this comment](https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873).
     """
+    import logging
     loggers = [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values())
     for logger in loggers:
         handlers = getattr(logger, 'handlers', [])
