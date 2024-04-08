@@ -154,7 +154,7 @@ SELECT ?ElementSymbol WHERE {{
         key2bindings = {
             key: self._retrieve_by_property(
                 entity_iri,
-                "zeo:hasZeoliticProperties/zeo:has{key}/om:hasNumericalValue".format(
+                "zeo:hasTopologicalProperties/zeo:has{key}/om:hasNumericalValue".format(
                     key=key.value
                 ),
             )

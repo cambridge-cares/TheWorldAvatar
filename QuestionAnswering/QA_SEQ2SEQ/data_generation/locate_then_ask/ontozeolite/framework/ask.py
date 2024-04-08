@@ -98,7 +98,7 @@ class OZFrameworkAsker:
             topo_key = random.choice(tuple(OZZeoTopoAttrKey))
             qnode = topo_key.value
             query_graph.add_question_node(qnode)
-            pred = "zeo:hasZeoliticProperties/zeo:has" + topo_key.value
+            pred = "zeo:hasTopologicalProperties/zeo:has" + topo_key.value
             qnode_verbn = random.choice(ZEOTOPO_ATTR_LABELS[topo_key])
             query_graph.add_triple("Framework", pred, qnode)
         elif key is OZFrameworkAttrKey.GUEST_SPECIES:

@@ -24,18 +24,18 @@ class OZMaterialLocator:
         query_graph = QueryGraph()
         query_graph.add_topic_node("Material", iri=entity_iri)
         return query_graph, np.random.choice(
-            ["zeolite", "zeolite material"], p=normalize_1d(1, 4)
+            ["zeolite", "zeolite material"], p=normalize_1d([1, 4])
         )
 
     def locate_name(self, entity_iri):
         query_graph, concept = self._locate_concept_name(entity_iri)
         entity = self.store.get_material(entity_iri)
-        formula = random.choice(entity.formula)
 
-        literal_node = query_graph.make_literal_node(formula)
+        literal_node = query_graph.make_literal_node(entity.formula)
         query_graph.add_triple("Material", "zeo:hasChemicalFormula", literal_node)
         verbn = "{concept} [{label}]".format(
-            concept=concept + random.choice(["", " with formulation"]), label=formula
+            concept=concept + random.choice(["", " with formulation"]),
+            label=entity.formula,
         )
 
         return query_graph, verbn
@@ -131,7 +131,7 @@ class OZMaterialLocator:
 
         return "which {contain} {elements}".format(
             contain=(
-                random.choice(["contain", "are built by"]) + " only" if only else ""
+                random.choice(["contain", "are built by"]) + (" only" if only else "")
             ),
             elements=" and ".join(
                 "[{literal}]".format(literal=literal) for literal in elements
@@ -200,7 +200,7 @@ class OZMaterialLocator:
                     query_graph, entity.framework_components, freq
                 )
                 conds.append(_cond)
-            elif k is OZMaterialAttrKey.GUEST_SPECIES:
+            elif attr is OZMaterialAttrKey.GUEST_SPECIES:
                 _cond = self._locate_guest_species(
                     query_graph, entity.guest_species_iris, freq
                 )

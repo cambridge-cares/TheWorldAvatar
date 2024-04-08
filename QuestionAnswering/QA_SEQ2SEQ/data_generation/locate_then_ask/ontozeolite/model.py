@@ -21,7 +21,7 @@ class OZFramework:
     crystal_info: OZCrystalInfo  # ocr:hasCrystalInformation
     topo_scalar: Dict[
         OZZeoTopoAttrKey, Decimal
-    ]  # zeo:hasZeoliticProperties/zeo:has{key}/om:hasNumericalValue
+    ]  # zeo:hasTopologicalProperties/zeo:has{key}/om:hasNumericalValue
     material_iris: List[str]  # zeo:hasZeoliticMaterial
     framework_components: List[str]
     guest_species_iris: List[str]

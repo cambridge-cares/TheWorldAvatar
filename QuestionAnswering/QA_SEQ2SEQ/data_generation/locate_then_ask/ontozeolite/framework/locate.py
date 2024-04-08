@@ -26,7 +26,9 @@ class OZFrameworkLocator:
     def locate_concept_name(self, entity_iri: str):
         query_graph = QueryGraph()
         query_graph.add_topic_node("Framework", iri=entity_iri)
-        return query_graph, np.random.choice(["zeolite framework", "zeolite"], p=normalize_1d([4, 1]))
+        return query_graph, np.random.choice(
+            ["zeolite framework", "zeolite"], p=normalize_1d([4, 1])
+        )
 
     def locate_name(self, entity_iri):
         query_graph, concept = self.locate_concept_name(entity_iri)
@@ -66,7 +68,8 @@ class OZFrameworkLocator:
         )
 
         return "which {contain} {elements}".format(
-            contain=random.choice(["contain", "are built by"]) + " only" if only else "",
+            contain=random.choice(["contain", "are built by"])
+            + (" only" if only else ""),
             elements=" and ".join(
                 "[{literal}]".format(literal=literal) for literal in elements
             ),
@@ -78,7 +81,7 @@ class OZFrameworkLocator:
         frame = [OZCrystalInfoAttrKey.UNIT_CELL]
         if crystal_info.tile_code:
             frame.append(OZCrystalInfoAttrKey.TILED_STRUCTURE)
-            
+
         keys = random.sample(frame, k=freq)
         conds = []
         for k in keys:
@@ -121,20 +124,25 @@ class OZFrameworkLocator:
                 )
             else:
                 raise ValueError("Unexpected crystal info key: " + str(k))
-            
+
             conds.append(cond)
 
         return conds
 
     def _locate_topo_attr(
-        self, query_graph: QueryGraph, topo_scalar: Dict[OZZeoTopoAttrKey, Decimal], freq: int
+        self,
+        query_graph: QueryGraph,
+        topo_scalar: Dict[OZZeoTopoAttrKey, Decimal],
+        freq: int,
     ):
         conds = []
 
         for k, value in random.sample(topo_scalar.items(), k=freq):
             attr_key = k.value
-            pred = "zeo:hasZeoliticProperties/zeo:has{key}/om:hasNumericalValue".format(
-                key=attr_key
+            pred = (
+                "zeo:hasTopologicalProperties/zeo:has{key}/om:hasNumericalValue".format(
+                    key=attr_key
+                )
             )
             attr_verbn = random.choice(ZEOTOPO_ATTR_LABELS[k])
             val_node = attr_key + "NumericalValue"
