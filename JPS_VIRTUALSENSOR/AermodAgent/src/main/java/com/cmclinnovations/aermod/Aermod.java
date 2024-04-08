@@ -53,6 +53,7 @@ import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
@@ -65,6 +66,15 @@ public class Aermod {
     private Path aermodDirectory;
     private Path rasterDirectory;
     private static final String AERMET_INPUT = "aermet.inp";
+    // this keeps 50 unique timesteps in the geoserver layers to keep performance
+    // reasonable
+    String sqlCleanupTemplate = """
+            DELETE FROM %s WHERE time NOT IN (
+                SELECT DISTINCT time
+                FROM %s
+                ORDER BY time DESC
+                LIMIT 50)
+                """;
 
     public Aermod(Path simulationDirectory) {
         LOGGER.info("Creating directory for simulation files");
@@ -241,6 +251,13 @@ public class Aermod {
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.STATIC_SOURCE_TABLE, new GeoServerVectorSettings());
+
+        // keep layer at maintainable size
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.STATIC_SOURCE_TABLE, EnvConfig.STATIC_SOURCE_TABLE);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
 
     void createShipsLayer(List<Ship> pointSources, long simulationTime, String derivationIri) {
@@ -286,6 +303,14 @@ public class Aermod {
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.SHIPS_LAYER_NAME, new GeoServerVectorSettings());
+
+        // keep layer at maintainable size
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.SHIPS_LAYER_NAME,
+                EnvConfig.SHIPS_LAYER_NAME);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
 
     public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
@@ -775,6 +800,14 @@ public class Aermod {
 
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.DISPERSION_CONTOURS_TABLE, geoServerVectorSettings);
+
+        // clean up table
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.DISPERSION_CONTOURS_TABLE,
+                EnvConfig.DISPERSION_CONTOURS_TABLE);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
 
     void createElevationLayer(JSONObject geoJSON, String derivationIri) {
