@@ -1550,18 +1550,338 @@
             ],
             "layers": [
                 {
-                    "id": "with-heat",
-                    "name": "Buildings with heat emissions",
+                    "id": "data-centres",
+                    "name": "Data centres",
                     "source": "usage",
                     "source-layer": "building_usage",
                     "type": "fill-extrusion",
                     "filter": [
-                        "!=",
+                        "all",
                         [
-                            "get",
-                            "heat_emissions"
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
                         ],
-                        null
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "data_centres"
+                        ]
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                5
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#2ad5ff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                15
+                            ],
+                            "#55aaff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                25
+                            ],
+                            "#aa55ff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                31
+                            ],
+                            "#d52aff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "factories",
+                    "name": "Factories",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "all",
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "factories"
+                        ]
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                5
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#2ad5ff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                15
+                            ],
+                            "#55aaff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                25
+                            ],
+                            "#aa55ff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                31
+                            ],
+                            "#d52aff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "precision-engineering",
+                    "name": "Precision engineering",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "all",
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "precision_engineering"
+                        ]
+                    ],
+                    "order": 7,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                5
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#2ad5ff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                15
+                            ],
+                            "#55aaff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                25
+                            ],
+                            "#aa55ff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                31
+                            ],
+                            "#d52aff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "printing",
+                    "name": "Printing",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "all",
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "heat_emissions"
+                            ],
+                            null
+                        ],
+                        [
+                            "==",
+                            [
+                                "get",
+                                "infrastructure_type"
+                            ],
+                            "printing"
+                        ]
                     ],
                     "order": 7,
                     "layout": {
