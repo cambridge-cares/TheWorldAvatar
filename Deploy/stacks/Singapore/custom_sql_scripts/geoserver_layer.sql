@@ -32,12 +32,20 @@ WITH uuid_table AS (
     FROM "citydb"."cityobject_genericattrib"
     WHERE attrname = 'height'
 ), factory_data_combined AS (
-    SELECT building_uuid, sum(heat_emissions) as heat_emissions
+    SELECT building_uuid, sum(heat_emissions) as heat_emissions, 'factories' as infrastructure_type
 	FROM factories
 	GROUP BY building_uuid
 	UNION
-	SELECT building_uuid, sum(heat_emissions) as heat_emissions
+	SELECT building_uuid, sum(heat_emissions) as heat_emissions, 'data_centres' as infrastructure_type
 	FROM data_centres
+	GROUP BY building_uuid
+	UNION
+	SELECT building_uuid, sum(heat_emissions) as heat_emissions, 'precision_engineering' as infrastructure_type
+	FROM precision_engineering
+	GROUP BY building_uuid
+	UNION
+	SELECT building_uuid, sum(heat_emissions) as heat_emissions, 'printing' as infrastructure_type
+	FROM printing
 	GROUP BY building_uuid
 )
 
@@ -52,7 +60,8 @@ SELECT DISTINCT
     iri_table.iri,
     ontobuilt,
 	heat_emissions,
-	citydb.objectclass.classname AS objectclass
+	citydb.objectclass.classname AS objectclass,
+	infrastructure_type
 FROM citydb.building b
 JOIN citydb.surface_geometry sg ON sg.root_id = b.lod0_footprint_id
 JOIN uuid_table ON b.id = uuid_table.cityobject_id
@@ -73,7 +82,8 @@ SELECT
     iri_table.iri,
     null as ontobuilt,
     heat_emissions,
-    objectclass.classname AS objectclass
+    objectclass.classname AS objectclass,
+	null as infrastructure_type
 FROM 
     citydb.city_furniture
 JOIN 
@@ -94,3 +104,4 @@ WHERE
 CREATE INDEX usage_index ON usage.buildingusage_geoserver_sg (ontobuilt);
 CREATE INDEX geometry_index ON usage.buildingusage_geoserver_sg USING GIST (geom);
 CREATE INDEX classname_index ON usage.buildingusage_geoserver_sg (objectclass);
+CREATE INDEX infra_index ON usage.buildingusage_geoserver_sg (infrastructure_type);
