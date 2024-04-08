@@ -133,41 +133,49 @@ public class Aermod {
     }
 
     public void runBPIPPRM() {
-        try {
-            Process process = Runtime.getRuntime().exec(
-                    new String[] { EnvConfig.BPIPPRM_EXE, "bpipprm.inp", "building.dat", "buildings_summary.dat" },
-                    null, bpipprmDirectory.toFile());
 
+        Process process = null;
+
+        try {
+            ProcessBuilder builder = new ProcessBuilder(EnvConfig.BPIPPRM_EXE, "bpipprm.inp", "building.dat",
+                    "buildings_summary.dat");
+            builder.directory(bpipprmDirectory.toFile());
+            process = builder.start();
             process.waitFor();
 
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
 
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                // Read the output from the command
+                LOGGER.info("Here is the standard output of BPIPPRM:");
+                String s;
+                while ((s = stdInput.readLine()) != null) {
+                    LOGGER.info(s);
+                }
 
-            // Read the output from the command
-            LOGGER.info("Here is the standard output of BPIPPRM:");
-            String s = null;
-            while ((s = stdInput.readLine()) != null) {
-                LOGGER.info(s);
-            }
-
-            // Read any errors from the attempted command
-            LOGGER.info("Here is the standard error of BPIPPRM (if any):");
-            while ((s = stdError.readLine()) != null) {
-                LOGGER.info(s);
+                // Read any errors from the attempted command
+                LOGGER.info("Here is the standard error of BPIPPRM (if any):");
+                while ((s = stdError.readLine()) != null) {
+                    LOGGER.error(s);
+                }
             }
         } catch (IOException e) {
-            String errmsg = "Error running bpipprm";
-            LOGGER.error(e.getMessage());
+            String errmsg = "Error executing bpipprm";
             LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            String errmsg = "Error running bpipprm";
-            LOGGER.error(e.getMessage());
+            String errmsg = "Error executing bpipprm";
             LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
+        } finally {
+            if (null != process) {
+                process.destroy();
+            }
         }
+
     }
 
     public void createAERMODBuildingsInput(boolean createEmptyFile) {
@@ -487,39 +495,45 @@ public class Aermod {
             throw new RuntimeException(errmsg, e);
         }
 
+        Process process = null;
+
         try {
-            Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMET_EXE, AERMET_INPUT }, null,
-                    aermetDirectory.toFile());
+            ProcessBuilder builder = new ProcessBuilder(EnvConfig.AERMET_EXE, AERMET_INPUT);
+            builder.directory(aermetDirectory.toFile());
+            process = builder.start();
             process.waitFor();
 
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
 
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                // Read the output from the command
+                LOGGER.info("Here is the standard output of AERMET:");
+                String s;
+                while ((s = stdInput.readLine()) != null) {
+                    LOGGER.info(s);
+                }
 
-            // Read the output from the command
-            LOGGER.info("Here is the standard output of AERMET:");
-            String s = null;
-            while ((s = stdInput.readLine()) != null) {
-                LOGGER.info(s);
+                // Read any errors from the attempted command
+                LOGGER.info("Here is the standard error of AERMET (if any):");
+                while ((s = stdError.readLine()) != null) {
+                    LOGGER.error(s);
+                }
             }
-
-            // Read any errors from the attempted command
-            LOGGER.info("Here is the standard error of AERMET (if any):");
-            while ((s = stdError.readLine()) != null) {
-                LOGGER.info(s);
-            }
-
         } catch (IOException e) {
             String errmsg = "Error executing aermet";
             LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             String errmsg = "Error executing aermet";
             LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
+        } finally {
+            if (null != process) {
+                process.destroy();
+            }
         }
 
         // check if outputs are generated
@@ -604,41 +618,48 @@ public class Aermod {
         writeToFile(aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).resolve(String.valueOf(z))
                 .resolve(aermodInputFile), templateContent);
 
+        Process process = null;
+
         try {
-            Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMOD_EXE, aermodInputFile }, null,
-                    aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).resolve(String.valueOf(z))
-                            .toFile());
+            ProcessBuilder builder = new ProcessBuilder(EnvConfig.AERMOD_EXE, aermodInputFile);
+            builder.directory(aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType))
+                    .resolve(String.valueOf(z)).toFile());
+            process = builder.start();
             process.waitFor();
 
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
 
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                // Read the output from the command
+                LOGGER.info("Here is the standard output of AERMOD:");
+                String s;
+                while ((s = stdInput.readLine()) != null) {
+                    LOGGER.info(s);
+                }
 
-            // Read the output from the command
-            LOGGER.info("Here is the standard output of AERMOD:");
-            String s = null;
-            while ((s = stdInput.readLine()) != null) {
-                LOGGER.info(s);
-            }
-
-            // Read any errors from the attempted command
-            LOGGER.info("Here is the standard error of AERMOD (if any):");
-            while ((s = stdError.readLine()) != null) {
-                LOGGER.info(s);
+                // Read any errors from the attempted command
+                LOGGER.info("Here is the standard error of AERMOD (if any):");
+                while ((s = stdError.readLine()) != null) {
+                    LOGGER.error(s);
+                }
             }
         } catch (IOException e) {
             String errmsg = String.format("Error executing aermod for pollutant: %s and height: %f",
                     Pollutant.getPollutantLabel(pollutantType), z);
             LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             String errmsg = String.format("Error executing aermod for pollutant: %s and height: %f",
                     Pollutant.getPollutantLabel(pollutantType), z);
             LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             throw new RuntimeException(errmsg, e);
+        } finally {
+            if (null != process) {
+                process.destroy();
+            }
         }
     }
 
