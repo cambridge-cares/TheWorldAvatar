@@ -797,15 +797,13 @@ public class QueryClient {
             if (latestTime != null) {
                 String dispersionRaster = dispersionSimulation
                         .getDispersionRaster(dispersionSimulation.getPollutants().get(0));
-                simulationTimes = tsClient
-                        .getTimeSeriesWithinBounds(List.of(dispersionRaster), latestTime - 86400, latestTime, conn)
-                        .getTimes();
-                // 86400 = 24 hours
+                simulationTimes = tsClient.getTimeSeries(List.of(dispersionRaster), conn).getTimes();
+
             } else {
                 simulationTimes = new ArrayList<>();
             }
 
-            dispersionSimulation.setTimesteps(simulationTimes);
+            dispersionSimulation.setTimesteps(simulationTimes.subList(0, Math.min(simulationTimes.size(), 50)));
         });
     }
 

@@ -80,7 +80,7 @@ public class ScheduledDispersion extends HttpServlet {
                 Instant nextUpdate = Instant.now().plus(1, ChronoUnit.HOURS);
 
                 // timestamp to run dispersion simulations
-                long simTime = Instant.now().minus(delay, ChronoUnit.MINUTES).getEpochSecond();
+                long simTime = Instant.now().getEpochSecond();
 
                 queryClient.updateSimulationTime(derivation, simTime);
                 devClient.updatePureSyncDerivation(derivation);
