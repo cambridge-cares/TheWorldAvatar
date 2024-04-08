@@ -8,9 +8,11 @@ import numpy as np
 from constants.functions import BASIC_NUM_OPS
 from constants.ontozeolite import (
     CRYSTAL_SCALAR_KEYS,
+    ZEOMATERIAL_PRED_LABELS,
     ZEOTOPO_ATTR_LABELS,
     OZCrystalInfoAttrKey,
     OZFrameworkAttrKey,
+    OZMaterialAttrKey,
     OZZeoTopoAttrKey,
 )
 from locate_then_ask.ontozeolite.model import OZCrystalInfo
@@ -36,7 +38,7 @@ class OZFrameworkLocator:
 
         literal_node = query_graph.make_literal_node(entity.framework_code)
         query_graph.add_triple("Framework", "zeo:hasFrameworkCode", literal_node)
-        verbn = "{concept} [{label}]".format(
+        verbn = "{concept} <span>{label}</span>".format(
             concept=concept, label=entity.framework_code
         )
 
@@ -69,12 +71,7 @@ class OZFrameworkLocator:
 
         return "which {contain} {elements}".format(
             contain=random.choice(
-                [
-                    "contains",
-                    "is built by",
-                    "is built by elements",
-                    "has building elements",
-                ]
+                ZEOMATERIAL_PRED_LABELS[OZMaterialAttrKey.FRAMEWORK_COMPONENTS]
             )
             + (" only" if only else ""),
             elements=" and ".join(elements),
@@ -124,7 +121,7 @@ class OZFrameworkLocator:
                     subkey=k,
                 )
 
-                cond = "whose tile code is [{label}]".format(
+                cond = "whose tile code is <span>{label}</span>".format(
                     label=crystal_info.tile_code
                 )
             else:
@@ -220,9 +217,11 @@ class OZFrameworkLocator:
         )
 
         return "which {incorporate} {guests}".format(
-            incorporate=random.choice(["incorporate", "have guest species"]),
+            incorporate=random.choice(
+                ZEOMATERIAL_PRED_LABELS[OZMaterialAttrKey.GUEST_SPECIES]
+            ),
             guests=" and ".join(
-                ["[{literal}]".format(literal=guest) for guest in guests]
+                ["<span>{literal}</span>".format(literal=guest) for guest in guests]
             ),
         )
 

@@ -6,7 +6,7 @@ import numpy as np
 
 from constants.functions import BASIC_NUM_OPS
 from constants.ontozeolite import (
-    ZEOMATERIAL_ATTR_LABELS,
+    ZEOMATERIAL_PRED_LABELS,
     OZCrystalInfoAttrKey,
     OZMaterialAttrKey,
 )
@@ -33,8 +33,9 @@ class OZMaterialLocator:
 
         literal_node = query_graph.make_literal_node(entity.formula)
         query_graph.add_triple("Material", "zeo:hasChemicalFormula", literal_node)
-        verbn = "{concept} [{label}]".format(
-            concept=concept + random.choice(["", " with formulation"]),
+        verbn = "{concept}{connector} <span>{label}</span>".format(
+            concept=concept,
+            connector=random.choice(["", " with formulation"]),
             label=entity.formula,
         )
 
@@ -95,7 +96,7 @@ class OZMaterialLocator:
                     subkey=k,
                 )
 
-                cond = "whose tile code is [{label}]".format(
+                cond = "whose tile code is <span>{label}</span>".format(
                     label=crystal_info.tile_code
                 )
             else:
@@ -132,12 +133,7 @@ class OZMaterialLocator:
         return "which {contain} {elements}".format(
             contain=(
                 random.choice(
-                    [
-                        "contains",
-                        "is built by",
-                        "is built by elements",
-                        "has building elements",
-                    ]
+                    ZEOMATERIAL_PRED_LABELS[OZMaterialAttrKey.FRAMEWORK_COMPONENTS]
                 )
                 + (" only" if only else "")
             ),
@@ -169,9 +165,11 @@ class OZMaterialLocator:
         )
 
         return "which {incorporate} {guests}".format(
-            incorporate=random.choice(["incorporate", "have guest species"]),
+            incorporate=random.choice(
+                ZEOMATERIAL_PRED_LABELS[OZMaterialAttrKey.GUEST_SPECIES]
+            ),
             guests=" and ".join(
-                ["[{literal}]".format(literal=guest) for guest in guests]
+                ["<span>{literal}</span>".format(literal=guest) for guest in guests]
             ),
         )
 

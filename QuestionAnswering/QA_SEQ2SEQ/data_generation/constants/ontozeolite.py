@@ -99,7 +99,9 @@ ZEOTOPO_ATTR_LABELS = {
 
 ZEOMATERIAL_ATTR_LABELS = {
     OZMaterialAttrKey.FRAMEWORK_COMPONENTS: [
-        "building elements", "framework components"
+        "building elements",
+        "framework building elements",
+        "framework components",
     ],
     OZMaterialAttrKey.GUEST_SPECIES: [
         "guest",
@@ -107,5 +109,18 @@ ZEOMATERIAL_ATTR_LABELS = {
         "guest species",
         "incorporated species",
         "OSDA",
-    ]
+    ],
+}
+
+ZEOMATERIAL_PRED_LABELS = {
+    OZMaterialAttrKey.FRAMEWORK_COMPONENTS: [
+        "is built by",
+        "is built by elements",
+        "is made up of",
+        "is made up of elements",
+        "has building elements",
+        "has framework building elements",
+        "has framework components",
+    ],
+    OZMaterialAttrKey.GUEST_SPECIES: ["incorporates", "has guest species", "has guest"],
 }
