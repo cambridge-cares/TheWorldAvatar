@@ -57,7 +57,6 @@ class OZFrameworkAttrKey(Enum):
     TOPO_ATTR = 2
     MATERIALS = 3
     GUEST_SPECIES = 4
-    GUEST_FORMULA = 5
 
 
 class OZMaterialAttrKey(Enum):

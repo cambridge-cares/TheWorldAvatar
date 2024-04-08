@@ -25,7 +25,6 @@ class OZFramework:
     material_iris: List[str]  # zeo:hasZeoliticMaterial
     framework_components: List[str]
     guest_species_iris: List[str]
-    guest_formulae: List[str]
 
 
 @dataclass(frozen=True)
@@ -37,7 +36,6 @@ class OZMaterial:
         str
     ]  # zeo:hasFrameworkComponent/os:hasElementSymbol/os:value
     guest_species_iris: List[str]  # zeo:hasGuestCompound
-    guest_formula: Optional[str]
 
     def __post_init__(self):
         object.__setattr__(self, "formulae", tuple(self.formula))
