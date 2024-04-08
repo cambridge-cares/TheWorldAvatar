@@ -133,13 +133,28 @@ class OZFrameworkLocator:
 
         return conds
 
+    def _locate_material(self, query_graph: QueryGraph, material_iris: List[str]):
+        material_iri = random.choice(material_iris)
+        material = self.store.get_material(material_iri)
+
+        literal_node = query_graph.make_literal_node(material.formula)
+        query_graph.add_triples([
+            ("Framework", "zeo:hasZeoliticMaterial", "Material"),
+            ("Material", "zeo:hasChemicalFormula", literal_node)
+        ])
+
+        return "corresponding to {material} {formula}".format(
+            material=random.choice(["material", "zeolitic material", "zeolite"]),
+            formula=random.choice(["formula ", "with formula ", ""]) + material.formula
+        )
+
     def locate_concept_and_literal_multi(self, entity_iri: str, cond_num: int):
         query_graph, concept = self.locate_concept_name(entity_iri)
 
         entity = self.store.get_framework(entity_iri)
 
         attr_key_counts = {
-            OZFrameworkAttrKey.FRAMEWORK_COMPONENTS: 2,
+            OZFrameworkAttrKey.FRAMEWORK_COMPONENTS: 3,
             OZFrameworkAttrKey.CRYSTAL_INFO: 2 if entity.crystal_info.tile_code else 1,
             OZFrameworkAttrKey.TOPO_ATTR: 10,
             OZFrameworkAttrKey.MATERIALS: 1,
@@ -168,7 +183,8 @@ class OZFrameworkLocator:
                 _conds = self._locate_topo_attr(query_graph, entity.topo_scalar, freq)
                 conds.extend(_conds)
             elif attr is OZFrameworkAttrKey.MATERIALS:
-                pass
+                _cond = self._locate_material(query_graph, entity.material_iris)
+                conds.append(_cond)
             elif attr is OZFrameworkAttrKey.GUEST_SPECIES:
                 pass
             elif attr is OZFrameworkAttrKey.GUEST_FORMULA:
