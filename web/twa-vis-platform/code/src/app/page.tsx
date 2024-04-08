@@ -4,10 +4,12 @@
 
 import React from 'react';
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 import LandingPage from 'ui/pages/landing';
 import OptionalPages from 'io/config/optional-pages';
-import VisualisationPage from './visualisation/page';
+import SettingsStore from 'io/config/settings';
+import { DefaultSettings } from 'types/settings';
 
 /**
  * Set page metadata.
@@ -34,15 +36,10 @@ export async function generateMetadata(): Promise<Metadata> {
  * @returns JSX for default (home) page.
  */
 export default function App() {
-  const landingPage = OptionalPages.getPage("landing");
-  return (
-    <>
-      {landingPage &&
-        <LandingPage />
-      }
-      {!landingPage &&
-        <VisualisationPage />
-      }
-    </>
-  );
+  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  if (uiSettings.modules.landing){
+    return (<LandingPage />);
+  } else {
+    redirect(`visualisation`);
+  }
 }
