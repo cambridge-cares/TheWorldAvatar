@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional
 
 from pydantic.dataclasses import dataclass
 
@@ -21,15 +21,21 @@ class OZFramework:
     crystal_info: OZCrystalInfo  # ocr:hasCrystalInformation
     topo_scalar: Dict[
         OZZeoTopoAttrKey, Decimal
-    ]  # zeo:hasZeoliteTopology/zeo:has{key}/om:hasNumericalValue
+    ]  # zeo:hasZeoliticProperties/zeo:has{key}/om:hasNumericalValue
+    material_iris: List[str]  # zeo:hasZeoliticMaterial
+    framework_components: List[str]
+    guest_species_iris: List[str]
 
 
 @dataclass(frozen=True)
 class OZMaterial:
     iri: str
     framework_iri: str  # ^zeo:hasZeoliticMaterial
-    formulae: Tuple[str, ...]  # zeo:hasChemicalFormula
-    guest_compound: Optional[str]  # zeo:hasGuestCompound/os:formula
+    formula: str  # zeo:hasChemicalFormula
+    framework_components: List[
+        str
+    ]  # zeo:hasFrameworkComponent/os:hasElementSymbol/os:value
+    guest_species_iris: List[str]  # zeo:hasGuestCompound
 
     def __post_init__(self):
-        object.__setattr__(self, "formulae", tuple(self.formulae))
+        object.__setattr__(self, "formulae", tuple(self.formula))

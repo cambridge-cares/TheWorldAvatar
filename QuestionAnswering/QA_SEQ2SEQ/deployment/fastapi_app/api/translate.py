@@ -7,6 +7,8 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
+from api.sparql import get_kg_configs
+from services.utils.frozendict import FrozenDict
 from services.translate.triton_client.feature_extraction_client import (
     FeatureExtractionClient,
     IFeatureExtractionClient,
@@ -58,8 +60,12 @@ def get_translator(
     feature_extraction_client: Annotated[
         IFeatureExtractionClient, Depends(get_feature_extraction_client)
     ],
+    domain2kgconfig: Annotated[
+        FrozenDict[str, FrozenDict[str, str]], Depends(get_kg_configs)
+    ]
 ):
-    return Translator(seq2seq_client, feature_extraction_client)
+    print(domain2kgconfig)
+    return Translator(seq2seq_client, feature_extraction_client, domain2kgconfig=domain2kgconfig)
 
 
 def get_preprocessor() -> IPreprocessor:
