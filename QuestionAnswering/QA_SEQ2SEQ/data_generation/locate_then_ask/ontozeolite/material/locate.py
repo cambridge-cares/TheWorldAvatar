@@ -131,7 +131,15 @@ class OZMaterialLocator:
 
         return "which {contain} {elements}".format(
             contain=(
-                random.choice(["contain", "are built by"]) + (" only" if only else "")
+                random.choice(
+                    [
+                        "contains",
+                        "is built by",
+                        "is built by elements",
+                        "has building elements",
+                    ]
+                )
+                + (" only" if only else "")
             ),
             elements=" and ".join(
                 "[{literal}]".format(literal=literal) for literal in elements

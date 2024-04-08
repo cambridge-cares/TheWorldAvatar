@@ -20,7 +20,7 @@ class OZFrameworkAsker:
     ATTR_WEIGHTS = {
         OZFrameworkAttrKey.FRAMEWORK_COMPONENTS: 2,
         OZFrameworkAttrKey.CRYSTAL_INFO: 2,
-        OZFrameworkAttrKey.TOPO_ATTR: 10,
+        OZFrameworkAttrKey.TOPO_ATTR: 15,
         OZFrameworkAttrKey.GUEST_SPECIES: 2,
     }
 

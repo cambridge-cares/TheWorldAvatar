@@ -30,7 +30,7 @@ class OZFrameworkExampleMaker(ExampleMakerBase):
                 entity_iri, cond_num=cond_num
             )
             if self.asker.get_unsampled_keys(query_graph):
-                ask_strategy_weights = {"name": 3, "attr": 2}
+                ask_strategy_weights = {"name": 1, "attr": 10}
             else:
                 ask_strategy_weights = {"name": 1}
         else:
