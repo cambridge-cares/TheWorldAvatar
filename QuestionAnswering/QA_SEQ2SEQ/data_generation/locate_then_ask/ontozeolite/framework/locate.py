@@ -69,12 +69,15 @@ class OZFrameworkLocator:
             ]
         )
 
-        return "which {contain} {elements}".format(
+        template = random.choice(
+            ["which {contain} {elements}{only}", "which {contain}{only} {elements}"]
+        )
+        return template.format(
             contain=random.choice(
                 ZEOMATERIAL_PRED_LABELS[OZMaterialAttrKey.FRAMEWORK_COMPONENTS]
-            )
-            + (" only" if only else ""),
+            ),
             elements=" and ".join(elements),
+            only=" only" if only else "",
         )
 
     def _locate_crystal_info(

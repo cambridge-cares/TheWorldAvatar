@@ -129,15 +129,15 @@ class OZMaterialLocator:
                 for literal_node in literal_nodes
             ]
         )
-
-        return "which {contain} {elements}".format(
-            contain=(
-                random.choice(
-                    ZEOMATERIAL_PRED_LABELS[OZMaterialAttrKey.FRAMEWORK_COMPONENTS]
-                )
-                + (" only" if only else "")
+        template = random.choice(
+            ["which {contain} {elements}{only}", "which {contain}{only} {elements}"]
+        )
+        return template.format(
+            contain=random.choice(
+                ZEOMATERIAL_PRED_LABELS[OZMaterialAttrKey.FRAMEWORK_COMPONENTS]
             ),
             elements=" and ".join(elements),
+            only=" only" if only else "",
         )
 
     def _locate_guest_species(

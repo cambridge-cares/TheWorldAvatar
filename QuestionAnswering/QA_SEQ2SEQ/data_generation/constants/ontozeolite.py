@@ -115,12 +115,12 @@ ZEOMATERIAL_ATTR_LABELS = {
 ZEOMATERIAL_PRED_LABELS = {
     OZMaterialAttrKey.FRAMEWORK_COMPONENTS: [
         "is built by",
-        "is built by elements",
+        "is built by elements being",
         "is made up of",
-        "is made up of elements",
-        "has building elements",
-        "has framework building elements",
-        "has framework components",
+        "is made up of elements being",
+        "has building elements being",
+        "has framework building elements being",
+        "has framework components being",
     ],
     OZMaterialAttrKey.GUEST_SPECIES: ["incorporates", "has guest species", "has guest"],
 }
