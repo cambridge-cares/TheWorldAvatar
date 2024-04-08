@@ -52,8 +52,12 @@ ZEOTOPO_SCALAR_KEYS = [
 
 
 class OZFrameworkAttrKey(Enum):
-    CRYSTAL_INFO = 0
-    TOPO_ATTR = 1
+    FRAMEWORK_COMPONENTS = 0
+    CRYSTAL_INFO = 1
+    TOPO_ATTR = 2
+    MATERIALS = 3
+    GUEST_SPECIES = 4
+    GUEST_FORMULA = 5
 
 
 class OZMaterialAttrKey(Enum):

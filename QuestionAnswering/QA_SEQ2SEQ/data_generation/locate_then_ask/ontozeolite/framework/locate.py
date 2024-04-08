@@ -1,7 +1,7 @@
 from collections import defaultdict
 from decimal import Decimal
 import random
-from typing import Dict
+from typing import Dict, List
 
 from constants.functions import BASIC_NUM_OPS
 from constants.ontozeolite import (
@@ -36,6 +36,27 @@ class OZFrameworkLocator:
         )
 
         return query_graph, verbn
+
+    def _locate_framework_components(
+        self, query_graph: QueryGraph, framework_components: List[str], freq: int
+    ):
+        elements = random.sample(
+            framework_components, k=min(len(framework_components, freq))
+        )
+        literal_nodes = [query_graph.make_literal_node(elem) for elem in elements]
+        only = random.getrandbits(1)
+        pred = "zeo:hasFrameworkComponent{only}/rdfs:label".format(
+            only="Only" if only else ""
+        )
+
+        query_graph.add_triple("Framework", "zeo:hasZeoliticMaterial", "Material")
+        query_graph.add_triples(
+            [("Material", pred, literal_node) for literal_node in literal_nodes]
+        )
+
+        return "built by " + " and ".join(
+            "[{literal}]".format(literal=literal) for literal in elements
+        )
 
     def _locate_crystal_info(
         self, query_graph: QueryGraph, crystal_info: OZCrystalInfo, freq: int
@@ -136,13 +157,16 @@ class OZFrameworkLocator:
         conds = []
         for attr, freq in attr2freq.items():
             if attr is OZFrameworkAttrKey.FRAMEWORK_COMPONENTS:
-                pass
+                _cond = self._locate_framework_components(query_graph, entity.framework_components, freq)
+                conds.append(_cond)
             elif attr is OZFrameworkAttrKey.CRYSTAL_INFO:
                 _conds = self._locate_crystal_info(
                     query_graph, entity.crystal_info, freq
                 )
+                conds.extend(_conds)
             elif attr is OZFrameworkAttrKey.TOPO_ATTR:
                 _conds = self._locate_topo_attr(query_graph, entity.topo_scalar, freq)
+                conds.extend(_conds)
             elif attr is OZFrameworkAttrKey.MATERIALS:
                 pass
             elif attr is OZFrameworkAttrKey.GUEST_SPECIES:
@@ -151,7 +175,6 @@ class OZFrameworkLocator:
                 pass
             else:
                 raise Exception("Unexpected attr: " + str(attr))
-            conds.extend(_conds)
 
         return query_graph, "{concept}, {attrs}".format(
             concept=concept, attrs=", and ".join(conds)
