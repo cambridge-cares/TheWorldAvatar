@@ -23,7 +23,7 @@ PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 SELECT ?UnitCellVolume ?TileCode WHERE {{
     ?s a {type} . 
     ?s {pred_prefix}ocr:hasCrystalInformation/ocr:hasUnitCell/ocr:hasUnitCellVolume/om:hasNumericalValue ?UnitCellVolume .
-    ?s {pred_prefix}ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode ?TileCode .
+    ?s {pred_prefix}ocr:hasCrystalInformation/ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode ?TileCode .
 }}
 LIMIT 100""".format(
         type=clsname2iri(clsname),
@@ -75,10 +75,10 @@ def retrieve_seed_guestSpeciesCounts(
 ):
     query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 
-SELECT (COUNT(?Guest) AS ?Count) WHERE {
+SELECT (COUNT(?Guest) AS ?Count) WHERE {{
     ?s a {rdf_type} .
     ?s {pred_prefix}zeo:hasGuestCompound ?Guest .
-}
+}}
 GROUP BY ?s
 LIMIT 100""".format(
         rdf_type=clsname2iri(clsname),

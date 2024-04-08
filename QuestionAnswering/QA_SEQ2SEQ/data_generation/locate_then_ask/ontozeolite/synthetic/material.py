@@ -28,10 +28,11 @@ class OZMaterialSynthesizer:
 
     @classmethod
     def _retrieve_seed_formulae(cls, kg_client: KgClient):
-        query = """
+        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+
 SELECT ?Formula WHERE {
     ?Material a zeo:ZeoliticMaterial .
-    ?Material zeo:hasChemicalFormula .
+    ?Material zeo:hasChemicalFormula ?Formula .
 }
 LIMIT 100"""
         return [
