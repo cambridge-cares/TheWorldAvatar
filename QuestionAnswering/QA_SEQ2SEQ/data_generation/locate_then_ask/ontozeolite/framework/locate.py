@@ -77,9 +77,7 @@ class OZFrameworkLocator:
                 ]
             )
             + (" only" if only else ""),
-            elements=" and ".join(
-                "[{literal}]".format(literal=literal) for literal in elements
-            ),
+            elements=" and ".join(elements),
         )
 
     def _locate_crystal_info(
@@ -223,7 +221,9 @@ class OZFrameworkLocator:
 
         return "which {incorporate} {guests}".format(
             incorporate=random.choice(["incorporate", "have guest species"]),
-            guests=" and ".join(guests),
+            guests=" and ".join(
+                ["[{literal}]".format(literal=guest) for guest in guests]
+            ),
         )
 
     def locate_concept_and_literal_multi(self, entity_iri: str, cond_num: int):

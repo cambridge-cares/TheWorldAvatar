@@ -32,8 +32,15 @@ class OZMaterialAsker:
         query_sparql = self.graph2sparql.convert(query_graph)
         return query_sparql, "what are the {located}?".format(located=verbalization)
 
-    def ask_attr(self, query_graph: QueryGraph, verbalization: str):
+    def ask_attr(
+        self, query_graph: QueryGraph, verbalization: str, no_ask_guest: bool = False
+    ):
         unsampled_keys = self.get_unsampled_keys(query_graph)
+        if no_ask_guest:
+            try:
+                unsampled_keys.remove(OZMaterialAttrKey.GUEST_SPECIES)
+            except ValueError:
+                pass
         key = np.random.choice(
             unsampled_keys,
             p=normalize_1d([self.ATTR_WEIGHT[x] for x in unsampled_keys]),

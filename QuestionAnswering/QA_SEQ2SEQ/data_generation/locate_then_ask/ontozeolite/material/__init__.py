@@ -37,7 +37,9 @@ class OZMaterialExampleMaker(ExampleMakerBase):
         if ask_strategy == "name":
             query_sparql, verbn = self.asker.ask_name(query_graph, verbn)
         elif ask_strategy == "attr":
-            query_sparql, verbn = self.asker.ask_attr(query_graph, verbn)
+            query_sparql, verbn = self.asker.ask_attr(
+                query_graph, verbn, no_ask_guest=locate_strategy == "name"
+            )
         else:
             raise Exception("Unexpected `ask_strategy`: " + ask_strategy)
 
