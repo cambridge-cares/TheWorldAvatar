@@ -100,7 +100,14 @@
 
 
     <owl:ObjectProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#isEndOf">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentEnd"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentEnd"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingEnd"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
         <rdfs:comment>An object property representing the end date of a business establishment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
@@ -113,7 +120,14 @@
 
 
     <owl:ObjectProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#isStartOf">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentStart"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentStart"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingStart"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
         <rdfs:comment>An object property representing the start date of a business establishment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
@@ -554,6 +568,12 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentEnd">
         <rdfs:subClassOf rdf:resource="http://ies.data.gov.uk/ontology/ies4#BoundingState"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ies.data.gov.uk/ontology/ies4#isEndOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The date of decommissioning or closure of a business establishment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
         <rdfs:label>Business Establishment End</rdfs:label>
@@ -566,6 +586,12 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishmentStart">
         <rdfs:subClassOf rdf:resource="http://ies.data.gov.uk/ontology/ies4#BoundingState"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ies.data.gov.uk/ontology/ies4#isStartOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>Tthe official date when the business began operations or was inaugurated.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
         <rdfs:label>Business Establishment Start</rdfs:label>
@@ -878,6 +904,12 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingEnd">
         <rdfs:subClassOf rdf:resource="http://ies.data.gov.uk/ontology/ies4#BoundingState"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ies.data.gov.uk/ontology/ies4#isEndOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The date on which a rating of a business establishment expired.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
         <rdfs:label>Rating End</rdfs:label>
@@ -901,6 +933,12 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoFHRS/RatingStart">
         <rdfs:subClassOf rdf:resource="http://ies.data.gov.uk/ontology/ies4#BoundingState"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ies.data.gov.uk/ontology/ies4#isStartOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/BusinessEstablishment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The initial date when a rating became effective for a business establishment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
         <rdfs:label>Rating Start</rdfs:label>
@@ -1014,7 +1052,7 @@
 
 
     <owl:Class rdf:about="https://dbpedia.org/ontology/City">
-        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:isDefinedBy rdf:resource="https://dbpedia.org/ontology"/>
         <rdfs:label>City</rdfs:label>
     </owl:Class>
     
@@ -1024,7 +1062,7 @@
 
 
     <owl:Class rdf:about="https://dbpedia.org/ontology/Country">
-        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:isDefinedBy rdf:resource="https://dbpedia.org/ontology"/>
         <rdfs:label>Country</rdfs:label>
     </owl:Class>
     
@@ -1034,7 +1072,7 @@
 
 
     <owl:Class rdf:about="https://dbpedia.org/ontology/Region">
-        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/OntoFHRS/"/>
+        <rdfs:isDefinedBy rdf:resource="https://dbpedia.org/ontology"/>
         <rdfs:label>Region</rdfs:label>
     </owl:Class>
 </rdf:RDF>
