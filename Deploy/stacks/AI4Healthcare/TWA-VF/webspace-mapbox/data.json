@@ -2,142 +2,6 @@
     "name": "All Layers",
     "groups": [
         {
-            "name": "Dispersion",
-            "stack": "http://174.138.27.240:10102",
-            "expanded": true,
-            "sources": [
-                {
-                    "tiles": [
-                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
-                    ],
-                    "id": "dispersion-source",
-                    "type": "vector"
-                },
-                {
-                    "tiles": [
-                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
-                    ],
-                    "id": "weather-source",
-                    "type": "vector"
-                },
-                {
-                    "tiles": [
-                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
-                    ],
-                    "id": "ship-source",
-                    "type": "vector"
-                },
-                {
-                    "tiles": [
-                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
-                    ],
-                    "id": "sensor-source",
-                    "type": "vector"
-                },
-                {
-                    "tiles": [
-                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:building-pirmasens_gsl"
-                    ],
-                    "id": "building-source",
-                    "type": "vector"
-                }
-            ],
-            "layers": [
-                {
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "name": "Plumes",
-                    "paint": {
-                        "fill-outline-color": [
-                            "get",
-                            "stroke"
-                        ],
-                        "fill-color": [
-                            "get",
-                            "fill"
-                        ],
-                        "fill-opacity": 0.3
-                    },
-                    "id": "dispersion-layer",
-                    "source": "dispersion-source",
-                    "source-layer": "dispersion_contours",
-                    "type": "fill",
-                    "minzoom": 4
-                },
-                {
-                    "layout": {
-                        "visibility": "none"
-                    },
-                    "name": "Weather station",
-                    "paint": {
-                        "circle-color": "blue"
-                    },
-                    "id": "weather-layer",
-                    "source": "weather-source",
-                    "source-layer": "weather",
-                    "type": "circle"
-                },
-                {
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "name": "Ships",
-                    "paint": {
-                        "circle-color": "black"
-                    },
-                    "id": "ships-layer",
-                    "source": "ship-source",
-                    "source-layer": "ships",
-                    "type": "circle",
-                    "minzoom": 4
-                },
-                {
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "name": "Virtual sensors",
-                    "paint": {
-                        "circle-color": "red"
-                    },
-                    "id": "sensor-layer",
-                    "source": "sensor-source",
-                    "source-layer": "sensors",
-                    "type": "circle",
-                    "minzoom": 4
-                },
-                {
-                    "id": "buildings",
-                    "source-layer": "building-pirmasens_gsl",
-                    "name": "Buildings",
-                    "source": "building-source",
-                    "type": "fill-extrusion",
-                    "minzoom": 8,
-                    "order": 23,
-                    "layout": {
-                        "visibility": "none"
-                    },
-                    "paint": {
-                        "fill-extrusion-color": "#8D99AE",
-                        "fill-extrusion-opacity": 0.9,
-                        "fill-extrusion-base": 0,
-                        "fill-extrusion-height": [
-                            "case",
-                            [
-                                "has",
-                                "building_height"
-                            ],
-                            [
-                                "get",
-                                "building_height"
-                            ],
-                            8
-                        ]
-                    }
-                }
-            ]
-        },
-        {
             "name": "Cam-Ely-Wisbech Buildings",
             "stack": "http://174.138.27.240:3838",
             "sources": [
@@ -407,27 +271,152 @@
                 }
             ]
         },
-        {   "name": "GPS Tracking",
-            "stack": "http://174.138.27.240:5007",
+        {
+            "name": "Pollutant Dispersion",
+            "stack": "http://174.138.27.240:10102",
+            "expanded": true,
             "sources": [
                 {
-                    "id": "Recorded Points Sources",
-                    "type": "vector",
                     "tiles": [
-                        "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_data&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
+                    ],
+                    "id": "dispersion-source",
+                    "type": "vector"
                 },
                 {
-                    "id": "Movement Trajectory Sources",
-                    "type": "raster",
                     "tiles": [
-                        "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_line&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
-                    ]
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
+                    ],
+                    "id": "weather-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
+                    ],
+                    "id": "ship-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
+                    ],
+                    "id": "sensor-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:building-pirmasens_gsl"
+                    ],
+                    "id": "building-source",
+                    "type": "vector"
                 }
-
             ],
             "layers": [
                 {
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "name": "NOx Distribution",
+                    "paint": {
+                        "fill-outline-color": [
+                            "get",
+                            "stroke"
+                        ],
+                        "fill-color": [
+                            "get",
+                            "fill"
+                        ],
+                        "fill-opacity": 0.3
+                    },
+                    "id": "dispersion-layer",
+                    "source": "dispersion-source",
+                    "source-layer": "dispersion_contours",
+                    "type": "fill",
+                    "minzoom": 4
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Weather station",
+                    "paint": {
+                        "circle-color": "blue"
+                    },
+                    "id": "weather-layer",
+                    "source": "weather-source",
+                    "source-layer": "weather",
+                    "type": "circle"
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Virtual sensors",
+                    "paint": {
+                        "circle-color": "red"
+                    },
+                    "id": "sensor-layer",
+                    "source": "sensor-source",
+                    "source-layer": "sensors",
+                    "type": "circle",
+                    "minzoom": 4
+                },
+                {
+                    "id": "buildings",
+                    "source-layer": "building-pirmasens_gsl",
+                    "name": "Buildings",
+                    "source": "building-source",
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#8D99AE",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "GPS Example Data",
+            "groups": [
+              {
+                "name": "Example GPS Data in 2015",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                  {
+                    "id": "Recorded Points Sources",
+                    "type": "vector",
+                    "tiles": [
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_data&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                  },
+                  {
+                    "id": "Movement Trajectory Sources",
+                    "type": "raster",
+                    "tiles": [
+                      "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_line&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    ]
+                  }
+                ],
+                "layers": [
+                  {
                     "id": "Recorded Points_layer",
                     "name": "Recorded Points",
                     "source": "Recorded Points Sources",
@@ -436,14 +425,14 @@
                     "minzoom": 6,
                     "order": 24,
                     "layout": {
-                        "visibility": "none",
-                        "icon-image": "gpslocation2",
-                        "icon-size": 0.37,
-                        "icon-allow-overlap": true,
-                        "icon-ignore-placement": true
+                      "visibility": "none",
+                      "icon-image": "gpslocation2",
+                      "icon-size": 0.37,
+                      "icon-allow-overlap": true,
+                      "icon-ignore-placement": true
                     }
-                },
-                {
+                  },
+                  {
                     "id": "Movement Trajectory_layer",
                     "name": "Movement Trajectory",
                     "source": "Movement Trajectory Sources",
@@ -451,100 +440,310 @@
                     "minzoom": 4,
                     "order": 3,
                     "layout": {
-                        "visibility": "none"
+                      "visibility": "none"
                     }
-                }
-
+                  }
+                ]
+              },
+              {
+                "name": "Example GPS Data in 2016",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                  {
+                    "id": "Recorded Points Sources",
+                    "type": "vector",
+                    "tiles": [
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_tra_2016&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                  },
+                  {
+                    "id": "Movement Trajectory Sources",
+                    "type": "raster",
+                    "tiles": [
+                      "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_tra_2016_line&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    ]
+                  }
+                ],
+                "layers": [
+                  {
+                    "id": "Recorded Points_layer",
+                    "name": "Recorded Points",
+                    "source": "Recorded Points Sources",
+                    "source-layer": "gps_tra_2016",
+                    "type": "symbol",
+                    "minzoom": 6,
+                    "order": 24,
+                    "layout": {
+                      "visibility": "none",
+                      "icon-image": "gpslocation2",
+                      "icon-size": 0.37,
+                      "icon-allow-overlap": true,
+                      "icon-ignore-placement": true
+                    }
+                  },
+                  {
+                    "id": "Movement Trajectory_layer",
+                    "name": "Movement Trajectory",
+                    "source": "Movement Trajectory Sources",
+                    "type": "raster",
+                    "minzoom": 4,
+                    "order": 3,
+                    "layout": {
+                      "visibility": "none"
+                    }
+                  }
+                ]
+              }
             ]
         },
-        {   "name": "Food Hygiene Rating",
-            "stack": "http://174.138.27.240:5007",
-            "sources": [
-                {
+        {
+            "name": "Food Retailing",
+            "groups": [
+            {
+                "name": "Food Hygiene Rating",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                  {
                     "id": "fhr-cambridge-source",
                     "type": "vector",
                     "cluster": true,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "tiles": [
-                        "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:fhr_cambridge&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:fhr_cambridge&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
-                }
-            ],
-            "layers": [
-                {
-                    "id": "fhr-cambridge_layer",
-                    "name": "FHR Cambridge",
-                    "source": "fhr-cambridge-source",
-                    "source-layer": "fhr_cambridge",
-                    "type": "symbol",
-                    "minzoom": 6,
-                    "order": 24,
-                    "layout": {
-                        "visibility": "none",
-                        "icon-image": "FoodHygieneRating",
-                        "icon-size": 0.45,
-                        "icon-allow-overlap": true,
-                        "icon-ignore-placement": true
+                  }
+                ],
+                "layers": [
+                    {
+                        "id": "fhr-cambridge_layer",
+                        "name": "School/college/university",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 24,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "School/college/university"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_two",
+                        "name": "Hospitals/Childcare/CaringPremises",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Hospitals/Childcare/Caring Premises"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_three",
+                        "name": "Restaurant/Cafe/Canteen",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Restaurant/Cafe/Canteen"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_four",
+                        "name": "Hotel/bed & breakfast/guest house",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Hotel/bed & breakfast/guest house"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_five",
+                        "name": "Pub/bar/nightclub",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Pub/bar/nightclub"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_six",
+                        "name": "Mobile caterer",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Mobile caterer"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_seven",
+                        "name": "Retailers - supermarkets/hypermarkets",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Retailers - supermarkets/hypermarkets"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_eight",
+                        "name": "Retailers - other",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Retailers - other"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_nine",
+                        "name": "Takeaway/sandwich shop",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Takeaway/sandwich shop"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_ten",
+                        "name": "Other catering premises",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Other catering premises"]
                     }
-                }
-            ]
-        },
-        {   "name": "Food Retailing",
-            "stack": "http://174.138.27.240:5007",
-            "sources": [
-                {
+        
+                ]
+            },
+              {
+                "name": "Grab-and-Go Food Venues",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                  {
                     "id": "Takeaways Sources",
                     "type": "vector",
                     "tiles": [
-                        "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:takeaways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:takeaways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
-                },
-                {
+                  },
+                  {
                     "id": "Supermarket Sources",
                     "type": "vector",
                     "tiles": [
-                        "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:supermarket&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:supermarket&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
-                }
-
-            ],
-            "layers": [
-                {
+                  }
+                ],
+                "layers": [
+                  {
                     "id": "Takeaways_layer",
-                    "name": "Fast Food Outlets",
+                    "name": "Fast Food",
                     "source": "Takeaways Sources",
                     "source-layer": "takeaways",
                     "type": "symbol",
                     "minzoom": 6,
                     "order": 24,
                     "layout": {
-                        "visibility": "none",
-                        "icon-image": "takeaway",
-                        "icon-size": 0.35,
-                        "icon-allow-overlap": true,
-                        "icon-ignore-placement": true
+                      "visibility": "none",
+                      "icon-image": "takeaway",
+                      "icon-size": 0.35,
+                      "icon-allow-overlap": true,
+                      "icon-ignore-placement": true
                     }
-                },
-                {
+                  },
+                  {
                     "id": "Supermarket_layer",
-                    "name": "Supermarket Footprint",
+                    "name": "Supermarket",
                     "source": "Supermarket Sources",
                     "source-layer": "supermarket",
                     "type": "symbol",
                     "minzoom": 6,
                     "order": 25,
                     "layout": {
-                        "visibility": "none",
-                        "icon-image": "supermarket",
-                        "icon-size": 0.35,
-                        "icon-allow-overlap": true,
-                        "icon-ignore-placement": true
+                      "visibility": "none",
+                      "icon-image": "supermarket",
+                      "icon-size": 0.35,
+                      "icon-allow-overlap": true,
+                      "icon-ignore-placement": true
                     }
-                }
-
+                  }
+                ]
+              }
             ]
-        },
+          },
         {
             "name": "Reporting Stations",
             "stack": "http://165.232.172.16:3838",
@@ -703,66 +902,72 @@
                 }
             ]
         },
-        {   "name": "Green Space",
-            "stack": "http://174.138.27.240:5007",
-            "sources": [
-                {
-                    "id": "green-space-source",
-                    "type": "raster",
-                    "tiles": [
-                        "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
-                    ]
-                }
-            ],
-            "layers": [
-                {
-                    "id": "green-space_layer",
-                    "name": "Green Space for Cambridgeshire",
-                    "source": "green-space-source",
-                    "type": "raster",
-                    "minzoom": 4,
-                    "order": 1,
-                    "layout": {
-                        "visibility": "visible"
+        {
+            "name": "Land Use",
+            "groups": [
+                {   
+                "name": "Green Space",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                    {
+                        "id": "green-space-source",
+                        "type": "raster",
+                        "tiles": [
+                            "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                        ]
                     }
-                },
-                {
-                    "id": "green-space_layer_2",
-                    "name": "Green Space for Norfolk, including King's Lynn",
-                    "source": "green-space-source",
-                    "type": "raster",
-                    "minzoom": 4,
-                    "order": 1,
-                    "layout": {
-                        "visibility": "visible"
+                ],
+                "layers": [
+                    {
+                        "id": "green-space_layer",
+                        "name": "Green Space for Cambridgeshire",
+                        "source": "green-space-source",
+                        "type": "raster",
+                        "minzoom": 4,
+                        "order": 1,
+                        "layout": {
+                            "visibility": "visible"
+                        }
+                    },
+                    {
+                        "id": "green-space_layer_2",
+                        "name": "Green Space for Norfolk, including King's Lynn",
+                        "source": "green-space-source",
+                        "type": "raster",
+                        "minzoom": 4,
+                        "order": 1,
+                        "layout": {
+                            "visibility": "visible"
+                        }
                     }
-                }
-            ]
-        },
-        {   "name": "Cropmap",
-            "stack": "http://174.138.27.240:5007",
-            "sources": [
-                {
-                    "id": "cropmap-source",
-                    "type": "raster",
-                    "tiles": [
-                        "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
-                    ]
-                }
-            ],
-            "layers": [
-                {
-                    "id": "cropmap_layer",
-                    "name": "Cropmap for Cambridgeshire",
-                    "source": "cropmap-source",
-                    "type": "raster",
-                    "minzoom": 4,
-                    "order": 2,
-                    "layout": {
-                        "visibility": "none"
+                ]
+            },
+            {   "name": "Cropmap",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                    {
+                        "id": "cropmap-source",
+                        "type": "raster",
+                        "tiles": [
+                            "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                        ]
                     }
-                }
-            ]
-        } 
+                ],
+                "layers": [
+                    {
+                        "id": "cropmap_layer",
+                        "name": "Cropmap for Cambridgeshire",
+                        "source": "cropmap-source",
+                        "type": "raster",
+                        "minzoom": 4,
+                        "order": 2,
+                        "layout": {
+                            "visibility": "none"
+                        }
+                    }
+                ]
+            }
+        ]
+        }
     ]
 }
