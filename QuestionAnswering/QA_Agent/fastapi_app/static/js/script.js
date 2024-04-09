@@ -69,7 +69,7 @@ async function throwErrorIfNotOk(res) {
         try {
             let resJson = await res.json()
             detail = resJson["detail"]
-        } catch (_) {}
+        } catch (_) { }
         throw new HttpError(res.status, detail)
     }
     return res
@@ -149,20 +149,40 @@ function renderBootstrapTable(vars, bindings, id, containerElem) {
     containerElem.innerHTML = content;
 }
 
-function renderTimeseriesGraph(title, vars, bindings, id) {
-    let traces = bindings.map(binding => {
-        return {
-            type: "scatter",
-            mode: "lines",
-            name: vars.filter(key => key !== "timeseries").map(key => binding[key]).join(", "),
-            x: binding["timeseries"].map(obs => obs[0]),
-            y: binding["timeseries"].map(obs => obs[1]),
+function renderTimeseriesGraphs(title_template, vars, bindings, container) {
+    const key2unit2bindings = Object.entries(
+        bindings.reduce((acc, binding) => {
+            (acc[binding["key"]] = acc[binding["key"]] || []).push(binding);
+            return acc;
+        }, {})
+    ).reduce((acc, [key, group]) => {
+        acc[key] = group.reduce((acc, binding) => {
+            (acc[binding["unit"]] = acc[binding["unit"]] || []).push(binding);
+            return acc;
+        }, {});
+        return acc;
+    }, {});
+
+    for (const [key, unit2bindings] of Object.entries(key2unit2bindings)) {
+        for (const [unit, group] of Object.entries(unit2bindings)) {
+            const traces = group.map(binding => {
+                return {
+                    type: "scatter",
+                    mode: "lines",
+                    name: vars.filter(key => !(key in ["timeseries", "key"])).map(key => binding[key]).join(", "),
+                    x: binding["timeseries"].map(obs => obs[0]),
+                    y: binding["timeseries"].map(obs => obs[1]),
+                }
+            })
+
+            let plotContainer = document.createElement("div");
+            plotContainer.id = `plot-${key}`;
+            container.appendChild(plotContainer);
+
+            const title = title_template ? title_template.replace("{key}", key).replace("{unit}", unit) : `${key} (${unit})`;
+            Plotly.newPlot(plotContainer.id, traces, { title });
         }
-    })
-
-    let layout = { title }
-
-    Plotly.newPlot(id, traces, layout)
+    }
 }
 
 const errorContainer = (function () {
@@ -211,7 +231,7 @@ const qaDataContainer = (function () {
     const tableContainerOuter = document.getElementById("tabular-data-container")
     const tableContainerInner = document.getElementById("tabular-data")
     const toggleIriButton = document.getElementById("toggle-iri")
-    const figureContainer = document.getElementById("figure-container")
+    const figuresContainer = document.getElementById("figures-container")
 
     let table = null
     let isShowingIRI = false
@@ -250,14 +270,14 @@ const qaDataContainer = (function () {
         reset() {
             tableContainerOuter.style.display = "none"
             tableContainerInner.innerHTML = ""
-            figureContainer.display = "none"
-            figureContainer.innerHTML = ""
+            figuresContainer.display = "none"
+            figuresContainer.innerHTML = ""
         },
 
         render(data) {
             if (data["vars"].includes("timeseries")) {
-                renderTimeseriesGraph(data["title"], data["vars"], data["bindings"], figureContainer.id)
-                figureContainer.style.display = "block"
+                renderTimeseriesGraphs(data["title_template"], data["vars"], data["bindings"], figuresContainer)
+                figuresContainer.style.display = "block"
             } else {
                 table = renderDataTable(vars = data["vars"], bindings = data["bindings"], id = "qa-results-table", containerElem = tableContainerInner)
                 tableContainerOuter.style.display = "block"

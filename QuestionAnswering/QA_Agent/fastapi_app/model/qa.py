@@ -10,6 +10,6 @@ class QAStep(BaseModel):
     latency: float
 
 class QAData(BaseModel):
-    title: Optional[str] = None
+    title_template: Optional[str] = None
     vars: List[str] = []
     bindings: List[Dict[str, Any]] = []
