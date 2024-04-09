@@ -18,8 +18,8 @@ from .make_sparql import SGFactoriesSPARQLMaker, get_sgFactories_sparqlmaker
 
 logger = logging.getLogger(__name__)
 
-class SGFactoriesAgent:
 
+class SGFactoriesAgent:
     def __init__(
         self,
         ontop_client: KgClient,
@@ -45,12 +45,15 @@ FILTER ( ?Factory IN ( {values} ) )
             values=", ".join("<{iri}>".format(iri=iri) for iri in factory_iris)
         )
         res = self.ontop_client.query(query)
-        bindings = [{k: v["value"] for k, v in binding.items()} for binding in res["results"]["bindings"]]
-        
+        bindings = [
+            {k: v["value"] for k, v in binding.items()}
+            for binding in res["results"]["bindings"]
+        ]
+
         factory2company = defaultdict(lambda: None)
         for binding in bindings:
             factory2company[binding["Factory"]] = binding["CompanyLabel"]
-        
+
         return [factory2company[factory] for factory in factory_iris]
 
     def _add_company_label(self, vars: List[str], bindings: List[dict]):
@@ -174,11 +177,11 @@ FILTER ( ?Factory IN ( {values} ) )
 
 def get_sgFactories_agent(
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
-    labels_store: Annotated[LabelStore, Depends(get_sgFactories_labelStore)],
+    label_store: Annotated[LabelStore, Depends(get_sgFactories_labelStore)],
     sparql_maker: Annotated[
         SGFactoriesSPARQLMaker, Depends(get_sgFactories_sparqlmaker)
     ],
 ):
     return SGFactoriesAgent(
-        ontop_client=ontop_client, label_store=labels_store, sparql_maker=sparql_maker
+        ontop_client=ontop_client, label_store=label_store, sparql_maker=sparql_maker
     )

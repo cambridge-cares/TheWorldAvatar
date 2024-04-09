@@ -92,10 +92,10 @@ class LabelStore:
         iris = [str(doc.IRI) for doc in docs]
         return list(set(iris))
 
-    def link_entity(self, name: str):
+    def link_entity(self, label: str):
         choices = self._all_labels()
         closest_label, _, _ = rapidfuzz.process.extractOne(
-            name,
+            label,
             choices,
             scorer=rapidfuzz.fuzz.WRatio,
             processor=rapidfuzz.utils.default_process,
