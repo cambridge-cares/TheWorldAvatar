@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getIndex, setIndex } from 'state/floating-panel-slice';
-import { getQueryTrigger, getIri, getStack, getScenario, setQueryTrigger } from 'state/map-feature-slice';
+import { getQueryTrigger, getIri, getStack, getScenario, setQueryTrigger, getProperties } from 'state/map-feature-slice';
 import { useGetMetadataQuery } from 'utils/server-utils';
 import { DataStore } from 'io/data/data-store';
 import LayerTree from './layer/layer-tree';
@@ -42,6 +42,7 @@ export default function FloatingPanelContainer(
   const dispatch = useDispatch();
   const activeIndex = useSelector(getIndex);
   const selectedIri = useSelector(getIri);
+  const selectedProperties = useSelector(getProperties);
   const selectedStack = useSelector(getStack);
   const selectedScenario = useSelector(getScenario);
   const trigger = useSelector(getQueryTrigger);
@@ -58,11 +59,24 @@ export default function FloatingPanelContainer(
       // WIP: Add required functionality while data is still being fetched
     } else if (error) {
       console.error("Error fetching data:", error);
+      console.info("Displaying built-in data...");
+      // Note that IRI will not be displayed
+      if (selectedProperties) {
+        const builtInData = {
+          meta: {
+            Properties: Object.fromEntries(
+              Object.entries(selectedProperties)
+                .filter(([key]) => key !== 'iri')
+            )
+          }
+        }
+        setQueriedData(builtInData);
+      }
     } else {
       if (data) {
         setQueriedData(data);
-        dispatch(setQueryTrigger(false));
       }
+      dispatch(setQueryTrigger(false));
     }
   }, [isFetching]);
 

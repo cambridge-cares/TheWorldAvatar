@@ -41,7 +41,7 @@ export default function InfoTree(props: InfoTreeProps) {
   const [selectedTimeSeriesOption, setSelectedTimeSeriesOption] = useState(0);
 
   const consumeTimeSeries = (data: JsonObject) => {
-    if (data) {
+    if (data?.time && Object.keys(data.time).length > 0 ) {
       timeSeries.current = parseTimeSeries(data);
       options.current = [];
       timeSeries.current.data.map((timeSeries, index) => {
@@ -61,7 +61,8 @@ export default function InfoTree(props: InfoTreeProps) {
     <div className={styles.infoPanelContainer}>
       <div className={styles.infoHeadSection}>
         <h2>Feature Information</h2>
-        {!props.isFetching && (
+        {// Display the tabs only if there are both meta and time
+        !props.isFetching && props.data.meta && props.data.time && (
           <InfoTabs
             data={props.data}
             activeTab={{

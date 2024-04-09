@@ -2,7 +2,7 @@
 import mapboxgl from 'mapbox-gl';
 import { Dispatch } from 'redux';
 
-import { setLatLng, setName, setQueryTrigger, setIri, setStack } from 'state/map-feature-slice';
+import { setLatLng, setName, setQueryTrigger, setIri, setProperties, setStack } from 'state/map-feature-slice';
 import { DataStore } from 'io/data/data-store';
 
 /**
@@ -41,6 +41,7 @@ export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch, d
       queryTrigger = true;
     }
     dispatch(setIri(iri));
+    dispatch(setProperties(feature.properties));
     dispatch(setStack(stack));
     dispatch(setQueryTrigger(queryTrigger));
   });

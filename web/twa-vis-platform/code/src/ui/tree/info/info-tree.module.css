@@ -10,6 +10,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  margin-bottom: 0.5rem;
 }
 
 .infoHeadSection h2 {
@@ -17,7 +18,6 @@
 }
 
 .tab-container {
-  margin: 0.2rem 0;
   width: 100%;
   height: 100%;
   display: flex;
