@@ -1,6 +1,6 @@
 from functools import cache
 import os
-from typing import Annotated, Tuple
+from typing import Annotated
 
 from fastapi import Depends
 import requests
@@ -20,10 +20,10 @@ class SGDispersionAgent:
 
         timestamps = res["time"]
         return QAData(
-            vars=["pollutant", "timeseries", "unit"],
+            vars=["key", "timeseries", "unit"],
             bindings=[
                 {
-                    "pollutant": key,
+                    "key": key,
                     "timeseries": list(zip(timestamps, value)),
                     "unit": "µg/m³"
                 }

@@ -286,7 +286,7 @@ class OntoSpeciesAgentConnector(AgentConnectorBase):
         return steps, data
 
 
-def get_ontospecies_agent_connector(
+def get_ontospecies_agentConnector(
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
