@@ -224,17 +224,16 @@ class BaseOntology(BaseModel):
         KnowledgeGraph.register_property(prop)
 
     @classmethod
-    def export_to_owl(cls, file_path: str, format: str = 'ttl'):
-        # TODO: offer the option to export ontology to a triplestore directly
+    def export_to_graph(cls, g: Graph = None) -> Graph:
         """
-        This method is used to export the ontology to an ontology file.
+        This method is used to export the ontology to a rdflib.Graph object.
         It operates at the TBox level, i.e. it only exports the classes and properties of the ontology.
 
         Args:
-            file_path (str): The path of the ontology file to be exported to
-            format (str): The format of the ontology file, the default value is 'ttl'
+            g (Graph): The rdflib.Graph object to which the ontology will be exported
         """
-        g = Graph()
+        if g is None:
+            g = Graph()
         # metadata
         g.add((URIRef(cls.get_namespace_iri()), RDF.type, OWL.Ontology))
         g.add((URIRef(cls.get_namespace_iri()), DC.date, Literal(datetime.now().isoformat())))
@@ -254,6 +253,35 @@ class BaseOntology(BaseModel):
         if bool(cls.data_property_lookup):
             for prop in cls.data_property_lookup.values():
                 g = prop.export_to_owl(g)
+
+        return g
+
+    @classmethod
+    def export_to_triple_store(cls, sparql_client: PySparqlClient):
+        """
+        This method is used to export the ontology to a triplestore.
+        It operates at the TBox level, i.e. it only exports the classes and properties of the ontology.
+
+        Args:
+            sparql_client (PySparqlClient): The PySparqlClient object that connects to the triplestore
+        """
+        g = cls.export_to_graph()
+
+        # upload to triplestore
+        sparql_client.upload_graph(g)
+
+    @classmethod
+    def export_to_owl(cls, file_path: str, format: str = 'ttl'):
+        # TODO: offer the option to export ontology to a triplestore directly
+        """
+        This method is used to export the ontology to an ontology file.
+        It operates at the TBox level, i.e. it only exports the classes and properties of the ontology.
+
+        Args:
+            file_path (str): The path of the ontology file to be exported to
+            format (str): The format of the ontology file, the default value is 'ttl'
+        """
+        g = cls.export_to_graph()
 
         # serialize
         g.serialize(destination=file_path, format=format)
