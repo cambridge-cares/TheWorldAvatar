@@ -113,7 +113,7 @@ public class AermodAgent extends DerivationAgent {
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
         if (Boolean.parseBoolean(EnvConfig.PARALLELISE_EMISSIONS_UPDATE)) {
-            derivationsToUpdate.parallelStream().forEach(derivation -> devClient.updatePureSyncDerivation(derivation));
+            devClient.updatePureSyncDerivationsInParallel(derivationsToUpdate);
         } else {
             devClient.updatePureSyncDerivations(derivationsToUpdate);
         }
