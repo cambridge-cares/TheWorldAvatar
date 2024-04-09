@@ -89,7 +89,7 @@ if __name__ == "__main__":
         pairs = []
 
         if random.random() > 0.75:
-            pairs.append((query_sparql, datum["verbalization"]))
+            pairs.append((query_sparql, purge_span_tags(datum["verbalization"])))
         pairs.extend([(query_sparql, p) for p in parapharses])
         pairs.extend(
             regrounder.reground(
