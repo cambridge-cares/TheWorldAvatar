@@ -143,7 +143,7 @@ def instance_to_http(value, file_line):
         if SHOW_WARNING:
             print(f"Error in instace_to_http(): input must be str. Got: '{value}'.")
         WARNING_COUNT += 1
-    # Choose slash or hash or nothing depending on the settings
+    # Choose slash or hash or return error depending on the settings:
     if INSTANCE_TO_HTTP == "USE_SLASH":
         full_path = propread.getABoxIRI() + SLASH + format_iri(str(value).strip())
     elif INSTANCE_TO_HTTP == "USE_HASH":
@@ -186,7 +186,7 @@ def class_to_http(value, file_line):
 
 def set_tbox_iri(value, file_line):
     """Assign the tbox address, prints warnings for repeated assignments"""
-    global WARNING_COUNT
+    global WARNING_COUNT, CLASS_TO_HTTP
     if is_empty(value.strip()):
         if SHOW_WARNING:
             print(f"Warning: Empty ontology name {file_line}.")
@@ -199,12 +199,22 @@ def set_tbox_iri(value, file_line):
             if old.strip() != value.strip():
                 print(f"         New tbox address is '{value}'.")
         WARNING_COUNT += 1
-    propread.setTBoxIRI(value.strip())
+    value = value.strip()
+
+    if value.endswith("/"):
+        CLASS_TO_HTTP = "USE_SLASH"
+        propread.setTBoxIRI(value[:-1])
+    elif value.endswith("#"):
+        CLASS_TO_HTTP = "USE_HASH"
+        propread.setTBoxIRI(value[:-1])
+    else:
+        CLASS_TO_HTTP = "USE_SLASH"
+        propread.setTBoxIRI(value)
 
 
 def set_abox_iri(value, file_line):
     """Assign the abox address, prints warnings for repeated assignments"""
-    global WARNING_COUNT
+    global WARNING_COUNT, INSTANCE_TO_HTTP
     if is_empty(value.strip()):
         if SHOW_WARNING:
             print(f"Warning: Empty ontology name {file_line}.")
@@ -217,7 +227,17 @@ def set_abox_iri(value, file_line):
             if old.strip() != value.strip():
                 print(f"         New abox address is '{value}'.")
         WARNING_COUNT += 1
-    propread.setABoxIRI(value.strip())
+    value = value.strip()
+
+    if value.endswith("/"):
+        INSTANCE_TO_HTTP = "USE_SLASH"
+        propread.setABoxIRI(value[:-1])
+    elif value.endswith("#"):
+        INSTANCE_TO_HTTP = "USE_HASH"
+        propread.setABoxIRI(value[:-1])
+    else:
+        INSTANCE_TO_HTTP = "USE_SLASH"
+        propread.setABoxIRI(value)
 
 
 def is_header_valid(row, file_line):
