@@ -2,7 +2,7 @@
     "name": "All Layers",
     "groups": [
         {
-            "name": "Cam-Ely-Wisbech Buildings",
+            "name": "Buildings",
             "stack": "http://174.138.27.240:3838",
             "sources": [
                 {
@@ -34,7 +34,7 @@
             "layers": [
                 {
                     "id": "cambridge-layer",
-                    "name": "Cambridge-Ely-Wisbech Building",
+                    "name": "Cambridge-Ely-Wisbech",
                     "treeable": false,
                     "source": "cambridge-source",
                     "source-layer": "cambridge_gsl",
@@ -122,7 +122,7 @@
             ]
         },
         {
-            "name": "Kings-Lynn Buildings",
+            "name": "Kings-Lynn",
             "stack": "http://165.232.172.16:3838",
             "sources": [
                 {
@@ -161,7 +161,7 @@
             "layers": [
                 {
                     "id": "buildings-layer-value",
-                    "name": "Property Value Estimates",
+                    "name": "Property value estimates",
                     "source": "building_values",
                     "source-layer": "marketvalues",
                     "type": "fill-extrusion",
@@ -191,7 +191,7 @@
                 },
                 {
                     "id": "buildings-layer-sales",
-                    "name": "Actual Property Sales",
+                    "name": "Actual property sales",
                     "source": "building_sales",
                     "source-layer": "transactions",
                     "type": "fill-extrusion",
@@ -272,7 +272,7 @@
             ]
         },
         {
-            "name": "Pollutant Dispersion",
+            "name": "Air quality simulations",
             "stack": "http://174.138.27.240:10102",
             "expanded": true,
             "sources": [
@@ -317,7 +317,7 @@
                     "layout": {
                         "visibility": "visible"
                     },
-                    "name": "NOx Distribution",
+                    "name": "NOx",
                     "paint": {
                         "fill-outline-color": [
                             "get",
@@ -339,7 +339,7 @@
                     "layout": {
                         "visibility": "none"
                     },
-                    "name": "Weather station",
+                    "name": "Weather stations",
                     "paint": {
                         "circle-color": "blue"
                     },
@@ -394,10 +394,10 @@
             ]
         },
         {
-            "name": "GPS Example Data",
+            "name": "Example GPS trajectories",
             "groups": [
               {
-                "name": "Example GPS Data in 2015",
+                "name": "Example trajectory (2015)",
                 "stack": "http://174.138.27.240:5007",
                 "sources": [
                   {
@@ -418,7 +418,7 @@
                 "layers": [
                   {
                     "id": "Recorded Points_layer",
-                    "name": "Recorded Points",
+                    "name": "Raw data",
                     "source": "Recorded Points Sources",
                     "source-layer": "gps_data",
                     "type": "symbol",
@@ -434,7 +434,7 @@
                   },
                   {
                     "id": "Movement Trajectory_layer",
-                    "name": "Movement Trajectory",
+                    "name": "Interpolated movement",
                     "source": "Movement Trajectory Sources",
                     "type": "raster",
                     "minzoom": 4,
@@ -446,7 +446,7 @@
                 ]
               },
               {
-                "name": "Example GPS Data in 2016",
+                "name": "Example trajectory (2016)",
                 "stack": "http://174.138.27.240:5007",
                 "sources": [
                   {
@@ -467,7 +467,7 @@
                 "layers": [
                   {
                     "id": "Recorded Points_layer",
-                    "name": "Recorded Points",
+                    "name": "Raw data",
                     "source": "Recorded Points Sources",
                     "source-layer": "gps_tra_2016",
                     "type": "symbol",
@@ -483,7 +483,7 @@
                   },
                   {
                     "id": "Movement Trajectory_layer",
-                    "name": "Movement Trajectory",
+                    "name": "Interpolated movement",
                     "source": "Movement Trajectory Sources",
                     "type": "raster",
                     "minzoom": 4,
@@ -497,10 +497,10 @@
             ]
         },
         {
-            "name": "Food Retailing",
+            "name": "Food retail environment",
             "groups": [
             {
-                "name": "Food Hygiene Rating",
+                "name": "Food Hygiene Rating Service (2023)",
                 "stack": "http://174.138.27.240:5007",
                 "sources": [
                   {
@@ -534,7 +534,7 @@
                     },
                     {
                         "id": "fhr-cambridge_layer_two",
-                        "name": "Hospitals/Childcare/CaringPremises",
+                        "name": "Hospitals/childcare/care homes",
                         "source": "fhr-cambridge-source",
                         "source-layer": "fhr_cambridge",
                         "type": "symbol",
@@ -551,7 +551,7 @@
                     },
                     {
                         "id": "fhr-cambridge_layer_three",
-                        "name": "Restaurant/Cafe/Canteen",
+                        "name": "Restaurant/cafe/canteen",
                         "source": "fhr-cambridge-source",
                         "source-layer": "fhr_cambridge",
                         "type": "symbol",
@@ -689,7 +689,7 @@
                 ]
             },
               {
-                "name": "Grab-and-Go Food Venues",
+                "name": "Fenland Study (circa 2014)",
                 "stack": "http://174.138.27.240:5007",
                 "sources": [
                   {
@@ -710,7 +710,7 @@
                 "layers": [
                   {
                     "id": "Takeaways_layer",
-                    "name": "Fast Food",
+                    "name": "Fast food",
                     "source": "Takeaways Sources",
                     "source-layer": "takeaways",
                     "type": "symbol",
@@ -745,7 +745,7 @@
             ]
           },
         {
-            "name": "Reporting Stations",
+            "name": "Environmental sensor data",
             "stack": "http://165.232.172.16:3838",
             "sources": [
                 {
@@ -776,7 +776,7 @@
             "layers": [
                 {
                     "id": "airquality",
-                    "name": "Airquality Stations", 
+                    "name": "Air quality", 
                     "source": "aq-stations",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
@@ -793,7 +793,7 @@
                 },
                 {
                     "id": "airquality_cluster",
-                    "name":  "Airquality Stations",
+                    "name":  "Air quality",
                     "source": "aq-stations",
                     "type": "symbol",
                     "filter": ["has", "point_count"],
@@ -813,7 +813,7 @@
                 },
                 {
                     "id": "metoffice",
-                    "name": "Weather Stations", 
+                    "name": "Weather", 
                     "source": "metoffice",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
@@ -836,7 +836,7 @@
                 },
                 {
                     "id": "metoffice_cluster",
-                    "name":  "Weather Stations",
+                    "name":  "Weather",
                     "source": "metoffice",
                     "type": "symbol",
                     "filter": ["has", "point_count"],
@@ -856,7 +856,7 @@
                 },
                 {
                     "id": "ea-stations",
-                    "name": "Flood Monitoring Stations", 
+                    "name": "Flood monitoring", 
                     "source": "ea-stations",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
@@ -882,7 +882,7 @@
                 },
                 {
                     "id": "ea-stations_cluster",
-                    "name":  "Flood Monitoring Stations",
+                    "name":  "Flood monitoring",
                     "source": "ea-stations",
                     "type": "symbol",
                     "filter": ["has", "point_count"],
@@ -903,10 +903,10 @@
             ]
         },
         {
-            "name": "Land Use",
+            "name": "Land use",
             "groups": [
                 {   
-                "name": "Green Space",
+                "name": "Green space",
                 "stack": "http://174.138.27.240:5007",
                 "sources": [
                     {
@@ -920,7 +920,7 @@
                 "layers": [
                     {
                         "id": "green-space_layer",
-                        "name": "Green Space for Cambridgeshire",
+                        "name": "Cambridgeshire",
                         "source": "green-space-source",
                         "type": "raster",
                         "minzoom": 4,
@@ -931,7 +931,7 @@
                     },
                     {
                         "id": "green-space_layer_2",
-                        "name": "Green Space for Norfolk, including King's Lynn",
+                        "name": "Norfolk",
                         "source": "green-space-source",
                         "type": "raster",
                         "minzoom": 4,
@@ -942,7 +942,7 @@
                     }
                 ]
             },
-            {   "name": "Cropmap",
+            {   "name": "Crop map",
                 "stack": "http://174.138.27.240:5007",
                 "sources": [
                     {
@@ -956,7 +956,7 @@
                 "layers": [
                     {
                         "id": "cropmap_layer",
-                        "name": "Cropmap for Cambridgeshire",
+                        "name": "Cambridgeshire",
                         "source": "cropmap-source",
                         "type": "raster",
                         "minzoom": 4,
