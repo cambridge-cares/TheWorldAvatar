@@ -8,12 +8,15 @@ from services.translate.sparql.graph_pattern import (
     OptionalClause,
     TriplePattern,
 )
+from services.translate.sparql.constraint import BrackettedExpression
 from services.translate.sparql.where_clause import WhereClause
 from services.translate.sparql.query_form import SelectClause
 from services.translate.sparql import SparqlQuery
 
 
 class TestOZCompact2VerboseConverter:
+    ONTOSPECIES_ENDPOINT_TEST = "http://ontospecies.com/sparql"
+
     @pytest.mark.parametrize(
         "sparql_compact,expected",
         [
@@ -147,7 +150,9 @@ class TestOZCompact2VerboseConverter:
                                 "?SpecificAccessibleAreaNumericalValue",
                             ),
                             FilterClause(
-                                "?SpecificAccessibleAreaNumericalValue <= 100"
+                                BrackettedExpression(
+                                    "?SpecificAccessibleAreaNumericalValue <= 100"
+                                )
                             ),
                         ]
                     ),
@@ -166,7 +171,7 @@ class TestOZCompact2VerboseConverter:
                             "?SpecificAccessibleAreaNumericalValue",
                             "?SpecificAccessibleAreaUnitLabel",
                         ],
-                        solution_modifier="DISTINCT"
+                        solution_modifier="DISTINCT",
                     ),
                     where_clause=WhereClause(
                         [
@@ -192,7 +197,9 @@ class TestOZCompact2VerboseConverter:
                                 ],
                             ),
                             FilterClause(
-                                "?SpecificAccessibleAreaNumericalValue <= 100"
+                                BrackettedExpression(
+                                    "?SpecificAccessibleAreaNumericalValue <= 100"
+                                )
                             ),
                         ]
                     ),
@@ -201,5 +208,5 @@ class TestOZCompact2VerboseConverter:
         ],
     )
     def test_convert(self, sparql_compact, expected):
-        converter = OZCompact2VerboseConverter()
+        converter = OZCompact2VerboseConverter(self.ONTOSPECIES_ENDPOINT_TEST)
         assert converter.convert(sparql_compact) == expected
