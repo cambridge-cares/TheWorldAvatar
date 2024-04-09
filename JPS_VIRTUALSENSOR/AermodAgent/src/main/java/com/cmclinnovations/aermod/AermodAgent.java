@@ -85,23 +85,29 @@ public class AermodAgent extends DerivationAgent {
         Map<String, Building> allBuildings = null;
         LOGGER.info("Querying for buildings within simulation domain");
         allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
+
         List<StaticPointSource> staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
 
         staticPointSources.removeIf(s -> s.getLocation() == null);
 
         long timeBuffer = 1800; // 30 minutes
+
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
 
         // update ensure ship derivations use the right simulation time
+
         queryClient.attachSimTimeToShips(ships, simulationTimeIri);
 
         List<PointSource> allSources = new ArrayList<>();
+
         allSources.addAll(staticPointSources);
+
         allSources.addAll(ships);
 
         queryClient.setPointSourceLabel(allSources);
 
         // new ontop way
+
         List<Building> buildings = queryClient.getBuildings(allSources, allBuildings);
 
         // update derivation of ships (on demand)
@@ -109,7 +115,7 @@ public class AermodAgent extends DerivationAgent {
         if (Boolean.parseBoolean(EnvConfig.PARALLELISE_EMISSIONS_UPDATE)) {
             derivationsToUpdate.parallelStream().forEach(derivation -> devClient.updatePureSyncDerivation(derivation));
         } else {
-            derivationsToUpdate.stream().forEach(derivation -> devClient.updatePureSyncDerivation(derivation));
+            devClient.updatePureSyncDerivations(derivationsToUpdate);
         }
 
         // get emissions and set the values in the ships
