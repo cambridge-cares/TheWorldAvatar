@@ -1,0 +1,100 @@
+site_name: The World Avatar
+site_description: A knowledge-graph-based digital twin of the world.
+# site_url: # TODO tbd
+
+theme:
+  name: "material"
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+      primary: teal
+      accent: purple
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+      primary: teal
+      accent: lime
+  logo: './media/twa-logo-white.svg'
+  favicon: './media/twa-logo-blue.svg'
+
+repo_name: cambridge-cares/TheWorldAvatar
+repo_url: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            members_order: source
+            separate_signature: true
+            filters: ["!^_"]
+            docstring_options:
+              ignore_init_summary: true
+            merge_init_into_class: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+          import:
+            - https://docs.python.org/3/objects.inv
+  - search
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+      title: Page contents
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      pygments_lang_class: true
+  - pymdownx.extra
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.mark
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+
+nav:
+  - Get Started:
+    - Welcome to twa: index.md
+    - Installation: install.md
+    - Contributing: contributing.md
+    - Bug reports/feature requests: wishlist.md
+  - API Documentation:
+    - Py4j-related:
+      - Resource Registry: api/res_registry.md
+      - Resource Manager: api/res_manager.md
+      - JPS Gateway: api/jps_gateway.md
+    - Data Model:
+      - BaseOntology: api/base_ontology.md
+      - Utilities: api/utilities.md
+    - KG Operations:
+      - Gateway: api/gateway.md
+      - SparqlClient: api/sparql_client.md
+    - Agent Logging:
+      - Logging: api/logging.md
+  - Examples:
+    - Python-Java communications: examples/python_java.md
+    - Use additional Java library: examples/additional_java_lib.md
+    - Logging: examples/logging.md
+    - Perform knowledge graph operations: examples/sparql.md
+    - Define a new ontology: examples/ogm.md
