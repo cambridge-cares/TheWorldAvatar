@@ -75,5 +75,64 @@ Options:
 --outDir=<dir>    Output directory path
 ```
 
+## csv file format for abox
+
+The input csv file must have at least 6 columns: A,B,C,D,E,F.
+Extra columns are allowed, but they are ignored. They can be used for notes, comments, etc.
+
+Each row in csv file describes one of the following:
+
+### Ontology description contains prefixes for the tbox and the abox.
+For Abox:
+- Col A: Abox file name (actually not used, but col A cannot be empty)
+- Col B: "Ontology"
+- Col C: http://www.theworldavatar.com/kb/ontospecies for abox (To be specified by user)
+- Col D: "base"
+- Col E,F are not used.
+
+Fot Tbox:
+- Col A: not used (but Col A cannot be empty!)???
+- Col B: "Ontology"
+- Col C: http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl (To be specified by user)
+- Col D: "http://www.w3.org/2002/07/owl#imports"
+- Col E,F are not used.
+
+The ontology prefix in Col C mush end with SLASH (/) or HASH (#).
+The full path of entities will be
+http://www.theworldavatar.com/ontology/ontospecies/ClassName or
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ClassName,
+respectively.
+
+### Define an instance of class
+(the name of the instance can be either a full path or
+relative to the base ontology),
+- Col A: class name for the ontology defined in the tbox, or a full http:// address
+         of class name for a class from an external ontologies
+- Col B: "Instance"
+- Col C: The new instance name. It is possible to provide a full http:// address
+         of the instance together with the ontology defined in base,
+- Col D,E,F must be empty.
+
+### Specify relation between two class instances
+(if the instance is relatile path both instances must be defined before this line).
+- Col A: An instance name defined earlier in this file, or a full http:// address of instance
+- Col B: "Instance"
+- Col C: The instance defined before this point or a full http:// address of instance
+- Col D: Full http:// address of the relation: Col A  relation Col C.
+- Col E,F are not used.
+
+### Assign data value to an instance
+(data type of the instance can be full path, or one of predefined shortcuts:
+'string', 'integer', 'float', 'double', 'decimal', 'datetime', 'boolean').
+For the predefined data types it is possible to add the "xsd:" prefix, like
+'xsd:string', etc.
+
+- Col A: Full http:// address of the relation
+- Col B: "Data Property"
+- Col C: instance to assign the value
+- Col D is not used
+- Col E: value to be assigned
+- Col F: data type of the value.
+
 # Authors #
 Feroz Farazi (msff2@cam.ac.uk), 17 May 2021
