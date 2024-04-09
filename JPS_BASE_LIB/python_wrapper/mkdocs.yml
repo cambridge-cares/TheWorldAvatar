@@ -97,4 +97,4 @@ nav:
     - Use additional Java library: examples/additional_java_lib.md
     - Logging: examples/logging.md
     - Perform knowledge graph operations: examples/sparql.md
-    - Define a new ontology: examples/ogm.md
+    - Object Graph Mapper: examples/ogm.md
