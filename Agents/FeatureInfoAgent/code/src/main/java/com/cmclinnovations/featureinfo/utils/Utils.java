@@ -3,6 +3,7 @@ package com.cmclinnovations.featureinfo.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -100,18 +101,18 @@ public final class Utils {
 	 * 
      * @return StackEndpoint instance
      */
-    public static List<StackEndpoint> getBlazegraphEndpoints(ConfigStore configStore, String enforcedEndpoint) {
+    public static List<StackEndpoint> getBlazegraphEndpoints(ConfigStore configStore, Optional<String> enforcedEndpoint) {
         // If an endpoint is enforced, try to find it's match from the auto-discovered ones
-        if(enforcedEndpoint != null) {
+        if(enforcedEndpoint.isPresent()) {
             StackEndpoint match = configStore.getStackEndpoints(StackEndpointType.BLAZEGRAPH)
                 .stream()
-                .filter(endpoint -> endpoint.url().equalsIgnoreCase(enforcedEndpoint))
+                .filter(endpoint -> endpoint.url().equalsIgnoreCase(enforcedEndpoint.get()))
                 .findFirst()
                 .orElse(null);
 
             if(match == null) {
                 // No match, create a new temporary one.
-                match = new StackEndpoint(enforcedEndpoint, null, null, StackEndpointType.BLAZEGRAPH);
+                match = new StackEndpoint(enforcedEndpoint.get(), null, null, StackEndpointType.BLAZEGRAPH);
             }
             return new ArrayList<>(Arrays.asList(match));
         }
@@ -127,7 +128,7 @@ public final class Utils {
 	 * 
      * @return KG URLs.
      */
-	public static List<String> getBlazegraphURLs(ConfigStore configStore, String enforcedEndpoint) {
+	public static List<String> getBlazegraphURLs(ConfigStore configStore, Optional<String> enforcedEndpoint) {
 		List<StackEndpoint> endpoints = getBlazegraphEndpoints(configStore, enforcedEndpoint);
 		return endpoints.stream()
 			.map(endpoint -> endpoint.url())

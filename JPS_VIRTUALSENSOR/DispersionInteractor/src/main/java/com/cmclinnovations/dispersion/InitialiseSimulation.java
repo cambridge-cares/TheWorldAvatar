@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.servlet.ServletException;
@@ -61,6 +63,23 @@ public class InitialiseSimulation extends HttpServlet {
         int nx = Integer.parseInt(req.getParameter("nx"));
         int ny = Integer.parseInt(req.getParameter("ny"));
         String citiesNamespace = req.getParameter("citiesnamespace");
+        String scopeLabel = req.getParameter("label");
+        String[] zArray = req.getParameterValues("z");
+        String simulationTimeIri = req.getParameter("simulationTimeIri"); // optional
+
+        List<Integer> zList = new ArrayList<>();
+        if (zArray == null) {
+            zList.add(0);
+        } else {
+            for (int i = 0; i < zArray.length; i++) {
+                int zInt = Integer.parseInt(zArray[i]);
+                if (zList.contains(zInt)) {
+                    LOGGER.warn("Duplicate value given for z = {}, will be ignored", zInt);
+                } else {
+                    zList.add(zInt);
+                }
+            }
+        }
 
         Polygon polygonProvided = null;
         try {
@@ -92,13 +111,25 @@ public class InitialiseSimulation extends HttpServlet {
                     polygon4326 = polygonProvided;
                 }
 
-                if (!dispersionPostGISClient.scopeExists(polygon4326, conn)) {
+                // returns null if there are no matches
+                scopeIri = dispersionPostGISClient.getScopeIri(polygon4326, conn);
+                String derivation = null;
+
+                if (scopeIri == null) {
                     scopeIri = dispersionPostGISClient.addScope(polygon4326, conn);
+
+                    String weatherStation = createVirtualWeatherStation(polygon4326);
+
+                    derivation = queryClient.initialiseScopeDerivation(scopeIri, scopeLabel, weatherStation, nx,
+                            ny, citiesNamespace, zList, simulationTimeIri);
                 } else {
-                    String responseString = "Given EWKT literal already exists in the database, or the scopeExists query failed, check logs";
-                    resp.getWriter().write(String.format("Created scope <%s>", scopeIri));
-                    LOGGER.warn(responseString);
+                    derivation = queryClient.getDerivationWithScope(scopeIri);
                 }
+
+                resp.getWriter().print(new JSONObject().put("derivation", derivation));
+                resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
+                resp.setCharacterEncoding("UTF-8");
+
             } catch (SQLException e) {
                 LOGGER.error("SQL state {}", e.getSQLState());
                 LOGGER.error(e.getMessage());
@@ -106,25 +137,8 @@ public class InitialiseSimulation extends HttpServlet {
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
                 LOGGER.error("Probably failed to add ontop mapping");
-            }
-
-            if (scopeIri != null && polygon4326 != null) {
-                String weatherStation = createVirtualWeatherStation(polygon4326);
-
-                String derivation = queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny,
-                        citiesNamespace);
-                try {
-                    resp.getWriter().print(new JSONObject().put("derivation", derivation));
-                    resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
-                    resp.setCharacterEncoding("UTF-8");
-                } catch (IOException e) {
-                    LOGGER.error(e.getMessage());
-                    LOGGER.error("Failed to write HTTP response");
-                } catch (JSONException e) {
-                    LOGGER.error(e.getMessage());
-                    LOGGER.error("Failed to create JSON object for HTTP response");
-                }
-
+            } catch (JSONException e) {
+                LOGGER.error(e.getMessage());
             }
         }
 

@@ -12,6 +12,7 @@ from typing import Iterable
 # Third-party imports
 import pandas as pd
 from pandas.testing import assert_frame_equal
+import yaml
 
 # Self imports
 from agent.kgutils import KGClient
@@ -43,6 +44,24 @@ def _sort_and_reset_index(df: pd.DataFrame):
 
 def assert_df_equal(left: pd.DataFrame, right: pd.DataFrame):
     return assert_frame_equal(_sort_and_reset_index(left), _sort_and_reset_index(right), check_dtype=False)
+
+
+def overwrite_yaml(sample_bim_iri="", sample_bim_name="", sample_solar_iri="", 
+                   sample_solar_name="", sample_sewage_iri="", sample_sewage_name=""):
+    # Create a sample yaml file with required properties for retrieval
+    yaml_path = C.SAMPLE_YAML_PATH
+    data = dict(
+        query_endpoint=C.KG_ENDPOINT,
+        update_endpoint=C.KG_ENDPOINT,
+        bim_tileset_iri=sample_bim_iri,
+        bim_tileset_name=sample_bim_name,
+        solar_panel_tileset_iri=sample_solar_iri,
+        solar_panel_tileset_name=sample_solar_name,
+        sewage_tileset_iri=sample_sewage_iri,
+        sewage_tileset_name=sample_sewage_name
+    )
+    with open(yaml_path, 'w') as outfile:
+        yaml.dump(data, outfile)
 
 
 def read_json_file(json_filepath: str):

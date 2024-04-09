@@ -1,0 +1,17 @@
+{
+    "services": {
+        "includes": [
+            "mapbox-vis",
+            "cesium-vis"
+        ],
+        "excludes": [
+            "citytiler",
+            "citydbimpexp",
+            "feature-info-agent"
+        ]
+    },
+    "volumes": {
+        "mapbox-vis-files": "mapbox-vis-files",
+        "cesium-vis-files": "cesium-vis-files"
+    }
+}

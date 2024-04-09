@@ -1,0 +1,231 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "ukpn",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "skip": false,
+            "table": "ukpn_line_styling",
+            "subdirectory": "tabular"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_overhead_lines_high_distribution",
+            "subdirectory": "vector/ukpn-hv-overhead-lines-shapefile",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "otherOptions": {
+                    "-nlt": [
+                        "MULTILINESTRING"
+                    ],
+                    "-sql": [
+                        "SELECT *, 'DH' AS voltage_level FROM \"ukpn-hv-overhead-lines-shapefile\""
+                    ]
+                }
+            },
+            "sql": "@/inputs/config/sql/ukpn_overhead_lines_high_distribution.sql",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_overhead_lines_low",
+                    "sql": "@/inputs/config/sql/virtualTables/ukpn_overhead_lines_high_distribution_geoserver.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "twa:overhead-lines"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_overhead_lines_low_distribution",
+            "subdirectory": "vector/ukpn-lv-overhead-lines-shapefile",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "otherOptions": {
+                    "-sql": [
+                        "SELECT *, 'DL' AS voltage_level, 1.0 AS max_voltage_kv FROM \"ukpn-lv-overhead-lines-shapefile\""
+                    ]
+                }
+            },
+            "sql": "@/inputs/config/sql/ukpn_overhead_lines_low_distribution.sql",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_overhead_lines_low_distribution",
+                    "sql": "@/inputs/config/sql/virtualTables/ukpn_overhead_lines_low_distribution_geoserver.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "twa:overhead-lines"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_poles_towers_medium",
+            "subdirectory": "vector/ukpn-33kv-poles-towers",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "otherOptions": {
+                    "-sql": [
+                        "SELECT *, 'M' AS voltage_level, 33.0 AS max_voltage_kv, CONCAT('UKPN Tower (',SUBSTR(system_fl, 1, 3), '-', poleno, '-M)') AS name FROM \"ukpn-33kv-poles-towers\""
+                    ]
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_poles_towers_medium",
+                    "sql": "@/inputs/config/sql/virtualTables/ukpn_poles_towers_medium_geoserver.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "twa:poles-towers"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_overhead_lines_medium_66kv",
+            "subdirectory": "vector/ukpn-66kv-overhead-lines-shapefile",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "otherOptions": {
+                    "-sql": [
+                        "SELECT *, 'M' AS voltage_level, 66.0 AS max_voltage_kv FROM \"ukpn-66kv-overhead-lines-shapefile\""
+                    ]
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_overhead_lines_medium",
+            "subdirectory": "vector/33kv-overhead-lines",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "otherOptions": {
+                    "-nlt": [
+                        "MULTILINESTRING"
+                    ],
+                    "-sql": [
+                        "SELECT *, 'M' AS voltage_level, 33.0 AS max_voltage_kv, CONCAT('UKPN Overhead Line (', cmr, '-M)') AS name FROM \"33kv-overhead-lines\""
+                    ]
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_overhead_lines_medium",
+                    "sql": "@/inputs/config/sql/virtualTables/ukpn_overhead_lines_medium_geoserver.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "twa:overhead-lines"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_poles_towers_high",
+            "subdirectory": "vector/132kv-poles-towers",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "otherOptions": {
+                    "-sql": [
+                        "SELECT *, 'H' AS voltage_level, 132.0 AS max_voltage_kv, CONCAT('UKPN Tower (', SUBSTR(sap_functi, 1, 3), '-', entityid, '-H)') AS name  FROM \"132kv-poles-towers\""
+                    ]
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_poles_towers_high",
+                    "sql": "@/inputs/config/sql/virtualTables/ukpn_poles_towers_high_geoserver.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "twa:poles-towers"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "ukpn_overhead_lines_high",
+            "subdirectory": "vector/132kv-overhead-lines",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "otherOptions": {
+                    "-nlt": [
+                        "MULTILINESTRING"
+                    ],
+                    "-sql": [
+                        "SELECT *, 'H' AS voltage_level, 132.0 AS max_voltage_kv FROM \"132kv-overhead-lines\""
+                    ]
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_overhead_lines_high",
+                    "sql": "@/inputs/config/sql/virtualTables/ukpn_overhead_lines_high_geoserver.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "twa:overhead-lines"
+            }
+        }
+    ],
+    "mappings": [
+        "ukpn_ontop.obda"
+    ],
+    "styles": [
+        {
+            "name": "poles-towers",
+            "file": "./sld/poles-towers.sld"
+        },
+        {
+            "name": "overhead-lines",
+            "file": "./sld/overhead-lines.sld"
+        }
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    }
+}

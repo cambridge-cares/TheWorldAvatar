@@ -1,7 +1,7 @@
 #==================================================================================================
 # Download the Java dependencies (allows them to be cached if unchanged)
 #==================================================================================================
-FROM maven:3.8.3-adoptopenjdk-11 as retriever
+FROM maven:3.8.3-adoptopenjdk-11 AS retriever
 
 # Copy in Maven settings templates and credentials 
 COPY docker/credentials /root/credentials
@@ -23,7 +23,7 @@ RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked 
 # Build war file
 #==================================================================================================
 
-FROM maven:3.8.3-adoptopenjdk-11 as war_builder
+FROM maven:3.8.3-adoptopenjdk-11 AS war_builder
 
 COPY --from=retriever /root/.m2 /root/.m2
 
@@ -39,16 +39,10 @@ RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked 
 #==================================================================================================
 # Build aermod components
 #==================================================================================================
-FROM ubuntu:22.10 as aermod_builder
+FROM ubuntu:22.10 AS aermod_builder
 
 RUN apt-get update
 RUN apt-get install gfortran dos2unix -y
-
-#build AERMAP (terrain preprocessor)
-COPY aermap_source /root/aermap_source/
-WORKDIR /root/aermap_source
-RUN dos2unix gfortran-aermap.sh
-RUN ./gfortran-aermap.sh
 
 #build BPIPPRM (buildings preprocessor)
 COPY bpipprm_source /root/bpipprm_source/
@@ -71,9 +65,8 @@ RUN ./gfortran-aermod.sh
 #==================================================================================================
 # Copy compiled executables and war file into tomcat image
 #==================================================================================================
-FROM tomcat:9 as agent
+FROM tomcat:9 AS agent
 
-COPY --from=aermod_builder /root/aermap_source/aermap /root/aermod/
 COPY --from=aermod_builder /root/bpipprm_source/bpipprm /root/aermod/
 COPY --from=aermod_builder /root/aermet_source/aermet /root/aermod/
 COPY --from=aermod_builder /root/aermod_source/aermod /root/aermod/

@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   virtual-sensor-agent:
-    image: ghcr.io/cambridge-cares/virtual-sensor-agent:1.0.0
+    image: ghcr.io/cambridge-cares/virtual-sensor-agent:1.4
     deploy:
       mode: replicated
       replicas: 1

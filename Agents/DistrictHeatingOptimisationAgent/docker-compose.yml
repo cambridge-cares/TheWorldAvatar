@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  dh-optimisation-agent:
+    image: ghcr.io/cambridge-cares/dh-optimisation-agent:1.0.0
+    environment:
+      # Required environment variables for "standalone" deployment
+      - STACK_NAME=
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_URL=jdbc:postgresql://host.docker.internal:7432/postgres
+      - SPARQL_QUERY_ENDPOINT=http://host.docker.internal:27149/blazegraph/namespace/kb/sparql
+      - SPARQL_UPDATE_ENDPOINT=http://host.docker.internal:27149/blazegraph/namespace/kb/sparql
+      #--- Derivation Agent parameters ---#
+      - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__DHOptimisationAgent/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5001/DHOptimisationAgent
+      - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
+      - DERIVATION_PERIODIC_TIMESCALE=100000
+      - REGISTER_AGENT=true
+      # Required inputs, although not used when initialising DerivationAgent
+      - KG_USERNAME=''
+      - KG_PASSWORD=''
+      - FILE_SERVER_ENDPOINT=''
+      - FILE_SERVER_USERNAME=''
+      - FILE_SERVER_PASSWORD=''
+    build:
+      # Path to dockerfile ('.' represents current directory with .yml file)
+      context: .
+      target: prod
+    ports:
+      - 5001:5000
+    extra_hosts:
+      # To allow connecting to 'host.docker.internal' on Linux
+      # details: https://github.com/moby/libnetwork/pull/2348#issuecomment-1177610499
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - logs:/root/.jps
+
+volumes:
+  logs:
+    name: "logs"

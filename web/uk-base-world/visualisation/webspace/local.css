@@ -27,3 +27,18 @@
     height: calc(100% - 40px) !important;
     margin: 0 20px 20px 20px !important;
 }
+
+/** Custom controls for this visualisation **/
+#customControlsContainer {
+    width: 150px;
+    height: 100px;
+    position: absolute;
+    top: 20px;
+    right: 520px;
+
+    color: white;
+    font-size: 10pt;
+}
+#showRadiusButton {
+    cursor: pointer;
+}

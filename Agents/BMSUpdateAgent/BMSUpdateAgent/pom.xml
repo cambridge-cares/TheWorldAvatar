@@ -7,7 +7,7 @@
 
   <groupId>uk.ac.cam.cares.jps</groupId>
   <artifactId>bms-update-agent</artifactId>
-  <version>1.0.0</version>
+  <version>1.2.0</version>
   <packaging>war</packaging>
 
   <properties>
@@ -112,7 +112,12 @@
       <version>1.15.3</version>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>1.15.3</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Logging -->
     <dependency>
@@ -133,10 +138,17 @@
       <version>3.5.7</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- Keycloak -->
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-servlet-filter-adapter</artifactId>
+      <version>21.1.1</version>
+    </dependency>
   </dependencies>
 
   <build>
-    <finalName>esphome-control-agent</finalName>
+    <finalName>bms-update-agent</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

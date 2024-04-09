@@ -2,9 +2,6 @@ package uk.ac.cam.cares.jps.base.converter;
 
 import java.io.IOException;
 
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**

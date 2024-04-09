@@ -1,0 +1,43 @@
+{
+    "name": "Flood Routing Tool",
+    "groups": [
+        {
+            "name": "Multiple Asset Sites",
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "id": "tspNodes",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Apoi_tsp_nearest_node&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "tspNodeLayer",
+                    "name": "Flooded power stations",
+                    "source": "tspNodes",
+                    "type": "symbol",
+                    "order": 50,
+                    "layout": {
+                        "icon-image": "power-primary",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.5
+                        ],
+                        "icon-anchor": "bottom"
+                    }
+                }
+            ]
+        }
+    ]
+}

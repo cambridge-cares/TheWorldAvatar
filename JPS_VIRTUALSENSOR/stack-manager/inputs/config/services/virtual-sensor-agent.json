@@ -3,12 +3,10 @@
 		"Name": "virtual-sensor-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/virtual-sensor-agent:1.0.0",
+				"Image": "ghcr.io/cambridge-cares/virtual-sensor-agent:1.4",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
-					"PYTHON_SERVICE_INTERPOLATION_URL=http://ship-stack-python-service:5000/getInterpolatedConc",
-					"DATABASE=postgres",
-					"GEOSERVER_WORKSPACE=dispersion"
+					"DATABASE=postgres"
 				],
 				"Configs": [
 					{

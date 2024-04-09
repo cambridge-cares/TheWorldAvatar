@@ -1,0 +1,13 @@
+PREFIX disp: <https://www.theworldavatar.com/kg/ontodispersion/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+
+SELECT ?Property ?Value
+WHERE {
+{[IRI] disp:hasProperty ?mmsi.
+?mmsi a disp:MMSI;
+om:hasValue/om:hasNumericalValue ?mmsiValue.
+ BIND (?mmsiValue AS ?Value).
+ BIND ("MMSI" AS ?Property).
+}
+}

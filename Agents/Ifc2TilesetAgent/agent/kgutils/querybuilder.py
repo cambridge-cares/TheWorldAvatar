@@ -113,6 +113,51 @@ class QueryBuilder:
             raise QueryBuilderError("Invalid var_index! Only 0 - 7 is valid.")
 
         return self
+    
+    def add_optional_triple(self, subject: str, predicate: str, objectnode: str, var_ind: int = 0):
+        """
+        This function adds optional triples to the WHERE query.
+        Valid iri format include "prefix:class" or "<namespace#class>"
+
+        Arguments:
+            subject - subject node in the form "prefix:class" [iri] or "var" [variable]
+            predicate - predicate node in the form "prefix:property" [iri] or "var" [variable]
+            object - object node in the form "prefix:class" [iri] or "var" [variable]
+            var_ind - an indicator determining which nodes are variables. 0 indicates no variable,\
+                1 references subject, 2 references predicate, 3 references object,\
+                4 references subject and predicate, 5 references subject and object,\
+                6 references predicate and object, 7 references all as variables
+        """
+        self.where_string += "OPTIONAL {"
+        if var_ind == 0:
+            self.where_string += subject + self.whitespace
+            self.where_string += predicate + self.whitespace + objectnode
+        elif var_ind == 1:
+            self.where_string += "?" + subject + self.whitespace
+            self.where_string += predicate + self.whitespace + objectnode
+        elif var_ind == 2:
+            self.where_string += subject + self.whitespace
+            self.where_string += "?" + predicate + self.whitespace + objectnode
+        elif var_ind == 3:
+            self.where_string += subject + self.whitespace
+            self.where_string += predicate + self.whitespace + "?" + objectnode
+        elif var_ind == 4:
+            self.where_string += "?" + subject + self.whitespace
+            self.where_string += "?" + predicate + self.whitespace + objectnode
+        elif var_ind == 5:
+            self.where_string += "?" + subject + self.whitespace
+            self.where_string += predicate + self.whitespace + "?" + objectnode
+        elif var_ind == 6:
+            self.where_string += subject + self.whitespace
+            self.where_string += "?" + predicate + self.whitespace + "?" + objectnode
+        elif var_ind == 7:
+            self.where_string += "?" + subject + self.whitespace
+            self.where_string += "?" + predicate + self.whitespace + "?" + objectnode
+        else:
+            logger.error("Invalid var_index! Only 0 - 7 is valid.")
+            raise QueryBuilderError("Invalid var_index! Only 0 - 7 is valid.")
+        self.where_string += ".}\n"
+        return self
 
     def add_values_where(self, var: str, *values):
         """

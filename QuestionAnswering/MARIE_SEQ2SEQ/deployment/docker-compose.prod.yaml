@@ -1,0 +1,12 @@
+services:
+  triton:
+    image: ghcr.io/cambridge-cares/marie-seq2seq-triton:1.0.0-beta.1
+    shm_size: 256m
+    ports:
+      - 8000:8000
+  flask:
+    image: ghcr.io/cambridge-cares/marie-seq2seq-flask:1.0.0-beta.1
+    ports:
+      - 5000:5000
+    depends_on:
+      - triton

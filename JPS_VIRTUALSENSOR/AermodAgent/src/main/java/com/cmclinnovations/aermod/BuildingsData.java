@@ -164,23 +164,11 @@ public class BuildingsData {
 
         List<Building> buildings = new ArrayList<>();
 
-        double maxDistance = 200.0;
-
         for (String ocgmlIRI : ocgmlIRList) {
             List<Polygon> groundPolygons = iriToPolygonMap.get(ocgmlIRI).get(0);
             List<Polygon> roofPolygons = iriToPolygonMap.get(ocgmlIRI).get(1);
             LinearRing basePolygon = extractFootprint(groundPolygons);
             basePolygon.setSRID(srid);
-
-            // Check if this building is to be included
-            Point centre = basePolygon.getCentroid();
-
-            int numSources = (int) allSources.stream()
-                    .filter(s -> centre.distance(s.getLocation()) <= maxDistance)
-                    .count();
-
-            if (numSources == 0)
-                continue;
 
             double aveGroundZ = groundPolygons.stream()
                     .flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
@@ -193,6 +181,7 @@ public class BuildingsData {
             double height = aveRoofZ - aveGroundZ;
 
             Building bd = new Building(basePolygon, height);
+            bd.setIri(ocgmlIRI);
             buildings.add(bd);
 
         }

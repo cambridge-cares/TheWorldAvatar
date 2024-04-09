@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   emissions-agent:
-    image: ghcr.io/cambridge-cares/emissions-agent:1.2.2
+    image: ghcr.io/cambridge-cares/emissions-agent:1.3
     deploy:
       mode: replicated
       replicas: 1

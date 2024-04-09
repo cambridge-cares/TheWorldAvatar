@@ -1,6 +1,11 @@
 package com.cmclinnovations.aermod.objects;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import org.locationtech.jts.geom.Point;
+
+import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
 
 public class PointSource {
     private Point location;
@@ -10,22 +15,17 @@ public class PointSource {
     private double mixtureMolWeight; // kg/mol
     private double mixtureCp; // J/kg/K
     private double mixtureTemperature; // K
-    private double mixtureMassFlux = 0.0192143028723584; // kg/s, constant in python script anyway, probably violates
-                                                         // mass balance
     private double mixtureDensity; // kg/m3
     private double particleDensity; // kg/m3
-    private double flowrateNOx; // g/s
-    private double flowrateSO2; // g/s
-    private double flowrateHC; // g/s
-    private double flowrateCO; // g/s
-    private double flowrateCO2;
-    private double pm25; // pm 2.5
-    private double pm10; // pm 10
+
+    private Map<PollutantType, Double> flowrateInGramsPerS;
 
     private String iri;
+    private double baseElevation = 0;
 
     public PointSource(String iri) {
         this.iri = iri;
+        flowrateInGramsPerS = new EnumMap<>(PollutantType.class);
     }
 
     public String getIri() {
@@ -40,28 +40,24 @@ public class PointSource {
         return this.location;
     }
 
-    public void setFlowRateCO2InKgPerS(double flowrateCO2InKgPerS) {
-        flowrateCO2 = flowrateCO2InKgPerS * 1000;
+    public void setElevation(double elevation) {
+        this.baseElevation = elevation;
     }
 
-    public double getFlowrateCO2InGramsPerSecond() {
-        return flowrateCO2;
+    public double getElevation() {
+        return baseElevation;
     }
 
-    public void setFlowRateNOxInKgPerS(double flowrateNOxInKgPerS) {
-        this.flowrateNOx = flowrateNOxInKgPerS * 1000;
+    public void setFlowrateInKgPerS(PollutantType pollutant, double flowRate) {
+        flowrateInGramsPerS.put(pollutant, flowRate * 1000);
     }
 
-    public void setFlowRateSO2InKgPerS(double flowrateSO2InKgPerS) {
-        this.flowrateSO2 = flowrateSO2InKgPerS * 1000;
+    public double getFlowrateInGramsPerS(PollutantType pollutant) {
+        return flowrateInGramsPerS.get(pollutant);
     }
 
-    public void setFlowRateHCInKgPerS(double flowrateHCInKgPerS) {
-        this.flowrateHC = flowrateHCInKgPerS * 1000;
-    }
-
-    public void setFlowRateCOInKgPerS(double flowrateCOInKgPerS) {
-        this.flowrateCO = flowrateCOInKgPerS * 1000;
+    public boolean hasPollutant(PollutantType pollutant) {
+        return flowrateInGramsPerS.containsKey(pollutant);
     }
 
     public void setMixtureTemperatureInKelvin(double mixtureTemperature) {
@@ -73,7 +69,7 @@ public class PointSource {
     }
 
     public double getMixtureMassFlux() {
-        return this.mixtureMassFlux;
+        return flowrateInGramsPerS.values().stream().mapToDouble(d -> d).sum() / 1000;
     }
 
     public void setMixtureDensityInKgm3(double mixtureDensity) {
@@ -82,38 +78,6 @@ public class PointSource {
 
     public double getMixtureDensityInKgm3() {
         return this.mixtureDensity;
-    }
-
-    public double getFlowrateNOxInGramsPerS() {
-        return this.flowrateNOx;
-    }
-
-    public double getFlowrateCOInGramsPerS() {
-        return this.flowrateCO;
-    }
-
-    public double getFlowrateSO2InGramsPerS() {
-        return this.flowrateSO2;
-    }
-
-    public double getFlowrateHCInGramsPerS() {
-        return this.flowrateHC;
-    }
-
-    public void setFlowRatePM25InKgPerS(double flowratepm25InKgPerS) {
-        this.pm25 = flowratepm25InKgPerS * 1000;
-    }
-
-    public double getFlowRatePm25InGramsPerS() {
-        return this.pm25;
-    }
-
-    public void setFlowRatePM10InKgPerS(double flowratepm10InKgPerS) {
-        this.pm10 = flowratepm10InKgPerS * 1000;
-    }
-
-    public double getFlowRatePm10InGramsPerS() {
-        return this.pm10;
     }
 
     public double getDiameter() {

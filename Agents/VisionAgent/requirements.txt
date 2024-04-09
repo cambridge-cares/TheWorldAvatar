@@ -1,0 +1,13 @@
+#######################################
+## The World Avatar related packages ##
+#######################################
+#py4jps==1.0.37
+#pyderivationagent==1.5.0
+
+##########################
+## Third-party packages ##
+##########################
+flask==3.0.0
+gunicorn==20.0.4
+numpy==1.26.1            # Numerical Python @14/10/23 version
+opencv-python==4.8.1.78  # OpenCV @24/09/23 version

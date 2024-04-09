@@ -9,7 +9,7 @@ to split and convert the IFC model to geometry outputs.
 from py4jps import agentlogging
 
 # Self imports
-from agent.ifc2gltf.kghelper import retrieve_metadata, get_building_iri
+from agent.ifc2gltf.kghelper import retrieve_metadata, get_building_iri_name
 from agent.ifc2gltf.ifchelper import exec_gltf_conversion, get_filename_to_ifc_ids_mapping
 
 # Retrieve logger
@@ -25,8 +25,9 @@ def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
         update_endpoint: SPARQL UPDATE endpoint.
 
     Returns:
-        A tuple (asset_df, building_iri), where asset_df is a dataframe containing the individual assets and their
-        metadata with headers 'file', 'name', 'uid', 'iri', and building_iri is the data IRI of the building.
+        A tuple (asset_df, building_data), where asset_df is a dataframe containing the individual assets and their
+        metadata with headers 'file', 'name', 'uid', 'iri', and building_data is an list
+        containing building_iri and building_name in this order.
     """
     logger.info("Retrieving metadata from endpoint...")
     metadata = retrieve_metadata(query_endpoint, update_endpoint)
@@ -50,6 +51,6 @@ def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
     logger.info("Conversion to geometry outputs completed...")
 
     asset_data = metadata[~metadata["file"].isin(["furniture", "solarpanel", "sewagenetwork"])]
-    building_iri = get_building_iri(query_endpoint, update_endpoint)
-
-    return asset_data, building_iri
+    building_iri, building_name = get_building_iri_name(query_endpoint, update_endpoint)
+    building_data = [building_iri, building_name]
+    return asset_data, building_data

@@ -3,7 +3,7 @@ version: '3.9'
 services:
   ifc2tileset-agent:
     container_name: ifc2tileset-agent
-    image: ifc2tileset-agent:1.0.0
+    image: ifc2tileset-agent:1.1.0
     build:
       context: .
       target: prod

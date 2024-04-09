@@ -3,7 +3,7 @@
         "Name": "ship-input-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.2",
+                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.3",
 				"Env": [
 					"DATABASE=postgres",
 					"DATA_DIR=/data",
@@ -13,7 +13,10 @@
 					"EMISSIONS_AGENT_URL=http://ship-stack-emissions-agent:8080/EmissionsAgent/",
 					"EMISSIONS_AGENT_IRI=http://theworldavatar.com/kg/dispersion/EmissionsAgent",
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000",
-					"PARALLELISE_CALCULATIONS=true"
+					"PARALLELISE_CALCULATIONS=true",
+					"SHIP_IRI_LOOKUP_TABLE=ship_location_iri",
+					"SCOPE_TABLE_NAME=scopes",
+					"SHIPS_LAYER_NAME=ships"
 				],
 				"Configs": [
 					{

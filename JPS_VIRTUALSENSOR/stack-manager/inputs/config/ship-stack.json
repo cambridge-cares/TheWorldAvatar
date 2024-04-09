@@ -5,12 +5,17 @@
 			"weather-agent",
 			"ship-input-agent",
 			"dispersion-interactor",
-			"dispersion-vis",
 			"aermod-agent",
 			"python-service",
 			"emissions-agent",
 			"virtual-sensor-agent",
+			"jurong-island-input-agent",
+			"visualisation",
 			"feature-info-agent"
 		]
-	}
+	},
+	"volumes": {
+        "vis-files": "visualisation",
+        "fia-queries": "queries"
+    }
 }

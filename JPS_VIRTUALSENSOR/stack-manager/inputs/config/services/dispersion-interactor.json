@@ -3,7 +3,7 @@
 		"Name": "dispersion-interactor",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.2.3",
+				"Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.4",
 				"Env": [
 					"DATABASE=postgres",
 					"SCOPE_TABLE_NAME=scopes",
@@ -12,8 +12,15 @@
 					"WEATHER_AGENT_URL=http://ship-stack-weather-agent:8080/WeatherAgent/CreateStation",
 					"SHIP_INPUT_AGENT=http://ship-stack-ship-input-agent:8080/ShipInputAgent/update",
 					"GEOSERVER_WORKSPACE=dispersion",
+					"STACK_URL=http://localhost:3838",
 					"SENSORS_TABLE_NAME=sensors",
-					"VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent"
+					"VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
+					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
+					"SHIPS_LAYER_NAME=ships",
+					"BUILDINGS_TABLE=buildings",
+					"STATIC_SOURCE_TABLE=static",
+					"VIRTUAL_SENSOR_AGENT_URL=http://ship-stack-virtual-sensor-agent:8080/VirtualSensorAgent/",
+					"ELEVATION_CONTOURS_TABLE=elevation_contours"
 				],
 				"Configs": [
 					{

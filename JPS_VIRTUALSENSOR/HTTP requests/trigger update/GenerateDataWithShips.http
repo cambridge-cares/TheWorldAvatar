@@ -1,0 +1,6 @@
+# parameters:
+# derivation - derivation IRI without curly brackets
+# numsteps - number of timesteps
+POST http://localhost:3838/dispersion-interactor/GenerateDataWithShips
+?derivation=REPLACE_WITH_DERIVATION_IRI
+&numsteps=1

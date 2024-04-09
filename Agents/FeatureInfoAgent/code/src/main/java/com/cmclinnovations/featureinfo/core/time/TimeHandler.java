@@ -6,11 +6,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.jena.sparql.function.library.collation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -56,7 +54,7 @@ public class TimeHandler {
     /**
      * Optional enforced Blazegraph URL.
      */
-    private final String enforcedEndpoint;
+    private final Optional<String> enforcedEndpoint;
     
     /**
      * Configuration store.
@@ -85,7 +83,7 @@ public class TimeHandler {
      * @param enforcedEndpoint optional enforced Blazegraph URL.
      * @param configStore Store of class mappings and stack endpoints.
      */
-    public TimeHandler(String iri, String enforcedEndpoint, ConfigStore configStore) {
+    public TimeHandler(String iri, Optional<String> enforcedEndpoint, ConfigStore configStore) {
         this.iri = iri;
         this.enforcedEndpoint = enforcedEndpoint;
         this.configStore = configStore;

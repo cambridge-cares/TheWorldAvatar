@@ -1,0 +1,2932 @@
+{
+    "groups": [
+        {
+            "name": "Buildings with usage",
+            "expanded": false,
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "id": "building",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=building%3Abuilding_usage&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "Religious Facility",
+                    "name": "Religious Facility",
+                    "source": "building",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "in",
+                        "ReligiousFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFD700",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Industrial Facility",
+                    "name": "Industrial Facility",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "IndustrialFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFA500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Police Station",
+                    "name": "Police Station",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "PoliceStation",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#1E90FF",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Cultural Facility",
+                    "name": "Cultural Facility",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "CulturalFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF69B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Drinking Establishment",
+                    "name": "Drinking Establishment",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "DrinkingEstablishment",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#008000",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Fire Station",
+                    "name": "Fire Station",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "FireStation",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Single Residential",
+                    "name": "Single Residential",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "SingleResidential",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#6495ED",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Hotel",
+                    "name": "Hotel",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "Hotel",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF1493",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Non-Domestic",
+                    "name": "Non-Domestic",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "Non-Domestic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#F1EB9C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "University Facility",
+                    "name": "University Facility",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "UniversityFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#9932CC",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Multi-Residential",
+                    "name": "Multi-Residential",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "MultiResidential",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4169E1",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Domestic",
+                    "name": "Domestic",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "Domestic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4682B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Eating Establishment",
+                    "name": "Eating Establishment",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "EatingEstablishment",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FFD700",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Transport Facility",
+                    "name": "Transport Facility",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "TransportFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#2CA02C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "School",
+                    "name": "School",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "School",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#4682B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Retail Facility",
+                    "name": "Retail Facility",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "RetailFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#DC143C",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Sports Facility",
+                    "name": "Sports Facility",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "SportsFacility",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF69B4",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Office",
+                    "name": "Office",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "Office",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF8C00",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Clinic",
+                    "name": "Clinic",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "Clinic",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Hospital",
+                    "name": "Hospital",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "Hospital",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Pharmacy",
+                    "name": "Pharmacy",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "Pharmacy",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Bank",
+                    "name": "Bank",
+                    "source": "building",
+                    "filter": [
+                        "in",
+                        "Bank",
+                        [
+                            "get",
+                            "ontobuilt"
+                        ]
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF8C00",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Buildings with CEA results",
+            "expanded": false,
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "id": "building",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=building%3Abuilding_usage&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "Buildings with CEA results",
+                    "name": "Buildings with CEA results",
+                    "source": "building",
+                    "type": "fill-extrusion",
+                    "filter": [
+                        "in",
+                        "iri",
+                        "https://www.theworldavatar.com/kg/Building/010c761f-d5a2-4c9a-b8e2-1a2e93da66ff",
+                        "https://www.theworldavatar.com/kg/Building/010fdf17-87d3-4a3a-a026-f4e3f331c3d1",
+                        "https://www.theworldavatar.com/kg/Building/02ae4411-ec46-48d2-8f03-ebe30656e257",
+                        "https://www.theworldavatar.com/kg/Building/02dc5af1-bea5-41ee-9926-e5cb74d7bba8",
+                        "https://www.theworldavatar.com/kg/Building/02e1772a-3edd-4be1-9230-ec637aac0280",
+                        "https://www.theworldavatar.com/kg/Building/03fb00f9-264f-42ef-aa0d-982c274b0153",
+                        "https://www.theworldavatar.com/kg/Building/04807dd3-17bf-448a-8447-81c553aa7ce8",
+                        "https://www.theworldavatar.com/kg/Building/04b98410-b52b-460c-a20a-1b1e89d585e6",
+                        "https://www.theworldavatar.com/kg/Building/065902f5-1482-49eb-bb64-85e09f34fd69",
+                        "https://www.theworldavatar.com/kg/Building/074ed41d-8357-48ea-b81b-1698e23feb21",
+                        "https://www.theworldavatar.com/kg/Building/07a3fe36-3c4f-4a26-9cad-a70a899af7e1",
+                        "https://www.theworldavatar.com/kg/Building/081a8846-98e6-406d-a76b-83b6e42bc4c9",
+                        "https://www.theworldavatar.com/kg/Building/0869c608-6a7c-4de3-9dce-1556aefa2034",
+                        "https://www.theworldavatar.com/kg/Building/08d21874-054e-46dd-8008-8e9ae147b77c",
+                        "https://www.theworldavatar.com/kg/Building/09367753-6ba3-4f1f-a72a-f9e459d5bf49",
+                        "https://www.theworldavatar.com/kg/Building/0a054385-454c-4968-874b-1a5bb8e7e46f",
+                        "https://www.theworldavatar.com/kg/Building/0a68f930-4544-4bc0-a9a3-1a9380aa77c0",
+                        "https://www.theworldavatar.com/kg/Building/0aa644a3-db2c-4400-8bfb-059c517607bf",
+                        "https://www.theworldavatar.com/kg/Building/0ab21c52-8941-4652-9e0c-f1ef9229645a",
+                        "https://www.theworldavatar.com/kg/Building/0b3c5992-2e8c-4885-8773-5c947c7a7985",
+                        "https://www.theworldavatar.com/kg/Building/0b498a25-1535-4dff-abc3-cf6d91df2d5b",
+                        "https://www.theworldavatar.com/kg/Building/0bcf9d69-a1a6-4856-a153-e385e5f07933",
+                        "https://www.theworldavatar.com/kg/Building/0c1797e4-57eb-49a6-8f44-92356d71eeca",
+                        "https://www.theworldavatar.com/kg/Building/0d48b154-0dc9-4dde-8ee8-37f39f31ef86",
+                        "https://www.theworldavatar.com/kg/Building/0da9b480-96be-490e-ae63-f8ccc3bf039b",
+                        "https://www.theworldavatar.com/kg/Building/0e26102e-bc62-42b2-a9b0-fc2cece6fcce",
+                        "https://www.theworldavatar.com/kg/Building/0e266813-4611-4d0e-a71f-7f0caa57d1a2",
+                        "https://www.theworldavatar.com/kg/Building/0ec684c9-3620-479f-a2a6-244935068051",
+                        "https://www.theworldavatar.com/kg/Building/0fc63164-57ee-4568-99b5-5f2211d7a1f7",
+                        "https://www.theworldavatar.com/kg/Building/1040fb69-f15b-4510-ac57-9cc2008f20c9",
+                        "https://www.theworldavatar.com/kg/Building/104bf774-704b-4fe9-872e-782e6710739e",
+                        "https://www.theworldavatar.com/kg/Building/1131bb21-a816-45f4-a3e6-5a75a084fa7f",
+                        "https://www.theworldavatar.com/kg/Building/119ef91c-bdb4-47ce-b7f3-f60d12f6dc71",
+                        "https://www.theworldavatar.com/kg/Building/121fd708-c467-486f-b829-5724a0128b5c",
+                        "https://www.theworldavatar.com/kg/Building/13026e66-8881-49d6-bed1-7a02c56c63a4",
+                        "https://www.theworldavatar.com/kg/Building/13332f91-8fbc-4105-babb-bc044ca9fce1",
+                        "https://www.theworldavatar.com/kg/Building/133ca927-e28e-41dc-858d-0ce7e984992e",
+                        "https://www.theworldavatar.com/kg/Building/1349752f-e309-4999-ad5c-cfef4558198b",
+                        "https://www.theworldavatar.com/kg/Building/1489834f-8095-4fea-b2fc-e9473dbb7634",
+                        "https://www.theworldavatar.com/kg/Building/151baf52-bb58-40e7-bc41-5df7d9bb4d60",
+                        "https://www.theworldavatar.com/kg/Building/16e6f7ad-e55f-4da8-b653-f65b0d223c99",
+                        "https://www.theworldavatar.com/kg/Building/178a7b22-2828-4b64-b77f-dea077c5386b",
+                        "https://www.theworldavatar.com/kg/Building/1880f36e-0c94-457f-91a5-13e550aecafb",
+                        "https://www.theworldavatar.com/kg/Building/18bd906d-dec1-4eb8-95a2-4f12d77616f4",
+                        "https://www.theworldavatar.com/kg/Building/1a1116ab-7c16-4cbf-a8d7-b50c49d4d784",
+                        "https://www.theworldavatar.com/kg/Building/1a757427-8e80-4a8d-8aca-00b069c8a925",
+                        "https://www.theworldavatar.com/kg/Building/1ac23903-4f56-453a-a748-5545b31378c7",
+                        "https://www.theworldavatar.com/kg/Building/1b2b335f-ffee-421a-ade0-a601d757ad7f",
+                        "https://www.theworldavatar.com/kg/Building/1b96d65f-090d-41b9-b96c-92c6a841ee9b",
+                        "https://www.theworldavatar.com/kg/Building/1c721466-dd7b-4c89-8cf8-283e9b4c64c3",
+                        "https://www.theworldavatar.com/kg/Building/1d497d1d-a2c8-4f8c-8a71-91a8fe64de07",
+                        "https://www.theworldavatar.com/kg/Building/1d9ee0d3-36d0-4b59-8e5a-946be117e3a7",
+                        "https://www.theworldavatar.com/kg/Building/1e0471d6-d138-407b-aa11-3caf9067f465",
+                        "https://www.theworldavatar.com/kg/Building/1f5881b7-dcf0-4cd1-9fc9-dccbb53ef43f",
+                        "https://www.theworldavatar.com/kg/Building/21c98eac-75a1-4c9a-bb8c-490cb0c2f12b",
+                        "https://www.theworldavatar.com/kg/Building/225c68a1-0f21-4b67-ae02-7bb95fc16603",
+                        "https://www.theworldavatar.com/kg/Building/2316f843-8cd9-4bbd-9bc2-4af0d361251c",
+                        "https://www.theworldavatar.com/kg/Building/24a011f2-86f6-4c04-b72d-5958589f0a88",
+                        "https://www.theworldavatar.com/kg/Building/25438a5c-cafb-404c-bbc6-6da3808f7b5f",
+                        "https://www.theworldavatar.com/kg/Building/26a7431f-feec-436c-908c-8471cfef1fee",
+                        "https://www.theworldavatar.com/kg/Building/2778440f-bf66-4888-b32c-f5089af081af",
+                        "https://www.theworldavatar.com/kg/Building/27ed677d-f590-4d20-bc4f-131be32b881a",
+                        "https://www.theworldavatar.com/kg/Building/2853ee40-b2b2-4680-a46e-e266f6831de8",
+                        "https://www.theworldavatar.com/kg/Building/28eaa8bd-bae9-436d-a3df-899ea2d651fa",
+                        "https://www.theworldavatar.com/kg/Building/290bf79f-2e1a-491f-a123-18a60cb85831",
+                        "https://www.theworldavatar.com/kg/Building/299d0def-2ca0-42da-8121-474684b4e9f4",
+                        "https://www.theworldavatar.com/kg/Building/2a2176af-be5f-4aa0-ac17-49f1a4085f3d",
+                        "https://www.theworldavatar.com/kg/Building/2ab5d5be-f998-4df6-8a7d-352d17482282",
+                        "https://www.theworldavatar.com/kg/Building/2b587d85-7e0c-4e4c-ae19-b8d3418d5bde",
+                        "https://www.theworldavatar.com/kg/Building/2b6f73a0-ff82-4033-a4db-5ae43d164a47",
+                        "https://www.theworldavatar.com/kg/Building/2b8efa04-083c-4c25-9684-0af935f5fb62",
+                        "https://www.theworldavatar.com/kg/Building/2cf41675-7e98-4bb2-9f2e-c8a03f96dd4e",
+                        "https://www.theworldavatar.com/kg/Building/2d2829be-3c11-434a-b333-a62fe928418e",
+                        "https://www.theworldavatar.com/kg/Building/2de77e06-0d45-4e75-94f0-f50776547e71",
+                        "https://www.theworldavatar.com/kg/Building/2e9f3cfa-b1f4-433a-8b36-0ca48cc6fdfa",
+                        "https://www.theworldavatar.com/kg/Building/2f86754b-958c-400f-a56f-e7f73f054298",
+                        "https://www.theworldavatar.com/kg/Building/2f984cc6-0e60-4f66-8747-dadf48096454",
+                        "https://www.theworldavatar.com/kg/Building/30c943d1-cefb-4d7a-ac5f-cbb42c5dc0e0",
+                        "https://www.theworldavatar.com/kg/Building/30e7ea60-1603-4861-8ba4-b84766162182",
+                        "https://www.theworldavatar.com/kg/Building/313c1156-267a-44b5-961a-877fc3e32be9",
+                        "https://www.theworldavatar.com/kg/Building/315d29ca-c558-49d6-8b6f-85116329bacb",
+                        "https://www.theworldavatar.com/kg/Building/318d3284-4b92-4396-af14-b14dc29886be",
+                        "https://www.theworldavatar.com/kg/Building/31a080bd-6494-4859-a185-e88aed407acc",
+                        "https://www.theworldavatar.com/kg/Building/321a6eb9-d8dc-4172-a24d-f9b6ca31ea63",
+                        "https://www.theworldavatar.com/kg/Building/340d397e-00f1-40e7-9cf1-45119e27c91a",
+                        "https://www.theworldavatar.com/kg/Building/3417a6ef-5d17-406e-be18-90ee6fdb7f71",
+                        "https://www.theworldavatar.com/kg/Building/3580cd05-1f9e-4bcf-ba29-7b7f64b5a19b",
+                        "https://www.theworldavatar.com/kg/Building/35cf2f76-4b35-4de9-bf64-3a8adf417a4d",
+                        "https://www.theworldavatar.com/kg/Building/35fac921-d5e1-4444-9989-5990450d1187",
+                        "https://www.theworldavatar.com/kg/Building/36065856-64d5-43b8-b6dd-90daea3d4f29",
+                        "https://www.theworldavatar.com/kg/Building/36379b47-79cf-4f32-a4b2-74f3ca7d969f",
+                        "https://www.theworldavatar.com/kg/Building/36fe50b2-aea9-4940-97c7-046c72e23fbb",
+                        "https://www.theworldavatar.com/kg/Building/37560091-6d2d-47f8-bab1-9b6eff36afc9",
+                        "https://www.theworldavatar.com/kg/Building/37b19526-03e0-44f5-8f13-93dd11d9ca54",
+                        "https://www.theworldavatar.com/kg/Building/37d94a8b-1f5a-41fb-a6b4-a42e5f21f5fc",
+                        "https://www.theworldavatar.com/kg/Building/384ca580-cac5-46ec-ba92-67bd8b6a1fe6",
+                        "https://www.theworldavatar.com/kg/Building/39066237-145f-4e3a-a45e-37e317fcb7b5",
+                        "https://www.theworldavatar.com/kg/Building/39edc51d-1e65-47c7-8060-65d467a1ed65",
+                        "https://www.theworldavatar.com/kg/Building/39f7933b-3442-48dd-a6ef-4f10fd5c2258",
+                        "https://www.theworldavatar.com/kg/Building/3a30a923-5fb2-4f22-926a-5eb78f07b1c6",
+                        "https://www.theworldavatar.com/kg/Building/3ae9ad3b-aa19-42a7-a9a5-a08d29e6d3c8",
+                        "https://www.theworldavatar.com/kg/Building/3b06a03e-e2f4-4702-896e-8a453c3fa846",
+                        "https://www.theworldavatar.com/kg/Building/3b1b20bb-e892-476e-8c64-ee091cf3ff56",
+                        "https://www.theworldavatar.com/kg/Building/3b304b5c-28a7-472f-b973-ae3ce0b4714a",
+                        "https://www.theworldavatar.com/kg/Building/3b7c2484-8abe-4258-8af9-d78f1489e489",
+                        "https://www.theworldavatar.com/kg/Building/3cc1fb75-dfb7-4116-8bf2-7d6e16ac1a7a",
+                        "https://www.theworldavatar.com/kg/Building/3d59093c-fdad-4654-936b-912ecc575725",
+                        "https://www.theworldavatar.com/kg/Building/3e18ccb5-d6f0-431e-8dfb-fa3fc5bdca2c",
+                        "https://www.theworldavatar.com/kg/Building/3ea16f18-d382-47bc-a1fb-e4bfcce9af47",
+                        "https://www.theworldavatar.com/kg/Building/3fba9a51-2e46-4cd5-9bc8-e6d923ee88a6",
+                        "https://www.theworldavatar.com/kg/Building/3fe40dde-8a98-47ac-8c94-89e88794a374",
+                        "https://www.theworldavatar.com/kg/Building/403d43ab-9f93-42e8-808f-40a65328cf9c",
+                        "https://www.theworldavatar.com/kg/Building/406ab06b-8915-4030-b65b-2e2d9605e64f",
+                        "https://www.theworldavatar.com/kg/Building/4152a208-6c91-4aa3-b400-816e318bbfbb",
+                        "https://www.theworldavatar.com/kg/Building/4179063a-ce28-4a4a-9b3e-981cd90a6072",
+                        "https://www.theworldavatar.com/kg/Building/41a26ca4-9232-430b-9637-9de4466c7bfb",
+                        "https://www.theworldavatar.com/kg/Building/421373a5-6286-4652-bb06-ba03a7de8963",
+                        "https://www.theworldavatar.com/kg/Building/441dd624-ee71-4c8a-8312-1ba7b499741a",
+                        "https://www.theworldavatar.com/kg/Building/44b62a6d-9e23-4bc8-8692-753888776c02",
+                        "https://www.theworldavatar.com/kg/Building/48587f2c-c238-4c1f-9600-5bad91816717",
+                        "https://www.theworldavatar.com/kg/Building/49137aee-dd63-45a9-b90f-7abb57a4d523",
+                        "https://www.theworldavatar.com/kg/Building/49548982-2eae-43bb-8128-2e82bf04db71",
+                        "https://www.theworldavatar.com/kg/Building/498e5293-6203-4719-9749-489a599ac97f",
+                        "https://www.theworldavatar.com/kg/Building/4a09ec39-4f5d-46be-80d2-8c275aa1c36f",
+                        "https://www.theworldavatar.com/kg/Building/4a0e3abf-a628-4ccd-a4e9-23f50fe1d180",
+                        "https://www.theworldavatar.com/kg/Building/4a9fa3e1-a0a1-4739-8d55-3530bf16dadc",
+                        "https://www.theworldavatar.com/kg/Building/4b16ad6c-bbec-4c2f-820c-372a019f1922",
+                        "https://www.theworldavatar.com/kg/Building/4bc3ee59-5276-4890-b080-32586a11a84f",
+                        "https://www.theworldavatar.com/kg/Building/4c670141-5f28-4cee-829e-360f5d231bb3",
+                        "https://www.theworldavatar.com/kg/Building/4c733431-413d-4809-9ff9-3275bb682677",
+                        "https://www.theworldavatar.com/kg/Building/4c7e2c27-5855-4999-b6f0-5e6df7017d14",
+                        "https://www.theworldavatar.com/kg/Building/4cf1023e-18b9-4611-88df-530e2c8a5c75",
+                        "https://www.theworldavatar.com/kg/Building/4d00078e-4bfb-4d4e-9ad2-906843587824",
+                        "https://www.theworldavatar.com/kg/Building/4d6b05a8-2cb8-4d81-8fbf-b6af9efa0080",
+                        "https://www.theworldavatar.com/kg/Building/4dd6282b-331d-4ede-b606-e65beff05551",
+                        "https://www.theworldavatar.com/kg/Building/4e533ca4-831f-4bdd-8e12-17a2c20bf8c4",
+                        "https://www.theworldavatar.com/kg/Building/4e86ce4f-f63e-41e0-be70-0d94ca9eac90",
+                        "https://www.theworldavatar.com/kg/Building/4f3b3599-af5f-4d64-a6d2-4bf900df0ad9",
+                        "https://www.theworldavatar.com/kg/Building/4fa545af-d2d5-475d-b5f0-40047c6ca43a",
+                        "https://www.theworldavatar.com/kg/Building/4fc0e44c-ec69-4f82-9869-38b0113fd97b",
+                        "https://www.theworldavatar.com/kg/Building/5017e3c7-042a-4abc-b40a-d227eee5000b",
+                        "https://www.theworldavatar.com/kg/Building/504316e6-163a-46eb-8031-b742ff1d1b69",
+                        "https://www.theworldavatar.com/kg/Building/50d82882-401c-46c9-9290-7a638b9623e1",
+                        "https://www.theworldavatar.com/kg/Building/51f3276d-8de4-4e30-ba6e-f315cdf51f08",
+                        "https://www.theworldavatar.com/kg/Building/52431528-c5f3-423f-9afd-159cd867dd5e",
+                        "https://www.theworldavatar.com/kg/Building/525229e2-528f-4291-bbf5-9dc5644e5144",
+                        "https://www.theworldavatar.com/kg/Building/53b2ff85-eb0a-4de9-b2a8-c6c872246ff4",
+                        "https://www.theworldavatar.com/kg/Building/542a4852-8bb4-425e-ab40-612309aede68",
+                        "https://www.theworldavatar.com/kg/Building/544ca05e-499c-436b-a7bc-2aa129c51aab",
+                        "https://www.theworldavatar.com/kg/Building/547429b1-ae6e-47c0-8ad9-8ced9068b149",
+                        "https://www.theworldavatar.com/kg/Building/54d2ff73-a7c1-4f75-8b3b-90d095fc3df6",
+                        "https://www.theworldavatar.com/kg/Building/54d468b0-a554-459b-a974-869c33033efa",
+                        "https://www.theworldavatar.com/kg/Building/54f8065e-5de5-4321-9ea2-b42ddad46c30",
+                        "https://www.theworldavatar.com/kg/Building/550636ac-876f-43bc-85ac-804fc2eff42e",
+                        "https://www.theworldavatar.com/kg/Building/5514d28c-b631-4e90-9d3b-402e219f30ba",
+                        "https://www.theworldavatar.com/kg/Building/553ebd8c-4206-48a7-8e5e-efc4d5908a40",
+                        "https://www.theworldavatar.com/kg/Building/56c29aa5-7c29-46d3-a739-7f3cd6e557cc",
+                        "https://www.theworldavatar.com/kg/Building/57a97a9f-94b7-46ca-a536-4bbcbeff2841",
+                        "https://www.theworldavatar.com/kg/Building/57dd3544-285a-4b84-95c2-0c0799b098de",
+                        "https://www.theworldavatar.com/kg/Building/582e3558-ac81-4497-86bd-3c12ed34da04",
+                        "https://www.theworldavatar.com/kg/Building/592178d4-9e40-400a-a758-3d2c1cbfb660",
+                        "https://www.theworldavatar.com/kg/Building/59344b93-b29e-47e9-9454-3fec01c358ca",
+                        "https://www.theworldavatar.com/kg/Building/59c7a436-8f7c-4c25-aafd-2231cbefddeb",
+                        "https://www.theworldavatar.com/kg/Building/5a467069-707a-46db-a895-ff18c600f996",
+                        "https://www.theworldavatar.com/kg/Building/5ad218ab-b2d7-4925-9d15-87961ed582e2",
+                        "https://www.theworldavatar.com/kg/Building/5b3277b7-26f0-4896-8685-35f77f08ef81",
+                        "https://www.theworldavatar.com/kg/Building/5b4aab67-4c55-4653-9636-5d7c12e9c83b",
+                        "https://www.theworldavatar.com/kg/Building/5bd70ef7-0e82-4537-a87f-edd753e3d300",
+                        "https://www.theworldavatar.com/kg/Building/5c4999cf-fcff-467a-acbd-a0dc0f49ea8e",
+                        "https://www.theworldavatar.com/kg/Building/5c6dd0f9-c048-45ed-b729-5ae3cff95a08",
+                        "https://www.theworldavatar.com/kg/Building/5caac82e-02bb-4816-a3e5-d86cf01fc06d",
+                        "https://www.theworldavatar.com/kg/Building/5cb55c23-c5ee-47f0-ac2a-bce4e9ed45f0",
+                        "https://www.theworldavatar.com/kg/Building/5d0a483a-6894-4be7-9189-3af6a274b0bc",
+                        "https://www.theworldavatar.com/kg/Building/5d2b8677-cd43-40b6-a3b2-7c2996ad55f1",
+                        "https://www.theworldavatar.com/kg/Building/5d9d4314-1096-4bb6-9468-ee906fd28135",
+                        "https://www.theworldavatar.com/kg/Building/5de7b959-fa3e-4032-bbf4-996a0ad45cb8",
+                        "https://www.theworldavatar.com/kg/Building/5e2a2a82-31fb-462b-8f0d-bead40af0213",
+                        "https://www.theworldavatar.com/kg/Building/5f866e22-2788-45a8-9b80-16e22fc1eff0",
+                        "https://www.theworldavatar.com/kg/Building/5fe9aeb2-381c-422c-b771-8e7ffcb054c4",
+                        "https://www.theworldavatar.com/kg/Building/610eda36-3586-4b22-a855-527f442cb493",
+                        "https://www.theworldavatar.com/kg/Building/611774c6-4823-44b2-b18a-1331b7bb96b0",
+                        "https://www.theworldavatar.com/kg/Building/612da2fa-0a3a-43c4-8b34-ac1e2d1b72c3",
+                        "https://www.theworldavatar.com/kg/Building/62a3497a-46d2-4db7-98a4-58aa4c6484f2",
+                        "https://www.theworldavatar.com/kg/Building/63357b70-b25d-4686-a1d6-7d8e33ca1351",
+                        "https://www.theworldavatar.com/kg/Building/63386a83-983c-4ee4-9354-265b136b07b7",
+                        "https://www.theworldavatar.com/kg/Building/6358c2c8-e5ee-4b40-b105-c1556be955ee",
+                        "https://www.theworldavatar.com/kg/Building/636a6e99-c2ca-4a0e-a5d2-c767cfbaddf7",
+                        "https://www.theworldavatar.com/kg/Building/63c4a88c-034c-4370-9312-5c86c5fc9ffe",
+                        "https://www.theworldavatar.com/kg/Building/63e61552-65bc-4d79-b6f1-4e76d1898b8d",
+                        "https://www.theworldavatar.com/kg/Building/63ed0051-2a35-4fa0-a036-73fdea5076bc",
+                        "https://www.theworldavatar.com/kg/Building/63f1f349-bf9b-48e6-b8d2-5e578d568883",
+                        "https://www.theworldavatar.com/kg/Building/646fd1a8-205c-409a-af41-31647b3df221",
+                        "https://www.theworldavatar.com/kg/Building/652c0dd4-7562-4872-812b-8a2338a92fe3",
+                        "https://www.theworldavatar.com/kg/Building/6548f965-ab05-49b2-b0e9-1fd1596fd0f4",
+                        "https://www.theworldavatar.com/kg/Building/6627e9f6-8b06-445b-ae5d-f12e07682914",
+                        "https://www.theworldavatar.com/kg/Building/6691b542-28a6-45ea-8bbc-0bbf77cc4ab1",
+                        "https://www.theworldavatar.com/kg/Building/66c8c8d7-dc96-4e39-9f4a-809375679b99",
+                        "https://www.theworldavatar.com/kg/Building/66ec6426-d979-44e9-8cc3-ec59504bcd6a",
+                        "https://www.theworldavatar.com/kg/Building/67197efa-5310-4deb-b3cf-31a941569dfb",
+                        "https://www.theworldavatar.com/kg/Building/673224e1-dc34-4fe8-9bdd-ded5508f3154",
+                        "https://www.theworldavatar.com/kg/Building/a339c865-c175-4813-a466-499b5f06d3d3",
+                        "https://www.theworldavatar.com/kg/Building/a34cd858-7c50-489b-8ac5-34ec85bfdea8",
+                        "https://www.theworldavatar.com/kg/Building/a3545972-0b4c-4f51-af8f-6bc306d647a8",
+                        "https://www.theworldavatar.com/kg/Building/a364fb60-d566-4e19-98b0-83a5c907027b",
+                        "https://www.theworldavatar.com/kg/Building/a596db0a-2831-4d86-8216-9104456d8f38",
+                        "https://www.theworldavatar.com/kg/Building/a5fa76a1-522a-4175-94b2-e516b448e4b2",
+                        "https://www.theworldavatar.com/kg/Building/a73ccf14-721a-4bc8-96ad-37ab6eb131e3",
+                        "https://www.theworldavatar.com/kg/Building/a7475b39-697d-44ac-8af2-4e557409f43b",
+                        "https://www.theworldavatar.com/kg/Building/a83f85ee-b756-4b49-b3c4-341dc9b9d02e",
+                        "https://www.theworldavatar.com/kg/Building/a8e7d9ee-0f4f-4379-8f63-eed7a834c7c1",
+                        "https://www.theworldavatar.com/kg/Building/a9193072-de32-4e14-bb58-78015f1599f4",
+                        "https://www.theworldavatar.com/kg/Building/a9635c7d-cf56-4a0c-9f3b-c624ace655d8",
+                        "https://www.theworldavatar.com/kg/Building/aa2f321a-22b7-4260-9cb1-1a8af9661df7",
+                        "https://www.theworldavatar.com/kg/Building/aa4e4088-0aa3-4afc-8328-ada8e14d4ed0",
+                        "https://www.theworldavatar.com/kg/Building/aa6cf3f7-745f-4e3b-909f-a8ce4f2558e5",
+                        "https://www.theworldavatar.com/kg/Building/ab112cf0-ebbd-4d54-9b7a-4d48ed96db33",
+                        "https://www.theworldavatar.com/kg/Building/ab6deeb4-0440-4768-808e-e6957602cc00",
+                        "https://www.theworldavatar.com/kg/Building/ac05c9bc-5569-4775-940f-05d27b096829",
+                        "https://www.theworldavatar.com/kg/Building/acf76bbf-47e1-490f-b29b-7aa6cb888d0c",
+                        "https://www.theworldavatar.com/kg/Building/adff84e5-15f3-41b9-b4b8-ef02455a8320",
+                        "https://www.theworldavatar.com/kg/Building/ae146ca5-acb8-4f37-b1d5-3b861340ff95",
+                        "https://www.theworldavatar.com/kg/Building/ae47fc3b-e7f7-4b76-bba6-12534925d8c6",
+                        "https://www.theworldavatar.com/kg/Building/af001fd0-c32c-4328-b958-b95b1e24467b",
+                        "https://www.theworldavatar.com/kg/Building/aff018a5-f486-4db1-b2a3-ac6d85c400af",
+                        "https://www.theworldavatar.com/kg/Building/affd295e-f1bf-4ba2-a771-71b421faab51",
+                        "https://www.theworldavatar.com/kg/Building/b01dc50d-ffeb-4182-a482-0ef1fecb4b8b",
+                        "https://www.theworldavatar.com/kg/Building/b0ae2429-2d73-426c-923b-abdfdf238c50",
+                        "https://www.theworldavatar.com/kg/Building/b0b1ccc9-b4cd-4f25-a451-b7fc71e3ac2c",
+                        "https://www.theworldavatar.com/kg/Building/b0dd1971-70cc-48ca-89f0-cd847c95ac6c",
+                        "https://www.theworldavatar.com/kg/Building/b1356234-0a89-4a8e-80bd-a2b295856599",
+                        "https://www.theworldavatar.com/kg/Building/b2606e65-ba30-4e26-aca4-d0de5769ddac",
+                        "https://www.theworldavatar.com/kg/Building/b2cf678e-45a4-4118-a5c3-579ef750b9d9",
+                        "https://www.theworldavatar.com/kg/Building/b2ec192b-44ea-47e6-9ae8-af318fe23851",
+                        "https://www.theworldavatar.com/kg/Building/b2fc2346-d627-42b4-982a-810e7a505b60",
+                        "https://www.theworldavatar.com/kg/Building/b3434a01-41e1-431b-8434-a2152c7849a0",
+                        "https://www.theworldavatar.com/kg/Building/b3b93ee6-c5bb-43a9-ac9a-a5d36f66cda3",
+                        "https://www.theworldavatar.com/kg/Building/b4515a18-da8d-4d48-8cc2-9a8127eb5c9b",
+                        "https://www.theworldavatar.com/kg/Building/b57d1ce3-30f0-46e6-b2ee-eb5aa1df6e57",
+                        "https://www.theworldavatar.com/kg/Building/b68c3dd2-60a7-4628-a69d-34447e5140e3",
+                        "https://www.theworldavatar.com/kg/Building/b7226591-da93-43d7-a6fc-2f8f9fb92d75",
+                        "https://www.theworldavatar.com/kg/Building/b7ff670a-06b9-4e3b-9d31-d32e59666c01",
+                        "https://www.theworldavatar.com/kg/Building/b8155f99-881f-4bca-a9ef-2a67df660d88",
+                        "https://www.theworldavatar.com/kg/Building/b83a08bc-0c89-452c-8ec0-6a920ca0f953",
+                        "https://www.theworldavatar.com/kg/Building/b88751e5-e6d1-4fda-b9dd-d220d32ddfdd",
+                        "https://www.theworldavatar.com/kg/Building/b8c0337f-76e0-4033-b708-ee059ccf929e",
+                        "https://www.theworldavatar.com/kg/Building/b933e62d-6f74-4810-a0fd-7dde3ed3fffb",
+                        "https://www.theworldavatar.com/kg/Building/b9a2649e-7e82-45da-b4be-1ff26babd5d4",
+                        "https://www.theworldavatar.com/kg/Building/b9ce6120-86df-4e14-9e44-fddad1155cc6",
+                        "https://www.theworldavatar.com/kg/Building/ba674422-fa6b-4b12-8a1d-6083ddaa73a5",
+                        "https://www.theworldavatar.com/kg/Building/bae527e8-bc20-4aa8-9242-f2251e2c05a3",
+                        "https://www.theworldavatar.com/kg/Building/bb14b620-e259-4a38-a4ba-72ff625f950f",
+                        "https://www.theworldavatar.com/kg/Building/bc418817-a574-4430-8fd8-0378c2479f61",
+                        "https://www.theworldavatar.com/kg/Building/bc9fd8d8-89bc-40f7-93a2-5d615f7e004c",
+                        "https://www.theworldavatar.com/kg/Building/bca4fe22-ef74-4207-82c1-d8a9d2be2aad",
+                        "https://www.theworldavatar.com/kg/Building/be3534bf-7257-43b0-8cee-d88c54212a01",
+                        "https://www.theworldavatar.com/kg/Building/be7816bb-a7fb-43b4-9896-3b1f51eb75bf",
+                        "https://www.theworldavatar.com/kg/Building/be939eee-f555-465d-81af-061f0d558e9c",
+                        "https://www.theworldavatar.com/kg/Building/be99bd99-41ce-45b3-83a8-1a4d0a2dbb90",
+                        "https://www.theworldavatar.com/kg/Building/bea688d2-e6f7-4b09-972a-9f0c679d8530",
+                        "https://www.theworldavatar.com/kg/Building/bef035f8-f456-44e6-99a7-d4901ac76d7e",
+                        "https://www.theworldavatar.com/kg/Building/bf6e251f-e3d1-463c-a4a3-176df88889a2",
+                        "https://www.theworldavatar.com/kg/Building/c0e967d9-dd44-4827-8c0b-07b55064d73c",
+                        "https://www.theworldavatar.com/kg/Building/c1080f76-1e99-450e-94d3-7617154bc211",
+                        "https://www.theworldavatar.com/kg/Building/c192dcdc-0ff5-4b01-a25a-803212c5e463",
+                        "https://www.theworldavatar.com/kg/Building/c1c5f010-ccbe-49a5-89ff-99120d9a73fe",
+                        "https://www.theworldavatar.com/kg/Building/c1dc45d9-96f4-4de3-b84f-33305e920a83",
+                        "https://www.theworldavatar.com/kg/Building/c2a106c9-8923-422c-82d4-d9b048d0ab09",
+                        "https://www.theworldavatar.com/kg/Building/c2de22ad-4d06-4d25-9f90-78b20f5177f0",
+                        "https://www.theworldavatar.com/kg/Building/c3eb6150-616a-426e-9b00-0a67ce47b76a",
+                        "https://www.theworldavatar.com/kg/Building/c4984a10-7d59-4ac6-8b7a-781ed32a5374",
+                        "https://www.theworldavatar.com/kg/Building/c544145a-89b6-4cae-8fff-cbe0cb402102",
+                        "https://www.theworldavatar.com/kg/Building/c548e17a-9174-4945-90ea-13359d4c2733",
+                        "https://www.theworldavatar.com/kg/Building/c5d4b67e-cc15-4348-92fa-cddd75a32541",
+                        "https://www.theworldavatar.com/kg/Building/c6b7eb3d-b258-4ed0-b22f-3a6f432564c6",
+                        "https://www.theworldavatar.com/kg/Building/c6ce7718-4fc0-4dbc-9170-ec233f7f20e1",
+                        "https://www.theworldavatar.com/kg/Building/c7033734-67e7-4757-a1c7-320275426314",
+                        "https://www.theworldavatar.com/kg/Building/c7c6a59e-5adc-4544-98cc-1e3c33a193ea",
+                        "https://www.theworldavatar.com/kg/Building/c8b9e605-9176-4d25-a466-de3c74b97d1d",
+                        "https://www.theworldavatar.com/kg/Building/c958ba80-69d5-4a71-b055-e2467be28043",
+                        "https://www.theworldavatar.com/kg/Building/c95fe269-3ce8-4b84-88c1-9c087ed89680",
+                        "https://www.theworldavatar.com/kg/Building/c9d957f4-d43d-416e-a331-5a2c6d0b4792",
+                        "https://www.theworldavatar.com/kg/Building/ca19f331-c80d-4559-a4a7-10862e518123",
+                        "https://www.theworldavatar.com/kg/Building/cc580be2-0234-4fe8-aaaf-b6c1b96c6288",
+                        "https://www.theworldavatar.com/kg/Building/cd3b5d0a-aa34-470f-9e5c-3916cb0692f8",
+                        "https://www.theworldavatar.com/kg/Building/cd54ce1e-ea2c-4245-a600-18e267a460a3",
+                        "https://www.theworldavatar.com/kg/Building/ce402921-0d65-4365-8239-0d9e1c02c9a3",
+                        "https://www.theworldavatar.com/kg/Building/cea98063-4d1a-431d-99f8-4d429fffd41f",
+                        "https://www.theworldavatar.com/kg/Building/cee5dd79-8dfb-45b8-a410-0425ad4f54c4",
+                        "https://www.theworldavatar.com/kg/Building/cf0391d0-d6e9-4b86-9946-49735a2d5e10",
+                        "https://www.theworldavatar.com/kg/Building/cf3ba3ee-e587-4e45-b6ad-8539cb0eddc9",
+                        "https://www.theworldavatar.com/kg/Building/cf49398e-259c-4be8-a03d-5b39901969aa",
+                        "https://www.theworldavatar.com/kg/Building/cf9be4ed-99b3-4437-a03f-b75ebff7b166",
+                        "https://www.theworldavatar.com/kg/Building/d0493076-a166-4d53-9a99-4a3370f365aa",
+                        "https://www.theworldavatar.com/kg/Building/d1a01a96-e332-43f4-9848-e4e407b79de6",
+                        "https://www.theworldavatar.com/kg/Building/d1b5bf8f-948a-41c0-9f04-1776d4edd591",
+                        "https://www.theworldavatar.com/kg/Building/d226a7b1-b320-4ae2-9bc2-e467f05441f0",
+                        "https://www.theworldavatar.com/kg/Building/d32d749e-7372-419f-bf5a-3054ba26b9ce",
+                        "https://www.theworldavatar.com/kg/Building/d3ebd8c8-cd48-4c33-8354-6db31074563e",
+                        "https://www.theworldavatar.com/kg/Building/d4a33a0a-2c55-4866-b792-551699e17a00",
+                        "https://www.theworldavatar.com/kg/Building/d5285335-f3d7-4a87-adb5-3cb50de703b6",
+                        "https://www.theworldavatar.com/kg/Building/679b5658-042d-436a-a65b-291998fd7a62",
+                        "https://www.theworldavatar.com/kg/Building/694b3b77-adf8-496c-bd97-940332af2456",
+                        "https://www.theworldavatar.com/kg/Building/6a1d73a6-8f0b-4b4d-afb2-df9fd9d067bd",
+                        "https://www.theworldavatar.com/kg/Building/6ab5995a-f52f-4079-84e6-935f84606d79",
+                        "https://www.theworldavatar.com/kg/Building/6b233d01-8a3a-4ebc-b98e-58b53b9be61e",
+                        "https://www.theworldavatar.com/kg/Building/6bebeb2e-1fe2-4f1a-82c2-5378c1ae6a42",
+                        "https://www.theworldavatar.com/kg/Building/6c223f19-38d5-4a94-b3a8-eefa1bef96a8",
+                        "https://www.theworldavatar.com/kg/Building/6c411201-ca97-467e-9c5b-08127fd1e574",
+                        "https://www.theworldavatar.com/kg/Building/6c420cf3-a0cd-4473-aed1-b5dfca5464b0",
+                        "https://www.theworldavatar.com/kg/Building/6cb59e73-c329-4482-89e5-2592d89faef9",
+                        "https://www.theworldavatar.com/kg/Building/6df9aa63-131a-409f-b2d7-7a40dc8767a4",
+                        "https://www.theworldavatar.com/kg/Building/6fe514b1-d863-4a16-80d0-5fb4cd28632f",
+                        "https://www.theworldavatar.com/kg/Building/709b2390-90da-4bd1-b5ca-dbc40ee370c4",
+                        "https://www.theworldavatar.com/kg/Building/70b5cc6a-44d6-43b8-bcbf-db9d8a9d3a09",
+                        "https://www.theworldavatar.com/kg/Building/70f924d1-e110-4e5e-9f09-32ea2a49b8df",
+                        "https://www.theworldavatar.com/kg/Building/713052c8-ab1e-4e4b-b7c5-ccd38f3f1760",
+                        "https://www.theworldavatar.com/kg/Building/713807d8-3436-428a-8bd6-55518dcaf64f",
+                        "https://www.theworldavatar.com/kg/Building/719c399c-b23b-4ead-8a34-33059b0f9de6",
+                        "https://www.theworldavatar.com/kg/Building/71c69093-012b-49d4-a4ec-1770e32cc889",
+                        "https://www.theworldavatar.com/kg/Building/71ef2d51-c45f-4516-8ce7-274e323a2f83",
+                        "https://www.theworldavatar.com/kg/Building/725440d1-101d-4cb7-8169-2758a63f2b99",
+                        "https://www.theworldavatar.com/kg/Building/74583667-cb98-4f80-ab53-c1e534e2c277",
+                        "https://www.theworldavatar.com/kg/Building/754768dd-abe3-4c44-8618-1959f2d1d590",
+                        "https://www.theworldavatar.com/kg/Building/7582662b-a95c-4783-8879-bd686e6060bb",
+                        "https://www.theworldavatar.com/kg/Building/767b7de8-9cef-45aa-b5d0-479865617c3c",
+                        "https://www.theworldavatar.com/kg/Building/76de6de2-e1d5-48c5-bdc6-ce78085e9bb9",
+                        "https://www.theworldavatar.com/kg/Building/76efba85-0850-41b9-bf91-62c3e4d4fb22",
+                        "https://www.theworldavatar.com/kg/Building/770a4af6-fa9d-45e2-86a5-17093547ae0f",
+                        "https://www.theworldavatar.com/kg/Building/77b88331-ce37-4a9b-ab39-57d91ac8f7f5",
+                        "https://www.theworldavatar.com/kg/Building/78be3a7a-eb33-4b5b-8daa-8ab2d68bddf9",
+                        "https://www.theworldavatar.com/kg/Building/78f0da43-8378-4788-a04a-032945f92f1d",
+                        "https://www.theworldavatar.com/kg/Building/79a25983-1cab-45fc-8a27-f3e329af1601",
+                        "https://www.theworldavatar.com/kg/Building/7a9d5ff3-b7b9-4c10-8c99-209e4f429756",
+                        "https://www.theworldavatar.com/kg/Building/7b0d2120-ff26-49c3-b5b7-f10b9b66a5c7",
+                        "https://www.theworldavatar.com/kg/Building/7b205728-0617-4f78-ae5c-994485443fd4",
+                        "https://www.theworldavatar.com/kg/Building/7c0dfc65-a622-46b5-9e97-ace0e8f96395",
+                        "https://www.theworldavatar.com/kg/Building/7c183193-6c4e-497b-bf1b-e37cbae97729",
+                        "https://www.theworldavatar.com/kg/Building/7d5cb5c4-c7a0-4f26-84c1-1d07b101da70",
+                        "https://www.theworldavatar.com/kg/Building/7d6df33d-407d-4324-87d2-1a24c07b8cf3",
+                        "https://www.theworldavatar.com/kg/Building/7dc58dbc-4afe-426c-af58-c6d506a71384",
+                        "https://www.theworldavatar.com/kg/Building/7f3697a1-4cb9-43f8-8347-2e9e79c2d64b",
+                        "https://www.theworldavatar.com/kg/Building/7fea778b-2edf-40ea-afcd-f9ee2717631b",
+                        "https://www.theworldavatar.com/kg/Building/80c69a13-d0b8-4d1d-aeb4-65b0bff90724",
+                        "https://www.theworldavatar.com/kg/Building/80fabb9a-a283-457e-b2cd-bf2e30a2f7a0",
+                        "https://www.theworldavatar.com/kg/Building/822f138b-daeb-4851-af56-d14c16d1aee8",
+                        "https://www.theworldavatar.com/kg/Building/83317d84-6e57-47c8-addb-80df2df2e7b7",
+                        "https://www.theworldavatar.com/kg/Building/8362c758-bd2a-4a9b-bdfe-34d8f543819b",
+                        "https://www.theworldavatar.com/kg/Building/84bce55e-b08b-4790-b2c8-3d8142e4a0f3",
+                        "https://www.theworldavatar.com/kg/Building/8542de80-cf8a-4dcc-9fa3-07655740e8fa",
+                        "https://www.theworldavatar.com/kg/Building/856243b2-38e6-415a-9e2b-d3fa4970c654",
+                        "https://www.theworldavatar.com/kg/Building/875e1fb9-f11f-45be-8e59-cba7d262983d",
+                        "https://www.theworldavatar.com/kg/Building/87b66ce3-fa72-4d9c-8e61-af2d3868da69",
+                        "https://www.theworldavatar.com/kg/Building/8912a92d-c97b-473d-a7cd-a8bdad5e4330",
+                        "https://www.theworldavatar.com/kg/Building/89d4fad5-afbc-4cb7-8f65-fc8bba67d2e2",
+                        "https://www.theworldavatar.com/kg/Building/89fe27c7-310b-4ba6-ac30-35d9fdff137f",
+                        "https://www.theworldavatar.com/kg/Building/8ae84792-040d-4bf4-bfb1-c0f7a137e913",
+                        "https://www.theworldavatar.com/kg/Building/8b3bc61c-ec75-4a89-a951-d50b41d9699d",
+                        "https://www.theworldavatar.com/kg/Building/8c1e814d-a022-41f2-a5be-8a891f8f4268",
+                        "https://www.theworldavatar.com/kg/Building/8cb89f32-6833-4409-9572-5bdf3cc78fa0",
+                        "https://www.theworldavatar.com/kg/Building/8cd77271-dbd9-44ec-a9ab-cd2fa86cb491",
+                        "https://www.theworldavatar.com/kg/Building/8d2782f1-3a5e-447c-86d7-c50b72d81870",
+                        "https://www.theworldavatar.com/kg/Building/8d560c94-918f-4bb0-9beb-345c05fbde53",
+                        "https://www.theworldavatar.com/kg/Building/8e41ebaa-8884-449f-b199-219a7b1898a7",
+                        "https://www.theworldavatar.com/kg/Building/8f78c192-b3f3-4306-baea-234ab1585f2c",
+                        "https://www.theworldavatar.com/kg/Building/8fa4ac6f-bfe2-432c-975f-d4a32a8f39be",
+                        "https://www.theworldavatar.com/kg/Building/8fb77ed2-6cd0-4fcd-97ed-ca78cde9bb61",
+                        "https://www.theworldavatar.com/kg/Building/9062fe9a-8059-422e-9d47-efaa7f84fc25",
+                        "https://www.theworldavatar.com/kg/Building/907a05b3-399c-4b29-b1c9-134dc3783236",
+                        "https://www.theworldavatar.com/kg/Building/92a96004-dffb-42b5-b209-2077c05420ec",
+                        "https://www.theworldavatar.com/kg/Building/941bc36d-ea57-42b5-a55a-6fb8cfd40c66",
+                        "https://www.theworldavatar.com/kg/Building/95541517-d4a6-416d-9b41-de92aa1bb77d",
+                        "https://www.theworldavatar.com/kg/Building/95fe67f1-97fd-49ea-9e4d-81210ebde8aa",
+                        "https://www.theworldavatar.com/kg/Building/9664257d-b70f-4a1c-bee9-8669b4458e7d",
+                        "https://www.theworldavatar.com/kg/Building/971774ed-5514-4c14-9725-80db567b9fe5",
+                        "https://www.theworldavatar.com/kg/Building/97335684-185b-477f-b4f5-f5c461567560",
+                        "https://www.theworldavatar.com/kg/Building/9772d0d7-35ce-4e56-bad0-9a2cccee444b",
+                        "https://www.theworldavatar.com/kg/Building/97d0666f-7a57-4e56-98f8-a201298df5e6",
+                        "https://www.theworldavatar.com/kg/Building/97d60fef-c25f-4631-adff-eb28957ceb92",
+                        "https://www.theworldavatar.com/kg/Building/984a8cb1-db5c-4da3-bb15-41a3b58ca3f5",
+                        "https://www.theworldavatar.com/kg/Building/988ddaf0-2fb7-43fe-bee0-2d23aa47ac8b",
+                        "https://www.theworldavatar.com/kg/Building/99e8ab68-5df1-4585-954e-7984fb301633",
+                        "https://www.theworldavatar.com/kg/Building/9a78df3e-6cea-40a6-9453-862cdb2e08cf",
+                        "https://www.theworldavatar.com/kg/Building/9b8cb7bb-1bcd-4c06-bc78-55b264f45f23",
+                        "https://www.theworldavatar.com/kg/Building/9c148f33-38d3-443d-833b-72ff6ec09464",
+                        "https://www.theworldavatar.com/kg/Building/9c4692e6-11b1-455b-9ea1-e7d8bfc1e000",
+                        "https://www.theworldavatar.com/kg/Building/9d5fdbdb-864d-4b28-aa0c-ed77d4f7e5a1",
+                        "https://www.theworldavatar.com/kg/Building/9d5fe34b-2787-41bc-a318-a37a65c7c0c5",
+                        "https://www.theworldavatar.com/kg/Building/9d6c638f-fa82-481d-b9ce-052d034db0d9",
+                        "https://www.theworldavatar.com/kg/Building/9dcdb2d3-d4ee-4fbb-8090-adfe86a5db66",
+                        "https://www.theworldavatar.com/kg/Building/9df3a375-423e-4e46-9cee-b383a9ff6d88",
+                        "https://www.theworldavatar.com/kg/Building/9e5c3d4b-71b5-4446-8001-79fc03085b62",
+                        "https://www.theworldavatar.com/kg/Building/9f4d1174-20e5-4c09-9246-250e4f26e214",
+                        "https://www.theworldavatar.com/kg/Building/9f66f5ca-9f6f-4ad9-8dc3-81faa9349a70",
+                        "https://www.theworldavatar.com/kg/Building/9fe03998-6eab-4b5a-a440-29d2154438c9",
+                        "https://www.theworldavatar.com/kg/Building/a0fd39dd-375f-4676-89a1-82ad98c295b0",
+                        "https://www.theworldavatar.com/kg/Building/a15f44c4-363f-4ec6-8f26-f453ba0b8b8e",
+                        "https://www.theworldavatar.com/kg/Building/a1ca3c21-937a-4c28-b7e1-e4ae3c93ec74",
+                        "https://www.theworldavatar.com/kg/Building/a1df60d1-c912-454c-9b79-fca0c0f512a5",
+                        "https://www.theworldavatar.com/kg/Building/a2d508ce-23d6-4d17-9bba-dbf1c8897356",
+                        "https://www.theworldavatar.com/kg/Building/a2eb16ef-106c-4523-baad-4874d7e01834",
+                        "https://www.theworldavatar.com/kg/Building/d586b88e-f3a8-42bf-898b-92ab34aea119",
+                        "https://www.theworldavatar.com/kg/Building/d66268a4-7666-4c34-a06a-263d98977d15",
+                        "https://www.theworldavatar.com/kg/Building/d6690dd1-c0de-4793-9657-4bf8d53a1320",
+                        "https://www.theworldavatar.com/kg/Building/d6b09274-f532-4f70-bafb-a9fe9ced6363",
+                        "https://www.theworldavatar.com/kg/Building/d7c4f370-e19d-4fff-a597-f05741680023",
+                        "https://www.theworldavatar.com/kg/Building/d94d87a5-75c0-42a9-936f-93429c368b82",
+                        "https://www.theworldavatar.com/kg/Building/d9c1f67e-7851-46fd-b0e8-e15904f0cd75",
+                        "https://www.theworldavatar.com/kg/Building/da926f16-8868-44b7-870c-1de51023efcf",
+                        "https://www.theworldavatar.com/kg/Building/db5d399f-b645-4ac7-b827-10db7497ce49",
+                        "https://www.theworldavatar.com/kg/Building/db6797e2-afc8-4296-9a8e-310c6c2280e7",
+                        "https://www.theworldavatar.com/kg/Building/dc8d92ea-a6d9-4dbc-ab8c-2246c702e405",
+                        "https://www.theworldavatar.com/kg/Building/dd92c84a-3fbf-4884-bd9f-1efb6a01295a",
+                        "https://www.theworldavatar.com/kg/Building/de827eae-58f0-49ad-980d-7d771a4328e1",
+                        "https://www.theworldavatar.com/kg/Building/de843a5b-dbf6-409a-b7d6-bc9949d098b4",
+                        "https://www.theworldavatar.com/kg/Building/df4c06ab-a076-4306-8fc0-d69a7575efe1",
+                        "https://www.theworldavatar.com/kg/Building/dfd9d379-4571-48f6-9ba3-edb96bc48af9",
+                        "https://www.theworldavatar.com/kg/Building/e1de9812-ca9e-4364-af72-181e4ae755bd",
+                        "https://www.theworldavatar.com/kg/Building/e1ed49a2-a87a-472d-9fcd-b8b21590ca07",
+                        "https://www.theworldavatar.com/kg/Building/e200fa31-696c-41f8-a201-dc8b50768445",
+                        "https://www.theworldavatar.com/kg/Building/e277ce73-acdd-4719-a1bd-c9df6622a300",
+                        "https://www.theworldavatar.com/kg/Building/e28985e3-d7ce-4893-ac1c-c71670d4e554",
+                        "https://www.theworldavatar.com/kg/Building/e383523c-10a1-4510-84f8-e938795cb830",
+                        "https://www.theworldavatar.com/kg/Building/e5316594-d5be-4784-bb19-eed4bb4c7da2",
+                        "https://www.theworldavatar.com/kg/Building/e6365b1e-37bb-4119-a96a-181fbe377391",
+                        "https://www.theworldavatar.com/kg/Building/e796a3b4-8862-4185-b76a-069c236d37fe",
+                        "https://www.theworldavatar.com/kg/Building/e7fd6fba-a09d-4c01-83d4-483575027f92",
+                        "https://www.theworldavatar.com/kg/Building/e856d9c0-c2d9-4c75-9cc0-c4f82b9accbc",
+                        "https://www.theworldavatar.com/kg/Building/e93550ab-1266-4c1e-af8a-2843fc7aba50",
+                        "https://www.theworldavatar.com/kg/Building/e9398451-7525-4a9f-b8e7-7cdb14f40420",
+                        "https://www.theworldavatar.com/kg/Building/e94d72ac-54ce-413e-9dbd-a84d6350788e",
+                        "https://www.theworldavatar.com/kg/Building/e9e7d93a-bb54-45d0-8bdc-9817ec14ef81",
+                        "https://www.theworldavatar.com/kg/Building/ea0d0353-d346-4876-9e2f-e04a92e4b98f",
+                        "https://www.theworldavatar.com/kg/Building/ea1bd432-b107-4687-b1c2-86f477719018",
+                        "https://www.theworldavatar.com/kg/Building/ea6dcb95-a57d-4c04-b5e9-e14f717db77e",
+                        "https://www.theworldavatar.com/kg/Building/eaaf7379-3c38-4503-b5dd-e9156b337df2",
+                        "https://www.theworldavatar.com/kg/Building/eb69f444-798f-4342-8174-b328e5fc6359",
+                        "https://www.theworldavatar.com/kg/Building/ebc5bbf3-6a92-47af-bb53-4fa7732d1c4b",
+                        "https://www.theworldavatar.com/kg/Building/ebf67208-f7ac-4f95-bbf1-e458c0783bfd",
+                        "https://www.theworldavatar.com/kg/Building/ec7647b9-5405-4e89-8e74-92cdb0df21be",
+                        "https://www.theworldavatar.com/kg/Building/ec94872a-a8e6-4670-935a-98851fdf3d03",
+                        "https://www.theworldavatar.com/kg/Building/ed1a0c98-2849-48cc-bbe3-7a7c0bba7fad",
+                        "https://www.theworldavatar.com/kg/Building/edcc48a8-4226-474c-b2c3-a5d3b2bf59c3",
+                        "https://www.theworldavatar.com/kg/Building/ee69bb94-dba0-4980-b46a-cdc6746459f4",
+                        "https://www.theworldavatar.com/kg/Building/efaecc92-21cb-49d6-b03e-53f5bc80aa60",
+                        "https://www.theworldavatar.com/kg/Building/efb22ab3-eb0b-4cba-8a98-5705a253f9f3",
+                        "https://www.theworldavatar.com/kg/Building/f003f0dc-211a-4dc0-9ccb-67880319eaa7",
+                        "https://www.theworldavatar.com/kg/Building/f01b9323-d9e0-43d5-be4e-13aa7a51a5f8",
+                        "https://www.theworldavatar.com/kg/Building/f106e859-199c-4a67-8dfb-cdc00f0f0f8b",
+                        "https://www.theworldavatar.com/kg/Building/f4916b3b-44bd-440c-83d4-1c8f8be151a5",
+                        "https://www.theworldavatar.com/kg/Building/f4b0b66a-7732-43b8-b0b4-70fb403e889e",
+                        "https://www.theworldavatar.com/kg/Building/f5d9b4b3-4bdc-4d4e-8277-ecd20a6d8994",
+                        "https://www.theworldavatar.com/kg/Building/f5f9984d-395c-4bc5-8383-e4025e1ad324",
+                        "https://www.theworldavatar.com/kg/Building/f65ea00a-8f98-437d-b537-e0997279c77e",
+                        "https://www.theworldavatar.com/kg/Building/f68648c8-e8a6-443a-8e36-0a04f9e2ea36",
+                        "https://www.theworldavatar.com/kg/Building/f693fbf3-b8ee-4dc9-9fd4-f5222ce8da05",
+                        "https://www.theworldavatar.com/kg/Building/f715e545-2fd1-4a49-bfdd-4e4467c806de",
+                        "https://www.theworldavatar.com/kg/Building/f7196e5d-26f6-4fa0-ab2e-4db7835a4531",
+                        "https://www.theworldavatar.com/kg/Building/f7da1efb-cbdf-41e7-a021-97b935bc0b3b",
+                        "https://www.theworldavatar.com/kg/Building/f82017e6-2b1e-4f7e-8b3b-4e3a5412bf6c",
+                        "https://www.theworldavatar.com/kg/Building/f83096aa-4170-444d-a3e5-ddbfaf156046",
+                        "https://www.theworldavatar.com/kg/Building/f8edfd4c-5264-4db5-be3e-b4ab2b43dfc6",
+                        "https://www.theworldavatar.com/kg/Building/f942f8a7-dadc-4362-b823-f522cb661189",
+                        "https://www.theworldavatar.com/kg/Building/fa5033c6-b8f1-4cb4-9a46-55b13ce71e73",
+                        "https://www.theworldavatar.com/kg/Building/fae5a31c-d312-48b2-a543-3bff116bd23f",
+                        "https://www.theworldavatar.com/kg/Building/fb2cac82-957f-46af-80e0-804236867da7",
+                        "https://www.theworldavatar.com/kg/Building/fbd8bcc6-610a-43dd-82a5-fd597f2f5b39",
+                        "https://www.theworldavatar.com/kg/Building/fc4b0be6-246b-4e80-a963-8b80e807d83f",
+                        "https://www.theworldavatar.com/kg/Building/fc8dd13b-f5e6-47e3-adac-4113212773be",
+                        "https://www.theworldavatar.com/kg/Building/fdd7d7dd-7159-489b-b0e4-8cb7f102f633",
+                        "https://www.theworldavatar.com/kg/Building/fed62e33-1d2b-4735-abb8-28b835b6b23c",
+                        "https://www.theworldavatar.com/kg/Building/ff18fdc7-f13a-4c80-8ef6-ccfae7b3db82"
+                    ],
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#808080",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Isochrone",
+            "stack": "http://localhost:3838",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "walk",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Walk%27"
+                },
+                {
+                    "id": "bicycle",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Cycle%27"
+                },
+                {
+                    "id": "car",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Drive%27"
+                }
+            ],
+            "groups": [
+                {
+                    "name": "Pharmacy",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Pharmacy",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#0074E4",
+                                        30,
+                                        "#00C86F"
+                                    ]
+                                ],
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Pharmacy",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#9C27B0",
+                                        30,
+                                        "#E91E63"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Pharmacy",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#FF9800",
+                                        30,
+                                        "#FFEB3B"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "School",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "School",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#0074E4",
+                                        30,
+                                        "#00C86F"
+                                    ]
+                                ],
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "School",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#9C27B0",
+                                        30,
+                                        "#E91E63"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "School",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#FF9800",
+                                        30,
+                                        "#FFEB3B"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Bank",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Bank",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#0074E4",
+                                        30,
+                                        "#00C86F"
+                                    ]
+                                ],
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Bank",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#9C27B0",
+                                        30,
+                                        "#E91E63"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Bank",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#FF9800",
+                                        30,
+                                        "#FFEB3B"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Hospital",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Hospital",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#0074E4",
+                                        30,
+                                        "#00C86F"
+                                    ]
+                                ],
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Hospital",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#9C27B0",
+                                        30,
+                                        "#E91E63"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Hospital",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#FF9800",
+                                        30,
+                                        "#FFEB3B"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Clinic",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Clinic",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#0074E4",
+                                        30,
+                                        "#00C86F"
+                                    ]
+                                ],
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Clinic",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#9C27B0",
+                                        30,
+                                        "#E91E63"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "Clinic",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#FF9800",
+                                        30,
+                                        "#FFEB3B"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "PoliceStation",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "PoliceStation",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#0074E4",
+                                        30,
+                                        "#00C86F"
+                                    ]
+                                ],
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "PoliceStation",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#9C27B0",
+                                        30,
+                                        "#E91E63"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "PoliceStation",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#FF9800",
+                                        30,
+                                        "#FFEB3B"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "EatingEstablishment",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "EatingEstablishment",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#0074E4",
+                                        30,
+                                        "#00C86F"
+                                    ]
+                                ],
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "EatingEstablishment",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#9C27B0",
+                                        30,
+                                        "#E91E63"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "EatingEstablishment",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#FF9800",
+                                        30,
+                                        "#FFEB3B"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "ReligiousFacility",
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Walk",
+                            "source": "walk",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "ReligiousFacility",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#0074E4",
+                                        30,
+                                        "#00C86F"
+                                    ]
+                                ],
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "bicycle_layer",
+                            "name": "Bicycle",
+                            "source": "bicycle",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "ReligiousFacility",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#9C27B0",
+                                        30,
+                                        "#E91E63"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        },
+                        {
+                            "id": "car_layer",
+                            "name": "Car",
+                            "source": "car",
+                            "type": "fill",
+                            "filter": [
+                                "in",
+                                "ReligiousFacility",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "order": 3,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#FF9800",
+                                        30,
+                                        "#FFEB3B"
+                                    ]
+                                ],
+                                "fill-outline-color": "#000000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Population Data",
+            "expanded": false,
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "id": "population",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Apopulation&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG%3A3857&styles=&format=image%2Fpng&transparent=true"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "population",
+                    "type": "raster",
+                    "name": "Pirmasens Total Population",
+                    "source": "population",
+                    "minzoom": 8,
+                    "order": 1,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Public Infrastructure",
+            "expanded": false,
+            "groups": [
+                {
+                    "name": "Toilets Location",
+                    "stack": "http://localhost:3838",
+                    "sources": [
+                        {
+                            "id": "toilet",
+                            "type": "geojson",
+                            "cluster": false,
+                            "clusterMaxZoom": 14,
+                            "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atoilet&outputFormat=application%2Fjson"
+                        }
+                    ],
+                    "layers": [
+                        {
+                            "id": "toilet_layer",
+                            "name": "Toilet",
+                            "source": "toilet",
+                            "type": "symbol",
+                            "order": 50,
+                            "layout": {
+                                "visibility": "none",
+                                "icon-image": "toilet_image",
+                                "icon-size": [
+                                    "interpolate",
+                                    [
+                                        "linear"
+                                    ],
+                                    [
+                                        "zoom"
+                                    ],
+                                    12,
+                                    0.1
+                                ],
+                                "icon-anchor": "bottom"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Isochrone - Infrastructure",
+                    "stack": "http://localhost:3838",
+                    "sources": [
+                        {
+                            "id": "walk",
+                            "type": "geojson",
+                            "cluster": false,
+                            "clusterMaxZoom": 14,
+                            "clusterRadius": 100,
+                            "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Walk%27"
+                        }
+                    ],
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Toilet (walk)",
+                            "filter": [
+                                "in",
+                                "Toilet",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "source": "walk",
+                            "type": "fill",
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#0074E4",
+                                        10,
+                                        "#00C86F"
+                                    ]
+                                ],
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Digitales Landschaftsmodell",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "dlm-sie02f-source",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Adlmsie02f&outputFormat=application%2Fjson&srsName=epsg:4326"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "dlm-AX_FlaecheBesondererFunktionalerPraegung-layer",
+                    "name": "AX_FlaecheBesondererFunktionalerPraegung (Area Of Special Functional)",
+                    "source": "dlm-sie02f-source",
+                    "filter": [
+                        "in",
+                        "AX_FlaecheBesondererFunktionalerPraegung",
+                        [
+                            "get",
+                            "OBJART_TXT"
+                        ]
+                    ],
+                    "type": "fill",
+                    "visibility": "none",
+                    "paint": {
+                        "fill-color": "#000000",
+                        "fill-outline-color": "#000000",
+                        "fill-opacity": 0.20
+                    }
+                },
+                {
+                    "id": "dlm-AX_FlaecheGemischterNutzung-layer",
+                    "name": "AX_FlaecheGemischterNutzung (Area of Mixed Use)",
+                    "source": "dlm-sie02f-source",
+                    "filter": [
+                        "in",
+                        "AX_FlaecheGemischterNutzung",
+                        [
+                            "get",
+                            "OBJART_TXT"
+                        ]
+                    ],
+                    "type": "fill",
+                    "visibility": "none",
+                    "paint": {
+                        "fill-color": "#0000FF",
+                        "fill-outline-color": "#000000",
+                        "fill-opacity": 0.20
+                    }
+                },
+                {
+                    "id": "dlm-AX_Friedhof-layer",
+                    "name": "AX_Friedhof (Cemetery)",
+                    "source": "dlm-sie02f-source",
+                    "filter": [
+                        "in",
+                        "AX_Friedhof",
+                        [
+                            "get",
+                            "OBJART_TXT"
+                        ]
+                    ],
+                    "type": "fill",
+                    "visibility": "none",
+                    "paint": {
+                        "fill-color": "#FF00FF",
+                        "fill-outline-color": "#000000",
+                        "fill-opacity": 0.20
+                    }
+                },
+                {
+                    "id": "dlm-AX_IndustrieUndGewerbeflaeche-layer",
+                    "name": "AX_IndustrieUndGewerbeflaeche (Industry And Commercial Area)",
+                    "source": "dlm-sie02f-source",
+                    "filter": [
+                        "in",
+                        "AX_IndustrieUndGewerbeflaeche",
+                        [
+                            "get",
+                            "OBJART_TXT"
+                        ]
+                    ],
+                    "type": "fill",
+                    "visibility": "none",
+                    "paint": {
+                        "fill-color": "#FFFF00",
+                        "fill-outline-color": "#000000",
+                        "fill-opacity": 0.20
+                    }
+                },
+                {
+                    "id": "dlm-AX_SportFreizeitUndErholungsflaeche-layer",
+                    "name": "AX_SportFreizeitUndErholungsflaeche (Sport Leisure And Recreation Area)",
+                    "source": "dlm-sie02f-source",
+                    "filter": [
+                        "in",
+                        "AX_SportFreizeitUndErholungsflaeche",
+                        [
+                            "get",
+                            "OBJART_TXT"
+                        ]
+                    ],
+                    "type": "fill",
+                    "visibility": "none",
+                    "paint": {
+                        "fill-color": "#00FFFF",
+                        "fill-outline-color": "#000000",
+                        "fill-opacity": 0.20
+                    }
+                },
+                {
+                    "id": "dlm-AX_Wohnbauflaeche-layer",
+                    "name": "AX_Wohnbauflaeche (Residential area)",
+                    "source": "dlm-sie02f-source",
+                    "filter": [
+                        "in",
+                        "AX_Wohnbauflaeche",
+                        [
+                            "get",
+                            "OBJART_TXT"
+                        ]
+                    ],
+                    "type": "fill",
+                    "visibility": "none",
+                    "paint": {
+                        "fill-color": "#FFA500",
+                        "fill-outline-color": "#000000",
+                        "fill-opacity": 0.20
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Plots",
+            "expanded": false,
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "id": "plots",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:plots&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "plots",
+                    "name": "Plots",
+                    "source": "plots",
+                    "source-layer": "plots",
+                    "type": "fill",
+                    "visibility": "none",
+                    "paint": {
+                        "fill-color": "#31ff61",
+                        "fill-opacity": 0.5
+                    }
+                }
+            ]
+        }
+    ]
+}
