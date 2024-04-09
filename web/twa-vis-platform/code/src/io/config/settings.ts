@@ -85,9 +85,13 @@ export default class SettingsStore {
  * Reads the data settings for populating the map.
  */
   public static readMapDataSettings(): void {
-    const dataSettings: string = this.readFile(this.DATA_SETTINGS_FILE);
-    this.MAP_DATA_SETTINGS = dataSettings;
-    console.info("Map data settings have been read and cached.");
+    try {
+      const dataSettings: string = this.readFile(this.DATA_SETTINGS_FILE);
+      this.MAP_DATA_SETTINGS = dataSettings;
+      console.info("Map data settings have been read and cached.");
+    } catch (error) {
+      console.info("No local data files detected...");
+    }
   }
 
   /**

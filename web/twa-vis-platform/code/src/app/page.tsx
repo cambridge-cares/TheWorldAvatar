@@ -37,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default function App() {
   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
-  if (uiSettings.modules.landing){
+  if (uiSettings.modules.landing) {
     return (<LandingPage />);
   } else {
     redirect(`visualisation`);

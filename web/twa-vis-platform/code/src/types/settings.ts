@@ -6,7 +6,11 @@ export interface DefaultSettings {
     [key: string]: string | number | boolean;
   },
   modules: {
-    [key: string]: boolean
+    [key: string]: boolean;
+  },
+  scenario?: {
+    url: string;
+    data: string;
   }
 }
 

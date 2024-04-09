@@ -19,7 +19,18 @@ The platform requires the following [JSON](https://en.wikipedia.org/wiki/JSON) c
 
 ### 1.1 UI Settings
 
-The `config/ui-settings.json` file provides general settings for the platform. This includes settings for displaying modules and branding requirements. Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
+The `config/ui-settings.json` file provides general settings for the platform. This includes settings for displaying modules, branding requirements, and setting scenarios. A brief explanation is as follows:
+
+- `branding`: key value pairs for various branding icons such as toolbar and logo
+- `modules`: key value pairs indicating if certain modules should be highlighted
+  - `landing`: REQUIRED. Displays landing page if enabled
+  - `map`: REQUIRED. Displays map visualisation if enabled
+  - `dashboard`: REQUIRED. Displays dashboard if enabled
+- `scenario`: optional key value pairs if you require scenario handling
+  - `url`: endpoint to retrieve the scenarios and settings
+  - `data`: target dataset that should be acccessible to the user
+
+Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
 
 > [!NOTE]  
 > The comments seen below are for explanation purposes only, they are not valid JSON. If wishing to use this content in production, remove the comments first.

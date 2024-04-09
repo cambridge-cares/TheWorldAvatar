@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getIndex, setIndex } from 'state/floating-panel-slice';
-import { getQueryTrigger, getUrl, setQueryTrigger } from 'state/map-feature-slice';
+import { getQueryTrigger, getIri, getStack, getScenario, setQueryTrigger } from 'state/map-feature-slice';
 import { useGetMetadataQuery } from 'utils/server-utils';
 import { DataStore } from 'io/data/data-store';
 import LayerTree from './layer/layer-tree';
@@ -18,6 +18,13 @@ type FloatingPanelContainerProps = {
   hideLegend?: boolean;
   hideInfo?: boolean;
 };
+
+function genQueryEndpoint(iri: string, stack: string, scenario: string): string {
+  if (scenario) {
+    return `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenario}?iri=${encodeURIComponent(iri)}`;
+  }
+  return `${stack}/feature-info-agent/get?iri=${encodeURIComponent(iri)}`;
+}
 
 /**
  * Floating panel that contains the layer tree and legend components.
@@ -34,14 +41,16 @@ export default function FloatingPanelContainer(
 
   const dispatch = useDispatch();
   const activeIndex = useSelector(getIndex);
-  const selectedUrl = useSelector(getUrl);
+  const selectedIri = useSelector(getIri);
+  const selectedStack = useSelector(getStack);
+  const selectedScenario = useSelector(getScenario);
   const trigger = useSelector(getQueryTrigger);
 
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
 
   // Execute API call
-  const { data, error, isFetching } = useGetMetadataQuery(selectedUrl, { skip: !trigger });
+  const { data, error, isFetching } = useGetMetadataQuery(genQueryEndpoint(selectedIri, selectedStack, selectedScenario), { skip: !trigger });
 
   // Effect to display additional feature information retrieved from an agent only once it has been loaded
   useEffect(() => {
@@ -141,7 +150,7 @@ export default function FloatingPanelContainer(
               data={queriedData}
               isFetching={isFetching}
               activeTab={{
-                index: activeInfoTab, 
+                index: activeInfoTab,
                 setActiveTab: setActiveInfoTab,
               }}
             />}
