@@ -15,10 +15,10 @@ import {
   getCameraPositions,
   getImageryOptions,
   getDefaultImageryOption,
-  setImagery, 
-  resetCamera, 
-  togglePlacenames, 
-  locateUser, 
+  setImagery,
+  resetCamera,
+  togglePlacenames,
+  locateUser,
   set3DTerrain
 } from 'map/map-helper';
 
@@ -26,6 +26,8 @@ import {
 export type RibbonProps = {
   startingIndex: number,
   mapSettings: MapSettings,
+  hasScenario: boolean,
+  toggleScenarioSelection: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Definition of context menu item used to toggle map ribbon.
@@ -44,7 +46,7 @@ export default function Ribbon(props: RibbonProps) {
   const ribbonState: ContextItemDefinition = useSelector(selectItem("Show Controls Ribbon"));
   const cameraNames: string[] = getCameraPositions(props.mapSettings.camera);
   const imageryNames: string[] = getImageryOptions(props.mapSettings.imagery);
-  const currentImagery:ImageryOption = getDefaultImageryOption(props.mapSettings.imagery);
+  const currentImagery: ImageryOption = getDefaultImageryOption(props.mapSettings.imagery);
 
   // State for map configuration settings
   const dispatch = useDispatch();
@@ -129,6 +131,15 @@ export default function Ribbon(props: RibbonProps) {
                   set3DTerrain(state);
                 }}
               />
+              {props.hasScenario &&
+                <RibbonComponentToggle
+                  icon="huboutlined"
+                  text="Scenario"
+                  tooltip="Select another scenario."
+                  initialState={false}
+                  action={props.toggleScenarioSelection}
+                />
+              }
               <RibbonComponentToggle
                 icon="/images/defaults/icons/maximise.svg"
                 text="Full Screen"

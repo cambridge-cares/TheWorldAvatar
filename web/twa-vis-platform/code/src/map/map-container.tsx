@@ -78,7 +78,12 @@ export default function MapContainer(props: MapContainerProps) {
         {/* Container elements */}
         <div className={styles.componentContainer}>
           {/* Map controls ribbon */}
-          <Ribbon startingIndex={0} mapSettings={mapSettings} />
+          <Ribbon
+            startingIndex={0}
+            mapSettings={mapSettings}
+            hasScenario={!!selectedScenario}
+            toggleScenarioSelection={setShowDialog}
+          />
 
           {/* Containers for upcoming components (layer tree, metadata, time series charts etc.) */}
           <div className={styles.upperContainer}>
