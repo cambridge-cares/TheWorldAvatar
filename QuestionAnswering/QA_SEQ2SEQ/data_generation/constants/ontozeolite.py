@@ -62,7 +62,8 @@ class OZFrameworkAttrKey(Enum):
 class OZMaterialAttrKey(Enum):
     FRAMEWORK = 0
     CRYSTAL_INFO = 1
-    GUEST_COMPOUND = 2
+    FRAMEWORK_COMPONENTS = 2
+    GUEST_SPECIES = 3
 
 
 CRYSTAL_ATTR_LABELS = {
@@ -97,5 +98,29 @@ ZEOTOPO_ATTR_LABELS = {
 }
 
 ZEOMATERIAL_ATTR_LABELS = {
-    OZMaterialAttrKey.GUEST_COMPOUND: ["guest compound", "guest species", "OSDA"]
+    OZMaterialAttrKey.FRAMEWORK_COMPONENTS: [
+        "building elements",
+        "framework building elements",
+        "framework components",
+    ],
+    OZMaterialAttrKey.GUEST_SPECIES: [
+        "guest",
+        "guest compound",
+        "guest species",
+        "incorporated species",
+        "OSDA",
+    ],
+}
+
+ZEOMATERIAL_PRED_LABELS = {
+    OZMaterialAttrKey.FRAMEWORK_COMPONENTS: [
+        "is built by",
+        "is built by elements being",
+        "is made up of",
+        "is made up of elements being",
+        "has building elements being",
+        "has framework building elements being",
+        "has framework components being",
+    ],
+    OZMaterialAttrKey.GUEST_SPECIES: ["incorporates", "has guest species", "has guest"],
 }

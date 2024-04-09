@@ -1,17 +1,22 @@
 from collections import defaultdict
 from decimal import Decimal
 import random
-from typing import Dict, List
+from typing import DefaultDict, Dict, List
+
+import numpy as np
 
 from constants.functions import BASIC_NUM_OPS
 from constants.ontozeolite import (
+    CRYSTAL_SCALAR_KEYS,
+    ZEOMATERIAL_PRED_LABELS,
     ZEOTOPO_ATTR_LABELS,
     OZCrystalInfoAttrKey,
     OZFrameworkAttrKey,
+    OZMaterialAttrKey,
     OZZeoTopoAttrKey,
 )
 from locate_then_ask.ontozeolite.model import OZCrystalInfo
-from utils.numerical import make_operand_and_verbn
+from utils.numerical import make_operand_and_verbn, normalize_1d
 from locate_then_ask.query_graph import QueryGraph
 from locate_then_ask.ontozeolite.entity_store import OZEntityStore
 
@@ -23,7 +28,9 @@ class OZFrameworkLocator:
     def locate_concept_name(self, entity_iri: str):
         query_graph = QueryGraph()
         query_graph.add_topic_node("Framework", iri=entity_iri)
-        return query_graph, random.choice(["zeolite framework", "zeolite"])
+        return query_graph, np.random.choice(
+            ["zeolite framework", "zeolite"], p=normalize_1d([4, 1])
+        )
 
     def locate_name(self, entity_iri):
         query_graph, concept = self.locate_concept_name(entity_iri)
@@ -31,7 +38,7 @@ class OZFrameworkLocator:
 
         literal_node = query_graph.make_literal_node(entity.framework_code)
         query_graph.add_triple("Framework", "zeo:hasFrameworkCode", literal_node)
-        verbn = "{concept} [{label}]".format(
+        verbn = "{concept} <span>{label}</span>".format(
             concept=concept, label=entity.framework_code
         )
 
@@ -41,7 +48,7 @@ class OZFrameworkLocator:
         self, query_graph: QueryGraph, framework_components: List[str], freq: int
     ):
         elements = random.sample(
-            framework_components, k=min(len(framework_components, freq))
+            framework_components, k=min(len(framework_components), freq)
         )
         literal_nodes = [query_graph.make_literal_node(elem) for elem in elements]
         only = random.getrandbits(1)
@@ -62,17 +69,25 @@ class OZFrameworkLocator:
             ]
         )
 
-        return "{contain} {elements}".format(
-            contain=random.sample(["contain", "built by"]),
-            elements=" and ".join(
-                "[{literal}]".format(literal=literal) for literal in elements
+        template = random.choice(
+            ["which {contain} {elements}{only}", "which {contain}{only} {elements}"]
+        )
+        return template.format(
+            contain=random.choice(
+                ZEOMATERIAL_PRED_LABELS[OZMaterialAttrKey.FRAMEWORK_COMPONENTS]
             ),
+            elements=" and ".join(elements),
+            only=" only" if only else "",
         )
 
     def _locate_crystal_info(
         self, query_graph: QueryGraph, crystal_info: OZCrystalInfo, freq: int
     ):
-        keys = random.sample(tuple(OZCrystalInfoAttrKey), k=freq)
+        frame = [OZCrystalInfoAttrKey.UNIT_CELL]
+        if crystal_info.tile_code:
+            frame.append(OZCrystalInfoAttrKey.TILED_STRUCTURE)
+
+        keys = random.sample(frame, k=freq)
         conds = []
         for k in keys:
             if k is OZCrystalInfoAttrKey.UNIT_CELL:
@@ -108,22 +123,31 @@ class OZFrameworkLocator:
                     key=OZFrameworkAttrKey.CRYSTAL_INFO,
                     subkey=k,
                 )
-                cond = "whose tile code is [{label}]".format(
+
+                cond = "whose tile code is <span>{label}</span>".format(
                     label=crystal_info.tile_code
                 )
+            else:
+                raise ValueError("Unexpected crystal info key: " + str(k))
+
             conds.append(cond)
 
         return conds
 
     def _locate_topo_attr(
-        query_graph: QueryGraph, topo_scalar: Dict[OZZeoTopoAttrKey, Decimal], freq: int
+        self,
+        query_graph: QueryGraph,
+        topo_scalar: Dict[OZZeoTopoAttrKey, Decimal],
+        freq: int,
     ):
         conds = []
 
         for k, value in random.sample(topo_scalar.items(), k=freq):
             attr_key = k.value
-            pred = "zeo:hasZeoliticProperties/zeo:has{key}/om:hasNumericalValue".format(
-                key=attr_key
+            pred = (
+                "zeo:hasTopologicalProperties/zeo:has{key}/om:hasNumericalValue".format(
+                    key=attr_key
+                )
             )
             attr_verbn = random.choice(ZEOTOPO_ATTR_LABELS[k])
             val_node = attr_key + "NumericalValue"
@@ -165,16 +189,17 @@ class OZFrameworkLocator:
             ]
         )
 
-        return "corresponding to {material} {formula}".format(
+        return "corresponding to {material} {connector}<span>{formula}</span>".format(
             material=random.choice(["material", "zeolitic material", "zeolite"]),
-            formula=random.choice(["formula ", "with formula ", ""]) + material.formula,
+            connector=random.choice(["formula ", "with formula ", ""]),
+            formula=material.formula,
         )
 
     def _locate_guest_species(
         self, query_graph: QueryGraph, guest_species_iris: List[str], freq: int
     ):
         guest_iris = random.sample(
-            guest_species_iris, k=min(len(guest_species_iris, freq))
+            guest_species_iris, k=min(len(guest_species_iris), freq)
         )
         guests = [
             random.choice(self.store.get_guest_species_identifiers(iri))
@@ -195,9 +220,13 @@ class OZFrameworkLocator:
             ]
         )
 
-        return "{incorporate} {guests}".format(
-            incorporate=random.choice(["incorporate", "have guest species"]),
-            guests=" and ".join(guests),
+        return "which {incorporate} {guests}".format(
+            incorporate=random.choice(
+                ZEOMATERIAL_PRED_LABELS[OZMaterialAttrKey.GUEST_SPECIES]
+            ),
+            guests=" and ".join(
+                ["<span>{literal}</span>".format(literal=guest) for guest in guests]
+            ),
         )
 
     def locate_concept_and_literal_multi(self, entity_iri: str, cond_num: int):
@@ -206,17 +235,17 @@ class OZFrameworkLocator:
         entity = self.store.get_framework(entity_iri)
 
         attr_key_counts = {
-            OZFrameworkAttrKey.FRAMEWORK_COMPONENTS: 3,
+            OZFrameworkAttrKey.FRAMEWORK_COMPONENTS: 6,
             OZFrameworkAttrKey.CRYSTAL_INFO: 2 if entity.crystal_info.tile_code else 1,
             OZFrameworkAttrKey.TOPO_ATTR: 10,
             OZFrameworkAttrKey.MATERIALS: 1,
-            OZFrameworkAttrKey.GUEST_SPECIES: 5,
+            OZFrameworkAttrKey.GUEST_SPECIES: 10,
         }
-        attr2freq: defaultdict[OZFrameworkAttrKey, int] = defaultdict(lambda: 0)
+        attr2freq: DefaultDict[OZFrameworkAttrKey, int] = defaultdict(lambda: 0)
         for k in random.sample(
-            tuple(attr_key_counts.keys()),
-            k=min(cond_num, len(attr_key_counts)),
-            counts=tuple(attr_key_counts.values()),
+            attr_key_counts.keys(),
+            k=min(cond_num, sum(attr_key_counts.values())),
+            counts=attr_key_counts.values(),
         ):
             attr2freq[k] += 1
 

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Dict
+from typing import Dict, Literal
 
 from constants.ontozeolite import ZEOTOPO_SCALAR_KEYS
 from locate_then_ask.kg_client import KgClient
@@ -40,12 +40,13 @@ class OZEntityStore:
                 framework_code=self._retrieve_by_property(
                     entity_iri, "zeo:hasFrameworkCode"
                 )[0],
-                crystal_info=self._retrieve_crystal_info(entity_iri),
+                crystal_info=self._retrieve_crystal_info(
+                    entity_iri, rdf_type="Framework"
+                ),
                 topo_scalar=self._retrieve_topomeasures(entity_iri),
                 material_iris=material_iris,
                 framework_components=framework_components,
                 guest_species_iris=guest_species_iris,
-                guest_formulae=guest_formulae,
             )
         return self.iri2framework[entity_iri]
 
@@ -60,25 +61,29 @@ class OZEntityStore:
                 guest_formula = None
             self.iri2material[entity_iri] = OZMaterial(
                 iri=entity_iri,
-                framework_iri=self._retrieve_by_property(
-                    entity_iri, "^zeo:hasZeoliticMaterial"
-                )[0],
                 formula=self._retrieve_by_property(
                     entity_iri, "zeo:hasChemicalFormula"
                 )[0],
+                framework_iri=self._retrieve_by_property(
+                    entity_iri, "^zeo:hasZeoliticMaterial"
+                )[0],
+                crystal_info=self._retrieve_crystal_info(
+                    entity_iri, rdf_type="Material"
+                ),
                 framework_components=self._retrieve_framework_components(entity_iri),
                 guest_species_iris=self._retrieve_by_property(
                     entity_iri, "zeo:hasGuestCompound"
                 ),
-                guest_formula=guest_formula,
             )
         return self.iri2material[entity_iri]
 
     def get_guest_species_identifiers(self, entity_iri: str):
-        query = """
+        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
 SELECT ?SpeciesIdentifier {{
-    <{IRI}> ?hasIdentifier [ a/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifier ] .
-}""".format(
+    VALUES ?hasIdentifier {{ os:hasInChI os:hasIUPACName os:hasMolecularFormula os:hasSMILES }}
+    <{IRI}> ?hasIdentifier [ os:value ?SpeciesIdentifier ] .
+}}""".format(
             IRI=entity_iri
         )
         return [
@@ -120,16 +125,21 @@ SELECT ?ElementSymbol WHERE {{
             for x in self.ontozeolite_client.query(query)["results"]["bindings"]
         ]
 
-    def _retrieve_crystal_info(self, entity_iri: str):
+    def _retrieve_crystal_info(
+        self, entity_iri: str, rdf_type: Literal["Framework", "Material"]
+    ):
+        pred_prefix = "^zeo:hasZeoliticMaterial?/" if rdf_type == "Material" else ""
         unit_cell_volume = Decimal(
             self._retrieve_by_property(
                 entity_iri,
-                "ocr:hasCrystalInformation/ocr:hasUnitCell/ocr:hasUnitCellVolume/om:hasNumericalValue",
+                pred_prefix
+                + "ocr:hasCrystalInformation/ocr:hasUnitCell/ocr:hasUnitCellVolume/om:hasNumericalValue",
             )[0]
         )
         tile_code_values = self._retrieve_by_property(
             entity_iri,
-            "ocr:hasCrystalInformation/ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode",
+            pred_prefix
+            + "ocr:hasCrystalInformation/ocr:hasTiledStructure/ocr:hasTile/ocr:hasTileCode",
         )
         if len(tile_code_values) == 0:
             tile_code = None
@@ -144,7 +154,7 @@ SELECT ?ElementSymbol WHERE {{
         key2bindings = {
             key: self._retrieve_by_property(
                 entity_iri,
-                "zeo:hasZeoliticProperties/zeo:has{key}/om:hasNumericalValue".format(
+                "zeo:hasTopologicalProperties/zeo:has{key}/om:hasNumericalValue".format(
                     key=key.value
                 ),
             )
