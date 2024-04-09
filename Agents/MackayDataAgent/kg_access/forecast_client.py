@@ -12,7 +12,7 @@ DELETE_STR = "DELETE WHERE"
 SELECT_STR=  "SELECT * WHERE"
 INSERT_STR = "INSERT DATA"
 GLOBAL_BASE = "https://www.theworldavatar.com/kg/"
-META_PREFIX = 'PREFIX : <{base_iri}> ' + '''
+META_PREFIX = 'PREFIX : <{}> ' + '''
 PREFIX owl:    <http://www.w3.org/2002/07/owl#>
 prefix xsd:    <http://www.w3.org/2001/XMLSchema#>
 prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -62,15 +62,16 @@ META_UPDATE_QUERY = '''
 # Wrapper for using a forecast Agent
 # Requires: a running copy of ForecastAgent with a URL, a remote/local KG access info for R/W agent meta information, and the IRI of this forecast agent in the KG
 class ForcastAgentClient:
-    def __init__(self, agent_url: str, agent_iri: str, kg_info: KgAccessInfo):
+    def __init__(self, agent_url: str, agent_iri: str, kg_info: KgAccessInfo, base_iri):
         self.deriv_client = PyDerivationClient(agent_url, kg_info.endpoint, kg_info.endpoint, kg_user=kg_info.user,
                                                kg_password=kg_info.password)
         self.forcastagent_iri = agent_iri
         self.sparql_client = PySparqlClient(kg_info.endpoint, kg_info.endpoint, kg_user=kg_info.user,
                                             kg_password=kg_info.password)
-        self.base_iri = GLOBAL_BASE + kg_info.endpoint.split('/')[-2] # namespace
+        self.base_iri = base_iri # namespace
 
     def call_predict(self, forecast_meta: ForecastMeta):
+        print('inside call_predict')
         predict_input = self.update_forcast_meta(
             forecast_meta)  # Meta definition of forecast instance needs to be inserted before run forecast agent
         logging.info('Forecast meta successfully inserted to KG')
@@ -82,8 +83,20 @@ class ForcastAgentClient:
                                                                       ONTODERIVATION_DERIVATIONWITHTIMESERIES)
         derivation_iri = derivation.getIri()
         # Update existing forecast derivation
-        self.deriv_client.unifiedUpdateDerivation(derivation_iri)
         return derivation_iri
+
+    def check_if_TS_update(self, forecast_iri):
+        # check if TS is updated
+        derivation_iri = self.deriv_client.getDerivationsOf([forecast_iri])
+        print(derivation_iri)
+        derivation_iri = derivation_iri[forecast_iri]
+        self.deriv_client.derivation_client.updateMixedAsyncDerivation(derivation_iri)
+        status = self.deriv_client.derivation_client.getStatusType(derivation_iri)
+        print(status)
+        if status == 'https://www.theworldavatar.com/kg/ontoderivation/derived/Requested':
+            return True# Original TS needs update
+        return False
+
 
     def get_forecast_iri(self, src_iri):
         q = '''
@@ -98,6 +111,7 @@ class ForcastAgentClient:
             return False
 
     def update_forcast_meta(self, fmeta: ForecastMeta) -> list:
+        print('inside update forecast')
         self._delete_forecast_meta(fmeta.iri, fmeta.name)
         self._insert_forecast_meta(fmeta)
         logging.info('Forecast meta successfully inserted')
@@ -110,9 +124,11 @@ class ForcastAgentClient:
         return input_list
 
     def _delete_forecast_meta(self, src_iri, name):
+        print(self.base_iri)
         delete_str = META_PREFIX.format(self.base_iri) + META_UPDATE_QUERY.format(action=DELETE_STR, name=name, ts_iri=src_iri, model='?m',
                                                             start='?s', end='?e', frequency='?f', unit='?u',
                                                             duration="?d")
+        print(delete_str)
         if self.get_forecast_meta(src_iri,name):
             r = self.sparql_client.performUpdate(delete_str)
             logging.info('Old Forecast meta successfully deleted')

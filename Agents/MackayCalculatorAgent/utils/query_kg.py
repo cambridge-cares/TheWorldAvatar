@@ -16,7 +16,6 @@ def unit_convert_hv(hv):
 def unit_convert_thousand(ppl):
     return ppl/1000
 
-#TODO: check unit for this
 def query_data_agent(agent_url):
     return requests.get(agent_url).json()
 

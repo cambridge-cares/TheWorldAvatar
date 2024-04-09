@@ -7,13 +7,14 @@ from data_classes.ts_data_classes import *
 import logging
 import datetime
 from typing import List
-#TODO: restructure this with not property file
-#https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries/TimeSeriesClient.java
+
+# https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries/TimeSeriesClient.java
 DOUBLE = jpsBaseLibView().getView().java.lang.Double.TYPE
+
 
 def get_ts_client(property_file_path: str, data_class_name: str = 'Instant'):
     TSClient = jpsBaseLibView().getView().TimeSeriesClient(get_java_time_object(data_class_name), property_file_path)
-    print('get ts client')
+    logging.info('get ts client')
     return TSClient
 
 
@@ -47,8 +48,8 @@ class TSClient():
         self.client.addTimeSeriesData(timeseries)
 
     def delete_timeseries(self, datairi):
-       tsiri = self.client.getTimeSeriesIRI(datairi)
-       self.client.deleteTimeSeries(tsiri)
+        tsiri = self.client.getTimeSeriesIRI(datairi)
+        self.client.deleteTimeSeries(tsiri)
 
     def check_timeseries_exist(self, datairi):
         tsiri = self.client.getTimeSeriesIRI(datairi)
@@ -63,31 +64,44 @@ class TSClient():
         if not ts_exist:
             logging.error('TSClient_Wrapper: try to update a timeseries that has not been registered')
             raise Exception('TSClient_Wrapper: try to update a timeseries that has not been registered')
-        if not force:#If Force-update Flag not set, and timeseries does exist
+        if not force:  # If Force-update Flag not set, and timeseries does exist
             exist_times, exist_values = self.get_timeseries(tsinstance.src_iri)
             if exist_times is not None:  # Have existing records, check if API values has change compared to record
                 to_update_idx = [idx for idx, t in enumerate(times_new) if t not in exist_times]
                 if not to_update_idx:
                     logging.info('API for {} has not updated since last time. No change is made into KG'.format(
                         tsinstance.src_iri))
-                    return False # Source data has no different time points than current record, no update
+                    return False  # Source data has no different time points than current record, no update
         new_values = [tsinstance.values]
         dataIRIs = [tsinstance.src_iri]
         timeseries = jpsBaseLibView().getView().TimeSeries(times_new, dataIRIs, new_values)
-        lowb = jpsBaseLibView().getView().java.time.Instant.parse(parse_time_to_format(parse_incomplete_time("1000")))#TODO, should change this
+        lowb = jpsBaseLibView().getView().java.time.Instant.parse(
+            parse_time_to_format(parse_incomplete_time("1000")))  # TODO, should change this
         hb = jpsBaseLibView().getView().java.time.Instant.parse(parse_time_to_format(parse_incomplete_time("3000")))
-        a = self.client.deleteTimeSeriesHistory(tsinstance.src_iri, lowb, hb)  # Delete data in last TS record but do not make new TS IRI
+        a = self.client.deleteTimeSeriesHistory(tsinstance.src_iri, lowb,
+                                                hb)  # Delete data in last TS record but do not make new TS IRI
         self.client.addTimeSeriesData(timeseries)
         logging.info('Timeseries for {} updated from API'.format(tsinstance.src_iri))
         return True
 
-    def get_timeseries(self, target_iri: str) -> (list,list):
-        ts = self.client.getTimeSeriesWithinBounds([target_iri], None, None)
+    def get_timeseries(self, ts_iri: str) -> (list, list):
+        ts = self.client.getTimeSeriesWithinBounds([ts_iri], None, None)
         times = ts.getTimes()
-        values = ts.getValues(target_iri)
+        values = ts.getValues(ts_iri)
         # Unwrap Java time objects
         times = [t.toString() for t in times]
         return times, list(values)
+
+
+    def delete_timeseries_records(self, data_iri, lower_bound, upper_bound):
+        if lower_bound is not None:
+            lower_bound = jpsBaseLibView().getView().java.time.Instant.parse(
+            parse_time_to_format(parse_incomplete_time(lower_bound)))
+        if upper_bound is not None:
+            upper_bound = jpsBaseLibView().getView().java.time.Instant.parse(
+                parse_time_to_format(parse_incomplete_time(upper_bound)))
+        self.client.deleteTimeSeriesHistory(data_iri, lower_bound, upper_bound)
+        return
 
 
 def create_postgres_db_if_not_exists(db_url, db_usr, db_pw):
@@ -121,7 +135,7 @@ def create_postgres_db_if_not_exists(db_url, db_usr, db_pw):
         # Close communication with the PostgreSQL database server
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logging.error(error)
     finally:
         if conn is not None:
             conn.close()

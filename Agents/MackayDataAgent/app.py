@@ -1,4 +1,4 @@
-from api_agent.mackay_data_agent import MackayDataAgent
+from mackay_data_agent.mackay_data_agent import MackayDataAgent
 from flask import Flask, Response
 import json
 import os,sys
@@ -13,12 +13,23 @@ def create_app(testing=False):
     else:
         cfg = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'confs_files')
     agent = MackayDataAgent(cfg)
-    agent.initiate()
+    agent.init_model_APIs()
+
+
+    @app.route('/', methods=['GET'])
+    def default():
+        """
+            Instructional message at the app root.
+        """
+        msg  = "This is the data agent that manages and serves the Mackay calculator data."
+        return msg
+
+
 
     @app.route('/update', methods=['GET'])
     def run_update():
         try:
-            agent.update_from_external_and_predict()
+            agent.update_model()
             final_ret = {"status": "Success"}
             return final_ret
         except Exception as e:
@@ -45,3 +56,8 @@ def create_app(testing=False):
                 status=500
             )
     return app
+
+
+if __name__ == "__main__":
+    myapp = create_app()
+    myapp.run(port=5002)

@@ -4,3 +4,5 @@ xlwings==0.30.10
 requests
 py4jps
 pytest
+numpy
+python-dateutil

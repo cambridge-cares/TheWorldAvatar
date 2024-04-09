@@ -1,5 +1,10 @@
-# API agent
-This `API Agent` can be used to manage the automatic instantiation and updating of TimeSeries data from external APIs into the knowledge graph (KG) using the [OntoTimeSeries] (TS) ontology. Reading and writing TimeSeries from/into the KG relies on the [TimeSeriesClient].
+# Mackay Data Agent
+The ` Mackay Data Agent` 
+
+
+
+
+of TimeSeries data from external APIs into the knowledge graph (KG) using the [OntoTimeSeries] (TS) ontology. Reading and writing TimeSeries from/into the KG relies on the [TimeSeriesClient].
 
 
 The agent is integrated with the [Derived Information Framework]'s (DIF) to ensure proper data provenance. API information and API-Data-to-TimeSeries mappings are defined as a meta-data instance in KG. TS data is then considered as the derived quantity of the meta-data. The required meta-data triples to derive an API-downloaded TS instance are described in the [required derivation markup](#13-required-derivation-markup) section below.
@@ -16,39 +21,15 @@ The agent now supports three input data formats from API: `json, csv, xlsx.` Dow
 
 
 # 1. Setup
+
+## 1.1 
+* api agent
+* forecast agent
+* rdb & triple store
+
+
 ## 1.3 Required Derivation Markup
-Before any API data can be downloaded (and instantiated), the required meta-data instance need to be properly instantiated. 
-
-
-The following snippet provides an overview of the expected instantiation structure of required API meta-data instance (further examples can be found in folder TODO):
-
-```
-###   Required inputs   ###
-<target_data_IRI> rml4ts:has_ts_mapping <IRI_of_Mapping>.
-
-<IRI_of_Mapping> a rml4ts:TimeSeriesMap;
-    time:hasDuration <IRI_of_Update_Duration>;
-    rml:logicalSource [ a rml:LogicalSource;
-    rml:source <IRI_of_Web_Source> ;
-    rml:referenceFormulation ql:JSONPath;
-    rml4ts:value_iterator <JSONPath>;
-    rml4ts:time_iterator <JSONPath>;
-  ];
-.
-
-<IRI_of_Web_Source> a td:PropertyAffordance;
-  td:hasForm [
-    hctl:hasTarget <RequestUrl>;
-    hctl:forContentType <ContentType>;
-    htv:methodName <HTTPMethod>;
-  ];
-.
-
-<IRI_of_Update_Duration> rdf:type time:Duration ;
-    time:numericDuration <xsd:decimal> ;
-    time:unitType  time:unitDay .
-```
-
+Mackay Data agent is a client of API Agent. For the any API data used by the data agent to be properly managed by the API agent, the required meta-data instance need to be properly instantiated. Refer to API Agent section 1.3.
 
 
 

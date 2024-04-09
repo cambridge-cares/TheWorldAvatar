@@ -15,15 +15,9 @@ import uuid
 import os
 
 '''
-Use a ConfigParser object for configuration
-Downloads from an external datasource
+This modules handles data Download from an external datasource
 Returns a parsed timeseries data instance
-
 '''
-# Things required for download/parser values:
-# API => download (move to KG meta triples)
-# mappings to output format (can change to RML future, currently lacking RML parser)
-# Predict / Post operation/calculation
 
 class Downloader:
     def __init__(self,
@@ -46,7 +40,6 @@ class Downloader:
         self.value_iter =value_iter
         self.time_iter = time_iter
         self.dynamicGenerated = dynamic_generated
-        print(self.dynamicGenerated)
         self.methodDynamic= method_dynamic
         self.post_calculation = getattr(importlib.import_module("data_classes.calculations"),
                                         calculation) if calculation else None
@@ -62,11 +55,14 @@ class Downloader:
         if self.dynamicGenerated:
             url_res = requests.request(self.methodDynamic, self.url, headers=magic_header)
             url_obj = url_res.json()
-            print(url_obj)
-            self.url = url_obj['url']
-        print('request:')
-        print(self.url)
-        print(self.method)
+            logging.info('Dynamic URL retrieval, get http response: {}'.format(url_obj))
+            if 'url' in url_obj:
+                self.url = url_obj['url']
+            elif 'data' in url_obj:
+                self.url = url_obj['data']['url']
+            else:
+                self.url= None
+        logging.info('request to:{}'.format(self.url))
         raw_response = requests.request(self.method, self.url, headers=magic_header)
         parsed = self.format_parser(raw_response.content if self.format == 'xlsx' else raw_response.text,
                                     self.target_iri,self.value_iter,self.time_iter)
@@ -76,7 +72,7 @@ class Downloader:
             parsed = self.post_calculation(parsed)
         return parsed
 
-
+# parser for raw http response in csv format
 def csv_parser(raw_response, src_iri, value_iter, time_iter, **kwargs) -> ts_data_classes.TimeSeriesInstance:
     parsed_values, parsed_times = [], []
     lines = raw_response.splitlines()
@@ -89,7 +85,7 @@ def csv_parser(raw_response, src_iri, value_iter, time_iter, **kwargs) -> ts_dat
         parsed_times.append(row[int(time_col)])
     return ts_data_classes.TimeSeriesInstance(values=parsed_values, times=parsed_times, src_iri=src_iri)
 
-
+# parser for raw http response in json format
 def json_parser(raw_response, src_iri, value_iter, time_iter, **kwargs) -> ts_data_classes.TimeSeriesInstance:
     raw_data = json.loads(raw_response)
     value_exp = jsonpath_ng.ext.parse(value_iter)
@@ -98,7 +94,7 @@ def json_parser(raw_response, src_iri, value_iter, time_iter, **kwargs) -> ts_da
     parsed_times = [match.value for match in time_exp.find(raw_data)]
     return ts_data_classes.TimeSeriesInstance(values=parsed_values, times=parsed_times, src_iri=src_iri)
 
-
+# parser for raw http response in xlsx format
 def xlsx_parser(raw_response, src_iri, value_iter, time_iter, **kwargs) -> ts_data_classes.TimeSeriesInstance:
     # write a temporary xlsx files,
     tmpname = './{}.xlsx'.format(uuid.uuid4().hex)

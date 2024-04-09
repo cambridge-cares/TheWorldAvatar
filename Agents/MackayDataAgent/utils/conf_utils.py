@@ -73,7 +73,7 @@ def create_property_files(base_conf, data_confs) -> dict:
         outpaths[dataname] = outpath
     return outpaths
 
-def create_property_file(name, db_url, db_user, db_pw, kg_url ) -> str:
+def create_property_file(name, db_url, db_user, db_pw, endpoint ) -> str:
     outdir = (os.path.join(Path(__file__).parent.parent, 'resources'))
     Path(outdir).mkdir(parents=True, exist_ok=True)
     outpath = os.path.abspath(os.path.join(outdir, "{}.properties".format(name)))
@@ -81,7 +81,7 @@ def create_property_file(name, db_url, db_user, db_pw, kg_url ) -> str:
     props['db.url'] = db_url
     props['db.user'] = db_user
     props['db.password'] = db_pw
-    props['sparql.query.endpoint']  =kg_url
-    props['sparql.update.endpoint']  =kg_url
+    props['sparql.query.endpoint']  =endpoint
+    props['sparql.update.endpoint']  =endpoint
     write_java_properties_conf(props, outpath)
     return outpath

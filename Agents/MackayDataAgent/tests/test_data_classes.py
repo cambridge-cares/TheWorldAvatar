@@ -15,3 +15,9 @@ def test_calculations_retire():
     out = retire(testts)
     assert out.times == [ parse_incomplete_time(str(t)) for t in [2015, 2020, 2025, 2030, 2035, 2040, 2045]]
     assert out.values == [0.06, 0.43, 0.82, 0.82, 0.76, 0.39, 0.0]
+
+def test_calculations_retire():
+    testts = TimeSeriesInstance(src_iri='1', times=[2015,2020,2025], values=[0.06,0.43,1.005])
+    out = retire(testts)
+    assert out.times == [ parse_incomplete_time(str(t)) for t in [2015, 2020, 2025, 2030, 2035, 2040, 2045]]
+    assert out.values == [0.06, 0.43, 1.005, 1.005, 0.94, 0.57, 0.0]

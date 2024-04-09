@@ -86,7 +86,6 @@ PropertiesFileProtytype = {
 
 
 def parse_incomplete_time(input_tstr: str) -> datetime.datetime:
-    input_tstr = input_tstr.replace('00:00:00Z','')
     return parse(input_tstr, default=DEFAULT_TIME)
 
 
@@ -108,7 +107,7 @@ def get_next_timeinstant_by_unit(unitname: str, last_time: datetime.datetime):
         next_time = last_time + diff
         return next_time
     except AttributeError:
-        print(
+        raise Exception(
             'supplied timeunit does not exist in python datetime attributes. Has to be either year, month, day, hour, minute or second')
 
 

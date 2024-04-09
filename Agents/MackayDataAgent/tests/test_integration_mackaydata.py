@@ -1,5 +1,5 @@
 import pytest
-from app_md import create_app
+from app import create_app
 
 
 @pytest.fixture
@@ -21,6 +21,6 @@ def test_get_data(client):
     re = client.get('data')
     print(re.json)
     assert re.status_code == 200
-    assert 'dwellingunit' in re.json
+    assert 'dwelling_unit' in re.json
     assert 'installed_pv' in re.json
     assert 'temperature_mean' in re.json

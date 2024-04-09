@@ -93,6 +93,9 @@ class CalculatorModel(XLSVModel):
     # update all values in the updatelist by querying the KG
     def updateFromKG(self, new_values):
         for k in self.updateList:
+            if k not in new_values:
+                print('{} not in update data, could be an error'.format(k))
+                continue
             cell = self.updateList[k]
             print(cell)
             new_value = new_values[k]
