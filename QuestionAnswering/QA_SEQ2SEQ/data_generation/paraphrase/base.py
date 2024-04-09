@@ -7,7 +7,7 @@ from openai import OpenAI
 
 class OpenAiClientForBulletPointResponse:
     PARAPHRASE_NUM = 3
-    SYSTEM_PROMPT_TEMPLATE = '''You will be provided with a machine-generated query. Rephrase it in {num} different ways. Additionally, keep the square brackets, tags, and their enclosing text unchanged.
+    SYSTEM_PROMPT_TEMPLATE = '''You will be provided with a machine-generated query. Rephrase it in {num} different ways. Additionally, keep the <span> tags and their enclosing text unchanged.
     
 Text: """
 {text}

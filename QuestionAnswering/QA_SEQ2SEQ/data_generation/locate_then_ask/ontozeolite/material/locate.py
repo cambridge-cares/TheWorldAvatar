@@ -50,7 +50,7 @@ class OZMaterialLocator:
             literal_node,
             key=OZMaterialAttrKey.FRAMEWORK,
         )
-        return "whose framework is [{label}]".format(label=framework.framework_code)
+        return "whose framework is <span>{label}</span>".format(label=framework.framework_code)
 
     def _locate_crystal_info(
         self, query_graph: QueryGraph, crystal_info: OZCrystalInfo, freq: int

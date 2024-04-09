@@ -189,9 +189,10 @@ class OZFrameworkLocator:
             ]
         )
 
-        return "corresponding to {material} {formula}".format(
+        return "corresponding to {material} {connector}<span>{formula}</span>".format(
             material=random.choice(["material", "zeolitic material", "zeolite"]),
-            formula=random.choice(["formula ", "with formula ", ""]) + material.formula,
+            connector=random.choice(["formula ", "with formula ", ""]),
+            formula=material.formula,
         )
 
     def _locate_guest_species(
