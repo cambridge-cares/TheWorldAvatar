@@ -266,22 +266,20 @@ const sparqlContainer = (function () {
 })()
 
 function displayIRIDetails(data, iri, filename) {
-    const iriInfoPara = document.getElementById("iri-response")
-    const jsmolContainer = document.getElementById("jsmolAppletContainer")
+    const iriInfoPara = document.getElementById("iri-response");
+    const jsmolContainer = document.getElementById("jsmolAppletContainer");
 
-    iriInfoPara.innerHTML = ""
-    const list = document.createElement('ul');
-    const item = document.createElement('li');
-    item.innerHTML = `<strong>IRI</strong>: ${iri}`;
-    list.appendChild(item);
+    iriInfoPara.innerHTML = "";
+    jsmolContainer.innerHTML = "";
+
+    let detailsHTML = `<strong>IRI</strong>: ${iri}<br>`;
+
     for (const [key, value] of Object.entries(data)) {
-        const item = document.createElement('li');
-        item.innerHTML  = `<strong>${key}</strong>: ${value}`;
-        list.appendChild(item);
+        detailsHTML += `<strong>${key}</strong>: ${value}<br>`;
     }
 
-    iriInfoPara.appendChild(list);
-    console.log(iriInfoPara.innerHTML)
+    iriInfoPara.innerHTML = detailsHTML;
+    console.log(iriInfoPara.innerHTML);
 
     // JSmol applet configuration
     var Info = {

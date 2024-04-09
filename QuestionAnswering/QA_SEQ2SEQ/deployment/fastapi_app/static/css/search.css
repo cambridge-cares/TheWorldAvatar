@@ -21,14 +21,23 @@
     font-family: inherit;
 }
 
+/* Styling for the placeholder text */
+.search-form .input-row > div > input[type="text"]::placeholder {
+    font-family: inherit; /* Ensures the placeholder text uses the same font family */
+    font-size: inherit; /* Ensures the placeholder text uses the same font size */
+    font-style: italic; /* Makes the placeholder text italic */
+}
+
 legend {
     font-family: inherit;
-    font-size: 12pt; /* Larger font size for section titles */
+    /* font-size: 12pt; /* Larger font size for section titles */
     margin-top: 12px;
     margin-bottom: 12px; /* Space below the legend */
+    font-size: inherit; 
 }
 
 label {
     font-family: inherit;
-    font-size: 10pt; /* Consistent font size for labels */
+    /* font-size: 10pt; /* Consistent font size for labels */
+    font-size: inherit; 
 }
