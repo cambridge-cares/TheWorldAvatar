@@ -86,14 +86,15 @@ class EquipmentBookingSparqlClient(PySparqlClient):
             ?booking <{OAM_HASBOOKINGPERIOD}>/<{TIME_HASBEGINNING}>/<{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?bookingStart ;
                     <{OAM_HASBOOKINGPERIOD}>/<{TIME_HASEND}>/<{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?bookingEnd ;
                     <{OAM_HASBOOKER}>/<{OMG_HASNAME}>/rdfs:label ?booker .
-            }}"""
+            }}
+            ORDER BY ASC(?bookingStart)"""
         response = self.performQuery(query)
         booking_list = list()
         for res in response:
             booking_list.append(Booking(
                 instance_iri=res['booking'],
-                hasBookingStart=datetime.fromtimestamp(res['bookingStart']),
-                hasBookingEnd=datetime.fromtimestamp(res['bookingEnd']),
+                hasBookingStart=datetime.fromtimestamp(int(res['bookingStart'])),
+                hasBookingEnd=datetime.fromtimestamp(int(res['bookingEnd'])),
                 hasBooker=res['booker']
             ))
         return booking_list
@@ -106,7 +107,8 @@ class EquipmentBookingSparqlClient(PySparqlClient):
                     <{OAM_HASBOOKINGPERIOD}>/<{TIME_HASEND}>/<{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?bookingEnd .
             FILTER ( ?bookingStart <= {next_day} && ?bookingEnd >= {this_day} )
             ?booking <{OAM_HASBOOKER}>/<{OMG_HASNAME}>/rdfs:label ?booker .
-            }}"""
+            }}
+            ORDER BY ASC(?bookingStart)"""
         response = self.performQuery(query)
         booking_list = list()
         for res in response:
@@ -215,9 +217,7 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         self.performUpdate(update)
         logger.info(f"Booking {booking_iri} was added to booking system {booking_system_iri}.")
         #return g
-        return booking_iri
-
-    
+        return booking_iri    
 
     def remove_booking_from_system (self, booking_iri: str):
         booking_iri = trimIRI(booking_iri)
@@ -233,7 +233,7 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         }}"""
         self.performUpdate(update)
         logger.info(f"Booking {booking_iri} was removed.")
-
+        
 
     def modify_booking_in_system (self, booking_iri: str, booker_iri: str, booker_person_iri: str, booking_start: datetime, booking_end: datetime):
         booking_iri = trimIRI(booking_iri)

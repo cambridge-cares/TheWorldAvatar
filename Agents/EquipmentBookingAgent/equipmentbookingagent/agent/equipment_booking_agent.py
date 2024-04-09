@@ -50,6 +50,8 @@ class EquipmentBookingAgent(ABC):
         app: Flask = Flask(__name__, template_folder="/app/templates"),
         flask_config: FlaskConfig = FlaskConfig(),
         logger_name: str = "dev",
+        start_working_hours = '08:00',
+        end_working_hours = '19:00'
     ):
         """
             This method initialises the instance of EquipmentBookingAgent.
@@ -62,6 +64,8 @@ class EquipmentBookingAgent(ABC):
                 app - flask app object, an example: app = Flask(__name__)
                 flask_config - configuration object for flask app, should be an instance of the class FlaskConfig provided as part of this package
                 logger_name - logger names for getting correct loggers from py4jps.agentlogging package, valid logger names: "dev" and "prod", for more information, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_wrapper/py4jps/agentlogging/logging.py
+                start_working_hours - start of work day as displayed in daily booking overview
+                end_working_hours - end of work day as displayed in daily booking overview
         """
 
         # initialise flask app with its configuration
@@ -74,6 +78,10 @@ class EquipmentBookingAgent(ABC):
         self.kg_update_url = kg_update_url if kg_update_url is not None else kg_url
         self.kg_user = kg_user
         self.kg_password = kg_password
+
+        # assign UI related information
+        self.start_working_hours = start_working_hours
+        self.end_working_hours = end_working_hours
 
 
         # initialise the EquipmentBookingSparqlClient
@@ -92,10 +100,57 @@ class EquipmentBookingAgent(ABC):
         self.app.add_url_rule('/booking', 'equipment_booking', self.booking_page, methods=['GET'])
 
         # add the route for the booking confirmation
-        self.app.add_url_rule('/confirmation', 'booking_confirmation', self.confirmation_page, methods=['GET','POST'])
+        self.app.add_url_rule('/booking_confirmation', 'booking_confirmation', self.confirmation_page, methods=['POST'])
 
-        # add the route for booking overview
+        # add the route for daily booking overview
         self.app.add_url_rule('/overview', 'booking_overview', self.booking_overview, methods=['GET'])
+
+         # add the route for equipment-specific booking overview
+        self.app.add_url_rule('/view', 'bookings_view', self.equipment_overview, methods=['GET'])
+
+        # add the route for the deletion confirmation
+        self.app.add_url_rule('/delete_booking', 'deletion_confirmation', self.deletion_page, methods=['POST'])
+
+    def deletion_page(self):
+        data = request.get_json()
+        if 'iri' in data:
+            booking_iri = data['iri']
+            try:
+                self.sparql_client.remove_booking_from_system(booking_iri=booking_iri)
+                return render_template('equipment_booking_confirm_deletion.html',
+                                   header_text='Booking deleted', content_primer='The booking was successfully deleted from TWA', content_text=booking_iri)
+            except Exception as e:
+                return render_template('equipment_booking_confirm_deletion.html',
+                                   header_text='Error', content_primer='Could not delete booking', content_text=str(e))        
+        else:
+            return render_template('equipment_booking_confirm_deletion.html',
+                                   header_text='Error', content_primer='Faulty request', content_text='Booking IRI not fond')
+
+    def equipment_overview(self):
+        try:
+            selected_eq = request.args.get('eq')
+        except:
+            selected_eq = None
+
+        if selected_eq == None:
+            bookings = []
+        else:
+            bookings = self.sparql_client.get_all_bookings_in_system(selected_eq)
+        
+        all_bookings = {}
+
+        for booking in bookings:
+            all_bookings[booking.instance_iri] = {
+                'booker': booking.hasBooker,
+                'start': booking.hasBookingStart.strftime('%d.%m.%Y. %H:%M'),
+                'end': booking.hasBookingEnd.strftime('%d.%m.%Y. %H:%M'),
+            }
+
+        return render_template(
+                'equipment_booking_delete_booking.html',
+                bookable_assets=[{'iri': eq.hasBookingSystem.instance_iri, 'display': eq.label} for eq in self.sparql_client.get_all_bookable_equipment()],
+                selected_equipment = selected_eq, active_bookings = all_bookings
+            )
 
     def default(self):
         """Instruction for the EquipmentBookingAgent usage."""
@@ -114,12 +169,10 @@ class EquipmentBookingAgent(ABC):
         except:
             this_date = datetime.today()
             this_date = this_date.replace(hour=0,minute=0,second=0,microsecond=0)
-
-        start_time = '08:00'
-        end_time = '19:00'
+   
         time_slots = []
-        current_time = start_time
-        while current_time <= end_time:
+        current_time = self.start_working_hours
+        while current_time <= self.end_working_hours:
             time_slots.append(current_time)
             current_time = (datetime.strptime(current_time, '%H:%M') + timedelta(minutes=15)).strftime('%H:%M')
 

@@ -5,7 +5,6 @@
         <style>
             body {
                 font-family: Arial, sans-serif;
-                text-align: center;
             }
             .button {
                 display: inline-block;
@@ -26,16 +25,23 @@
     </head>
 
     <body>
-        <h1>CARES Laboratory equipment booking</h1>
-        <a href="/booking" class="button">Book Equipment</a>
-        <a href="/overview" class="button">Overview</a>
-        <a href="/view" class="button">Edit bookings</a>
-        <br><br>
+        <h1 id="header">{{header_text}}</h1>
+        <br>
+        <h3 id="primer">{{content_primer}}</h3>
+        <div>
+            {{content_text}}
+        </div>
 
+        <br><br><br><br><br><br>
+
+        <a href="/view" class="button">Delete another booking</a>
+        <a href="/booking" class="button">Make a new booking</a>
+        <a href="/" class="button">Back to main menu</a>
+
+        <br><br><br><br><br><br>
         <div>
             <span>Please contact developers of TheWorldAvatar if more features needed.</span><br><br>
-        </div><br><br>
-
-        <br><br>
+        </div>
+        
     </body>
 </html>
