@@ -10,6 +10,4 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 # Instantiate and start resource gateway object to JPS_BASE_LIB
 jpsBaseLibGW = JpsBaseLib()
-""" Instantiate the resource gateway object to JPS_BASE_LIB, starting it requires calling `jpsBaseLibGW.launchGateway()` """
-
 jpsBaseLibGW.launchGateway()

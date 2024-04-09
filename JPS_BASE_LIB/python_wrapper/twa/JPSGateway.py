@@ -128,6 +128,27 @@ class JPSGateway:
     Wrapper class of the py4j JavaGateway class for managing
     Python-Java communication.
 
+    The class can be used in the following way:
+
+    ```python
+    from twa import JPSGateway
+
+    yourGateway = JPSGateway(resName=yourResName, jarPath=yourResJarPath, **JGkwargs)
+    ```
+
+    > Note that if you wish to access an already installed resource through
+    the `JPSGateway` (not recommended), then the `jarPath` argument can be omitted
+    as it can be looked up by the resource name in the resource registry. Also,
+    note that some of the `py4j.java_gateway.JavaGateway` constructor arguments
+    are not allowed or should be passed to the `py4j.java_gateway.launch_gateway`
+    method instead. If that is the case, the code will print a warning message
+    which shows how to set the desired argument correctly. Please also note that
+    according to the `py4j` documentation, the `gateway_parameters` argument to the
+    `py4j.java_gateway.JavaGateway` constructor must have the type of the
+    [py4j GatewayParameters](https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.GatewayParameters)
+    object. However, to make it easy for the `twa` users, this argument can be passed
+    as a dictionary which then is automatically converted into the `py4j GatewayParameters` object.
+
     Attributes:
         resName (str): name of the Java resource
         jarPath (str): absolute path to the main jar file of the java resource
@@ -144,22 +165,27 @@ class JPSGateway:
             resName (str): name of the Java resource
             jarPath (str): absolute path to the main jar file of the java resource
             JGkwargs (dict): dictionary storing user provided JavaGateway parameters
+                `argument: value` pairs one wishes to pass to the
+                [py4j JavaGateway](https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.JavaGateway) constructor
 
         > Note that the JGkwargs related to the 'gateway_parameters'
         argument should be passed as a dictionary which is then
-        automatically converted into the 'GatewayParameters' object
+        automatically converted into the 'GatewayParameters' object.
+        Please refer to the
+        [py4j documentation](https://www.py4j.org/py4j_java_gateway.html)
+        for the description of all the possible arguments.
 
-        As an example, the following arguments:
+        > As an example, the following arguments:
 
-        ```
-        JGkwargs = {'gateway_parameters':{'auto_convert':True}}
-        ```
+        > ```python
+        > JGkwargs = {'gateway_parameters':{'auto_convert':True}}
+        > ```
 
-        will be automatically converted to:
+        > will be automatically converted to:
 
-        ```
-        JGkwargs = {'gateway_parameters': GatewayParameters(auto_convert=True)}}
-        ```
+        > ```python
+        > JGkwargs = {'gateway_parameters': GatewayParameters(auto_convert=True)}}
+        > ```
 
         > Note that the 'java_process' and 'auth_token' arguments
         will be skipped if present and they are automatically
@@ -172,6 +198,15 @@ class JPSGateway:
         py4j.java_gateway.launch_gateway 'enable_auth' arguments to
         True at the same time does NOT work. The arguments are mutually
         exclusive
+
+        > Note that the most important and useful settings are set by default
+        in this constructor so a user hardly ever need to pass any arguments
+        in that call. If required, however, the defaults of this constructor
+        can be overwritten by simply passing their new values. Please also
+        note that this constructor only instantiates the `JPSGateway` object,
+        and it DOES NOT instantiate the `py4j.java_gateway.JavaGateway`, whose
+        instantiation only happens in the `twa.JPSGateway.launchGateway` method
+        explained in more details below.
         """
         self.resName = resName
         self.jarPath = jarPath
