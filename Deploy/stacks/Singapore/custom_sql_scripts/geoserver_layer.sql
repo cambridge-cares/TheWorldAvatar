@@ -47,6 +47,18 @@ WITH uuid_table AS (
 	SELECT building_uuid, sum(heat_emissions) as heat_emissions, 'printing' as infrastructure_type
 	FROM printing
 	GROUP BY building_uuid
+), gfa_table AS (
+    SELECT realval AS calc_gfa, cityobject_id
+	FROM citydb.cityobject_genericattrib
+	WHERE attrname = 'GFA'
+), ref_gfa_table AS (
+    SELECT mb.building_uuid AS uuid, 
+        CASE WHEN "GPR" ~ '^\d+(\.\d+)?$' 
+        THEN ("GPR"::double precision * public.ST_Area("lod1Geometry", true))
+		ELSE 0
+        END AS ref_gfa
+    FROM public.landplot AS pl, public.matched_buildings AS mb
+    WHERE pl.ogc_fid = mb.ogc_fid 
 )
 
 SELECT DISTINCT
@@ -61,7 +73,9 @@ SELECT DISTINCT
     ontobuilt,
 	heat_emissions,
 	citydb.objectclass.classname AS objectclass,
-	infrastructure_type
+	infrastructure_type,
+	calc_gfa,
+	ref_gfa
 FROM citydb.building b
 JOIN citydb.surface_geometry sg ON sg.root_id = b.lod0_footprint_id
 JOIN uuid_table ON b.id = uuid_table.cityobject_id
@@ -71,6 +85,8 @@ LEFT JOIN pointsTable ON uuid_table.uuid = pointsTable.iri
 LEFT JOIN polygonsTable ON uuid_table.uuid = polygonsTable.iri
 LEFT JOIN usageTable ON uuid_table.uuid = usageTable.iri
 LEFT JOIN factory_data_combined ON uuid_table.uuid = factory_data_combined.building_uuid
+LEFT JOIN gfa_table ON b.id = gfa_table.cityobject_id
+LEFT JOIN ref_gfa_table ON uuid_table.uuid = ref_gfa_table.uuid
 WHERE sg.geometry IS NOT NULL AND COALESCE(measured_height, 100.0) != '0'
 
 UNION ALL
@@ -83,7 +99,9 @@ SELECT
     null as ontobuilt,
     heat_emissions,
     objectclass.classname AS objectclass,
-	null as infrastructure_type
+	null as infrastructure_type,
+	null as calc_gfa,
+	null as ref_gfa
 FROM 
     citydb.city_furniture
 JOIN 
