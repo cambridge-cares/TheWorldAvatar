@@ -16,7 +16,7 @@ from rdflib.extras.infixowl import OWL_NS
 from rdflib.namespace import Namespace, XSD, RDF, RDFS
 import entityrdfizer.aboxgenerator.PropertyReader as propread
 import entityrdfizer.aboxgenerator.ABoxGeneration as aboxgen
-from entityrdfizer.aboxgenerator import tboxtools
+#from entityrdfizer.aboxgenerator import tboxtools
 
 '''
 Log:
@@ -159,7 +159,7 @@ def class_to_http(value, file_line):
         warning_count += 1
     if not isinstance(value, str):
         if SHOW_WARNING:
-            print(f"Error in class_to_http(): input must be str. " +
+            print("Error in class_to_http(): input must be str. " +
                   f"Got: '{value}' {file_line}.")
         warning_count += 1
 #        return str(value)
@@ -518,8 +518,8 @@ def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None
     """This function checks the validity of the CSV template header and iterates
     over each data row until the whole content of the template is converted into RDF.
     Some example input and output file paths are provided below:
-    input_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox/ABoxOntoSpecies.csv"
-    output_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABoxRDFFiles"
+    input_file_path = "C:/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox/ABoxOntoSpecies.csv"
+    output_file_path = "C:/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABoxRDFFiles"
     """
     global warning_count, tBox
     input_path = PathlibPath(input_file_path)
@@ -599,12 +599,11 @@ def _serialize_csv_row(csv_row, filename, line_count):
     if line_count == 0:
         if not is_header_valid(csv_row, file_line):
             raise ValueError(textwrap.dedent(f"""
-                    Error: Found invalid csv header:
-                           {csv_row}
-                           ,so it will terminate now."""))
-        else:
-            global g
-            g = Graph()
+                    Error: Found invalid csv header line: {csv_row},
+                           Rdfizer is terminated now."""))
+
+        global g
+        g = Graph()
 
     if line_count > 0:
         process_data(csv_row, file_line)
