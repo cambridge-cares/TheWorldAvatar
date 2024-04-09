@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
 
 import uk.ac.cam.cares.jps.timeline.ConnectionViewModel;
 import uk.ac.cam.cares.jps.timelinemap.R;
@@ -20,7 +21,7 @@ public class NoConnectionBottomSheet extends BottomSheet{
 
     @Override
     void init(Context context, ViewGroup parent) {
-        bottomSheet = inflate(context, R.layout.bottom_sheet_widget_not_connected, parent).findViewById(R.id.bottom_sheet);
+        bottomSheet = (LinearLayoutCompat) inflate(context, R.layout.bottom_sheet_widget_not_connected, parent);
         bottomSheet.findViewById(R.id.try_again_button).setOnClickListener(view -> {
             connectionViewModel.checkNetworkConnection();
         });

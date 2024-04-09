@@ -6,6 +6,7 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
 
 import uk.ac.cam.cares.jps.timelinemap.R;
 
@@ -18,6 +19,6 @@ public class NormalBottomSheet extends BottomSheet {
 
     @Override
     void init(Context context, ViewGroup parent) {
-        bottomSheet = inflate(context, R.layout.bottom_sheet_widget, parent).findViewById(R.id.bottom_sheet);
+        bottomSheet = (LinearLayoutCompat) inflate(context, R.layout.bottom_sheet_widget, parent);
     }
 }
