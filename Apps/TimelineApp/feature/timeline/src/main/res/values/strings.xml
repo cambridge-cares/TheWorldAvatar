@@ -4,4 +4,6 @@
     <string name="next_date_button">Next date button</string>
     <string name="date_picker_button">Date picker button</string>
     <string name="user">user page</string>
+    <string name="no_connection_please_check_internet_connection_and_try_again">No connection. Please check internet connection and try again.</string>
+    <string name="try_again">Try again</string>
 </resources>

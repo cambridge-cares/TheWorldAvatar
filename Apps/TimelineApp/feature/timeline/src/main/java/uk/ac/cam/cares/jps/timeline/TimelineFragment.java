@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.timeline;
 
 import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -30,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
+import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NoConnectionBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
 import uk.ac.cam.cares.jps.timelinemap.R;
@@ -40,8 +43,8 @@ public class TimelineFragment extends Fragment {
     private FragmentTimelineBinding binding;
     private MapView mapView;
     private BottomSheet bottomSheet;
+    private ConnectionViewModel connectionViewModel;
     private Logger LOGGER = Logger.getLogger(TimelineFragment.class);
-    private ConnectivityManager connectivityManager;
 
     private final int MAP_BOTTOM_FLOATING_COMPONENT_MARGIN = 100;
     private BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
@@ -52,13 +55,19 @@ public class TimelineFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        connectivityManager = requireContext().getSystemService(ConnectivityManager.class);
-
         binding = FragmentTimelineBinding.inflate(inflater);
         setupMenu();
         setupBackPress();
 
-        bottomSheet = new NormalBottomSheet(requireContext(), binding.getRoot());
+//        connectivityManager = requireContext().getSystemService(ConnectivityManager.class);
+//        if (hasNetworkConnection(connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork()))) {
+//            bottomSheet = new NormalBottomSheet(requireContext(), binding.getRoot());
+//        } else {
+//            bottomSheet = new NoConnectionBottomSheet(requireContext(), binding.getRoot());
+//            bottomSheetBehavior = (BottomSheetBehavior<LinearLayoutCompat>) bottomSheet.getBehavior();
+//            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+//        }
+
         return binding.getRoot();
     }
 
@@ -66,14 +75,35 @@ public class TimelineFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bottomSheetBehavior = (BottomSheetBehavior<LinearLayoutCompat>) bottomSheet.getBehavior();
-//        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheetWidget.bottomSheet);
-
         mapView = binding.mapView;
         mapView.getMapboxMap().addOnStyleLoadedListener(style -> {
             // todo
         });
         mapView.getMapboxMap().loadStyleUri(Style.LIGHT);
+
+        TrajectoryManager trajectoryManager = new TrajectoryManager(this, mapView);
+
+        connectionViewModel = new ViewModelProvider(this).get(ConnectionViewModel.class);
+        connectionViewModel.getHasConnection().observe(getViewLifecycleOwner(), hasConnection -> {
+            if (bottomSheetBehavior != null) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+
+            if (hasConnection) {
+                bottomSheet = new NormalBottomSheet(requireContext(), binding.getRoot());
+                bottomSheetBehavior = (BottomSheetBehavior<LinearLayoutCompat>) bottomSheet.getBehavior();
+                setupBottomSheet();
+                trajectoryManager.getTrajectory();
+            } else {
+                bottomSheet = new NoConnectionBottomSheet(requireContext(), binding.getRoot(), connectionViewModel);
+                bottomSheetBehavior = (BottomSheetBehavior<LinearLayoutCompat>) bottomSheet.getBehavior();
+                setupBottomSheet();
+            }
+
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+        });
+        connectionViewModel.checkNetworkConnection();
+
 
         compassPlugin = mapView.getPlugin(Plugin.MAPBOX_COMPASS_PLUGIN_ID);
         compassPlugin.setEnabled(true);
@@ -84,10 +114,7 @@ public class TimelineFragment extends Fragment {
 
         scaleBarPlugin = mapView.getPlugin(Plugin.MAPBOX_SCALEBAR_PLUGIN_ID);
 
-        setupBottomSheet();
 
-        TrajectoryManager trajectoryManager = new TrajectoryManager(this, mapView);
-        trajectoryManager.getTrajectory();
 
     }
 

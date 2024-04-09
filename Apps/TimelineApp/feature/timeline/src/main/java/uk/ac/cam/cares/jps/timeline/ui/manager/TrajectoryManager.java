@@ -15,15 +15,19 @@ import org.json.JSONObject;
 
 import java.util.Objects;
 
+import uk.ac.cam.cares.jps.timeline.ConnectionViewModel;
 import uk.ac.cam.cares.jps.timeline.TimelineFragment;
 import uk.ac.cam.cares.jps.timeline.TrajectoryViewModel;
 
 public class TrajectoryManager {
     private TrajectoryViewModel trajectoryViewModel;
+    private ConnectionViewModel connectionViewModel;
     private Logger LOGGER = Logger.getLogger(TrajectoryManager.class);
 
     public TrajectoryManager(Fragment fragment, MapView mapView) {
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
+        connectionViewModel = new ViewModelProvider(fragment).get(ConnectionViewModel.class);
+
         trajectoryViewModel.trajectory.observe(fragment.getViewLifecycleOwner(), trajectory -> {
             mapView.getMapboxMap().getStyle(style -> {
                 Expected<String, None> removeLayerSuccess = style.removeStyleLayer("trajectory_layer");
@@ -57,6 +61,10 @@ public class TrajectoryManager {
                 Expected<String, None> layerSuccess = style.addStyleLayer(Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()), new LayerPosition(null, null, null));
                 LOGGER.debug("trajectory: layer created " + (layerSuccess.isError() ? layerSuccess.getError() : "success"));
             });
+        });
+
+        trajectoryViewModel.trajectoryError.observe(fragment.getViewLifecycleOwner(), error -> {
+            connectionViewModel.setHasConnection(false);
         });
     }
 

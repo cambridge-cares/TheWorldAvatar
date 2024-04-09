@@ -10,6 +10,9 @@ android {
         targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [
+                'appAuthRedirectScheme': 'uk.ac.cam.cares.jps.twatimelineapp'
+        ]
     }
 
     buildTypes {

@@ -9,9 +9,7 @@ android {
         applicationId "uk.ac.cam.cares.jps.timeline"
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [
-                'appAuthRedirectScheme': 'uk.ac.cam.cares.jps.twatimelineapp'
-        ]
+
     }
 }
 
