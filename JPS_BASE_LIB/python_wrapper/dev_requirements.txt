@@ -1,2 +1,7 @@
 testcontainers
 pytest
+mkdocs
+mkdocs-material
+mkdocstrings-python
+mkdocs-embed-external-markdown
+mike
