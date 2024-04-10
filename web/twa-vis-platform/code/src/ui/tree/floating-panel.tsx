@@ -8,6 +8,7 @@ import { getIndex, setIndex } from 'state/floating-panel-slice';
 import { getQueryTrigger, getIri, getStack, getScenario, setQueryTrigger, getProperties } from 'state/map-feature-slice';
 import { useGetMetadataQuery } from 'utils/server-utils';
 import { DataStore } from 'io/data/data-store';
+import { IconSettings } from 'types/settings';
 import LayerTree from './layer/layer-tree';
 import LegendTree from './legend/legend-tree';
 import InfoTree from './info/info-tree';
@@ -15,6 +16,7 @@ import InfoTree from './info/info-tree';
 // Incoming parameters for component.
 type FloatingPanelContainerProps = {
   dataStore: DataStore;
+  icons: IconSettings;
   hideLegend?: boolean;
   hideInfo?: boolean;
 };
@@ -157,7 +159,7 @@ export default function FloatingPanelContainer(
       {/* Conditionally render the panel's body */}
       {isPanelVisible && (
         <div className={styles.floatingPanelBody}>
-          {activeIndex === 0 && <LayerTree dataStore={props.dataStore} />}
+          {activeIndex === 0 && <LayerTree dataStore={props.dataStore} icons={props.icons} />}
           {activeIndex === 1 && <LegendTree />}
           {activeIndex === 2 &&
             <InfoTree

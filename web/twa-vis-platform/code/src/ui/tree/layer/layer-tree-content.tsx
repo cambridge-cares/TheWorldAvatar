@@ -221,11 +221,11 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
           iconStyles={[iconStyles["small-icon"]]}
         />
 
-        {/* Tree icon, if present */}
+        {/* Layer's icon, if present. Either creates a line or icon for display */}
         {layer.icon && (
-          <div className={styles.icon}>
-            <SVG src={layer.icon} />
-          </div>
+          layer.icon.startsWith("#") ?
+            <span className={iconStyles["line-icon"]} style={{ background: layer.icon }}></span> :
+            <img className={iconStyles["small-icon-image"]} src={layer.icon} />
         )}
 
         {/* Name of group */}
