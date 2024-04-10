@@ -4,8 +4,6 @@
 
 import fs from 'fs';
 import path from 'path';
-import { MapSettings } from 'types/settings';
-import { JsonObject } from "types/json";
 
 /**
  * Handles the retrieval and storage of settings from the user provided configuration files.

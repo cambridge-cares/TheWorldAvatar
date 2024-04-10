@@ -64,7 +64,7 @@ export default function MapboxMapComponent(props: MapProperties) {
     }
     // If there is a name, add the tool tip with the name to the map
     if (name != null) {
-      toolTip.current.setLngLat(coordinates).setHTML(name).addTo(window.map)
+      toolTip.current?.setLngLat(coordinates).setHTML(name).addTo(window.map)
     }
   }, [coordinates]);
 

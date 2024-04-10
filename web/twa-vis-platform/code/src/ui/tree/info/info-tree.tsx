@@ -62,7 +62,7 @@ export default function InfoTree(props: InfoTreeProps) {
       <div className={styles.infoHeadSection}>
         <h2>Feature Information</h2>
         {// Display the tabs only if there are both meta and time
-        !props.isFetching && props.data.meta && props.data.time && (
+        !props.isFetching && props.data?.meta && props.data?.time && (
           <InfoTabs
             data={props.data}
             activeTab={{
