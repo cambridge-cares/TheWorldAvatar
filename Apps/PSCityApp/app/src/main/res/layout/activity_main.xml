@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="20dp"
@@ -9,150 +10,154 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5pt"
-        android:layout_marginTop="5pt"
-        android:layout_marginRight="5pt"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/logo"
-                android:layout_width="103dp"
-                android:layout_height="128dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/pslogo"
-                tools:visibility="visible" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:id="@+id/weather"
-                android:layout_width="261dp"
-                android:layout_height="140dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/weather"
-                tools:visibility="visible" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="103dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/pslogo"
+        android:contentDescription="Logo"
+        app:layout_constraintEnd_toStartOf="@+id/weather"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
     <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="match_parent"
+        android:id="@+id/weather"
+        android:layout_width="261dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/weather"
+        android:contentDescription="Weather Panel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/notice"
+        android:layout_width="wrap_content"
         android:layout_height="291dp"
-        android:layout_marginLeft="5pt"
-        android:layout_marginTop="25dp"
-        android:layout_marginRight="5pt"
+        android:layout_marginTop="16dp"
+        android:contentDescription="Notifications"
         android:scaleType="fitCenter"
         android:src="@drawable/event_cover"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weather"
         tools:srcCompat="@drawable/event_cover"
         tools:visibility="visible" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="170dp"
-        android:layout_marginLeft="5pt"
-        android:layout_marginTop="5pt"
-        android:layout_marginRight="5pt"
-        android:gravity="center|center_horizontal|center_vertical|end"
-        android:orientation="horizontal">
+    <Button
+        android:id="@+id/amenity"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/main_button_background"
+        android:drawableStart="@drawable/outline_map_24"
+        android:padding="8dp"
+        android:text="@string/amenity_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toStartOf="@+id/events"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notice" />
 
-        <LinearLayout
-            android:layout_width="495dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center|left"
-            android:orientation="vertical">
+    <Button
+        android:id="@+id/report"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/main_button_background"
+        android:drawableStart="@drawable/baseline_warning_24"
+        android:padding="8dp"
+        android:text="@string/report_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toStartOf="@+id/events"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/amenity" />
 
-            <ImageButton
-                android:id="@+id/locations_btn"
-                android:layout_width="176dp"
-                android:layout_height="80dp"
-                android:background="@null"
-                android:scaleType="fitCenter"
-                android:src="@drawable/locations"
-                android:stateListAnimator="@null" />
+    <Button
+        android:id="@+id/events"
+        android:layout_width="0dp"
+        android:layout_height="106dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/main_button_background"
+        android:drawableTop="@drawable/baseline_calendar_month_24"
+        android:paddingTop="24dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="@string/event_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notice" />
 
-            <Space
-                android:layout_width="1dp"
-                android:layout_height="5pt" />
+    <Button
+        android:id="@+id/profile"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/secondary_button_height"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/main_button_background"
+        android:drawableTop="@drawable/outline_person_24"
+        android:paddingTop="12dp"
+        android:text="@string/profile_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toStartOf="@+id/news"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/report" />
 
-            <ImageButton
-                android:id="@+id/damage_report_btn"
-                android:layout_width="177dp"
-                android:layout_height="77dp"
-                android:background="@null"
-                android:scaleType="fitCenter"
-                android:src="@drawable/damage_report" />
+    <Button
+        android:id="@+id/news"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/secondary_button_height"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/main_button_background"
+        android:drawableTop="@drawable/baseline_newspaper_24"
+        android:paddingTop="12dp"
+        android:text="@string/news_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toStartOf="@+id/contacts"
+        app:layout_constraintStart_toEndOf="@+id/profile"
+        app:layout_constraintTop_toBottomOf="@+id/report" />
 
-        </LinearLayout>
+    <Button
+        android:id="@+id/contacts"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/secondary_button_height"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/main_button_background"
+        android:drawableTop="@drawable/outline_contacts_24"
+        android:paddingTop="12dp"
+        android:text="@string/contact_text"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/button_font_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/news"
+        app:layout_constraintTop_toBottomOf="@+id/report" />
 
-        <ImageButton
-            android:id="@+id/imageButton3"
-            android:layout_width="177dp"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:scaleType="fitCenter"
-            android:src="@drawable/events" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="97dp"
-        android:layout_marginLeft="5pt"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="5pt"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/profile_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="97dp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:scaleType="fitCenter"
-            android:src="@drawable/profile" />
-
-        <Space
-            android:layout_width="5pt"
-            android:layout_height="wrap_content" />
-
-        <ImageButton
-            android:id="@+id/news_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="97dp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:scaleType="fitCenter"
-            android:src="@drawable/news" />
-
-        <Space
-            android:layout_width="5pt"
-            android:layout_height="wrap_content" />
-
-        <ImageButton
-            android:id="@+id/contact_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="97dp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:scaleType="fitCenter"
-            android:src="@drawable/contacts" />
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
