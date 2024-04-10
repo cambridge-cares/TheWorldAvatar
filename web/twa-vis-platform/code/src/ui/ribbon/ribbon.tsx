@@ -80,11 +80,13 @@ export default function Ribbon(props: RibbonProps) {
               <Tab
                 className={getRibbonTabClass(activeIndex === 0)}
                 label="View" />
+              {/*
               <Tab
                 className={getRibbonTabClass(activeIndex === 1)}
                 label="Filter" />
+              */}
               <Tab
-                className={getRibbonTabClass(activeIndex === 2)}
+                className={getRibbonTabClass(activeIndex === 1)}
                 label="Search" />
 
             </Tabs>
@@ -157,12 +159,6 @@ export default function Ribbon(props: RibbonProps) {
           }
 
           {activeIndex == 1 &&
-            <RibbonPanel>
-              Item Two
-            </RibbonPanel>
-          }
-
-          {activeIndex == 2 &&
             <RibbonPanel>
               <RibbonComponentClick
                 icon="my_location"
