@@ -21,6 +21,11 @@ const markdowner = markdownit({
     linkify: true
 });
 
+type LandingPageProps = {
+    hasMap: boolean,
+    hasDashboard: boolean,
+}
+
 /**
  * Represents a standard landing page for the TWA platform. Can optionally
  * contain dynamically created links to other static pages (e.g. acknowledgements,
@@ -28,7 +33,7 @@ const markdowner = markdownit({
  * 
  * @returns JSX for landing page.
  */
-export default function LandingPage() {
+export default function LandingPage(props: LandingPageProps) {
     // CSS class names
     const introClasses = ["markdown-body", styles.introInner].join(" ");
 
@@ -61,12 +66,12 @@ export default function LandingPage() {
                 <div className={styles.introMiddle}>
                     <div
                         className={introClasses}
-                        dangerouslySetInnerHTML={{__html: introContent}}
+                        dangerouslySetInnerHTML={{ __html: introContent }}
                     />
 
                     <div className={styles.introLower}>
-                        {mapButton}
-                        {dashButton}
+                        {props.hasMap && mapButton}
+                        {props.hasDashboard && dashButton}
                     </div>
                 </div>
             </div>
@@ -96,7 +101,7 @@ function buildButton(title: string, description: string, icon: string, url: stri
             <Link href={url} className={styles.button}>
                 {/* Add thumbnail */}
                 <div className={styles.buttonIcon}>
-                    <img src={icon}/> 
+                    <img src={icon} />
                 </div>
                 {/* Page title */}
                 <div className={styles.buttonTitle}>

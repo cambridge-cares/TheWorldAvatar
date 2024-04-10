@@ -38,7 +38,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function App() {
   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
   if (uiSettings.modules.landing) {
-    return (<LandingPage />);
+    return (<LandingPage
+      hasMap={uiSettings.modules.map}
+      hasDashboard={uiSettings.modules.dashboard}
+    />);
   } else {
     redirect(`visualisation`);
   }
