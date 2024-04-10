@@ -26,6 +26,7 @@ The `config/ui-settings.json` file provides general settings for the platform. T
   - `landing`: REQUIRED. Displays landing page if enabled
   - `map`: REQUIRED. Displays map visualisation if enabled
   - `dashboard`: REQUIRED. Displays dashboard if enabled
+  - `help`: REQUIRED. Displays help page if enabled
 - `scenario`: optional key value pairs if you require scenario handling
   - `url`: endpoint to retrieve the scenarios and settings
   - `data`: target dataset that should be acccessible to the user

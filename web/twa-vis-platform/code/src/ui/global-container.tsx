@@ -79,6 +79,9 @@ export default class GlobalContainer extends React.Component<
 
           <Toolbar
             showLanding={modules.landing}
+            showMap={modules.map}
+            showDash={modules.dashboard}
+            showHelp={modules.help}
             toolbarLogo={branding.toolbarLogo.toString()}
           />
 
