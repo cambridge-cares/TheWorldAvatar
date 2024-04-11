@@ -98,10 +98,10 @@ def iri_info_query(iri):
         }}
         UNION
         {{
-            ?framework zeo:hasFrameworkCode ?o .
-            ?framework rdf:type ?type .
+            <{iri}> zeo:hasFrameworkCode ?o .
+            <{iri}> rdf:type ?type .
         }}
-        }} 
+        }} ORDER BY ?type
         """
         makeCifFile(iri)
         filename = 'result.cif'
@@ -131,9 +131,7 @@ def iri_info_query(iri):
             ?framework zeo:hasFrameworkCode ?o .
             ?framework rdf:type ?type .
         }}
-        }}
-
-
+        }}ORDER BY ?type
         """
         makeCifFile(iri)
         filename = 'result.cif'
