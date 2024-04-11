@@ -55,7 +55,7 @@ class SGShipsAgent:
         bindings = []
 
         for ship in ships:
-            ship_data: dict = self.feature_info_client.query(ship.IRI)["meta"]
+            ship_data: dict = self.feature_info_client.query(iri=ship.IRI)["meta"]
             ship_data = {k: self._sanitise(v) for k, v in ship_data.items()}
             bindings.append({**asdict(ship), **ship_data})
 
@@ -76,7 +76,7 @@ class SGShipsAgent:
         bindings = []
 
         for ship in ships:
-            ship_data = self.feature_info_client.query(ship.IRI)["time"][0]
+            ship_data = self.feature_info_client.query(iri=ship.IRI)["time"][0]
             """
             {
                 "data": [string, ...],
