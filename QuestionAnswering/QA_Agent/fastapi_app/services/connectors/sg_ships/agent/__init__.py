@@ -8,7 +8,6 @@ from redis import Redis
 from model.qa import QAData
 from services.core.kg import KgClient
 from services.core.redis import get_redis_client
-from services.core.exceptions import NotFoundError
 from services.connectors.sg import get_sgDispersion_bgClient
 from services.connectors.feature_info_client import (
     FeatureInfoClient,
@@ -27,8 +26,9 @@ class SGShipsAgent:
         if mmsi:
             ship = self.linker.lookup_by_mmsi(mmsi)
             if not ship:
-                raise NotFoundError()
-            ships = [ship]
+                ships = []
+            else:
+                ships = [ship]
         elif name:
             ships = self.linker.lookup_by_name(name)
         else:
@@ -72,7 +72,7 @@ class SGShipsAgent:
         """
         ships = self._link(name, mmsi)
 
-        vars = ["IRI", "MMSI", "name", "key", "timeseries", "unit"]
+        vars = ["IRI", "MMSI", "name", "key", "timeseries"]
         bindings = []
 
         for ship in ships:
@@ -91,16 +91,15 @@ class SGShipsAgent:
                     {
                         **asdict(ship),
                         **dict(
-                            key=key,
+                            key="{key} ({unit})".format(key=key, unit=ship_data["units"][i]),
                             timeseries=list(
                                 zip(ship_data["time"], ship_data["values"][i])
                             ),
-                            unit=ship_data["units"][i],
                         ),
                     }
                 )
 
-        title_tokens = ["{key}", "({unit})", "of"]
+        title_tokens = ["{key}", "of"]
         if name:
             title_tokens.append(name)
         if mmsi:

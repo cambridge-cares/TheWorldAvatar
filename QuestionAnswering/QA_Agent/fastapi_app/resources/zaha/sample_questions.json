@@ -47,6 +47,15 @@
                 "questions": [
                     "What are the concentrations of air pollutants in Jurong Island, singapore"
                 ]
+            },
+            {
+                "data_domain": "sg_ships",
+                "label": "Singapore's Ships",
+                "description": "Data about Ships in Singapore",
+                "questions": [
+                    "What's the maximum static draught of ship SCDF White Swordfish",
+                    "what's the speed over ground of ship with MMSI 563026590"
+                ]
             }
         ]
     }
