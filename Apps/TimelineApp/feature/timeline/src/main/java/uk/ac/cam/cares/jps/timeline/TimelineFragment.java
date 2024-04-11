@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -30,9 +28,9 @@ import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
-import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NoConnectionBottomSheet;
-import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;
+import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
+import uk.ac.cam.cares.jps.timeline.viewmodel.ConnectionViewModel;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
 
@@ -71,24 +69,8 @@ public class TimelineFragment extends Fragment {
         mapView.getMapboxMap().loadStyleUri(Style.LIGHT);
 
         TrajectoryManager trajectoryManager = new TrajectoryManager(this, mapView);
-
-        connectionViewModel = new ViewModelProvider(this).get(ConnectionViewModel.class);
-        connectionViewModel.getHasConnection().observe(getViewLifecycleOwner(), hasConnection -> {
-            binding.bottomSheetContainer.removeAllViews();
-
-            if (hasConnection) {
-                bottomSheet = new NormalBottomSheet(requireContext(), binding.bottomSheetContainer);
-                bottomSheetBehavior = (BottomSheetBehavior<LinearLayoutCompat>) bottomSheet.getBehavior();
-                setupBottomSheet();
-                trajectoryManager.getTrajectory();
-            } else {
-                bottomSheet = new NoConnectionBottomSheet(requireContext(), binding.bottomSheetContainer, connectionViewModel);
-                bottomSheetBehavior = (BottomSheetBehavior<LinearLayoutCompat>) bottomSheet.getBehavior();
-                setupBottomSheet();
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
-            }
-        });
-        connectionViewModel.checkNetworkConnection();
+        BottomSheetManager bottomSheetManager = new BottomSheetManager(this, binding.bottomSheetContainer);
+//        trajectoryManager.getTrajectory();
 
 
         compassPlugin = mapView.getPlugin(Plugin.MAPBOX_COMPASS_PLUGIN_ID);
@@ -100,37 +82,6 @@ public class TimelineFragment extends Fragment {
 
         scaleBarPlugin = mapView.getPlugin(Plugin.MAPBOX_SCALEBAR_PLUGIN_ID);
 
-    }
-
-    private void setupBottomSheet() {
-        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View view, int i) {
-                LOGGER.info("State is " + i);
-                scaleBarPlugin.updateSettings(scaleBarSettings -> {
-                    scaleBarSettings.setMarginTop(view.getTop() - MAP_BOTTOM_FLOATING_COMPONENT_MARGIN + binding.appBarLayout.getHeight());
-                    return null;
-                });
-
-                if (i == BottomSheetBehavior.STATE_EXPANDED) {
-                    // todo: change the app bar style
-                    TypedValue typedValue = new TypedValue();
-                    requireContext().getTheme().resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
-
-                    binding.appBarLayout.setBackground(getResources().getDrawable(typedValue.resourceId, requireContext().getTheme()));
-                } else {
-                    binding.appBarLayout.setBackground(getResources().getDrawable(R.drawable.app_bar_background, requireContext().getTheme()));
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View view, float v) {
-                scaleBarPlugin.updateSettings(scaleBarSettings -> {
-                    scaleBarSettings.setMarginTop(view.getTop() - MAP_BOTTOM_FLOATING_COMPONENT_MARGIN + binding.appBarLayout.getHeight());
-                    return null;
-                });
-            }
-        });
     }
 
     private void setupMenu() {

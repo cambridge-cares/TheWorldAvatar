@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.timeline;
+package uk.ac.cam.cares.jps.timeline.viewmodel;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -7,7 +7,6 @@ import android.net.NetworkCapabilities;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 
 import javax.inject.Inject;
 

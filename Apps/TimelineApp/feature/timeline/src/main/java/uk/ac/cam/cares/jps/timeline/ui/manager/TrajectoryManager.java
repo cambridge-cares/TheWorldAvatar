@@ -15,18 +15,14 @@ import org.json.JSONObject;
 
 import java.util.Objects;
 
-import uk.ac.cam.cares.jps.timeline.ConnectionViewModel;
-import uk.ac.cam.cares.jps.timeline.TimelineFragment;
-import uk.ac.cam.cares.jps.timeline.TrajectoryViewModel;
+import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
 
 public class TrajectoryManager {
     private TrajectoryViewModel trajectoryViewModel;
-    private ConnectionViewModel connectionViewModel;
     private Logger LOGGER = Logger.getLogger(TrajectoryManager.class);
 
     public TrajectoryManager(Fragment fragment, MapView mapView) {
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
-        connectionViewModel = new ViewModelProvider(fragment).get(ConnectionViewModel.class);
 
         trajectoryViewModel.trajectory.observe(fragment.getViewLifecycleOwner(), trajectory -> {
             mapView.getMapboxMap().getStyle(style -> {
@@ -62,13 +58,9 @@ public class TrajectoryManager {
                 LOGGER.debug("trajectory: layer created " + (layerSuccess.isError() ? layerSuccess.getError() : "success"));
             });
         });
-
-        trajectoryViewModel.trajectoryError.observe(fragment.getViewLifecycleOwner(), error -> {
-            connectionViewModel.setHasConnection(false);
-        });
     }
 
-    public void getTrajectory() {
-        trajectoryViewModel.getTrajectory();
-    }
+//    public void getTrajectory() {
+//        trajectoryViewModel.getTrajectory();
+//    }
 }

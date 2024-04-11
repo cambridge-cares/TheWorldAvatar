@@ -9,23 +9,14 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
-public abstract class BottomSheet implements CoordinatorLayout.AttachedBehavior{
+public abstract class BottomSheet{
     LinearLayoutCompat bottomSheet;
 
-    public BottomSheet(@NonNull Context context, ViewGroup parent) {
-        init(context, parent);
+    public BottomSheet(@NonNull Context context) {
+        init(context);
     }
 
-    abstract void init(Context context, ViewGroup parent);
-
-    @NonNull
-    @Override
-    public CoordinatorLayout.Behavior<LinearLayoutCompat> getBehavior() {
-        BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        bottomSheetBehavior.setPeekHeight(200);
-        bottomSheetBehavior.setFitToContents(false);
-        return bottomSheetBehavior;
-    }
+    abstract void init(Context context);
 
     public LinearLayoutCompat getBottomSheet() {
         return bottomSheet;

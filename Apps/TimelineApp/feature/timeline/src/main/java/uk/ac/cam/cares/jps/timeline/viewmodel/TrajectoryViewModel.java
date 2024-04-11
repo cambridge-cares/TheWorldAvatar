@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.timeline;
+package uk.ac.cam.cares.jps.timeline.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -18,8 +18,10 @@ public class TrajectoryViewModel extends ViewModel {
     private SensorRepository sensorRepository;
     private MutableLiveData<String> _trajectory = new MutableLiveData<>();
     private MutableLiveData<String> _trajectoryError = new MutableLiveData<>();
+    private MutableLiveData<Boolean> _isFetchingTrajectory = new MutableLiveData<>();
     public LiveData<String> trajectory = _trajectory;
     public LiveData<String> trajectoryError = _trajectoryError;
+    public LiveData<Boolean> isFetchingTrajecjtory = _isFetchingTrajectory;
 
     @Inject
     public TrajectoryViewModel(TrajectoryRepository routeRepository, SensorRepository sensorRepository) {
@@ -28,10 +30,14 @@ public class TrajectoryViewModel extends ViewModel {
     }
 
     public void getTrajectory() {
+        // todo: be careful on the concurrency issue because this method is called at multiple places!
+        _isFetchingTrajectory.setValue(true);
+
         trajectoryRepository.getTrajectory(new RepositoryCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 _trajectory.postValue(result);
+                _isFetchingTrajectory.postValue(false);
             }
 
             @Override

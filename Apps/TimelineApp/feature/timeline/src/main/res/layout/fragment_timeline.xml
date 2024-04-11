@@ -38,7 +38,11 @@
         style="@style/Widget.TWA.BottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_peekHeight="100dp"
+        app:behavior_fitToContents="false"
+        app:behavior_hideable="false"
+        />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

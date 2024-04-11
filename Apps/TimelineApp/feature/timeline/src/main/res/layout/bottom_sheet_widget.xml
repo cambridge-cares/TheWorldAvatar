@@ -53,9 +53,18 @@
             android:contentDescription="@string/next_date_button" />
     </LinearLayout>
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/component_margin_small"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:id="@+id/progress_linear"/>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/nested_scroll_view">
 
         <LinearLayout
             android:layout_width="match_parent"
