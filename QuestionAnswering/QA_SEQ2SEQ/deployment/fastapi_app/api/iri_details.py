@@ -39,8 +39,6 @@ def fetch_iri_details(iri: str) -> dict:
         sparql_service = SparqlService(endpoint_url=f"{KG_URL_CHEMISTRY}/namespace/{namespace}/sparql")
 
         query, filename = iri_info_query(iri)
-        print(query)
-        print(filename)
         data = sparql_service.execute_query(query=query)
         
         simplified_format = {}
@@ -55,8 +53,6 @@ def fetch_iri_details(iri: str) -> dict:
             else:
                 u_value = ''
             simplified_format[p_value] = str(o_value) + ' ' + str(u_value)
-
-        print(simplified_format)
 
         return simplified_format, filename
     
@@ -222,10 +218,8 @@ def makeCifFile(iri):
             output.append("_atom_site_fract_z")
 
             for res in results["results"]["bindings"]:
-                print(res)
                 res_alb_value = str(res["alb"]["value"])  # Your original string with letters and numbers
                 res["alb"]["value"] = ''.join(char for char in res_alb_value if not char.isdigit())
-                print(res["alb"]["value"] + 'a')
 
                 if res["alb"]["value"] == 'T':
                     res["alb"]["value"] = 'Si'

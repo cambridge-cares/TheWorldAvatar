@@ -26,7 +26,6 @@ SearchModel = create_model('SearchRequest', **fields)
 
 class SearchInput(SearchModel):
     domain : str = None
-    print('class created')
 
 @router.post("")
 def adv_search(search_form:SearchInput, domain):
@@ -184,12 +183,8 @@ def zeolite_framework_adv_search_query(params):
     if filters:
         base_query += "FILTER (" + " && ".join(filters) + ")\n"
 
-    print(select_statement)
-
     base_query += "} ORDER BY ?zeoname"
     base_query = base_query.replace('#SELECTSTATEMENT#', select_statement)
-
-    print(base_query)
 
     return base_query
 
@@ -206,11 +201,12 @@ def zeolite_material_adv_search_query(params):
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
-        SELECT DISTINCT ?zeo_material ?name ?framework #SELECTSTATEMENT#
+        SELECT DISTINCT ?zeo_material ?formula ?framework #SELECTSTATEMENT#
         WHERE {
             ?zeo_framework zeo:hasZeoliticMaterial ?zeo_material ;
                 zeo:hasFrameworkCode ?framework .
             ?zeo_material rdf:type zeo:ZeoliticMaterial .
+            ?zeo_material zeo:hasChemicalFormula ?formula .
         """
     
     unitcell_section_added = False
@@ -231,11 +227,7 @@ def zeolite_material_adv_search_query(params):
     
     formula = getattr(params, "formula")
     if formula:
-        base_query += f"""
-            ?zeo_material zeo:hasChemicalFormula ?formula .
-        """
         filters.append(f"CONTAINS(?formula, \"{formula}\" )")
-        select_statement += f" ?formula"
 
     # Unit cell parameters
     for param in ['A', 'B', 'C', 'ALPHA', 'BETA', 'GAMMA']:
@@ -293,10 +285,11 @@ def zeolite_material_adv_search_query(params):
             """
         if journal:
             base_query += f"""
-            ?citation dcterm:isPartOf ?journalversion .
-            ?journalversion dcterm:isPartOf ?journal .
-            ?journal dcterm:title "{journal}" .
+            ?citation dcterm:isPartOf/dcterm:isPartOf ?j .
+            ?j dcterm:title ?journal .
             """
+            filters.append(f"?journal = \'{journal}\'") 
+            select_statement += f" ?journal"
     
     for i in range(1, 6):  # up to 5 elements
         attr_el = f"el{i}"
@@ -313,13 +306,16 @@ def zeolite_material_adv_search_query(params):
         if guest_id:
             iri = query_species(guest_id)
             base_query += f"""
-            ?zeo_material zeo:hasGuestCompound <{iri}> .
+            ?zeo_material zeo:hasGuestCompound ?guest{i}IRI .
+            FILTER(?guest{i}IRI = <{iri}>)
+            SERVICE <http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql> {{
+            ?guest{i}IRI rdfs:label ?guest{i}formula
+            }}
             """
+            select_statement += f" ?guest{i}IRI ?guest{i}formula"
    
     if filters:
         base_query += "FILTER (" + " && ".join(filters) + ")\n"
-
-    print(select_statement)
 
     base_query += "} ORDER BY ?name"
     base_query = base_query.replace('#SELECTSTATEMENT#', select_statement)
@@ -350,12 +346,19 @@ def query_species(species_id):
     query = f"""
     PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
     PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
     SELECT DISTINCT ?species 
     WHERE {{
     ?species a os:Species .
     VALUES ?SpeciesIdentifierValue {{ "{species_id}" }}
+    {{
+    ?species rdfs:label ?SpeciesIdentifierValue .
+    }}
+    UNION
+    {{
     ?species ?hasIdentifier [ a/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ] .
+    }}
     }}
     """
     KG_URL_CHEMISTRY = os.getenv("KG_URL_CHEMISTRY")

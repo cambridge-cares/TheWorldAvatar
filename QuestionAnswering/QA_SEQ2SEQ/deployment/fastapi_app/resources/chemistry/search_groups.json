@@ -109,9 +109,9 @@
       "section": "Guest Molecules",
       "input_rows": [
         [
-          {"label": "Species 1:", "entry": "guest1", "description": ""},
-          {"label": "Species 2:", "entry": "guest2", "description": ""},
-          {"label": "Species 3:", "entry": "guest3", "description": ""}
+          {"label": "Species 1:", "entry": "guest1", "description": "example: H2O"},
+          {"label": "Species 2:", "entry": "guest2", "description": "example: CO"},
+          {"label": "Species 3:", "entry": "guest3", "description": "example: Na+"}
         ]
       ]
     },
