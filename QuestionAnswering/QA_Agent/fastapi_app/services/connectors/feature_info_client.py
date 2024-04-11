@@ -9,8 +9,8 @@ class FeatureInfoClient:
     def __init__(self, url: str):
         self.url = url
 
-    def query(self, iri: str):
-        res = requests.get(self.url, params=dict(iri=iri))
+    def query(self, **kwargs):
+        res = requests.get(self.url, params=kwargs)
         res.raise_for_status()
         return res.json()
 
