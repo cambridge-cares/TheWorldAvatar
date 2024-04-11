@@ -16,6 +16,8 @@ import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -80,6 +82,8 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
      */
     private static final String OntoAqmesh_NS = "https://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl/";
 
+    private Map<String, ScheduledExecutorService> schedulerMap;
+
     /**
      * Servlet init.
      *
@@ -87,13 +91,13 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
      */
     @Override
     public void init() throws ServletException {
-        super.init();
         LOGGER.debug("This is a debug message.");
         LOGGER.info("This is an info message.");
         LOGGER.warn("This is a warn message.");
         LOGGER.error("This is an error message.");
         LOGGER.fatal("This is a fatal message.");
         valid = true;
+        schedulerMap = new HashMap<>();
     }
 
     /**
@@ -133,6 +137,11 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
                 LOGGER.info("Executing retrieve route ...");
                 setSchedulerForRetrievedRoute(args, delay, interval, timeunit);
                 msg.put("result", "Retrieve route will be executed at the following intervals:" + interval + " " + timeunit);
+                break;
+            case "stopScheduler":
+                LOGGER.info("Executing stop scheduler route ...");
+                stopSchedulerRoute();
+                msg.put("result", "Stopping scheduler...");
                 break;
             case "instantiateGeoLocation":
                 LOGGER.info("Executing instantiate geolocation route ...");
@@ -203,14 +212,7 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
      */
     private void setSchedulerForRetrievedRoute(String[] args, int delay, int interval, String timeunit) {
         // Create a ScheduledExecutorService with a single thread
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        
-        // Define the task to be scheduled
-        Runnable task = new Runnable() {
-            public void run() {
-                main(args);
-            }
-        };
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         TimeUnit timeUnit = null;
         switch (timeunit) {
             case "seconds":
@@ -223,7 +225,26 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
                 timeUnit = TimeUnit.HOURS;
                 break;
         }
-        scheduler.scheduleAtFixedRate(task, delay, interval, timeUnit);
+        schedulerMap.put("scheduler", scheduler);
+        LOGGER.info("The scheduler has been added into the map!");
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                main(args);
+            } catch (Exception ex) {
+                LOGGER.error(ex.getMessage());
+            }
+        }, delay, interval, timeUnit);
+
+        
+    }
+
+    /**
+     * Stops internal scheduler
+     */
+    private void stopSchedulerRoute() {
+        ScheduledExecutorService scheduler = schedulerMap.get("scheduler");
+        scheduler.shutdown();
+        schedulerMap.remove("scheduler");
     }
 
     /**
@@ -298,6 +319,11 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
 
         // If both readings are not empty there is new data
         if(!particleReadings.isEmpty() && !gasReadings.isEmpty()) {
+            // calculate and add scaled measurements
+            gasReadings = agent.calculateAndAddScaledMeasurementsForGas(gasReadings);
+            LOGGER.info("The gas readings containing scaled measurements are " + gasReadings);
+            particleReadings = agent.calculateAndAddScaledMeasurementsForParticle(particleReadings);
+            LOGGER.info("The particle readings containing scaled measurements are " + particleReadings);
             // Update the data
             agent.updateData(particleReadings, gasReadings);
             LOGGER.info("Data updated with new readings from API.");
