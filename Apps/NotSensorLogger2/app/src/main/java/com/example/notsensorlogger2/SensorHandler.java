@@ -8,6 +8,6 @@ import java.util.List;
 public interface SensorHandler {
     void start();
     void stop();
-    JSONObject getSensorData();
+    JSONArray getSensorData();
 }
 

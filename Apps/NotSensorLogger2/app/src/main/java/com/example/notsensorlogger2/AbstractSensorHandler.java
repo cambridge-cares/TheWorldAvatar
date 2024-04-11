@@ -10,9 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class AbstractSensorHandler implements SensorHandler, SensorEventListener {
     protected SensorManager sensorManager;
     protected Sensor sensor;
@@ -33,7 +30,6 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     public void start() {
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         startTime = System.currentTimeMillis();
-        sensorName = sensor.getName();
     }
 
     @Override
@@ -45,33 +41,49 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     }
 
     @Override
-    public JSONObject getSensorData() {
-        JSONObject sensorDataObject = new JSONObject();
-        try {
-            sensorDataObject.put("name", sensorName);
-            sensorDataObject.put("time", System.currentTimeMillis() * 1000000); // Convert to nanoseconds
-            sensorDataObject.put("values", sensorData); // Assuming sensorData is a JSONArray of sensor values
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return sensorDataObject;
+    public JSONArray getSensorData() {
+        return sensorData;
     }
-
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         JSONObject dataPoint = new JSONObject();
         try {
-            dataPoint.put("sensor", sensorName);
+            JSONObject values = new JSONObject();
+            values.put("x", event.values[0]);
+            values.put("y", event.values[1]);
+            values.put("z", event.values[2]);
+
+            dataPoint.put("name", this.sensorName);
             dataPoint.put("time", System.nanoTime());
-            dataPoint.put("seconds_elapsed", (System.currentTimeMillis() - startTime) / 1000.0);
-            dataPoint.put("x", event.values[0]);
-            dataPoint.put("y", event.values[1]);
-            dataPoint.put("z", event.values[2]);
-            sensorData.put(dataPoint);
+            dataPoint.put("values", values);
+
+            synchronized (this) {
+                sensorData.put(dataPoint);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+//    @Override
+//    public void onSensorChanged(SensorEvent event) {
+//        JSONObject dataPoint = new JSONObject();
+//        try {
+//            dataPoint.put("sensor", this.sensorName);
+//            dataPoint.put("time", System.nanoTime());
+//           // dataPoint.put("seconds_elapsed", (System.currentTimeMillis() - startTime) / 1000.0);
+//            dataPoint.put("x", event.values[0]);
+//            dataPoint.put("y", event.values[1]);
+//            dataPoint.put("z", event.values[2]);
+//            sensorData.put(dataPoint);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    public void clearSensorData() {
+        sensorData = new JSONArray();
     }
 
     @Override

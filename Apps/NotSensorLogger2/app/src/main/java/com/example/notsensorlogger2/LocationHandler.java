@@ -13,19 +13,22 @@ import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LocationHandler implements LocationListener {
     private Context context;
     private LocationManager locationManager;
-    private JSONObject lastLocationData; // Change to JSONObject
+    private JSONArray locationData; // Change to JSONArray
     private long startTime;
+    private String sensorName; // Added sensorName field
 
     public LocationHandler(Context context) {
         this.context = context;
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        lastLocationData = new JSONObject();
+        locationData = new JSONArray();
+        this.sensorName = "location";
     }
 
     public void start() {
@@ -44,9 +47,9 @@ public class LocationHandler implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         try {
-            lastLocationData = new JSONObject(); // Reset the object for each new location
-            lastLocationData.put("name", "location");
-            lastLocationData.put("time", System.currentTimeMillis() * 1000000); // Adjust timestamp format if necessary
+            JSONObject locationObject = new JSONObject();
+            locationObject.put("name", this.sensorName);
+            locationObject.put("time", System.nanoTime());
 
             JSONObject values = new JSONObject();
             values.put("latitude", location.getLatitude());
@@ -61,14 +64,19 @@ public class LocationHandler implements LocationListener {
                 values.put("verticalAccuracy", location.hasVerticalAccuracy() ? location.getVerticalAccuracyMeters() : null);
             }
 
-            lastLocationData.put("values", values);
+            locationObject.put("values", values);
+            locationData.put(locationObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public JSONObject getLocationData() {
-        return lastLocationData;
+    public JSONArray getLocationData() {
+        return locationData;
+    }
+
+    public void clearLocationData() {
+        locationData = new JSONArray();
     }
 
     @Override
