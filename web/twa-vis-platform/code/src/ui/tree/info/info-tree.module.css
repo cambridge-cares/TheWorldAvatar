@@ -63,27 +63,8 @@
   margin: 0.2rem 0 0.4rem;
 }
 
-/* Primary Header Styling */
+/* Header for Tree Entry Styling */
 .treeEntryHeader {
-  display: flex;
-  flex-direction: row;
-  border-style: solid;
-  border-color: var(--border-tertiary);
-  border-width: 0px 0px 0.12rem 0px;
-  transition: background-color 0.3s ease;
-}
-
-.treeEntryHeader:hover {
-  background-color: var(--background-secondary);
-}
-
-.treeHeaderName {
-  width: 100%;
-  font-size: var(--font-size-primary-text);
-}
-
-/* Non Primary Header Styling */
-.treeEntryNonPrimaryHeader {
   display: flex;
   flex-direction: row;
   border-style: solid;
@@ -93,11 +74,11 @@
   transition: background-color 0.3s ease;
 }
 
-.treeEntryNonPrimaryHeader:hover {
+.treeEntryHeader:hover {
   background-color: var(--background-secondary);
 }
 
-.treeEntryNonPrimaryHeaderName {
+.treeEntryHeaderName {
   color: var(--text-color-primary);
   font-size: var(--font-size-secondary-text);
 }

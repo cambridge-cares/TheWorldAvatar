@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 
 import { Attribute, AttributeGroup } from 'types/attribute';
 import MaterialIconButton from 'ui/buttons/icon-button';
+import HeaderField from '../../field/header';
 
 // type definition for incoming properties
 type InfoTreeNodeProps = {
@@ -71,18 +72,12 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
   if (depth === 0) {
     return (
       <div className={styles.treeEntry}>
-        <div style={{ paddingLeft: spacing }} className={styles.treeEntryHeader} onClick={toggleExpansion}>
-          {/* Header Name */}
-          <div className={styles.treeHeaderName}>
-            {group.name}
-          </div>
-
-          {/* Expand/collapse icon */}
-          <MaterialIconButton
-            iconName={collapsedIcon}
-            className={iconStyles["push-right"]}
-          />
-        </div>
+        <HeaderField
+          name={group.name}
+          spacing={spacing}
+          isCollapsed={isCollapsed}
+          toggleExpansion={toggleExpansion}
+        />
 
         {/* Elements */}
         {!isCollapsed && (<>
@@ -104,9 +99,9 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
     // For non-root elements
     return (
       <div className={styles.treeEntry}>
-        <div className={styles.treeEntryNonPrimaryHeader} style={{ paddingLeft: spacing }} onClick={toggleExpansion}>
+        <div className={styles.treeEntryHeader} style={{ paddingLeft: spacing }} onClick={toggleExpansion}>
           {/* Header Name */}
-          <div className={styles.treeEntryNonPrimaryHeaderName}>
+          <div className={styles.treeEntryHeaderName}>
             {group.name}
           </div>
           {/* Expand/collapse icon */}
