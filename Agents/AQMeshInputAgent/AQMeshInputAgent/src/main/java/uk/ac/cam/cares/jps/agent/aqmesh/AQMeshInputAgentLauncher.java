@@ -140,8 +140,8 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
                 break;
             case "stopScheduler":
                 LOGGER.info("Executing stop scheduler route ...");
-                stopSchedulerRoute();
-                msg.put("result", "Stopping scheduler...");
+                String result = stopSchedulerRoute();
+                msg.put("result", result);
                 break;
             case "instantiateGeoLocation":
                 LOGGER.info("Executing instantiate geolocation route ...");
@@ -241,10 +241,20 @@ public class AQMeshInputAgentLauncher extends JPSAgent {
     /**
      * Stops internal scheduler
      */
-    private void stopSchedulerRoute() {
+    private String stopSchedulerRoute() {
         ScheduledExecutorService scheduler = schedulerMap.get("scheduler");
-        scheduler.shutdown();
-        schedulerMap.remove("scheduler");
+        if (scheduler != null) {
+            scheduler.shutdown();
+            schedulerMap.remove("scheduler");
+            String msg = "Stopping Scheduler...";
+            LOGGER.info("Stopping Scheduler...");
+            return msg;
+        } else {
+            String msg = "Scheduler has not been initialised yet...";
+            LOGGER.info("Scheduler has not been initialised yet...");
+            return msg;
+        }
+        
     }
 
     /**
