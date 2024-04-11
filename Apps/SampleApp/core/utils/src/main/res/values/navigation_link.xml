@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_fragment_link">android-app://uk.ac.cam.cares.jps.app/login</string>
+    <string name="user_fragment_link">android-app://uk.ac.cam.cares.jps.app/user_page</string>
+    <string name="timeline_fragment_link">android-app://uk.ac.cam.cares.jps.app/timeline</string>
+
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/second_page_bt"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/get_todo"
+        android:layout_margin="@dimen/component_margin_small"
+        android:id="@+id/get_todo_bt"/>
+
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/get_todo_bt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/go_to_second_page"
+        android:layout_margin="@dimen/component_margin_small"
+        android:id="@+id/second_page_bt"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
