@@ -5,21 +5,11 @@ from data_classes.ts_data_classes import *
 from collections import Counter
 
 
-def algebra_sum(ts: TimeSeriesInstance) -> TimeSeriesInstance:
-    sum_values = Counter()
-    for t, v in zip(ts.times, ts.values):
-        if type(v) == str:
-            v = float(v)
-        sum_values[t] += v
-    sk, sv = zip(*sum_values.items())
-    return TimeSeriesInstance(src_iri=ts.src_iri, times=list(sk), values=list(sv))
-
 
 def retire(ts: TimeSeriesInstance, lifespan=20, predict_end=2050, interval=5, **kwargs) -> TimeSeriesInstance:
     # From a time step, remove
     lifespan,predict_end,interval = int(lifespan),int(predict_end),int(interval)
     ts_years =    [t.year for t in ts.times]
-    print(ts_years)
     ts_end = min(predict_end, ts_years[-1]+lifespan) # All will be retired (value 0) after a lifespan from last data
     #start to nearest interval
     start_preict = ts_years[-1]//interval*interval+interval

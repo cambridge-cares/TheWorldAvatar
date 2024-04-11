@@ -60,8 +60,12 @@ class MackayDataAgent:
         for name in self.name_to_apis:
             map_iri = self.name_to_apis[name]
             registered = self.api_agent.check_if_API_registered(map_iri)
+            print(registered)
             if not registered:
+                logging.info('{} not in API agent, reggister now'.format(map_iri))
                 self.api_agent.register_API(map_iri)
+            else:
+                logging.info('{} exists in API agent'.format(map_iri))
 
 
     #update predict with derivation logic
@@ -69,22 +73,19 @@ class MackayDataAgent:
         for data_name in self.name_to_iris:
             data_iri = self.name_to_iris[data_name]
             forecast_iri = self.forecast_client.get_forecast_iri(data_iri)
-            print('has exist forecast {}'.format(forecast_iri))
+            logging.info('has exist forecast {}'.format(forecast_iri))
             # Call predication agent if: requires to predict and either A. an update in timeseries record B. no predication has ever been made
             if forecast_iri:
                 needs_update = self.forecast_client.check_if_TS_update(forecast_iri)
             else:
                 needs_update = False
-            print(self.predict_cfgs)
             if data_name in self.predict_cfgs and (needs_update or not forecast_iri):# either no forecast exist (first name), or needs update since original TS is updated
                 # pad empty TS instance for prediction
-                print('start forcast')
+                logging.info('start forcast')
                 forecast_cfg = self.predict_cfgs[data_name]
                 predict_end = parse_incomplete_time(forecast_cfg['predictEnd'])
                 times,values = self.ts_client.get_timeseries(data_iri)
-                print(times)
                 timeseries_instance = TimeSeriesInstance(times,values,data_iri)
-                print(timeseries_instance)
                 padding_ts = get_padded_TSInstance(data_iri,forecast_cfg['unitFrequency'], timeseries_instance.times[-1],predict_end )
                 logging.info('Prepare for forecast')
                 history_duration = get_duration_in_days(timeseries_instance.times[0],timeseries_instance.times[-1])

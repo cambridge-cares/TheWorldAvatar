@@ -14,8 +14,6 @@ import os
 import pytest
 import requests
 import time
-import numpy as np
-import pandas as pd
 import psycopg2 as pg
 from flask import Flask
 from pathlib import Path

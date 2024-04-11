@@ -2,6 +2,7 @@ import requests
 from pyderivationagent import PyDerivationClient
 from pyderivationagent.data_model import ONTODERIVATION_DERIVATIONWITHTIMESERIES
 import json
+import logging
 
 class APIAgentClient:
     def __init__(self, triples_base_url:str,agent_url: str, agent_iri: str, endpoint:str):
@@ -13,13 +14,10 @@ class APIAgentClient:
 
 
     def check_if_API_registered(self, api_iri):
-        print(self.agent_url)
         check_route = self.agent_url.split('/')
         last  = -2 if check_route[-1] == '' else -1
         check_route = '/'.join(check_route[:last])+'/check_api'
-        print(check_route)
         res = requests.get(check_route, json={'api_iri':api_iri})
-        print(res)
         result = res.json()
         if 'result' not in result:
             return False
@@ -30,5 +28,5 @@ class APIAgentClient:
         derivation = derivation_client.createSyncDerivationForNewInfo(self.agent_iri, [api_iri],
                                                                   ONTODERIVATION_DERIVATIONWITHTIMESERIES)
         derivation_iri = derivation.getIri()
-        print('{} registered to API Agent'.format(api_iri))
+        logging.info('{} registered to API Agent'.format(api_iri))
         return derivation_iri

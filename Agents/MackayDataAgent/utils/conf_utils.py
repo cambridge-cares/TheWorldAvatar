@@ -13,7 +13,6 @@ from data_classes.ts_data_classes import PropertiesFileProtytype
 def load_conf(fullfilepath: str) -> configparser.ConfigParser:
     config = configparser.ConfigParser()
     config.read(fullfilepath)
-    print(config)
     return config
 
 

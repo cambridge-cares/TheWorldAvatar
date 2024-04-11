@@ -3,7 +3,7 @@ from flask import Flask, Response
 import json
 import os,sys
 from pathlib import Path
-
+import logging
 
 def create_app(testing=False):
     app = Flask(__name__)

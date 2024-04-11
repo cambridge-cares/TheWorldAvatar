@@ -7,13 +7,11 @@ from data_classes.ts_data_classes import *
 import logging
 import datetime
 from typing import List
-#TODO: restructure this with not property file
 #https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries/TimeSeriesClient.java
 DOUBLE = jpsBaseLibView().getView().java.lang.Double.TYPE
 
 def get_ts_client(property_file_path: str, data_class_name: str = 'Instant'):
     TSClient = jpsBaseLibView().getView().TimeSeriesClient(get_java_time_object(data_class_name), property_file_path)
-    print('get ts client')
     return TSClient
 
 
@@ -121,7 +119,7 @@ def create_postgres_db_if_not_exists(db_url, db_usr, db_pw):
         # Close communication with the PostgreSQL database server
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logging.error(error)
     finally:
         if conn is not None:
             conn.close()
