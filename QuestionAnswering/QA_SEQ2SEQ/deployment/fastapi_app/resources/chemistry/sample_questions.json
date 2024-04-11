@@ -7,11 +7,9 @@
             "What is the charge of benzene?",
             "How many hydrogen bond acceptors does H2O have and what is its boiling point?",
             "Could you provide the number of defined atom stereocenters for chemical species categorized as trinitrotoluene?",
-            
             "Can you provide information about the chemical classes attributed to InChI=1S/C3H9NO/c1-3(5)2-4/h3,5H,2,4H2,1H3?",
             "What are the applications of 2-amino-4-sulfanyl-butanoic acid",
             "Show the IUPAC name of CH2O2",
-
             "Find all species with boiling point above 0°C",
             "What are the chemical species having molecular weight around 150 g/mol?",
             "Provide a roster of chemical entities used as pH regulating agent",
@@ -50,12 +48,15 @@
         "label": "Zeolites",
         "description": "Queries related to zeolite properties",
         "questions": [
-            "what are the zeolites with specific accessible area is between 1000 and 1200",
+            "what are the zeolites with specific accessible area between 1000 and 1200",
             "What is the unit cell information of zeolite ABW",
             "what's the tile information of zeolite MOZ",
-            "Give me a list of all materials linked to framework LTA",
-            "for zeolites belonging to the framework DOH, give me a list of all guest compounds that have been recorded",
-            "what are the frameworks of zeolites in which methane serves as a guest species"
+            "give me a list of all guest species that have been recorded for zeolite framework FAU",
+            "what are zeolitic materials that take Na+ as a guest species",
+            "Show me zeolite frameworks incorporating tetraethylammonium",
+            "find zeolites with components Ta and N",
+            "find zeolite frameworks built by Al and Si only",
+            "Show me the species incorporated by zeolites made of Al and P elements"
         ]
     }
 ]
