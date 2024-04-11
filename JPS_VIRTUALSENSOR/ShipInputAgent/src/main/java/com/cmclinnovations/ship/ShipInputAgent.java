@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -103,12 +104,17 @@ public class ShipInputAgent extends HttpServlet {
                 LOGGER.info("No ongoing live updates to stop");
             }
         } else if (req.getServletPath().contentEquals(CLEAR_OLD_DATA_PATH)) {
+            LOGGER.info("Received DELETE request to clear old ship data");
             // number of days before current time to keep
             String daysBefore = req.getParameter("daysBefore");
             if (daysBefore != null) {
-                List<String> shipsToDelete = queryClient.cleanUpTimeSeries(Long.parseLong(daysBefore));
+                long daysBeforeLong = Long.parseLong(daysBefore);
+                LOGGER.info("Deleting data before {}", Instant.now().minus(daysBeforeLong, ChronoUnit.DAYS));
+
+                List<String> shipsToDelete = queryClient.cleanUpTimeSeries(daysBeforeLong);
                 queryClient.deleteShipDerivation(shipsToDelete);
                 queryClient.deleteShips(shipsToDelete);
+                LOGGER.info("Delete complete");
             } else {
                 throw new RuntimeException("daysBefore value is needed");
             }
