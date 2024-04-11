@@ -33,6 +33,10 @@ from services.connectors.ontospecies import (
     OntoSpeciesAgentConnector,
     get_ontospecies_agentConnector,
 )
+from services.connectors.sg_carparks import (
+    SGCarparksAgentConnector,
+    get_sgCarparks_agentConnector,
+)
 
 
 @cache
@@ -61,6 +65,9 @@ def get_mediator(
     sg_ships_agent_connector: Annotated[
         SGShipsAgentConnector, Depends(get_sgShips_agentConnector)
     ],
+    sg_carparks_agent_connector: Annotated[
+        SGCarparksAgentConnector, Depends(get_sgCarparks_agentConnector)
+    ],
 ):
     common_connectors = [retrieval_agent_connector]
     chemistry_connectors = [ontospecies_agent_connector]
@@ -70,6 +77,7 @@ def get_mediator(
         sg_data_centres_agent_connector,
         sg_dispersion_agent_connector,
         sg_ships_agent_connector,
+        sg_carparks_agent_connector,
     ]
 
     return AgentConnectorMediator(

@@ -1,8 +1,10 @@
 from functools import cache, cached_property
-from typing import Annotated, Optional
+import time
+from typing import Annotated, List, Optional
 
 from fastapi import Depends
 
+from model.qa import QAStep
 from services.connectors.agent_connector import AgentConnectorBase
 from .agent import SGShipsAgent, get_sgShips_agent
 
@@ -54,12 +56,38 @@ class SGShipsAgentConnector(AgentConnectorBase):
     def lookup_ship_attributes(
         self, name: Optional[str] = None, mmsi: Optional[str] = None
     ):
-        return [], self.agent.lookup_ship_attributes(name, mmsi)
+        steps: List[QAStep] = []
+
+        timestamp = time.time()
+        data = self.agent.lookup_ship_attributes(name, mmsi)
+        latency = time.time() - timestamp
+        steps.append(
+            QAStep(
+                action="lookup_ship_attributes",
+                arguments=dict(name=name, mmsi=mmsi),
+                latency=latency,
+            )
+        )
+
+        return steps, data
 
     def lookup_ship_timeseries(
         self, name: Optional[str] = None, mmsi: Optional[str] = None
     ):
-        return [], self.agent.lookup_ship_timeseries(name, mmsi)
+        steps: List[QAStep] = []
+
+        timestamp = time.time()
+        data = self.agent.lookup_ship_timeseries(name, mmsi)
+        latency = time.time() - timestamp
+        steps.append(
+            QAStep(
+                action="lookup_ship_timeseries",
+                arguments=dict(name=name, mmsi=mmsi),
+                latency=latency,
+            )
+        )
+
+        return steps, data
 
 
 @cache
