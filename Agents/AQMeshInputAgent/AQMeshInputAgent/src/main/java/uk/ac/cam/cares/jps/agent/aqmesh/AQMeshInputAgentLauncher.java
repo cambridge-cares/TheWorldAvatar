@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
  * data from the API and write it into the database.
  * @author Niklas Kasenburg
  */
-@WebServlet(urlPatterns = {"/retrieve", "/status", "/instantiateGeoLocation"})
+@WebServlet(urlPatterns = {"/retrieve", "/status", "/instantiateGeoLocation", "/stopScheduler"})
 public class AQMeshInputAgentLauncher extends JPSAgent {
     private boolean valid = false;
     private String sparqlEndpoint = null;
