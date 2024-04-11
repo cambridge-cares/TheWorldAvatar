@@ -150,38 +150,28 @@ function renderBootstrapTable(vars, bindings, id, containerElem) {
 }
 
 function renderTimeseriesGraphs(title_template, vars, bindings, container) {
-    const key2unit2bindings = Object.entries(
-        bindings.reduce((acc, binding) => {
-            (acc[binding["key"]] = acc[binding["key"]] || []).push(binding);
-            return acc;
-        }, {})
-    ).reduce((acc, [key, group]) => {
-        acc[key] = group.reduce((acc, binding) => {
-            (acc[binding["unit"]] = acc[binding["unit"]] || []).push(binding);
-            return acc;
-        }, {});
+    const key2bindings = bindings.reduce((acc, binding) => {
+        (acc[binding["key"]] = acc[binding["key"]] || []).push(binding);
         return acc;
     }, {});
 
-    for (const [key, unit2bindings] of Object.entries(key2unit2bindings)) {
-        for (const [unit, group] of Object.entries(unit2bindings)) {
-            const traces = group.map(binding => {
-                return {
-                    type: "scatter",
-                    mode: "lines",
-                    name: vars.filter(key => !(key in ["timeseries", "key"])).map(key => binding[key]).join(", "),
-                    x: binding["timeseries"].map(obs => obs[0]),
-                    y: binding["timeseries"].map(obs => obs[1]),
-                }
-            })
+    for (const [key, group] of Object.entries(key2bindings)) {
+        const traces = group.map(binding => {
+            return {
+                type: "scatter",
+                mode: "lines",
+                name: vars.filter(key => !(key in ["timeseries", "key"])).map(key => binding[key]).join(", "),
+                x: binding["timeseries"].map(obs => obs[0]),
+                y: binding["timeseries"].map(obs => obs[1]),
+            }
+        })
 
-            let plotContainer = document.createElement("div");
-            plotContainer.id = `plot-${key}`;
-            container.appendChild(plotContainer);
+        let plotContainer = document.createElement("div");
+        plotContainer.id = `plot-${key}`;
+        container.appendChild(plotContainer);
 
-            const title = title_template ? title_template.replace("{key}", key).replace("{unit}", unit) : `${key} (${unit})`;
-            Plotly.newPlot(plotContainer.id, traces, { title });
-        }
+        const title = title_template ? title_template.replace("{key}", key) : key;
+        Plotly.newPlot(plotContainer.id, traces, { title });
     }
 }
 

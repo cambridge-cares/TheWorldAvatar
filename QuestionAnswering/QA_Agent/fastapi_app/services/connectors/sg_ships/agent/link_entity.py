@@ -112,4 +112,5 @@ class ShipLinker:
             return None
 
         doc = docs[0]
+        print("find: ", MMSI, "; found:", doc)
         return ShipIdentifier(IRI=doc.IRI, MMSI=doc.MMSI, name=doc.name)

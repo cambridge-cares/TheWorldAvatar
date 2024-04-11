@@ -61,7 +61,7 @@ class SGDispersionAgentConnector(AgentConnectorBase):
         timestamp = time.time()
         try:
             data = self.agent.get_pollutant_concentrations(lat=place.lat, lon=place.lon)
-            data.title_template = "{key} concentration ({unit}) in " + place.name
+            data.title_template = "{key} in " + place.name
         except requests.HTTPError as e:
             if e.response.status_code == 404:
                 raise HTTPException(

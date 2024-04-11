@@ -20,11 +20,11 @@ class SGShipsAgentConnector(AgentConnectorBase):
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "name": {"type": "string", "description": "Ship name"}
-                    },
-                    "mmsi": {
-                        "type": "string",
-                        "description": "Maritime Mobile Service Identity",
+                        "name": {"type": "string", "description": "Ship name"},
+                        "mmsi": {
+                            "type": "string",
+                            "description": "Maritime Mobile Service Identity (MMSI) represented by a nine-digit number",
+                        },
                     },
                 },
             },
@@ -34,11 +34,11 @@ class SGShipsAgentConnector(AgentConnectorBase):
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "name": {"type": "string", "description": "Ship name"}
-                    },
-                    "mmsi": {
-                        "type": "string",
-                        "description": "Maritime Mobile Service Identity",
+                        "name": {"type": "string", "description": "Ship name"},
+                        "mmsi": {
+                            "type": "string",
+                            "description": "Maritime Mobile Service Identity (MMSI) represented by a nine-digit number",
+                        },
                     },
                 },
             },
