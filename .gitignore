@@ -99,9 +99,3 @@ JPS_VIRTUALSENSOR/ShipInputAgent/data/*.json
 web/uk-base-world/grafana_api_key
 web/uk-base-world/visualisation/mapbox_api_key
 web/uk-base-world/visualisation/mapbox_username
-Agents/MackayCalculatorAgent/frontend/package-lock.json
-Agents/MackayDataAgent/playground.py
-*.ttl
-*.owl
-*.xlsx
-*.properties
