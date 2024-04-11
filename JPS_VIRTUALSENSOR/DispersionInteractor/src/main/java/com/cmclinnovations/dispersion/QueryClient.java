@@ -803,7 +803,7 @@ public class QueryClient {
                 simulationTimes = new ArrayList<>();
             }
 
-            dispersionSimulation.setTimesteps(simulationTimes.subList(0, Math.min(simulationTimes.size(), 50)));
+            dispersionSimulation.setTimesteps(simulationTimes.subList(0, Math.min(simulationTimes.size(), 10)));
         });
     }
 

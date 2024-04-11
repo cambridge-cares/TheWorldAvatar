@@ -73,7 +73,7 @@ public class Aermod {
                 SELECT DISTINCT time
                 FROM %s
                 ORDER BY time DESC
-                LIMIT 50)
+                LIMIT 10)
                 """;
 
     public Aermod(Path simulationDirectory) {
