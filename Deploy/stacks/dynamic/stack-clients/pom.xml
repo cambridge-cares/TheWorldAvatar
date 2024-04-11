@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.25.4-hotfix-multidim-vrt-raster-SNAPSHOT</version>
+  <version>1.26.0</version>
 
   <name>Stack Clients</name>
   <url>https://theworldavatar.io</url>
