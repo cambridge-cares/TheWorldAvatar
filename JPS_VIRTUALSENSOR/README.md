@@ -61,7 +61,7 @@ An instance can emit multiple pollutants, the class of pollutant ID needs to be 
 - <https://www.theworldavatar.com/kg/ontodispersion/CO2>
 
 ## Important for visualisation if not deployed locally
-Modify instances of `http://localhost:3838` in [data.json] to the external URL of where the stack is going to be deployed.
+Modify instances of `http://localhost:4242` in [data.json] to the external URL of where the stack is going to be deployed.
 
 ## Start up the stack
 
@@ -80,7 +80,7 @@ There is an option in ShipInputAgent to pull data from https://aisstream.io/, th
 
 - Obtain an API key from this service at https://aisstream.io/authenticate.
 - Parameters relevant to this API are set in [ship-input-agent.json]
-    1) USE_LIVE_DATA - if this is set to true, ShipInputAgent will start pulling data at startup time. If set to false, live updates can still be triggered by submitting a POST request to http://localhost:3838/ship-input-agent/live-server
+    1) USE_LIVE_DATA - if this is set to true, ShipInputAgent will start pulling data at startup time. If set to false, live updates can still be triggered by submitting a POST request to http://localhost:4242/ship-input-agent/live-server
     2) API_KEY - API key for aistream.io
     3) BOUNDING_BOXES - see https://aisstream.io/documentation 
     4) UPLOAD_INTERVAL_MINUTES - The interval where ShipInputAgent accumulates data from aistream.io before uploading to the data to KG, default is 10 minutes.
@@ -113,7 +113,7 @@ record this derivation IRI.
 3) Execute [GenerateDataWithoutShips.http], be sure to enter derivation IRI in the request.
 
 ## Visualisation
-Visualisation can be viewed at http://localhost:3838/visualisation (replace localhost if deployed elsewhere). Note that if buildings data is present in ontop, the visualisation may take a while to load because the first query takes time. 
+Visualisation can be viewed at http://localhost:4242/visualisation (replace localhost if deployed elsewhere). Note that if buildings data is present in ontop, the visualisation may take a while to load because the first query takes time. 
 
 <!-- links -->
 [ship-input-agent.json]: ./stack-manager/inputs/config/services/ship-input-agent.json
