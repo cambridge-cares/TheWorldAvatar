@@ -21,6 +21,7 @@
 					"VIRTUAL_SENSOR_AGENT_URL=http://${STACK_NAME}-virtual-sensor-agent:8080/VirtualSensorAgent/",
 					"ELEVATION_CONTOURS_TABLE=elevation_contours",
 					"WEATHER_LAYER_NAME=weather",
+					"NUMBER_OF_LAYERS=20",
                     "JPDA_ADDRESS=0.0.0.0:5005",
                     "JPDA_TRANSPORT=dt_socket",
                     "DEBUG=ON"

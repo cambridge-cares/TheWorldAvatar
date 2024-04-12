@@ -803,8 +803,17 @@ public class QueryClient {
                 simulationTimes = new ArrayList<>();
             }
 
+            int numLayers;
+            try {
+                numLayers = Integer.parseInt(Config.NUMBER_OF_LAYERS);
+            } catch (NumberFormatException e) {
+                LOGGER.error(e.getMessage());
+                LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+                numLayers = 20;
+            }
+
             dispersionSimulation.setTimesteps(
-                    simulationTimes.subList(Math.max(simulationTimes.size() - 10, 0), simulationTimes.size()));
+                    simulationTimes.subList(Math.max(simulationTimes.size() - numLayers, 0), simulationTimes.size()));
         });
     }
 

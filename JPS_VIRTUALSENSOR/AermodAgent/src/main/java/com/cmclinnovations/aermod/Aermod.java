@@ -73,7 +73,7 @@ public class Aermod {
                 SELECT DISTINCT time
                 FROM %s
                 ORDER BY time DESC
-                LIMIT 10)
+                LIMIT %d)
                 """;
 
     public Aermod(Path simulationDirectory) {
@@ -255,7 +255,17 @@ public class Aermod {
         // keep layer at maintainable size
         PostGISClient postGISClient = PostGISClient.getInstance();
 
-        String sql = String.format(sqlCleanupTemplate, EnvConfig.STATIC_SOURCE_TABLE, EnvConfig.STATIC_SOURCE_TABLE);
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.STATIC_SOURCE_TABLE, EnvConfig.STATIC_SOURCE_TABLE,
+                numLayers);
 
         postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
@@ -307,8 +317,17 @@ public class Aermod {
         // keep layer at maintainable size
         PostGISClient postGISClient = PostGISClient.getInstance();
 
-        String sql = String.format(sqlCleanupTemplate, EnvConfig.SHIPS_LAYER_NAME,
-                EnvConfig.SHIPS_LAYER_NAME);
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.SHIPS_LAYER_NAME, EnvConfig.SHIPS_LAYER_NAME,
+                numLayers);
 
         postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
@@ -804,8 +823,17 @@ public class Aermod {
         // clean up table
         PostGISClient postGISClient = PostGISClient.getInstance();
 
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
         String sql = String.format(sqlCleanupTemplate, EnvConfig.DISPERSION_CONTOURS_TABLE,
-                EnvConfig.DISPERSION_CONTOURS_TABLE);
+                EnvConfig.DISPERSION_CONTOURS_TABLE, numLayers);
 
         postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
