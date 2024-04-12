@@ -1,6 +1,7 @@
 .header {
   display: flex;
   flex-direction: row;
+  width: 100%;
   border-style: solid;
   border-color: var(--border-tertiary);
   border-width: 0px 0px 0.12rem 0px;

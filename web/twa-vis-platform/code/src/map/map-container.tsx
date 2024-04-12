@@ -87,7 +87,7 @@ export default function MapContainer(props: MapContainerProps) {
 
           {/* Containers for upcoming components (layer tree, metadata, time series charts etc.) */}
           <div className={styles.upperContainer}>
-            <FloatingPanelContainer dataStore={dataStore} icons={mapSettings.icons} />
+            <FloatingPanelContainer dataStore={dataStore} icons={mapSettings.icons} legend={mapSettings.legend} />
           </div>
           <div className={styles.lowerContainer} />
         </div>

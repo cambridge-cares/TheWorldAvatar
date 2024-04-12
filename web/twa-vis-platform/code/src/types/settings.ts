@@ -19,6 +19,7 @@ export interface MapSettings {
   type: string,
   camera: CameraSettings,
   imagery: ImagerySettings,
+  legend?: LegendSettings,
   icons: IconSettings,
 }
 
@@ -53,4 +54,23 @@ export interface CameraPosition {
   zoom: number,
   bearing: number,
   pitch: number
+}
+
+// Legend settings object
+export interface LegendSettings {
+  [groupName: string]: LegendGroup;
+}
+
+export interface LegendGroup {
+  [itemName: string]: FillLegend | SymbolLegend;
+}
+
+interface SymbolLegend {
+  type: "symbol";
+  icon: string;
+}
+
+interface FillLegend {
+  type: "fill";
+  fill: string;
 }

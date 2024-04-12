@@ -8,7 +8,7 @@ import { getIndex, setIndex } from 'state/floating-panel-slice';
 import { getQueryTrigger, getIri, getStack, getScenario, setQueryTrigger, getProperties } from 'state/map-feature-slice';
 import { useGetMetadataQuery } from 'utils/server-utils';
 import { DataStore } from 'io/data/data-store';
-import { IconSettings } from 'types/settings';
+import { IconSettings, LegendSettings } from 'types/settings';
 import LayerTree from './layer/layer-tree';
 import LegendTree from './legend/legend-tree';
 import InfoTree from './info/info-tree';
@@ -17,7 +17,7 @@ import InfoTree from './info/info-tree';
 type FloatingPanelContainerProps = {
   dataStore: DataStore;
   icons: IconSettings;
-  hideLegend?: boolean;
+  legend: LegendSettings;
   hideInfo?: boolean;
 };
 
@@ -38,7 +38,7 @@ export default function FloatingPanelContainer(
   const [queriedData, setQueriedData] = useState(null);
   const [activeInfoTab, setActiveInfoTab] = React.useState(0);
 
-  const showLegend = props.hideLegend == null || !props.hideLegend;
+  const showLegend: boolean = !!props.legend;
   const showInfo = props.hideInfo == null || !props.hideInfo;
 
   const dispatch = useDispatch();
@@ -160,7 +160,7 @@ export default function FloatingPanelContainer(
       {isPanelVisible && (
         <div className={styles.floatingPanelBody}>
           {activeIndex === 0 && <LayerTree dataStore={props.dataStore} icons={props.icons} />}
-          {activeIndex === 1 && <LegendTree />}
+          {activeIndex === 1 && <LegendTree settings={props.legend} />}
           {activeIndex === 2 &&
             <InfoTree
               data={queriedData}
