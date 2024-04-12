@@ -1,4 +1,4 @@
-import { AnySourceData, CanvasSourceRaw, GeoJSONSourceRaw, ImageSourceRaw, RasterSource, VectorSource, VideoSourceRaw } from 'mapbox-gl';
+import { AnySourceData, CanvasSourceRaw, GeoJSONSourceRaw, ImageSourceRaw, Map, RasterSource, VectorSource, VideoSourceRaw } from 'mapbox-gl';
 import { DataSource } from 'io/data/data-source';
 import { DataStore } from 'io/data/data-store';
 import { JsonObject } from 'types/json';
@@ -7,21 +7,23 @@ import { JsonObject } from 'types/json';
  * Given a DataStore instance housing parsed DataSource instances,
  * this function adds them all to the Mapbox map object.
  * 
- * @param dataStore Store containing parsed DataSource instances.
+ * @param {React.MutableRefObject<Map>} map the Mapbox map instance wrapped in a mutable reference object.
+ * @param {DataSource} dataStore Store containing parsed DataSource instances.
  */
-export function addAllSources(dataStore: DataStore) {
+export function addAllSources(map: React.MutableRefObject<Map>, dataStore: DataStore) {
     const sourceArray: DataSource[] = dataStore.getSourceList();
-    sourceArray.forEach((source) => addSource(source));
+    sourceArray.forEach((source) => addSource(map, source));
     console.log("Added all registered sources to the map object.");
 }
 
 /**
  * Adds the input data source to the Mapbox map object.
  * 
- * @param source data source to add.
+ * @param {React.MutableRefObject<Map>} map the Mapbox map instance wrapped in a mutable reference object.
+ * @param {DataSource} source data source to add.
  */
-export function addSource(source: DataSource) {
-    const collision = window.map.getSource(source.id);
+export function addSource(map: React.MutableRefObject<Map>, source: DataSource) {
+    const collision = map.current?.getSource(source.id);
     if(collision != null) {
         console.warn("Attempting to add a source that's already on map: '" + source.id + "'.");
         return;
@@ -64,6 +66,6 @@ export function addSource(source: DataSource) {
     }
 
     // Add to the map
-    window.map.addSource(source.id, mapboxObj);
+    map.current?.addSource(source.id, mapboxObj);
     console.info("Pushed data source to map '" + source.id + "'.");
 }

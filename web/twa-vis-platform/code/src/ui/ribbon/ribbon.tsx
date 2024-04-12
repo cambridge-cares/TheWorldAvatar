@@ -2,6 +2,7 @@ import styles from './ribbon.module.css';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Tabs, Tab } from '@mui/material';
+import { Map } from 'mapbox-gl';
 
 import RibbonPanel from './ribbon-panel';
 import RibbonComponentClick from './components/ribbon-component-click';
@@ -24,6 +25,7 @@ import {
 
 // Type definition for Ribbon parameters
 export type RibbonProps = {
+  map: React.MutableRefObject<Map>,
   startingIndex: number,
   mapSettings: MapSettings,
   hasScenario: boolean,
@@ -102,7 +104,7 @@ export default function Ribbon(props: RibbonProps) {
                 initialOption={currentImagery?.name}
                 iconClickable={false}
                 action={() => {
-                  setImagery(props.mapSettings.imagery);
+                  setImagery(props.mapSettings.imagery, props.map);
                 }}
               />
               <RibbonComponentCombo
@@ -112,7 +114,7 @@ export default function Ribbon(props: RibbonProps) {
                 options={cameraNames}
                 initialOption={cameraDefault}
                 action={() => {
-                  resetCamera(props.mapSettings.camera);
+                  resetCamera(props.mapSettings.camera, props.map);
                 }}
               />
               <RibbonComponentToggle
@@ -121,7 +123,7 @@ export default function Ribbon(props: RibbonProps) {
                 tooltip="Toggle display of place names."
                 initialState={false}
                 action={() => {
-                  togglePlacenames(props.mapSettings.imagery);
+                  togglePlacenames(props.mapSettings.imagery, props.map);
                 }}
               />
               <RibbonComponentToggle
@@ -130,7 +132,7 @@ export default function Ribbon(props: RibbonProps) {
                 tooltip="Toggle 3D terrain."
                 initialState={false}
                 action={state => {
-                  set3DTerrain(state);
+                  set3DTerrain(state, props.map);
                 }}
               />
               {props.hasScenario &&
@@ -165,7 +167,7 @@ export default function Ribbon(props: RibbonProps) {
                 text="Your Location"
                 tooltip="Move the map to your location."
                 action={() => {
-                  locateUser();
+                  locateUser(props.map);
                 }}
               />
             </RibbonPanel>
