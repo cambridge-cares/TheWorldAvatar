@@ -260,8 +260,8 @@ building,carport,"A carport is a covered structure used to offer limited protect
 building,garage,"A garage is a building suitable for the storage of one or possibly more motor vehicle or similar. See building=garages for larger shared buildings. For an aircraft garage, see building=hangar.",MultiResidential
 building,garages,A building that consists of a number of discrete storage spaces for different owners/tenants. See also building=garage.,MultiResidential
 building,parking,Structure purpose-built for parking cars.,TransportFacility
-amenity,college,Campus or buildings of an institute of Further Education (aka continuing education),UniversityFacility
-amenity,research_institute,An establishment endowed for doing research.,UniversityFacility
-amenity,university,An university campus: an institute of higher education,UniversityFacility
-building,college,A college building. Use amenity=college on the whole college area to represent the college as an institution.,UniversityFacility
-building,university,A university building. Use amenity=university for the university as an institution.,UniversityFacility
+amenity,college,Campus or buildings of an institute of Further Education (aka continuing education),University
+amenity,research_institute,An establishment endowed for doing research.,University
+amenity,university,An university campus: an institute of higher education,University
+building,college,A college building. Use amenity=college on the whole college area to represent the college as an institution.,University
+building,university,A university building. Use amenity=university for the university as an institution.,University

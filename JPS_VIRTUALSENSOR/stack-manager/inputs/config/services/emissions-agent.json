@@ -3,10 +3,11 @@
         "Name": "emissions-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/emissions-agent:1.3",
+                "Image": "ghcr.io/cambridge-cares/emissions-agent:1.4",
                 "Env": [
                     "DATABASE=postgres",
-                    "PYTHON_SERVICE_URL=http://ship-stack-python-service:5000"
+                    "PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000",
+                    "SCALING_FACTOR=100"
                 ],
                 "Configs": [
                     {
@@ -19,13 +20,6 @@
                 "Secrets": [
                     {
                         "SecretName": "postgis_password"
-                    }
-                ],
-                "Mounts": [
-                    {
-                        "Type": "volume",
-                        "Source": "logs",
-                        "Target": "/root/.jps"
                     }
                 ]
             }

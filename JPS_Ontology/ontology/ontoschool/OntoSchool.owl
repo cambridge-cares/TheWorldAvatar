@@ -1,0 +1,528 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontoschool/"
+     xml:base="https://www.theworldavatar.com/kg/ontoschool/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontoschool="https://www.theworldavatar.com/kg/ontoschool/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoschool/">
+        <owl:imports rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl"/>
+        <dc:date>25 March 2024</dc:date>
+        <rdfs:comment>OntoSchool is an ontology to represent schools and their information such as (contact information, address, CCAs etc).</rdfs:comment>
+        <owl:versionInfo>1</owl:versionInfo>
+        <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/gitCommitHash -->
+
+
+    <owl:AnnotationProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/hasAddress -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/hasAddress">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
+        <rdfs:comment>A relationship that describes a school's address.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>has address</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/hasCCA -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/hasCCA">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/CCAGroups"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoschool/CCA"/>
+        <rdfs:comment>A relationship which decribes the different activities or programmes under each CCA group.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>has CCA</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/hasCCAGroups -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/hasCCAGroups">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoschool/CCAGroups"/>
+        <rdfs:comment>A relationship which decribes the CCA groups in a school.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>has CCA groups</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/hasContactNumber -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/hasContactNumber">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#PhoneNumber"/>
+        <rdfs:comment>A relationship which describes the contact number of a school.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>has contact number</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/hasEducationLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/hasEducationLevel">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoschool/EducationLevel"/>
+        <rdfs:comment>A relationship which describes the education level that a school provides.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>has education level</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/hasGenderComposition -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/hasGenderComposition">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoschool/GenderComposition"/>
+        <rdfs:comment>A relationship which describes the gender composition of a school (Boys only, girls only, mixed).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>has gender composition</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/hasProperty -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/hasProperty">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+        <rdfs:comment>A relationship that relates a school to its built structures.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>has property</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://ontology.eil.utoronto.ca/icontact.owl#hasEmail -->
+
+
+    <owl:DatatypeProperty rdf:about="http://ontology.eil.utoronto.ca/icontact.owl#hasEmail">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Email address of a school.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>has email</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ontology.eil.utoronto.ca/icontact.owl#hasWebSite -->
+
+
+    <owl:DatatypeProperty rdf:about="http://ontology.eil.utoronto.ca/icontact.owl#hasWebSite">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Website of the school.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>hasWeb Site</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/offersProgramme -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoschool/offersProgramme">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Programmes offered by the school.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>offers programme</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://ontology.eil.utoronto.ca/icontact.owl#Address -->
+
+
+    <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
+    
+
+
+    <!-- http://ontology.eil.utoronto.ca/icontact.owl#PhoneNumber -->
+
+
+    <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icontact.owl#PhoneNumber"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Property -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/AllBoys -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/AllBoys">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/Monogender"/>
+        <rdfs:comment>An educational setting or institution where only male students are enrolled.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>All boys</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/AllGirls -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/AllGirls">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/Monogender"/>
+        <rdfs:comment>An educational setting or institution where only female students are enrolled.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>All girls</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/CCA -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/CCA">
+        <rdfs:comment>An activity or program that complements the academic curriculum in educational institutions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>CCA</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/CCAGroups -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/CCAGroups">
+        <rdfs:comment>Groups for different types of CCAs (Co-Curricular Activities).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>CCA groups</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/ClubsAndSocieties -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/ClubsAndSocieties">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/CCAGroups"/>
+        <rdfs:comment>Clubs and societies CCAs cover a diverse array of interests and hobbies beyond sports and arts.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Clubs and societies</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/Coeducational -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/Coeducational">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/GenderComposition"/>
+        <rdfs:comment>An educational setting or institution where students of both genders—males and females—are enrolled together.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Coeducational</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/EducationLevel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/EducationLevel">
+        <rdfs:comment>A stage or phase of formal education that an individual has completed or is currently pursuing.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Education level</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/GenderComposition -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/GenderComposition">
+        <rdfs:comment>The distribution of students based on their gender or sex.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Gender composition</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/GovernmentAidedSchool -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/GovernmentAidedSchool">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:comment>Educational institutions that receive partial funding from the government but are managed independently.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Government aided school</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/GovernmentSchool -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/GovernmentSchool">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:comment>Educational institutions funded and managed by the government.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Government school</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/IndependentSchool -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/IndependentSchool">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:comment>Educational institutions that are not administered by the government.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Independent school</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/JuniorCollege -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/JuniorCollege">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/SecondaryEducation"/>
+        <rdfs:comment>This level offers advanced coursework, preparation for college or university admissions, and opportunities for students to pursue specialized subjects or interests in preparation for further academic study.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Junior college</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/MixedLevels -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/MixedLevels">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/EducationLevel"/>
+        <rdfs:comment>This level integrate multiple education levels or age groups to provide a more flexible and inclusive learning environment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Mixed levels</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/Monogender -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/Monogender">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/GenderComposition"/>
+        <rdfs:comment>An educational setting or institution where students of only one gender are enrolled.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Monogender</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/PhysicalSports -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/PhysicalSports">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/CCAGroups"/>
+        <rdfs:comment>Physical sports CCAs involve activities focused on physical fitness, teamwork, and competitive sportsmanship.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Physical sports</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/PrimaryEducation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/PrimaryEducation">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/EducationLevel"/>
+        <rdfs:comment>This level focuses on fundamental skills such as literacy, numeracy, and basic knowledge in subjects like science, social studies, and language arts.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Primary education</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/School -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/School">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization"/>
+        <rdfs:comment>An educational institution designed to provide learning spaces and learning environments for the teaching of students under the direction of teachers.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>School</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/SecondaryEducation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/SecondaryEducation">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/EducationLevel"/>
+        <rdfs:comment>This level builds upon the foundational knowledge acquired in primary school and offers more specialized subjects and opportunities for academic exploration.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Secondary education</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/SpecialisedIndependentSchool -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/SpecialisedIndependentSchool">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:comment>Educational institutions that are not administered by the government and focuses on a specific area of study or cater to students with particular needs or interests.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Specialised independent school</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/SpecialisedSchool -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/SpecialisedSchool">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/School"/>
+        <rdfs:comment>Educational institutions that focus on a specific area of study or cater to students with particular needs or interests.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Specialised school</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/StudentLeadership -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/StudentLeadership">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/CCAGroups"/>
+        <rdfs:comment>Student leadership CCAs focus on developing leadership skills, responsibility, and initiative among students.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Student leadership</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/TertiaryEducation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/TertiaryEducation">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/EducationLevel"/>
+        <rdfs:comment>This level provides specialized knowledge and skills in various academic disciplines or professional fields and prepares individuals for careers or advanced study.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Tertiary education</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/UniformedGroups -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/UniformedGroups">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/CCAGroups"/>
+        <rdfs:comment>Uniformed groups CCAs involve organizations that promote leadership, discipline, and community service through structured programs and activities.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Uniformed groups</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoschool/VisualAndPerformingArts -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoschool/VisualAndPerformingArts">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoschool/CCAGroups"/>
+        <rdfs:comment>Visual and performing arts CCAs encompass a wide range of creative activities including drawing, painting, sculpture, photography, dance, drama, music, and choir.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoschool/"/>
+        <rdfs:label>Visual and performing arts</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+
