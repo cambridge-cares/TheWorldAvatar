@@ -106,7 +106,7 @@ public class OPFAgent extends JPSAgent{
 		JSONObject resjo = new JSONObject();
 		resjo.put("electricalnetwork", targetResourceID);
 		
-		logger.info("starting simulation for electrical network = " + targetResourceID + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
+		LOGGER.info("starting simulation for electrical network = " + targetResourceID + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		
 		try {
 			generateInputWithAccessAgent(targetResourceID, baseUrl, baseMVA, time, hasSolar);
@@ -145,7 +145,7 @@ public class OPFAgent extends JPSAgent{
 			resjo.put("status", "Diverged");
 		}
 		
-		logger.info("finished simulation for electrical network = " + targetResourceID + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
+		LOGGER.info("finished simulation for electrical network = " + targetResourceID + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		return resjo;
 	}
 
@@ -263,7 +263,7 @@ public class OPFAgent extends JPSAgent{
 				// If we take solar PV into consideration for this system
 				for (int i = 0; i < numOfBus; i++) {
 					if (dataIRIs.get(i)[2] == null) {
-						logger.info("Bus node has no PV");
+						LOGGER.info("Bus node has no PV");
 						// If this bus node does not have solar PV, only take Pd and Qd IRIs
 						busValues = new String[2];
 						String[] loadIRIs = new String[2];
@@ -281,7 +281,7 @@ public class OPFAgent extends JPSAgent{
 						busValues[0] = timeseries.getValuesAsString(dataIRIs.get(i)[0]).get(0); // Pd value of this bus
 						busValues[1] = timeseries.getValuesAsString(dataIRIs.get(i)[1]).get(0); // Qd value of this bus
 						
-						logger.info("Bus node has PV");
+						LOGGER.info("Bus node has PV");
 						//PV data IRI is different so do this separately
 						try {
 						String[] pvIRI = new String[1];
@@ -828,7 +828,7 @@ public class OPFAgent extends JPSAgent{
 		String keysConcat = MiscUtil.concat(keys, ", ");
 		StringBuffer b = new StringBuffer("context = ").append(context)
 				.append(", keys = ").append(keys.length).append(", ").append(keysConcat);
-		logger.info(b.toString());
+		LOGGER.info(b.toString());
 		
 		if (!context.toLowerCase().contains("output")) {
 			/*
@@ -859,7 +859,7 @@ public class OPFAgent extends JPSAgent{
 	 */
 	public void doConversionWithAccessAgent(String targetResourceID, String baseUrl, OffsetDateTime time, String modeltype)
 			throws IOException {
-		logger.info("update bus entities in KG");
+		LOGGER.info("update bus entities in KG");
 		ArrayList<String[]> busResult = readResult(baseUrl + "/outputBus" + modeltype.toUpperCase() + ".txt");
 
 		// Update VoltMagnitude & VoltAngle in time series
@@ -1043,7 +1043,7 @@ public class OPFAgent extends JPSAgent{
 			}
 			System.out.println("Done");
 		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
+			LOGGER.error(e.getMessage(), e);
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 		return writer.toString();
