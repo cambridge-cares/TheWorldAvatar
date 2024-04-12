@@ -62,9 +62,54 @@ The `config/map-settings.json` file provides general map settings that are not s
 - `type` : The map type. Either "mapbox" or "cesium" is currently accepted
 - `camera` : Camera starting position and available positions
 - `imagery` : Imagery options
+- `legend` : Optional custom legend settings
 - `icons` : A key-value map of the icon name and its corresponding url
 
 Please note that Cesium has not been incorporated at the moment. It is intended that this file (along with other configuration files) are provided by the deploying developer via Docker volumes created with the standard TWA Stack. As such, there may be no off-the-shelf example file committed to this repository.
+
+> Legend setting format
+
+Icons on the map are shown by default in the layer tree. Additional legend items can be customised in this file. The current setup uses nested groups, where group names act as headers on the legend. At the moment, the available visualisation options for legends are only `icons` and `fills`. For other options, please send in a feature request. Sample settings are as follows:
+
+> [!NOTE]  
+> The comments seen below are for explanation purposes only. They are not valid JSON and should be removed.
+```json
+{
+  "legend": {
+    // Group one for icons - Only PNG, JPG, SVG, and Google Materials icon are available
+    "Status Indicators": {
+      // Group one, item one
+      "Active": {
+        "type": "symbol",
+        "icon": "/images/active.svg"
+      },
+      // Group one, item two
+      "Inactive": {
+        "type": "symbol",
+        "icon": "/images/inactive.jpg"
+      },
+      // Group one, item three
+      "Unknown": {
+        "type": "symbol",
+        "icon": "question_mark"
+      }
+    },
+    // Group two for fills
+    "Area of interest": {
+      // Group two, item one
+      "Primary": {
+        "type": "fill",
+        "fill": "#000000"
+      },
+      // Group two, item two
+      "Secondary": {
+        "type": "fill",
+        "fill": "#709ac7"
+      }
+    }
+  }
+}
+```
 
 Below is an example of the contents for a valid `map-settings.json` file for Mapbox with additional comments explaining each entry. The format of the file is mostly consistent for either mapbox or cesium maps. However, there are some differences, that will be explained when Cesium has been incorporated.
 
@@ -133,7 +178,8 @@ Below is an example of the contents for a valid `map-settings.json` file for Map
       }
     ]
   },
-  "icons": { // Mappings for the icon name that will be called in code and its corresponding url
+  "icons": {
+    // Mappings for the icon name that will be called in code and its corresponding url
     "info": "/images/defaults/icons/info.svg"
   }
 }
@@ -191,6 +237,7 @@ Definitions of sources vary depending on the chosen mapping provider. Specific p
 - `type` (required): This is the type of the source. Acceptable values differ depending on the mapping library (see the library specific documentation for details).
 
 A sample definition for Mapbox is as follows:
+
 ```json
 {
   "id": "example-mapbox-source",
@@ -225,20 +272,23 @@ Do note that users should **NOT** delete any contents within the `defaults` dire
 
 ## 3. Optional Pages
 
-Developers can insert landing pages alongside other supplementary pages such as about us, glossary, acknowledgements, and attributions into the platform. These optional pages must be included as `Markdown` files in the `uploads/optional-pages` directory. 
+Developers can insert landing pages alongside other supplementary pages such as about us, glossary, acknowledgements, and attributions into the platform. These optional pages must be included as `Markdown` files in the `uploads/optional-pages` directory.
 
 Do note that the supplementary pages will be inserted as thumbnails and accessed via the landing page. It is crucial to add numbers in the file name of supplementary pages to order the thumbnail display according to your preferences. Otherwise, file names are insignificant if the display order is not of utmost significance. For instance, `01.about.md` and `02.glossary.md` will be always be displayed in this sequence as 01 is smaller than 02.
 
 ### 3.1 Fields
+
 The following fields are supported, and must be added to the top of the file before any markdown content:
 
-* `title`: Displays the title on the browser tab. Required
-* `slug`: Identifier for the page route. Required
-* `description`: Describes the page in the landing page. Required only for non-landing pages
-* `thumbnail`: Displays the associated thumbnail image in the landing page. Required only for non-landing pages
+- `title`: Displays the title on the browser tab. Required
+- `slug`: Identifier for the page route. Required
+- `description`: Describes the page in the landing page. Required only for non-landing pages
+- `thumbnail`: Displays the associated thumbnail image in the landing page. Required only for non-landing pages
 
 ### 3.2 Sample
+
 A sample markdown file for the landing page:
+
 ```
 ---
 title: CReDo // Customisable
