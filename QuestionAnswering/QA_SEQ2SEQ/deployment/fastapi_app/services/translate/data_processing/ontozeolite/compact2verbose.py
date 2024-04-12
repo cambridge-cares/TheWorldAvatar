@@ -38,13 +38,13 @@ class OZCompact2VerboseConverter:
             ocr:hasVectorComponent [ ocr:hasComponentLabel "x" ; ocr:hasComponentValue ?FractionalPositionX ] , 
                                    [ ocr:hasComponentLabel "y" ; ocr:hasComponentValue ?FractionalPositionY ] ,
                                    [ ocr:hasComponentLabel "z" ; ocr:hasComponentValue ?FractionalPositionZ ] ;
-            om:hasUnit/rdfs:label ?FractionalPositionUnitLabel
+            om:hasUnit ?FractionalPositionUnit
         ] ;
         ocr:hasCartesianPosition [
             ocr:hasVectorComponent [ ocr:hasComponentLabel "x" ; ocr:hasComponentValue ?CartesianPositionX ] ,
                                    [ ocr:hasComponentLabel "y" ; ocr:hasComponentValue ?CartesianPositionY ] ,
                                    [ ocr:hasComponentLabel "z" ; ocr:hasComponentValue ?CartesianPositionZ ] ;
-            om:hasUnit/rdfs:label ?CartesianPositionUnitLabel
+            om:hasUnit ?CartesianPositionUnit
         ] .
         OPTIONAL {
             ?AtomSite ocr:hasAtomSiteLabel ?AtomSiteLabel .
@@ -58,11 +58,11 @@ class OZCompact2VerboseConverter:
                 tails=[
                     (
                         "ocr:hasFractionalPosition",
-                        '[ ocr:hasVectorComponent [ ocr:hasComponentLabel "x" ; ocr:hasComponentValue ?FractionalPositionX ] , [ ocr:hasComponentLabel "y" ; ocr:hasComponentValue ?FractionalPositionY ] , [ ocr:hasComponentLabel "z" ; ocr:hasComponentValue ?FractionalPositionZ ] ; om:hasUnit/rdfs:label ?FractionalPositionUnitLabel ]',
+                        '[ ocr:hasVectorComponent [ ocr:hasComponentLabel "x" ; ocr:hasComponentValue ?FractionalPositionX ] , [ ocr:hasComponentLabel "y" ; ocr:hasComponentValue ?FractionalPositionY ] , [ ocr:hasComponentLabel "z" ; ocr:hasComponentValue ?FractionalPositionZ ] ; om:hasUnit ?FractionalPositionUnit ]',
                     ),
                     (
                         "ocr:hasCartesianPosition",
-                        ' [ ocr:hasVectorComponent [ ocr:hasComponentLabel "x" ; ocr:hasComponentValue ?CartesianPositionX ] , [ ocr:hasComponentLabel "y" ; ocr:hasComponentValue ?CartesianPositionY ] , [ ocr:hasComponentLabel "z" ; ocr:hasComponentValue ?CartesianPositionZ ] ; om:hasUnit/rdfs:label ?CartesianPositionUnitLabel ]',
+                        ' [ ocr:hasVectorComponent [ ocr:hasComponentLabel "x" ; ocr:hasComponentValue ?CartesianPositionX ] , [ ocr:hasComponentLabel "y" ; ocr:hasComponentValue ?CartesianPositionY ] , [ ocr:hasComponentLabel "z" ; ocr:hasComponentValue ?CartesianPositionZ ] ; om:hasUnit ?CartesianPositionUnit ]',
                     ),
                 ],
             ),
@@ -78,11 +78,11 @@ class OZCompact2VerboseConverter:
             "?FractionalPositionX",
             "?FractionalPositionY",
             "?FractionalPositionZ",
-            "?FractionalPositionUnitLabel",
+            "?FractionalPositionUnit",
             "?CartesianPositionX",
             "?CartesianPositionY",
             "?CartesianPositionZ",
-            "?CartesianPositionUnitLabel",
+            "?CartesianPositionUnit",
             "?AtomSiteLabel",
         ]
         return vars, patterns, []
@@ -102,17 +102,17 @@ class OZCompact2VerboseConverter:
                 ocr:hasVectorComponent [ ocr:hasComponentLabel "a" ; ocr:hasComponentValue ?a ] ,
                                        [ ocr:hasComponentLabel "b" ; ocr:hasComponentValue ?b ] ,
                                        [ ocr:hasComponentLabel "c" ; ocr:hasComponentValue ?c ] ;
-                om:hasUnit/rdfs:label ?LengthsUnitLabel
+                om:hasUnit ?LengthsUnit
             ] ;
             ocr:hasUnitCellAngles [
                 ocr:hasVectorComponent [ ocr:hasComponentLabel "alpha" ; ocr:hasComponentValue ?alpha ] ,
                                        [ ocr:hasComponentLabel "beta" ; ocr:hasComponentValue ?beta ] ,
                                        [ ocr:hasComponentLabel "gamma" ; ocr:hasComponentValue ?gamma ] ;
-                om:hasUnit/rdfs:label ?AnglesUnitLabel 
+                om:hasUnit ?AnglesUnit 
             ] ;
             ocr:hasUnitCellVolume [
                 om:hasNumericalValue ?VolumeNumericalValue ;
-                om:hasUnit/rdfs:label ?VolumeUnitLabel
+                om:hasUnit ?VolumeUnit
             ] .
         OPTIONAL {
             ?UnitCell ocr:hasLatticeSystem ?LatticeSystem .
@@ -128,15 +128,15 @@ class OZCompact2VerboseConverter:
                 [
                     (
                         "ocr:hasUnitCellLengths",
-                        '[ ocr:hasVectorComponent [ ocr:hasComponentLabel "a" ; ocr:hasComponentValue ?a ] , [ ocr:hasComponentLabel "b" ; ocr:hasComponentValue ?b ] , [ ocr:hasComponentLabel "c" ; ocr:hasComponentValue ?c ] ; om:hasUnit/rdfs:label ?LengthsUnitLabel ]',
+                        '[ ocr:hasVectorComponent [ ocr:hasComponentLabel "a" ; ocr:hasComponentValue ?a ] , [ ocr:hasComponentLabel "b" ; ocr:hasComponentValue ?b ] , [ ocr:hasComponentLabel "c" ; ocr:hasComponentValue ?c ] ; om:hasUnit ?LengthsUnit ]',
                     ),
                     (
                         "ocr:hasUnitCellAngles",
-                        '[ ocr:hasVectorComponent [ ocr:hasComponentLabel "alpha" ; ocr:hasComponentValue ?alpha ] , [ ocr:hasComponentLabel "beta" ; ocr:hasComponentValue ?beta ] , [ ocr:hasComponentLabel "gamma" ; ocr:hasComponentValue ?gamma ] ; om:hasUnit/rdfs:label ?AnglesUnitLabel ]',
+                        '[ ocr:hasVectorComponent [ ocr:hasComponentLabel "alpha" ; ocr:hasComponentValue ?alpha ] , [ ocr:hasComponentLabel "beta" ; ocr:hasComponentValue ?beta ] , [ ocr:hasComponentLabel "gamma" ; ocr:hasComponentValue ?gamma ] ; om:hasUnit ?AnglesUnit ]',
                     ),
                     (
                         "ocr:hasUnitCellVolume",
-                        "[ om:hasNumericalValue ?VolumeNumericalValue ; om:hasUnit/rdfs:label ?VolumeUnitLabel ]",
+                        "[ om:hasNumericalValue ?VolumeNumericalValue ; om:hasUnit ?VolumeUnit ]",
                     ),
                 ],
             ),
@@ -159,13 +159,13 @@ class OZCompact2VerboseConverter:
             "?a",
             "?b",
             "?c",
-            "?LengthsUnitLabel",
+            "?LengthsUnit",
             "?alpha",
             "?beta",
             "?gamma",
-            "?AnglesUnitLabel",
+            "?AnglesUnit",
             "?VolumeNumericalValue",
-            "?VolumeUnitLabel",
+            "?VolumeUnit",
             "?LatticeSystem",
             "?SpaceGroupNumber_ITCr",
         ]
@@ -351,14 +351,14 @@ class OZCompact2VerboseConverter:
         """
         ?Zeolite zeo:hasTopologicalProperties/zeo:has{key} ?{key}
         ?{key} om:hasNumericalValue ?{key}NumericalValue ;
-               om:hasUnit/rdfs:label ?{key}UnitLabel
+               om:hasUnit ?{key}Unit
         """
         if pred.endswith("/om:hasNumericalValue"):
             numval = obj
-            unitlabel = "?" + key + "UnitLabel"
+            unitlabel = "?" + key + "Unit"
         else:
             numval = obj + "NumericalValue"
-            unitlabel = obj + "UnitLabel"
+            unitlabel = obj + "Unit"
         patterns = [
             TriplePattern.from_triple(
                 subj, "zeo:hasTopologicalProperties/zeo:has" + key, "?" + key
@@ -367,7 +367,7 @@ class OZCompact2VerboseConverter:
                 "?" + key,
                 tails=[
                     ("om:hasNumericalValue", numval),
-                    ("om:hasUnit/rdfs:label", unitlabel),
+                    ("om:hasUnit", unitlabel),
                 ],
             ),
         ]
@@ -458,7 +458,7 @@ class OZCompact2VerboseConverter:
         """
         ?Zeolite zeo:hasSphereDiameter ?SphereDiameter .
         ?SphereDiameter ocr:hasVectorComponent [ ocr:hasComponentLabel "a" ; ocr:hasComponentValue ?SphereDiameterA ] ... ;
-                        om:hasUnit/rdfs:label ?SphereDiameterUnitLabel .
+                        om:hasUnit ?SphereDiameterUnit .
         """
         patterns = [
             TriplePattern.from_triple(subj, pred, obj),
@@ -476,13 +476,13 @@ class OZCompact2VerboseConverter:
                             ]
                         ),
                     ),
-                    ("om:hasUnit/rdfs:label", "?SphereDiameterUnitLabel"),
+                    ("om:hasUnit", "?SphereDiameterUnit"),
                 ],
             ),
         ]
         vars = [
             "?SphereDiameter" + x.capitalize() for x in ["a", "b", "c", "included"]
-        ] + ["?SphereDiameterUnitLabel"]
+        ] + ["?SphereDiameterUnit"]
         return vars, patterns, []
 
     def _try_convert_hasTAtom_triple(self, subj: str, pred: str, objs: List[str]):

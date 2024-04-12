@@ -41,7 +41,7 @@ class TestOZCompact2VerboseConverter:
                         ]
                     ),
                 ),
-                # SELECT ?UnitCell ?a ?b ?c ?LengthsUnitLabel ?alpha ?beta ?gamma ?AnglesUnitLabel ?VolumeNumericalValue ?VolumeUnitLabel ?LatticeSystem ?SpaceGroupNumber_ITCr WHERE {
+                # SELECT ?UnitCell ?a ?b ?c ?LengthsUnit ?alpha ?beta ?gamma ?AnglesUnit ?VolumeNumericalValue ?VolumeUnit ?LatticeSystem ?SpaceGroupNumber_ITCr WHERE {
                 #   ?Framework zeo:hasFrameworkCode "ABW" .
                 #   ?Framework ocr:hasCrystalInformation/ocr:hasUnitCell ?UnitCell .
                 #   ?UnitCell
@@ -49,17 +49,17 @@ class TestOZCompact2VerboseConverter:
                 #           ocr:hasVectorComponent [ ocr:hasComponentLabel "a" ; ocr:hasComponentValue ?a ] ,
                 #                                  [ ocr:hasComponentLabel "b" ; ocr:hasComponentValue ?b ] ,
                 #                                  [ ocr:hasComponentLabel "c" ; ocr:hasComponentValue ?c ] ;
-                #           om:hasUnit/rdfs:label ?LengthsUnitLabel
+                #           om:hasUnit ?LengthsUnit
                 #       ] ;
                 #       ocr:hasUnitCellAngles [
                 #           ocr:hasVectorComponent [ ocr:hasComponentLabel "alpha" ; ocr:hasComponentValue ?alpha ] ,
                 #                                  [ ocr:hasComponentLabel "beta" ; ocr:hasComponentValue ?beta ] ,
                 #                                  [ ocr:hasComponentLabel "gamma" ; ocr:hasComponentValue ?gamma ] ;
-                #          om:hasUnit/rdfs:label ?AnglesUnitLabel
+                #          om:hasUnit ?AnglesUnit
                 #       ] ;
                 #       ocr:hasUnitCellVolume [
                 #           om:hasNumericalValue ?VolumeNumericalValue ;
-                #           om:hasUnit/rdfs:label ?VolumeUnitLabel
+                #           om:hasUnit ?VolumeUnit
                 #       ] .
                 #   OPTIONAL {
                 #       ?UnitCell ocr:hasLatticeSystem ?LatticeSystem .
@@ -75,13 +75,13 @@ class TestOZCompact2VerboseConverter:
                             "?a",
                             "?b",
                             "?c",
-                            "?LengthsUnitLabel",
+                            "?LengthsUnit",
                             "?alpha",
                             "?beta",
                             "?gamma",
-                            "?AnglesUnitLabel",
+                            "?AnglesUnit",
                             "?VolumeNumericalValue",
-                            "?VolumeUnitLabel",
+                            "?VolumeUnit",
                             "?LatticeSystem",
                             "?SpaceGroupNumber_ITCr",
                         ],
@@ -102,15 +102,15 @@ class TestOZCompact2VerboseConverter:
                                 tails=[
                                     (
                                         "ocr:hasUnitCellLengths",
-                                        '[ ocr:hasVectorComponent [ ocr:hasComponentLabel "a" ; ocr:hasComponentValue ?a ] , [ ocr:hasComponentLabel "b" ; ocr:hasComponentValue ?b ] , [ ocr:hasComponentLabel "c" ; ocr:hasComponentValue ?c ] ; om:hasUnit/rdfs:label ?LengthsUnitLabel ]',
+                                        '[ ocr:hasVectorComponent [ ocr:hasComponentLabel "a" ; ocr:hasComponentValue ?a ] , [ ocr:hasComponentLabel "b" ; ocr:hasComponentValue ?b ] , [ ocr:hasComponentLabel "c" ; ocr:hasComponentValue ?c ] ; om:hasUnit ?LengthsUnit ]',
                                     ),
                                     (
                                         "ocr:hasUnitCellAngles",
-                                        '[ ocr:hasVectorComponent [ ocr:hasComponentLabel "alpha" ; ocr:hasComponentValue ?alpha ] , [ ocr:hasComponentLabel "beta" ; ocr:hasComponentValue ?beta ] , [ ocr:hasComponentLabel "gamma" ; ocr:hasComponentValue ?gamma ] ; om:hasUnit/rdfs:label ?AnglesUnitLabel ]',
+                                        '[ ocr:hasVectorComponent [ ocr:hasComponentLabel "alpha" ; ocr:hasComponentValue ?alpha ] , [ ocr:hasComponentLabel "beta" ; ocr:hasComponentValue ?beta ] , [ ocr:hasComponentLabel "gamma" ; ocr:hasComponentValue ?gamma ] ; om:hasUnit ?AnglesUnit ]',
                                     ),
                                     (
                                         "ocr:hasUnitCellVolume",
-                                        "[ om:hasNumericalValue ?VolumeNumericalValue ; om:hasUnit/rdfs:label ?VolumeUnitLabel ]",
+                                        "[ om:hasNumericalValue ?VolumeNumericalValue ; om:hasUnit ?VolumeUnit ]",
                                     ),
                                 ],
                             ),
@@ -158,10 +158,10 @@ class TestOZCompact2VerboseConverter:
                         ]
                     ),
                 ),
-                # SELECT DISTINCT ?Framework ?FrameworkCode ?SpecificAccessibleAreaNumericalValue ?SpecificAccessibleAreaUnitLabel WHERE {
+                # SELECT DISTINCT ?Framework ?FrameworkCode ?SpecificAccessibleAreaNumericalValue ?SpecificAccessibleAreaUnit WHERE {
                 #   ?Framework zeo:hasFrameworkCode ?FrameworkCode .
                 #   ?Framework zeo:hasTopologicalProperties/zeo:hasSpecificAccessibleArea ?SpecificAccessibleArea .
-                #   ?SpecificAccessibleArea om:hasNumericalValue ?SpecificAccessibleAreaNumericalValue ; om:hasUnit/rdfs:label ?SpecificAccessibleAreaUnitLabel .
+                #   ?SpecificAccessibleArea om:hasNumericalValue ?SpecificAccessibleAreaNumericalValue ; om:hasUnit ?SpecificAccessibleAreaUnit .
                 #   FILTER ( ?SpecificAccessibleAreaNumericalValue <= 100 )
                 # }
                 SparqlQuery(
@@ -170,7 +170,7 @@ class TestOZCompact2VerboseConverter:
                             "?Framework",
                             "?FrameworkCode",
                             "?SpecificAccessibleAreaNumericalValue",
-                            "?SpecificAccessibleAreaUnitLabel",
+                            "?SpecificAccessibleAreaUnit",
                         ],
                         solution_modifier="DISTINCT",
                     ),
@@ -192,8 +192,8 @@ class TestOZCompact2VerboseConverter:
                                         "?SpecificAccessibleAreaNumericalValue",
                                     ),
                                     (
-                                        "om:hasUnit/rdfs:label",
-                                        "?SpecificAccessibleAreaUnitLabel",
+                                        "om:hasUnit",
+                                        "?SpecificAccessibleAreaUnit",
                                     ),
                                 ],
                             ),
