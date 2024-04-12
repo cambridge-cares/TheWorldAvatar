@@ -12,6 +12,7 @@
     .introOuter {
         flex: 7.5 !important;
     }
+
     .thumbnailContainer {
         flex: 2.5 !important;
     }
@@ -71,7 +72,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-}  
+}
 
 .button {
     width: 50%;
@@ -92,6 +93,7 @@
     background-color: var(--background-secondary) !important;
     border-radius: 20px !important;
 }
+
 .button:hover {
     background-color: var(--background-tertiary) !important;
     outline: 1px solid var(--border-secondary) !important;
@@ -104,10 +106,12 @@
     overflow: hidden;
     width: 100%;
 }
+
 .button img {
     height: 100%;
     filter: drop-shadow(4px 4px 2px rgb(0 0 0 / 0.25));
 }
+
 .buttonTitle {
     flex-grow: 0;
     width: 50%;
@@ -118,10 +122,17 @@
     border-width: 0px 0px 1px 0px;
     text-align: center;
 }
+
 .buttonDescription {
     flex-grow: 0;
     width: 100%;
     font-size: var(--font-size-secondary-text);
     text-align: center;
     margin-bottom: 4px;
+}
+
+.footer {
+    flex-grow: 0;
+    margin: 5px;
+    text-align: center;
 }

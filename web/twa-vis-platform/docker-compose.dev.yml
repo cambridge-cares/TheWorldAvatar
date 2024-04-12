@@ -14,9 +14,8 @@ services:
     restart: "no"
     environment:
       WATCHPACK_POLLING: true
-    secrets:
-      - mapbox_username
-      - mapbox_api_key
+      MAPBOX_USER: "ushmap"
+      MAPBOX_API_KEY: "pk.eyJ1IjoidXNobWFwIiwiYSI6ImNsczkxdWl4azAyZzcyam9qZ3VkOWM2djgifQ.judcTrOnhjLNu1XhtYhBHA"
     build:
       context: "./"
       dockerfile: "Dockerfile"

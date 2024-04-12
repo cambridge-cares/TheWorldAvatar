@@ -9,6 +9,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Tooltip } from '@mui/material';
 import markdownit from 'markdown-it';
+// import { CFooter, CLink } from '@coreui/react'
 
 import StaticPageThumbnail from 'ui/content/static-page-thumbnail';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
@@ -73,6 +74,10 @@ export default function LandingPage(props: LandingPageProps) {
                         {props.hasMap && mapButton}
                         {props.hasDashboard && dashButton}
                     </div>
+                    <footer className={styles.footer}>
+                        <span>Powered by </span>
+                        <Link href="https://theworldavatar.io">The World Avatar</Link>
+                    </footer>
                 </div>
             </div>
 
