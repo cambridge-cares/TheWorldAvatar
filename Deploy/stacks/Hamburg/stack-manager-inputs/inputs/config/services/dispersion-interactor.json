@@ -21,7 +21,8 @@
 					"STATIC_SOURCE_TABLE=static",
 					"VIRTUAL_SENSOR_AGENT_URL=http://${STACK_NAME}-virtual-sensor-agent:8080/VirtualSensorAgent/",
 					"ELEVATION_CONTOURS_TABLE=elevation_contours",
-					"WEATHER_LAYER_NAME=weather"
+					"WEATHER_LAYER_NAME=weather",
+					"NUMBER_OF_LAYERS=20"
 				],
 				"Configs": [
 					{
