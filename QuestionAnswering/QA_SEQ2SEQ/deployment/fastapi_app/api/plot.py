@@ -57,7 +57,7 @@ def query_zeolite(x_axis, y_axis, c_axis):
             SELECT ?id {select_statement}
             WHERE {{
             {{
-                SELECT ?id (MIN(?ring_sizes_v) AS ?min_ring_size) (MAX(?ring_sizes_v) AS ?max_ring_size)
+                SELECT ?id (MIN(xsd:integer(STR(?ring_sizes_v))) AS ?min_ring_size) (MAX(xsd:integer(STR(?ring_sizes_v))) AS ?max_ring_size)
                 WHERE {{
                     ?zeo        zeo:hasFrameworkCode            ?id .
                     ?zeo        zeo:hasTopologicalProperties          ?topo .
@@ -68,7 +68,7 @@ def query_zeolite(x_axis, y_axis, c_axis):
                 }}GROUP BY ?id
             }}
             {{
-                SELECT ?id (MIN(?nOfEdges) AS ?min_nOfEdges) (MAX(?nOfEdges) AS ?max_nOfEdges)
+                SELECT ?id (MIN(xsd:integer(STR(?nOfEdges))) AS ?min_nOfEdges) (MAX(xsd:integer(STR(?nOfEdges))) AS ?max_nOfEdges) 
                 WHERE {{
                     ?zeoFrame   zeo:hasFrameworkCode  ?id .
                     ?zeoFrame   ocr:hasCrystalInformation ?cifcore .
