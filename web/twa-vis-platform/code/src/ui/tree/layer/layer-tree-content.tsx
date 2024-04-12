@@ -6,6 +6,7 @@ import iconStyles from 'ui/buttons/icon-button.module.css';
 import SVG from 'react-inlinesvg';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Map } from 'mapbox-gl';
 
 import { getIsStyleLoaded } from 'state/floating-panel-slice';
 import { MapLayerGroup, MapLayer } from 'types/map-layer';
@@ -13,12 +14,14 @@ import MaterialIconButton from 'ui/buttons/icon-button';
 
 // type definition for incoming properties
 type LayerTreeHeaderProps = {
+  map: React.MutableRefObject<Map>;
   group: MapLayerGroup;
   depth: number;
   parentShowChildren: boolean;
 };
 
 type LayerTreeEntryProps = {
+  map: React.MutableRefObject<Map>;
   layer: MapLayer;
   depth: number;
   showChildren: boolean;
@@ -29,6 +32,7 @@ type LayerTreeEntryProps = {
 /**
  * This component renders the header based on the input map layers and their groups.
  *
+ * @param {React.MutableRefObject<Map>} map The current map instance wrapped in a mutable reference object..
  * @param {MapLayerGroup} group The map layer group to render.
  * @param {number} depth The current depth to this tree.
  * @param {boolean} parentShowChildren An indicator based on the parent node that shows children or not.
@@ -91,9 +95,9 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
     // Split layer IDs in case there are multiple
     layerIds.split(" ").forEach((id) => {
       if (isVisible) {
-        window.map.setLayoutProperty(id, "visibility", "none");
+        props.map?.current?.setLayoutProperty(id, "visibility", "none");
       } else {
-        window.map.setLayoutProperty(id, "visibility", "visible");
+        props.map?.current?.setLayoutProperty(id, "visibility", "visible");
       }
     });
   }
@@ -138,6 +142,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
             {group.layers.map((layer) => {
               return (
                 <LayerTreeEntry
+                  map={props.map}
                   key={layer.address}
                   layer={layer}
                   depth={props.depth + 1}
@@ -150,6 +155,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
             {group.subGroups.map((subGroup) => {
               return (
                 <LayerTreeHeader
+                  map={props.map}
                   key={subGroup.name}
                   group={subGroup}
                   depth={props.depth + 1}
@@ -166,6 +172,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
 /**
  * This component renders the specified map layer.
  *
+ * @param {Map} map The current map instance wrapped in a mutable reference object..
  * @param {MapLayer} layer The map layer that should be rendered.
  * @param {number} depth The depth of the layer in the layer tree.
  * @param {boolean} showChildren Indicates whether children layers should be shown.
@@ -190,7 +197,7 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
     if (props.isStyleLoaded) {
       const firstLayerId: string = layer.ids.split(" ")[0];
       // Existing visible state before any changes
-      const beforeVisibleState: boolean = window.map.getLayoutProperty(firstLayerId, "visibility") === "visible";
+      const beforeVisibleState: boolean = props.map?.current?.getLayoutProperty(firstLayerId, "visibility") === "visible";
       // This boolean is the required state that should toggle either the corresponding hidden or show effect depending on the various states
       const requiredVisibleState: boolean = props.showChildren ?
         beforeVisibleState ? isVisible : false :
@@ -199,7 +206,7 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
       // Toggle visibility on the map
       props.handleLayerVisibility(layer.ids, requiredVisibleState);
       // Get current visibility state of the layer after any toggling
-      const currentVisibleState: boolean = window.map.getLayoutProperty(firstLayerId, "visibility") === "visible";
+      const currentVisibleState: boolean = props.map?.current?.getLayoutProperty(firstLayerId, "visibility") === "visible";
       setIsVisible(currentVisibleState);
     }
   };

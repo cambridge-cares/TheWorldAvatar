@@ -3,6 +3,7 @@ import styles from './floating-panel.module.css';
 
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Map } from 'mapbox-gl';
 
 import { getIndex, setIndex } from 'state/floating-panel-slice';
 import { getQueryTrigger, getIri, getStack, getScenario, setQueryTrigger, getProperties } from 'state/map-feature-slice';
@@ -15,6 +16,7 @@ import InfoTree from './info/info-tree';
 
 // Incoming parameters for component.
 type FloatingPanelContainerProps = {
+  map: React.MutableRefObject<Map>;
   dataStore: DataStore;
   icons: IconSettings;
   legend: LegendSettings;
@@ -158,7 +160,7 @@ export default function FloatingPanelContainer(
       {/* Conditionally render the panel's body */}
       {isPanelVisible && (
         <div className={styles.floatingPanelBody}>
-          {activeIndex === 0 && <LayerTree dataStore={props.dataStore} icons={props.icons} />}
+          {activeIndex === 0 && <LayerTree map={props.map} dataStore={props.dataStore} icons={props.icons} />}
           {activeIndex === 1 && <LegendTree settings={props.legend} />}
           {activeIndex === 2 &&
             <InfoTree

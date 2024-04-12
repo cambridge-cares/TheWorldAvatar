@@ -1,6 +1,7 @@
 import styles from './layer-tree.module.css';
 
 import React from 'react';
+import { Map } from 'mapbox-gl';
 
 import { DataGroup } from 'io/data/data-group';
 import { DataLayer } from 'io/data/data-layer';
@@ -12,6 +13,7 @@ import LayerTreeHeader from './layer-tree-content';
 
 // type definition for incoming properties
 type LayerTreeProps = {
+  map: React.MutableRefObject<Map>;
   dataStore: DataStore;
   icons: IconSettings;
 };
@@ -26,6 +28,7 @@ export default function LayerTree(props: LayerTreeProps) {
     {structure.map((mapLayerGroup) => {
       return (
         <LayerTreeHeader
+          map={props.map}
           group={mapLayerGroup}
           depth={0}
           parentShowChildren={mapLayerGroup.showChildren}

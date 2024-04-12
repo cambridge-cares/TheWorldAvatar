@@ -1,4 +1,4 @@
-import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, HeatmapLayer, LineLayer, RasterLayer, SymbolLayer } from 'mapbox-gl';
+import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, HeatmapLayer, LineLayer, Map, RasterLayer, SymbolLayer } from 'mapbox-gl';
 
 import { DataLayer } from 'io/data/data-layer';
 import { DataStore } from 'io/data/data-store';
@@ -7,27 +7,29 @@ import { ImageryOption, ImagerySettings } from 'types/settings';
 import { getCurrentImageryOption } from '../map-helper';
 /**
  * Given a DataStore instance housing parsed DataLayer instances,
- * this function adds them all to the Mapbox map object.
+ * this function adds them all to the Mapbox map instance.
  * 
+ * @param {React.MutableRefObject<Map>} map the Mapbox map instance wrapped in a mutable reference object.
  * @param {dataStore} dataStore Store containing parsed DataLayer instances.
  * @param {ImagerySettings} imagerySettings - The imagery settings for the map.
  */
-export async function addAllLayers(dataStore: DataStore, imagerySettings: ImagerySettings) {
+export async function addAllLayers(map: React.MutableRefObject<Map>, dataStore: DataStore, imagerySettings: ImagerySettings) {
     const currentStyle = getCurrentImageryOption(imagerySettings);
 
     const layerArray: DataLayer[] = dataStore.getLayerList();
-    layerArray.forEach((layer) => addLayer(layer, currentStyle));
+    layerArray.forEach((layer) => addLayer(map, layer, currentStyle));
     console.log("Added all registered layers to the map object.");
 }
 
 /**
- * Adds the input DataLayer to the Mapbox map object.
+ * Adds the input DataLayer to the Mapbox map instance.
  * 
+ * @param {React.MutableRefObject<Map>} map the Mapbox map instance wrapped in a mutable reference object.
  * @param {DataLayer} layer - The input DataLayer.
  * @param {ImageryOption} currentStyle - The current imagery style.
  */
-export function addLayer(layer: DataLayer, currentStyle: ImageryOption) {
-    const collision = window.map.getLayer(layer.id);
+export function addLayer(map: React.MutableRefObject<Map>, layer: DataLayer, currentStyle: ImageryOption) {
+    const collision = map.current?.getLayer(layer.id);
 
     if (collision != null) {
         console.warn("Attempting to add a layer that's already on map: '" + layer.id + "'.");
@@ -109,6 +111,6 @@ export function addLayer(layer: DataLayer, currentStyle: ImageryOption) {
     }
 
     // Add to the map
-    window.map.addLayer(mapboxObj);
+    map.current?.addLayer(mapboxObj);
     console.info("Pushed data layer to map '" + layer.id + "'.");
 }
