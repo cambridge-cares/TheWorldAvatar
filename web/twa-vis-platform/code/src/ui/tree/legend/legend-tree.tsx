@@ -8,12 +8,12 @@ import DecagonIconComponent from 'ui/icon/decagon';
 
 // Incoming parameters for component.
 type LegendTreeProps = {
-  settings: LegendSettings;
+  readonly settings: LegendSettings;
 };
 
 type LegendTreeNodeProps = {
-  group: LegendGroup;
-  groupName: string;
+  readonly group: LegendGroup;
+  readonly groupName: string;
 };
 
 /**
@@ -24,7 +24,7 @@ export default function LegendTree(props: LegendTreeProps) {
     <div className={styles.legendContainer}>
       <h2>Legend</h2>
       {Object.entries(props.settings).map(([groupName, group]) => {
-        return <LegendTreeNode groupName={groupName} group={group} />
+        return <LegendTreeNode key={groupName} groupName={groupName} group={group} />
       })}
     </div>
   );

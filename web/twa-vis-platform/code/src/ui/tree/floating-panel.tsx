@@ -60,8 +60,7 @@ export default function FloatingPanelContainer(
     if (isFetching) {
       // WIP: Add required functionality while data is still being fetched
     } else if (error) {
-      console.error("Error fetching data:", error);
-      console.info("Displaying built-in data...");
+      console.info("Unable to fetch data. Displaying built-in data...");
       // Note that IRI will not be displayed
       if (selectedProperties) {
         const builtInData = {

@@ -5,7 +5,7 @@ import { Icon } from '@mui/material';
 interface IconComponentProps {
   readonly icon: string;
   readonly classes: string
-};
+}
 
 /**
  * Reusable component for displaying icons. It supports PNG, JPG, SVG, and Google Material icons.
