@@ -17,7 +17,7 @@
 					"USE_LIVE_DATA=false",
 					"API_KEY=",
 					"BOUNDING_BOXES=[[[53.489, 9.881], [53.596, 10.06]]]",
-					"UPLOAD_INTERVAL_MINUTES=10"
+					"UPLOAD_INTERVAL_MINUTES=30"
 				],
 				"Configs": [
 					{
