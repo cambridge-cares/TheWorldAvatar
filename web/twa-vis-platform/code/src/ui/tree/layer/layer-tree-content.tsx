@@ -110,7 +110,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
 
         {/* Expand/collapse icon */}
         <MaterialIconButton
-          iconName={isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}
+          iconName={isExpanded ? "keyboard_arrow_down" : "keyboard_arrow_right"}
           iconStyles={[iconStyles.hover]}
           onClick={toggleExpansion}
         />
@@ -222,11 +222,6 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
       <div className={styles.treeEntryHeader}>
         {/* Spacer */}
         <span style={{ width: spacing }} />
-
-        <MaterialIconButton
-          iconName="subdirectory_arrow_right"
-          iconStyles={[iconStyles["small-icon"]]}
-        />
 
         {/* Layer's icon, if present. Either creates a line or icon for display */}
         {layer.icon && (
