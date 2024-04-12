@@ -5,8 +5,7 @@ from .error_handling.exceptions import KGException, TSException
 from .kg_utils.tsClientForUpdate import TSClientForUpdate
 from .cluster_model import ClusterModel
 from NTUEnergyClusterAgent.data_retrieval.query_data import QueryData
-from NTUEnergyClusterAgent.data_retrieval.query_timeseries import query_latest_timeseries, query_all_timeseries, query_timeseries_within_bounds
-from NTUEnergyClusterAgent.data_instantiation.timeseries_instantiation import timeseries_instantiation
+from NTUEnergyClusterAgent.data_retrieval.query_timeseries import query_latest_timeseries, query_timeseries_within_bounds
 
 from NTUEnergyClusterAgent.kg_utils.utils import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from NTUEnergyClusterAgent.kg_utils.utils import DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD
