@@ -607,7 +607,15 @@ public class QueryClient {
 
         JSONObject overallResult = new JSONObject();
 
-        TimeSeries<Long> dispRasterTimeSeries = tsClient.getTimeSeries(dispRasterIriList, conn);
+        long latestTime = tsClient.getMaxTime(dispRasterIriList.get(0), conn);
+        long earliestTime = tsClient.getMinTime(dispRasterIriList.get(0), conn);
+
+        if ((latestTime - earliestTime) > 86400) {
+            earliestTime = latestTime - 86400;
+        }
+
+        TimeSeries<Long> dispRasterTimeSeries = tsClient.getTimeSeriesWithinBounds(dispRasterIriList, earliestTime,
+                latestTime, conn);
 
         List<Instant> timeStampList = dispRasterTimeSeries.getTimes().stream().map(Instant::ofEpochSecond)
                 .collect(Collectors.toList());
