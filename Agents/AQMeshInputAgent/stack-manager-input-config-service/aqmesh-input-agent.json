@@ -3,7 +3,7 @@
     "Name": "aqmesh-input-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "aqmesh-input-agent:1.3.0",
+        "Image": "ghcr.io/cambridge-cares/aqmesh-input-agent:1.3.0",
         "Env": [
 					"AQMESH_AGENT_PROPERTIES=/usr/local/tomcat/config/agent.properties",
           "AQMESH_API_PROPERTIES=/usr/local/tomcat/config/api.properties",
