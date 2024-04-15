@@ -65,6 +65,7 @@ async def home(request: Request):
         dict(
             request=request,
             superdomain=superdomain,
+            ga_stream_id=os.getenv("GA_STREAM_ID"),
             domains=domain_data,
             title=METADATA[superdomain]["title"],
             subtitle_paras=METADATA[superdomain]["subtitle"].split("\n"),
