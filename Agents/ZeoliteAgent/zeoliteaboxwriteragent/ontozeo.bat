@@ -27,7 +27,7 @@ if "%~1"=="" (
     )
 )
 
-goto START
+rem goto START
 
 rem Bibliography *.bib to .csv file:
 call biblio.bat data %DATADIR%
@@ -51,7 +51,6 @@ call zeolite.bat csv  %DATADIR%
 rem Zeolite-specific data *.csv to .owl files:
 call zeolite.bat owl %DATADIR%
 
-:START
 rem Upload all data to Blazegraph server:
 call upload_cryst.bat  %SERVER% %NAMESPACE%
 
