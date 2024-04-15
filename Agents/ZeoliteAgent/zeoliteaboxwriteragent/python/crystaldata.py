@@ -480,6 +480,8 @@ class CrystalData:
         #  logging.error(" Invalid entry '" + str(uuidDB) + "', expecting a database.")
 
         #self.cifStandard = None
+        self.cifStandard = self.readStandardFile(os.path.join("ontozeolite", "crystal",
+                                                 "data", "CIF_standard_2.4.5.txt"))
         self.cifStandard = self.readStandardFile("CIF_standard_2.4.5.txt")
         self.cifStandard += ["_symmetry_Int_Tables_number"]
 
@@ -571,9 +573,11 @@ class CrystalData:
         if self.unitCellVolume is not None:
             logging.warning(" Overwriting 'unitCellVolume' %s.", where)
         if self.listAtomRaw is not None:
-            logging.warning(" Overwriting 'listAtomRaw' %s.", where)
+            #logging.warning(" Overwriting 'listAtomRaw' %s.", where)
+            pass
         if self.listAtomAll is not None:
-            logging.warning(" Overwriting 'listAtomAll' %s.", where)
+            #logging.warning(" Overwriting 'listAtomAll' %s.", where)
+            pass
         if self.listAtomSymm != []:
             logging.warning(" Overwriting 'listAtomSymm' %s.", where)
             self.listAtomSymm = []
@@ -630,7 +634,7 @@ class CrystalData:
             logging.error("Not loaded pymatgen structure, skipping genUnitCell")
             return
     #logging.error(" Not implemented eeetttwww  def loadPyMatGenUnitCell (self, path): ")
-        print("Starting evalPyMatGenUnitCell---")
+        #print("Starting evalPyMatGenUnitCell---")
 
         # The Unit Cell Lengths:
         self.unitCellLengths = ocdt.OntoVector(
@@ -1017,7 +1021,7 @@ class CrystalData:
                     overlap = False
                     for a2 in self.listAtomAll:
                         r2 = a2.frac
-                        if self._dist_cart(r2, r1) <= 0.06:
+                        if self._dist_cart(r2, r1) <= 2.0:
                             overlap = True
                             break
                     if not overlap:
@@ -1908,6 +1912,14 @@ class CrystalData:
             #self.symmLatticeSystem = words[1]
             pass
 
+        elif words[0] in ["_journal_name_full", "_journal_page_first",
+                          "_journal_page_last", "_journal_volume",
+                          "_journal_year", "_chemical_formula_sum",
+                          "_chemical_name_systematic", "_cell_formula_units_Z",
+                          "_database_code_depnum_ccdc_archive",
+                          "_audit_update_record", "_database_code_ICSD"]:
+            # Do nothing
+            pass
         else:
             logging.warning(" Not processed keyword '%s' in '%s'",
                             words[0], cif_name)

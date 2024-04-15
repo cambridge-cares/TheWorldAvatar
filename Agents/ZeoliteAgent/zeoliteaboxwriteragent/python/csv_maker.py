@@ -64,6 +64,7 @@ TODO:
 
 
 import os
+import sys
 #import csv
 import math
 
@@ -91,6 +92,13 @@ import ontocrystal_species as ocos
 #logging.basicConfig(level = logging.INFO)
 #logging.basicConfig(level = logging.WARNING)
 logging.basicConfig(level = logging.ERROR)
+
+#if len(sys.argv) > 1:
+#    DATA_DIR = sys.argv[1]
+#else:
+if True:
+    DATA_DIR = "ontozeolite"
+    print("Missing command line argument in csv_maker.py, using", DATA_DIR)
 
 # Ontology for Crystal,
 #crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
@@ -312,11 +320,11 @@ class CsvMaker:
             logging.error(" Invalid command line argument '%s', expect" +
                           " Framework code or 'all'", self.settings.cif_file)
 
-        self.inputDir  = os.path.join("ontozeolite", "data")
+        self.inputDir  = os.path.join(DATA_DIR, "zeolite", "data")
 
         if self.settings.out_dir == "":
-            self.uuidDB = tools.UuidDB(os.path.join("ontozeolite", "uuid", "default.csv"))
-            self.outputDir = os.path.join("ontozeolite", "zeocsv")
+            self.uuidDB = tools.UuidDB(os.path.join(DATA_DIR, "zeolite", "uuid", "default.csv"))
+            self.outputDir = os.path.join(DATA_DIR, "zeolite", "csv")
         else:
             if os.path.isdir(self.settings.out_dir):
                 self.uuidDB = tools.UuidDB(os.path.join(self.settings.out_dir, "default.csv"))
@@ -750,7 +758,9 @@ class CsvMaker:
 
         output = []
 
-        xrdFile = "xrd-ed5.csv"
+        xrdFile = os.path.join(DATA_DIR, "zeolite", "data", "xrd-ed5.csv")
+        #print("data_dir =", DATA_DIR)
+        #print("xrd file =", xrdFile)
         xrdData = tools.readCsv(xrdFile)
         #print(xrdData[:2])
 
@@ -771,9 +781,10 @@ class CsvMaker:
 
                 #print(zeoname, "=====>", xrd[5])
                 #print(">>> In arrSpectrum, uuid_xrd =", uuid_xrd)
+                filename = os.path.join("ontozeolite", "zeolite", "data", xrd[5])
                 output += self.loadXRDPeaks(uuid_xrd,
                                 self.crystOntoPrefix + "hasCharacteristicPeak",
-                                zeoname + str(nSpectra), xrd[5])
+                                zeoname + str(nSpectra), filename)
 
                 if xrd[6] != "" and xrd[6] is not None:
                     print("TODO Add DOI ")
@@ -1248,7 +1259,8 @@ class CsvMaker:
         #zeoDataBase.load("zeolites_merged.json")
         #zeoDataBase.load("a_final_3.json")
         #zeoDataBase.load("a_final_species.json")
-        zeoDataBase.load("a_final_species_updated.json")
+        zeoDataBase.load(os.path.join(DATA_DIR, "zeolite", # "data",
+                                      "a_final_species_nodup.json"))
 
         #print("Number of zeoData in csv_maker =", len(self.zeoList))
         #print(self.zeoList)
@@ -1427,7 +1439,7 @@ class CsvMaker:
                 #arr += zeoData.get_csv_arr_recipe(cif_line, uuid_zeolite, "")
 
                 # Description of the chemical constituent for the given zeolite:
-                logging.warning(" FIXME: no constituent data")
+                #logging.warning(" FIXME: no constituent data")
                 #arr += zeoData.getCsvArrConstituent(cif_line, uuid_zeolite, "")
                 arr += zeoDataBase.getCsvArrConstituent(uuid_zeolite, "predicate")
 

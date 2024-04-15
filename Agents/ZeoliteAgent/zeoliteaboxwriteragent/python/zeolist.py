@@ -32,7 +32,7 @@ rawString = " ABW     ACO     AEI     AEL     AEN     AET     AFG     AFI     AF
     "UFI     UOS     UOV     UOZ     USI UTL     UWY     VET     VFI     VNI     VSV     "+\
     "WEI     -WEN    YFI     YUG     ZON "
 
-newString = "JZT   EOS   -ION   RFE" 
+newString = "JZT   EOS   -ION   RFE   JSY" 
 inGrowString = "CIT-13  ITQ-39  ZSM-48  IPC-6   SSZ-57  SSZ-31  SSZ-70  IM-18  HPM-14"
 
 #testString = " ABW     ACO     AEI     AEL   "

@@ -22,7 +22,7 @@ class IzaTopology:
         # === end of IzaTopology.__init__()
 
     def load(self):
-        self.iza_file_path = os.path.join("ontozeolite", "izadata", "iza-data.json")
+        self.iza_file_path = os.path.join("ontozeolite", "zeolite", "data", "iza-data.json")
         self.iza_data_base = {}
         with open(self.iza_file_path, encoding="utf-8") as f:
             self.iza_data_base = json.load(f)

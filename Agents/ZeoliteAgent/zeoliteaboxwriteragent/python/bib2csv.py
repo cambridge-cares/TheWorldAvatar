@@ -19,7 +19,7 @@ import uuid
 # https://github.com/sciunto-org/python-bibtexparser
 # and NOT from 'pip install'. Pip install has version 1.3 or 1.4.
 # Command line to install:
-# install --no-cache-dir --force-reinstall git+https://github.com/sciunto-org/python-bibtexparser@main
+# pip install --no-cache-dir --force-reinstall git+https://github.com/sciunto-org/python-bibtexparser@main
 import bibtexparser
 import bibtexparser.middlewares as btpmiddle
 
@@ -28,6 +28,15 @@ logging.basicConfig(level=logging.WARNING)
 
 # Warnings:
 W_SKIP_NON_BIB_EXT = True
+
+#if len(sys.argv) > 1:
+#    PARENT_DIR = sys.argv[1]
+#else:
+if True:
+    PARENT_DIR = "ontozeolite"
+    print("Missing command line arg in bib2csv, using", PARENT_DIR)
+
+OUTPUT_CSV = os.path.join(PARENT_DIR, "biblio", "csv", "onto_bib.csv")
 
 """
 TODO
@@ -78,6 +87,7 @@ def str2owlsafe(string):
 
     return output
 
+
 def doi_to_bib_id(doi):
     tmp = doi.replace("", "")
     tmp = tmp.replace("/", "_").replace(",", "_")
@@ -89,33 +99,69 @@ def doi_to_bib_id(doi):
     #tmp = tmp.replace("(", "_").replace(")", "_")
     return tmp
 
-BIB_IRI_FILE = "bib_iri_list.csv"  # Format: doi, bib_id, iri, uuid
+
+BIB_IRI_FILE = os.path.join(PARENT_DIR, "biblio", "bib_iri_list.csv")  # File format: doi, bib_id, iri, uuid
 BIB_IRI_LIST = None
 def get_bib_iri(doi):
+    global BIB_IRI_LIST
+
+    doi = doi.strip()
     if doi.startswith("bibfiles\\"):
         doi = doi.replace("bibfiles\\", "")
     if doi.endswith(".bib"):
         doi = doi.replace(".bib", "")
 
-    global BIB_IRI_LIST
     if BIB_IRI_LIST is None:
         BIB_IRI_LIST = tools.readCsv(BIB_IRI_FILE)
 
     for bib_iri in BIB_IRI_LIST:
         key = bib_iri[0].lower().strip()
         if doi == key:
-            return bib_iri[2].strip()
+            return bib_iri[2].strip(), bib_iri[3].strip()
 
     bib_id = doi_to_bib_id(doi)
     bib_id = bib_id.lower().strip()
     for bib_iri in BIB_IRI_LIST:
         key = bib_iri[1].lower().strip()
         if bib_id == key:
-            return bib_iri[2].strip()
+            return bib_iri[2].strip(), bib_iri[3].strip()
 
     logging.error(" bib2csv.py: Not found bib_iri '%s' in '%s'.",
                   bib_id, BIB_IRI_FILE)
-    return None
+
+    return None, None
+    # === end of get_bib_iri()
+
+
+def add_bib_iri(item_name, safe_name, iri, uuid):
+
+    v1, v2 = get_bib_iri(item_name)
+
+    if v1 is None:
+        BIB_IRI_LIST.append([item_name, safe_name, iri, uuid])
+
+    # === end of add_bib_iri()
+
+
+def get_person_iri(first_name, last_name):
+
+    firstList = first_name.split()
+    if len(firstList) > 0:
+        name = firstList[0][0].upper()
+    else:
+        name = ""
+
+    name += "_" + last_name
+
+    pass
+    # === end of get_person_iri()
+
+
+def add_person_iri(first_name, last_name, safe_name, iri, uuid):
+
+    pass
+    # === end of add_person_iri()
+
 
 class OntoBibo:
     """
@@ -130,8 +176,9 @@ class OntoBibo:
                  "tbox_prefix", "abox_prefix", "entries", "entryInBibFile", "btpLibrary",
                  "journalAbbreviations", "journalFullLow", "journalAltSpell",
                  "journalShortLow", "foreignWords",
-                 "field_count_note", "field_count_lastchecked",
-                 "uuid", "doi_iri_list"]
+                 "field_count_note", "field_count_lastchecked", "field_count_address",
+                 #"iri",
+                 "known_authors", "doi_iri_list"]
     # __slots__ = ["year", "month", "title", "journal", "volume", "number",
     #             "pages", "abstract", "issn", "doi", "eprint"
     # ]
@@ -170,7 +217,7 @@ class OntoBibo:
         if uuidDB is None:
             logging.warning(" Missing argument uuidDB in '%s' in class" +
                             " OntoBibo. Using default.", self.item_name)
-            self.uuidDB = tools.UuidDB("biblio")
+            self.uuidDB = tools.UuidDB(os.path.join(PARENT_DIR, "biblio", "biblio_uuid.csv"))
         elif isinstance(uuidDB, tools.UuidDB):
             self.uuidDB = uuidDB
         else:
@@ -197,19 +244,21 @@ class OntoBibo:
 
         self.journalAbbreviations = {}
         # journals = ["journals.json", "more-journals.json"]
-        journals = [os.path.join("bib2csvp", "journals.json"),
-                    os.path.join("bib2csvp", "more-journals.json")]
+        journals = [os.path.join(PARENT_DIR, "biblio", "bib2csvp", "journals.json"),
+                    os.path.join(PARENT_DIR, "biblio", "bib2csvp", "more-journals.json")]
         for path in journals:
             self.loadJournal(path)
 
         self.updateJournalDB()
 
-        self.uuid = None
+        #self.iri = None
 
+        self.known_authors = []
         self.field_count_note = 0
+        self.field_count_address = 0
         self.field_count_lastchecked = 0
 
-        self.doi_iri_list = []
+        #self.doi_iri_list = []
         # logging.error(">>>>>>>>>>>>>>>>>>>>>>>")
         # for k in self.entryInBibFile.keys():
         #    logging.error("  > " + k)
@@ -222,7 +271,7 @@ class OntoBibo:
                 tmp = json.load(fp)
                 self.journalAbbreviations |= tmp
         else:
-            logging.error("Unknown journal database: '%s' in OntoBibo.", path)
+            logging.error(" Unknown journal database: '%s' in OntoBibo.", path)
             self.err_count += 1
 
         # === end of OntoBibo.loadJournal()
@@ -380,6 +429,7 @@ class OntoBibo:
         err_count = 0
         output = []
 
+        self.known_authors = []
         self.field_count_note = 0
         self.field_count_lastchecked = 0
 
@@ -393,7 +443,23 @@ class OntoBibo:
                 err_count += err
                 pass
 
-            elif "inproceedings" == ent.entry_type:
+            elif "-incollection" == ent.entry_type:
+                pass
+            elif "-inbook" == ent.entry_type:
+                logging.info(" Loading an in book '%s'", str(i+1))
+                out, err = self._csvBtpInBook(ent, subject,
+                                              predicate, options)
+                output += out
+                err_count += err
+                pass
+            elif "-book" == ent.entry_type:
+                logging.info(" Loading a book '%s'", str(i+1))
+                out, err = self._csvBtpBook(ent, subject,
+                                            predicate, options)
+                output += out
+                err_count += err
+                pass
+            elif "-inproceedings" == ent.entry_type:
                 logging.info(" Loading an inproceedings %d", (i+1))
                 out, err = self._csvBtpInProceedings(ent, subject,
                                                      predicate, options)
@@ -403,7 +469,8 @@ class OntoBibo:
 
             # TODO other types of entries
             else:
-                logging.error(" Unknown citation type '%s'.", ent.entry_type)
+                logging.error(" Unknown citation type '%s' in %s.",
+                              ent.entry_type, ent.key)
 
 
         return output, err_count
@@ -480,7 +547,8 @@ class OntoBibo:
         jAbbr = None
         vol = None
         journal = "None"
-        issue = None
+        issue = "None"
+        year = "None"
 
         # print(" Missing journal for ", entity.key)
         # print("datatype of fields:", type(entity.fields))
@@ -488,7 +556,7 @@ class OntoBibo:
             # print("key:", f.key)
             if "journal" == f.key.lower():
                 # print("Assigned journal", f.value)
-                journal = f.value
+                journal = f.value.strip()
                 if journal in self.journalAbbreviations:
                     jFull = journal
                     jAbbr = self.journalAbbreviations[journal]
@@ -502,8 +570,8 @@ class OntoBibo:
                     else:
                         file = self.entryInBibFile[entity.key]
                         logging.error(" Unknown journal name in bib file:" +
-                                      " '%s' in bib entry '%s'.",
-                                      journal, file)
+                                      " '%s' in bib entry '%s', '%s'.",
+                                      journal, file, entity.key)
                         # print (    "jNew = ", jNew)
                         self.err_count += 1
 
@@ -518,6 +586,9 @@ class OntoBibo:
             elif "issue" == f.key.lower():
                 issue = str(f.value)
 
+            elif "year" == f.key.lower():
+                year = str(f.value)
+
         if jFull is None:
             logging.error(" Unknown journal full name '%s'", journal)
             self.err_count += 1
@@ -528,8 +599,12 @@ class OntoBibo:
 
         if vol is None: # and None == issue:
             file = self.entryInBibFile[entity.key]
-            logging.error(" In bib entry '%s' volume is not specified in %s.",
-                          entity.key, file)
+            if jAbbr not in ["J. Chem. Soc. Dalton Trans.", "Chem. Commun.",
+                             "J. Chem. Soc., Chem. Commun.",
+                             "J. Chem. Soc.", "J. Chem. Soc. A",
+                             "Neues Jahrb. Mineral. Monatsh."]:
+                logging.error(" Volume is not specified in bib entry '%s' in %s.",
+                              entity.key, file)
             vol = "None"
             self.err_count += 1
 
@@ -540,7 +615,7 @@ class OntoBibo:
         #    issue = "None"
         #    self.err_count += 1
 
-        return jFull, jAbbr, vol, issue
+        return jFull, jAbbr, vol, issue, year
         # === end of OntoBibo.getIssueInfo()
 
     def _csvBtpArticle(self, entity, subject, predicate, options):
@@ -550,58 +625,56 @@ class OntoBibo:
         # file = self.entryInBibFile[entity.key]
         # print("Starting key: ",  entity.key, file)
 
-        """
-    print("type: ", library.entries[0].entry_type)
-    k = library.entries[0].key
-        print("Starting key: ",  library.entries[0].key)
-    print(type(library.entries[0].fields))
-    #print(library.entries[0].fields)
-    for f in library.entries[0].fields:
-        if "author" == f.key:
-            for a in f.value:
-              print(f.key, ":", a.first, a.last)
-        else:
-            print(f.key, ":", f.value)
-
-        """
         dctPrefix = "http://purl.org/dc/terms/"
         item_name = entity.key
         class_name = "AcademicArticle"
 
-        #safe_name = item_name.replace("/", "_")
-        #safe_name = safe_name.replace("<", "_").replace(">", "_")
         safe_name = doi_to_bib_id(item_name)
 
-        self.uuid, uuidStr = self.uuidDB.addUUID(biboPrefix + class_name,
-                                                 self.abox_prefix + "Citation_" + safe_name)
-        output.append([self.uuid, "Instance", biboPrefix + class_name,
+        iri, uuidStr = get_bib_iri(item_name)
+        if not iri:
+            iri, uuidStr = self.uuidDB.addUUID(biboPrefix + class_name,
+                                                     self.abox_prefix + "Citation_" + safe_name)
+        output.append([iri, "Instance", biboPrefix + class_name,
                        "", "", ""])
 
         if subject != "" and predicate != "":
-            output.append([subject, "Instance", self.uuid, predicate, "", ""])
+            output.append([subject, "Instance", iri, predicate, "", ""])
         else:
-            logging.warning(" No subject in csvBtpArr(), skipping" +
-                            " subject-predicate triple. %s", item_name)
+            #logging.warning(" No subject in csvBtpArr(), skipping" +
+            #                " subject-predicate triple. %s", item_name)
+            pass
 
         #if subject != "" and predicate != "":
-        #    output.append([subject, "Instance", self.uuid, predicate, "", ""])
+        #    output.append([subject, "Instance", iri, predicate, "", ""])
         #    return output, err_count 
-        self.doi_iri_list.append([item_name, safe_name, self.uuid, uuidStr])
+        #self.doi_iri_list.append([item_name, safe_name, iri, uuidStr])
+        add_bib_iri(item_name, safe_name, iri, uuidStr)
 
         # Issue of the Journal:
         # The name consists of the abbreviated journal name, the volume, and uuid:
         # "J.Name"_"V"str(volume)_UUID
-        jFull, jAbbr, vol, issue = self.getIssueInfo(entity)
+        jFull, jAbbr, vol, issue, year = self.getIssueInfo(entity)
         # print(f"'{jFull}', '{jAbbr}', '{vol}'")
         jShort = jAbbr.replace(".", "").replace(" ", "")
 
         class_name = "Issue"
 
+        issueId = "None"
+        if vol != "None":
+            issueId = vol
+        elif issue != "None":
+            issueId = issue
+        elif year != "None":
+            issueId = year
+        else:
+            logging.error(" vol, issue and year are not specified for citation %s", entity.key)
+
         iUuid, _ = self.uuidDB.addUUID(biboPrefix + class_name,
-                                       self.abox_prefix + jShort + "_V" + vol)
+                                       self.abox_prefix + jShort + "_V" + issueId)
 
         if self.uuidDB.getUUID(biboPrefix + class_name,
-                               self.abox_prefix + jShort + "_V" + vol) is None:
+                               self.abox_prefix + jShort + "_V" + issueId) is None:
 
             #iUuid, _ = self.uuidDB.addUUID(biboPrefix + class_name,
             #                               self.abox_prefix + jShort + "_V" + vol)
@@ -611,7 +684,7 @@ class OntoBibo:
 
         output.append([iUuid, "Instance", biboPrefix + class_name, "", "", ""])
 
-        output.append([self.uuid, "Instance", iUuid,
+        output.append([iri, "Instance", iUuid,
                        dctPrefix + "isPartOf", "", ""])
 
         # Journal information:
@@ -635,7 +708,7 @@ class OntoBibo:
         if False:
             print("-------------------------------------------")
             print("----------     In bib2csv.py     ----------")
-            print("Citation:", self.uuid)
+            print("Citation:", iri)
             print("Journal: ", jUuid)
             print("Issue:   ", iUuid)
             print("-------------------------------------------")
@@ -643,14 +716,14 @@ class OntoBibo:
         # self.uuid,_ = self.uuidDB.addUUID(self.tPrefix + class_name,
         #                                   self.abox_prefix + self.item_name)
         # ###                                self.abox_prefix + self.item_name)
-        # output.append([self.uuid, "Instance",
+        # output.append([iri, "Instance",
         #                self.tbox_prefix + self.class_name, "", "", ""])
-        # output.append([subject, "Instance", self.uuid, predicate, "", ""])
+        # output.append([subject, "Instance", iri, predicate, "", ""])
 
         # if self.value != None:
         #     output.append([omOntoPrefix + "hasNumericalValue",
         #                    "Data Property",
-        #                    self.uuid, "", self.value, "decimal"])
+        #                    iri, "", self.value, "decimal"])
         #     pass
         # output += [ ]
         for field in entity.fields:
@@ -662,7 +735,7 @@ class OntoBibo:
                                                 self.abox_prefix + "Authors_" + self.item_name,
                                                 newUuid = uuidStr)
                 output.append([alUuid, "Instance", class_name, "", "", ""])
-                output.append([self.uuid, "Instance", alUuid,
+                output.append([iri, "Instance", alUuid,
                                biboPrefix + "authorList", "", ""])
                 """
 
@@ -683,19 +756,29 @@ class OntoBibo:
 
                     nameID = "".join(author.first + author.last)
 
-                    # print("aaa")
-
                     auth_iri, _ = self.uuidDB.addUUID(foafPrefix + class_name,
-                                                  self.abox_prefix + "Person_" + nameID)
+                                                      self.abox_prefix + "Person_" + nameID)
                                                       #foafPrefix + "Person_" + nameID + str(ia+1))
+
                     if self.uuidDB.getUUID(foafPrefix + class_name,
                                            self.abox_prefix + "Person_" + nameID) is None:
-
                         pass
-                    output.append([auth_iri, "Instance", foafPrefix + class_name,
+
+                    if auth_iri not in self.known_authors:
+                        pass
+                    if True:
+                        self.known_authors.append(auth_iri)
+                        output.append([auth_iri, "Instance", foafPrefix + class_name,
                                        "", "", ""])
 
-                    output.append([self.uuid, "Instance", auth_iri,
+                        output.append([foafPrefix + "firstName", "Data Property",
+                                       auth_iri, "",
+                                       " ".join(author.first), "xsd:string"])
+                        output.append([foafPrefix + "family_name", "Data Property",
+                                       auth_iri, "",
+                                       " ".join(author.last), "xsd:string"])
+
+                    output.append([iri, "Instance", auth_iri,
                                    crystPrefix + "hasAuthor", "", ""])
 
                     #Creating the author's position in the list
@@ -708,7 +791,7 @@ class OntoBibo:
                     output.append([auth_ind, "Instance", crystPrefix + "AuthorIndex",
                                    "", "", ""])
 
-                    output.append([self.uuid, "Instance", auth_ind,
+                    output.append([iri, "Instance", auth_ind,
                                    crystPrefix + "hasAuthorIndex", "", ""])
 
                     output.append([crystPrefix + "hasIndexValue", "Data Property",
@@ -717,26 +800,17 @@ class OntoBibo:
                     output.append([auth_ind, "Instance", auth_iri,
                                    crystPrefix + "isAuthorIndexOf", "", ""])
 
-                    output.append([foafPrefix + "firstName", "Data Property",
-                                   auth_iri, "",
-                                   " ".join(author.first), "xsd:string"])
-                    output.append([foafPrefix + "family_name", "Data Property",
-                                   auth_iri, "",
-                                   " ".join(author.last), "xsd:string"])
-                    #output.append([crystPrefix + "hasOrderId", "Data Property",
-                    #               auth_iri, "", ia+1, "xsd:integer"])
-
             elif "title" == field.key.lower():
                 # print(field.key, "not implemented")
                 output.append([dctPrefix + "title", "Data Property",
-                               self.uuid, "", str2owlsafe(field.value),
+                               iri, "", str2owlsafe(field.value),
                                "xsd:string"])
 
             elif "abstract" == field.key.lower():
                 # print(field.key, "not implemented")
                 if field.value.strip() != "":
                     output.append([crystPrefix + "hasAbstract",
-                                   "Data Property", self.uuid, "",
+                                   "Data Property", iri, "",
                                    str2owlsafe(field.value), "xsd:string"])
 
             elif "journal" == field.key.lower():
@@ -815,22 +889,30 @@ class OntoBibo:
 
             elif "pages" == field.key:
                 output.append([biboPrefix + "pages", "Data Property",
-                               self.uuid, "", field.value, "xsd:string"])
+                               iri, "", field.value, "xsd:string"])
 
                 # logging.warning(field.key + " need to add pageStart and pageEnd properly")
                 start, end = self.pagesToStartEnd(field.value)
                 if start:
                     output.append([biboPrefix + "pageStart", "Data Property",
-                                   self.uuid, "", start, "xsd:integer"])
+                                   iri, "", start, "xsd:integer"])
                 if end:
                     output.append([biboPrefix + "pageEnd", "Data Property",
-                                   self.uuid, "", end, "xsd:integer"])
+                                   iri, "", end, "xsd:integer"])
 
             elif "doi" == field.key.lower():
                 if field.value.strip() != "":
                     # print(field.key, "not implemented")
                     output.append([biboPrefix + "doi", "Data Property",
-                                   self.uuid, "", field.value, "xsd:string"])
+                                   iri, "", field.value, "xsd:string"])
+
+            elif "doidoi" == field.key.lower():
+                # Do nothing. Need to remove this key entry.
+                pass
+
+            elif "keyword" == field.key.lower():
+                # Do nothing. Need to remove this key entry.
+                pass
 
             elif "url" == field.key.lower():
                 if field.value.strip() != "":
@@ -839,20 +921,20 @@ class OntoBibo:
                         1/0
                     # print(field.key, "not implemented")
                     output.append([crystPrefix + "hasUrl", "Data Property",
-                                   self.uuid, "", field.value.strip(), "xsd:string"])
+                                   iri, "", field.value.strip(), "xsd:string"])
 
             elif "eprint" == field.key.lower():
                 if field.value.strip() != "":
                     # print(field.key, "not implemented")
                     output.append([crystPrefix + "hasEPrint", "Data Property",
-                                   self.uuid, "", field.value.strip(), "xsd:string"])
+                                   iri, "", field.value.strip(), "xsd:string"])
 
             elif "keywords" == field.key:
                 if field.value.strip() != "":
                     # print(field.key, "not implemented")
                     for kw in field.value.split(","):
                         output.append([crystPrefix + "hasKeyword", "Data Property",
-                                       self.uuid, "", kw.strip(), "xsd:string"])
+                                       iri, "", kw.strip(), "xsd:string"])
 
             elif "note" == field.key:
                 if field.value.strip() != "":
@@ -870,11 +952,18 @@ class OntoBibo:
                     self.err_count += 1
                 self.field_count_lastchecked += 1
 
+            elif "address" == field.key:
+                if 0 == self.field_count_address:
+                    logging.warning(" Bib entry '%s' is not implemented" +
+                                    " (warning only once)", field.key)
+                    self.err_count += 1
+                self.field_count_address += 1
+
                 """
             elif "url" == field.key:
                 print(field.key, "not implemented")
                 #output.append([dctPrefix + "title", "Data Property",
-                #               self.uuid, "", field.value, "xsd:string"])
+                #               iri, "", field.value, "xsd:string"])
                 """
 
             else:
@@ -884,6 +973,17 @@ class OntoBibo:
 
         return output, err_count
         # === end of OntoBibo._csvBtpArticle()
+
+    def _csvBtpInBook(self, entity, subject, predicate, options):
+        output = []
+        err_count = 0
+
+        1/0
+        # file = self.entryInBibFile[entity.key]
+        # print("Starting key: ",  entity.key, file)
+
+        return output, err_count
+        # === end of OntoBibo._csvBtpInBook()
 
     def _csvBtpInProceedings(self, entity, subject, predicate, options):
         output = []
@@ -899,11 +999,12 @@ class OntoBibo:
         safe_name = item_name.replace("/", "_")
         safe_name = safe_name.replace("<", "_").replace(">", "_")
 
-        # self.uuid, uuidStr = self.uuidDB.addUUID(biboPrefix + class_name,
+        # iri, uuidStr = self.uuidDB.addUUID(biboPrefix + class_name,
         #                                          self.abox_prefix + "Cite_" + item_name)
-        # output.append([self.uuid, "Instance", biboPrefix + class_name,
+        # output.append([iri, "Instance", biboPrefix + class_name,
         #                "", "", ""])
-        # output.append([  subject, "Instance", self.uuid, predicate, "", ""])
+        # output.append([  subject, "Instance", iri, predicate, "", ""])
+        1/0
 
         logging.error(" Invalid function '%s'", class_name)
         err_count += 1
@@ -923,8 +1024,8 @@ class OntoBibo:
 
         if not short.startswith("has"):
             logging.warning(" Predicate in OntoBibo.getCsvArr() is '%s'," +
-                            " but expecting it to be 'has" + "%s'.",
-                            predicate, "Citation")
+                            " but expecting it to be 'has%s'. Subj = '%s'.",
+                            predicate, "Citation", subject)
 
         err_count = 0
         output = []
@@ -938,6 +1039,8 @@ class OntoBibo:
         # === end of OntoBib.getCsvArr()
 
     # === end of class OntoBibo
+
+
 def getCsvInit( baseName, tPrefix, aPrefix ):
     output = [ ]
     output.append(["Source", "Type", "Target", "Relation", "Value", "Data Type"])
@@ -951,12 +1054,12 @@ def getCsvInit( baseName, tPrefix, aPrefix ):
     pass  # getCsvInit()
 
 if __name__ == "__main__":
-    path = os.path.join("..", "bibfiles", "10.1524_zkri.1988.182.14.1.bib")
-    path = os.path.join("bibfiles", "10.1524_zkri.1988.182.14.1.bib")
-    path = os.path.join("10.1524_zkri.1988.182.14.1.bib")
-    path = "10.1002_anie.200461911.bib"
-    path = "bibfiles\\" + "10.1038_nmat2228.bib"
-    path = "bibcombine.bib"
+    #path = os.path.join("..", "bibfiles", "10.1524_zkri.1988.182.14.1.bib")
+    #path = os.path.join("bibfiles", "10.1524_zkri.1988.182.14.1.bib")
+    #path = os.path.join("10.1524_zkri.1988.182.14.1.bib")
+    #path = "10.1002_anie.200461911.bib"
+    #path = "bibfiles\\" + "10.1038_nmat2228.bib"
+    path = os.path.join(PARENT_DIR, "biblio", "bibcombine.bib")
 
     # fp = open(path)
     # p = biblib.bib.Parser().parse(fp, log_fp=sys.stderr).get_entries()
@@ -1013,7 +1116,8 @@ if __name__ == "__main__":
     # with redundant information.
     """
 
-    uuidDB = tools.UuidDB(os.path.join("ontozeolite", "final", "uuid", "biblio.csv"))
+    #uuidDB = tools.UuidDB(os.path.join(PARENT_DIR, "final", "uuid", "biblio.csv"))
+    uuidDB = tools.UuidDB(os.path.join(PARENT_DIR, "biblio", "biblio_uuid.csv"))
 
     output = getCsvInit("base", tPrefix=crystPrefix, aPrefix=crystPrefix)
 
@@ -1030,7 +1134,8 @@ if __name__ == "__main__":
 
     #csv_data = b.getCsvArr("subj", "hasCitation")
     #print("csv =", csv_data)
-    tools.writeCsv("onto_bib.csv", output)
-    tools.writeCsv(BIB_IRI_FILE, b.doi_iri_list)
+    tools.writeCsv(OUTPUT_CSV , output)
+    #tools.writeCsv(BIB_IRI_FILE, b.doi_iri_list)
+    tools.writeCsv(BIB_IRI_FILE, BIB_IRI_LIST)
     uuidDB.saveDB()
 

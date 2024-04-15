@@ -6,6 +6,7 @@ Combined from several sources.
 """
 
 import os
+import sys
 import logging
 import json
 import uuid
@@ -28,10 +29,17 @@ crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
 ontoSpeciesPrefix = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
 biboOntoPrefix = "http://purl.org/ontology/bibo/"
 
+if len(sys.argv) > 1:
+    DATA_DIR = sys.argv[1]
+else:
+    DATA_DIR = "ontozeolite"
+    print("Missing command line arg in crystalinfo, using '", DATA_DIR, "'.", sep="")
+
 _Mendeleev_table = None
 if _Mendeleev_table is None:
     # Remember to skip the top line (the header):
-    _Mendeleev_table = tools.readCsv("elements.csv")[1:]
+    filepath = os.path.join("ontozeolite", "zeolite", "data", "elements.csv")
+    _Mendeleev_table = tools.readCsv(filepath)[1:]
 
 def get_element_iri(element):
     for mend in _Mendeleev_table:
@@ -46,17 +54,19 @@ def get_element_iri(element):
 _chemical_small = None
 if _chemical_small is None:
     # Remember to skip the top line (the header):
-    _chemical_small = tools.readCsv("Compounds_Laura.csv")[1:]
+    filepath = os.path.join("ontozeolite", "zeolite", "data", "Compounds_Laura.csv")
+    _chemical_small = tools.readCsv(filepath)[1:]
     #_chemical_small_2 = tools.readCsv("Compounds_to_IRI_2.csv")[1:]
     #_chemical_small += _chemical_small_2
     #_chemical_small_3 = tools.readCsv("Compounds_to_IRI_3.csv")[1:]
     #_chemical_small += _chemical_small_3
-    _chemical_small_2 = tools.readCsv("Compounds_to_IRI_23.csv")[1:]
+    filepath = os.path.join("ontozeolite", "zeolite", "data", "Compounds_to_IRI_23.csv")
+    _chemical_small_2 = tools.readCsv(filepath)[1:]
     _chemical_small += _chemical_small_2
 
-    filename = "species_ontozeolite_merged_spaces_removed.csv"
+    filename = os.path.join("ontozeolite", "zeolite", "data",
+                            "species_ontozeolite_merged_spaces_removed.csv")
     _chemical_small = tools.readCsv(filename)[1:]
-
 
     _chemical_small.sort(key=lambda v: -len(v[0]))
     for i, value in enumerate(_chemical_small):
@@ -67,8 +77,10 @@ if _chemical_small is None:
 _chemical_small_2 = None
 if _chemical_small_2 is None:
     # Remember to skip the top line (the header):
-    _chemical_small_2 = tools.readCsv("Compounds_to_IRI_2.csv")[1:]
-    _chemical_small_3 = tools.readCsv("Compounds_to_IRI_3.csv")[1:]
+    filepath = os.path.join("ontozeolite", "zeolite", "data", "Compounds_to_IRI_2.csv")
+    _chemical_small_2 = tools.readCsv(filepath)[1:]
+    filepath = os.path.join("ontozeolite", "zeolite", "data", "Compounds_to_IRI_3.csv")
+    _chemical_small_3 = tools.readCsv(filepath)[1:]
 
     # _chemical_small_2.sort(key=lambda v: -len(v[0]))
     # for i, value in enumerate(_chemical_small_2):
@@ -76,7 +88,7 @@ if _chemical_small_2 is None:
 
 _ICSD_DOI_LIST = None
 if _ICSD_DOI_LIST is None:
-    file_path = os.path.join("ontozeolite", "icsddata", "jpcrd392010033102_codes_dois3.csv")
+    file_path = os.path.join("ontozeolite", "zeolite", "data", "jpcrd392010033102_codes_dois3.csv")
     _raw = tools.readCsv(file_path)
     # Remember to skip the top line (the header):
     #_raw = _raw[1:]
@@ -92,7 +104,7 @@ if _ICSD_DOI_LIST is None:
 
 _ICSD_FORMULA_LIST = None
 if _ICSD_FORMULA_LIST is None:
-    file_path = os.path.join("ontozeolite", "icsddata", "jpcrd392010033102_codes_dois3.csv")
+    file_path = os.path.join("ontozeolite", "zeolite", "data", "jpcrd392010033102_codes_dois3.csv")
     _raw = tools.readCsv(file_path)
     # Remember to skip the top line (the header):
     _raw = _raw[1:]
@@ -103,7 +115,7 @@ BASE_LIST = ["(AlSi5O12)", "Si96O192"
 _COD_DOI_CIF = None
 if _COD_DOI_CIF is None:
     #file_path = os.path.join("ontozeolite", "icsddata", ".json")
-    file_path = "cod_doi_cif.json"
+    file_path = os.path.join("ontozeolite", "zeolite", "data", "cod_doi_cif.json")
     if os.path.isfile(file_path):
         with open(file_path, encoding="utf-8") as fp:
             _COD_DOI_CIF = json.load(fp)
@@ -112,7 +124,7 @@ if _COD_DOI_CIF is None:
 
 _OSDA_COMPOUNDS_IRI = None
 if _OSDA_COMPOUNDS_IRI is None:
-    file_path = "chemical_data_Laura.csv"
+    file_path = os.path.join("ontozeolite", "zeolite", "data", "chemical_data_Laura.csv")
     if os.path.isfile(file_path):
         with open(file_path, encoding="utf-8") as fp:
             _OSDA_COMPOUNDS_IRI = tools.readCsv(file_path)
@@ -332,7 +344,8 @@ class ZeoliteMaterial:
             #tmp = os.path.join("bibfiles", self.data["bib_path"])
             tmp = self.data["bib_path"]
 
-            bib_iri = bib2csv.get_bib_iri(tmp)
+            bib_iri, _ = bib2csv.get_bib_iri(tmp)
+
             if bib_iri:
                 output += [[uuid_zeo, "Instance", bib_iri,
                            crystOntoPrefix + "hasCitation", "", ""]]
@@ -711,7 +724,7 @@ class ZeoliteDB:
         self.recipes = []
         self.izatopology = izatopology.IzaTopology(uuidDB=self.uuidDB)
 
-        file_path = os.path.join("cod_doi_cif_manual.json")
+        file_path = os.path.join("ontozeolite", "zeolite", "data", "cod_doi_cif_manual.json")
         if os.path.isfile(file_path):
             with open(file_path, encoding="utf-8") as fp:
                 raw = json.load(fp)
@@ -1088,7 +1101,7 @@ class ZeoliteDB:
         Processing is done by file jpcrd392010033102.py
         """
 
-        filename = os.path.join("ontozeolite", "icsddata", "icsddata.json")
+        filename = os.path.join(DATA_DIR, "icsddata", "icsddata.json")
         #data = tools.readCsv(filename)
         with open(filename, encoding="utf-8") as fp:
             data = json.load(fp)
@@ -1482,7 +1495,7 @@ class ZeoliteDB:
         # === end of ZeoliteDB.get_framework_materials()
 
     def getCsvArrConstituent(self, subject, predicate):
-        logging.error(" Not implemented OntoZeolite.getCsvArrConstituent()")
+        #logging.error(" Not implemented OntoZeolite.getCsvArrConstituent()")
         output = []
 
         return output

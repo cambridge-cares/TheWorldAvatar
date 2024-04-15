@@ -883,10 +883,10 @@ class OntoMatrix:
         # The Matrix class is defined in the OntoCrystal ontology:
         #self.ontoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
 
-        self.comp_list     = []
-        self.comp_err_list  = []
+        self.comp_dict = {}
+        self.comp_list = []
+        self.comp_err_list = []
         self.comp_unit_list = []
-        self.comp_dict     = {}
 
         # === end of OntoMatrix.__init__()
 
@@ -1055,10 +1055,10 @@ class OntoMatrix:
 
         #logging.error(" Not implemented OntoMatrix.get_csv_arr ttttttt")
 
-        if self.comp_list is not None:
+        if len(self.comp_list) > 0:
             output += self._get_csv_value_list(new_uuid=new_uuid)
 
-        if self.comp_dict is not None:
+        if len(self.comp_dict.keys()) > 0:
             output += self._get_csv_value_dict(new_uuid=new_uuid)
 
         return output

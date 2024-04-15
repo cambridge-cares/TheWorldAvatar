@@ -1,4 +1,5 @@
 import os
+import sys
 import math
 import logging
 import time
@@ -16,36 +17,22 @@ import ontocrystal_datatypes as ocdt
 logging.basicConfig(level = logging.WARNING)
 #logging.basicConfig(level = logging.ERROR)
 
+#if len(sys.argv) > 1:
+#    DATA_DIR = sys.argv[1]
+#else:
+if True:
+    DATA_DIR = "ontozeolite"
+    print("Missing command line arg in crystalinfo, using '", DATA_DIR, "'.", sep="")
+
+DB_FOLDER = os.path.join(DATA_DIR, "crystal")
 
 crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
 zeoOntoPrefix = "http://www.theworldavatar.com/kg/ontozeolite/"
 
 
-CIF_IRI_FILE = "cif_iri_list.csv"  # Format: filename, count/unique_id, iri, uuid
+CIF_IRI_FILE = os.path.join(DATA_DIR, "crystal", "cif_iri_list.csv")  # Format: filename, count/unique_id, iri, uuid
 CIF_IRI_LIST = None
-'''
-def get_cif_iri(cif_path):
-    """
 
-    """
-    #if doi.startswith("bibfiles\\"):
-    #    doi = doi.replace("bibfiles\\", "")
-    #if doi.endswith(".bib"):
-    #    doi = doi.replace(".bib", "")
-
-    global CIF_IRI_LIST
-    if CIF_IRI_LIST is None:
-        CIF_IRI_LIST = tools.readCsv(CIF_IRI_FILE)
-
-    for cif_iri in CIF_IRI_LIST:
-        key = cif_iri[0].lower().strip()
-        if cif_path == key:
-            return cif_iri[2].strip()
-
-    logging.error(" crystalinfo.py: Not found cif_iri '%s' in '%s'.",
-                  cif_path, CIF_IRI_FILE)
-    return None
-'''
 
 def has_xyz_line(file_path):
         with open(file_path, encoding="utf-8") as fp:
@@ -56,6 +43,7 @@ def has_xyz_line(file_path):
                     got_symm = True
                     break
         return got_symm
+
 
 def get_cif_iri(cif_path):
     """
@@ -86,7 +74,7 @@ class CifIriData:
     """ Data structure to convert a given file_path to iri,
     based on the database in file CIF_IRI_FILE.
     Main functions:
-    get_entry(cif_path) - return iri and uuid for given cif_path, 
+    get_entry_iri(cif_path) - return iri and uuid for given cif_path, 
                           from existing entry.
                           Return None,None if it does nto exist.
                           or create a new if it does not exist
@@ -115,6 +103,8 @@ class CifIriData:
                 self.data = self.data[1:]
         else:
             self.data = []
+            print("Not found file '", self.filename, "'.", sep="")
+            #1/0
 
         return self.data
 
@@ -172,7 +162,7 @@ class CifIriData:
 
         ### header = [["CIF file", "id", "iri", "uuid", "Folder", "Errors" ]]
 
-        cif_path = cif_path.replace("/", "\\")
+        cif_path = cif_path.replace("/", "\\").lower().strip()
 
         found = False
         for i_line, line in enumerate(self.data):
@@ -199,11 +189,14 @@ class CifIriData:
         """
         iri = None
         uid = None
+        #print("In get_entry_iri", cif_path)
         cif_path = cif_path.replace("/", "\\").lower().strip()
         for line in self.data:
-            if line[0].lower().strip() == cif_path:
+            if line[0].lower().strip() == cif_path or \
+               line[0].lower().strip() == os.path.join("ontozeolite", "crystal", "data", cif_path):
                 iri = line[2].strip()
                 uid = line[3].strip()
+                #print("Found entry ", line)
                 break
 
         return iri, uid
@@ -498,7 +491,7 @@ class CrystalInfo:
         output = []
 
         logging.info("Starting crystalinfo.csv_arr_material(), new_iri", new_uuid)
-        print("Starting crystalinfo.csv_arr_material(), new_iri", new_uuid)
+        #print("Starting crystalinfo.csv_arr_material(), new_iri", new_uuid)
 
         if new_uuid is None:
             #print(123)
@@ -506,12 +499,15 @@ class CrystalInfo:
             #self.iri = get_cif_iri(file_path)
             self.iri, self.uuid = CIF_IRI_DATA.get_entry_iri(file_path)
 
-            #print(file_path, self.iri)
+            #print(">>>>>>>>>", file_path, self.iri)
 
             if not self.iri:
-                self.iri, self.uuid = tools.addUUID(self.uuidDB.uuidDB,
-                                                    crystOntoPrefix + "CrystalInformation",
-                                                    "ZeoliteCIF_" + name)
+                self.iri, self.uuid = self.uuidDB.addUUID(crystOntoPrefix + "CrystalInformation",
+                                                          "ZeoliteCIF_" + name)
+            else:
+                #print("==============================")
+                #1/0
+                pass
         else:
             #print(456)
             self.uuid = new_uuid
@@ -528,7 +524,7 @@ class CrystalInfo:
             return output
 
         logging.info("Continue initializing CIF", file_path, self.iri)
-        print("Full initialization of CIF", file_path, self.iri)
+        #print("Full initialization of CIF", file_path, self.iri)
 
         if True:
             pass
@@ -537,7 +533,7 @@ class CrystalInfo:
             pass
         except :    
             #logging.error("=================================================")
-            logging.error(" Failed to read data by PyMatGen '%s', use ValAndErr", file)
+            logging.warning(" Failed to read data by PyMatGen '%s', use ValAndErr", file)
             #logging.error("=================================================")
 
             err_count = self.load_cif_file_val_and_err(file_path)
@@ -545,13 +541,15 @@ class CrystalInfo:
             #if not got_symm:
             if has_xyz_line(file_path):
                 with open("list_of_cif_fails.txt", "a", encoding="utf-8") as fp:
-                    fp.write(file + "\n")
+                    #fp.write(file + "\n")
+                    pass
 
         if err_count > 0:
             logging.error(" Failed to load cif file '%s', aborting", file_path)
 
             with open("list_of_cif_fails.txt", "a", encoding="utf-8") as fp:
                 fp.write(file + "\n")
+                pass
             return output
 
         #print("Starting get_csv_arr_from_cif() for", file_path, name)
@@ -1245,10 +1243,10 @@ class CrystalInfo:
 
         #print(self.cifValAndErr.unitCellLengths)
         if self.cifPyMatGen:
-            print("pymatget to output crystal")
+            #print("pymatgen to output crystal")
             self.cifOutput = self.cifPyMatGen
         else:
-            print("starting ValAndErr merge")
+            #print("starting ValAndErr merge")
             self.cifOutput = crystaldata.CrystalData("ValAndErr", self.uuidDB,
                                                      abox_prefix=self.abox_prefix)
             self.cifOutput = self.cifValAndErr
@@ -1419,16 +1417,16 @@ if __name__ == "__main__":
     #files += list_files_with_extension( os.path.join("ccdcfiles"), ".cif")
 
     files = []
-    data = tools.readCsv("a_cifs.csv")
+    data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "a_cifs.csv"))
     data = data[1:]  # <= removed the header line
     for line in data[:]:
         if line[5] != "" and line[5].lower() != "none":
             if line[5].lower() not in files:
                 files += line[5].lower().split()
 
-    print("Found files:", len(files))
+    #print("Found files:", len(files))
     files = list(set(files))
-    print("Found files:", len(files))
+    print("Found CIF files:", len(files))
 
     tmp = list(files)
     tmp.sort()
@@ -1437,6 +1435,16 @@ if __name__ == "__main__":
         if line.lower() == tmp[i_line+1].lower():
             print("Repeating file ", line)
             pass
+
+    tmp = list(files)
+    files = []
+    for file in tmp:
+        new_file = os.path.join(DATA_DIR, "crystal", "data", file)
+        if not os.path.isfile(new_file):
+            print("Missing file", new_file)
+        files.append(new_file)
+        #print(files[-1])
+
     #1/0
     # FIXME
     #print("testing for aaaaaaaaaaaaaaaaaaaaa")
@@ -1460,7 +1468,6 @@ if __name__ == "__main__":
     #    2b. Keep a list of CIF uuid
     #    2c. Once too many lines in the output - create a new file
 
-    DB_FOLDER = "crystals"
     if not os.path.isdir(DB_FOLDER):
         os.mkdir(DB_FOLDER)
 
@@ -1533,5 +1540,3 @@ if __name__ == "__main__":
     CIF_IRI_DATA.save()
 
     pass
-CIF_IRI_FILE = "cif_iri_list.csv"  # Format: filename, folder, iri, uuid
-CIF_IRI_LIST = None
