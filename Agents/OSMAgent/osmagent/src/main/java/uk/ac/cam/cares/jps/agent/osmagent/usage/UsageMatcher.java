@@ -133,24 +133,41 @@ public class UsageMatcher {
      * @param polygonTable table containing OSM data with the geometries being polygons
      * @param usageTable centralised table to store usage information
      */
-    public void copyFromOSM(String pointTable, String polygonTable, String usageTable) {
-        String usageSchema = usageTable.split("\\.")[0];
-        String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + usageSchema;
-        String initialiseTable = "CREATE TABLE IF NOT EXISTS " + usageTable;
-
-        initialiseTable += " (building_iri TEXT, propertyusage_iri TEXT, ontobuilt TEXT, usageshare FLOAT)";
-
+    public void copyFromOSM(String pointTable, String polygonTable, String schema, String usageTable, String addressTable) {
+        // initialise schema
+        String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + schema;
         rdbStoreClient.executeUpdate(initialiseSchema);
-        rdbStoreClient.executeUpdate(initialiseTable);
 
-        String copyIri = "INSERT INTO %s (building_iri, ontobuilt)\n" +
+        // initialise usage table
+        String initialiseUsageTable = "CREATE TABLE IF NOT EXISTS " + usageTable;
+
+        initialiseUsageTable += " (building_iri TEXT, propertyusage_iri TEXT, ontobuilt TEXT, usageshare FLOAT)";
+
+        rdbStoreClient.executeUpdate(initialiseUsageTable);
+
+        // insert usage data from OSM into usage table
+        String copyUsage = "INSERT INTO %s (building_iri, ontobuilt)\n" +
                 "SELECT o.building_iri, o.ontobuilt FROM %s o\n" +
                 "LEFT JOIN %s u on u.building_iri = o.building_iri AND u.ontobuilt = o.ontobuilt\n" +
                 "WHERE u.building_iri IS NULL AND u.ontobuilt IS NULL\n" +
                 "AND o.building_iri IS NOT NULL AND o.ontobuilt IS NOT NULL";
 
-        rdbStoreClient.executeUpdate(String.format(copyIri, usageTable, pointTable, usageTable));
-        rdbStoreClient.executeUpdate(String.format(copyIri, usageTable, polygonTable, usageTable));
+        rdbStoreClient.executeUpdate(String.format(copyUsage, usageTable, pointTable, usageTable));
+        rdbStoreClient.executeUpdate(String.format(copyUsage, usageTable, polygonTable, usageTable));
+
+        // initialise address table
+        String initialiseAddressTable = "CREATE TABLE IF NOT EXISTS " + addressTable;
+
+        initialiseAddressTable += " (building_iri TEXT, address_iri TEXT, country TEXT, city TEXT, street TEXT, house_number TEXT, postcode TEXT)";
+
+        rdbStoreClient.executeUpdate(initialiseAddressTable);
+
+        String copyAddress = "INSERT INTO %s (building_iri , country, city, street, house_number, postcode)\n" +
+                "SELECT o.building_iri, o.country, o.city, o.street, o.house_number, o.postcode FROM %s o\n" +
+                "WHERE o.building_iri NOT IN (SELECT building_iri FROM %s)";
+
+        rdbStoreClient.executeUpdate(String.format(copyAddress, addressTable, polygonTable, addressTable));
+        rdbStoreClient.executeUpdate(String.format(copyAddress, addressTable, pointTable, addressTable));
     }
 
     /**
