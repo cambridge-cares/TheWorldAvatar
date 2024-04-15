@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  derivationexample:
-    container_name: derivationexample
-    image: derivationexample:1.2.0
+  derivationexamplebnl:
+    container_name: derivationexamplebnl
+    image: derivationexamplebnl:1.2.0
     build:
       context: ./
     volumes:
