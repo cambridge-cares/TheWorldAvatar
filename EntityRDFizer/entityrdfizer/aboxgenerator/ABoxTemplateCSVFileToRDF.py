@@ -19,17 +19,12 @@ import entityrdfizer.aboxgenerator.ABoxGeneration as aboxgen
 from entityrdfizer.aboxgenerator import tboxtools
 
 '''
-Log:
-
-TODO: proper abox and tbox address (HASH/SLASH)
-
 There are two traditional ways to form the IRI for instances:
 1) HASH-separated:
     if abox address contains "#" at the end
 2) SLASH-separated
     if abox address contains "/" at the end
-Depending on the abox and tbox address
-
+Depending on the abox and tbox address in the header.
 '''
 
 """
@@ -143,7 +138,7 @@ def instance_to_http(value, file_line):
         if SHOW_WARNING:
             print(f"Error in instace_to_http(): input must be str. Got: '{value}'.")
         WARNING_COUNT += 1
-    # Choose slash or hash or return error depending on the settings:
+
     if INSTANCE_TO_HTTP == "USE_SLASH":
         full_path = propread.getABoxIRI() + SLASH + format_iri(str(value).strip())
     elif INSTANCE_TO_HTTP == "USE_HASH":
@@ -167,16 +162,11 @@ def class_to_http(value, file_line):
             print("Error in class_to_http(): input must be str. " +
                   f"Got: '{value}' {file_line}.")
         WARNING_COUNT += 1
-#        return str(value)
-    # FIXME choose slash or hash or nothing depending on the settings
 
-    # full_path = propread.getTBoxIRI() + HASH + format_iri(str(value))
-    # full_path = propread.getABoxIRI() + SLASH + format_iri(str(value))
-    # full_path = "http://www.theworldavatar.com/kg/ontocrystal/" + format_iri(str(value))
     if CLASS_TO_HTTP == "USE_SLASH":
-        full_path = propread.getABoxIRI() + SLASH + format_iri(str(value))
+        full_path = propread.getTBoxIRI() + SLASH + format_iri(str(value))
     elif CLASS_TO_HTTP == "USE_HASH":
-        full_path = propread.getABoxIRI() + HASH + format_iri(str(value))
+        full_path = propread.getTBoxIRI() + HASH + format_iri(str(value))
     else:
         print("Error in class_to_http(): unknown " +
               f"CLASS_TO_HTTP = {CLASS_TO_HTTP} {file_line}")
@@ -489,6 +479,15 @@ def process_data(row, file_line):
             WARNING_COUNT += 1
             return
 
+        prop = get_data_type(row[0], file_line)
+        if is_http(prop):
+            prop = prop.strip()
+        elif ":" in prop:
+            # Do nothing
+            pass
+        else:
+            prop = class_to_http(prop, file_line)
+
         if is_http(row[2]):
             instance = row[2].strip()
         elif row[2].strip() in instances:
@@ -500,7 +499,6 @@ def process_data(row, file_line):
             WARNING_COUNT += 1
             instance = row[2]
 
-        prop = get_data_type(row[0], file_line)
         if is_empty(row[5]):
             aboxgen.link_data(g, URIRef(prop),
                               URIRef(instance), row[4].strip())
