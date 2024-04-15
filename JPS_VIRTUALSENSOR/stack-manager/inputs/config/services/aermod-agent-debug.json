@@ -3,19 +3,19 @@
 		"Name": "aermod-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.4",
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.5",
 				"Env": [
-					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",
+					"PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000/getAermodGeoJSON",
 					"AERMAP_EXE=/root/aermod/aermap",
 					"BPIPPRM_EXE=/root/aermod/bpipprm",
 					"AERMET_EXE=/root/aermod/aermet",
 					"AERMOD_EXE=/root/aermod/aermod",
-					"WEATHER_AGENT=http://ship-stack-weather-agent:8080/WeatherAgent/UpdateStation",
+					"WEATHER_AGENT=http://${STACK_NAME}-weather-agent:8080/WeatherAgent/UpdateStation",
 					"DATABASE=postgres",
 					"GEOSERVER_WORKSPACE=dispersion",
 					"DISPERSION_LAYER=dispersion_layer",
 					"SIMULATION_DIR=/root/aermod/simulations",
-					"FILE_SERVER_URL=http://ship-stack-file-server:8080/FileServer/",
+					"FILE_SERVER_URL=http://${STACK_NAME}-file-server:8080/FileServer/",
 					"ELEVATION_TABLE=elevation",
 					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
 					"DISPERSION_RASTER_TABLE=dispersion_raster",
@@ -23,8 +23,9 @@
 					"BUILDINGS_TABLE=buildings",
 					"STATIC_SOURCE_TABLE=static",
 					"ELEVATION_CONTOURS_TABLE=elevation_contours",
-					"PARALLELISE_EMISSIONS_UPDATE=true",
+					"PARALLELISE_EMISSIONS_UPDATE=false",
 					"TARGET_EMISSION_VOLUME_FRACTION=0.001",
+					"SHIPS_LAYER_NAME=ships",
 					"JPDA_ADDRESS=0.0.0.0:5005",
 					"JPDA_TRANSPORT=dt_socket",
 					"DEBUG=ON"
@@ -49,18 +50,6 @@
 					},
 					{
 						"SecretName": "geoserver_password"
-					}
-				],
-				"Mounts": [
-					{
-						"Type": "volume",
-						"Source": "logs",
-						"Target": "/root/.jps"
-					},
-					{
-						"Type": "volume",
-						"Source": "vis_data",
-						"Target": "/vis_data"
 					}
 				]
 			}

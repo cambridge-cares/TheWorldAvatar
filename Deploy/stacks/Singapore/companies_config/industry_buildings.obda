@@ -1,0 +1,82 @@
+[PrefixDeclaration]
+:               https://www.theworldavatar.com/kg/infrastructure/
+building:       https://www.theworldavatar.com/kg/Building/
+ontobim:        https://www.theworldavatar.com/kg/ontobim/
+ontocompany:    http://www.theworldavatar.com/kg/ontocompany#
+ontochemplant:  http://www.theworldavatar.com/kg/ontochemplant#
+ontocape:       http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/
+ontobuiltenv:   https://www.theworldavatar.com/kg/ontobuiltenv/
+cityfurniture:  https://www.theworldavatar.com/kg/CityFurniture/	
+rdf:            http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:           http://www.w3.org/2000/01/rdf-schema#
+owl:            http://www.w3.org/2002/07/owl#
+xsd:            http://www.w3.org/2001/XMLSchema#
+skos:           http://www.w3.org/2004/02/skos/core#
+om:             http://www.ontology-of-units-of-measure.org/resource/om-2/
+geo:            http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+
+mappingId       datacentrebuildings
+target          building:{building_uuid} ontobim:hasFacility :datacenter/{facility_uuid}.
+source          SELECT
+                    "facility_uuid",
+                    "building_uuid"
+                FROM
+                    "data_centres" 
+                WHERE "infrastructure_type" = 'Data Centre'
+
+
+mappingId       chemicalbuildings
+target          building:{building_uuid} ontobim:hasFacility :chemplant/{facility_uuid}.
+source          SELECT
+                    "facility_uuid",
+                    "building_uuid"
+                FROM
+                    "factories" 
+                WHERE "infrastructure_type" = 'Chemical Plant'
+
+mappingId       semiconductorbuildings
+target          building:{building_uuid} ontobim:hasFacility :waferPlant/{facility_uuid}.
+source          SELECT
+                    "facility_uuid",
+                    "building_uuid"
+                FROM
+                    "factories" 
+                WHERE "infrastructure_type" = 'Semiconductor Plant'
+
+mappingId       foodbuildings
+target          building:{building_uuid} ontobim:hasFacility :foodPlant/{facility_uuid}.
+source          SELECT
+                    "facility_uuid",
+                    "building_uuid"
+                FROM
+                    "factories" 
+                WHERE "infrastructure_type" = 'Food Plant'
+
+mappingId       pharmaceuticalbuildings
+target          building:{building_uuid} ontobim:hasFacility :pharmaPlant/{facility_uuid}.
+source          SELECT
+                    "facility_uuid",
+                    "building_uuid"
+                FROM
+                    "factories" 
+                WHERE "infrastructure_type" = 'Pharmaceutical Plant'
+
+mappingId       precisionbuildings
+target          building:{building_uuid} ontobim:hasFacility :precisionPlant/{facility_uuid}.
+source          SELECT
+                    "facility_uuid",
+                    "building_uuid"
+                FROM
+                    "precision_engineering"
+
+mappingId       printingbuildings
+target          building:{building_uuid} ontobim:hasFacility :printingPlant/{facility_uuid}.
+source          SELECT
+                    "facility_uuid",
+                    "building_uuid"
+                FROM
+                    "printing"  
+
+]]
