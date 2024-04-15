@@ -1,3 +1,4 @@
+import os
 from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, Request
@@ -34,6 +35,7 @@ async def home(
         dict(
             request=request,
             qa_engine=qa_engine.value,
+            ga_measurement_id=os.getenv("GA_MEASUREMENT_ID"),
             qa_domains=[
                 dict(value=datum.qa_domain, label=datum.label)
                 for datum in sample_questions
