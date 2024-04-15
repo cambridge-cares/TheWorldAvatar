@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.theworldavatar.com/kg/OntoWTBladeMatPassport#"
+<rdf:RDF xmlns="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/"
      xml:base="http://www.theworldavatar.com/kg/OntoWTBladeMatPassport"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -8,9 +8,9 @@
      xmlns:om-2="http://www.ontology-of-units-of-measure.org/resource/om-2/"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:skos="http://www.w3.org/2004/02/skos/core#"
-     xmlns:ontomatpassport="http://www.theworldavatar.com/kg/ontomatpassport#"
-     xmlns:OntoWTBladeMatPassport="http://www.theworldavatar.com/kg/OntoWTBladeMatPassport#">
-    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/OntoWTBladeMatPassport">
+     xmlns:ontomatpassport="http://www.theworldavatar.com/kg/ontomatpassport/"
+     xmlns:OntoWTBladeMatPassport="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/">
         <owl:imports rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/dev-composite-materials-ontology/JPS_Ontology/ontology/ontomatpassport/OntoMatPassport.owl"/>
         <rdfs:comment xml:lang="en">An ontology designed to represent data contained in material passports for wind turbine blades.</rdfs:comment>
         <rdfs:label xml:lang="en">OntoWTBladeMatPassport</rdfs:label>
@@ -47,10 +47,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kg/OntoWTBladeMatPassport#MaximumChord -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumChord -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/OntoWTBladeMatPassport#MaximumChord">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Dimension"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumChord">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
         <rdfs:comment xml:lang="en">The longest width of a wind turbine blade.</rdfs:comment>
         <rdfs:label xml:lang="en">Maximum chord</rdfs:label>
         <skos:altLabel xml:lang="en">Longest width</skos:altLabel>
@@ -58,39 +58,39 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kg/OntoWTBladeMatPassport#MaximumLaminateThickness -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumLaminateThickness -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/OntoWTBladeMatPassport#MaximumLaminateThickness">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Dimension"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumLaminateThickness">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
         <rdfs:comment xml:lang="en">The thickest position of the laminated materials in the wind turbine blade.</rdfs:comment>
         <rdfs:label xml:lang="en">Maximum laminate thickness</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/OntoWTBladeMatPassport#MaximumThickness -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumThickness -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/OntoWTBladeMatPassport#MaximumThickness">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Dimension"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumThickness">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
         <rdfs:comment xml:lang="en">The thickness of the blade at the thickest position.</rdfs:comment>
         <rdfs:label xml:lang="en">Maximum thickness</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/OntoWTBladeMatPassport#RootDiametre -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/RootDiametre -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/OntoWTBladeMatPassport#RootDiametre">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Dimension"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/RootDiametre">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
         <rdfs:comment xml:lang="en">The diameter of the wind turbine blade&apos;s root or base inserted into the turbine hub.</rdfs:comment>
         <rdfs:label xml:lang="en">Root diametre</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Dimension -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Dimension -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Dimension"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
 </rdf:RDF>
 
 

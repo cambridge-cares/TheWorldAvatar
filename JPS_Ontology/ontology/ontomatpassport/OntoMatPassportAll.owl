@@ -14,7 +14,7 @@
      xmlns:skos="http://www.w3.org/2004/02/skos/core#"
      xmlns:terms="http://purl.org/dc/terms/"
      xmlns:OntoSpecies="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#">
-    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontomatpassport"/>
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/"/>
     
 
 
@@ -43,6 +43,12 @@
     
 
 
+    <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
+
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -59,6 +65,7 @@
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+		<rdfs:label xml:lang="en">Unit</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -68,6 +75,7 @@
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+		<rdfs:label xml:lang="en">Value</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -901,7 +909,6 @@
     <!-- http://www.theworldavatar.com/kg/ontomatpassport/ChemicalComposition -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ChemicalComposition">
-        <rdfs:comment xml:lang="en">Chemical composition refers to the arrangement, type, and ratio of atoms in molecules of chemical substances [Chemistry LibreTexts].</rdfs:comment>
         <rdfs:label xml:lang="en">Chemical composition</rdfs:label>
     </owl:Class>
     
@@ -1603,23 +1610,6 @@
         <rdfs:label xml:lang="en">Toxicity</rdfs:label>
     </owl:Class>
     
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/UserInterfaceType -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/UserInterfaceType">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ComponentType"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ProductType"/>
-                </owl:oneOf>
-            </owl:Class>
-        </owl:equivalentClass>
-    </owl:Class>
-    
-
-
     <!-- http://www.theworldavatar.com/kg/ontomatpassport/VirginContentMass -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/VirginContentMass">
@@ -1720,6 +1710,533 @@
     </owl:Class>
     
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/HeatCapacity -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatCapacity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty"/>
+        <rdfs:label xml:lang="en">Heat capacity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty"/>
+        <rdfs:label xml:lang="en">Specific heat capacity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/GlassTransitionTemperature -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/GlassTransitionTemperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/GlassTransitionTemperatureMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/GlassTransitionTemperatureMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">A thermal property referring to a range of temperatures over which a polymer converts from a rigid state to a soft state.</rdfs:comment>
+        <rdfs:label xml:lang="en">Glass transition temperature</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/GlassTransitionTemperatureMeasure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/GlassTransitionTemperatureMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeFahrenheit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Glass transition temperature measure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/MeltingPoint -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/MeltingPoint">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/MeltingTemperatureMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/MeltingTemperatureMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">A thermal property indicating the temperature that causes a solid substance to convert into liquid form.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Melting temperature</rdfs:comment>
+        <rdfs:label xml:lang="en">Melting point</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/MeltingTemperatureMeasure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontoautomatpassport/MeltingTemperatureMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Melting temperature measure</rdfs:label>
+    </owl:Class>
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Capacitance -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Capacitance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty"/>
+        <rdfs:label xml:lang="en">Capacitance</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/ElectricalResistance -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/ElectricalResistance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ResistanceMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ResistanceMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Resistance</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/CapacitorTerminationStyle -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/CapacitorTerminationStyle">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:label xml:lang="en">Capacitor termination style</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/CapacitorTolerance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/CapacitorTolerance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty"/>
+        <rdfs:label xml:lang="en">Capacitor tolerance</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/CurrentMeasure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/CurrentMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/ampere"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/milliampere"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Current measure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/DielectricType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/DielectricType">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterial"/>
+        <rdfs:label xml:lang="en">Dielectric type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:label xml:lang="en">Electrical property</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/MaximumOperatingTemperature -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/MaximumOperatingTemperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/OperatingTemperature"/>
+        <rdfs:label xml:lang="en">Maximum operating temperature</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/MinimumOperatingTemperature -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/MinimumOperatingTemperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/OperatingTemperature"/>
+        <rdfs:label xml:lang="en">Minimum operating temperature</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/OperatingCurrent -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/OperatingCurrent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/CurrentMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/CurrentMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Operating current</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/OperatingTemperature -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/OperatingTemperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
+        <rdfs:label xml:lang="en">Operating temperature</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/OperatingVoltage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/OperatingVoltage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Operating voltage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/PowerDissipation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/PowerDissipation">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/PowerMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/PowerMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Power dissipation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/PowerMeasure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/PowerMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/kilowatt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/milliwatt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/watt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Power measure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/PowerRating -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/PowerRating">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/PowerMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/PowerMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Power rating</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ResistanceMeasure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ResistanceMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/kilohm"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/ohm"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Resistance measure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ResistorTerminationStyle -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ResistorTerminationStyle">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:label xml:lang="en">Resistor termination style</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ResistorTolerance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ResistorTolerance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty"/>
+        <rdfs:label xml:lang="en">Resistor tolerance</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageMeasure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/kilovolt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/millivolt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/volt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Voltage measure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageRating -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageRating">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/ElectricalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Voltage rating</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageRatingDC -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageRatingDC">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ontopcbmatpassport/VoltageRating"/>
+        <rdfs:label xml:lang="en">Voltage rating DC</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property">
+        <rdfs:label xml:lang="en">Property</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://w3id.org/mdo/core/PhysicalProperty -->
+
+    <owl:Class rdf:about="https://w3id.org/mdo/core/PhysicalProperty">
+        <rdfs:label xml:lang="en">Physical property</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumChord -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumChord">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
+        <rdfs:comment xml:lang="en">The longest width of a wind turbine blade.</rdfs:comment>
+        <rdfs:label xml:lang="en">Maximum chord</rdfs:label>
+        <skos:altLabel xml:lang="en">Longest width</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumLaminateThickness -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumLaminateThickness">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
+        <rdfs:comment xml:lang="en">The thickest position of the laminated materials in the wind turbine blade.</rdfs:comment>
+        <rdfs:label xml:lang="en">Maximum laminate thickness</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumThickness -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/MaximumThickness">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
+        <rdfs:comment xml:lang="en">The thickness of the blade at the thickest position.</rdfs:comment>
+        <rdfs:label xml:lang="en">Maximum thickness</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/RootDiametre -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ontowtbladepassport/RootDiametre">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
+        <rdfs:comment xml:lang="en">The diameter of the wind turbine blade&apos;s root or base inserted into the turbine hub.</rdfs:comment>
+        <rdfs:label xml:lang="en">Root diametre</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Dimension -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
+
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -1728,33 +2245,6 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
-
-    
-
-
-    <!-- http://purl.org/dc/terms/URI -->
-
-    <owl:NamedIndividual rdf:about="http://purl.org/dc/terms/URI"/>
-    
-
-
-    <!-- http://purl.org/goodrelations/v1#name -->
-
-    <owl:NamedIndividual rdf:about="http://purl.org/goodrelations/v1#name"/>
-    
-
-
-    <!-- http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService -->
-
-    <owl:NamedIndividual rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/HeatTransferCoefficient -->
-
-    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatTransferCoefficient"/>
-    
-
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/centimetre -->
 
@@ -1786,26 +2276,6 @@
         <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
     </owl:NamedIndividual>
     
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
-
-    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue"/>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
-
-    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
-
-    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
-    
-
-
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/kilogram -->
 
     <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/kilogram"/>
@@ -1931,366 +2401,80 @@
     <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/year"/>
     
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/ampere -->
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Biodegradability -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Biodegradability"/>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/ampere"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/BiologicalProperty -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/kilohm -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/BiologicalProperty"/>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/kilohm"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ChemicalCompositionalProperty -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/kilovolt -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ChemicalCompositionalProperty"/>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/kilovolt"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ChemicalProperty -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/kilowatt -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ChemicalProperty"/>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/kilowatt"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ComponentType -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/milliampere -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ComponentType">
-        <rdfs:label xml:lang="en">Component</rdfs:label>
-    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/milliampere"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/CompressiveStrength -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/millivolt -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CompressiveStrength"/>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/millivolt"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Decomposability -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/milliwatt -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Decomposability"/>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/milliwatt"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Density -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/ohm -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Density"/>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/ohm"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Dimension -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/volt -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/volt"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/DimensionLessQuantity -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/watt -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/DimensionLessQuantity"/>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/watt"/>
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius -->
+
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ExpectedLifetime -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/degreeFahrenheit -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ExpectedLifetime"/>
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeFahrenheit"/>
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/HealthAndSafetyHazard -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/HealthAndSafetyHazard"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Height -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Height"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Ingredient -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Ingredient"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Length -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Length"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Manufacturer -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Manufacturer"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ProductIdentifier -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ProductIdentifier"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ProductType -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ProductType">
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
-        <rdfs:label xml:lang="en">Product</rdfs:label>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/RecycledContent -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/RecycledContent"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Resistance -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Resistance"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Rigidity -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Rigidity"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ServiceLife -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ServiceLife"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ShearModulus -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ShearModulus"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ShearStrength -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ShearStrength"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/TemporalProperty -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/TemporalProperty"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/TensileStrength -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/TensileStrength"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Weight -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Weight"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Width -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Width"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasAutomaticTrackingOrScanning -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasAutomaticTrackingOrScanning"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasBrandName -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasBrandName"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasCEMarkingDocument -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasCEMarkingDocument"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasCountry -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasCountry"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasEAN -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasEAN"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasEPDDocument -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasEPDDocument"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasFunctionality -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasFunctionality"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasGTIN -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasGTIN"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasImage -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasImage"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasMSDSDocument -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasMSDSDocument"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasManufacturer -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasManufacturer"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasManufacturerName -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasManufacturerName"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasNumber -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasNumber"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasProductType -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasProductType"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasProperty -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasProperty"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasRegistrationCountry -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasRegistrationCountry"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasRegistrationNumber -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasRegistrationNumber"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/hasTradeName -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/hasTradeName"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/heatTransferCoefficient-Dimension -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/heatTransferCoefficient-Dimension">
-        <rdfs:label xml:lang="en">Heat transfer coefficient dimension</rdfs:label>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/isBiodegradable -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/isBiodegradable"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/isDecomposable -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/isDecomposable"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/isHazardous -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/isHazardous"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/level -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/level"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/partOf -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/partOf"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/representedUsing -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/representedUsing"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/Young&apos;sModulus -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Young&apos;sModulus"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
-    
-
-
-    <!-- https://dbpedia.org/ontology/Country -->
-
-    <owl:NamedIndividual rdf:about="https://dbpedia.org/ontology/Country"/>
-    
-
-
-    <!-- https://w3id.org/mdo/core/PhysicalProperty -->
-
-    <owl:NamedIndividual rdf:about="https://w3id.org/mdo/core/PhysicalProperty"/>
-    
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin"/>
 
 
     <!-- 
