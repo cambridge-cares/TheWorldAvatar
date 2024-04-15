@@ -482,7 +482,7 @@ class CrystalData:
         #self.cifStandard = None
         self.cifStandard = self.readStandardFile(os.path.join("ontozeolite", "crystal",
                                                  "data", "CIF_standard_2.4.5.txt"))
-        self.cifStandard = self.readStandardFile("CIF_standard_2.4.5.txt")
+        #self.cifStandard = self.readStandardFile("CIF_standard_2.4.5.txt")
         self.cifStandard += ["_symmetry_Int_Tables_number"]
 
         if abox_prefix:
