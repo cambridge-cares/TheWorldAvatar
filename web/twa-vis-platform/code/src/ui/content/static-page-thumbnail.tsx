@@ -3,10 +3,10 @@
 import styles from './static-page-thumbnail.module.css';
 
 import React from 'react';
-import Link from 'next/link';
 import { Tooltip } from '@mui/material';
 
 import { OptionalPage } from 'io/config/optional-pages';
+import AppLink from 'ui/navigation/link/link';
 
 // Interface for incoming parameters
 interface Props {
@@ -24,15 +24,14 @@ export default function StaticPageThumbnail({ page }: Readonly<Props>) {
 
     const tooltipText = "Click to open the '" + page.title + "' page.";
     const thumbnail = page.thumbnail ?? "/images/defaults/icons/info.svg";
-    const url = "/posts/" + page.slug;
+    const url = `/posts/${page.slug}`;
 
     return (
         <Tooltip title={tooltipText} enterDelay={1000} leaveDelay={100}>
-            <Link href={url} className={styles.container}>
-                    
+            <AppLink url={url} className={styles.container}>
                 {/* Add thumbnail */}
                 <div className={styles.thumbnail}>
-                    <img src={thumbnail}/>
+                    <img src={thumbnail} />
                 </div>
 
                 <div className={styles.content}>
@@ -43,8 +42,7 @@ export default function StaticPageThumbnail({ page }: Readonly<Props>) {
                         {page.description}
                     </div>
                 </div>
-
-            </Link>
+            </AppLink>
         </Tooltip>
     );
 }

@@ -9,10 +9,11 @@ import React from 'react';
 import Link from 'next/link';
 import { Tooltip } from '@mui/material';
 import markdownit from 'markdown-it';
-// import { CFooter, CLink } from '@coreui/react'
 
-import StaticPageThumbnail from 'ui/content/static-page-thumbnail';
+import { Routes } from 'io/config/routes';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
+import StaticPageThumbnail from 'ui/content/static-page-thumbnail';
+import AppLink from 'ui/navigation/link/link';
 
 // Utilities to render markdown into HTML
 const markdowner = markdownit({
@@ -49,7 +50,7 @@ export default function LandingPage(props: LandingPageProps) {
         "Geospatial map",
         "Explore assets, connections, and failures visually.",
         "/images/defaults/icons/map.svg",
-        "/visualisation"
+        Routes.MAP
     );
 
     // Button to open dashboard page.
@@ -57,7 +58,7 @@ export default function LandingPage(props: LandingPageProps) {
         "Analytics dashboard",
         "Investigate all data across all scenarios.",
         "/images/defaults/icons/dash.svg",
-        "/analytics"
+        Routes.DASHBOARD
     );
 
     return (
@@ -103,7 +104,7 @@ function buildButton(title: string, description: string, icon: string, url: stri
 
     return (
         <Tooltip title={tooltipText} enterDelay={1000} leaveDelay={100}>
-            <Link href={url} className={styles.button}>
+            <AppLink url={url} className={styles.button}>
                 {/* Add thumbnail */}
                 <div className={styles.buttonIcon}>
                     <img src={icon} />
@@ -116,7 +117,7 @@ function buildButton(title: string, description: string, icon: string, url: stri
                 <div className={styles.buttonDescription}>
                     {description}
                 </div>
-            </Link>
+            </AppLink>
         </Tooltip>
     )
 }

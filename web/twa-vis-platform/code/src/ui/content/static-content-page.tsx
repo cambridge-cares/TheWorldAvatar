@@ -9,11 +9,11 @@ import styles from './static-content-page.module.css';
 import iconStyles from 'ui/buttons/icon-button.module.css';
 import 'github-markdown-css/github-markdown.css';
 
-import Link from 'next/link';
-import React from 'react';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
+import { Routes } from 'io/config/routes';
 import MaterialIconButton from 'ui/buttons/icon-button';
+import AppLink from 'ui/navigation/link/link';
 
 // Interface for properties with react nodes
 interface Props {
@@ -34,13 +34,13 @@ export default function StaticContentPage({ childNodes, childString }: Readonly<
 
     // Return to landing button
     const returnButton = (
-        <Link href="/" className={styles.button}>
+        <AppLink url={Routes.HOME} className={styles.button}>
             <MaterialIconButton
                 iconName="arrow_circle_left"
-                iconStyles= {[iconStyles["large-icon"]]}
-                className = {iconStyles["elongated-icon-button-container"]}
+                iconStyles={[iconStyles["large-icon"]]}
+                className={iconStyles["elongated-icon-button-container"]}
             />
-        </Link>
+        </AppLink>
     );
 
     if (childNodes != null) {

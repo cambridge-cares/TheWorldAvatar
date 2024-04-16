@@ -3,9 +3,10 @@
 import styles from './toolbar-component.module.css';
 
 import React from 'react';
-
 import Icon from '@mui/material/Icon';
-import { Link, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
+
+import AppLink from 'ui/navigation/link/link';
 
 
 // Type definition for incoming parameters
@@ -38,10 +39,10 @@ export default class ToolbarComponent extends React.Component<ToolbarComponentPr
     render() {
 
         return (
-            <Link
+            <AppLink
                 className={styles.toolbarButton}
                 onClick={this.bubbleUp}
-                href={this.props.url}>
+                url={this.props.url}>
 
                 <Tooltip
                     title={this.props.tooltip}
@@ -59,8 +60,7 @@ export default class ToolbarComponent extends React.Component<ToolbarComponentPr
                         {this.props.icon}
                     </Icon>
                 </Tooltip>
-               
-            </Link>
+            </AppLink>
         );
     }
 }
