@@ -1,7 +1,7 @@
 
 
 import styles from './layer-tree.module.css';
-import iconStyles from 'ui/buttons/icon-button.module.css';
+import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 
 import SVG from 'react-inlinesvg';
 import React, { useEffect, useState } from 'react';

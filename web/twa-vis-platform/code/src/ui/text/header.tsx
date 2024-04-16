@@ -1,5 +1,5 @@
 import styles from './header.module.css';
-import iconStyles from 'ui/buttons/icon-button.module.css';
+import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 
 import React from 'react';
 
