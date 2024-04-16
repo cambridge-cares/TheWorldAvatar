@@ -29,7 +29,7 @@ Timeseries data is expected to be in the database "ntuenergy". This can be confi
 
 Then build image with:
 ```
-docker build -t ntu-energy-cluster-agent:1.0.0 .
+docker build -t ntu-energy-cluster-agent:2.0.0 .
 ```
 The Dockerfile will automatically copy all properties files and mapping folders and set environment variables pointing to their location. Therefore, you do not need to shift the properties files and mapping folder nor add in environment variables manually.
 

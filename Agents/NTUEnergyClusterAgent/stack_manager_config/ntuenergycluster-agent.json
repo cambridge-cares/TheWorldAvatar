@@ -3,7 +3,7 @@
     "Name": "ntuenergycluster-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ntu-energy-cluster-agent:1.0.0",
+        "Image": "ntu-energy-cluster-agent:2.0.0",
         "Configs": [
           {
             "ConfigName": "blazegraph"
