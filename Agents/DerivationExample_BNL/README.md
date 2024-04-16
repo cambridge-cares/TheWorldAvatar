@@ -1,7 +1,7 @@
-# Derivation Example
+# Derivation Example (BNL)
 
 ## Purpose
-This example demonstrates the usage of the derivation framework (DerivationInputs, DerivationOutputs, DerivationAgent, DerivationClient, and DerivationSparql class) from jps-base-lib.
+This exercise is a duplicate from DerivationExample (Synchronous) whereby the example demonstrates the usage of the derivation framework (DerivationInputs, DerivationOutputs, DerivationAgent, DerivationClient, and DerivationSparql class) from jps-base-lib. The purpose of this exercise to implement a simple example for BNL Use Case. 
 
 ## Setup
 This example uses a docker stack with three containers:
@@ -9,10 +9,7 @@ This example uses a docker stack with three containers:
 1. derivationexample (containing the following servlets)
     - DerivationExample/InitialiseInstances
     - DerivationExample/InputAgent
-    - DerivationExample/MinValueAgent
-    - DerivationExample/MaxValueAgent
-    - DerivationExample/DifferenceAgent
-    - DerivationExample/AverageAgent
+    - DerivationExample/SumValueAgent
 2. postgres
 3. blazegraph
 
@@ -76,7 +73,8 @@ curl http://localhost:8081/DerivationExample/InitialiseInstances
 ```
 If it is successful, you should receive a HTTP response with the IRIs of the newly created instances, e.g.
 ```json
-{"min value":"http://derivation_example#2b5f97c0-9e90-4eee-8c75-b193a83e2269","derivation of average":"https://www.theworldavatar.com/kg/ontoderivation/derived365dbb1a-89c1-49f4-9e00-546f85feb0c2","input":"http://derivation_example#bdba8ae0-51f5-4447-8d4b-1c4c05f8347f","average":"http://derivation_example#e7966f33-a01d-4ee5-a12e-825a96a10060","derivation of difference":"https://www.theworldavatar.com/kg/ontoderivation/derived9f192ef4-83a7-4c24-b8cf-3f3d9fc7f441","derivation of min value":"https://www.theworldavatar.com/kg/ontoderivation/derived66ccb5a6-6b29-43da-a68c-3e8f3f89010c","difference":"http://derivation_example#01a767ee-d048-4a89-b3e1-6def55f3410d","max value":"http://derivation_example#b8b26247-883d-4243-b19b-d9b08d13cd18","derivation of max value":"https://www.theworldavatar.com/kg/ontoderivation/derived2e8a4d01-bd19-4811-abdb-dee6b21e102a"}
+{"min value":"http://derivation_example#2b5f97c0-9e90-4eee-8c75-b193a83e2269","derivation of average":"https://www.theworldavatar.com/kg/ontoderivation/derived365dbb1a-89c1-49f4-9e00-546f85feb0c2","input":"http://derivation_example#bdba8ae0-51f5-4447-8d4b-1c4c05f8347f"}
+
 ```
 If this is not successful, it may be the case that the `derivationexample` container is still loading up, check the console of the container and ensure that the you see a line like this 
 ```
