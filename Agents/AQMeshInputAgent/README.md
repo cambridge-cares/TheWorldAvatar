@@ -214,7 +214,7 @@ Copy `stack-manager-input-config-service/aqmesh-input-agent.json` to the service
 
 ### Run the agent
 
-The agent has three routes, a status route, a retrieve route and a instantiateGeoLocation route. A description for each route is provided below.
+The agent has four routes, a status route, a retrieve route, a stop scheduler route and a instantiateGeoLocation route. A description for each route is provided below.
 
 #### Status route
 
@@ -236,6 +236,25 @@ This request gets the latest timeseries for the AQMesh and uploads them to the k
 An example of the request in curl syntax is shown below:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"interval\":\"180\",\"timeunit\":\"seconds\"}" http://localhost:3838/aqmesh-input-agent/retrieve
+```
+
+#### Stop Scheduler route
+
+This request will stop the internal scheduler that was initialized in the Retrieve route.
+
+An example of the request in curl syntax is shown below:
+```
+curl -X POST http://localhost:3838/aqmesh-input-agent/stopScheduler
+```
+
+If there is no internal scheduler running at the moment, the agent will return the following:
+```
+{"result":"Scheduler has not been initialised yet..."}
+```
+
+If the scheduler has been stopped successfully, the agent will return the following:
+```
+{"result":"Stopping Scheduler..."}
 ```
 
 #### InstatiateGeoLocation route
