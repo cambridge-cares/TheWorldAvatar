@@ -153,14 +153,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompany/belongsToIndustry">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocompany/DataCentre"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocompany/Factory"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany/IndustrialFacility"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany/Industry"/>
         <rdfs:comment>A relationship between a factory or data centre and its corresponding economic sector.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
