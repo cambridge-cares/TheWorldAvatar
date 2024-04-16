@@ -3,7 +3,7 @@ import styles from './info-tree.module.css';
 import React from 'react';
 
 import { JsonObject } from "types/json";
-import { MaterialIconButtonWithIndex } from 'ui/buttons/icon-button';
+import { MaterialIconButtonWithIndex } from 'ui/graphic/icon/icon-button';
 
 type InfoTabsProps = {
   data: JsonObject;

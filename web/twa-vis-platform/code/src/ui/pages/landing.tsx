@@ -12,7 +12,7 @@ import markdownit from 'markdown-it';
 
 import { Routes } from 'io/config/routes';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
-import StaticPageThumbnail from 'ui/content/static-page-thumbnail';
+import StaticPageThumbnail from './static-page-thumbnail';
 import AppLink from 'ui/navigation/link/link';
 
 // Utilities to render markdown into HTML

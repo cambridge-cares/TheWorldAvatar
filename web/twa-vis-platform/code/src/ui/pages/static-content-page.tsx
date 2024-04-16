@@ -12,7 +12,7 @@ import 'github-markdown-css/github-markdown.css';
 import React, { ReactNode } from 'react';
 
 import { Routes } from 'io/config/routes';
-import MaterialIconButton from 'ui/buttons/icon-button';
+import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import AppLink from 'ui/navigation/link/link';
 
 // Interface for properties with react nodes

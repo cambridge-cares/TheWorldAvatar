@@ -7,9 +7,9 @@ import { TimeSeriesGroup } from 'types/timeseries';
 import { JsonObject } from "types/json";
 import InfoTreeNode from './info-tree-node';
 import InfoTabs from './info-tabs';
-import Chart from 'ui/chart/chart';
-import DropdownField, { DropdownFieldOption } from 'ui/field/dropdown';
-import Table from 'ui/table/table';
+import Chart from 'ui/graphic/chart/chart';
+import Table from 'ui/graphic/table/table';
+import DropdownField, { DropdownFieldOption } from 'ui/interaction/dropdown/dropdown';
 import { parseTimeSeries } from 'utils/client-utils';
 
 const rootKey: string = "meta";

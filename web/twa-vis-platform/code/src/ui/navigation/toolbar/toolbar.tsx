@@ -6,10 +6,10 @@ import React from 'react';
 import SVG from 'react-inlinesvg';
 import { useSelector } from 'react-redux';
 
-import ToolbarComponent from './toolbar-component';
 import { Routes } from 'io/config/routes';
 import { selectItem } from 'state/context-menu-slice';
 import AppLink from 'ui/navigation/link/link';
+import ToolbarComponent from './toolbar-component';
 
 // Type definition for toolbar properties
 type ToolbarProps = {

@@ -5,8 +5,8 @@ import Konami from 'react-konami-code';
 import { Provider } from 'react-redux';
 
 import Trex from 'utils/trex';
-import ContextMenu from './context-menu/context-menu';
-import Toolbar from './toolbar/toolbar';
+import ContextMenu from './interaction/context-menu/context-menu';
+import Toolbar from './navigation/toolbar/toolbar';
 import { reduxStore } from 'app/store';
 import { DefaultSettings } from 'types/settings';
 

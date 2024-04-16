@@ -2,9 +2,9 @@ import styles from './legend-tree.module.css'; // Assuming you have a CSS module
 import React, { useState } from 'react';
 
 import { LegendSettings, LegendGroup } from 'types/settings';
-import HeaderField from 'ui/field/header';
-import IconComponent from 'ui/icon/icon';
-import DecagonIconComponent from 'ui/icon/decagon';
+import HeaderField from 'ui/text/header';
+import IconComponent from 'ui/graphic/icon/icon';
+import DecagonIconComponent from 'ui/graphic/icon/decagon';
 
 // Incoming parameters for component.
 type LegendTreeProps = {

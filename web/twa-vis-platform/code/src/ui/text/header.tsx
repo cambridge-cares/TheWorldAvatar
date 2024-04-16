@@ -3,7 +3,7 @@ import iconStyles from 'ui/buttons/icon-button.module.css';
 
 import React from 'react';
 
-import MaterialIconButton from 'ui/buttons/icon-button';
+import MaterialIconButton from 'ui/graphic/icon/icon-button';
 
 type HeaderFieldProps = {
   readonly name: string;

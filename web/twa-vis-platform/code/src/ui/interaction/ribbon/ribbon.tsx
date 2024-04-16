@@ -10,7 +10,7 @@ import RibbonComponentToggle from './components/ribbon-component-toggle';
 import RibbonComponentCombo from './components/ribbon-component-combo';
 import { addItem, selectItem } from 'state/context-menu-slice';
 import { ImageryOption, MapSettings } from 'types/settings';
-import { ContextItemDefinition } from 'ui/context-menu/context-item';
+import { ContextItemDefinition } from 'ui/interaction/context-menu/context-item';
 import { closeFullscreen, openFullscreen } from 'utils/client-utils';
 import {
   getCameraPositions,

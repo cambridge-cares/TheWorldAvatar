@@ -10,7 +10,7 @@ import { Map } from 'mapbox-gl';
 
 import { getIsStyleLoaded } from 'state/floating-panel-slice';
 import { MapLayerGroup, MapLayer } from 'types/map-layer';
-import MaterialIconButton from 'ui/buttons/icon-button';
+import MaterialIconButton from 'ui/graphic/icon/icon-button';
 
 // type definition for incoming properties
 type LayerTreeHeaderProps = {

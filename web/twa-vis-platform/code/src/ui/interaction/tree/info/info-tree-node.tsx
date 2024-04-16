@@ -6,8 +6,8 @@ import iconStyles from 'ui/buttons/icon-button.module.css';
 import React, { useState } from 'react';
 
 import { Attribute, AttributeGroup } from 'types/attribute';
-import MaterialIconButton from 'ui/buttons/icon-button';
-import HeaderField from '../../field/header';
+import MaterialIconButton from 'ui/graphic/icon/icon-button';
+import HeaderField from 'ui/text/header';
 
 // type definition for incoming properties
 type InfoTreeNodeProps = {

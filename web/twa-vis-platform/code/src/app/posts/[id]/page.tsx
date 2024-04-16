@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import React from 'react';
 import markdownIt from "markdown-it";
 
-import StaticContentPage from 'ui/content/static-content-page';
+import StaticContentPage from 'ui/pages/static-content-page';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
 
 // Type definition for incoming page parameters
