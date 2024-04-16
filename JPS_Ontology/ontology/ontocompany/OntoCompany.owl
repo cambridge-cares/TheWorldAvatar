@@ -360,7 +360,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.purl.org/oema/infrastructure/Building"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocompany/Factory"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocompany/IndustrialFacility"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -841,8 +841,7 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany/FloorArea">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany/DataCentreProperty"/>
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany/FactoryProperty"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany/IndustrialFacilityProperty"/>
         <rdfs:comment>The total floor area of an industrial facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
         <rdfs:label>floor area</rdfs:label>

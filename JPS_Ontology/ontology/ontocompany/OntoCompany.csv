@@ -31,7 +31,7 @@ http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,Class,,,,,,,h
 http://www.theworldavatar.com/kg/ontopowsys/powsysfunction/PowerConsumption,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,"The utilisation of power to satisfy needs or in manufacturing, e.g., chemical manufacturing.",http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl,Power Consumption
 Revenue,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,The total amount of income of an organization prior to any deductions.,http://www.theworldavatar.com/kg/ontocompany/,Revenue
 http://www.opengis.net/ont/geosparql#ehContains,Object Property,,,,,,A relationship between two spatial objects.,http://www.opengis.net/ont/geosparql,contains
-isOwnerOf,Object Property,,,Company,Factory UNION http://www.purl.org/oema/infrastructure/Building,,A relationship between a company and the entities it owns.,http://www.theworldavatar.com/kg/ontocompany/,is owner of
+isOwnerOf,Object Property,,,Company,IndustrialFacility UNION http://www.purl.org/oema/infrastructure/Building,,A relationship between a company and the entities it owns.,http://www.theworldavatar.com/kg/ontocompany/,is owner of
 http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsperformance/economicperformance/hasRevenue,Object Property,,,Company,Revenue,,A relationship between a company and its annual revenue,http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsperformance/economicperformance/,revenue
 hasPowerConsumption,Object Property,,,Company,http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#PowerConsumption,,A relationship between an entity and its annual power consumption.,http://www.theworldavatar.com/kg/ontocompany/,power consumption
 hasCompanyProperty,Data Property,,,Company,,,An attribute of a Company.,http://www.theworldavatar.com/kg/ontocompany/,company property
@@ -57,8 +57,7 @@ MaximumITCapacity,Class,DataCentreProperty,IS-A,,,,The maximum IT capacity of a 
 hasMaximumITCapacity,Object Property,,,DataCentre,ITLoad,,A relation between a data centre and its maximum IT capacity.,http://www.theworldavatar.com/kg/ontocompany/,Maximum IT Capacity
 UtilizationRate,Class,DataCentreProperty,IS-A,,,,The typical utilization rate of a data centre.,http://www.theworldavatar.com/kg/ontocompany/,Utilization Rate
 hasUtilizationRate,Object Property,,,DataCentre,UtilizationRate,,A relation between a data centre and its typical utilization rate.,http://www.theworldavatar.com/kg/ontocompany/,Utilization Rate
-FloorArea,Class,DataCentreProperty,IS-A,,,,The total floor area of an industrial facility,http://www.theworldavatar.com/kg/ontocompany/,floor area
-FloorArea,Class,FactoryProperty,IS-A,,,,The total floor area of an industrial facility,http://www.theworldavatar.com/kg/ontocompany/,floor area
+FloorArea,Class,IndustrialFacilityProperty,IS-A,,,,The total floor area of an industrial facility,http://www.theworldavatar.com/kg/ontocompany/,floor area
 hasFloorArea,Object Property,,,IndustrialFacility,FloorArea,,A relation between an industrial facility and its gross floor area.,http://www.theworldavatar.com/kg/ontocompany/,floor area
 FactoryProperty,Class,IndustrialFacilityProperty,IS-A,,,,A property of a factory,http://www.theworldavatar.com/kg/ontocompany/,factory property
 DesignCapacity,Class,FactoryProperty,IS-A,,,,Design capacity of a factory.,http://www.theworldavatar.com/kg/ontocompany/,Design Capacity
