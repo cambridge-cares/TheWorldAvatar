@@ -19,6 +19,8 @@ This agent is designed to run ONLY in a docker stack. No standalone option is cu
 
 ### [Step 1] Build a Docker Container
 
+List buyer and seller bus numbers in config/buses.py
+
 Then build image with:
 ```
 docker build -t ntu-p2p-energy-agent:1.0.0 .
