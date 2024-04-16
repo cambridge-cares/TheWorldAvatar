@@ -8,6 +8,8 @@
 **/
 
 const nextConfig = {
+	basePath: "",
+	assetPrefix: process.env.BASE_PATH ?? "",
 };
 
 module.exports = nextConfig;
