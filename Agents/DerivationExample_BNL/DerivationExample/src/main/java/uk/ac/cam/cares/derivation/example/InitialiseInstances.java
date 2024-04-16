@@ -31,11 +31,17 @@ public class InitialiseInstances extends JPSAgent{
 	private static String sumvalue_agent_iri = SparqlClient.namespace + "sumvalue_agent";
 	private static String sumvalue_agent_url = baseURL + SumValueAgent.URL_SUMVALUE;
 
+	private static String truckcalling_agent_iri = SparqlClient.namespace +"truckcalling_agent";
+	private static String truckcalling_agent_url = baseURL+TruckCallingAgent.URL_TruckValue;
+
 	public static final String derivationInstanceBaseURL = "http://derivationexample.com/triplestore/repository/";
 
 	public static final String input_key = "input";
 	public static final String sum_key = "sum value";
 	public static final String sum_dev_key = "derivation of sum value";
+
+	public static final String truck_key = "truck value";
+	public static final String truck_dev_key = "derivation of sum value";
 
 
 	@Override
@@ -71,17 +77,21 @@ public class InitialiseInstances extends JPSAgent{
 
 
 
+
 			// register ontoagent instances in triple store
 			String inputDataRdfType = SparqlClient.getRdfTypeString(SparqlClient.InputData);
 			String sumValueRdfType = SparqlClient.getRdfTypeString(SparqlClient.SumValue);
 			String scalarValueRdfType = SparqlClient.getRdfTypeString(SparqlClient.ScalarValue);
+			String truckValueRdfType = SparqlClient.getRdfTypeString(SparqlClient.TruckValue);
 
 
-			//Create ontoagent instances
+			//Create ontoagent instances for SumValue
 			devClient.createOntoAgentInstance(sumvalue_agent_iri, sumvalue_agent_url,
 					Arrays.asList(inputDataRdfType), Arrays.asList(sumValueRdfType, scalarValueRdfType));
 
-
+			//Create ontoagent instance for TruckValue
+			devClient.createOntoAgentInstance(truckcalling_agent_iri, truckcalling_agent_url,
+					Arrays.asList(sumValueRdfType), Arrays.asList(truckValueRdfType));
 
 			//Create sumvalue_iri
 			String sumvalue_property = sparqlClient.createSumValue();
@@ -89,17 +99,27 @@ public class InitialiseInstances extends JPSAgent{
 			String sum_value = sparqlClient.addValueInstance(sumvalue_property, 0);
 			LOGGER.info("Created sum value <" + sumvalue_property + ">");
 
+			//Create truckvalue_iri
+			String truckvalue_property = sparqlClient.createTruckValue();
+			//Initialise truckvalue to be 0
+			String truckvalue = sparqlClient.addStringInstance(truckvalue_property,"0");
+
 
 
 			// create standard derived quantities
 			String derived_sumvalue = devClient.createDerivation(Arrays.asList(sumvalue_property,sum_value), sumvalue_agent_iri, Arrays.asList(input));
 			LOGGER.info("Created derived quantity for min value <" + derived_sumvalue + ">");
 
+			String derived_truckvalue = devClient.createDerivation(Arrays.asList(truckvalue_property,truckvalue),truckcalling_agent_iri,Arrays.asList(sumvalue_property,sum_value));
+			LOGGER.info("Created derived quantity for truck value<"+derived_truckvalue+">");
+
 
 			JSONObject response = new JSONObject();
 			response.put(input_key, input);
 			response.put(sum_key, sumvalue_property);
 			response.put(sum_dev_key, derived_sumvalue);
+			response.put(truck_key,truckvalue_property);
+			response.put(truck_dev_key,derived_truckvalue);
 			return requestParams;
         }
 
