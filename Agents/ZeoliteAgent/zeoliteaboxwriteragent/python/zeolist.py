@@ -1,3 +1,9 @@
+"""
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
+
 import logging
 #logging.basicConfig( level = logging.INFO )
 logging.basicConfig( level = logging.WARNING )

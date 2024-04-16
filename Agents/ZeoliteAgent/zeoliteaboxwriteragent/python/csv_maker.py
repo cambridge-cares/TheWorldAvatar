@@ -1,4 +1,10 @@
 """
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
+
+"""
 Creator of abox .csv file for zeolite data from CIF file and other sources.
 
 This ontology uses the OntoCrystal and OntoZeolite TBox structures.

@@ -1,7 +1,7 @@
 @echo off
 rem Part of ontozeolite package.
 rem Generation of bibliography data for ontozeolites.
-rem Author: Rutkevych Pavlo
+rem Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
 rem Date: 2024/04/01
 
 set PYTHON=python

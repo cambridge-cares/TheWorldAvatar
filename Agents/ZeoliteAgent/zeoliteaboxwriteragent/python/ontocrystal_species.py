@@ -1,4 +1,10 @@
 """
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
+
+"""
 A substitute of OntoSpecies elements.
 In normal opoeration all OntoSpecies features should be taken from it,
 however, blazegraph does not allow cross-namespace operation.

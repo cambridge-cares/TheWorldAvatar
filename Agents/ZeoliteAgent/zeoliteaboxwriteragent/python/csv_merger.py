@@ -1,11 +1,11 @@
 """
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
+
+"""
 Combine several csvs.
-
-TODO
-1) ??? Verification that new classes are not defined twice. 
-   Though not strictly necessary. This is alreaty done in the abox_creator.
-2) 
-
 """
 
 import os

@@ -1,10 +1,7 @@
 """
-File:    combine_bib.py 
-         Part of ontozeolite package.
-Author:  Paul Rutkevych
-Created: 2024/04/01
-Contact: 
-
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
 """
 
 import os

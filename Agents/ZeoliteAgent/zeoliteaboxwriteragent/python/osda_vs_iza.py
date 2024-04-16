@@ -1,3 +1,8 @@
+"""
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
 
 
 """ A script to compare OSDA database versus the IZA database.

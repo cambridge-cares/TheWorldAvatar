@@ -1,4 +1,10 @@
 """
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
+
+"""
 Python program to prepare .csv file for OntoZeolite ontology abox.
 
 There is a single .csv file with data for all zeolitic materials.
@@ -1538,8 +1544,8 @@ class OntoZeolite:
                 # FIXME: delete from topology (this is backwards compatibility)
                 output += dens.get_csv_arr(subject,
                           self.zeoOntoPrefix + "hasDensity")
-                output += dens.get_csv_arr(uuid_zeotopo,
-                          self.zeoOntoPrefix + "hasDensity")
+                #output += dens.get_csv_arr(uuid_zeotopo,
+                #          self.zeoOntoPrefix + "hasDensity")
 
         elif "SpecificOccupiableArea" in topo_data and \
                      "OccupiableArea" in topo_data and \

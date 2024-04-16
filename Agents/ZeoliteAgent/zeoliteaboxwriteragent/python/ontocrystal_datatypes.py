@@ -1,3 +1,9 @@
+"""
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
+
 """ Module implements the datatypes defined in OntoCrystal ontology.
 
 Includes: OntoMeasureWithUncertainty, OntoVector, OntoMatrix, OntoPlot.

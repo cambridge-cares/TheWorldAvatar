@@ -1,4 +1,10 @@
 """
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
+
+"""
 The database of all zeolites.
 
 Combined from several sources.

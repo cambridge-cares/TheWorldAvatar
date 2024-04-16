@@ -1,3 +1,8 @@
+"""
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
 
 import os
 import json
@@ -654,8 +659,8 @@ class IzaTopology:
                 output += dens.get_csv_arr(subject,
                           zeoOntoPrefix + "hasDensity")
 
-                output += dens.get_csv_arr(zeotopo_iri,
-                          zeoOntoPrefix + "hasDensity")
+                #output += dens.get_csv_arr(zeotopo_iri,
+                #          zeoOntoPrefix + "hasDensity")
         else:
             logging.error(" Broken IZA data, missing" +
                           " ['SpecificOccupiableArea'] or" +

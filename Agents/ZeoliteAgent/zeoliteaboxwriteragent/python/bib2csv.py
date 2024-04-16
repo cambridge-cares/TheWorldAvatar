@@ -1,3 +1,9 @@
+"""
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
+
 import os
 import sys
 import logging
@@ -178,7 +184,8 @@ class OntoBibo:
                  "journalShortLow", "foreignWords",
                  "field_count_note", "field_count_lastchecked", "field_count_address",
                  #"iri",
-                 "known_authors", "doi_iri_list"]
+                 "known_authors", "known_journal", "known_volume",
+                 "doi_iri_list"]
     # __slots__ = ["year", "month", "title", "journal", "volume", "number",
     #             "pages", "abstract", "issn", "doi", "eprint"
     # ]
@@ -254,6 +261,9 @@ class OntoBibo:
         #self.iri = None
 
         self.known_authors = []
+        self.known_journal = []
+        self.known_volume = []
+
         self.field_count_note = 0
         self.field_count_address = 0
         self.field_count_lastchecked = 0
@@ -429,7 +439,7 @@ class OntoBibo:
         err_count = 0
         output = []
 
-        self.known_authors = []
+        #self.known_authors = []
         self.field_count_note = 0
         self.field_count_lastchecked = 0
 
@@ -618,6 +628,14 @@ class OntoBibo:
         return jFull, jAbbr, vol, issue, year
         # === end of OntoBibo.getIssueInfo()
 
+    def to_safe_name(self, nameID):
+        nameID = nameID.replace("{", "").replace("}", "")
+        nameID = nameID.replace("\\v", "").replace(" ", "")
+        nameID = nameID.replace("\\'", "").replace("\\\"", "")
+        nameID = nameID.replace("\\r", "").replace("\\a", "")
+        nameID = nameID.replace("\\i", "").replace("\\~", "")
+        return nameID
+
     def _csvBtpArticle(self, entity, subject, predicate, options):
         output = []
         err_count = 0
@@ -657,6 +675,7 @@ class OntoBibo:
         jFull, jAbbr, vol, issue, year = self.getIssueInfo(entity)
         # print(f"'{jFull}', '{jAbbr}', '{vol}'")
         jShort = jAbbr.replace(".", "").replace(" ", "")
+        jShort = self.to_safe_name(jShort)
 
         class_name = "Issue"
 
@@ -670,28 +689,34 @@ class OntoBibo:
         else:
             logging.error(" vol, issue and year are not specified for citation %s", entity.key)
 
-        iUuid, _ = self.uuidDB.addUUID(biboPrefix + class_name,
+        i_iri, _ = self.uuidDB.addUUID(biboPrefix + class_name,
                                        self.abox_prefix + jShort + "_V" + issueId)
 
         if self.uuidDB.getUUID(biboPrefix + class_name,
                                self.abox_prefix + jShort + "_V" + issueId) is None:
 
-            #iUuid, _ = self.uuidDB.addUUID(biboPrefix + class_name,
+            #i_iri, _ = self.uuidDB.addUUID(biboPrefix + class_name,
             #                               self.abox_prefix + jShort + "_V" + vol)
 
-            #output.append([iUuid, "Instance", biboPrefix + class_name, "", "", ""])
+            #output.append([i_iri, "Instance", biboPrefix + class_name, "", "", ""])
             pass
 
-        output.append([iUuid, "Instance", biboPrefix + class_name, "", "", ""])
+        if i_iri not in self.known_volume:
+            self.known_volume.append(i_iri)
+            output.append([i_iri, "Instance", biboPrefix + class_name, "", "", ""])
 
-        output.append([iri, "Instance", iUuid,
+        output.append([iri, "Instance", i_iri,
                        dctPrefix + "isPartOf", "", ""])
 
         # Journal information:
         class_name = "Journal"
 
-        jUuid, _ = self.uuidDB.addUUID(biboPrefix + class_name,
+        j_iri, _ = self.uuidDB.addUUID(biboPrefix + class_name,
                                        self.abox_prefix + "Journal_" + jShort)
+
+        if j_iri not in self.known_journal:
+            self.known_journal.append(j_iri)
+            output.append([j_iri, "Instance", biboPrefix + class_name, "", "", ""])
 
         if self.uuidDB.getUUID(biboPrefix + class_name,
                                self.abox_prefix + "Journal_" + jShort) is None:
@@ -699,18 +724,18 @@ class OntoBibo:
                         #output.append([auth, "Instance", foafPrefix + class_name,
                         #               "", "", ""])
             pass
-        output.append([jUuid, "Instance", biboPrefix + class_name, "", "", ""])
 
-        output.append([iUuid, "Instance", jUuid,
+        output.append([i_iri, "Instance", j_iri,
                        dctPrefix + "isPartOf", "", ""])
+
 
         # For debugging only:
         if False:
             print("-------------------------------------------")
             print("----------     In bib2csv.py     ----------")
             print("Citation:", iri)
-            print("Journal: ", jUuid)
-            print("Issue:   ", iUuid)
+            print("Journal: ", j_iri)
+            print("Issue:   ", i_iri)
             print("-------------------------------------------")
 
         # self.uuid,_ = self.uuidDB.addUUID(self.tPrefix + class_name,
@@ -755,6 +780,7 @@ class OntoBibo:
                     # output.append([alUuid, "Instance", auth, "rdf:first", "", ""])
 
                     nameID = "".join(author.first + author.last)
+                    nameID = self.to_safe_name(nameID)
 
                     auth_iri, _ = self.uuidDB.addUUID(foafPrefix + class_name,
                                                       self.abox_prefix + "Person_" + nameID)
@@ -765,8 +791,6 @@ class OntoBibo:
                         pass
 
                     if auth_iri not in self.known_authors:
-                        pass
-                    if True:
                         self.known_authors.append(auth_iri)
                         output.append([auth_iri, "Instance", foafPrefix + class_name,
                                        "", "", ""])
@@ -777,6 +801,8 @@ class OntoBibo:
                         output.append([foafPrefix + "family_name", "Data Property",
                                        auth_iri, "",
                                        " ".join(author.last), "xsd:string"])
+                    if True:
+                        pass
 
                     output.append([iri, "Instance", auth_iri,
                                    crystPrefix + "hasAuthor", "", ""])
@@ -816,28 +842,28 @@ class OntoBibo:
             elif "journal" == field.key.lower():
                 # print(field.key, "not implemented")
                 output.append([dctPrefix + "title", "Data Property",
-                               jUuid, "", str2owlsafe(field.value),
+                               j_iri, "", str2owlsafe(field.value),
                                "xsd:string"])
 
             elif "issn" == field.key.lower():
                 # print(field.key, "not implemented")
                 output.append([biboPrefix + "issn", "Data Property",
-                               jUuid, "", field.value, "xsd:string"])
+                               j_iri, "", field.value, "xsd:string"])
 
             elif "publisher" == field.key.lower():
                 # print(field.key, "not implemented")
                 output.append([dctPrefix + "publisher", "Data Property",
-                               jUuid, "", field.value, "xsd:string"])
+                               j_iri, "", field.value, "xsd:string"])
 
             elif "volume" == field.key.lower():
                 # print(field.key, "not implemented")
                 output.append([biboPrefix + "volume", "Data Property",
-                               iUuid, "", field.value, "xsd:integer"])
+                               i_iri, "", field.value, "xsd:integer"])
 
             elif "year" == field.key.lower():
                 # print(field.key, "not implemented")
                 output.append([dctPrefix + "issued", "Data Property",
-                               iUuid, "", field.value, "xsd:gYear"])
+                               i_iri, "", field.value, "xsd:gYear"])
                 #if int(field.value) < 1900:
                 #    print("Error in bibfile", item_name)
                 #    if field.value < 4:
@@ -846,12 +872,12 @@ class OntoBibo:
             elif "month" == field.key.lower():
                 # print(field.key, "not implemented, is it supported by bibo?")
                 output.append([dctPrefix + "issued", "Data Property",
-                               iUuid, "", field.value, "xsd:gMonth"])
+                               i_iri, "", field.value, "xsd:gMonth"])
 
             elif "day" == field.key.lower():
                 # print(field.key, "not implemented, is it supported by bibo?")
                 output.append([dctPrefix + "issued", "Data Property",
-                               iUuid, "", field.value, "xsd:gDay"])
+                               i_iri, "", field.value, "xsd:gDay"])
 
             elif "number" == field.key.lower():
                 # This is tricky.
@@ -879,13 +905,13 @@ class OntoBibo:
 
                 # print(field.key, "not implemented")
                 #output.append([biboPrefix + "issue", "Data Property",
-                #               iUuid, "", field.value, "xsd:integer"])
+                #               i_iri, "", field.value, "xsd:integer"])
                 pass
 
             elif "issue" == field.key.lower():
                 # print(field.key, "not implemented")
                 output.append([biboPrefix + "issue", "Data Property",
-                               iUuid, "", field.value, "xsd:integer"])
+                               i_iri, "", field.value, "xsd:integer"])
 
             elif "pages" == field.key:
                 output.append([biboPrefix + "pages", "Data Property",
@@ -1012,6 +1038,10 @@ class OntoBibo:
         return output, err_count
         # === end of OntoBibo._csvBtpInProceedings()
 
+    def _is_known_author(self, author):
+
+        return False
+
     def getCsvArr(self, subject, predicate="", options={}):
 
         # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> in bib2csv.py")
@@ -1026,6 +1056,10 @@ class OntoBibo:
             logging.warning(" Predicate in OntoBibo.getCsvArr() is '%s'," +
                             " but expecting it to be 'has%s'. Subj = '%s'.",
                             predicate, "Citation", subject)
+
+        self.known_authors = []
+        self.known_journal = []
+        self.known_volume = []
 
         err_count = 0
         output = []
