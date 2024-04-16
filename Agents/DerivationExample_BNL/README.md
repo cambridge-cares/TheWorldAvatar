@@ -1,7 +1,7 @@
 # Derivation Example (BNL)
 
 ## Purpose
-This exercise is a duplicate from DerivationExample (Synchronous) whereby the example demonstrates the usage of the derivation framework (DerivationInputs, DerivationOutputs, DerivationAgent, DerivationClient, and DerivationSparql class) from jps-base-lib. The purpose of this exercise to implement a simple example for BNL Use Case. 
+This exercise is a modification from [DerivationExample (Synchronous)](../DerivationExample/) whereby the example demonstrates the usage of the derivation framework (DerivationInputs, DerivationOutputs, DerivationAgent, DerivationClient, and DerivationSparql class) from jps-base-lib. The purpose of this exercise to implement a simple example for BNL Use Case. 
 
 ## Setup
 This example uses a docker stack with three containers:
@@ -10,6 +10,7 @@ This example uses a docker stack with three containers:
     - DerivationExample/InitialiseInstances
     - DerivationExample/InputAgent
     - DerivationExample/SumValueAgent
+    - DerivationExample/TruckCountingAgent
 2. postgres
 3. blazegraph
 
@@ -47,25 +48,22 @@ docker-compose up -d
 The default port numbers for the containers are:
 | container | port number |
 | --- | --- |
-| derivationexample | 8081 |
+| derivationexamplebnl | 8081 |
 | blazegraph | 8889 |
 | postgres | 7432 |
 
 Once the docker stack is up and running, you should be able to access the blazegraph container at (http://localhost:8889/blazegraph). If you are using pgAdmin, you can monitor the postgres container by creating a new server that connects to `localhost` with port number `7432`.
 
-## Test
-To test the docker set up, there are integration tests written for this example - `uk.ac.cam.cares.derivation.example.IntegrationTest`. The tests should pass if the stack is up and running with the default port numbers. To run the tests, navigate to the folder containing the java project `DerivationExample`, and run the command `mvn clean test`.
-
 ## Logs
 By default, logs are written to `/root/.jps/` within the docker container. To copy this file into your local directory, run the following command in the terminal
 ```
-docker cp derivationexample:root/.jps/ .
+docker cp derivationexamplebnl:root/.jps/ .
 ```
 
 ## Initialisation
-There are two key demonstrations in this example, the input instance is shared between the two examples. A more visual illustration can be found below:
+A more visual illustration can be found below:
 
-![Alt text](DerivationExample.svg?raw=true)
+![Alt text](https://lucid.app/publicSegments/view/2ca9228e-b5cf-4ec4-8bd0-4a65dfadba51/image.jpeg)
 
 Assuming the stack is up and running, the instances can be initialised by running the following command:
 ```
@@ -73,10 +71,11 @@ curl http://localhost:8081/DerivationExample/InitialiseInstances
 ```
 If it is successful, you should receive a HTTP response with the IRIs of the newly created instances, e.g.
 ```json
-{"min value":"http://derivation_example#2b5f97c0-9e90-4eee-8c75-b193a83e2269","derivation of average":"https://www.theworldavatar.com/kg/ontoderivation/derived365dbb1a-89c1-49f4-9e00-546f85feb0c2","input":"http://derivation_example#bdba8ae0-51f5-4447-8d4b-1c4c05f8347f"}
+{"input":"http://bnl_example#7f758542-fca1-4973-968c-0060b975335c","derivation of truck value":"http://derivationexample.com/triplestore/repository/Derivation_8d976d70-b231-4a02-8fd2-8140e33e7e14","truck value":"http://bnl_example#
+5792cb5e-7256-48a3-a871-fa07d96d8cde","sum value":"http://bnl_example#93bcd78a-11b8-48e6-ae23-785c1053b8ab","derivation of sum value":"http://derivationexample.com/triplestore/repository/Derivation_7085e7fd-f34d-47c7-9028-8f5accffcd89"}
 
 ```
-If this is not successful, it may be the case that the `derivationexample` container is still loading up, check the console of the container and ensure that the you see a line like this 
+If this is not successful, it may be the case that the `derivationexamplebnl` container is still loading up, check the console of the container and ensure that the you see a line like this 
 ```
 16-Aug-2021 17:03:05.847 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [3196] milliseconds
 ```
@@ -86,15 +85,11 @@ The derivations in this example can be updated by running the command:
 ```
 curl http://localhost:8081/DerivationExample/UpdateDerivations
 ```
-On a successful update, you should receive a HTTP response, e.g.:
-```json
-{"status":"Updated derivation of difference <https://www.theworldavatar.com/kg/ontoderivation/derived2341b3e3-598f-46a1-900d-5506d0906c60> and derivation of average <https://www.theworldavatar.com/kg/ontoderivation/derivedd41b0c5d-b442-4a14-b0a0-14ad99c03ecc>"}
-```
 
 ## Input
 The input is an instance containing a time series. Upon initialisation, the following triples are created in blazegraph:
 ```
-<input> <rdf:type> <http://derived_example#InputData>
+<input> <rdf:type> <http://bnl_example#InputData>
 <input> <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries> <timeseries>
 <timeseries> <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#hasRDB> "jdbc:postgresql://postgres/postgres"
 <input> <time:hasTime> <timestamp>
@@ -118,107 +113,46 @@ If the update is successful, you should receive a HTTP response, e.g.:
 {"status":"Updated <http://derivation_example#bdba8ae0-51f5-4447-8d4b-1c4c05f8347f>"}
 ```
 
-## Derivation with time series
-### Average
-This derivation contains averages calculated from the input and stored in a time series table, e.g.
-```
-<average> <rdf:type> <http://derived_example#Average>
-<average> <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries> <timeseries>
-<timeseries> <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#hasRDB> "jdbc:postgresql://postgres/postgres"
-```
-| time | column1 |
-| --- | --- |
-| 2021-08-11 13:43:24.282104+00 | average1 |
-| 2021-08-11 13:43:40.778827+00 | average2 |
-
-Derivation of average:
-```
-<average> <:belongsTo> <derived_average>
-<derived_average> <:isDerivedFrom> <input>
-<derived_average> <:isDerivedUsing> <AverageAgent>
-```
-This instance is updated using `AverageAgent`. This agent queries the average value from the input and records the value in the timeseries table.
-
 ## Derivations without time series
 This example contains 3 derivations: 
-1. Maximum value: Maximum value in the input time series table
-2. Minimum value: Minimum value in the input time series table
-3. Difference: Difference between the minimum and maximum values
+1. Sum value: Sum value in the input time series table
+2. Truck vlaue: Count the trucks needed divide by 
 
-### Maximum value
-The property instance:
+### Sum value
+Sums up the total value of the inputs.
+
+The property instance
 ```
-<max> <rdf:type> <http://derived_example#MaxValue>
-<max> <http://derived_example#hasValue> <valueOfMax> 
-<valueOfMax> <http://derived_example#numericalValue> 123
-```
-The derivation instance:
-```
-<derivation_of_max> <:isDerivedFrom> <input>
-<max> <:belongsTo> <derivation_of_max>
-<valueOfMax> <:belongsTo> <derivation_of_max>
-<derivation_of_max> <:isDerivedUsing> <MaxValueAgent>
-```
-The agent for this instance, `MaxValueAgent`, receives HTTP responses in the form of:
-```json
-{"agent_input": {"http://derivation_example#InputData":[input]}, "belongsTo": {"<max>": "http://derived_example#MaxValue", "<valueOfMax>": "http://derived_example#ScalarValue"}, "derivation": "<derivation_of_max>", "derivation_rdftype": "https://www.theworldavatar.com/kg/ontoderivation/Derivation", "downstream_derivation": {"<max>": ["<derivation_of_diff>"]}}
-```
-queries the maximum value from the given input using the TimeSeriesClient, and writes a new instance, e.g.
-```
-<new_max> <rdf:type> <http://derived_example#MaxValue>
-<new_max> <http://derived_example#hasValue> <newMaxValue>
-<newMaxValue> <http://derived_example#numericalValue> 123
-```
-And returns a HTTP response in the form of:
-```json
-{"retrievedInputsAt": timestamp}
+<sum> <rdf:type> <http://bnl_example#SumValue>
+<sum> <http://bnl_example#hasValue> <valueOfSum> 
+<valueOfSum> <http://bnl_example#numericalValue> 123
 ```
 
-### Minimum value
-This instance is almost identical with the maximum value instance, except that it has the rdf:type `<http://derived_example#MinValue>`. 
-The property instance:
+The derivation instance
 ```
-<min> <rdf:type> <http://derived_example#MinValue>
-<min> <http://derived_example#hasValue> <valueOfMin> 
-<valueOfMin> <http://derived_example#numericalValue> 123
-```
-The derivation instance:
-```
-<derivation_of_min> <:isDerivedFrom> <input>
-<min> <:belongsTo> <derivation_of_min>
-<valueOfMin> <:belongsTo> <derivation_of_min>
-<derivation_of_min> <:isDerivedUsing> <MinValueAgent>
-```
-The agent for this derivation, `MinValueAgent`, queries the minimum value from the given input using the TimeSeriesClient, and writes a new instance similarly to the `MaxValueAgent`.
-
-### Difference
-The difference instance is also identical, except that it has the rdf:type `<http://derived_example#Difference>`.
-```
-<diff> <rdf:type> <http://derived_example#Difference>
-<diff> <http://derived_example#hasValue> <valueOfDiff> 
-<valueOfDiff> <http://derived_example#numericalValue> 123
+<derivation_of_sum> <:isDerivedFrom> <input>
+<sum> <:belongsTo> <derivation_of_sum>
+<valueOfSum> <:belongsTo> <derivation_of_sum>
+<derivation_of_sum> <:isDerivedUsing> <SumValueAgent>
 ```
 
-The derivation instance contains two inputs - the minimum value and maximum value instances. 
+The agent for this instance `SumValueAgent`, receives HTTP responses in the form of
 ```
-<derivation_of_diff> <:isDerivedFrom> <min>
-<derivation_of_diff> <:isDerivedFrom> <max>
-<diff> <:belongsTo> <derivation_of_diff>
-<valueOfDiff> <:belongsTo> <derivation_of_diff>
-<derivation_of_diff> <:isDerivedUsing> <DifferenceAgent>
+{"downstream_derivation":{"http://bnl_example#4cbbf53c-7614-4425-914b-4822d5499526":["http://derivationexample.com/triplestore/repository/Derivation_8d976d70-b231-4a02-8fd2-8140e33e7e14"],"http://bnl_example#b20c5c37-eb42-457d-9fbb-1b147ecb272a":["http://derivationexample.com/triplestore/repository/Derivation_8d976d70-b231-4a02-8fd2-8140e33e7e14"]},"method":"GET","sync_new_info":false,"requestUrl":"http://derivationexamplebnl:8080/DerivationExample/SumValueAgent","derivation_rdftype":"https://www.theworldavatar.com/kg/ontoderivation/Derivation","derivation":"http://derivationexample.com/triplestore/repository/Derivation_7085e7fd-f34d-47c7-9028-8f5accffcd89","belongsTo":{"http://bnl_example#4cbbf53c-7614-4425-914b-4822d5499526":"http://bnl_example#ScalarValue","http://bnl_example#b20c5c37-eb42-457d-9fbb-1b147ecb272a":"http://bnl_example#SumValue"},"agent_input":{"http://bnl_example#InputData":["http://bnl_example#7f758542-fca1-4973-968c-0060b975335c"]}}
 ```
-The `DifferenceAgent` receives HTTP requests in the form of:
-```json
-{"agent_input": {"http://derived_example#MaxValue":[max], "http://derived_example#MinValue": [min]}, "belongsTo": {"<diff>": "http://derived_example#Difference", "<valueOfDiff>": "http://derived_example#ScalarValue"}, "derivation": "<derivation_of_diff>", "derivation_rdftype": "https://www.theworldavatar.com/kg/ontoderivation/Derivation", "downstream_derivation": {}}
+sums the value from the input using TimeSeriesClient and writes a new instnace, e.g.,
 ```
-It then queries the values using the given IRIs and calculate the difference between the values. The agent creates a new instance
+<new_sum> <rdf:type> <http://derived_example#SumValue>
+<new_sum> <http://derived_example#hasValue> <newSumValue>
+<newSumValue> <http://derived_example#numericalValue> 123
 ```
-<new_diff> <rdf:type> <http://derived_example#Difference>
-<new_diff> <http://derived_example#hasValue> <newDiffValue>
-<newDiffValue> <http://derived_example#numericalValue> 123
+
+### Truck Counting
+The truck counting is similar, except that it has the rdf:type `<http://bnl_example#TruckValue>`
+
+The derivation instance contains one inputs - the sum value. It retrieves the sum value and divides by 500 kg per truck, output a string indicating how many trucks are needed to carry the sum value
 ```
-and returns a HTTP response in the form of:
-```json
-{"retrievedInputsAt": timestamp}
+3.0 trucks are needed to carry the weight.
 ```
+
 

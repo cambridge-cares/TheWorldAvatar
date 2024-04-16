@@ -20,19 +20,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-@WebServlet(urlPatterns = {TruckCallingAgent.URL_TruckValue})
-public class TruckCallingAgent extends DerivationAgent {
+@WebServlet(urlPatterns = {TruckCountingAgent.URL_TruckValue})
+public class TruckCountingAgent extends DerivationAgent {
 
     private static final long serialVersionUID = 1L;
-    public static final String URL_TruckValue = "/TruckCallingAgent";
-    private static final Logger LOGGER = LogManager.getLogger(TruckCallingAgent.class);
+    public static final String URL_TruckValue = "/TruckCountingAgent";
+    private static final Logger LOGGER = LogManager.getLogger(TruckCountingAgent.class);
 
 
     TripleStoreClientInterface storeClient;
     SparqlClient sparqlClient;
 
-    public TruckCallingAgent() {
-        LOGGER.info("TruckCallingAgent is initialised.");
+    public TruckCountingAgent() {
+        LOGGER.info("TruckCountingAgent is initialised.");
     }
 
     @Override

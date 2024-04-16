@@ -32,7 +32,7 @@ public class InitialiseInstances extends JPSAgent{
 	private static String sumvalue_agent_url = baseURL + SumValueAgent.URL_SUMVALUE;
 
 	private static String truckcalling_agent_iri = SparqlClient.namespace +"truckcalling_agent";
-	private static String truckcalling_agent_url = baseURL+TruckCallingAgent.URL_TruckValue;
+	private static String truckcalling_agent_url = baseURL+TruckCountingAgent.URL_TruckValue;
 
 	public static final String derivationInstanceBaseURL = "http://derivationexample.com/triplestore/repository/";
 
@@ -41,7 +41,7 @@ public class InitialiseInstances extends JPSAgent{
 	public static final String sum_dev_key = "derivation of sum value";
 
 	public static final String truck_key = "truck value";
-	public static final String truck_dev_key = "derivation of sum value";
+	public static final String truck_dev_key = "derivation of truck value";
 
 
 	@Override
@@ -120,7 +120,7 @@ public class InitialiseInstances extends JPSAgent{
 			response.put(sum_dev_key, derived_sumvalue);
 			response.put(truck_key,truckvalue_property);
 			response.put(truck_dev_key,derived_truckvalue);
-			return requestParams;
+			return response;
         }
 
 		private static void createInputTimeSeries(String input_iri, TimeSeriesClient<Instant> tsClient) {
