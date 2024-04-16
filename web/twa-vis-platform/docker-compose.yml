@@ -1,9 +1,6 @@
 #
 # Compose file for the TWA-VP.
 #
-version: "3.8"
-
-# All Services
 services:
   # Empty visualisation image for deployment.
   visualise:

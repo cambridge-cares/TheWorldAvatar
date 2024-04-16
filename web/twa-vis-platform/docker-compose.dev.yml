@@ -1,9 +1,6 @@
 #
 # Compose file for the TWA-VP.
 #
-version: "3.8"
-
-# All Services
 services:
 
   # Builds a base image that, when combined with a volume of files, can be used as a visualisation for development purposes. 
