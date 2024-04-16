@@ -49,10 +49,6 @@ public class BottomSheetManager {
         initBottomSheet();
     }
 
-    public BottomSheet getBottomSheet() {
-        return bottomSheet;
-    }
-
     public void initBottomSheet() {
         initNormalBottomSheet();
         initErrorBottomSheet();
@@ -103,8 +99,8 @@ public class BottomSheetManager {
 
     private void setAndExtendBottomSheet(BottomSheet bottomSheet) {
         setBottomSheet(bottomSheet);
-        if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED ||
-                bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_DRAGGING ||
+        if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED &&
+                bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_DRAGGING &&
                 bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_SETTLING) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
         }

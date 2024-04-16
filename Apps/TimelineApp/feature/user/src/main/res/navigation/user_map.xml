@@ -24,11 +24,20 @@
         <action
             android:id="@+id/action_user_fragment_to_account_setting"
             app:destination="@id/account_setting" />
+        <action
+            android:id="@+id/action_user_fragment_to_sensor_setting"
+            app:destination="@id/sensor_setting" />
     </fragment>
 
     <fragment
         android:id="@+id/account_setting"
         android:name="uk.ac.cam.cares.jps.user.AccountSettingFragment"
         tools:layout="@layout/fragment_account_setting">
+    </fragment>
+
+    <fragment
+        android:id="@+id/sensor_setting"
+        android:name="uk.ac.cam.cares.jps.user.SensorSettingFragment"
+        tools:layout="@layout/fragment_sensor_setting">
     </fragment>
 </navigation>

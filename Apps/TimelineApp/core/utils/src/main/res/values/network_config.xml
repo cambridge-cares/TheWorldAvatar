@@ -5,4 +5,5 @@
     <string name="trajectoryqueryagent_createlayer">trajectoryqueryagent/createlayer</string>
     <string name="useragent_registerphone">user-agent/registerPhone</string>
     <string name="geoserver_twa_ows">geoserver/twa/ows</string>
+    <string name="sensorloggeragent_update">sensorloggermobileappagent/update</string>
 </resources>

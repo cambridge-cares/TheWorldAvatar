@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -27,10 +28,9 @@ import com.mapbox.maps.plugin.scalebar.ScaleBarPlugin;
 import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.manager.BottomSheetManager;
 import uk.ac.cam.cares.jps.timeline.ui.manager.TrajectoryManager;
-import uk.ac.cam.cares.jps.timeline.viewmodel.ConnectionViewModel;
+import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
 
@@ -38,8 +38,6 @@ import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
 public class TimelineFragment extends Fragment {
     private FragmentTimelineBinding binding;
     private MapView mapView;
-    private BottomSheet bottomSheet;
-    private ConnectionViewModel connectionViewModel;
     private Logger LOGGER = Logger.getLogger(TimelineFragment.class);
 
     private final int MAP_BOTTOM_FLOATING_COMPONENT_MARGIN = 100;
@@ -68,10 +66,12 @@ public class TimelineFragment extends Fragment {
         });
         mapView.getMapboxMap().loadStyleUri(Style.LIGHT);
 
+        TrajectoryViewModel trajectoryViewModel = new ViewModelProvider(this).get(TrajectoryViewModel.class);
+        trajectoryViewModel.registerPhoneToUser();
+
         TrajectoryManager trajectoryManager = new TrajectoryManager(this, mapView);
         BottomSheetManager bottomSheetManager = new BottomSheetManager(this, binding.bottomSheetContainer);
 //        trajectoryManager.getTrajectory();
-
 
         compassPlugin = mapView.getPlugin(Plugin.MAPBOX_COMPASS_PLUGIN_ID);
         compassPlugin.setEnabled(true);

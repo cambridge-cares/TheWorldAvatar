@@ -43,12 +43,12 @@ public class UserFragment extends Fragment {
 
         binding.mapTopAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
         binding.accountSetting.setOnClickListener(view1 -> NavHostFragment.findNavController(this). navigate(R.id.action_user_fragment_to_account_setting));
+        binding.sensorSetting.setOnClickListener(view1 -> NavHostFragment.findNavController(this). navigate(R.id.action_user_fragment_to_sensor_setting));
 
         // todo: unimplemented button
         binding.healthReport.setOnClickListener(view1 -> UiUtils.showNotImplementedDialog(requireContext()));
         binding.privacySetting.setOnClickListener(view1 -> UiUtils.showNotImplementedDialog(requireContext()));
         binding.locationHistory.setOnClickListener(view1 -> UiUtils.showNotImplementedDialog(requireContext()));
-        binding.sensorSetting.setOnClickListener(view1 -> UiUtils.showNotImplementedDialog(requireContext()));
 
         accountViewModel.getUserInfo();
     }
