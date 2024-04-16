@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  gfaagent:
+    image: ghcr.io/cambridge-cares/buildingflooragent:1.0.0-SNAPSHOT
+    build: .
+    ports:
+      - "10104:8080"
+    volumes:
+      - ./src/main/resources:/resources
