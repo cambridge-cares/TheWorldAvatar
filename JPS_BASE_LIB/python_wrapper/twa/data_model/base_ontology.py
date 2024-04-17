@@ -513,6 +513,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         is_defined_by_ontology (Ontology): The ontology that defines the class
         object_lookup (Dict[str, BaseClass]): A dictionary that maps the IRI of the object to the object
         rdfs_comment (str): The comment of the instance
+        rdfs_label (str): The label of the instance
         instance_iri (str): The IRI of the instance
 
     Example:
@@ -620,6 +621,37 @@ class BaseClass(BaseModel, validate_assignment=True):
         self.__class__.object_lookup[self.instance_iri] = self
 
     @classmethod
+    def retrieve_subclass(cls, iri: str) -> Type[BaseClass]:
+        """
+        This function retrieves the subclass of the current class based on the IRI.
+        If the IRI is the same as the rdf:type of the current class, it will return the current class itself.
+
+        Args:
+            iri (str): The IRI of the subclass
+
+        Returns:
+            Type[BaseClass]: The subclass of the BaseClass
+        """
+        if iri == cls.get_rdf_type():
+            return cls
+        return cls.construct_subclass_dictionary()[iri]
+
+    @classmethod
+    def construct_subclass_dictionary(cls) -> Dict[str, Type[BaseClass]]:
+        """
+        This function constructs a dictionary that maps the rdf:type to the subclass of the BaseClass.
+
+        Returns:
+            Dict[str, Type[BaseClass]]: The dictionary that maps the rdf:type to the subclass of the BaseClass
+        """
+        subclass_dict = {}
+        for clz in cls.__subclasses__():
+            subclass_dict[clz.get_rdf_type()] = clz
+            # recursively add the subclass of the subclass
+            subclass_dict.update(clz.construct_subclass_dictionary())
+        return subclass_dict
+
+    @classmethod
     def push_all_instances_to_kg(cls, sparql_client: PySparqlClient, recursive_depth: int = 0):
         """
         This function pushes all the instances of the class to the knowledge graph.
@@ -681,14 +713,23 @@ class BaseClass(BaseModel, validate_assignment=True):
         # return format: {iri: {predicate: {object}}}
         node_dct = sparql_client.get_outgoing_and_attributes(iris)
         instance_lst = []
-        # TODO optimise the time complexity of the following code when the number of instances is large
-        ops = cls.get_object_properties()
-        dps = cls.get_data_properties()
-
         for iri, props in node_dct.items():
-            if cls.get_rdf_type() not in props[RDF.type.toPython()]:
-                raise ValueError(f"The instance {iri} is of type {props[RDF.type.toPython()]}, therefore it cannot be instantiated as {cls.get_rdf_type()} ({cls.__name__}).")
+            # TODO optimise the time complexity of the following code when the number of instances is large
+            # check if the rdf:type of the instance matches the calling class or any of its subclasses
+            target_clz_rdf_type = list(props[RDF.type.toPython()])[0]
+            if target_clz_rdf_type != cls.get_rdf_type() and target_clz_rdf_type not in cls.construct_subclass_dictionary().keys():
+                raise ValueError(
+                    f"""The instance {iri} is of type {props[RDF.type.toPython()]},
+                    it doesn't match the rdf:type of class {cls.__name__} ({cls.get_rdf_type()}),
+                    nor any of its subclasses ({cls.construct_subclass_dictionary()}),
+                    therefore it cannot be instantiated.""")
             inst = KnowledgeGraph.get_object_from_lookup(iri)
+            # obtain the target class in case it is a subclass
+            target_clz = cls.retrieve_subclass(target_clz_rdf_type)
+            # instead of calling cls.get_object_properties() and cls.get_data_properties()
+            # calling methods of target_clz ensures that all properties are correctly inherited
+            ops = target_clz.get_object_properties()
+            dps = target_clz.get_data_properties()
             # handle object properties (where the recursion happens)
             # TODO need to consider what to do when two instances pointing to each other
             object_properties_dict = {
@@ -726,7 +767,7 @@ class BaseClass(BaseModel, validate_assignment=True):
                 inst._latest_cache.update(rdfs_properties_dict)
                 inst._timestamp_of_latest_cache = time.time()
             else:
-                inst = cls(
+                inst = target_clz(
                     instance_iri=iri,
                     **rdfs_properties_dict,
                     **object_properties_dict,
