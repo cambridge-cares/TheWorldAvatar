@@ -504,13 +504,6 @@ class BaseProperty(BaseModel, validate_assignment=True):
         """
         return NotImplementedError("This is an abstract method.")
 
-    def _exclude_keys_for_compare_(self, *keys_to_exclude):
-        list_keys_to_exclude = list(keys_to_exclude) if not isinstance(
-            keys_to_exclude, list) else keys_to_exclude
-        list_keys_to_exclude.append('instance_iri')
-        list_keys_to_exclude.append('rdfs_comment')
-        return set(tuple(list_keys_to_exclude))
-
 
 class BaseClass(BaseModel, validate_assignment=True):
     """
@@ -720,6 +713,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         """
         This function pulls all instances of the calling class from the knowledge graph (triplestore).
         It calls the pull_from_kg function with the IRIs of all instances of the calling class.
+        By default, it pulls the instances with no recursion.
 
         Args:
             sparql_client (PySparqlClient): The SPARQL client that is used to pull the data from the KG
