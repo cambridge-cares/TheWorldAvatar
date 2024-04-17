@@ -597,7 +597,9 @@ class BaseClass(BaseModel, validate_assignment=True):
             self.rdf_type = self.__class__.get_rdf_type()
         if not bool(self.instance_iri):
             self.instance_iri = init_instance_iri(
-                self.rdf_type, self.__class__.__name__)
+                self.__class__.is_defined_by_ontology.get_namespace_iri(),
+                self.__class__.__name__
+            )
         # set new instance to the global look up table, so that we can avoid creating the same instance multiple times
         self._register_object()
         return super().model_post_init(__context)

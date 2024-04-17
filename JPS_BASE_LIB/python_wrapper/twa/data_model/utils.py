@@ -9,14 +9,14 @@ def construct_namespace_iri(base_url: str, namespace: str) -> str:
 
     Args:
         base_url (str): The base URL of the namespace IRI, e.g. "https://www.theworldavatar.com/kg"
-        namespace (str): The namespace, e.g. "ontolab"
+        namespace (str): The namespace, e.g. "ontolab", will be ignored if None
 
     Returns:
         str: The namespace IRI, e.g. "https://www.theworldavatar.com/kg/ontolab"
     """
     if base_url[-1] not in ['/', '#']:
         base_url += '/'
-    return f'{base_url}{namespace}'
+    return f'{base_url}{namespace}' if namespace is not None else base_url
 
 
 def construct_rdf_type(namespace_iri: str, class_name: str) -> str:
