@@ -1,0 +1,17 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+env: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+twa:    https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+
+mappingId	building_floor
+target		twa:Building/{building_iri} env:hasBuildingFloors twa:BuildingFloors/{building_iri} .
+            twa:BuildingFloors/{building_iri} a env:{ontobuilt} ;
+            env:hasFloorsValue {floors}^^xsd:integer ;
+            env:hasAccuracy {storeys_above_ground_accuracy}^^xsd:string .
+source      SELECT cb.storeys_above_ground AS floors, cb.storeys_above_ground_accuracy, ccg.strval AS building_iri
+            FROM citydb.building cb, citydb.cityobject_genericattrib ccg
+            WHERE cb.id = ccg.cityobject_id AND ccg.attrname = 'uuid'
+]]

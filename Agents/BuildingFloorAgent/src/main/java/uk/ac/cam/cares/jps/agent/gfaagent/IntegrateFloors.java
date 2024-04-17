@@ -44,6 +44,20 @@ public class IntegrateFloors {
         this.osmPoint = osmPoint;
         this.osmPolygon = osmPolygon;
     }
+
+    //check table building has floor accuracy column
+    public void addFloorAccuracyColumn () {
+        String buildingSQLAlter = "ALTER TABLE building ADD COLUMN IF NOT EXISTS storeys_above_ground_accuracy character varying(4000);";
+        try (Connection srcConn = postgisClient.getConnection()) {
+            try (Statement stmt = srcConn.createStatement()) {
+                stmt.executeUpdate(buildingSQLAlter);
+            }
+        }catch (SQLException e) {
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }  
+    }
+
+
     /******************************************** */
     /* Fuzzy match building address from outer data source (csv) and osm agent to integrate floors data to citydb.buildilng */
     /* INPUT: data file location*/
@@ -144,7 +158,8 @@ public class IntegrateFloors {
                     }
                     
                     //store floors data based on building iri from osm agent
-                    int floors = hdbFloors.get(i).getFloors();
+                    Integer floors = hdbFloors.get(i).getFloors();
+                    String accuracy = "1";
                     String buildingiri = null;
                     if(pointScore > polyScore && pointScore != 0) {
                         buildingiri = pointIri;
@@ -153,10 +168,7 @@ public class IntegrateFloors {
                     }
 
                     if (buildingiri != null) {
-                        String buildingSQLUpdate = "UPDATE building b SET storeys_above_ground = " + floors + 
-                                                " FROM cityobject_genericattrib cg\n" + 
-                                                "WHERE b.id = cg.cityobject_id AND cg.strval = '" + buildingiri + "';";
-                        postgisClient.executeUpdate(buildingSQLUpdate);
+                        updateFloors(floors, accuracy, buildingiri);
                     }
                     
                 }
@@ -166,6 +178,74 @@ public class IntegrateFloors {
         }       
     }
 
-    
+    public void roughFloorDate () {
+        String accuracy = null;
+        String floorSQLQuery = "SELECT storeys_above_ground AS floors, storeys_above_ground_accuracy, id, cg.strval " +
+                                "FROM building, cityobject_genericattrib cg " + 
+                                "WHERE id = cg.cityobject_id AND cg.attrname = 'uuid'";       
+        Integer floors;
+        try (Connection srcConn = postgisClient.getConnection()) {
+            try (Statement stmt = srcConn.createStatement()) {
+                ResultSet floorsResults = stmt.executeQuery(floorSQLQuery);
+                while (floorsResults.next()) {
+                    floors = floorsResults.getInt("storeys_above_ground");
+                    accuracy = floorsResults.getString("storeys_above_ground_accuracy");
+                    String buildingIri = floorsResults.getString("strval");
+                    if (floors == null || accuracy == "3"){// get osm floor
+                        floors = queryOSMFloor(buildingIri);
+                        if (floors == null) {//estimate
 
+                        }
+                    }
+
+                    String floorsSQLUpdate = "";
+
+                    updateFloors(floors, accuracy, buildingIri);
+                }
+                
+            }
+        }catch (SQLException e) {
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
+    }
+
+    public Integer queryOSMFloor (String buildingIri) {
+        String osmFloorQuery = "";
+        Integer floors;
+        try (Connection srcConn = postgisClient.getConnection()) {
+            try (Statement stmt = srcConn.createStatement()) {
+                ResultSet floorsResults = stmt.executeQuery(osmFloorQuery);
+                while (floorsResults.next()) {
+                    floors = floorsResults.getInt("");
+
+                    if (floors == null ){
+                        return null;
+                    }else {
+                        return floors;
+                    }
+                }
+
+            }
+        }catch (SQLException e) {
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
+
+    }
+
+    public void updateFloors (Integer floors, String accuracy, String buildingIri) {
+        try (Connection srcConn = postgisClient.getConnection()) {
+            try (Statement stmt = srcConn.createStatement()) {
+                String buildingSQLUpdate = "UPDATE building b SET storeys_above_ground = " + floors + 
+                                            ", storeys_above_ground_accuracy = " + accuracy +
+                                            " FROM cityobject_genericattrib cg\n" + 
+                                            "WHERE b.id = cg.cityobject_id AND cg.strval = '" + buildingIri + "';";
+                postgisClient.executeUpdate(buildingSQLUpdate);
+
+            }
+        }catch (SQLException e) {
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
+        
+
+    }
 }

@@ -50,18 +50,13 @@ public class BuildingFloorAgent extends JPSAgent{
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
         try {
-            GFACalculation gfaCalculation = new GFACalculation(dbUrl, dbUser, dbPassword);
-            if(requestParams.getString("requestUrl").contains("/calculation")){            
-                
-            }else if(requestParams.getString("requestUrl").contains("/floors")){
-               //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
-                IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint, osmPolygon);
-                integrateFloors.matchAddress(floorsCsv);
-            }else if (requestParams.getString("requestUrl").contains("/cost")){
-                
-            }
-
-
+            
+            //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
+            IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint, osmPolygon);
+            integrateFloors.addFloorAccuracyColumn();
+            integrateFloors.matchAddress(floorsCsv);
+            integrateFloors.roughFloorDate();
+    
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
