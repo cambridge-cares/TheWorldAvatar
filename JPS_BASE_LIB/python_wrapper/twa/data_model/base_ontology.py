@@ -861,17 +861,26 @@ class BaseClass(BaseModel, validate_assignment=True):
         # TODO implement this method
         raise NotImplementedError
 
-    def push_to_kg(self, sparql_client: PySparqlClient, recursive_depth: int = 0) -> Tuple[Graph, Graph]:
+    def push_to_kg(
+        self,
+        sparql_client: PySparqlClient,
+        recursive_depth: int = 0,
+        pull_first: bool = False,
+    ) -> Tuple[Graph, Graph]:
         """
         This function pushes the triples of the calling object to the knowledge graph (triplestore).
 
         Args:
             sparql_client (PySparqlClient): The SPARQL client object to be used to push the triples
             recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+            pull_first (bool): Whether to pull the latest triples from the KG before pushing the triples
 
         Returns:
             Tuple[Graph, Graph]: A tuple of two rdflib.Graph objects containing the triples to be removed and added
         """
+        # pull the latest triples from the KG if needed
+        if pull_first:
+            self.__class__.pull_from_kg(self.instance_iri, sparql_client, recursive_depth)
         # type of changes: remove old triples, add new triples
         g_to_remove = Graph()
         g_to_add = Graph()
