@@ -255,7 +255,7 @@ public class AermodAgent extends DerivationAgent {
         aermod.uploadRasterToPostGIS(srid, append);
 
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), zToOutputMap, !ships.isEmpty(),
-                simulationTime, !staticPointSources.isEmpty(), !buildings.isEmpty(), usesElevation);
+                simulationTime, !staticPointSources.isEmpty(), !buildings.isEmpty(), usesElevation, srid);
     }
 
     /**
