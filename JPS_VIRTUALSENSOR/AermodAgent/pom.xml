@@ -144,7 +144,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.25.3</version>
+            <version>1.26.1-ship-demo-SNAPSHOT</version>
         </dependency>
 
         <dependency>

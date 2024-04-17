@@ -54,6 +54,7 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 import com.cmclinnovations.stack.clients.geoserver.MultidimSettings;
+import com.cmclinnovations.stack.clients.geoserver.GeoserverOtherStaticFile;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
@@ -722,6 +723,14 @@ public class Aermod {
         String fileContent = sb.toString();
 
         writeToFile(rasterDirectory.resolve(rasterFileName), fileContent);
+
+        // send files to geoserver for outside access
+
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+        List<GeoserverOtherStaticFile> files = new ArrayList<>();
+        GeoserverOtherStaticFile file = new GeoserverOtherStaticFile("dispersionoutput",rasterFileName);
+        files.add(file);
+        geoServerClient.loadOtherFiles(rasterDirectory, files);
     }
 
     void uploadRasterToPostGIS(int simSrid, boolean append) {
