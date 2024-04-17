@@ -11,16 +11,6 @@ public class AccelerometerHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_ACCELEROMETER);
         this.sensorName = "accelerometer";
     }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        super.onSensorChanged(event);
-    }
-
-    @Override
-    public JSONArray getSensorData() {
-        return sensorData;
-    }
 }
 
 

@@ -41,6 +41,7 @@ public class LocationHandler implements LocationListener {
 
     public void stop() {
         locationManager.removeUpdates(this);
+        locationData = new JSONArray();
     }
 
     @Override

@@ -12,15 +12,6 @@ public class GravitySensorHandler extends AbstractSensorHandler {
         this.sensorName = "gravity";
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        super.onSensorChanged(event);
-    }
-
-    @Override
-    public JSONArray getSensorData() {
-        return sensorData;
-    }
 }
 
 

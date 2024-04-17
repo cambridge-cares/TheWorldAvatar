@@ -32,11 +32,6 @@ public class RelativeHumiditySensorHandler extends AbstractSensorHandler {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public JSONArray getSensorData() {
-        return sensorData;
-    }
 }
 
 

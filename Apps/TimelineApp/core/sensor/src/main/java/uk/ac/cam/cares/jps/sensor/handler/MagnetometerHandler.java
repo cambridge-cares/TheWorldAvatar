@@ -11,14 +11,4 @@ public class MagnetometerHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_MAGNETIC_FIELD);
         this.sensorName = "magnetometer";
     }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        super.onSensorChanged(event);
-    }
-
-    @Override
-    public JSONArray getSensorData() {
-        return sensorData;
-    }
 }

@@ -12,15 +12,6 @@ public class GyroscopeHandler extends AbstractSensorHandler {
         this.sensorName = "gyroscope";
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        super.onSensorChanged(event);
-    }
-
-    @Override
-    public JSONArray getSensorData() {
-        return sensorData;
-    }
 }
 
 

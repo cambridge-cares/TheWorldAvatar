@@ -32,11 +32,6 @@ public class LightSensorHandler extends AbstractSensorHandler {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public JSONArray getSensorData() {
-        return sensorData;
-    }
 }
 
 
