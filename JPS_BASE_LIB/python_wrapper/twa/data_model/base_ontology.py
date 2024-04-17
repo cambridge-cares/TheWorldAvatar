@@ -903,7 +903,9 @@ class BaseClass(BaseModel, validate_assignment=True):
         """
         for f, field_info in self.model_fields.items():
             if BaseProperty.is_inherited(field_info.annotation):
-                p_cache = self._latest_cache.get(f, field_info.annotation())
+                # returning None as p_cache supports the default_factory that initialise the object with empty input values
+                # for those properties with minimum cardinality 1, otherwise it will fail the pydantic validation
+                p_cache = self._latest_cache.get(f, None)
                 p_now = getattr(self, f)
                 p_now.collect_range_diff_to_graph(self.instance_iri, p_cache, g_to_remove, g_to_add, recursive_depth)
             elif f == 'rdf_type' and not self._exist_in_kg and not bool(self._latest_cache.get(f)):
@@ -1032,8 +1034,10 @@ class ObjectProperty(BaseProperty):
 
         # TODO optimise the below codes
         # compare the range and its cache to find out what to remove and what to add
-        diff_to_remove = cache.range - self.range
-        diff_to_add = self.range - cache.range
+        # NOTE this supports the default_factory that initialise the object with empty input values for those properties with minimum cardinality 1
+        cached_range = cache.range if cache is not None else set()
+        diff_to_remove = cached_range - self.range
+        diff_to_add = self.range - cached_range
 
         # iterate the differences and add them to the graph
         for o in diff_to_add:
@@ -1046,7 +1050,7 @@ class ObjectProperty(BaseProperty):
 
         # besides the differences between the range and its cache
         # also need to consider the intersection of the range and its cache when recursive
-        for o in self.range.intersection(cache.range):
+        for o in self.range.intersection(cached_range):
             g_to_remove, g_to_add, o_iri = self._collect_diff(o, g_to_remove, g_to_add, flag_collect, recursive_depth)
 
         return g_to_remove, g_to_add
@@ -1159,12 +1163,16 @@ class DataProperty(BaseProperty):
         Returns:
             Tuple[Graph, Graph]: A tuple of two rdflib.Graph objects containing the triples to be removed and added
         """
+        # create an empty set for the cache.range if the cache is None
+        # NOTE this supports the default_factory that initialise the object with empty input values for those properties with minimum cardinality 1
+        cached_range = cache.range if cache is not None else set()
+
         # compare the range and its cache to find out what to remove and what to add
-        diff_to_remove = cache.range - self.range
+        diff_to_remove = cached_range - self.range
         for d in diff_to_remove:
             self.add_property_to_graph(subject, d, g_to_remove)
 
-        diff_to_add = self.range - cache.range
+        diff_to_add = self.range - cached_range
         # iterate the differences and add them to the graph
         for d in diff_to_add:
             self.add_property_to_graph(subject, d, g_to_add)
