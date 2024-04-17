@@ -207,6 +207,7 @@ public class AermodAgent extends DerivationAgent {
                     String rasterFileName = UUID.randomUUID().toString();
                     try {
                         aermod.createFileForRaster(rasterFileName, pollutantType, zMap.get(zIri));
+                        zToOutputMap.get(zIri).addDispXYZ(pollutantType, rasterFileName);
                         zToOutputMap.get(zIri).addDispRaster(pollutantType, rasterFileName + ".tif");
                     } catch (FileNotFoundException e) {
                         LOGGER.error("Average concentration file not found, probably failed to run simulation");

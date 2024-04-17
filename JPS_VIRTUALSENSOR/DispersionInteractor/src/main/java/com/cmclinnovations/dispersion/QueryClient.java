@@ -91,6 +91,7 @@ public class QueryClient {
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
     private static final Iri DISPERSION_RASTER = P_DISP.iri("DispersionRaster");
     private static final Iri DISPERSION_COLOUR_BAR = P_DISP.iri("DispersionColourBar");
+    private static final Iri DISPERSION_XYZ = P_DISP.iri("DispersionXYZ");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
     private static final Iri BUILDINGS_LAYER = P_DISP.iri("BuildingsLayer");
     private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
@@ -123,6 +124,7 @@ public class QueryClient {
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_DISPERSION_COLOUR_BAR = P_DISP.iri("hasDispersionColourBar");
+    private static final Iri HAS_DISPERSION_XYZ = P_DISP.iri("hasDispersionXYZ");
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
     private static final Iri AS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
     private static final Iri REPORTS = P_EMS.iri("reports");
@@ -244,6 +246,7 @@ public class QueryClient {
             String dispMatrixIri = PREFIX + UUID.randomUUID();
             String dispRasterIri = PREFIX + UUID.randomUUID();
             String dispColourBar = PREFIX + UUID.randomUUID();
+            String dispXYZ = PREFIX + UUID.randomUUID();
 
             modify.insert(iri(dispMatrixIri).isA(DISPERSION_MATRIX));
             modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_MATRIX, iri(dispMatrixIri)));
@@ -251,10 +254,14 @@ public class QueryClient {
             modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_RASTER, iri(dispRasterIri)));
             modify.insert(iri(dispColourBar).isA(DISPERSION_COLOUR_BAR));
             modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_COLOUR_BAR, iri(dispColourBar)));
+            modify.insert(iri(dispXYZ).isA(DISPERSION_XYZ));
+            modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_XYZ, iri(dispXYZ)));
 
             tsList.add(dispMatrixIri);
             tsList.add(dispRasterIri);
             tsList.add(dispColourBar);
+            tsList.add(dispXYZ);
+            dataClass.add(String.class);
             dataClass.add(String.class);
             dataClass.add(String.class);
             dataClass.add(String.class);

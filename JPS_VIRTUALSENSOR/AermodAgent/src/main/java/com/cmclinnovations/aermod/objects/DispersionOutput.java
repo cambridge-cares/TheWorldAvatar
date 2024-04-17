@@ -11,12 +11,14 @@ public class DispersionOutput {
     Map<PollutantType, String> pollutantToDispMatrixMap;
     Map<PollutantType, String> pollutantToRasterMap;
     Map<PollutantType, String> pollutantToColourBarMap;
+    Map<PollutantType, String> pollutantToDispXYZMap;
     List<PollutantType> pollutantTypeList;
 
     public DispersionOutput() {
         pollutantToDispMatrixMap = new EnumMap<>(PollutantType.class);
         pollutantToRasterMap = new EnumMap<>(PollutantType.class);
         pollutantToColourBarMap = new EnumMap<>(PollutantType.class);
+        pollutantToDispXYZMap = new EnumMap<>(PollutantType.class);
         pollutantTypeList = new ArrayList<>();
     }
 
@@ -41,6 +43,13 @@ public class DispersionOutput {
         }
     }
 
+    public void addDispXYZ(PollutantType pollutantType, String dispXYZ) {
+        pollutantToDispXYZMap.put(pollutantType, dispXYZ);
+        if (!pollutantTypeList.contains(pollutantType)) {
+            pollutantTypeList.add(pollutantType);
+        }
+    }
+
     public String getDispMatrix(PollutantType pollutantType) {
         return pollutantToDispMatrixMap.get(pollutantType);
     }
@@ -51,6 +60,10 @@ public class DispersionOutput {
 
     public String getColourBar(PollutantType pollutantType) {
         return pollutantToColourBarMap.get(pollutantType);
+    }
+
+    public String getDispXYZ(PollutantType pollutantType) {
+        return pollutantToDispXYZMap.get(pollutantType);
     }
 
     public boolean hasPollutant(PollutantType pollutantType) {
