@@ -981,6 +981,8 @@ class ObjectProperty(BaseProperty):
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
+        if cls.is_defined_by_ontology is None:
+            raise AttributeError(f"Did you forget to specify `is_defined_by_ontology` for your object property {cls}?")
         cls.is_defined_by_ontology.register_object_property(cls)
 
     def _collect_diff(
