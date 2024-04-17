@@ -22,21 +22,21 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-@WebServlet(urlPatterns = { "/GetDispersionSimulations" })
-public class GetDispersionSimulations extends HttpServlet {
-    private static final Logger LOGGER = LogManager.getLogger(GetDispersionSimulations.class);
+@WebServlet(urlPatterns = { "/GetDispersionMetadata" })
+public class GetDispersionMetadata extends HttpServlet {
+    private static final Logger LOGGER = LogManager.getLogger(GetDispersionMetadata.class);
     private QueryClient queryClient;
     RemoteRDBStoreClient remoteRDBStoreClient;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        LOGGER.info("Received GET request to obtain list of dispersion simulations.");
+        LOGGER.info("Received GET request to obtain metadata of dispersion simulations.");
 
         JSONObject results = new JSONObject();
+        List<DispersionMetadata> dispersionMetadatas = queryClient.getDispersionMetadata();
 
-        List<DispersionSimulation> dispersionSimulations = queryClient.getDispersionSimulations();
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            queryClient.removeNonExistentPollutantsAndSetSimTimes(dispersionSimulations, conn);
+            queryClient.removeNonExistentPollutantsAndSetSimTimesXYZ(dispersionMetadatas, conn);
         } catch (SQLException e) {
             String errmsg = "Probably error in closing connection while getting dispersion outputs";
             LOGGER.error(e.getMessage());
@@ -44,8 +44,8 @@ public class GetDispersionSimulations extends HttpServlet {
         }
 
         try {
-            dispersionSimulations.forEach(
-                dispersionSimulation -> results.put(dispersionSimulation.getLabel(), dispersionSimulation.toJson()));
+            dispersionMetadatas.forEach(
+                dispersionMetadata -> results.put(dispersionMetadata.getLabel(), dispersionMetadata.toJson()));
         } catch (JSONException e) {
             LOGGER.error(e.getMessage());
             LOGGER.error("Failed to create JSON object for HTTP response");
