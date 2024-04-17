@@ -17,7 +17,7 @@ import copy
 import time
 
 from twa.data_model.utils import construct_namespace_iri, construct_rdf_type, init_instance_iri
-from twa.data_model.iris import TWA_BASE_URL
+from twa.data_model.iris import TWA_BASE_URL, OWL_BASE_URL
 from twa.kg_operations import PySparqlClient
 
 
@@ -285,6 +285,12 @@ class BaseOntology(BaseModel):
 
         # serialize
         g.serialize(destination=file_path, format=format)
+
+
+class Owl(BaseOntology):
+    # This is to enable TransitiveProperty so that it can be registered
+    # It is not intended to be used as a standalone ontology
+    base_url: ClassVar[str] = OWL_BASE_URL
 
 
 class BaseProperty(BaseModel, validate_assignment=True):
@@ -812,6 +818,23 @@ class BaseClass(BaseModel, validate_assignment=True):
                               if BaseProperty.is_inherited(field_info.annotation) else getattr(self, f)
                               for f, field_info in self.model_fields.items()}
 
+    def get_object_property_by_iri(self, iri: str) -> ObjectProperty:
+        """
+        This function returns the object property by the IRI of the property.
+
+        Args:
+            iri (str): IRI of the object property
+
+        Returns:
+            ObjectProperty: The object property
+        """
+        dct = self.__class__.get_object_properties()
+        field_name = dct.get(iri, {}).get('field', None)
+        if field_name is not None:
+            return getattr(self, field_name)
+        else:
+            return None
+
     def get_object_property_range_iris(self, field_name: str) -> List[str]:
         """
         This function returns the IRIs of the range of the object property.
@@ -1057,6 +1080,27 @@ class ObjectProperty(BaseProperty):
         return self.__class__(range=set([
             o.instance_iri if isinstance(o, BaseClass) else o for o in self.range
         ]))
+
+
+class TransitiveProperty(ObjectProperty):
+    """
+    Base class for transitive object properties.
+    It inherits the ObjectProperty class.
+    """
+    is_defined_by_ontology: ClassVar[BaseOntology] = Owl
+
+    def obtain_transitive_objects(self, transitive_objects: set=None):
+        if transitive_objects is None:
+            transitive_objects = set()
+        for o in self.range:
+            if isinstance(o, str):
+                o = KnowledgeGraph.get_object_from_lookup(o)
+            prop = o.get_object_property_by_iri(self.predicate_iri)
+            transitive_objects.add(o)
+            if prop is not None:
+                transitive_objects = prop.obtain_transitive_objects(transitive_objects)
+        return transitive_objects
+
 
 class DataProperty(BaseProperty):
     """
