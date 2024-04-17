@@ -1,12 +1,3 @@
-from collections import defaultdict
-from functools import cache
-from typing import Annotated, Dict, List
-
-from fastapi import Depends
-
-from services.connectors.sg_land_lots.kg import get_sgLandLots_bgClient
-from services.core.kg import KgClient
-
 from .model import PlotNumAttrKey
 
 
@@ -16,4 +7,3 @@ PLOT_NUM_ATTR_PREDICATES = {
     PlotNumAttrKey.PLOT_AREA: "ontoplot:hasPlotArea/om:hasValue",
     PlotNumAttrKey.GROSS_FLOOR_AREA: "ontoplot:hasMaximumPermittedGPR/om:hasValue",
 }
-
