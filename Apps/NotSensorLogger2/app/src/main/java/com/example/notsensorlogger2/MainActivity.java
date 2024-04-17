@@ -2,6 +2,7 @@ package com.example.notsensorlogger2;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.hardware.SensorManager;
 import android.os.Handler;
@@ -9,6 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,6 +29,8 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.UUID;
+import android.Manifest;
+
 
 public class MainActivity extends Activity {
     private SensorManager sensorManager;
@@ -36,11 +42,28 @@ public class MainActivity extends Activity {
     private SensorHandler pressureSensorHandler;
     private SensorHandler gravitySensorHandler;
     private LocationHandler locationTracker;
+    private SensorHandler soundLevelHandler;
     private String deviceId;
     private Handler handler = new Handler();
     private Runnable sendDataRunnable;
-    private static final long SEND_INTERVAL = 6000; // Interval in milliseconds
+    private static final long SEND_INTERVAL = 8000; // Interval in milliseconds
     private boolean isDataCollectionActive = true;
+    private static final int PERMISSION_REQUEST_RECORD_AUDIO = 101;
+
+
+    private void checkAndRequestAudioPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_REQUEST_RECORD_AUDIO);
+        } else {
+            initializeAudioSensor();
+        }
+    }
+
+    private void initializeAudioSensor() {
+        soundLevelHandler = new SoundLevelHandler(sensorManager); // Assuming soundLevelHandler is declared in your MainActivity
+    }
+
+
 
     public final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +109,18 @@ public class MainActivity extends Activity {
         };
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initializeAudioSensor();
+            } else {
+                Log.e("MainActivity", "Permission Denied to record audio.");
+                // Optionally disable features or handle the case where permission is not granted.
+            }
+        }
+    }
 
 //    @Override
 //    public final void onCreate(Bundle savedInstanceState) {
@@ -128,6 +163,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         if (isDataCollectionActive) {
+            checkAndRequestAudioPermission();
             startDataCollection();
         }
     }
@@ -213,6 +249,9 @@ public class MainActivity extends Activity {
             addAllSensorData(allSensorData, gravitySensorHandler.getSensorData());
             addAllSensorData(allSensorData, magnetometerHandler.getSensorData());
             addAllSensorData(allSensorData, locationTracker.getLocationData());
+            if (soundLevelHandler != null) {
+                addAllSensorData(allSensorData, soundLevelHandler.getSensorData());
+            }
             // add other sensors similarly
         } catch (JSONException e) {
             e.printStackTrace();
@@ -288,6 +327,9 @@ public class MainActivity extends Activity {
         pressureSensorHandler.start();
         gravitySensorHandler.start();
         locationTracker.start();
+        if (soundLevelHandler != null) { // Check if initialized
+            soundLevelHandler.start();
+        }
     }
 
     private void stopSensors() {
@@ -299,6 +341,9 @@ public class MainActivity extends Activity {
         pressureSensorHandler.stop();
         gravitySensorHandler.stop();
         locationTracker.stop();
+        if (soundLevelHandler != null) { // Check if initialized
+            soundLevelHandler.stop();
+        }
     }
 
     // Code for second version, with sensor button names
@@ -341,7 +386,7 @@ public class MainActivity extends Activity {
 
 
     private void sendPostRequest(JSONArray sensorData) {
-        String url = "https://eou1bwdjb3p7r6h.m.pipedream.net";     //10.0.2.2:3838      //http://192.168.1.60:3838/sensorloggermobileappagent/update   //https://eou1bwdjb3p7r6h.m.pipedream.net
+        String url = "https://eou1bwdjb3p7r6h.m.pipedream.net";     //10.0.2.2:3838      //https://eo5qowv4nlk2w03.m.pipedream.net   //http://192.168.1.60:3838/sensorloggermobileappagent/update
         RequestQueue queue = Volley.newRequestQueue(this);
         String sessionId = UUID.randomUUID().toString();
         int messageId = generateMessageId();

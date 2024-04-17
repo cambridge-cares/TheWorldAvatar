@@ -3,13 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.BODY_SENSORS" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
 
     <application
         android:networkSecurityConfig="@xml/network_security_config"
@@ -22,28 +20,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NotSensorLogger2"
         tools:targetApi="31">
-        <!--        <service-->
-        <!--            android:name=".SensorService"-->
-        <!--            android:foregroundServiceType="location|sensor" />-->
 
         <activity
             android:name=".location.MainActivity3"
             android:exported="false" />
-
         <activity
             android:name=".gpsfunctionality.MainActivity2"
-            android:exported="false" /> <!-- <meta-data -->
-        <!-- android:name="com.mapbox.ACCESS_TOKEN" -->
-        <!-- android:value="pk.eyJ1IjoieWFzaG5hbGx1cmkiLCJhIjoiY2xzd3FidGhtMG1jaDJubGlkMjg5b21kZSJ9.EygiR41XHKSoxKVjXrSDmg"/> -->
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
