@@ -42,4 +42,8 @@ public class SensorViewModel extends ViewModel {
     public void setIsRecording(Boolean isRecording) {
         this._isRecording.setValue(isRecording);
     }
+
+    public void clearManagers() {
+        sensorRepository.clearManagers();
+    }
 }

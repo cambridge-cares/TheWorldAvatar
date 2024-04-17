@@ -83,19 +83,16 @@ public class LoginRepository {
         return null;
     }
 
-    public ActivityResultLauncher<Intent> getLogoutLauncher(Fragment fragment) {
+    public ActivityResultLauncher<Intent> getLogoutLauncher(Fragment fragment, RepositoryCallback<Boolean> callback) {
         return fragment.registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_CANCELED) {
-                        Toast.makeText(fragment.requireActivity(), R.string.cancel_logout, Toast.LENGTH_SHORT).show();
+                        callback.onFailure(new Throwable("cancelled"));
                     } else {
                         loginSource.authStateManager.clearSharedPref();
                         user = null;
-                        NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                                .fromUri(Uri.parse(fragment.getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
-                                .build();
-                        NavHostFragment.findNavController(fragment).navigate(request);
+                        callback.onSuccess(true);
                     }
                 }
         );

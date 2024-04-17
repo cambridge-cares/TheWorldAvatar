@@ -44,4 +44,8 @@ public class SensorRepository {
         LOGGER.info("stop recording");
         sensorNetworkSource.stopDataCollection();
     }
+
+    public void clearManagers() {
+        sensorNetworkSource.clearManagers();
+    }
 }

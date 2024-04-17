@@ -4,6 +4,7 @@ import static android.content.Context.SENSOR_SERVICE;
 
 import android.content.Context;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -28,6 +29,8 @@ public class SensorManager {
     private SensorHandler gravitySensorHandler;
     private LocationHandler locationTracker;
 
+    private Logger LOGGER = Logger.getLogger(SensorManager.class);
+
     public SensorManager(Context applicationContext) {
         android.hardware.SensorManager sensorManager = (android.hardware.SensorManager) applicationContext.getSystemService(SENSOR_SERVICE);
         accelerometerHandler = new AccelerometerHandler(sensorManager);
@@ -49,6 +52,8 @@ public class SensorManager {
         pressureSensorHandler.start();
         gravitySensorHandler.start();
         locationTracker.start();
+
+        LOGGER.info("sensors started");
     }
 
     protected void stopSensors() {
@@ -60,6 +65,8 @@ public class SensorManager {
         pressureSensorHandler.stop();
         gravitySensorHandler.stop();
         locationTracker.stop();
+
+        LOGGER.info("sensors stopped");
     }
 
     protected JSONArray collectSensorData() {
