@@ -620,6 +620,22 @@ class BaseClass(BaseModel, validate_assignment=True):
         self.__class__.object_lookup[self.instance_iri] = self
 
     @classmethod
+    def push_all_instances_to_kg(cls, sparql_client: PySparqlClient, recursive_depth: int = 0):
+        """
+        This function pushes all the instances of the class to the knowledge graph.
+
+        Args:
+            sparql_client (PySparqlClient): The SPARQL client that is used to push the data to the KG
+            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+        """
+        g_to_remove = Graph()
+        g_to_add = Graph()
+        cls.pull_from_kg(cls.object_lookup.keys(), sparql_client, recursive_depth)
+        for obj in cls.object_lookup.values():
+            g_to_remove, g_to_add = obj.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
+        sparql_client.delete_and_insert_graphs(g_to_remove, g_to_add)
+
+    @classmethod
     def clear_object_lookup(cls):
         """
         This function clears the lookup dictionary of the class.
