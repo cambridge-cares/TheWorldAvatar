@@ -540,6 +540,7 @@ class BaseClass(BaseModel, validate_assignment=True):
     is_defined_by_ontology: ClassVar[BaseOntology] = None
     object_lookup: ClassVar[Dict[str, BaseClass]] = None
     rdfs_comment: str = Field(default=None)
+    rdfs_label: str = Field(default=None)
     rdf_type: str = Field(default=None)
     instance_iri: str = Field(default=None)
     _timestamp_of_latest_cache: float = PrivateAttr(default_factory=time.time)
@@ -684,6 +685,17 @@ class BaseClass(BaseModel, validate_assignment=True):
                     range=props[dp_iri] if dp_iri in props else set()
                 ) for dp_iri, dp_dct in dps.items()
             }
+            # handle rdfs:label and rdfs:comment
+            rdfs_properties_dict = {}
+            if RDFS.label.toPython() in props:
+                if len(props[RDFS.label.toPython()]) > 1:
+                    raise ValueError(f"The instance {iri} has multiple rdfs:label {props[RDFS.label.toPython()]}.")
+                rdfs_properties_dict['rdfs_label'] = list(props[RDFS.label.toPython()])[0]
+            if RDFS.comment.toPython() in props:
+                if len(props[RDFS.comment.toPython()]) > 1:
+                    raise ValueError(f"The instance {iri} has multiple rdfs:comment {props[RDFS.comment.toPython()]}.")
+                rdfs_properties_dict['rdfs_comment'] = list(props[RDFS.comment.toPython()])[0]
+            # instantiate the object
             if inst is not None:
                 # consider those objects that are connected in the KG and are connected in python
                 # TODO below query can be combined with those connected in the KG to save amount of queries
@@ -693,10 +705,12 @@ class BaseClass(BaseModel, validate_assignment=True):
                             set(inst.get_object_property_range_iris(op_dct['field'])) - set(props.get(op_iri, [])),
                             sparql_client, recursive_depth)
                 inst._latest_cache = {k: v.create_cache() for k, v in {**object_properties_dict, **data_properties_dict}.items()}
+                inst._latest_cache.update(rdfs_properties_dict)
                 inst._timestamp_of_latest_cache = time.time()
             else:
                 inst = cls(
                     instance_iri=iri,
+                    **rdfs_properties_dict,
                     **object_properties_dict,
                     **data_properties_dict,
                 )
@@ -892,6 +906,12 @@ class BaseClass(BaseModel, validate_assignment=True):
                         g_to_remove.add((URIRef(self.instance_iri), RDFS.comment, Literal(self._latest_cache.get(f))))
                     if self.rdfs_comment is not None:
                         g_to_add.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment)))
+            elif f == 'rdfs_label':
+                if self._latest_cache.get(f) != self.rdfs_label:
+                    if self._latest_cache.get(f) is not None:
+                        g_to_remove.add((URIRef(self.instance_iri), RDFS.label, Literal(self._latest_cache.get(f))))
+                    if self.rdfs_label is not None:
+                        g_to_add.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
         return g_to_remove, g_to_add
 
     def _exclude_keys_for_compare_(self, *keys_to_exclude):
