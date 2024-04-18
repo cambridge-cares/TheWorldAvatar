@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet(urlPatterns = {"/floors"})
+@WebServlet(urlPatterns = {"/floors", "/floorswithodba"})
 public class BuildingFloorAgent extends JPSAgent{
     
     
@@ -61,12 +61,14 @@ public class BuildingFloorAgent extends JPSAgent{
             integrateFloors.importFloorDate();
     
             //Upload Ontop mapping
-            try {
-                OntopClient ontopClient = OntopClient.getInstance();
-                ontopClient.updateOBDA(obdaFile);
-            } catch (Exception e) {
-                System.out.println("Could not retrieve isochrone .obda file.");
-            }
+            if (requestParams.getString("requestUrl").contains("withodba")){
+                try {
+                    OntopClient ontopClient = OntopClient.getInstance();
+                    ontopClient.updateOBDA(obdaFile);
+                } catch (Exception e) {
+                    System.out.println("Could not retrieve isochrone .obda file.");
+                }
+            }           
 
         } catch (Exception e) {
             e.printStackTrace();
