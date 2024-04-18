@@ -3,7 +3,6 @@
 import styles from './navbar.module.css';
 
 import React from 'react';
-import SVG from 'react-inlinesvg';
 import { useSelector } from 'react-redux';
 
 import { Routes } from 'io/config/routes';
@@ -11,7 +10,7 @@ import { selectItem } from 'state/context-menu-slice';
 import { navbarItem } from 'ui/interaction/context-menu/context-menu';
 import AppLink from 'ui/navigation/link/link';
 import NavbarComponent from './navbar-component';
-import IconComponent from '../../graphic/icon/icon';
+import IconComponent from 'ui/graphic/icon/icon';
 
 // Type definition for navbar properties
 type NavbarProps = {
