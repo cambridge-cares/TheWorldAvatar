@@ -20,22 +20,30 @@ def convert_owl_to_jsonld(owl_file_path):
     return json_object
 
 
+USAGE_MESSAGE="Usage:\nCase-1: python owl2jsonld.py -f path/to/source.owl [path/to/target.jsonld]\nCase-2: python owl2jsonld.py -all path/to/source_directory [path/to/target_directory]"
 # Register the plugins for the parsers
 register('json-ld', Parser, 'rdflib_jsonld.parser', 'JsonLDParser')
 
 # check if the source and target filename was provided
-if len(sys.argv) < 4:
-    print("Usage:")
-    print("Case-1: python owl2jsonld.py -f path/to/source.owl path/to/target.jsonld")
-    print("Case-2: python owl2jsonld.py -all path/to/source_directory path/to/target_directory")
+if len(sys.argv) < 3:
+    print(USAGE_MESSAGE)
     sys.exit(1)
 
 if  sys.argv[1] == '-f':  
     # The first command-line argument is the script name, so the second one is the source
     source_owl_file = sys.argv[2]
-
-    # the third argument is the target
-    target_jsonld_file = sys.argv[3]
+    
+    if not source_owl_file.endswith('.owl'):  # Check if it's an OWL file
+        print("You cannot convert other than .owl file.")
+        print(USAGE_MESSAGE)
+        sys.exit(1)
+    
+    # if target file is not given, source file with .jsonld extension will be considered as the target file
+    if len(sys.argv) == 3:
+        target_jsonld_file = source_owl_file.replace('.owl', '.jsonld')
+    else:
+        # the fourth argument is the target
+        target_jsonld_file = sys.argv[3]
 
     print('Conversion started. Required time is proportional to the file size. \nTherefore, please keep patience until you get a message.')
     # Convert OWL to JSON-LD
@@ -45,7 +53,12 @@ if  sys.argv[1] == '-f':
         json.dump(jsonld_output, file, indent=4)
 elif sys.argv[1] == '-all':
     source_directory = sys.argv[2]
-    target_directory = sys.argv[3]
+    
+    # if target directory is not given, source directory is considered as the target directory
+    if len(sys.argv) == 3:
+        target_directory = sys.argv[2]
+    else:
+        target_directory = sys.argv[3]
 
     # Ensure the directories end with '/'
     if not source_directory.endswith('/'):
@@ -67,8 +80,6 @@ elif sys.argv[1] == '-all':
             with open(target_jsonld_file, 'w') as file:
                 json.dump(jsonld_output, file, indent=4)
 else:
-    print("Usage:")
-    print("Case-1: python owl2jsonld.py -f path/to/source.owl path/to/target.jsonld")
-    print("Case-2: python owl2jsonld.py -all path/to/source_directory path/to/target_directory")
+    print(USAGE_MESSAGE)
     sys.exit(1)
 print('Conversion completed.')
