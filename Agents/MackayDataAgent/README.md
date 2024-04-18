@@ -75,8 +75,11 @@ Note that the agent needs 4 other components to work:
 
 # 2.1 Mackay Calculator Agents
 The Singapore MacKay Carbon Calculator provides a model of the Singapore energy system that allows you to explore pathways to decarbonisation. The scenario simulation is based on an underling Mackay Calculator Model. We implement it in the TWA agent framework with two agents.
-1) Mackay Calculator Agent: The agent that manages the web-interface and controlling API over the Calculator model.
-2) Mackay Data Agent: The agent that manages the update of the derived Timeseries (TS) datapoints in TWA that is required as the input to the Calculator Model. The required input TS data are derived under DIF with a chain of [Forecasting Agent] and [API Agent].
+1) [Mackay Calculator Agent]: The agent that exposes a web-interface and level-controlling API of the Singapore Mackay Calculator Model. This Agent needs to be deployed on a Windows OS due to its dependency on Excel.
+2) Mackay Data Agent (this agent): The agent that manages the update of the input data to the Mackay Calculator Model as derived Timeseries (TS) datapoints in TWA. The required input data are derived as Timeseries under DIF with a chain of [Forecasting Agent] and [API Agent].
+
+Note that it is possible to deploy Calculator Agent without the Data Agent, however in that case the input data of the Calculator model will not be dynamically updated from the TWA KG.
+
 
 
 # 2.2 Data Agent Operation

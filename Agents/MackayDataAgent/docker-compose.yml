@@ -2,19 +2,17 @@ version: '3.8'
 
 services:
   api_agent:
-    image: ghcr.io/cambridge-cares/api_agent:1.0.0-SNAPSHOT
-    container_name: api_agent
+    image: ghcr.io/cambridge-cares/mackaydata_agent:1.0.0
+    container_name: mackaydata_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     build:
       context: .
       target: prod
     ports:
-      - 7000:5000
+      - 5002:5000
     extra_hosts:
       - host.docker.internal:host-gateway
-    env_file:
-      - ./agent.env.run
     volumes:
       # To run docker inside docker, mount default Unix socket docker.sock as a volume
       # (https://devopscube.com/run-docker-in-docker/)

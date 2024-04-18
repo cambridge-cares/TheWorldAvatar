@@ -8,7 +8,7 @@ from tests import conftest as cf
 TARGET_IRI_DUNIT = "https://www.theworldavatar.com/kg/test/Number_773521f9-528e-40fc-9bcb-4218e49f40e8"
 TARGET_IRI_PV = "https://www.theworldavatar.com/kg/test/Number_773521f9-528e-40fc-9bcb-4218e49f23ds"
 TARGET_IRI_TEMP = "https://www.theworldavatar.com/kg/test/Number_773521f9-528e-40fc-9bcb-4218e49f12eg"
-EXPECTED_INFO_PV = {'dynamic_generated': False, 'url': 'https://www.ema.gov.sg/content/dam/corporate/resources/singapore-energy-statistics/excel/SES_Public_2023_tidy.xlsx.coredownload.xlsx','format': 'xlsx', 'method': 'GET', 'contenttype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'value_iter': 'T6.1/inst_cap_mwp', 'time_iter': 'T6.1/year', 'calculation': 'algebra_sum'}
+EXPECTED_INFO_PV = {'dynamic_generated': False, 'url': 'https://www.ema.gov.sg/content/dam/corporate/resources/singapore-energy-statistics/excel/SES_Public_2023_tidy.xlsx.coredownload.xlsx','format': 'xlsx', 'method': 'GET', 'contenttype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'value_iter': 'T6.1/inst_cap_mwp', 'time_iter': 'T6.1/year', 'calculation': 'map_function_sum'}
 
 EXPECTED_INFO_TEMP ={'dynamic_generated': True, 'method': 'GET', 'format': 'csv','contenttype': 'text/csv', 'url': 'https://api-production.data.gov.sg/v2/internal/api/datasets/d_755290a24afe70c8f9e8bcbf9f251573/initiate-download', 'method_dynamic': 'POST', 'value_iter': 'mean_temp', 'time_iter': 'month'}
 

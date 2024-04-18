@@ -32,8 +32,7 @@ from werkzeug.serving import make_server
 # ----------------------------------------------------------------------------------
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TBOX_DIR = os.path.join(PROJECT_DIR, 'tbox_dev')
-TEST_TRIPLES_DIR = os.path.join(TBOX_DIR, 'test_triples')
+TEST_TRIPLES_DIR = os.path.join(PROJECT_DIR, 'test_triples')
 ENV_FILE = os.path.join(PROJECT_DIR, 'agent.env.test')
 # Provide names of respective Docker services
 # NOTE These names need to match the ones given in the `docker-compose-testcontainers.yml` file

@@ -10,7 +10,7 @@ SELECT_STR = "SELECT * WHERE"
 INSERT_STR = "INSERT DATA"
 
 META_PREFIX = '''
-prefix rml4ts: <http://www.theworldavatar.com/ontology/rml4ts/rml4ts.owl#>
+prefix rml4ts: <https://www.theworldavatar.com/kg/rml4ts.owl#>
 prefix td: <https://www.w3.org/2019/wot/td#>
 prefix htv: <http://www.w3.org/2011/http#>
 prefix hctl: <https://www.w3.org/2019/wot/hypermedia#>
@@ -27,7 +27,7 @@ SOURCE_QUERY = '''
 ?lsource rml:referenceFormulation ?type.
 ?lsource rml4ts:value_iterator ?value_iter.
 ?lsource rml4ts:time_iterator ?time_iter.
-OPTIONAL {{ ?lsource rml4ts:hasAlgebra ?algebra. }}
+OPTIONAL {{ ?lsource rml4ts:hasMapFunction ?mfunc. }}
 }}
 '''
 
@@ -120,9 +120,9 @@ class APISourceSparqlClient:
             else:
                 url_info['value_iter'] = r[0]['value_iter']
                 url_info['time_iter'] = r[0]['time_iter']
-                if 'algebra' in r[0]:
-                    algebra_name = r[0]['algebra'].split('#')[-1].lower()
-                    url_info['calculation'] = 'algebra_' + algebra_name
+                if 'mfunc' in r[0]:
+                    mfunc_name = r[0]['mfunc'].split('#')[-1].lower()
+                    url_info['calculation'] = 'map_function_' + mfunc_name
                 return url_info
         else:
             logging.info('map iri ' + map_iri + ' is not properly defined in KG')

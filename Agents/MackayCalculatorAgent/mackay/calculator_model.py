@@ -37,8 +37,8 @@ class CalculatorModel(XLSVModel):
                 return False
         return True
 
-    #twerk till netzero
-    def twerkTillZero(self, action, pos_cate, current_config):
+    #tweak till netzero
+    def tweakTillZero(self, action, pos_cate, current_config):
         all_cate = list(range(45))
         neg_cate = deque([ i for i in all_cate if i not in pos_cate])
         other_direction = 0

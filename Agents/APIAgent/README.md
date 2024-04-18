@@ -6,7 +6,7 @@ The agent is integrated with the [Derived Information Framework]'s (DIF) to ensu
 
 Once a API is registered using the [`DerivationClient`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation), API agent automatically manages a periodical re-downloading of the data from that API.
 
-Ontology definition of API meta-data relies on  [Web of Things (WoT) Hypermedia Controls Ontology]. We also extend [RDF Mapping Language (RML)] for TimeSeries data as `RMLTS Ontology`.
+Ontology definition of API meta-data relies on  [Web of Things (WoT) Hypermedia Controls Ontology]. We also extend [RDF Mapping Language (RML)] for TimeSeries data as `rmlts Ontology`.
 
 
 
@@ -77,7 +77,7 @@ The following snippet provides an overview of the expected instantiation structu
 #2. Agent Design
 
 ##2.1 Ontology
-This ontology design is not considered as the finalized version and should only serve as a reference. The HTTP request of each external API data point is defined via [Web of Things (WoT) Hypermedia Controls Ontology]. The API-Data-to-TimeSeries mapping is defined by extending RDF Mapping Language (RML) for current TWA Timeseries data format as`RMLTS Ontology`. See a proposed version of RMLTS: [RMLTS.owl].
+This ontology design is not considered as the finalized version and should only serve as a reference. The HTTP request of each external API data point is defined via [Web of Things (WoT) Hypermedia Controls Ontology]. The API-Data-to-TimeSeries mapping is defined by extending RDF Mapping Language (RML) for current TWA Timeseries data format as`rmlts Ontology`. See a proposed version of rmlts: [rmlts.owl].
 
 ##2.2 Agent Operation
 Upon an API is registered to the API Agent, the Agent will conduct two actions:
@@ -101,7 +101,7 @@ Once this is done, the API Agent automatically manages the instantiation and all
 
 ##2.2 Extra Options
 ###2.2.1 API with dynamically generated URL
-It is common for external data API to use dynamically generated access URL. For this purpose, we define a new rdf property in `RMLTS.OWL`: `rmlts:hasDynamicTarget`. Find in [test_triples] folder an example to define an API source with dynamically generated URL: [api_temperature.ttl].
+It is common for external data API to use dynamically generated access URL. For this purpose, we define a new rdf property in `rmlts.owl`: `rmlts:hasDynamicTarget`. Find in [test_triples] folder an example to define an API source with dynamically generated URL: [api_temperature.ttl].
  
 ###2.2.2 API-to-TS mapping with Algebra
 Some source-data-to-target-Timeseries mapping may need algebra operations. For examples, the raw data contains 4 set of sub-category quantities and the target quantity is the sum of them. Such operations can be declared as a Named Individual of type `rmlts:Algebra`. And a corresponding implementation should be put in the [calculations module]. We have implemented one example: `rmlts:Sum`. An API meta-data example can be found in [test_triples] folder: [api_pvcapacity.ttl].
@@ -113,7 +113,7 @@ Some source-data-to-target-Timeseries mapping may need algebra operations. For e
 
 A local running container can be initiated via:
 ```
-docker compose -f "docker-compose-test-dockerised.yml" up -d --build
+docker compose -f "docker-compose.yml" up -d --build
 ```
 Note that the agent needs a triple store and an RDB to work. The access information needs to be declared in agent.env.run. For easy local test, one could use the docker-compose-testcontainers.yml, which creates both the triple store and RDB as docker containers.
 ```commandline
@@ -146,18 +146,13 @@ python -m pytest --docker-compose=./docker-compose-testcontainers.yml
 
 [OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
 [OntoDerivation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoderivation
-
+[rmlts.owl]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/rmlts/rmlts.owl
 <!-- files -->
-[HTTP forecast error request]: ./resources/HTTP_evaluate_errors.http
-[model mapping]: ./forecastingagent/fcmodels/model_mapping.py
 [docker compose file]: ./docker-compose.yml
-[stack manager input config file]: ./stack-manager-input-config/forecasting-agent.json
-[stack-manager-input-config]: ./stack-manager-input-config
-[test_plots]: tests/test_plots/
 [Web of Things (WoT) Hypermedia Controls Ontology]:https://www.w3.org/2019/wot/hypermedia
 [RDF Mapping Language (RML)]:https://rml.io/specs/rml/
-[test_triples]: ./tbox_dev/test_triples
-[RMLTS.owl]: ./tbox_dev/rmlts.owl
+[test_triples]: ./test_triples
+
 [api_temperature.ttl]: ./tbox_dev/test_triples/api_temperature.ttl
 [calculations module]: ./data_classes/calculations.py
 [api_pvcapacity.ttl]: ./tbox_dev/test_triples/api_pvcapacity.ttl

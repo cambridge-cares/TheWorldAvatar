@@ -14,7 +14,6 @@ def default():
 
 
 def create_app():
-    print('start agent')
     agent = APIAgent(
         db_url=agent_config.DB_URL,
         db_user=agent_config.DB_USER,
@@ -29,13 +28,10 @@ def create_app():
         agent_endpoint= agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent = agent_config.REGISTER_AGENT
     )
-    print('started agent')
     app = agent.app
     def check_API_exist():
-        print('inside router check API')
         request_json = request.json
         iri = request_json['api_iri']
-        print(iri)
         return {'result':agent.check_if_api_registered(iri)}
     agent.add_url_pattern('/', 'root', default, methods=['GET']) # Add root web to be introduction page
     agent.add_url_pattern('/check_api', 'check_api', check_API_exist, methods=['GET']) # Add root web to be introduction page
