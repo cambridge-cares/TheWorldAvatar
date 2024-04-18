@@ -551,7 +551,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasAccuracy">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>A relationship between the BuildingFloors and its accuracy level.</rdfs:comment>
+        <rdfs:comment>A relationship between the floors and its accuracy level.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>has accuracy</rdfs:label>
     </owl:DatatypeProperty>
@@ -603,7 +603,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasFloorsValue">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
-        <rdfs:comment>A relationship between the BuildingFloors and its value.</rdfs:comment>
+        <rdfs:comment>A relationship between the floors and its value.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>has floors value</rdfs:label>
     </owl:DatatypeProperty>

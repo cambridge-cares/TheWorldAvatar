@@ -120,8 +120,8 @@ Bank,Class,Non-Domestic,IS-A,,,,A property where customers can deposit and withd
 Pharmacy,Class,Medical,IS-A,,,,A healthcare facility where medicinal drugs are prepared or sold.,https://www.theworldavatar.com/kg/ontobuiltenv/,Pharmacy
 BuildingFloors,Class,,,Property,,,A concept to describe amount of floors in a building.,https://www.theworldavatar.com/kg/ontobuiltenv/,Building floors
 hasBuildingFloors,Object Property,,,Property,BuildingFloors,exactly 1,A relationship between a property and its amount of floors.,https://www.theworldavatar.com/kg/ontobuiltenv/,has building floors
-hasFloorsValue,Data Property,,,BuildingFloors,integer,exactly 1,A relationship between the BuildingFloors and its value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has floors value
-hasAccuracy,Data Property,,,BuildingFloors,string,exactly 1,A relationship between the BuildingFloors and its accuracy level.,https://www.theworldavatar.com/kg/ontobuiltenv/,has accuracy
+hasFloorsValue,Data Property,,,BuildingFloors,integer,exactly 1,A relationship between the floors and its value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has floors value
+hasAccuracy,Data Property,,,BuildingFloors,string,exactly 1,A relationship between the floors and its accuracy level.,https://www.theworldavatar.com/kg/ontobuiltenv/,has accuracy
 hasGFA,Data Property,,,Property,float,exactly 1,A relationship between a building and its Gross Floor Area value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has GFA
 hasCountry,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,A relationship between an address and the respective country name.,https://www.theworldavatar.com/kg/ontobuiltenv/,has country
 hasCity,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,A relationship between an address and the respective city name.,https://www.theworldavatar.com/kg/ontobuiltenv/,has city
