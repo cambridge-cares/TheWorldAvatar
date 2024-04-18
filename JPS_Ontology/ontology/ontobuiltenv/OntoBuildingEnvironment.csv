@@ -123,5 +123,5 @@ hasBuildingFloors,Object Property,,,Property,BuildingFloors,exactly 1,A relation
 hasFloorsValue,Data Property,,,BuildingFloors,integer,exactly 1,A relationship between the BuildingFloors and its value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has floors value
 hasAccuracy,Data Property,,,BuildingFloors,string,exactly 1,A relationship between the BuildingFloors and its accuracy level.,https://www.theworldavatar.com/kg/ontobuiltenv/,has accuracy
 hasGFA,Data Property,,,Property,float,exactly 1,A relationship between a building and its Gross Floor Area value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has GFA
-hasCountry,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,The country where the address is located.,https://www.theworldavatar.com/kg/ontobuiltenv/,has country
-hasCity,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,The city where the address is located.,https://www.theworldavatar.com/kg/ontobuiltenv/,has city
+hasCountry,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,A relationship between an address and the respective country name.,https://www.theworldavatar.com/kg/ontobuiltenv/,has country
+hasCity,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,A relationship between an address and the respective city name.,https://www.theworldavatar.com/kg/ontobuiltenv/,has city
