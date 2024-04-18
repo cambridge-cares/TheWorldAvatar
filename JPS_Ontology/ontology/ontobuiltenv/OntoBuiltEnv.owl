@@ -163,7 +163,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasBuildingFloors">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
-        <rdfs:comment>A relationship between a property and its amount floors.</rdfs:comment>
+        <rdfs:comment>A relationship between a property and its amount of floors.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>has building floors</rdfs:label>
     </owl:ObjectProperty>
@@ -551,7 +551,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasAccuracy">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>A relationship between a building floors and its accuracy level.</rdfs:comment>
+        <rdfs:comment>A relationship between the BuildingFloors and its accuracy level.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>has accuracy</rdfs:label>
     </owl:DatatypeProperty>
@@ -603,7 +603,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasFloorsValue">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
-        <rdfs:comment>A relationship between a building floors and its value.</rdfs:comment>
+        <rdfs:comment>A relationship between the BuildingFloors and its value.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>has floors value</rdfs:label>
     </owl:DatatypeProperty>
@@ -616,7 +616,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasGFA">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
-        <rdfs:comment>A relationship between a building and its GFA value.</rdfs:comment>
+        <rdfs:comment>A relationship between a building and its Gross Floor Area value.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>has GFA</rdfs:label>
     </owl:DatatypeProperty>
