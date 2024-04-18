@@ -101,26 +101,27 @@
 
 .buttonIcon {
     flex-grow: 1;
-    max-height: 100%;
-
     overflow: hidden;
     width: 100%;
-}
-
-.button img {
-    height: 100%;
+    height: 5vh;
     filter: drop-shadow(4px 4px 2px rgb(0 0 0 / 0.25));
 }
 
 .buttonTitle {
     flex-grow: 0;
-    width: 50%;
+    width: 100%;
     margin: auto;
     margin-bottom: 5px;
-
-    border: 1px solid var(--border-secondary);
-    border-width: 0px 0px 1px 0px;
     text-align: center;
+}
+
+.buttonTitle::after {
+    content: "";
+    display: block;
+    height: 1px;
+    width: 80%;
+    margin: 0 auto;
+    background-color: var(--border-secondary);
 }
 
 .buttonDescription {

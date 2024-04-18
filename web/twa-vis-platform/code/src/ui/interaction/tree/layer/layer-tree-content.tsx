@@ -11,6 +11,7 @@ import { Map } from 'mapbox-gl';
 import { getIsStyleLoaded } from 'state/floating-panel-slice';
 import { MapLayerGroup, MapLayer } from 'types/map-layer';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
+import IconComponent from 'ui/graphic/icon/icon';
 
 // type definition for incoming properties
 type LayerTreeHeaderProps = {
@@ -227,7 +228,7 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
         {layer.icon && (
           layer.icon.startsWith("#") ?
             <span className={iconStyles["line-icon"]} style={{ background: layer.icon }}></span> :
-            <img className={iconStyles["small-icon-image"]} src={layer.icon} />
+            <IconComponent icon={layer.icon} classes={iconStyles["small-icon-image"]} />
         )}
 
         {/* Name of group */}

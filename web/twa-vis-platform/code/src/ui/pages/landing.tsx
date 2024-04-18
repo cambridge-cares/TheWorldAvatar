@@ -14,6 +14,7 @@ import { Routes } from 'io/config/routes';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
 import StaticPageThumbnail from './static-page-thumbnail';
 import AppLink from 'ui/navigation/link/link';
+import IconComponent from 'ui/graphic/icon/icon';
 
 // Utilities to render markdown into HTML
 const markdowner = markdownit({
@@ -106,9 +107,7 @@ function buildButton(title: string, description: string, icon: string, url: stri
         <Tooltip title={tooltipText} enterDelay={1000} leaveDelay={100}>
             <AppLink url={url} className={styles.button}>
                 {/* Add thumbnail */}
-                <div className={styles.buttonIcon}>
-                    <img src={icon} />
-                </div>
+                <IconComponent icon={icon} classes={styles.buttonIcon} />
                 {/* Page title */}
                 <div className={styles.buttonTitle}>
                     <h1>{title}</h1>

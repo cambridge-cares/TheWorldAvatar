@@ -6,7 +6,7 @@
 "use client";
 
 import styles from './static-content-page.module.css';
-import iconStyles from 'ui/buttons/icon-button.module.css';
+import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 import 'github-markdown-css/github-markdown.css';
 
 import React, { ReactNode } from 'react';

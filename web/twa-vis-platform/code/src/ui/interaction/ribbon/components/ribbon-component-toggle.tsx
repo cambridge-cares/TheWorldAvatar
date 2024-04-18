@@ -7,7 +7,7 @@ import SVG from 'react-inlinesvg';
 import { Icon, Tooltip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOption, setOption } from 'state/ribbon-component-slice';
-
+import { formatAppUrl } from 'utils/client-utils';
 
 type Props = {
     icon: string,
@@ -41,7 +41,7 @@ export default function RibbonComponentToggle(props: Props) {
     if(props.icon.endsWith(".svg")) {
         // Image file
         iconElement = (
-            <SVG src={props.icon}/>
+            <SVG src={formatAppUrl(props.icon)}/>
         );
     } else {
         // Name of Google material icon

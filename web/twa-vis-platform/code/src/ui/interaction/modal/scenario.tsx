@@ -10,6 +10,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { setScenario } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
+import IconComponent from 'ui/graphic/icon/icon';
 
 type ScenarioModalProperties = {
   scenarios: ScenarioDefinition[],
@@ -53,7 +54,7 @@ export default function ScenarioModal(props: ScenarioModalProperties) {
           >
             <div className={styles["option-container"]}>
               <div className={styles["icon-container"]}>
-                <img className={styles.icon} src="/images/defaults/icons/about.svg" />
+                <IconComponent icon="/images/defaults/icons/about.svg" classes={styles.icon} />
               </div>
               <div className={styles.content}>
                 <span className={styles.title}><b>({index + 1}) {scenario.name}</b></span>

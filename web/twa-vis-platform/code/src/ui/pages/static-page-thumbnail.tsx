@@ -7,6 +7,7 @@ import { Tooltip } from '@mui/material';
 
 import { OptionalPage } from 'io/config/optional-pages';
 import AppLink from 'ui/navigation/link/link';
+import AppImage from 'ui/graphic/image/image';
 
 // Interface for incoming parameters
 interface Props {
@@ -23,6 +24,8 @@ interface Props {
 export default function StaticPageThumbnail({ page }: Readonly<Props>) {
 
     const tooltipText = "Click to open the '" + page.title + "' page.";
+    const imageDescription = "Thumbnail icon for the '" + page.title + "' page.";
+
     const thumbnail = page.thumbnail ?? "/images/defaults/icons/info.svg";
     const url = `/posts/${page.slug}`;
 
@@ -30,9 +33,7 @@ export default function StaticPageThumbnail({ page }: Readonly<Props>) {
         <Tooltip title={tooltipText} enterDelay={1000} leaveDelay={100}>
             <AppLink url={url} className={styles.container}>
                 {/* Add thumbnail */}
-                <div className={styles.thumbnail}>
-                    <img src={thumbnail} />
-                </div>
+                <AppImage url={thumbnail} height={50} width={50} alt={imageDescription} classes={styles.thumbnail} />
 
                 <div className={styles.content}>
                     <div className={styles.title}>
