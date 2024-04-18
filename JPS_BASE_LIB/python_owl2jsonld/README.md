@@ -1,14 +1,15 @@
 # Description #
 
-The `owl2jsonld.py` provides a simple python API for converting .owl files into JSON-LD.
+The `owl2jsonld.py` module provides a simple Python API for converting OWL files into JSON-LD.
 
 # Installation
 
-We need to install rdflib and rdflib-jsonld to convert OWL to JSON-LD
+You need to install rdflib and rdflib-jsonld to convert OWL to JSON-LD.
 
 ## Virtual environment setup
 
-It is highly recommended to use a [virtual environment](https://docs.python.org/3/tutorial/venv.html) for the `owl2jsonld.py`. The virtual environment can be created as follows:
+It is highly recommended to use a virtual environment (https://docs.python.org/3/tutorial/venv.html) for the owl2jsonld.py module.
+The virtual environment can be created as follows:
 
 `(Windows)`
 
