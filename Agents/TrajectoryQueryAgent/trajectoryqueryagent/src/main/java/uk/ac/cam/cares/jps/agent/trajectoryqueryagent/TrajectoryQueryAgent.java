@@ -7,6 +7,7 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -62,6 +63,13 @@ public class TrajectoryQueryAgent extends JPSAgent {
         //Retrieve phoneId from User Agent with userId
         String getPhoneIds = userAgentUrl + "getPhoneIds";
         JSONObject phoneIdResponse = new JSONObject(AgentCaller.executeGet(getPhoneIds, "userId", userID));
+        JSONArray phoneIds = phoneIdResponse.getJSONArray("PhoneIds");
+        if (phoneIds.isEmpty()) {
+            JSONObject response = new JSONObject();
+            response.put("message", "No phone id on this user.");
+            return response;
+        }
+
         String phoneIri = phoneIdResponse.getJSONArray("PhoneIds").getString(0);     // todo: assume each user only has 1 phone id for now
 
         //SPARQL query for pointIRI based on userID - Note currently userID is deviceID, needs to be changed
@@ -70,7 +78,6 @@ public class TrajectoryQueryAgent extends JPSAgent {
         String altitudeIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getAltitudeIRIArray(smartphoneIRI));
         String speedIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getSpeedIRIArray(smartphoneIRI));
         String bearingIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getBearingIRIArray(smartphoneIRI));
-
 
         //Create Geoserver layer
         createGeoserver(pointIRI,altitudeIRI,speedIRI,bearingIRI );
