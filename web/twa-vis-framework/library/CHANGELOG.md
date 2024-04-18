@@ -2,6 +2,15 @@
 
 # TWA-VF Change Log
 
+## 4.7.0
+
+### Features
+
+* Added functionality to scenario handler to fetch time series data from scenario endpoint
+* Added a `slider_handler` class to handle a slider for actions on time series data display queried from scenario
+* Specify actions for slider move in index.html file
+* Refresh and replot data with multiple layers in geoserver using `{wildcard}` in data.json (on slider change for example)
+
 ## 4.6.0
 
 ### Features
@@ -10,7 +19,7 @@
 
 ### Bug Fixes
 
-* Fixed bug where sidebar tabs disappeared if content was too
+* Fixed bug where sidebar tabs disappeared if content was too long
 
 ## 4.5.2
 
