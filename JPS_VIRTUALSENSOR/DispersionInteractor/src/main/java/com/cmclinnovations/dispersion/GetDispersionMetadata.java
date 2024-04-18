@@ -36,7 +36,7 @@ public class GetDispersionMetadata extends HttpServlet {
         List<DispersionMetadata> dispersionMetadatas = queryClient.getDispersionMetadata();
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            queryClient.removeNonExistentPollutantsAndSetSimTimesXYZ(dispersionMetadatas, conn);
+            queryClient.queryDispersionXYZ(dispersionMetadatas, conn);
         } catch (SQLException e) {
             String errmsg = "Probably error in closing connection while getting dispersion outputs";
             LOGGER.error(e.getMessage());
