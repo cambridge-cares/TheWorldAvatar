@@ -1,6 +1,6 @@
 "use client";
 
-import styles from './toolbar.module.css';
+import styles from './navbar.module.css';
 
 import React from 'react';
 import SVG from 'react-inlinesvg';
@@ -8,53 +8,55 @@ import { useSelector } from 'react-redux';
 
 import { Routes } from 'io/config/routes';
 import { selectItem } from 'state/context-menu-slice';
+import { navbarItem } from 'ui/interaction/context-menu/context-menu';
 import AppLink from 'ui/navigation/link/link';
-import ToolbarComponent from './toolbar-component';
+import NavbarComponent from './navbar-component';
+import IconComponent from '../../graphic/icon/icon';
 
-// Type definition for toolbar properties
-type ToolbarProps = {
+// Type definition for navbar properties
+type NavbarProps = {
   showLanding?: boolean,
   showMap?: boolean,
   showDash?: boolean,
   showHelp?: boolean,
-  toolbarLogo?: string
+  navbarLogo?: string
 }
 
-// Default values for toolbar properties
-const defaultProps: ToolbarProps = {
+// Default values for navbar properties
+const defaultProps: NavbarProps = {
   showLanding: true,
   showMap: true,
   showDash: true,
   showHelp: true,
-  toolbarLogo: null
+  navbarLogo: null
 };
 
 /**
- * Represents the top level toolbar, that loads a number of 
- * custom toolbar components.
+ * Represents the top level navigation bar, that loads a number of 
+ * custom navbar components.
  */
-export default function Toolbar(props: ToolbarProps) {
+export default function Navbar(props: NavbarProps) {
 
-  // Visibility state of toolbar
-  const toolbarState = useSelector(selectItem("Show Toolbar"));
+  // Visibility state of navigation bar
+  const navbarState = useSelector(selectItem(navbarItem.name));
 
   // Apply defaults to any missing props
   props = { ...defaultProps, ...props };
 
   // Do not show if state exists and is disabled
-  if (toolbarState?.toggled != null && !toolbarState.toggled) {
+  if (navbarState?.toggled != null && !navbarState.toggled) {
     return null;
   }
 
   return (
-    <div id="toolbar" className={styles.toolbar}>
+    <div id="navbar" className={styles.navbar}>
 
-      {/* Render toolbar logo if set */}
-      {props.toolbarLogo != null &&
+      {/* Render navbar logo if set */}
+      {props.navbarLogo != null &&
         <AppLink url={Routes.HOME}>
-          <div className="toolbarLogo">
-            <SVG
-              src={props.toolbarLogo}
+          <div className="navbarLogo">
+            <IconComponent
+              icon={props.navbarLogo}
             />
           </div>
         </AppLink>
@@ -65,28 +67,28 @@ export default function Toolbar(props: ToolbarProps) {
 
       {/* Render each component as required */}
       {props.showLanding &&
-        <ToolbarComponent
+        <NavbarComponent
           name="LANDING"
           tooltip="Return to landing page."
           icon="home"
           url={Routes.HOME} />
       }
       {props.showMap &&
-        <ToolbarComponent
+        <NavbarComponent
           name="MAP"
           tooltip="Geospatial view."
           icon="public"
           url={Routes.MAP} />
       }
       {props.showDash &&
-        <ToolbarComponent
+        <NavbarComponent
           name="DASH"
           tooltip="Analytics view."
           icon="monitoring"
           url={Routes.DASHBOARD} />
       }
       {props.showHelp &&
-        <ToolbarComponent
+        <NavbarComponent
           name="HELP"
           tooltip="Open help page."
           icon="help"

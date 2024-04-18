@@ -1,4 +1,4 @@
-.toolbarButton {
+.navbarButton {
     width: 50px;
     height: 50px;
     padding: 0px 4px;
@@ -15,16 +15,16 @@
     cursor: pointer;
     z-index: 1;
 }
-.toolbarButton:hover {
+.navbarButton:hover {
     background-color: var(--background-secondary);
 }
 
-.toolbarButton .image {
+.navbarButton .image {
     width: 50px;
     font-size: var(--large-icon-size);
     color: var(--border-tertiary);
 }
-.toolbarButton .image:hover {
+.navbarButton .image:hover {
     color: var(--border-secondary);
 }
 

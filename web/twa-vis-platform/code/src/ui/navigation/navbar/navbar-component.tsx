@@ -1,6 +1,6 @@
 "use client";
 
-import styles from './toolbar-component.module.css';
+import styles from './navbar-component.module.css';
 
 import React from 'react';
 import Icon from '@mui/material/Icon';
@@ -10,7 +10,7 @@ import AppLink from 'ui/navigation/link/link';
 
 
 // Type definition for incoming parameters
-export type ToolbarComponentProps = {
+export type NavbarComponentProps = {
     name: string,
     tooltip: string,
     icon: string, 
@@ -20,9 +20,9 @@ export type ToolbarComponentProps = {
 }
 
 /**
- * This class represents an abstract toolbar button.
+ * This class represents an abstract navigation bar button.
  */
-export default class ToolbarComponent extends React.Component<ToolbarComponentProps> {
+export default class NavbarComponent extends React.Component<NavbarComponentProps> {
 
     // Callback to bubble up to Toolbar
     bubbleUp = () => {
@@ -40,7 +40,7 @@ export default class ToolbarComponent extends React.Component<ToolbarComponentPr
 
         return (
             <AppLink
-                className={styles.toolbarButton}
+                className={styles.navbarButton}
                 onClick={this.bubbleUp}
                 url={this.props.url}>
 

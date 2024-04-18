@@ -26,9 +26,9 @@ type ContextMenuState = {
     show: boolean
 }
 
-const toolbarItem: ContextItemDefinition = {
-    name: "Show Toolbar",
-    description: "Toggle visibility of global toolbar.",
+export const navbarItem: ContextItemDefinition = {
+    name: "Show Navigation Bar",
+    description: "Toggle visibility of global navbar.",
     toggled: true
 }
 
@@ -54,7 +54,7 @@ class ContextMenu extends React.Component<ContextMenuProps, ContextMenuState> {
     // On render
     componentDidMount() {
         document.addEventListener("click", this.handleLeftClick);
-        this.props.addItem(toolbarItem);
+        this.props.addItem(navbarItem);
 
         document.onmousedown = (event) => {
             if(event.button === 2) rmbDownTime = Date.now();

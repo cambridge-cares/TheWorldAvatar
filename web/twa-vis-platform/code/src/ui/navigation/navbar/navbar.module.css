@@ -1,4 +1,4 @@
-.toolbar {
+.navbar {
     width: 100%;
     overflow: hidden;
     flex-flow: row wrap;
@@ -23,7 +23,7 @@
     height: 100%;
     flex-grow: 1;
 }
-.toolbar :global .toolbarLogo {
+.navbar :global .navbarLogo {
     width: 250px;
     height: 50px;
 
@@ -32,7 +32,7 @@
     justify-content: center;
     align-items: center;
 }
-.toolbar :global .toolbarLogo svg {
+.navbar :global .navbarLogo svg {
     width: 100%;
     height: 100%;
     fill: var(--border-tertiary);

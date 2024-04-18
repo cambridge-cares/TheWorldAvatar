@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 
 import Trex from 'utils/trex';
 import ContextMenu from './interaction/context-menu/context-menu';
-import Toolbar from './navigation/toolbar/toolbar';
+import Navbar from './navigation/navbar/navbar';
 import { reduxStore } from 'app/store';
 import { DefaultSettings } from 'types/settings';
 
@@ -77,12 +77,12 @@ export default class GlobalContainer extends React.Component<
             />
           )}
 
-          <Toolbar
+          <Navbar
             showLanding={modules.landing}
             showMap={modules.map}
             showDash={modules.dashboard}
             showHelp={modules.help}
-            toolbarLogo={branding.toolbarLogo.toString()}
+            navbarLogo={branding.navbarLogo.toString()}
           />
 
           <div id="contentContainer">{this.props.children}</div>

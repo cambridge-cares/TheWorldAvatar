@@ -38,7 +38,7 @@ The [LandingPage](./src/ui/pages/landing.tsx) child component contains a landing
 
 ### 1.2 Component Hierarchy
 
-Next.js offers standardised special files to adhere to their **established component hierarchy**. Notably, `layout.tsx` provides a common layout for both existing routes and directly nested routes. `loading.tsx` serves as a fallback UI displayed immediately when navigating the application in the event of longer rendering. The component hierarchy is established as **Layout -> Loading -> Page**. Within the `layout` component, the [GlobalContainer](./src/ui/global-container.tsx) child component acts as a wrapper for all pages within the application. It provides global functionality such as a custom right-click menu, top-level toolbar, and Redux store provider (see [here](#14-state-management)).
+Next.js offers standardised special files to adhere to their **established component hierarchy**. Notably, `layout.tsx` provides a common layout for both existing routes and directly nested routes. `loading.tsx` serves as a fallback UI displayed immediately when navigating the application in the event of longer rendering. The component hierarchy is established as **Layout -> Loading -> Page**. Within the `layout` component, the [GlobalContainer](./src/ui/global-container.tsx) child component acts as a wrapper for all pages within the application. It provides global functionality such as a custom right-click menu, navigation bar, and Redux store provider (see [here](#14-state-management)).
 
 ### 1.3 Server vs Client components
 

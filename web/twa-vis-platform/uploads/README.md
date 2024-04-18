@@ -21,7 +21,7 @@ The platform requires the following [JSON](https://en.wikipedia.org/wiki/JSON) c
 
 The `config/ui-settings.json` file provides general settings for the platform. This includes settings for displaying modules, branding requirements, and setting scenarios. A brief explanation is as follows:
 
-- `branding`: key value pairs for various branding icons such as toolbar and logo
+- `branding`: key value pairs for various branding icons such as navigation bar and logo
 - `modules`: key value pairs indicating if certain modules should be highlighted
   - `landing`: REQUIRED. Displays landing page if enabled
   - `map`: REQUIRED. Displays map visualisation if enabled
@@ -40,7 +40,7 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 {
   "branding": {
     "logo": "/images/whatever.svg", // Custom branding logo
-    "toolbarLogo": "/images/defaults/toolbar-logo.svg" // Custom logo for the toolbar (should be 5:1 aspect ratio)
+    "navbarLogo": "/images/defaults/navbar-logo.svg" // Custom logo for the navbar (should be 5:1 aspect ratio)
   },
   "modules": {
     "landing": true, // Should the landing page be enabled
