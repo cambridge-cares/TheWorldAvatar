@@ -15,15 +15,15 @@ public class EndpointConfig {
         this.postGISEndpointConfig = containerClient.readEndpointConfig("postgis", PostGISEndpointConfig.class);
     }
 
-    public String getKgurl(String namespace) {
+    public String getKgUrl(String namespace) {
         return blazegraphEndpointConfig.getUrl(namespace);
     }
 
-    public String getKguser() {
+    public String getKgUser() {
         return blazegraphEndpointConfig.getUsername();
     }
 
-    public String getKgpassword() {
+    public String getKgPassword() {
         return blazegraphEndpointConfig.getPassword();
     }
 
