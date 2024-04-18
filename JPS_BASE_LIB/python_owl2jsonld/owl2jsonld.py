@@ -37,6 +37,7 @@ if  sys.argv[1] == '-f':
     # the third argument is the target
     target_jsonld_file = sys.argv[3]
 
+    print('Conversion started. Required time is proportional to the file size. \nTherefore, please keep patience until you get a message.')
     # Convert OWL to JSON-LD
     jsonld_output = convert_owl_to_jsonld(source_owl_file)
 
@@ -52,6 +53,7 @@ elif sys.argv[1] == '-all':
     if not target_directory.endswith('/'):
         target_directory += '/'
 
+    print('Conversion started. Required time is proportional to the number of files and file sizes. \nTherefore, please keep patience until you get a message.')
     # Loop through each file in the source directory
     for file_name in os.listdir(source_directory):
         if file_name.endswith('.owl'):  # Check if it's an OWL file
