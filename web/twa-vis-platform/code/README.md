@@ -74,6 +74,13 @@ The uploaded content provided by the deploying developer should match the direct
 * `optional-pages/`: Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
 * `style-overrides.css`: Optional CSS overrides.
 
+### 1.6 Reverse Proxy urls
+The default Next.js configuration is designed to function seamlessly when the base URL starts directly from the domain. However, in cases where subdomains are utilised (e.g., http://www.example.org/subdomain/), as seen in stack deployment and reverse proxy scenarios, additional configuration is necessary for Next.js to operate. This includes specifying the `assetPrefix` option in the `next.config.js` file.
+
+To accommodate developers deploying applications to various subdomains and environments, this option within the platform is configured to retrieve an environment variable called `BASE_PATH`. If this variable is not set, the `assetPrefix` defaults to an empty string. It is advisable to define the `BASE_PATH` variable primarily when deploying in a stack or for containers utilising subdomains.
+
+It's important to note that this URL configuration impacts both routes and images referenced with relative paths within your Next.js application.
+
 ## 2. Local Development Workflow
 
 ### 2.1 Requirements

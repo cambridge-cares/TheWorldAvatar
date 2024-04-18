@@ -21,6 +21,8 @@ Once the above steps have been completed, run the command `docker compose -f 'do
 
 The platform is intended to be run on Docker as part of the [TWA stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager), and other production workflows are out of the scope of this document. Developers will need to set up several configurations in the `upload` directory to get a minimal visualisation - namely, `landing-page.md`, `data.json`, `map-settings.json`, and `ui-settings.json`. Please read the documentation in the `upload` directory for the specific configuration syntax.
 
+Do note to pass a `BASE_PATH` environment variable if you are using any subdomains. Read [this section](./code#16-reverse-proxy-urls) for more details.
+
 ### 2.1 Docker Deployment
 
 For a standalone deployment, first create files within this directory (containing the docker configurations) for `mapbox_username` and `mapbox_api_key` according to your [Mapbox](https://www.mapbox.com/) credentials. This will be passed as Docker secrets when the container is started. Start the container by running the command `docker compose up -d`. The container will be running on your local machine at `localhost:80`.
