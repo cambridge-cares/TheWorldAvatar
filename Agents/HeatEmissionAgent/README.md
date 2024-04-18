@@ -80,7 +80,7 @@ The meanings of the symbols in the equation above are as follows:
   - $Q$ : Heat emissions rate in megawatts
   - $P_{max}$ : Maximum IT capacity in megawatts
   - $U_R$ : Utilization rate. This is a dimensionless parameter whose value ranges between 0 and 1.
-  - $ A_F$ : Gross floor area in square meters. 
+  - $A_F$ : Gross floor area in square meters. 
 
 
 
@@ -91,7 +91,7 @@ $$ Q = A_FS_F(1 - \eta) $$
 The meanings of the symbols in the equation above are as follows:
 
   - $Q$ : Heat emissions rate in megawatts
-  - $ A_F$ : Gross floor area in square meters.
+  - $A_F$ : Gross floor area in square meters.
   - $S_F$ : Energy consumption rate per unit of gross floor area in megawatts per square meter.
    - $\eta$ : Thermal efficiency. This is a dimensionless parameter whose value ranges between 0 and 1.
 
@@ -103,7 +103,7 @@ $$ Q = N_pH_p $$
 The meanings of the symbols in the equation above are as follows:
 
   - $Q$ : Heat emissions rate in megawatts
-  - $ N_p$ : Number of printers operated by the printing plant.
+  - $N_p$ : Number of printers operated by the printing plant.
   - $H_p$ : Heat emissions rate per printer in units of megawatts.
  
 #### Factories not in the precision engineering and printing industries:
@@ -116,7 +116,7 @@ $$ Q = \begin{cases}
 The meanings of the symbols in the equation above are as follows:
 
   - $Q$ : Heat emissions rate in megawatts
-  - $ V $ : Production rate. This quantity has units of kilograms per second for chemicals and food manufacturing factories. The units are square meters of wafer per second for semiconductor plants and US dollars per second for pharmaceuticals.
+  - $V$ : Production rate. This quantity has units of kilograms per second for chemicals and food manufacturing factories. The units are square meters of wafer per second for semiconductor plants and US dollars per second for pharmaceuticals.
   - $S$ : Specific energy consumption in units of megajoules per unit of product. The precise unit depends on the units of $V$.
   - $\eta$ : Thermal efficiency. This is a dimensionless parameter whose value ranges between 0 and 1.
 
@@ -128,7 +128,7 @@ $$ Q = \frac{E_c \times(1 - \eta) \times 1.0 \times 10^{12}}{C_I \times Y_s \tim
 The meanings of the symbols in the equation above are as follows:
 
   - $Q$ : Heat emissions rate in megawatts
-  - $ E_c $ : Carbon dioxide emissions rate in units of tons per year
+  - $E_c$ : Carbon dioxide emissions rate in units of tons per year
   - $C_I$ : Carbon emissions index which is assumed to be 63.0 kg/GJ
   - $Y_s$ : Number of seconds per year.
 
