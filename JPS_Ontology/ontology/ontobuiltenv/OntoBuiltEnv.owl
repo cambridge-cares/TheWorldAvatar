@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontobuiltenv="https://www.theworldavatar.com/kg/ontobuiltenv/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/">
-        <dc:date>17 April 2024</dc:date>
+        <dc:date>18 April 2024</dc:date>
         <rdfs:comment>The Building Environment ontology (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -564,7 +564,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasCity">
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>The city where the address is located.</rdfs:comment>
+        <rdfs:comment>A relationship between an address and the respective city name.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>has city</rdfs:label>
     </owl:DatatypeProperty>
@@ -577,7 +577,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasCountry">
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>The country where the address is located.</rdfs:comment>
+        <rdfs:comment>A relationship between an address and the respective country name.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>has country</rdfs:label>
     </owl:DatatypeProperty>
