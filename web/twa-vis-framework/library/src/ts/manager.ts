@@ -765,8 +765,8 @@ class Manager {
             let self = this;
             this.scenarioHandler.getConfiguration(function(dataJSON) {
                 let promise = self.loadDefinitionsFromObject(dataJSON, 1) as Promise<any>;
-                promise.then(() => self.plotData());
-            });
+                    self.sliderHandler.removeSlider();  
+                    self.sliderHandler.initialiseSlider(self.sliderActions);
         }
     }
 }
