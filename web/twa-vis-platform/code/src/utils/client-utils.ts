@@ -9,6 +9,16 @@ import { JsonObject } from "types/json";
 import { TimeSeriesGroup, TimeSeries } from 'types/timeseries';
 
 /**
+ * Format any internal app url path. Append a base path prefix if set.
+ */
+export function formatAppUrl(url: string): string {
+    // Append the base path prefix if there is a base environment
+    const appUrl: string = `${process.env.BASE_PATH || "/"}${url}`;
+    // Replace any double slashes with a single slash
+    return appUrl.replace(/\/\//g, "/");
+}
+
+/**
  * Open full screen mode.
  */
 export function openFullscreen() {

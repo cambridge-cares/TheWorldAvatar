@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 
+import { formatAppUrl } from 'utils/client-utils';
+
 type AppLinkProps = {
   readonly url: string;
   readonly className?: string;
@@ -17,7 +19,7 @@ type AppLinkProps = {
  * @returns A link element with the prefixed URL.
  */
 export default function AppLink(props: AppLinkProps) {
-  const url: string = `${process.env.BASE_PATH ?? "/"}${props.url}`;
+  const url: string = formatAppUrl(props.url);
   return (
     <Link href={url} className={props.className} onClick={props.onClick}>
       {props.children}
