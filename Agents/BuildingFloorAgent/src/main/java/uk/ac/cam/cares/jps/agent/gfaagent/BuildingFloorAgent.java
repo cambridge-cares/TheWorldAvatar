@@ -55,7 +55,7 @@ public class BuildingFloorAgent extends JPSAgent{
             IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint, osmPolygon);
             integrateFloors.addFloorAccuracyColumn();
             integrateFloors.matchAddress(floorsCsv);
-            integrateFloors.roughFloorDate();
+            integrateFloors.importFloorDate();
     
         } catch (Exception e) {
             e.printStackTrace();

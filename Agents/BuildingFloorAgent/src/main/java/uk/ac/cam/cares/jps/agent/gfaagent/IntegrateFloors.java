@@ -159,7 +159,7 @@ public class IntegrateFloors {
                     
                     //store floors data based on building iri from osm agent
                     Integer floors = hdbFloors.get(i).getFloors();
-                    String accuracy = "1";
+                    String accuracy = "high";
                     String buildingiri = null;
                     if(pointScore > polyScore && pointScore != 0) {
                         buildingiri = pointIri;
@@ -178,7 +178,7 @@ public class IntegrateFloors {
         }       
     }
 
-    public void roughFloorDate () {
+    public void importFloorDate () {
         String accuracy = null;
         String floorSQLQuery = "SELECT storeys_above_ground AS floors, storeys_above_ground_accuracy, id, cg.strval " +
                                 "FROM building, cityobject_genericattrib cg " + 
@@ -191,7 +191,7 @@ public class IntegrateFloors {
                     floors = floorsResults.getInt("storeys_above_ground");
                     accuracy = floorsResults.getString("storeys_above_ground_accuracy");
                     String buildingIri = floorsResults.getString("strval");
-                    if (floors == null || accuracy == "3"){// get osm floor
+                    if (floors == null || accuracy == "low"){// get osm floor
                         floors = queryOSMFloor(buildingIri);
                         if (floors == null) {//estimate
 
