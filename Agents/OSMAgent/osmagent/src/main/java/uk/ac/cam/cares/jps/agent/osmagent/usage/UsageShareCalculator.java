@@ -93,21 +93,22 @@ public class UsageShareCalculator {
 
         }
 
-        public void addMaterializedView(String usageTable, String osmSchema) {
+        public void addMaterializedView(String usageTable, String addressTable, String schema, String osmSchema) {
                 String materializedView ="-- Drop the materialized view if it exists\n" +
-                        "DROP MATERIALIZED VIEW IF EXISTS usage.buildingusage_osm;\n" +
+                        "DROP MATERIALIZED VIEW IF EXISTS "+schema+".buildinginfo_osm;\n" +
                         "\n" +
-                        "-- Create a new materialized view named \"buildingusage_osm\" in the \"usage\" schema\n" +
-                        "CREATE MATERIALIZED VIEW usage.buildingusage_osm AS\n" +
+                        "-- Create a new materialized view named \"buildinginfo_osm\" in the \"usage\" schema\n" +
+                        "CREATE MATERIALIZED VIEW "+schema+".buildinginfo_osm AS\n" +
                         "SELECT DISTINCT u.*, COALESCE(p.name, o.name) AS name\n" +
                         "FROM "+usageTable+" AS u\n" +
                         "LEFT JOIN "+osmSchema+".points AS p ON u.building_iri = p.building_iri\n" +
-                        "LEFT JOIN "+osmSchema+".polygons AS o ON u.building_iri = o.building_iri;";
+                        "LEFT JOIN "+osmSchema+".polygons AS o ON u.building_iri = o.building_iri\n" +
+                        "FULL OUTER JOIN "+addressTable+" AS a ON u.building_iri = a.building_iri;";
 
                 String materializedView_geoserver= "-- Drop the materialized view if it exists\n" +
-                        "DROP MATERIALIZED VIEW IF EXISTS usage.buildingusage_geoserver;\n" +
+                        "DROP MATERIALIZED VIEW IF EXISTS "+schema+".buildingusage_geoserver;\n" +
                         "\n" +
-                        "CREATE MATERIALIZED VIEW usage.buildingusage_geoserver AS\n" +
+                        "CREATE MATERIALIZED VIEW "+schema+".buildingusage_geoserver AS\n" +
                         "WITH uuid_table AS (\n" +
                         "    SELECT strval AS uuid, cityobject_id\n" +
                         "    FROM citydb.cityobject_genericattrib\n" +
@@ -118,7 +119,7 @@ public class UsageShareCalculator {
                         "    WHERE attrname = 'iri'\n" +
                         "), usageTable AS (\n" +
                         "    SELECT building_iri AS iri, propertyusage_iri, ontobuilt, usageshare\n" +
-                        "    FROM usage.usage\n" +
+                        "    FROM "+schema+".usage\n" +
                         "), pointsTable AS (\n" +
                         "    SELECT building_iri AS iri, name\n" +
                         "    FROM "+osmSchema+".points\n" +
@@ -157,8 +158,8 @@ public class UsageShareCalculator {
                         "WHERE\n" +
                         "    sg.geometry IS NOT NULL\n" +
                         "    AND COALESCE(measured_height, 100.0) != '0';\n" +
-                        "CREATE INDEX usage_index ON usage.buildingusage_geoserver (ontobuilt);\n" + 
-                        "CREATE INDEX geometry_index ON usage.buildingusage_geoserver USING GIST (geom);";
+                        "CREATE INDEX usage_index ON "+schema+".buildingusage_geoserver (ontobuilt);\n" + 
+                        "CREATE INDEX geometry_index ON "+schema+".buildingusage_geoserver USING GIST (geom);";
 
 
                 rdbStoreClient.executeUpdate(materializedView);
