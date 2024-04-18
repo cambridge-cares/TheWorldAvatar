@@ -22,9 +22,6 @@
         --border-primary:   #b6b6bf;
         --border-secondary: #a5a5b3;
         --border-tertiary:  #9898af;
-
-        /** Images **/
-        --background-image: url("/images/defaults/background-light.svg");
     }
 }
 
@@ -52,9 +49,6 @@
         --border-primary:   #434b55;
         --border-secondary: #6c7989;
         --border-tertiary:  #7f8ea1;
-
-        /** Images **/
-        --background-image: url("/images/defaults/background-dark.svg");
     }
 }
 
@@ -94,7 +88,6 @@ body {
     background-color: var(--background-primary);
     color: var(--text-color-primary);
 
-    background-image: var(--background-image);
     background-position: center;
     background-size: cover;
     overflow: hidden;

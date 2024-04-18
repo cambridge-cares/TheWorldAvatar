@@ -12,6 +12,7 @@ import OptionalPages from 'io/config/optional-pages';
 import SettingsStore from 'io/config/settings';
 import { DefaultSettings } from 'types/settings';
 import GlobalContainer from 'ui/global-container';
+import BackgroundImage from 'ui/graphic/image/background';
 
 /**
  * Performs initialisation when the platform is
@@ -38,7 +39,7 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
 
     // Get settings to pass to Toolbar
     const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
-    
+
     // Root element containing all children.
     return (
         <html lang="en">
@@ -51,12 +52,11 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
                 }
             </head>
             <body>
-                <StartupLogging/>
-                
+                <StartupLogging />
                 <GlobalContainer settings={uiSettings}>
+                    <BackgroundImage />
                     {children}
                 </GlobalContainer>
-
                 <ToastContainer />
             </body>
         </html>
