@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet(urlPatterns = {"/calculation", "/floors", "/cost"})
+@WebServlet(urlPatterns = {"/calculation", "/cost"})
 public class GFAAgent extends JPSAgent{
     
     
@@ -54,10 +54,6 @@ public class GFAAgent extends JPSAgent{
             if(requestParams.getString("requestUrl").contains("/calculation")){            
                 //calculate GFA 1. query footpring 2. query height (if no height, estimate 3.2m/floor) 3. calculate 4. store
                 gfaCalculation.calculationGFA();
-            }else if(requestParams.getString("requestUrl").contains("/floors")){
-               //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
-                IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint, osmPolygon);
-                integrateFloors.matchAddress(floorsCsv);
             }else if (requestParams.getString("requestUrl").contains("/cost")){
                 CostCalculation costCalculation = new CostCalculation(dbUrl, dbUser, dbPassword);
                 costCalculation.calculationCost();
