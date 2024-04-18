@@ -119,9 +119,9 @@ representativeFor,Object Property,,,AveragePricePerSqm,PostalCode,exactly 1,,htt
 Bank,Class,Non-Domestic,IS-A,,,,A property where customers can deposit and withdraw money.,https://www.theworldavatar.com/kg/ontobuiltenv/,Bank
 Pharmacy,Class,Medical,IS-A,,,,A healthcare facility where medicinal drugs are prepared or sold.,https://www.theworldavatar.com/kg/ontobuiltenv/,Pharmacy
 BuildingFloors,Class,,,Property,,,A concept to describe amount of floors in a building.,https://www.theworldavatar.com/kg/ontobuiltenv/,Building floors
-hasBuildingFloors,Object Property,,,Property,BuildingFloors,exactly 1,A relationship between a property and its amount floors.,https://www.theworldavatar.com/kg/ontobuiltenv/,has building floors
-hasFloorsValue,Data Property,,,BuildingFloors,integer,exactly 1,A relationship between a building floors and its value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has floors value
-hasAccuracy,Data Property,,,BuildingFloors,string,exactly 1,A relationship between a building floors and its accuracy level.,https://www.theworldavatar.com/kg/ontobuiltenv/,has accuracy
-hasGFA,Data Property,,,Property,float,exactly 1,A relationship between a building and its GFA value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has GFA
+hasBuildingFloors,Object Property,,,Property,BuildingFloors,exactly 1,A relationship between a property and its amount of floors.,https://www.theworldavatar.com/kg/ontobuiltenv/,has building floors
+hasFloorsValue,Data Property,,,BuildingFloors,integer,exactly 1,A relationship between the BuildingFloors and its value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has floors value
+hasAccuracy,Data Property,,,BuildingFloors,string,exactly 1,A relationship between the BuildingFloors and its accuracy level.,https://www.theworldavatar.com/kg/ontobuiltenv/,has accuracy
+hasGFA,Data Property,,,Property,float,exactly 1,A relationship between a building and its Gross Floor Area value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has GFA
 hasCountry,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,The country where the address is located.,https://www.theworldavatar.com/kg/ontobuiltenv/,has country
 hasCity,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,The city where the address is located.,https://www.theworldavatar.com/kg/ontobuiltenv/,has city
