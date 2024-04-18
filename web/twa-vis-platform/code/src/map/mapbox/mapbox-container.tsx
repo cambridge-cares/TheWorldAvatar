@@ -11,6 +11,7 @@ import { getLatLng, getName } from 'state/map-feature-slice';
 import { setIsStyleLoaded } from 'state/floating-panel-slice';
 import { MapSettings } from 'types/settings';
 import { getCurrentImageryOption, getDefaultCameraPosition } from '../map-helper';
+import { formatAppUrl } from 'utils/client-utils';
 
 // Type definition of incoming properties
 interface MapProperties {
@@ -60,7 +61,7 @@ export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef)
   const initialiseMap = async () => {
     if ((mapRef as React.MutableRefObject<Map>).current) return;
 
-    const response = await fetch("/api/map/settings", {
+    const response = await fetch(formatAppUrl("/api/map/settings"), {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
