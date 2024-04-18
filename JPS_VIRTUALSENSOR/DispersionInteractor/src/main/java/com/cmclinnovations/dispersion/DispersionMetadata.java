@@ -22,12 +22,14 @@ public class DispersionMetadata {
     private class DispXYZ {
         private String pollutant;
         private int z;
+        private int srid;
         private List<Long> time;
         private List<String> output;
 
-        private DispXYZ(String pollutant, int z) {
+        private DispXYZ(String pollutant, int z, int srid) {
             this.pollutant = pollutant;
             this.z = z;
+            this.srid = srid;
         }
     }
 
@@ -36,8 +38,8 @@ public class DispersionMetadata {
         dispXYZs = new HashMap<>();
     }
 
-    public void addDispXYZ(String iri, String pollutant, int z) {
-        DispXYZ dispXYZ = new DispXYZ(pollutant, z);
+    public void addDispXYZ(String iri, String pollutant, int z, int srid) {
+        DispXYZ dispXYZ = new DispXYZ(pollutant, z, srid);
         dispXYZs.put(iri, dispXYZ);
     }
 
@@ -80,6 +82,7 @@ public class DispersionMetadata {
                 JSONObject jXYZ = new JSONObject();
                 jXYZ.put("pollutant", dispXYZ.pollutant);
                 jXYZ.put("height", dispXYZ.z);
+                jXYZ.put("SRID", dispXYZ.srid);
                 jXYZ.put("time", dispXYZ.time);
                 jXYZ.put("output", dispXYZ.output);
                 xyzJson.put(jXYZ);

@@ -137,6 +137,7 @@ public class QueryClient {
     private static final Iri REPORTS = P_EMS.iri("reports");
     private static final Iri HAS_UNIT = P_OM.iri("hasUnit");
     private static final Iri HAS_HEIGHT = P_DISP.iri("hasHeight");
+    private static final Iri HAS_SRID = P_DISP.iri("hasSRID");
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient,
             TimeSeriesClient<Long> tsClient, TimeSeriesClient<Instant> tsClientInstant) {
@@ -795,10 +796,11 @@ public class QueryClient {
         Variable scopeWktVar = query.var();
         Variable zVar = query.var();
         Variable zValueVar = query.var();
+        Variable dispersionOutputSRID = query.var();
 
         ServiceEndpoint ontopEndpoint = new ServiceEndpoint(ontopUrl);
 
-        query.select(derivation,scopelabelVar,pollutantType,pollutantLabel,dispXYZVar,scopeWktVar,zValueVar);
+        query.select(derivation,scopelabelVar,pollutantType,pollutantLabel,dispXYZVar,scopeWktVar,zValueVar,dispersionOutputSRID);
 
         query.where(OPTIMISER_NONE,
             ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), scopeWktVar)),
@@ -806,7 +808,7 @@ public class QueryClient {
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
                 .andHas(HAS_DISPERSION_XYZ, dispXYZVar)
                 .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType)
-                .andHas(HAS_HEIGHT, zVar),
+                .andHas(HAS_HEIGHT, zVar).andHas(HAS_SRID,dispersionOutputSRID),
                 zVar.has(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), zValueVar),
                 pollutantType.has(RDFS.COMMENT, pollutantLabel).optional())
                 .prefix(P_DISP, P_GEO, P_OM, P_HINT);
@@ -823,6 +825,7 @@ public class QueryClient {
             String scopeLabel = queryResult.getJSONObject(i).getString(scopelabelVar.getQueryString().substring(1));
             String pol = queryResult.getJSONObject(i).getString(pollutantType.getQueryString().substring(1));
             String dispXYZ = queryResult.getJSONObject(i).getString(dispXYZVar.getQueryString().substring(1));
+            int srid = queryResult.getJSONObject(i).getInt(dispersionOutputSRID.getQueryString().substring(1));
 
             int zValue = queryResult.getJSONObject(i).getInt(zValueVar.getQueryString().substring(1));
 
@@ -837,7 +840,7 @@ public class QueryClient {
                 polLabel = pol;
             }
 
-            dispersionMetadata.addDispXYZ(dispXYZ,polLabel,zValue);
+            dispersionMetadata.addDispXYZ(dispXYZ,polLabel,zValue,srid);
             dispersionMetadata.setScopeLabel(scopeLabel);
 
             String wktLiteral = queryResult.getJSONObject(i).getString(scopeWktVar.getQueryString().substring(1));
@@ -903,8 +906,7 @@ public class QueryClient {
             List<Long> simulationTimes;
             if (latestTime != null) {
                 for (String dispersionXYZ : dispersionXYZs) {
-                    TimeSeries<Long> ts = tsClient
-                    .getTimeSeriesWithinBounds(List.of(dispersionXYZ), latestTime - 86400, latestTime, conn);
+                    TimeSeries<Long> ts = tsClient.getTimeSeries(List.of(dispersionXYZ),conn);
                     simulationTimes = ts.getTimes();
                     List<String> dispersionXYZfiles = ts.getValuesAsString(dispersionXYZ);
                     dispersionMetadata.updateDispXYZ(dispersionXYZ,simulationTimes,dispersionXYZfiles);
