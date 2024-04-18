@@ -26,7 +26,7 @@ class PanelHandler {
     /**
      * Constructor
      */
-    constructor(manager) {
+    constructor(manager: Manager) {
         this.manager = manager;
         this.timeseriesHandler = new TimeseriesHandler();
     }
@@ -119,7 +119,7 @@ class PanelHandler {
 		}
         document.getElementById("returnContainer").style.display = "none";
         window.currentFeature = null;
-        window.currentTimeIndex=1;
+        window.currentTimeIndex='1';
 
         // Simulate click on general tab
         // @ts-ignore

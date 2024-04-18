@@ -128,7 +128,7 @@ class ScenarioHandler {
      * 
      * @param show boolean
      */
-    private changeOther(show) {
+    private changeOther(show: boolean) {
         let controls = document.getElementById("controlsContainer");
         controls.style.visibility = (show) ? "visible" : "hidden";
         
@@ -191,7 +191,7 @@ class ScenarioHandler {
             this.selectedScenario = scenarioID;
             this.scenarioName = scenarioName;
 
-            window.currentTimeIndex = 1;
+            window.currentTimeIndex = '1';
     
             let container = document.getElementById("scenario-container");
             if (container != null) container.style.display = "none";
@@ -240,6 +240,16 @@ class ScenarioHandler {
             url += "?dataset=" + this.agentDataset;
         }
         return url;
+    }
+
+    public async fetchScenarioTimes(): Promise<ScenarioTimesData> {
+        try {
+            const response = await fetch(`${this.agentBaseURL}/getScenarioTimes/${this.selectedScenario}`);
+            const data: ScenarioTimesData = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching times from CentralStackAgent/getScenarioTimes:', error);
+        }
     }
 }
 // End of class.
