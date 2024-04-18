@@ -2,10 +2,12 @@ package uk.ac.cam.cares.jps.agent.gfaagent;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -15,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet(urlPatterns = {"/osm", "/floors", "/estimate"})
+@WebServlet(urlPatterns = {"/floors"})
 public class BuildingFloorAgent extends JPSAgent{
     
     
@@ -29,6 +31,7 @@ public class BuildingFloorAgent extends JPSAgent{
     private String osmSchema;
     private String osmPoint;
     private String osmPolygon;
+    private static final Path obdaFile = Path.of("/resources/buildingfloor.obda");
 
     public synchronized void init() {
         this.dbName = endpointConfig.getDbName();
@@ -57,6 +60,14 @@ public class BuildingFloorAgent extends JPSAgent{
             integrateFloors.matchAddress(floorsCsv);
             integrateFloors.importFloorDate();
     
+            //Upload Ontop mapping
+            try {
+                OntopClient ontopClient = OntopClient.getInstance();
+                ontopClient.updateOBDA(obdaFile);
+            } catch (Exception e) {
+                System.out.println("Could not retrieve isochrone .obda file.");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
