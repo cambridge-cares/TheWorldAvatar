@@ -37,6 +37,10 @@ class Manager {
      */
     private controlHandler: ControlHandler;
 
+    /** 
+     * Handles slider for time series layers
+     */
+    private sliderHandler: SliderHandler; 
     /**
      * Handles the side panel (on the right).
      */
@@ -61,6 +65,11 @@ class Manager {
      * Optional callbacks to trigger once a feature selection is cleared.
      */
     public unselectionCallbacks = [];
+
+    /**
+     * Actions for the slider to trigger. e.g. repaint layers, change Feature Info Agent etc
+     */
+    public sliderActions: (e: Event) => void
 
     /**
      * Optional callback to trigger once data definitions have been loaded.
@@ -192,6 +201,14 @@ class Manager {
      */
     public addTreeSelectionCallback(treeSelectionCallback) {
         this.controlHandler.addTreeSelectionCallback(treeSelectionCallback);
+    }
+
+    /**
+     * Callback functions for the slider event listener
+     * @param sliderActions callback function that returns void 
+     */
+    public setSliderActions(sliderActions: (e: Event) => void) {
+        this.sliderActions = sliderActions
     }
 
     /**
@@ -750,7 +767,7 @@ class Manager {
      * @param scenarioID scenario id 
      * @param scenarioName user facing name of the scenario
      */
-    public selectScenario(scenarioID, scenarioName) {
+    public selectScenario(scenarioID: string, scenarioName: string) {
         if(this.scenarioHandler != null) {
             if(scenarioID === this.scenarioHandler.selectedScenario) return;
 
@@ -764,9 +781,19 @@ class Manager {
             // Load its data configuration file
             let self = this;
             this.scenarioHandler.getConfiguration(function(dataJSON) {
-                let promise = self.loadDefinitionsFromObject(dataJSON, 1) as Promise<any>;
+            let promise = self.loadDefinitionsFromObject(dataJSON, 1) as Promise<any>;
+            promise.then(() => {
+                self.plotData();
+                self.scenarioHandler.fetchScenarioTimes().then(scenarioTimesData => {
+                    self.sliderHandler = new SliderHandler(self, scenarioTimesData);            
                     self.sliderHandler.removeSlider();  
                     self.sliderHandler.initialiseSlider(self.sliderActions);
+                }).catch(error => {
+                    console.error('Error initialising Time Slider:', error);
+                });
+            });
+        });
+
         }
     }
 }

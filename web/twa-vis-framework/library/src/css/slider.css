@@ -1,6 +1,5 @@
 .time-label {
   position: absolute;
-  bottom: 10%;
   background-color: #f6f8fa;
   padding: 3px 10px;
   /* border-radius: 10px; */
@@ -18,11 +17,11 @@
 }
 
 #sliderStartTime {
-  left: 23%;
+  left: -40px;
 }
 
 #sliderEndTime {
-  left: 62%;
+  right: -40px;
 }
 
 #timeSliderLabel {
