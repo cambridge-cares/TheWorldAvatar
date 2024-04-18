@@ -17,17 +17,15 @@ public class DispersionMetadata {
     private String label;
     private String derivationIri;
     private Polygon scopePolygon;
-    private List<DispXYZ> dispXYZs;
+    private Map<String, DispXYZ> dispXYZs;
 
     private class DispXYZ {
-        private String iri;
         private String pollutant;
         private int z;
         private List<Long> time;
         private List<String> output;
 
-        private DispXYZ(String iri, String pollutant, int z) {
-            this.iri = iri;
+        private DispXYZ(String pollutant, int z) {
             this.pollutant = pollutant;
             this.z = z;
         }
@@ -35,29 +33,21 @@ public class DispersionMetadata {
 
     public DispersionMetadata(String derivationIri) {
         this.derivationIri = derivationIri;
-        dispXYZs = new ArrayList<>();
+        dispXYZs = new HashMap<>();
     }
 
     public void addDispXYZ(String iri, String pollutant, int z) {
-        DispXYZ dispXYZ = new DispXYZ(iri,pollutant,z);
-        dispXYZs.add(dispXYZ);
+        DispXYZ dispXYZ = new DispXYZ(pollutant, z);
+        dispXYZs.put(iri, dispXYZ);
     }
 
     public List<String> getDispXYZsIRI() {
-        ArrayList<String> listIRI = new ArrayList<>();
-        for (DispXYZ dispXYZ : dispXYZs) {
-            listIRI.add(dispXYZ.iri);
-        }
-        return listIRI;
+        return new ArrayList<>(dispXYZs.keySet());
     }
 
     public void updateDispXYZ(String dispersionXYZ, List<Long> simulationTimes, List<String> dispersionXYZfiles) {
-        for (DispXYZ dispXYZ : dispXYZs) {
-            if (Objects.equals(dispXYZ.iri, dispersionXYZ)) {
-                dispXYZ.time = simulationTimes;
-                dispXYZ.output = dispersionXYZfiles;
-            }
-        }
+        dispXYZs.get(dispersionXYZ).time = simulationTimes;
+        dispXYZs.get(dispersionXYZ).output = dispersionXYZfiles;
     }
 
     public void setScopeLabel(String label) {
@@ -83,19 +73,20 @@ public class DispersionMetadata {
 
         json.put("centroid", centroidJson);
 
-        JSONArray XYZJson = new JSONArray();
+        JSONArray xyzJson = new JSONArray();
 
-        for (DispXYZ dispXYZ : dispXYZs) {
-            JSONObject jXYZ = new JSONObject();
-            jXYZ.put("pollutant", dispXYZ.pollutant);
-            jXYZ.put("height", dispXYZ.z);
-            jXYZ.put("iri",dispXYZ.iri);
-            jXYZ.put("time",dispXYZ.time);
-            jXYZ.put("output",dispXYZ.output);
-            XYZJson.put(jXYZ);
+        for (DispXYZ dispXYZ : dispXYZs.values()) {
+            if (dispXYZ.output.get(0) != null) {
+                JSONObject jXYZ = new JSONObject();
+                jXYZ.put("pollutant", dispXYZ.pollutant);
+                jXYZ.put("height", dispXYZ.z);
+                jXYZ.put("time", dispXYZ.time);
+                jXYZ.put("output", dispXYZ.output);
+                xyzJson.put(jXYZ);
+            }
         }
 
-        json.put("outputs",XYZJson);
+        json.put("outputs", xyzJson);
 
         return json;
     }

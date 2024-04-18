@@ -838,7 +838,6 @@ public class QueryClient {
             }
 
             dispersionMetadata.addDispXYZ(dispXYZ,polLabel,zValue);
-
             dispersionMetadata.setScopeLabel(scopeLabel);
 
             String wktLiteral = queryResult.getJSONObject(i).getString(scopeWktVar.getQueryString().substring(1));
