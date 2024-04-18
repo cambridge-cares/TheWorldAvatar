@@ -52,7 +52,7 @@ If the agent is being run as part of a stack, the user can opt to use a namespac
 
 The agent has a single API route which requires a POST request. It accepts the following input parameters:
 
-- ```dbName```: The name of the PostgreSQL database from which the factories' properties are queried. 
+- ```dbName```: The name of the PostgreSQL database from which the industrial facilities' properties are queried. 
 
 The following is an example POST request for running the agent. The stack is assumed to have been spun up using the default port 3838:
 
@@ -70,35 +70,65 @@ The agent adds a new column called 'heat_emissions' to each of the tables mentio
 
 The following methods are used to estimate the heat emissions of each type of industrial facility:
 
-- Data Centres:
+#### Data Centres
 
-$$ Q = \frac{1.08*P_{max}U_R + 21.53A_F + 9400}{1.0 \times 10^6} $$
+$$ Q = \frac{1.08P_{max}U_R + 21.53A_F + 9400}{1.0 \times 10^6} $$
 
-The parameters $Q$, $P_{max}$, $U_R$ and $A_F$ denote the heat emissions rate in megawatts, maximum IT capacity in megawatts, utilization rate and gross floor area in square meters respectively.
 
-- Precision Engineering
+The meanings of the symbols in the equation above are as follows:
+
+  - $Q$ : Heat emissions rate in megawatts
+  - $P_{max}$ : Maximum IT capacity in megawatts
+  - $U_R$ : Utilization rate. This is a dimensionless parameter whose value ranges between 0 and 1.
+  - $ A_F$ : Gross floor area in square meters. 
+
+
+
+#### Precision Engineering
 
 $$ Q = A_FS_F(1 - \eta) $$
 
-The parameter $\eta$ denote the thermal efficiency.
+The meanings of the symbols in the equation above are as follows:
 
-- Printing:
+  - $Q$ : Heat emissions rate in megawatts
+  - $ A_F$ : Gross floor area in square meters.
+  - $S_F$ : Energy consumption rate per unit of gross floor area in megawatts per square meter.
+   - $\eta$ : Thermal efficiency. This is a dimensionless parameter whose value ranges between 0 and 1.
+
+
+#### Printing:
 
 $$ Q = N_pH_p $$
 
-The parameters $N_p$ and $H_p$ denote the number of printers and average heat emissions per printer in megawatts.
+The meanings of the symbols in the equation above are as follows:
 
-- Factories not in the precision engineering and printing industries:
+  - $Q$ : Heat emissions rate in megawatts
+  - $ N_p$ : Number of printers operated by the printing plant.
+  - $H_p$ : Heat emissions rate per printer in units of megawatts.
+ 
+#### Factories not in the precision engineering and printing industries:
 
 $$ Q = \begin{cases}
     -VS & \text{if } S < 0  \\
     VS(1 - \eta) & \text{otherwise.}
 \end{cases} $$
 
-The parameters $V$ and $S$ denote the production volume in kilograms per second and specific energy consumption in megajoules per kilogram respectively.
+The meanings of the symbols in the equation above are as follows:
 
-- Individual Heat Sources in Chemical Plants and Petroleum Refineries:
+  - $Q$ : Heat emissions rate in megawatts
+  - $ V $ : Production rate. This quantity has units of kilograms per second for chemicals and food manufacturing factories. The units are square meters of wafer per second for semiconductor plants and US dollars per second for pharmaceuticals.
+  - $S$ : Specific energy consumption in units of megajoules per unit of product. The precise unit depends on the units of $V$.
+  - $\eta$ : Thermal efficiency. This is a dimensionless parameter whose value ranges between 0 and 1.
+
+#### Individual Heat Sources in Chemical Plants and Petroleum Refineries:
 
 $$ Q = \frac{E_c \times(1 - \eta) \times 1.0 \times 10^{12}}{C_I \times Y_s \times (1.0 \times 10^6)} $$
 
-The parameters $E_c$, $C_I$ and $Y_s$ denote the carbon dioxide emissions rate in units of tons per year, carbon emissions index which is assumed to be 63.0 kg/GJ and number of seconds per year respectively. 
+
+The meanings of the symbols in the equation above are as follows:
+
+  - $Q$ : Heat emissions rate in megawatts
+  - $ E_c $ : Carbon dioxide emissions rate in units of tons per year
+  - $C_I$ : Carbon emissions index which is assumed to be 63.0 kg/GJ
+  - $Y_s$ : Number of seconds per year.
+
