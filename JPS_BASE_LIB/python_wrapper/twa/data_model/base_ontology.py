@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 from annotated_types import Len
 
 from pydantic import BaseModel, Field, PrivateAttr, model_validator
+from pydantic_core import PydanticUndefined
 import rdflib
 from rdflib import Graph, URIRef, Literal, BNode
 from rdflib.namespace import RDF, RDFS, OWL, XSD, DC
@@ -564,6 +565,15 @@ class BaseClass(BaseModel, validate_assignment=True):
                     elif isinstance(data[f], possible_type):
                         data[f] = field_info.annotation(range=data[f])
                     # for all the other cases, we will let the pydantic to validate the input
+                else:
+                    # if the object/data property is not in the input
+                    if field_info.default is PydanticUndefined and field_info.default_factory is None:
+                        # also if the default value is undefined and there is no default_factory
+                        # we will set it to its default initialisation
+                        # this doesn't affect the validation process
+                        # as the actual validation will be done by checking the cardinality of the property
+                        # the default initialisation of the range is an empty set
+                        data[f] = field_info.annotation(range=set())
 
         super().__init__(**data)
 
