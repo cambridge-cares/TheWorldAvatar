@@ -1,0 +1,45 @@
+{
+    "ServiceSpec": {
+        "Name": "dh-emission-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/dh-emission-agent:1.1.0",
+                "Env": [
+                    "NAMESPACE=kb",
+                    "DATABASE=postgres",
+                    "ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__DHEmissionAgent/Service",
+                    "ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5000/DHEmissionAgent",
+                    "DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/",
+                    "DERIVATION_PERIODIC_TIMESCALE=100000",
+                    "REGISTER_AGENT=true",
+                    "SPARQL_QUERY_ENDPOINT=",
+                    "SPARQL_UPDATE_ENDPOINT=",
+                    "KG_USERNAME=",
+                    "KG_PASSWORD=",
+                    "FILE_SERVER_ENDPOINT=",
+                    "FILE_SERVER_USERNAME=",
+                    "FILE_SERVER_PASSWORD="
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/DHEmissionAgent/"
+        }
+    }
+}

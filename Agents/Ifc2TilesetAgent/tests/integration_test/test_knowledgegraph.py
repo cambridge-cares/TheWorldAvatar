@@ -10,7 +10,7 @@ import pytest
 
 # Self imports
 from . import testconsts as C
-from agent.ifc2gltf.kghelper import retrieve_metadata, get_building_iri
+from agent.ifc2gltf.kghelper import retrieve_metadata, get_building_iri_name
 from agent.ifc2gltf import conv2gltf
 from .testutils import init_kg_client, assert_df_equal, assert_assets_present
 
@@ -70,32 +70,54 @@ def test_retrieve_metadata(init_assets, expected, kg_client):
     assert_df_equal(actual, expected)
 
 
-def test_get_building_iri(endpoint, kg_client):
+@pytest.mark.parametrize(
+    "init_assets, expected_building_iri, expected_building_name",
+    [(
+        # when building exists, ensure that an iri and name can be retrieved
+        ["building"],
+        C.SAMPLE_BUILDING_IRI,
+        C.SAMPLE_BUILDING_NAME
+    ), (
+        # when building exists but no name is available, ensure that only an iri is retrieved
+        ["nameless_building"],
+        C.SAMPLE_BUILDING_IRI,
+        ""
+    ), (
+        # when there is no building, no values should be returned
+        [],
+        "",
+        ""
+    )]
+)
+def test_get_building_iri_name(init_assets, expected_building_iri, expected_building_name, endpoint, kg_client):
     # Arrange
-    init_kg_client(kg_client, ["building"])
+    init_kg_client(kg_client, init_assets)
 
     # Act
-    actual = get_building_iri(endpoint, endpoint)
+    actual = get_building_iri_name(endpoint, endpoint)
 
     # Assert
-    assert actual == C.sample_building_iri
+    assert actual[0] == expected_building_iri
+    assert actual[1] == expected_building_name
 
 
 @pytest.mark.parametrize(
-    "init_assets, expected_gltf, expected_asset_data, expected_building_iri",
+    "init_assets, expected_gltf, expected_asset_data, expected_building_iri, expected_building_name",
     [(
         # when only building and wall are present, building gltf should be generated and asset data should be empty
         ["building", "wall"],
         ["building"],
         pd.DataFrame(columns=["iri", "uid", "name", "file"]),
-        C.sample_building_iri
+        C.SAMPLE_BUILDING_IRI,
+        C.SAMPLE_BUILDING_NAME
     ), (
         # when only building, wall, and furniture are present, building and furniture gltf should be generated and
         # asset data should be empty
         ["building", "wall", "chair", "table"],
         ["building", "furniture"],
         pd.DataFrame(columns=["iri", "uid", "name", "file"]),
-        C.sample_building_iri
+        C.SAMPLE_BUILDING_IRI,
+        C.SAMPLE_BUILDING_NAME
     ), (
         # when assets, furniture, solar panel are present, gltf files should be generated and asset data present
         ["building", "wall", "water_meter", "fridge", "chair", "table", "solar_panel"],
@@ -106,19 +128,21 @@ def test_get_building_iri(endpoint, kg_client):
             name=[e.label for e in (C.sample_water_meter, C.sample_fridge)],
             file=[f"asset{i + 1}" for i in range(2)]
         )),
-        C.sample_building_iri
+        C.SAMPLE_BUILDING_IRI,
+        C.SAMPLE_BUILDING_NAME
     )]
 )
-def test_conv2gltf(init_assets, expected_gltf, expected_asset_data, expected_building_iri, endpoint, kg_client,
-                   gen_sample_ifc_file):
+def test_conv2gltf(init_assets, expected_gltf, expected_asset_data, expected_building_iri, expected_building_name,
+                   endpoint, kg_client, gen_sample_ifc_file):
     # Arrange
     init_kg_client(kg_client, init_assets)
     ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc", assets=init_assets)
 
     # Act
-    actual_asset_data, actual_building_iri = conv2gltf(ifcpath, endpoint, endpoint)
+    actual_asset_data, actual_building_data = conv2gltf(ifcpath, endpoint, endpoint)
 
     # Assert
     assert_df_equal(actual_asset_data, expected_asset_data)
     assert_assets_present(expected_gltf)
-    assert actual_building_iri == expected_building_iri
+    assert actual_building_data[0] == expected_building_iri
+    assert actual_building_data[1] == expected_building_name

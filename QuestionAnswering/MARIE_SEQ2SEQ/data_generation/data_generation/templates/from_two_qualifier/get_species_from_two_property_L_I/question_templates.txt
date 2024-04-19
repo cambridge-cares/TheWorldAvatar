@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} lower than {value1} and {PropertyName2} between {minvalue2} and {maxvalue2}
+Provide a catalog of chemical species having {PropertyName1} lesser than {value1} and {PropertyName2} falling within {minvalue2} and {maxvalue2}.
+List molecules exhibiting {PropertyName1} below {value1} and {PropertyName2} within the range of {minvalue2} to {maxvalue2}.
+Enumerate compounds with {PropertyName1} less than {value1} and {PropertyName2} in the {minvalue2} to {maxvalue2} interval.
+Compile a record of species where {PropertyName1} is under {value1} and {PropertyName2} ranges from {minvalue2} to {maxvalue2}.
+Display a roster of chemical entities featuring {PropertyName1} lower than {value1} and {PropertyName2} situated between {minvalue2} and {maxvalue2}.
+Outline a list of molecules having {PropertyName1} beneath {value1} and {PropertyName2} that falls in the {minvalue2} to {maxvalue2} bracket.
+Present a tally of compounds with {PropertyName1} not exceeding {value1} and {PropertyName2} ranging from {minvalue2} to {maxvalue2}.
+Show a compilation of chemical species where {PropertyName1} is less than {value1} and {PropertyName2} lies within {minvalue2} to {maxvalue2}.
+Offer an inventory of molecules demonstrating {PropertyName1} below {value1} and {PropertyName2} that is in the {minvalue2} - {maxvalue2} range.
+Create a list of compounds exhibiting {PropertyName1} lower than {value1} and {PropertyName2} between {minvalue2} and {maxvalue2}.
+Provide a rundown of chemical species featuring {PropertyName1} beneath {value1} and {PropertyName2} encompassed by {minvalue2} up to {maxvalue2}.
+Generate a catalogue of molecules with {PropertyName1} less than {value1} and {PropertyName2} in the {minvalue2} through {maxvalue2} span.
+Share a compilation of compounds where {PropertyName1} is under {value1} and {PropertyName2} falls within {minvalue2} - {maxvalue2}.
+List chemical species that have {PropertyName1} lower than {value1} and {PropertyName2} ranging from {minvalue2} to {maxvalue2}.
+Provide an overview of molecules with {PropertyName1} below {value1} and {PropertyName2} between {minvalue2} to {maxvalue2}.
+Present a collection of compounds displaying {PropertyName1} not exceeding {value1} and {PropertyName2} within {minvalue2} till {maxvalue2}.
+Compile a list of chemical species with {PropertyName1} lesser than {value1} and {PropertyName2} spanning {minvalue2} - {maxvalue2}.
+Display a roster of molecules showing {PropertyName1} under {value1} and {PropertyName2} in the range {minvalue2} to {maxvalue2}.
+Showcase a record of compounds featuring {PropertyName1} below {value1} and {PropertyName2} that's between {minvalue2} and {maxvalue2}.
+Provide a list of chemical species having {PropertyName1} lower than {value1} and {PropertyName2} ranging from {minvalue2} to {maxvalue2}.

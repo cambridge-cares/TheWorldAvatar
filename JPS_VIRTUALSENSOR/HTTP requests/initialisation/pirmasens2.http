@@ -1,0 +1,8 @@
+# Municipal utility district heating plant
+POST http://localhost:3838/dispersion-interactor/InitialiseSimulation
+?ewkt=SRID=32632;POLYGON((398420 5448860,400420 5448860,400420 5450860,398420 5450860,398420 5448860))
+&nx=100
+&ny=200
+&label=Pirmasens2
+&z=0
+&z=50

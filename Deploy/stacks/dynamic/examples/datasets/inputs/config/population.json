@@ -7,7 +7,8 @@
         {
             "type": "raster",
             "name": "population",
-            "skip": false
+            "skip": false,
+            "subdirectory": "population"
         }
     ]
 }

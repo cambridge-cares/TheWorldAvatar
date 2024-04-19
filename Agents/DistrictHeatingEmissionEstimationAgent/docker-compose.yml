@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   emission_agent:
-    image: ghcr.io/cambridge-cares/dh-emission-agent:1.0.0
+    image: ghcr.io/cambridge-cares/dh-emission-agent:1.1.0
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .

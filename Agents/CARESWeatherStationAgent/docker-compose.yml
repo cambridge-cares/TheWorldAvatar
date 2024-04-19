@@ -2,9 +2,11 @@ version: "3.8"
 
 services:
   caresWeatherStation-agent:
-    image: caresweatherstation-agent:1.3.0
+    image: caresweatherstation-agent:1.5.0
     build: .
     container_name: caresWeatherStation-agent
     pull_policy: if_not_present
+    volumes:
+      - './config:/root/config'
     ports:
       - "1080:8080"

@@ -1,0 +1,8 @@
+# EfW plant
+POST http://localhost:3838/dispersion-interactor/InitialiseSimulation
+?ewkt=SRID=32632;POLYGON((396720 5452820,398720 5452820,398720 5454820,396720 5454820,396720 5452820))
+&nx=100
+&ny=200
+&label=Pirmasens1
+&z=0
+&z=50

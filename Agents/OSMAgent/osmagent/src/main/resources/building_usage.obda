@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+twa:    https://www.theworldavatar.com/kg/
+ic:     http://ontology.eil.utoronto.ca/icontact.owl#
+
+[MappingDeclaration] @collection [[
+mappingId	Building Usage
+target		twa:Building/{building_iri} :hasPropertyUsage twa:{propertyusage_iri} .
+            twa:{propertyusage_iri} a :{ontobuilt} ;
+                :hasUsageShare {usageshare}^^xsd:float ;
+                :hasUsageLabel {name}^^xsd:string .
+source      SELECT DISTINCT u.name,
+            u.building_iri,
+            u.ontobuilt,
+            u.propertyusage_iri,
+            u.usageshare
+            FROM buildinginfo.buildinginfo_osm AS u WHERE building_iri IS NOT NULL
+
+mappingId	Address
+target		twa:Building/{building_iri} :hasAddress twa:{address_iri} .
+            twa:{address_iri} a ic:Address ;
+                :hasCountry {country}^^xsd:string ;
+                :hasCity {city}^^xsd:string ;
+                ic:hasUnitNumber {house_number}^^xsd:string ;
+                ic:hasPostalCode {postcode}^^xsd:string ;
+                ic:hasStreet {street}^^xsd:string .
+source      SELECT DISTINCT u.building_iri,
+            u.address_iri,
+            u.country,
+            u.city,
+            u.house_number,
+            u.postcode,
+            u.street
+            FROM buildinginfo.buildinginfo_osm AS u WHERE address_iri IS NOT NULL
+]]

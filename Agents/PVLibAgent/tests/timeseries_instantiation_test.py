@@ -12,8 +12,7 @@ from PVLibAgent.kg_utils.utils import DATACLASS, TIME_FORMAT, QUERY_ENDPOINT, UP
 from PVLibAgent.kg_utils.utils import create_sparql_prefix
 
 
-@pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in /kg_utils/resources/ts_client.properties file.\
-                   Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
+
 class TestDataInstantiation:
     def tearDown(self):
         kg_client = KGClient(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
@@ -36,14 +35,14 @@ class TestDataInstantiation:
             now = datetime.now(tz=timezone.utc)
             time = self.utcformat(now, 'seconds')
             test_timeseries = TSClientForUpdate.create_timeseries([time], ['http://test'], [[float(10)]])
-            timeseries_instantiation.add_timeseries_data(test_timeseries)
+            timeseries_instantiation.add_timeseries_data(test_timeseries, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
         # Check correct exception message
         assert 'Adding of timeseries data to knowledge graph was not successful.' in str(excinfo.value)
         self.tearDown()
 
     def test_init_timeseries_data_successful(self):
         # init_timeseries_data will only fail if there are connection errors
-        timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT)
+        timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
         kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
         query = create_sparql_prefix('rdf') + \
                 create_sparql_prefix('ts') + \
@@ -57,11 +56,11 @@ class TestDataInstantiation:
         self.tearDown()
 
     def test_add_timeseries_data_successful(self):
-        timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT)
+        timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
         now = datetime.now(tz=timezone.utc)
         time = self.utcformat(now, 'seconds')
         test_timeseries = TSClientForUpdate.create_timeseries([time], ['http://test'], [[float(10)]])
-        timeseries_instantiation.add_timeseries_data(test_timeseries)
+        timeseries_instantiation.add_timeseries_data(test_timeseries, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
         kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         ts_client = TSClientForQuery(kg_client=kg_client, rdb_url=DB_QUERY_URL, rdb_user=DB_QUERY_USER,
                                      rdb_password=DB_QUERY_PASSWORD)
@@ -78,13 +77,13 @@ class TestDataInstantiation:
         self.tearDown()
 
     def test_check_data_has_timeseries_true(self):
-        timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT)
-        boolean = timeseries_instantiation.check_data_has_timeseries(['http://test'])
+        timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
+        boolean = timeseries_instantiation.check_data_has_timeseries(['http://test'], QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
         assert boolean == True
         self.tearDown()
 
     def test_check_data_has_timeseries_false(self):
-        boolean = timeseries_instantiation.check_data_has_timeseries(['http://test'])
+        boolean = timeseries_instantiation.check_data_has_timeseries(['http://test'], QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
         assert boolean == False
         self.tearDown()
 

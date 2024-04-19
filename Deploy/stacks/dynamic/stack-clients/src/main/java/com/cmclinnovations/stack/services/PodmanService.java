@@ -53,8 +53,6 @@ public class PodmanService extends DockerService {
 
     public PodmanService(String stackName, ServiceConfig config) {
         super(stackName, config);
-
-        addStackSecrets();
     }
 
     @Override
@@ -68,11 +66,9 @@ public class PodmanService extends DockerService {
     }
 
     @Override
-    protected void initialise(String stackName) {
+    public void initialise() {
 
-        // addStackConfigs();
-
-        createNetwork(stackName);
+        addStackSecrets();
     }
 
     @Override

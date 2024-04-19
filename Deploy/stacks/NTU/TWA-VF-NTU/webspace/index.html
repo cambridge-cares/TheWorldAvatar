@@ -1,0 +1,352 @@
+<html>
+    <head>
+        <!-- ===== CUSTOMISABLE ===== -->
+        <title>NTU Digital Twin Visualisation</title>
+        <!-- ===== CUSTOMISABLE ===== -->
+
+        <meta charset="utf-8">
+
+        <!-- JS -->
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src="https://cesium.com/downloads/cesiumjs/releases/1.105/Build/Cesium/Cesium.js"></script>
+        <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+        <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
+        <!-- ===== CUSTOMISABLE ===== -->
+        <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
+        <script src="./customisation/twa-vf.min.js" charset="utf-8"></script>
+        <script src="./customisation/cesium-tilesetEffect.js"></script>
+        <script src="./customisation/custom_changes.js" charset="UTF-8"></script>
+        <script src="./customisation/CesiumHeatmap.js"></script>
+        <script src="./customisation/HeatmapImageryProvider.js"></script>
+        <!-- ===== CUSTOMISABLE ===== -->
+
+        <!-- CSS -->
+        <link href="https://cesium.com/downloads/cesiumjs/releases/1.105/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
+        <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+        <link href="./twa-vf/twa-vf.min.css" rel="stylesheet" />
+        <link href="./customisation/custom_changes.css" rel="stylesheet" />
+
+
+        <!-- ===== CUSTOMISABLE ===== -->
+        <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
+        <!-- ===== CUSTOMISABLE ===== -->
+
+    </head>
+    <body>
+        <!-- Container the map will be added to -->
+        <div id="map"></div>
+
+        <!-- Element for depth of field overlay -->
+        <div id="tiltShift"></div>
+
+        <!-- Pop up box for hover-over effecrs -->
+        <div id="cesiumMetaBox"></div>
+
+        <!-- Element the map controls will be added to (normally on the left) -->
+        <div id="controlsContainer">
+            <div id="controlContainer">
+
+                <!-- Camera controls -->
+                <div id="cameraContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle">
+                        <p>Camera</p>
+                    </div>
+                    <div class="controlContents">
+                        <a href="#" onclick="CesiumUtils.resetCamera()">Reset to default</a><br/>
+                    </div>
+                </div>
+
+                <!-- Terrain controls -->
+                <div id="terrainContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle" style="padding-right: 0px !important;">
+                        <p>Imagery</p>
+                    </div>
+                    <div id="imageryContainer" class="controlContents">
+                    </div>
+                </div>
+
+                <!-- Layer controls -->
+                <div id="layerContainer" class="controlBlock">
+                    <div id="controlTitle"  class="controlTitle">
+                        <p>Layers</p>
+                    </div>
+                    <div class="controlContents">
+                        <div id="layerTreeContainer">
+                            <div class="hummingbird-treeview-converter"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clipping plane controls, listeners will be dynamically added later -->
+                <div id="clipControlContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle">
+                        <p style="width: 100%;">Clipping Planes</p>
+                    </div>
+                    <div class="controlContents">
+                        <div id="clipEnableContainer">
+                            <p>Enable clipping planes?</p>
+                            <input type="checkbox" id="clipEnableCheck">
+                        </div>
+                        <div id="clipShowContainer" style="display: none;">
+                            <p>Show plane geometry?</p>
+                            <input type="checkbox" id="clipShowCheck" checked>
+                        </div>
+                        <div id="clipSelectContainer" style="display: none;">
+                            <p>Target layer:</p>
+                            <select id="clipSelectCombo">
+                                <option disabled hidden selected>Please select a layer...</option>
+                                <!-- Other options will be dynamically generated here -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help icon -->
+                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                    <div class="tooltip" id="coordEditor">
+                        <i class="fas fa-question fa-lg"></i>
+                        <span class="tooltiptext right">Help</span>
+                    </div>
+                </div>
+
+                <!-- Container for developer info -->
+                <div id="developerContainer" class="controlBlock" style="display: none;">
+                    <div class="tooltip" id="coordEditor" style="float: right;">
+                        <i class="fas fa-pencil-alt" onclick="event.stopPropagation(); manager.getControlHandler().editInfoPanel()"></i>
+                        <span class="tooltiptext">Change map position</span>
+                    </div>
+                    <div id="coordsContainer" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side panel for content and metdata -->
+        <div id="sidePanel" class="large expanded">
+            <div class="tooltip" id="slideButtonContainer">
+                <i class="fas fa-chevron-right" id="slideButton" width="16px" class="leftButton" height="16px" onclick="manager.getPanelHandler().toggleExpansion()"></i>
+                <span class="tooltiptext">Show/Hide</span>
+            </div>
+            <div class="tooltip" id="expandButtonContainer">
+                <i class="fas fa-compress-alt" id="expandButton" width="16px" class="rightButton" height="16px" onclick="manager.getPanelHandler().toggleMode()"></i>
+                <span class="tooltiptext">Expand/Collapse</span>
+            </div>
+            <div id="sidePanelInner">
+                <ul>
+                    <li><a href="#sidePanelGeneral">General</a></li>
+                    <li><a href="#sidePanelLegend">Legend</a></li>
+                    <li><a href="#sidePanelLinks">Links</a></li>
+                </ul>
+                <div id="sidePanelGeneral">
+                    <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
+                    <div id="contentContainer"></div>
+                    <div id="legendContainer"></div>
+                    <div id="footerContainer">
+                        <div id="footerContent"></div>
+                    </div>
+                </div>
+                <div id="sidePanelLegend"></div>
+                <div id="sidePanelLinks"></div>
+            </div>
+            <div id="returnContainer" style="display: none;">
+                <div id="innerReturnContainer">
+                    <a href="#" onclick="manager.getPanelHandler().returnToDefault()"><i class="fas fa-arrow-left" width="16px" height="16px"></i> Return</a>
+                </div>
+            </div>
+        </div>
+
+
+        <button id="LT1" class="custom-button3" style="position: absolute">LT1</button>
+
+        <!-- Code entry point -->
+        <script type="module">
+            // Log the version of the TWA-VF being used.
+            getVisVersion().then(result => console.log("Using TWA-VF " + result));
+
+            $("#sidePanelInner").tabs();
+
+            // Create a new manager instance
+            var manager = new Manager(MapProvider.CESIUM);
+            window.manager = manager;
+
+            // Read credentials
+            manager.readCredentials().then(() => {
+
+            // Only start the map after data definitions have been read.
+            var dataPromise = manager.loadDefinitions();
+            dataPromise.then(() => start());
+
+            /**
+             * Starts the visualisation setup process.
+             */
+             function start() {
+                // Initialise the map object
+                manager.initialiseMap();
+
+                // ===== CUSTOMISABLE =====
+                // Set the default content in the "General" tab of the side panel
+                //manager.getPanelHandler().setTitle("<h1>NTU Digital Twin Visualisation</h1>");
+                manager.getPanelHandler().setTitle(`<a href="http://128.199.151.149:3939/"><img src="twa-logo-with-title-blue-256.png"></a><br><h3>KG-Driven NTU Digital Twin Visualisation</h3>`);
+                manager.getPanelHandler().setContent(`
+                    <div id="buttonTabs">
+                    <button id="getClassScheduleButton" class="custom-button2" '="">Class Schedule</button>
+                    <button id="getWeatherDataButton" class="custom-button2" '="">Weather Data</button>
+                    <button id="getShowHeatmapButton" class="custom-button2" '="">Power Heatmap</button>
+                    </div>
+                    <div id="metaTabs">
+                    <p> The NTU digital twin visualization has been developed to showcase an interactive UI for a knowledge graph. 
+                        This graph integrates a 13-bus power network configuration, power consumption data, photovoltaic panel data,
+                         class schedules, and venue information specific to the NTU campus.
+                    </p>
+                    <h4>NTU digital twin agents:</h4>
+                    <ul class="dotted-list">
+                        <li><b>Historical NTU Energy Agent:</b> Instantiates the NTU KG based on ontology and data provided.</li>
+                        <li><b>OpenMeteo Agent:</b> Updates the KG with historical and forecasted weather data via <a href="https://open-meteo.com/">OpenMeteo API</a>.</li>
+                        <li><b>OPF Agent:</b> Computes optimal power flow (OPF) with <a href="https://epubs.siam.org/doi/pdf/10.1137/1.9781611971453.bm">Primal-dual interior point method</a> and <a href="https://www.math.kent.edu/~reichel/courses/optimization/beck.pdf">FMINCON</a>.</li>
+                        <li><b>Photovaltaic Agent:</b> Calculates PV panel outputs with <a href="https://pvpmc.sandia.gov/modeling-steps/2-dc-module-iv/point-value-models/sandia-pv-array-performance-model/">Sandia PV Array Performance Model</a>.</li>
+                        <li><b>NN-Cluster Agent:</b> Classifies power nodes into high-, medium-, and low- voltage clusters with a fuzzy algorithm developed by <a href="http://eeeweba.ntu.edu.sg/power_projects/ntu-ONRG/0_default.asp">NTU Clean Energy Research Lab</a>.</li>
+                    </ul>
+
+                    </div>
+                    <div id="metaContainerss></div>
+                `);
+                
+                manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+                // ===== CUSTOMISABLE =====
+                document.getElementById('getClassScheduleButton').addEventListener('click', function () {
+
+                alert('Getting class schedule data...');
+                var iframe = document.createElement("iframe");
+
+                // Set attributes for the iframe
+                iframe.src = "http://128.199.151.149:3838/analytics/d-solo/b56f5515-ef78-4feb-b712-7e5cddb4ba25/ntu-classschedule?orgId=1&from=1672731037713&to=1672787129841&theme=light&panelId=1";
+                iframe.width = "450";
+                iframe.height = "800";
+                iframe.frameBorder = "0"; // Note: It's frameBorder, not frameborder
+
+                // Get the "metaTabs" container and replace its content with the iframe
+                var metaTabsContainer = document.getElementById("metaTabs");
+                metaTabsContainer.innerHTML = '';
+                metaTabsContainer.appendChild(iframe);
+
+                // Get the "metaContainer" div and clear its content
+                var metaContainer = document.getElementById("metaContainer");
+                metaContainer.innerHTML = '';
+                });
+
+                document.getElementById('getWeatherDataButton').addEventListener('click', function () {
+
+
+                alert('Getting weather data...');
+
+                // Create first iframe and its header
+                var iframe1 = document.createElement("iframe");
+                var header1 = document.createElement("b");
+                header1.textContent = "Weather dashboard";
+                iframe1.src = "http://128.199.151.149:3838/analytics/d-solo/ba4fb953-c3c7-47f0-8869-df2ceb036343/ntu-weather?orgId=1&from=1672531200000&to=1673046000000&theme=light&panelId=2";
+                iframe1.width = "450";
+                iframe1.height = "270";
+                iframe1.frameBorder = "0";
+
+                // Get the container and clear its content
+                var container = document.getElementById("metaTabs");
+                container.innerHTML = '';
+
+                // Append the first iframe and its header to the container
+                container.appendChild(header1);
+                container.appendChild(iframe1);
+
+                // Create second iframe and its header (assuming you want to append it to the same container)
+                var iframe2 = document.createElement("iframe");
+                var header2 = document.createElement("b");
+                header2.textContent = "Weather forecast";
+                            
+                iframe2.src = "http://128.199.151.149:3838/analytics/d-solo/ba4fb953-c3c7-47f0-8869-df2ceb036343/ntu-weather?orgId=1&from=1672531200000&to=1672588799000&theme=light&panelId=1";
+                iframe2.width = "450";
+                iframe2.height = "280";
+                iframe2.frameBorder = "0";
+
+                // Append the second iframe and its header to the container
+                container.appendChild(header2);
+                container.appendChild(iframe2);
+
+                // Append the iframe to the container
+                metaContainer = document.getElementById("metaContainer");
+                metaContainer.innerHTML = '';
+
+                });
+
+
+                // for Heatmap button
+                document.getElementById('getShowHeatmapButton').addEventListener('click', function () {
+
+                console.log("viewer? ", MapHandler.MAP instanceof Cesium.Viewer);
+                let bounds = {
+                west: 103.6687938762,
+                east: 103.6963979333,
+                south: 1.3372667367,
+                north: 1.3605829566,
+                };
+                let heatMap = CesiumHeatmap.create(
+                MapHandler.MAP, // your cesium viewer
+                bounds, // bounds for heatmap layer
+                {
+                // heatmap.js options go here
+                //minOpacity: 0.2,
+                maxOpacity: 0.4,
+                //useEntitiesIfAvailable: false,
+                radius: 200,
+                blur: 0.9,
+                gradient: {  // the gradient used if not given in the heatmap options object
+                '.3': '#d9e7fc',
+                '.65': '#2a7aed',
+                '.8': '#fbd801',
+                '.95': '#c91212'
+                },
+                },
+                );
+                let data = [
+                { x: 103.6818572460, y: 1.3419334155, value: 100 },   // School of Physical and Mathematical Sciences
+                { x: 103.6800064641, y: 1.3442181323, value: 100 },  // Nanyang Auditorium
+                { x: 103.6791746564, y: 1.3450496383, value: 100 },   // School of Biological Sciences
+                { x: 103.6800881613, y: 1.3454565079, value: 100 },     // Block N1.3
+                { x: 103.6796595995, y: 1.3467408413, value: 100 },     // Block N2
+                { x: 103.6800130775, y: 1.3473157834, value: 41 },     // Block N2.1
+                { x: 103.6757490809, y: 1.3445919035, value: 75 },     // Experimental Medicine Building
+                { x: 103.6854021333, y: 1.3442537009, value: 76 },     // Hall of Residence 4
+                { x: 103.6883786891, y: 1.3458209704, value: 100 },    // Pioneer Hall
+                { x: 103.6853405644, y: 1.3483400219, value: 80 },     // Canteen 2
+                { x: 103.6877703643, y: 1.3494060864, value: 40 },      // The Wave
+                { x: 103.6881162008, y: 1.3514382803, value: 21 },     // Nanyang Executive Centre
+                { x: 103.6859452065, y: 1.3539692593, value: 30 },      // Hall 10
+                { x: 103.6811869703, y: 1.3508321630, value: 30 }      // Hall 16
+                ];
+                let valueMin = 0;
+                let valueMax = 50;
+                heatMap.setWGS84Data(valueMin, valueMax, data);
+                });
+
+
+
+
+
+                // Save general tab state as default
+                manager.getPanelHandler().storeDefault();
+
+                 // Load the data definitions
+                let configURL = "./data.json"
+                manager.loadDefinitionsFromURL(configURL).then(function() {
+
+                    // Plot the data
+                manager.plotData();
+                });
+            }
+            });
+        </script>
+    </body>
+</html>

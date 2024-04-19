@@ -1,10 +1,18 @@
 package uk.ac.cam.cares.jps.agent.cea;
 
 import java.io.File;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.gson.Gson;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.jena.base.Sys;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
+import uk.ac.cam.cares.jps.agent.cea.tasks.CEAOutputHandler;
+import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.DataManager;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
 public class Main {
     public static final int PORT = 8084;
@@ -29,7 +37,5 @@ public class Main {
         } finally {
             tomcat.destroy();
         }
-
     }
-
 }

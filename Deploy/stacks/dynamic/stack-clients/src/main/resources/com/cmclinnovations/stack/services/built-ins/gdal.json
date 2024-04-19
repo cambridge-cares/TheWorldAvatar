@@ -3,7 +3,7 @@
         "Name": "gdal",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "osgeo/gdal:alpine-normal-3.5.3",
+                "Image": "ghcr.io/osgeo/gdal:alpine-normal-3.8.3",
                 "Command": [
                     "tail",
                     "-f",
@@ -14,6 +14,11 @@
                         "Type": "volume",
                         "Source": "geotiffs",
                         "Target": "/geotiffs"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "multidim_geospatial",
+                        "Target": "/multidim_geospatial"
                     }
                 ],
                 "Configs": [

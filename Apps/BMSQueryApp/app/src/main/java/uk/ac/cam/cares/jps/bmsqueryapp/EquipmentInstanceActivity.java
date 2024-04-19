@@ -22,13 +22,14 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.cam.cares.jps.bmsqueryapp.authorization.AuthorizationHelper;
 import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
+import uk.ac.cam.cares.jps.bmsqueryapp.data.dict.IRIMapping;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityEquipmentInstanceBinding;
-import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.EditFragment;
-import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
+import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
 
-public class EquipmentInstanceActivity extends AppCompatActivity {
+public class EquipmentInstanceActivity extends AppCompatActivity{
     ActivityEquipmentInstanceBinding binding;
     private static final Logger LOGGER = LogManager.getLogger(EquipmentInstanceActivity.class);
 
@@ -64,7 +65,6 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 LOGGER.info("page finished loading");
-//                binding.progressBarWrapper.setVisibility(View.GONE);
             }
 
             @Override
@@ -74,7 +74,7 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
             }
         };
 
-        ValueCallback<String> reloadCallback = (ValueCallback<String>) o -> {
+        ValueCallback<String> reloadCallback = o -> {
             LOGGER.info("New data loaded");
             binding.refreshButton.setEnabled(true);
         };
@@ -83,7 +83,7 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
         TabLayout tabLayout = binding.tabs;
         adapter = new TabAdapter(getSupportFragmentManager(), getLifecycle());
         adapter.configDtvfTab(equipmentIri, webViewClient, reloadCallback);
-        adapter.configEditTab(getEditableAttributeList(equipmentType));
+        adapter.configEditTab(getEditableAttributeList(equipmentType, equipmentIri));
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(Constants.statusArrayTemp[position])).attach();
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -108,20 +108,28 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
                 }
             } else if (tabPosition == 1) {
                 if (adapter.getEditTab() != null) {
-                    ((EditFragment) adapter.getEditTab()).clearInputs();
+                    adapter.getEditTab().clearInputs();
                 }
             }
         });
     }
 
-    private List<EditableAttribute> getEditableAttributeList(String type) {
+    private List<EditableAttribute> getEditableAttributeList(String type, String equipmentIRI) {
+        IRIMapping iriMapping = new IRIMapping(getBaseContext());
         // determine the list of editable attribute based on the equipment type
         if (type.equals("https://www.theworldavatar.com/kg/ontobms/WalkInFumeHood")) {
             return new ArrayList<>();
         } else if (type.equals("https://www.theworldavatar.com/kg/ontodevice/SmartSensor") || type.equals("https://w3id.org/s3n/SmartSensor")) {
             ArrayList<EditableAttribute> attributes = new ArrayList<>();
-            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature", "Temperature", "double", "°C"));
+            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature", "Temperature Setpoint", "double", "°C"));
             return attributes;
+        } else if (type.equals("https://www.theworldavatar.com/kg/ontobms/ExhaustVAV") || type.equals("https://www.theworldavatar.com/kg/ontobms/CanopyHood")) {
+            ArrayList<EditableAttribute> attributes = new ArrayList<>();
+            String editableDataIRI = iriMapping.getEditableDataIRIFromEquipmentIRI(equipmentIRI);
+            if (editableDataIRI != null) {
+                attributes.add(new EditableAttribute(editableDataIRI, "Airflow Setpoint", "double", "m3/h"));
+                return attributes;
+            }
         }
         return new ArrayList<>();
     }

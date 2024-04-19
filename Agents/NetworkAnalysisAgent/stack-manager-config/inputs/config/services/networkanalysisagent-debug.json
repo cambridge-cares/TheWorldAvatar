@@ -1,0 +1,55 @@
+{
+  "ServiceSpec": {
+    "Name": "networkanalysisagent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "networkanalysisagent:1.0.0",
+        "Env": [
+          "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+        ],
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/NetworkAnalysisAgent/inputs",
+            "Target": "/inputs"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+            "ConfigName": "postgis"
+          },
+          {
+            "ConfigName": "geoserver"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
+          }
+        ]
+      }
+    },
+    "EndpointSpec": {
+      "Ports": [
+        {
+          "Name": "web",
+          "Protocol": "tcp",
+          "TargetPort": "5005",
+          "PublishedPort": "5005"
+        }
+      ]
+    }
+  },
+  "endpoints": {
+    "networkanalysisagent": {
+      "url": "http://localhost:8080/networkanalysisagent/",
+      "externalPath": "/networkanalysisagent/"
+    }
+  }
+}

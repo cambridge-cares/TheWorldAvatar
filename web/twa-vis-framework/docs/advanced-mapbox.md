@@ -99,6 +99,23 @@ An example snippet of the `settings.json` file defining search parameters is sho
 
 <br/>
 
-## Dashboards
+## Using IRIs in expressions
 
-Where applicable, the TWA-VF can now display a link to an associated analytics dashboard. To add this link, simply set the `dashboard` parameter in the visualisation's `settings.json` file to the dashboard's URL.
+The visualisation framework now provides a methodology for users to include the IRIs of hovered/selected features in their style and filter expressions. Within a single style parameter (or filter), simply use one of (using both is not currently supported) the placeholder strings, `"[HOVERED-IRI]"` or `"[SELECTED-IRI]"`. When a change in the hovered or selected feature is made, the framework will automatically update these expressions with the literal string value of the IRI. This allows for the creation of styles that can visually highlight a feature when the mouse is over it, or show highlights around selected features. See the [UK Base World Visualisation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/uk-base-world) for an example of this.
+
+**Note:** this of course requires your features to have an `iri` parameter with their metadata.
+
+## Mapbox controls
+
+As of version 4.5 of the `twa-vf`, three control sets are included by default. These are:
+
+* Scale Control (bottom right indicator of current map scale in metres and kilometres)
+* Geolocator (a button in the bottom right to display current location of the user)
+* Zoom, pitch and compass controls in the top right
+
+All of these controls can be disabled by the following respective flags in `settings.json`
+
+```json
+"showNavigationControl": false,
+"showMapScale": false,
+"showGeolocateControl": false```

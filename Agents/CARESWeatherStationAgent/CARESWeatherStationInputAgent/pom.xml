@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>caresweatherstation-agent</artifactId>
-    <version>1.3.0</version>
+    <version>1.5.0</version>
     <packaging>war</packaging>
 
 
@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <jps.base.version>1.30.0</jps.base.version>
+        <jps.base.version>1.40.0</jps.base.version>
 
     </properties>
 
@@ -21,7 +21,7 @@
     <parent>
         <groupId>uk.ac.cam.cares.jps</groupId>
         <artifactId>jps-parent-pom</artifactId>
-        <version>1.0.0</version>
+        <version>2.2.0</version>
     </parent>
 
     <!-- Profiles are used to switch between building for development and production
@@ -116,11 +116,25 @@
             <version>${jps.base.version}</version>
         </dependency>
 
+        <!-- for interacting with the stack -->
+        <dependency>
+            <groupId>com.cmclinnovations</groupId>
+            <artifactId>stack-clients</artifactId>
+            <version>1.22.0</version>
+        </dependency>
+
         <!-- For sending HTTP request to the API -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.10</version>
+        </dependency>
+
+        <!-- used to parse geosparql wkt literal -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-geosparql</artifactId>
+            <version>4.7.0</version>
         </dependency>
 
         <!-- Logging -->

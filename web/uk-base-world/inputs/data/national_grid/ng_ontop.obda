@@ -1,0 +1,96 @@
+[PrefixDeclaration]
+pow:    http://theworldavatar.com/ontology/ontopower/OntoPower.owl#
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+xsd:    http://www.w3.org/2001/XMLSchema#
+geo:    http://www.opengis.net/ont/geosparql#
+rdfs:   http://www.w3.org/2000/01/rdf-schema#
+
+[MappingDeclaration] @collection [[
+mappingId	ng-overhead-lines
+target		pow:ng_overhead_lines/{ogc_fid} a pow:Line ;
+                rdfs:label {name}^^xsd:string ;
+                pow:hasVoltageLevel pow:VoltageLevel/HighVoltage ;
+                pow:hasMaxVoltage pow:ng_overhead_lines/MaxVoltage/{ogc_fid} ;
+                geo:hasDefaultGeometry pow:ng_overhead_lines/geometry/0/{ogc_fid} .
+            pow:ng_overhead_lines/MaxVoltage/{ogc_fid} a om:PotentialDifference ;
+                om:hasValue pow:ng_overhead_lines/MaxVoltage/Measure/{ogc_fid} .
+            pow:ng_overhead_lines/MaxVoltage/Measure/{ogc_fid} om:hasUnit om:kilovolt ;
+                om:hasNumericValue {max_voltage_kv}^^xsd:float .
+            pow:ng_overhead_lines/geometry/0/{ogc_fid} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral .
+source      SELECT ogc_fid, name, ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv
+            FROM ng_overhead_lines
+
+
+mappingId	ng-underground-cables
+target      pow:ng_underground_cables/{ogc_fid} a pow:Cable ;
+                rdfs:label {name}^^xsd:string ;
+                pow:hasVoltageLevel pow:VoltageLevel/HighVoltage ;
+                pow:hasMaxVoltage pow:ng_underground_cables/MaxVoltage/{ogc_fid} ;
+                geo:hasDefaultGeometry pow:ng_underground_cables/geometry/0/{ogc_fid} .
+            pow:ng_underground_cables/MaxVoltage/{ogc_fid} a om:PotentialDifference ;
+                om:hasValue pow:ng_underground_cables/MaxVoltage/Measure/{ogc_fid} .
+            pow:ng_underground_cables/MaxVoltage/Measure/{ogc_fid} om:hasUnit om:kilovolt ;
+                om:hasNumericValue {max_voltage_kv}^^xsd:float .
+            pow:ng_underground_cables/geometry/0/{ogc_fid} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral .
+source      SELECT ogc_fid, name, ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv
+            FROM ng_underground_cables
+
+mappingId	ng-poles
+target		pow:ng_poles_towers/{ogc_fid} a pow:Pole ; 
+                rdfs:label {name}^^xsd:string ;
+                pow:hasVoltageLevel pow:VoltageLevel/HighVoltage ;
+                pow:hasMaxVoltage pow:ng_poles/MaxVoltage/{ogc_fid} ;
+                geo:hasDefaultGeometry pow:ng_poles/geometry/0/{ogc_fid} ; 
+                pow:hasPoleNumber pow:ng_poles/PoleNumber/{number} ;
+                pow:hasSource pow:ng_poles/Source/{source} ;
+                pow:hasSourceBreak pow:ng_poles/SourceBreak/{source} .
+            pow:ng_poles/MaxVoltage/{ogc_fid} a om:PotentialDifference ;
+                om:hasValue pow:ng_poles/MaxVoltage/Measure/{ogc_fid} .
+            pow:ng_poles/MaxVoltage/Measure/{ogc_fid} om:hasUnit om:kilovolt ;
+                om:hasNumericValue {max_voltage_kv}^^xsd:float .
+            pow:ng_poles/geometry/0/{ogc_fid} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral .
+            pow:ng_poles/PoleNumber/{number} a pow:ng_poles/PoleNumber .
+            pow:ng_poles/Source/{source} a pow:ng_poles/Source .
+            pow:ng_poles/SourceBreak/{source} a pow:ng_poles/SourceBreak .
+source      SELECT ogc_fid, name, ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv, number, source
+            FROM ng_poles
+
+mappingId	ng-towers
+target		pow:ng_poles_towers/{ogc_fid} a pow:Tower ; 
+                rdfs:label {name}^^xsd:string ;
+                pow:hasVoltageLevel pow:VoltageLevel/HighVoltage ;
+                pow:hasMaxVoltage pow:ng_towers/MaxVoltage/{ogc_fid} ;
+                geo:hasDefaultGeometry pow:ng_towers/geometry/0/{ogc_fid} ; 
+                pow:hasTowerNumber pow:ng_towers/TowerNumber/{number} ;
+                pow:hasSource pow:ng_towers/Source/{source} ;
+                pow:hasSourceBreak pow:ng_towers/SourceBreak/{source} .
+            pow:ng_towers/MaxVoltage/{ogc_fid} a om:PotentialDifference ;
+                om:hasValue pow:ng_towers/MaxVoltage/Measure/{ogc_fid} .
+            pow:ng_towers/MaxVoltage/Measure/{ogc_fid} om:hasUnit om:kilovolt ;
+                om:hasNumericValue {max_voltage_kv}^^xsd:float .
+            pow:ng_towers/geometry/0/{ogc_fid} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral .
+            pow:ng_towers/TowerNumber/{number} a pow:ng_towers/TowerNumber .
+            pow:ng_towers/Source/{source} a pow:ng_towers/Source .
+            pow:ng_towers/SourceBreak/{source} a pow:ng_towers/SourceBreak .
+source      SELECT ogc_fid, name, ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv, number, source
+            FROM ng_towers
+
+mappingId	ng-substations
+target		pow:ng_substations/{ogc_fid} a pow:Substation ; 
+                rdfs:label {name}^^xsd:string ;
+                pow:hasVoltageLevel pow:VoltageLevel/HighVoltage ;
+                pow:hasMaxVoltage pow:ng_substations/MaxVoltage/{ogc_fid} ;
+                geo:hasDefaultGeometry pow:ng_substations/geometry/0/{ogc_fid} ; 
+                pow:hasSiteNumber pow:ng_substations/SiteNumber/{ogc_fid} .
+            pow:ng_substations/SiteNumber/{ogc_fid} a pow:ng_substations/SiteNumber ;
+                om:hasValue pow:ng_substations/SiteNumber/Measure/{ogc_fid} .
+            pow:ng_substations/SiteNumber/Measure/{ogc_fid} om:hasNumericValue {number}^^xsd:float .
+            pow:ng_substations/MaxVoltage/{ogc_fid} a om:PotentialDifference ;
+                om:hasValue pow:ng_substations/MaxVoltage/Measure/{ogc_fid} .
+            pow:ng_substations/MaxVoltage/Measure/{ogc_fid} om:hasUnit om:kilovolt ;
+                om:hasNumericValue {max_voltage_kv}^^xsd:float .
+            pow:ng_substations/geometry/0/{ogc_fid} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral .
+            pow:ng_substations/SiteNumber/{number} a pow:ng_substations/SiteNumber .
+source      SELECT ogc_fid, "siteName" as name, ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv, "siteNo" as number 
+            FROM ng_substations
+            ]]

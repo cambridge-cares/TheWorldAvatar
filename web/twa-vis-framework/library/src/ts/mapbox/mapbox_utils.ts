@@ -4,6 +4,16 @@
 class MapboxUtils {
 
     /**
+     * IRI of currently hovered feature.
+     */
+    public static HOVERED_IRI;
+
+    /**
+     * IRI of currently selected feature.
+     */
+    public static SELECTED_IRI;
+
+    /**
      * Returns true if the input feature is contained within a layer
      * created by CMCL (rather than an existing one from Mapbox).
      * 
@@ -22,10 +32,6 @@ class MapboxUtils {
                 return false;
             } else {
                 if(!layer["metadata"]["attribution"] || layer["metadata"]["attribution"] !== "CMCL") {
-                    return false;
-                }
-
-                if(!layer["metadata"]["clickable"]) {
                     return false;
                 }
             }
@@ -135,8 +141,8 @@ class MapboxUtils {
      * @returns true if any layers present
      */
     public static anyLayersAdded(layerIDs) {
-        for(let i = 0; i < layerIDs.length; i++) {
-            let layerID = layerIDs[i];
+        for(const element of layerIDs) {
+            let layerID = element;
 
             if(MapHandler.MAP.getLayer(layerID) != null) {
                 return true;
@@ -148,15 +154,28 @@ class MapboxUtils {
     /**
      * True if any layers are currently visible
      */
-    public static anyLayersVisible(layerIDs: Array<String>) {
-        for(let i = 0; i < layerIDs.length; i++) {
-            let layerID = layerIDs[i];
+    public static anyLayersVisible(layerIDs: Array<string>) {
+        for(const element of layerIDs) {
+            let layerID = element;
             let prop = MapHandler.MAP.getLayoutProperty(layerID, "visibility");
             if(prop === "visible") return true;
         }
         return false;
     }
 
+    /**
+     * Returns true if the layer hosting the input feature is considered
+     * clickable.
+     * 
+     * @param feature feature within layer.
+     */
+    public static isLayerClickable(feature) {
+        let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
+        if(layer == null) return false;
+
+        let clickable = (layer.interactions === "all" || layer.interactions === "click-only");
+        return clickable;
+    }
 
     /**
      * Change the underlying Mapbox imagery style.
@@ -354,8 +373,9 @@ class MapboxUtils {
      * Given a list of features, this returns a new list without any
      * duplicates (as defined by matching IDs).
      * 
-     * @param features 
-     * @returns 
+     * @param features input feature list.
+     * 
+     * @returns deduplicated feature list.
      */
     public static deduplicate(features: Object[]) {
         let result = [];
@@ -393,6 +413,99 @@ class MapboxUtils {
             // @ts-ignore
             searchSelect.add(option);
         }
+    }
+
+    /**
+     * Updates certain layers style and filter to inject (or clear) any
+     * IRIs for the currently hovered or selected feature. Setting one of
+     * the input IRIs to null will clear that parameter (i.e. revert back
+     * to the placeholder string).
+     * 
+     * @param hoveredIRI IRI of hovered feature (can be null).
+     * @param selectedIRI IRI of selected feature (can be null).
+     */
+    public static updateStyleFilterInjections(hoveredIRI, selectedIRI) {
+        if(hoveredIRI === MapboxUtils.HOVERED_IRI && selectedIRI === MapboxUtils.SELECTED_IRI) return;
+
+        let layers = Manager.DATA_STORE.getLayerList();
+        layers.forEach(layer => {
+
+            if(hoveredIRI !== MapboxUtils.HOVERED_IRI) {
+                // Hover state changed, update properties
+                MapboxUtils.handleInjections(
+                    layer,
+                    "hover",
+                    (hoveredIRI == null) ? "[HOVERED-IRI]" : hoveredIRI,
+                    "[HOVERED-IRI]"
+                )
+            }
+
+            if(selectedIRI !== MapboxUtils.SELECTED_IRI) {
+                // Selection state changed, update properties
+                MapboxUtils.handleInjections(
+                    layer,
+                    "select",
+                    (selectedIRI == null) ? "[SELECTED-IRI]" : selectedIRI,
+                    "[SELECTED-IRI]"
+                )
+            }
+        });
+
+        // Cache the IRIs as we'll need to remove them from filters later.
+        MapboxUtils.HOVERED_IRI = hoveredIRI;
+        MapboxUtils.SELECTED_IRI = selectedIRI;
+    }
+
+
+    /**
+     * Injects/clears the IRIs of hovered or selected features from
+     * the style of the layer within the input ID.
+     * 
+     * @param layerObject target layer.
+     * @param injectionType type of injection ("hover", "select").
+     * @param newIRI IRI value to inject (null to clear).
+     * @param oldIRI IRI value to replace (could be null).
+     */
+    private static handleInjections(layerObject, injectionType, newIRI, oldIRI) {
+        // Skip is map is still loading the layer
+        if(MapHandler.MAP.getLayer(layerObject.id) == null) return;
+
+        let paintProps = layerObject.getCachedProperties(injectionType, "paint");
+        if(paintProps != null) {
+            for (const [key, value] of Object.entries(paintProps)) {
+                let newValue = MapboxUtils.updateProperty(value, newIRI, oldIRI);
+                MapHandler.MAP.setPaintProperty(layerObject.id, key, newValue);
+            }
+        }
+
+        let layoutProps = layerObject.getCachedProperties(injectionType, "layout");
+        if(layoutProps != null) {
+            for (const [key, value] of Object.entries(layoutProps)) {
+                let newValue = MapboxUtils.updateProperty(value, newIRI, oldIRI);
+                MapHandler.MAP.setLayoutProperty(layerObject.id, key, newValue);
+            }
+        }
+
+        let filter = layerObject.getCachedProperties(injectionType, "filter");
+        if(filter != null) {
+            let newValue = MapboxUtils.updateProperty(filter, newIRI, oldIRI);
+            MapHandler.MAP.setFilter(layerObject.id, newValue);
+        }
+    }
+
+    /**
+     * Handles injection for a single property/filter.
+     * 
+     * @param property property (JSON Object);
+     * @param newIRI IRI to be injected (null to clear);
+     * @param oldIRI IRI/placeholder to be replaced.
+     */
+    private static updateProperty(property, newIRI, oldIRI) {
+        if(newIRI === oldIRI) return property;
+
+        let propertyStr = JSON.stringify(property);
+        propertyStr = propertyStr.replaceAll(oldIRI, newIRI);
+        return JSON.parse(propertyStr);
     }
 
 }

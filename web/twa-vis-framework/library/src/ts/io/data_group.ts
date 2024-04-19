@@ -39,13 +39,6 @@ class DataGroup {
     public defaultExpanded: boolean = true; 
 
     /**
-     * Constructor
-     */
-    constructor() {
-        // Empty
-    }
-
-    /**
      * Parses the definition of each data set defined within the group. Note that
      * this just parse the definitions to create instance objects, it may not
      * read the full data at this point.
@@ -53,8 +46,8 @@ class DataGroup {
      * @param sourceJSON JSON array of source nodes.
      */
     public parseDataSources(sourcesJSON) {
-        for(var i = 0; i < sourcesJSON.length; i++) {
-            let node = sourcesJSON[i];
+        for(const element of sourcesJSON) {
+            let node = element;
 
             // Create and store source
             let source = new DataSource(node);
@@ -98,10 +91,37 @@ class DataGroup {
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
                     layer = new MapboxLayer(layerID, node["name"], source);
+                    layer.definition = node;
+
+                    // Store display order if present
+                    if(node.hasOwnProperty("order")) {
+                        layer.order = node["order"];
+                    }
+
+                    // Cache and injectable properties
+                    layer.cacheInjectableProperties();
+
+                    // Register this layer to this connected stack
+                    if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
+                        Manager.STACK_LAYERS[stack] = [];
+                    }
+                    Manager.STACK_LAYERS[stack].push(layerID);
                 break;
     
                 case MapProvider.CESIUM:
                     layer = new CesiumLayer(layerID, node["name"], source);
+                    layer.definition = node;
+                    
+                    // Store display order if present
+                    if(node.hasOwnProperty("order")) {
+                        layer.order = node["order"];
+                    }
+
+                    // Register this layer to this connected stack
+                    if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
+                        Manager.STACK_LAYERS[stack] = [];
+                    }
+                    Manager.STACK_LAYERS[stack].push(layerID);
                 break;
 
                 default:
@@ -130,7 +150,14 @@ class DataGroup {
             }
             Manager.STACK_LAYERS[stack].push(layerID);
            
-            // Add the layer
+            if(node.hasOwnProperty("interactions")) {
+                // Store the level of acceptable mouse interactions
+                layer.interactions = node.interactions;
+            } else if(node.hasOwnProperty("clickable")) {
+                // Support older format of this property
+                layer.interactions = (node.clickable) ? "all" : "none";
+            }
+           
             this.dataLayers.push(layer);
         }
     }

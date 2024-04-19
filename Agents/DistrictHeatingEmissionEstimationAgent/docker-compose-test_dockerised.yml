@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   emission_agent_test:
-    image: ghcr.io/cambridge-cares/dh-emission-agent-test:1.0.0
+    image: ghcr.io/cambridge-cares/dh-emission-agent-test:1.1.0
     build:
       context: .
       target: test

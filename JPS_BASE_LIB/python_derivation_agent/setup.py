@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='pyderivationagent',
-    version='1.5.0',
+    version='1.6.0',
     author='Jiaru Bai',
     author_email='jb2197@cam.ac.uk',
     license='MIT',
@@ -12,7 +12,8 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    install_requires=['py4jps>=1.0.35', 'flask==2.1.0', 'gunicorn==20.0.4', 'Flask-APScheduler', 'rdflib', 'python-dotenv', 'yagmail'],
+    # Werkzeug version is fixed as its 3.0.0 version breaks flask 2.x https://werkzeug.palletsprojects.com/en/3.0.x/changes/#version-3-0-0
+    install_requires=['py4jps>=1.0.38', 'flask==2.1.0', 'gunicorn==20.0.4', 'Flask-APScheduler', 'rdflib', 'python-dotenv', 'yagmail', 'Werkzeug~=2.2.2'],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",

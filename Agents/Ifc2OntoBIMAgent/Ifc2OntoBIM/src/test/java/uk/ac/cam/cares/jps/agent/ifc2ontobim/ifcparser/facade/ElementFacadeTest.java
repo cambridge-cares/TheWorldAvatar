@@ -21,6 +21,7 @@ class ElementFacadeTest {
     private static final String TEST_ZONE_PLACEMENT_IRI = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_385";
     private static final String ROOM_INST = TEST_BASE_URI + "Room_281";
     private static final String BUILDING_ELEMENT_PROXY_CLASS = "IfcBuildingElementProxy";
+    private static final String FLOW_SEGMENT_CLASS = "IfcFlowSegment";
     private static final String FLOW_TERMINAL_CLASS = "IfcFlowTerminal";
     private static final String FURNISHING_ELEMENT_CLASS = "IfcFurnishingElement";
     private static final String SUB_CONTEXT_INST = TEST_BASE_URI + "GeometricRepresentationSubContext_18";
@@ -56,6 +57,15 @@ class ElementFacadeTest {
     private static final String CHEMICAL_CONTAINER_SHAPE_REP_INST = TEST_BASE_URI + "ModelRepresentation_3312";
     private static final String CHEMICAL_CONTAINER_GEOM_INST = TEST_BASE_URI + "IfcFacetedBrep_29558";
     private static final String CHEMICAL_CONTAINER_GEOM_BIM_INST = TEST_BASE_URI + "FacetedBrep_29558";
+
+    // Element 4 Pipe fields
+    private static final String PIPE_INST = TEST_BASE_URI + "Element_325";
+    private static final String PIPE_NAME = "Sewage pipe";
+    private static final String PIPE_UID = "921safl921";
+    private static final String PIPE_PLACEMENT_INST = TEST_BASE_URI + "LocalPlacement_252";
+    private static final String PIPE_SHAPE_REP_INST = TEST_BASE_URI + "ModelRepresentation_8881";
+    private static final String PIPE_GEOM_INST = TEST_BASE_URI + "IfcFacetedBrep_7218";
+    private static final String PIPE_GEOM_BIM_INST = TEST_BASE_URI + "FacetedBrep_7218";
 
     // Geometry classes
     private static final String FACETED_BREP_CLASS = JunitTestUtils.bimUri + "FacetedBrep";
@@ -119,6 +129,22 @@ class ElementFacadeTest {
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("ElectricityMeter", ELEC_METER_CLASS, ELEC_METER_NAME, ELEC_METER_UID, ELEC_METER_PLACEMENT_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(ELEC_METER_GEOM_BIM_INST, REP_TYPE), result);
+    }
+
+    @Test
+    void testAddElementStatementsForPipes() {
+        // Set up
+        addBaseTriples(PIPE_INST, FLOW_SEGMENT_CLASS, PIPE_NAME, PIPE_UID, PIPE_PLACEMENT_INST);
+        addHostZoneTriples(PIPE_INST);
+        addGeometryTriples(PIPE_INST, PIPE_SHAPE_REP_INST, SUB_CONTEXT_INST, PIPE_GEOM_INST, REP_TYPE);
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        ElementFacade.addElementStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Element", ELEMENT_CLASS, PIPE_NAME, PIPE_UID, PIPE_PLACEMENT_INST), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(PIPE_GEOM_BIM_INST, REP_TYPE), result);
     }
 
     @Test

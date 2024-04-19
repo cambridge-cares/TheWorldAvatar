@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Marie </title>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="GravCMS" />
+    <meta name="description"
+        content="Our Knowledge Graph (KG) services leverage advanced agent-based operation and ontology representations, to bring automation and semantic context to machine-assisted solutions." />
+    <link rel="icon" type="image/png" href="/static/img/favicon.png" />
+    <link rel="canonical" href="http://kg.cmclinnovations.com/explore/marie" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" type="text/css" rel="stylesheet" />
+    <link href="/static/css/form-styles.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/spectre.min.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/theme.min.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/custom.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/line-awesome.min.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/styles.css" type="text/css" rel="stylesheet">
+
+
+</head>
+
+<body id="top" class=" header-fixed header-animated sticky-footer">
+    <header id="header">
+        <div class="container grid-lg">
+            <nav class="navbar">
+                <div class="navbar-section logo">
+                    <a href="https://cmclinnovations.com/">
+                        <img src="/static/img/cmcl.svg" style="padding-bottom: 10px" alt="" />
+                    </a>
+
+                    <a href="https://como.ceb.cam.ac.uk">
+                        <img src="/static/img/como_logo_processed.svg" alt="" />
+                    </a>
+
+                    <a href="https://www.cares.cam.ac.uk">
+                        <img src="/static/img/cares_short_logo_processed.svg" alt="" />
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main id="body-wrapper">
+        <div class="container grid-lg">
+            <section class="intro-container three-quarter-width">
+                <div class="intro-left">
+                    <video width="175" height="250" poster="/static/img/marie-thumbnail.jpg" controls="controls">
+                        <source src="http://kg.cmclinnovations.com/user/videos/animated-marie.mp4" type="video/mp4">
+                        </source>
+                    </video>
+                </div>
+                <div class="intro-center">
+                    <h2>Marie</h2>
+                    <p>This website presents a proof-of-concept search engine system for accessing chemical data
+                        from the World Avatar Knowledge Graph. The Knowledge
+                        Graphs
+                        offers inter-connected data from chemical kinetics to chemical and physical properties
+                        of
+                        species and many other domains.
+                        Please note that Marie is still under development and the accuracy of the results will
+                        increase
+                        with further refinement of the underlying ontologies.
+                    </p>
+                    <p>To use the Marie search engine, type a question into the field below, or select one of
+                        the
+                        provided sample questions.</p>
+                </div>
+            </section>
+
+            <section class="marie-input-container full-width">
+                <div id="special-chars-container">
+                    Common units with special characters:
+                    <span class="special-char" onclick="addToInputText('°C')"><u>°C</u></span>
+                    <span class="special-char" onclick="addToInputText('°F')"><u>°F</u></span>
+                </div>
+                <div class="input-group">
+                    <input id="input-field" type="search" autocomplete="off" placeholder="Type your query..."
+                        onkeydown="if (event.keyCode == 13) askQuestion()">
+                    <button id="ask-button" type="button" class="mybutton" onclick="askQuestion()"></button>
+                </div>
+            </section>
+
+            <section class="three-quarter-width" style="margin-bottom: 2rem;">
+                <div id="error-container" style="display: none; margin-bottom: 2rem; color: red;"></div>
+                <div id="preprocessed-question" style="display: none; margin-bottom: 2rem;"></div>
+                <div id="latency-info" style="display: none;"></div>
+                <div id="sparql-query-container" style="display: none; margin-bottom: 2rem;">
+                    <button type='submit' class='accordion'>Click to view the predicted SPARQL query</button>
+                    <div id="sparql-query" class='accordion-panel'></div>
+                </div>
+                <div id="results" style="display: none;"></div>
+            </section>
+
+            <section class="three-quarter-width">
+                <h3>Example Questions</h3>
+
+                {% for question_group in sample_questions %}
+                <button type="submit" class="accordion">{{question_group["title"]}}</button>
+                <div class="accordion-panel">
+                    <p>{{question_group["description"]}}</p>
+                    <ul>
+                        {% for question in question_group["questions"] %}
+                        <li class="sample-question" onclick="populateInputText('{{question}}'); askQuestion();">
+                            {{question}}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            </section>
+
+            <p><br></p>
+            <div style="padding-top: 10px; border-top: 1px solid LightGrey;">
+                This content was developed, tested, and documented by the following commercial and academic
+                partners. For more information on each institution, please follow the links listed below.
+
+                <table class="partner-table" style="padding-top: 10px;">
+                    <tr>
+                        <td width="33%"><a href="https://cmclinnovations.com" markdown="1"><img
+                                    src="/static/img/cmcl.svg" width="100"
+                                    class="animate__animated animate__fadeIn"></a></td>
+                        <td width="33%"><a href="https://como.ceb.cam.ac.uk" markdown="1"><img
+                                    src="/static/img/como-logo.png" width="85"
+                                    class="animate__animated animate__fadeIn"></a></td>
+                        <td width="33%"><a href="https://cares.cam.ac.uk" markdown="1"><img
+                                    src="/static/img/cares-logo.png" width="100"
+                                    class="animate__animated animate__fadeIn"></a></td>
+                    </tr>
+                    <tr>
+                    </tr>
+                    <tr style="font-size: 80%;">
+                        <td width="33%">CMCL Innovations<br><a
+                                href="https://cmclinnovations.com">cmclinnovations.com</a>
+                        </td>
+                        <td width="33%">Computational Modelling Group<br><a
+                                href="https://como.ceb.cam.ac.uk">como.ceb.cam.ac.uk</a>
+                        </td>
+                        <td width="33%">Cambridge CARES<br><a href="https://cares.cam.ac.uk">cares.cam.ac.uk</a>
+                        </td>
+                    </tr>
+                    <tr>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <footer id="footer" class="footer">
+        <p style="font-size: 75%;">All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="http://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+    <script src="../static/js/accordian.js"></script>
+    <script src="../static/js/script.js"></script>
+</body>
+
+</html>

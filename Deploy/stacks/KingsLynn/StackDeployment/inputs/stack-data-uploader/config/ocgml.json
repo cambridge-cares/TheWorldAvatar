@@ -1,0 +1,19 @@
+{
+    "datasetDirectory": "quads",
+    "namespace": {
+        "name": "ocgml",
+        "propertiesFile": "rdfonly.properties",
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.quadsMode": true,
+            "com.bigdata.rdf.sail.truthMaintenance": false
+        }
+    },
+    "dataSubsets": [
+        {
+            "type": "rdf",
+            "name": "ocgml",
+            "subdirectory": "quads",
+            "skip": false
+        }
+    ]
+}

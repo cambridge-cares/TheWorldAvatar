@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Example Service</title>
+    </head>
+    <body style="display: flex; flex-direction: column; justify-content: center; padding: 50px; font-size: 125%;">
+        <div style="flex-grow: 1; text-align: center; color: red;">
+            <h1>Example One</h1>
+            <p>The image below uses the URL "/images/image-one.png", this should work when accessing the service directly, but will <b>NOT</b> work when accessed via the "/example" redirect as the root of the environment changes behind the redirect.</p>
+            <div style="width: 100%; height: 200px; border: 1px solid red; text-align: center;">
+                <img width="200px" height="200px" src="/images/image-one.png" alt="image-one"/>
+            </div>
+        </div>
+        <div style="flex-grow: 1; text-align: center; color: orange;">
+            <h1>Example Two</h1>
+            <p>The image below uses the URL "http://localhost:3000/images/image-two.png", this should work when accessing the service directly, and <b>MAY</b> work when accessed via the "/example" redirect. This is considered mixed content (loading a HTTP resources from within a HTTPS environment), however, many modern browser will automatically upgrade this to a HTTPS request (which may then fail if your external service does not support HTTPS). It is not recommended to rely on this.
+            <div style="width: 100%; height: 200px; border: 1px solid orange; text-align: center;">
+                <img width="200px" height="200px" src="http://localhost:3000/images/image-two.png" alt="image-two"/>
+            </div>
+        </div>
+        <div style="flex-grow: 1; text-align: center; color: green;">
+            <h1>Example Three</h1>
+            <p>The image below uses the URL "./images/image-one.png", this should work when accessing the service directly, but <b>SHOULD</b> also work when accessed via the "/example" redirect as it's relative to the root of the environment.</p>
+            <div style="width: 100%; height: 200px; border: 1px solid green; text-align: center;">
+                <img width="200px" height="200px" src="./images/image-three.png" alt="image-three"/>
+            </div>
+        </div>
+    </body>
+
+</html>

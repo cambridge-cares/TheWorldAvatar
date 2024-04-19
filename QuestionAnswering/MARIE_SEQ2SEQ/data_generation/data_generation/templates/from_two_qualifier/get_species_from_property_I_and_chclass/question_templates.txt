@@ -1,0 +1,21 @@
+Give me a list of species that have {PropertyName} between {minvalue} and {maxvalue} and are classified as {ChemClass}
+Provide a roster of chemical species exhibiting {PropertyName} within the range of {minvalue} to {maxvalue} and falling under the category of {ChemClass}.
+List molecules with {PropertyName} ranging from {minvalue} to {maxvalue} and belonging to the {ChemClass} classification.
+Enumerate compounds that demonstrate {PropertyName} within {minvalue} and {maxvalue} and are categorized as {ChemClass}.
+Catalog chemical species manifesting {PropertyName} in the interval of {minvalue} through {maxvalue} and having the classification of {ChemClass}.
+Compile a record of species showing {PropertyName} within {minvalue} to {maxvalue} and falling under the {ChemClass} category.
+Generate a list of molecules displaying {PropertyName} between {minvalue} and {maxvalue}, while being classified as {ChemClass}.
+Display compounds that possess {PropertyName} in the range of {minvalue} to {maxvalue} and are categorized under {ChemClass}.
+Provide an inventory of chemical species indicating {PropertyName} within {minvalue} - {maxvalue} and falling into the {ChemClass} grouping.
+Offer a list of species showcasing {PropertyName} between {minvalue} and {maxvalue}, while being assigned the {ChemClass} classification.
+Present a compilation of molecules demonstrating {PropertyName} within the bracket of {minvalue} to {maxvalue} and sorted as {ChemClass}.
+Share a roster of compounds exhibiting {PropertyName} from {minvalue} up to {maxvalue}, and falling into the {ChemClass} category.
+Furnish a list of chemical species displaying {PropertyName} within the range of {minvalue} - {maxvalue}, and falling under {ChemClass}.
+Provide a catalog of species showcasing {PropertyName} between {minvalue} and {maxvalue}, and classified as {ChemClass}.
+List molecules that possess {PropertyName} ranging from {minvalue} to {maxvalue}, and are categorized under {ChemClass}.
+Enumerate compounds demonstrating {PropertyName} within {minvalue} to {maxvalue}, and falling into the {ChemClass} classification.
+Catalog chemical species indicating {PropertyName} in the interval from {minvalue} to {maxvalue}, while being assigned the {ChemClass} category.
+Compile a record of species showing {PropertyName} between {minvalue} and {maxvalue}, with classification as {ChemClass}.
+Generate a list of molecules displaying {PropertyName} within the range of {minvalue} through {maxvalue}, and falling under the {ChemClass} grouping.
+Display compounds that exhibit {PropertyName} in the bracket of {minvalue} to {maxvalue}, and are classified as {ChemClass}.
+Provide an inventory of chemical species indicating {PropertyName} between {minvalue} and {maxvalue}, categorized as {ChemClass}.

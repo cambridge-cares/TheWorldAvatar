@@ -1,0 +1,16 @@
+# This file shows a sample http request, mainly for debugging purposes
+# NOTE: This request is intended to be sent from inside the agent container
+
+POST http://localhost:5000/triggerOptimisation
+Content-Type: application/json
+
+{ 
+  // Optimisation parameters
+  "start": "2020-01-01T00:00:00Z",
+  "optHorizon": 24,
+  "numberOfTimeSteps": 1,
+  "timeDelta": "hour",
+  // Forecast parameters
+  "heatDemandDataLength": 8760,
+  "gridTemperatureDataLength": 336
+}

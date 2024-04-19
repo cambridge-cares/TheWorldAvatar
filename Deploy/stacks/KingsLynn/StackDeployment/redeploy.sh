@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Copy stack manager config file to stack manager repo
-cp ./inputs/redeployment/KINGS-LYNN.json ../../dynamic/stack-manager/inputs/config/
+cp ./inputs/stack-manager/inputs/config/KINGS-LYNN.json ../../dynamic/stack-manager/inputs/config/
 
 # Change directory to stack manager repo
 cd ../../dynamic/stack-manager
@@ -17,8 +17,8 @@ done
 
 # Specify required stack-manager version number
 # NOTE: 1.13.3 is the latest on that uses PostGIS 14
-REQUIRED_VERSION="1.13.3"
-sed -i "s/docker\.cmclinnovations\.com\/stack-manager\${IMAGE_SUFFIX}:[0-9]\+\.[0-9]\+\.[0-9]\+/docker.cmclinnovations.com\/stack-manager\${IMAGE_SUFFIX}:${REQUIRED_VERSION}/" docker-compose.yml
+REQUIRED_VERSION="1.22.0"
+sed -i "s/\(ghcr\.io\/cambridge-cares\/stack-manager\${IMAGE_SUFFIX}:\)[0-9]\+\.[0-9]\+\.[0-9]\+/\1${REQUIRED_VERSION}/" docker-compose.yml
 
 # Restart stack with required version
 bash ./stack.sh start $NETWORK_NAME

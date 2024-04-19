@@ -6,11 +6,15 @@
         {
             "type": "shell",
             "label": "compose-build",
-            "command": "bash",
+            "command": "./stack.sh",
             "args": [
-                "-c",
-                "./stack.sh build"
+                "build"
             ],
+            "options": {
+                "shell": {
+                    "executable": "bash"
+                }
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true
