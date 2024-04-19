@@ -66,7 +66,6 @@ jobs:
           push: true
           context: ./web/twa-vis-framework/library
           tags: |
-            ghcr.io/cambridge-cares/twa-vf:latest
             ghcr.io/cambridge-cares/twa-vf:${{ env.versionFull }}
             ghcr.io/cambridge-cares/twa-vf:${{ env.versionMajor }}
             ghcr.io/cambridge-cares/twa-vf:${{ env.versionMinor }}
