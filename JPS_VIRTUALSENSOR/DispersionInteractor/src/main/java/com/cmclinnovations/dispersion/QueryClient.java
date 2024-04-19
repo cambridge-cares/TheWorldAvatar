@@ -19,7 +19,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
-import org.jooq.False;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Polygon;
@@ -138,6 +137,9 @@ public class QueryClient {
     private static final Iri HAS_UNIT = P_OM.iri("hasUnit");
     private static final Iri HAS_HEIGHT = P_DISP.iri("hasHeight");
     private static final Iri HAS_SRID = P_DISP.iri("hasSRID");
+    private static final Iri HAS_TIME = P_TIME.iri("hasTime");
+    private static final Iri IN_TIME_POSITION = P_TIME.iri("inTimePosition");
+    private static final Iri NUMERIC_POSITION = P_TIME.iri("numericPosition");
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient,
             TimeSeriesClient<Long> tsClient, TimeSeriesClient<Instant> tsClientInstant) {
@@ -797,27 +799,33 @@ public class QueryClient {
         Variable zVar = query.var();
         Variable zValueVar = query.var();
         Variable dispersionOutputSRID = query.var();
+        Variable timeVar = query.var();
+        Variable timePosition = query.var();
+        Variable timeNumericPosition = query.var();
 
         ServiceEndpoint ontopEndpoint = new ServiceEndpoint(ontopUrl);
 
-        query.select(derivation,scopelabelVar,pollutantType,pollutantLabel,dispXYZVar,scopeWktVar,zValueVar,dispersionOutputSRID);
+        query.select(derivation, scopelabelVar, pollutantType, pollutantLabel, dispXYZVar, scopeWktVar, zValueVar,
+                dispersionOutputSRID,timeNumericPosition);
 
         query.where(OPTIMISER_NONE,
-            ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), scopeWktVar)),
-        derivation.has(isDerivedFrom, scope), scope.isA(SCOPE).andHas(iri(RDFS.LABEL), scopelabelVar),
+                ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), scopeWktVar)),
+                derivation.has(isDerivedFrom, scope).andHas(HAS_TIME, timeVar),
+                timeVar.has(IN_TIME_POSITION,timePosition),timePosition.has(NUMERIC_POSITION,timeNumericPosition),
+                scope.isA(SCOPE).andHas(iri(RDFS.LABEL), scopelabelVar),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
-                .andHas(HAS_DISPERSION_XYZ, dispXYZVar)
-                .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType)
-                .andHas(HAS_HEIGHT, zVar).andHas(HAS_SRID,dispersionOutputSRID),
+                        .andHas(HAS_DISPERSION_XYZ, dispXYZVar)
+                        .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType)
+                        .andHas(HAS_HEIGHT, zVar).andHas(HAS_SRID, dispersionOutputSRID),
                 zVar.has(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), zValueVar),
                 pollutantType.has(RDFS.COMMENT, pollutantLabel).optional())
-                .prefix(P_DISP, P_GEO, P_OM, P_HINT);
+                .prefix(P_DISP, P_GEO, P_OM, P_HINT, P_TIME);
 
         Map<String, DispersionMetadata> iriToDispSimMap = new HashMap<>();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         for (int i = 0; i < queryResult.length(); i++) {
-            
+
             String derivationIri = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
 
             iriToDispSimMap.computeIfAbsent(derivationIri, DispersionMetadata::new);
@@ -826,6 +834,7 @@ public class QueryClient {
             String pol = queryResult.getJSONObject(i).getString(pollutantType.getQueryString().substring(1));
             String dispXYZ = queryResult.getJSONObject(i).getString(dispXYZVar.getQueryString().substring(1));
             int srid = queryResult.getJSONObject(i).getInt(dispersionOutputSRID.getQueryString().substring(1));
+            int lastUpdateTime = queryResult.getJSONObject(i).getInt(timeNumericPosition.getQueryString().substring(1));
 
             int zValue = queryResult.getJSONObject(i).getInt(zValueVar.getQueryString().substring(1));
 
@@ -840,8 +849,9 @@ public class QueryClient {
                 polLabel = pol;
             }
 
-            dispersionMetadata.addDispXYZ(dispXYZ,polLabel,zValue,srid);
+            dispersionMetadata.addDispXYZ(dispXYZ, polLabel, zValue, srid);
             dispersionMetadata.setScopeLabel(scopeLabel);
+            dispersionMetadata.setLastUpdateTime(lastUpdateTime);
 
             String wktLiteral = queryResult.getJSONObject(i).getString(scopeWktVar.getQueryString().substring(1));
             org.locationtech.jts.geom.Geometry scopePolygon = WKTReader.extract(wktLiteral).getGeometry();
@@ -906,10 +916,10 @@ public class QueryClient {
             List<Long> simulationTimes;
             if (latestTime != null) {
                 for (String dispersionXYZ : dispersionXYZs) {
-                    TimeSeries<Long> ts = tsClient.getTimeSeries(List.of(dispersionXYZ),conn);
+                    TimeSeries<Long> ts = tsClient.getTimeSeries(List.of(dispersionXYZ), conn);
                     simulationTimes = ts.getTimes();
                     List<String> dispersionXYZfiles = ts.getValuesAsString(dispersionXYZ);
-                    dispersionMetadata.updateDispXYZ(dispersionXYZ,simulationTimes,dispersionXYZfiles);
+                    dispersionMetadata.updateDispXYZ(dispersionXYZ, simulationTimes, dispersionXYZfiles);
                 }
             }
         });
