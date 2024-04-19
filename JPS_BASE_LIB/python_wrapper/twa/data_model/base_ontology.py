@@ -107,39 +107,24 @@ class KnowledgeGraph(BaseModel):
         cls.property_lookup[prop.get_predicate_iri()] = prop
 
 
-# TODO optimise the way of spedifying range of object/data properties
-def as_range_of_object_property(t: T, min_cardinality: int = 0, max_cardinality: int = None) -> Set[Union[T, str]]:
+def as_range(t: T, min_cardinality: int = 0, max_cardinality: int = None) -> Set:
     """
-    This function is used to specify the range of an object property in the ontology.
+    This function is used to wrap the data type as the range of an object/data property in the ontology.
 
     Args:
-        t (T): The type of the object property
-        min_cardinality (int): The minimum cardinality of the object property
-        max_cardinality (int): The maximum cardinality of the object property
+        t (T): The type of the class to be the range
+        min_cardinality (int): The minimum cardinality of the object/data property
+        max_cardinality (int): The maximum cardinality of the object/data property
 
     Returns:
         The object property with the specified range in the form of a set, with `str` as an alternative type
     """
     if min_cardinality < 0 or max_cardinality is not None and max_cardinality < 0:
         raise ValueError('min_cardinality and max_cardinality must be greater than or equal to 0')
-    return Annotated[Set[Union[t, str]], Len(min_cardinality, max_cardinality)]
-
-
-def as_range_of_data_property(t: T, min_cardinality: int = 0, max_cardinality: int = None) -> Set[T]:
-    """
-    This function is used to specify the range of a data property in the ontology.
-
-    Args:
-        t (T): The type of the data property
-        min_cardinality (int): The minimum cardinality of the data property
-        max_cardinality (int): The maximum cardinality of the data property
-
-    Returns:
-        The data property with the specified range in the form of a set
-    """
-    if min_cardinality < 0 or max_cardinality is not None and max_cardinality < 0:
-        raise ValueError('min_cardinality and max_cardinality must be greater than or equal to 0')
-    return Annotated[Set[t], Len(min_cardinality, max_cardinality)]
+    if issubclass(t, BaseClass):
+        return Annotated[Set[Union[t, str]], Len(min_cardinality, max_cardinality)]
+    else:
+        return Annotated[Set[t], Len(min_cardinality, max_cardinality)]
 
 
 _list = copy.deepcopy(rdflib.term._GenericPythonToXSDRules)
@@ -459,7 +444,7 @@ class BaseProperty(BaseModel, validate_assignment=True):
     def reveal_possible_property_range(cls) -> Set[T]:
         """
         This is an abstract method that should be implemented by the subclasses.
-        It should unpack the range of the property from as_range_of_object_property or as_range_of_data_property.
+        It should unpack the range of the property from use_as_range.
 
         Raises:
             NotImplementedError: This is an abstract method.
