@@ -42,6 +42,7 @@ To prepare OSM data in `.gml` format
 3) Import the `.osm` file  into QGIS using [QuickOSM](https://plugins.qgis.org/plugins/QuickOSM/) plugin, then export points and polygons layer as `points.gml` and `polygons.gml`.
 
 If the `.gml` files generated in the above step 3 have all the information tags (such as building) grouped under the `other_tags` column, please run `./osmagent/src/main/resources/clean_and_to_gml.py` to parse out the information tags that are grouped under `other_tags`.
+To run the script, specify the input path to `points.gml` or `polygons.gml` as `input_file`in `clean_and_to_gml.py`, output GML file path as `output_file`,  and the types of geometries that the input file contains (point for `points.gml`,polyogn for `polygons.gml`).
 Please run `clean_and_to_gml.py` for both the `points.gml` and `polygons.gml` generated in step 3 above. This will parse the needed OSM tags into their own columns instead of having them grouped under the `other_tags` column.
 
 Once the OSM data is uploaded, it will appear in PostgreSQL tables. The agent assumes the following keys to be in the OSM data, please ensure that the required columns stated below are in the final `points.gml` and `polygons.gml`.
@@ -77,7 +78,7 @@ Please see [dlm_landuse.csv](osmagent/src/main/resources/dlm_landuse.csv) for fo
 Please also update `landuse.csv` in [config.properties](osmagent/src/main/resources/config.properties) to use the correct CSV file with the appropriate mapping for the land use data uploaded. 
 
 #### Important note
-The following datasets must exists in the same PostgreSQL database, they are allowed to have different schemas.  
+The following datasets must exist in the same PostgreSQL database, they are allowed to have different schemas.  
 1)  DLM land use data
 2)  3D buildings 
 3)  OSM data
