@@ -9,9 +9,12 @@
                     {
                         "Type": "volume",
                         "Source": "vis-files",
-                        "Target": "/var/www/html"
+                        "Target": "/twa/public"
                     }
                 ],
+                "Env": [
+                    "BASE_PATH=/visualisation/"
+                  ],
                 "Secrets": [
                     {
                         "SecretName": "mapbox_username",
@@ -31,7 +34,7 @@
     },
     "endpoints": {
         "ui": {
-            "url": "http://localhost/",
+            "url": "http://localhost:3000",
             "externalPath": "/visualisation/"
         }
     }
