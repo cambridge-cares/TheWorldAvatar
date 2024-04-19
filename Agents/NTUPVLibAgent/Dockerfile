@@ -36,6 +36,9 @@ ADD PVLibAgent /app/PVLibAgent
 COPY ./resources/model_parameters.properties /app/PVLibAgent/resources/model_parameters.properties
 
 # Copy in properties files
+COPY ./resources/misc_parameters.properties /app/PVLibAgent/resources/misc_parameters.properties
+
+# Copy in properties files
 COPY ./resources/ts_client.properties /app/PVLibAgent/kg_utils/resources/ts_client.properties
 
 # Copy in properties files

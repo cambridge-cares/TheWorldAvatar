@@ -2,14 +2,13 @@
 
 The NTUPVLib Agent is a modified version of the PVLibAgent developed to work with the PV data available for the NTU use case. The agent assumes a standard PV for the purpose of running PVLib and then scales the output by the PV area for the building. An additional scale factor is included to scale the data to a magnitude appropriate for the 15-bus NTU test system.
 
-
-
 This agent is designed to calculate AC and DC Power output from Photovaltaic Panels based on values provided in the properties files or values queried from the knowledge graph. It will then initialise the AC and DC Power as timeseries in the knowledge graph. The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) from the JPS_BASE_LIB to interact with both the knowledge graph and database and uses [PvLib](https://pvlib-python.readthedocs.io/en/stable/) for it's AC and DC Power calculations.
 
 For the agent to read data, three property files are required:
 - One [property file for DC and AC Power instantiation](#dataIRIs-properties) defining the IRIs for each of the keys.
 - One [property file for the time-series client](#time-series-client-properties) defining timeseries client related parameters.
 - One [property file for the Solar Model](#model-parameters-properties) defining the parameters of the Solar PV Model.
+- One [misc property file for the Solar Model](#misc-parameters-properties) defining a scale factor to apply to the calculated ac and dc power.
 
 #### dataIRIs properties
 This property file is used to determine whether there are IRIs already created for the instantiation of DC and AC Power
@@ -56,6 +55,10 @@ The model_parameters properties contains the parameters required to create a sol
 - `inverter_rated_dc_power` the rated DC power of the inverter
 - `modules_per_string` the number of modules per string
 - `strings_per_inverter` the number of strings per inverter
+
+##### Misc properties
+
+The agent takes a scale factor that can be applied to the calculated power. The scale_factor can be set in the file `misc_parameters.properties` found in the `resources` folder.
 
 ####  [Option 2] Read Photovoltaic Model Specs from Knowledge Graph
 Alternatively, the parameters required to create a solar PV Model can be read from a knowledge graph. This requires an instantiation agent to create a Knowledge Graph filled with PV model parameter values. The  [HistoricalNTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1496-dev-instantiate-historic-ntuenergyconsumptiondata-2/Agents/HistoricalNTUEnergyAgent) provides an example to instantiate a knowledge graph which includes PV model parameters.

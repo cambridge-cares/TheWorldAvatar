@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request, json
 from flask_cors import CORS
 
+from configobj import ConfigObj
+
 from .error_handling.exceptions import KGException, TSException
 from .kg_utils.tsClientForUpdate import TSClientForUpdate
 from .solar_model import SolarModel
@@ -73,6 +75,16 @@ def api():
     logging.info('DB_QUERY_URL: %s' % DB_QUERY_URL)
     logging.info('DB_QUERY_USER: %s' % DB_QUERY_USER)
     logging.info('DB_QUERY_PASSWORD: %s' % DB_QUERY_PASSWORD)
+
+
+    # Read scale factor from misc properties file
+    filepath = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "misc_parameters.properties"))
+    props = ConfigObj(filepath)
+    try:
+        scale_factor = props['scale_factor']
+    except KeyError:
+        logging.error("Scale factor not found.")
+        scale_factor = 1
 
     if 'device' in request.args:
         try:
@@ -248,10 +260,7 @@ def api():
 
     elif device.__contains__('openmeteo'):
         iri = IRI
-        
-        ### This is temporary as we want to query OpenMeteo from blazegraph outside of the stack
-     #   QUERY_ENDPOINT_STACK = 'http://host.docker.internal:9999/blazegraph/namespace/openmeteo/sparql'
-        
+                
         try:
             air_temperature_iri = QueryData.query_air_temperature(iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
             wind_speed_iri = QueryData.query_wind_speed(iri, QUERY_ENDPOINT, UPDATE_ENDPOINT)
@@ -326,10 +335,9 @@ def api():
                 timestamp = results["timestamp"]
                 # timestamp must have the format 2017-04-01T04:00:00Z
                 timestamp_list.append(wind_dates[i])
-# TODO read a scale factor from properties file
                 # scale by area
-                ac_power_value = float(pv_area) * float(results["AC Power(W)"]) * 0.0000001 *10     # 0.0000001 is the scale factor applied to load values
-                dc_power_value = float(pv_area) * float(results["DC Power(W)"]) * 0.0000001 *10
+                ac_power_value = float(pv_area) * float(results["AC Power(W)"]) * scale_factor 
+                dc_power_value = float(pv_area) * float(results["DC Power(W)"]) * scale_factor
                 ac_power_list.append(ac_power_value)
                 dc_power_list.append(dc_power_value)
 
