@@ -525,6 +525,8 @@ class BaseClass(BaseModel, validate_assignment=True):
     # (V) end BaseClass __init__
 
     is_defined_by_ontology: ClassVar[BaseOntology] = None
+    """ > NOTE for all subclasses, one can just use `is_defined_by_ontology = MyOntology`,
+        see [this discussion in Pydantic](https://github.com/pydantic/pydantic/issues/2061)"""
     object_lookup: ClassVar[Dict[str, BaseClass]] = None
     rdfs_comment: str = Field(default=None)
     rdfs_label: str = Field(default=None)
@@ -543,6 +545,8 @@ class BaseClass(BaseModel, validate_assignment=True):
                 field_info.annotation.add_to_domain(cls)
 
         # register the class to the ontology
+        if cls.is_defined_by_ontology is None:
+            raise AttributeError(f"Did you forget to specify `is_defined_by_ontology` for your class {cls}?")
         cls.is_defined_by_ontology.register_class(cls)
 
     def __init__(self, **data) -> None:
@@ -1170,7 +1174,7 @@ class TransitiveProperty(ObjectProperty):
     Base class for transitive object properties.
     It inherits the ObjectProperty class.
     """
-    is_defined_by_ontology: ClassVar[BaseOntology] = Owl
+    is_defined_by_ontology = Owl
 
     def obtain_transitive_objects(self, transitive_objects: set=None):
         if transitive_objects is None:
@@ -1193,6 +1197,8 @@ class DataProperty(BaseProperty):
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
+        if cls.is_defined_by_ontology is None:
+            raise AttributeError(f"Did you forget to specify `is_defined_by_ontology` for your data property {cls}?")
         cls.is_defined_by_ontology.register_data_property(cls)
 
     def collect_range_diff_to_graph(
