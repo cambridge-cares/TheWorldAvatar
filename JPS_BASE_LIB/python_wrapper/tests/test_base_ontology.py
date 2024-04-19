@@ -8,7 +8,7 @@ from pydantic import Field
 from typing import ClassVar, Set
 
 from twa.data_model.base_ontology import BaseOntology, BaseClass, DataProperty, ObjectProperty
-from twa.data_model.base_ontology import as_range_of_data_property, as_range_of_object_property
+from twa.data_model.base_ontology import as_range
 from twa.data_model.base_ontology import KnowledgeGraph
 
 
@@ -24,79 +24,79 @@ class ExampleOntology(BaseOntology):
 
 
 class DataProperty_A(DataProperty):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_data_property(str, 0, None)
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(str, 0, 1)
 
 
 class DataProperty_B(DataProperty):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_data_property(int, 0, 1)
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(int, 1, 1)
 
 
 class Data_Property_C(DataProperty):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_data_property(str, 0, 5)
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(str, 0, 5)
 
 
 class A(BaseClass):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    data_property_a: DataProperty_A = Field(default_factory=DataProperty_A)
-
+    is_defined_by_ontology = ExampleOntology
+    data_property_a: DataProperty_A
 
 class ObjectProperty_B_A(ObjectProperty):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_object_property(A, 0, None)
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(A)
 
 
 class ObjectProperty_C_A(ObjectProperty):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_object_property(A, 0, 3)
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(A, 0, 3)
 
 
 class B(BaseClass):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    object_property_b_a: ObjectProperty_B_A = Field(default_factory=ObjectProperty_B_A)
-    data_property_b: DataProperty_B = Field(default_factory=DataProperty_B)
+    is_defined_by_ontology = ExampleOntology
+    object_property_b_a: ObjectProperty_B_A
+    data_property_b: DataProperty_B
 
 
 class ObjectProperty_C_B(ObjectProperty):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_object_property(B, 0, 1)
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(B, 0, 1)
 
 
 class C(BaseClass):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    object_property_c_a: ObjectProperty_C_A = Field(default_factory=ObjectProperty_C_A)
-    object_property_c_b: ObjectProperty_C_B = Field(default_factory=ObjectProperty_C_B)
-    data_property_c: Data_Property_C = Field(default_factory=Data_Property_C)
+    is_defined_by_ontology = ExampleOntology
+    object_property_c_a: ObjectProperty_C_A
+    object_property_c_b: ObjectProperty_C_B
+    data_property_c: Data_Property_C
 
 
 class ObjectProperty_D_C(ObjectProperty):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_object_property(C)
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(C)
 
 
 class ObjectProperty_D_B(ObjectProperty):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_object_property(B)
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(B)
 
 
 class ObjectProperty_D_A(ObjectProperty):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_object_property(A)
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(A)
 
 
 class Data_Property_D(DataProperty):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    range: as_range_of_data_property(str)
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(str)
 
 
 class D(BaseClass):
-    is_defined_by_ontology: ClassVar[BaseOntology] = ExampleOntology
-    object_property_d_c: ObjectProperty_D_C = Field(default_factory=ObjectProperty_D_C)
-    object_property_d_b: ObjectProperty_D_B = Field(default_factory=ObjectProperty_D_B)
-    object_property_d_a: ObjectProperty_D_A = Field(default_factory=ObjectProperty_D_A)
-    data_property_d: Data_Property_D = Field(default_factory=Data_Property_D)
+    is_defined_by_ontology = ExampleOntology
+    object_property_d_c: ObjectProperty_D_C
+    object_property_d_b: ObjectProperty_D_B
+    object_property_d_a: ObjectProperty_D_A
+    data_property_d: Data_Property_D
+
 
 class E(D):
     pass
@@ -122,13 +122,12 @@ def init():
 
 
 def test_retrieve_cardinality():
-    assert DataProperty_A.retrieve_cardinality() == (0, None)
-    assert DataProperty_B.retrieve_cardinality() == (0, 1)
+    assert DataProperty_A.retrieve_cardinality() == (0, 1)
+    assert DataProperty_B.retrieve_cardinality() == (1, 1)
     assert Data_Property_C.retrieve_cardinality() == (0, 5)
     assert ObjectProperty_B_A.retrieve_cardinality() == (0, None)
     assert ObjectProperty_C_A.retrieve_cardinality() == (0, 3)
     assert ObjectProperty_C_B.retrieve_cardinality() == (0, 1)
-    # TODO handle min cardinality of 1
 
 
 def test_export_to_owl():
@@ -252,7 +251,6 @@ def test_pull_from_kg(initialise_sparql_client):
     # test exception when pulling an object that does not match the type of the class
     with pytest.raises(ValueError) as e_info:
         A.pull_from_kg(c.instance_iri, sparql_client)
-    print(e_info)
 
 
 def test_pull_all_instance_from_kg(initialise_sparql_client):
