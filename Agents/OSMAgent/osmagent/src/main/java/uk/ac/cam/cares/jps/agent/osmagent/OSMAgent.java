@@ -146,5 +146,5 @@ public class OSMAgent extends JPSAgent {
     }
 
 
-    private static final String buildingSQLQuery = "SELECT building_id, name, building_height, geom, uuid, iri, propertyusage_iri, ontobuilt, usageshare FROM usage.buildingusage_geoserver";
+    private static final String buildingSQLQuery = "SELECT building_id, name, building_height, geom, uuid, iri, propertyusage_iri, ontobuilt, usageshare FROM "+DATA_SCHEMA+".buildingusage_geoserver";
 }
