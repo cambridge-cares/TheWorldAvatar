@@ -9,7 +9,7 @@
 * Added functionality to scenario handler to fetch time series data from scenario endpoint
 * Added a `slider_handler` class to handle a slider for actions on time series data display queried from scenario
 * Specify actions for slider move in index.html file
-* Refresh and replot data with multiple layers in geoserver using `{dimension}={value}` in data.json (on slider change for example)
+* Refresh and replot data with multiple layers in geoserver using `dimension={dimension}}` for as many dimensions as required separated by '&' in data.json (on slider change for example)
 
 ## 4.6.0
 

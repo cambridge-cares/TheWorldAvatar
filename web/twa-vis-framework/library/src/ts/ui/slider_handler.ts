@@ -1,10 +1,10 @@
-type ScenarioTimeStep = {
+type ScenarioDimensionStep = {
     value: number;
     label: string;
 };
 
-type ScenarioTimesData = {
-    [key: string]: ScenarioTimeStep[];
+type ScenarioDimensionsData = {
+    [key: string]: ScenarioDimensionStep[];
 };
 
 class SliderHandler {
@@ -12,19 +12,23 @@ class SliderHandler {
     /**
      * Object with dimensions and their ranges from scenario endpoint
      */
-    public scenarioTimesData: ScenarioTimesData;
+    public scenarioTimesData: ScenarioDimensionsData;
 
 
-    constructor(scenarioTimesData: ScenarioTimesData) {
+    constructor(scenarioTimesData: ScenarioDimensionsData) {
         this.scenarioTimesData = scenarioTimesData;
     }
 
     public initialiseSlider(sliderActions: (e: Event) => void): void {
 
-        let dimensions = Object.values(this.scenarioTimesData);
-        for (let array of dimensions) {
+        let dimensions: ScenarioDimensionStep[][] = Object.values(this.scenarioTimesData);
+        let sliderNames: string[] = Object.keys(this.scenarioTimesData)
+        
+        for (const i of [...this.scenarioTimesData.keys()]) {
+            const sliderName = sliderNames[i];
+            const array = dimensions[i]
             if (Array.isArray(array) && array.length > 1) {
-                this.populateSlider(array, sliderActions);
+                this.populateSlider(sliderName, array, sliderActions);
                 this.changeLabel(array, 0);
                 break;
             }
@@ -36,7 +40,7 @@ class SliderHandler {
             document.getElementById("timeSliderContainer").remove();
         }
     }
-    private populateSlider(indexArray: Array<ScenarioTimeStep>, sliderActions: (e: Event) => void): void {
+    private populateSlider(sliderName: string, indexArray: Array<ScenarioDimensionStep>, sliderActions: (e: Event) => void): void {
         const firstIndex: number = indexArray[0].value;
         const lastIndex: number = indexArray[indexArray.length - 1].value;
         const firstLabel: string = indexArray[0].label;
@@ -45,13 +49,13 @@ class SliderHandler {
 
         // slider container
         const sliderContainer: HTMLDivElement = document.createElement('div');
-        sliderContainer.className = 'slidecontainer';
+        sliderContainer.className = 'sliderContainer';
         sliderContainer.id = 'timeSliderContainer';
 
         // slider itself
         const slider: HTMLInputElement = document.createElement('input');
-        slider.name = 'time-slider';
-        slider.id = 'timeSlider';
+        slider.name = sliderName + '_Slider';
+        slider.id = 'timeSlider_' + sliderName;
         slider.className = 'time-slider time-slider-jq blue';
         slider.type = 'range';
         slider.value = '1';
@@ -88,7 +92,7 @@ class SliderHandler {
     }
 
 
-    private changeLabel(indexArray: Array<ScenarioTimeStep>, currentSliderIndex: number): void {
+    private changeLabel(indexArray: Array<ScenarioDimensionStep>, currentSliderIndex: number): void {
         const label: string = indexArray[currentSliderIndex].label;
         const sliderLabel: HTMLElement | null = document.getElementById('timeSliderLabel');
         if (sliderLabel) {

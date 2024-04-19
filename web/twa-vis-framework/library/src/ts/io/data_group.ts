@@ -48,7 +48,7 @@ class DataGroup {
      */
     public parseDataSources(sourcesJSON, dimension: string, value?: number) {
         for (const element of sourcesJSON) {
-            let node = JSON.parse(JSON.stringify(element).replaceAll('{dimension}', dimension).replaceAll('{value}', value.toString()));
+            let node = JSON.parse(JSON.stringify(element).replaceAll(dimension, value.toString()));
             // Create and store source
             let source = new DataSource(node);
 
@@ -71,7 +71,7 @@ class DataGroup {
      */
     public parseDataLayers(stack: string, layersJSON, dimension: string, value?: number) {
         for (const element of layersJSON) {
-            let node = JSON.parse(JSON.stringify(element).replaceAll('{dimension}', dimension).replaceAll('{value}', value.toString()));
+            let node = JSON.parse(JSON.stringify(element).replaceAll(dimension, value.toString()));
 
             // Find the data source for this layer
             let source = this.findSource(node["source"]);
