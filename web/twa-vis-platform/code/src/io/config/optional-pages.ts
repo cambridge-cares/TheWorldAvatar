@@ -60,7 +60,7 @@ export default class OptionalPages {
                         title: matterResult.data.title,
                         slug: matterResult.data.slug,
                         description: matterResult.data.description,
-                        content: matterResult.content,
+                        content: formatMarkdownImages(matterResult.content),
                         filename: fileName,
                         thumbnail: matterResult.data.thumbnail
                     };
@@ -120,3 +120,17 @@ export default class OptionalPages {
 
 }
 // End of class.
+
+/**
+ * Format the images in the markdown content input with a prefix if there is a base path set.
+ * 
+ * @param markdownContent Entire content of markdown document.
+ * @returns The input content with prefix added to image urls.
+ */
+function formatMarkdownImages(markdownContent: string): string {
+    const prefix: string = process.env.BASE_PATH || "/";
+    // Append base path if available
+    // Formats either <img src="/images/... or <img src="images/...
+    // Exclude any initial img elements starting with http 
+    return markdownContent.replace(/(<img\s+src=")(?!https?:\/\/)(\/)?([^"]+")/g, `$1${prefix}$3`);
+}

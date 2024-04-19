@@ -276,6 +276,8 @@ Developers can insert landing pages alongside other supplementary pages such as 
 
 Do note that the supplementary pages will be inserted as thumbnails and accessed via the landing page. It is crucial to add numbers in the file name of supplementary pages to order the thumbnail display according to your preferences. Otherwise, file names are insignificant if the display order is not of utmost significance. For instance, `01.about.md` and `02.glossary.md` will be always be displayed in this sequence as 01 is smaller than 02.
 
+When linking the images in markdown, do note that any relative path should start from the `images` path (e.g. `/images/defaults/icons/acknowledgement.svg`). The platform will automatically transform this if required for a reverse proxy or subpath implementation through the `BASE_PATH` environment variable.
+
 ### 3.1 Fields
 
 The following fields are supported, and must be added to the top of the file before any markdown content:
