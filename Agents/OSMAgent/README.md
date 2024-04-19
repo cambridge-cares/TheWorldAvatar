@@ -41,6 +41,28 @@ To prepare OSM data in `.gml` format
 2) Convert the `.pbf` file into `.osm` format using [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert). 
 3) Import the `.osm` file  into QGIS using [QuickOSM](https://plugins.qgis.org/plugins/QuickOSM/) plugin, then export points and polygons layer as `points.gml` and `polygons.gml`.
 
+Once the OSM data is uploaded, it will appear in PostgreSQL tables. The agent assumes the following keys to be in the OSM data.
+
+|      OSM tag      | Corresponding column in PostgreSQL |  For points or polygons  |
+|:-----------------:|:----------------------------------:|:------------------------:|
+|     geometry      |          geometryProperty          |           both           |
+|       name        |                name                |           both           |
+|     building      |              building              |           both           |
+|      amenity      |              amenity               |           both           |
+|      leisure      |              leisure               |           both           |
+|      tourism      |              tourism               |           both           |
+|      office       |               office               |           both           |
+|       shop        |                shop                |           both           |
+|      landuse      |              landuse               |         polygons         |
+|     addr:city     |             addr_city              |           both           |
+|   addr:country    |            addr_country            |           both           |
+| addr:housenumber  |          addr_housenumber          |           both           |
+|   addr:postcode   |           addr_postcode            |           both           |
+|    addr:street    |            addr_street             |           both           |
+|  building:levels  |          building_levels           |         polygons         |
+| building:material |         building_material          |         polygons         |
+|   roof:material   |           roof_material            |         polygons         |
+
 #### 2.4.2. Digitales Landschaftsmodell (DLM) Land Use Data
 DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
 The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/pirmasens/tree/main/psdt/stack-data-uploader-inputs/data/dlm). 
