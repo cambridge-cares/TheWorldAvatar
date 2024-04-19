@@ -4,6 +4,6 @@ export const Routes: {
 } = {
   HOME: "",
   MAP: "explore",
-  DASHBOARD: "analytics",
+  DASHBOARD: "dash",
   HELP: "help",
 };
