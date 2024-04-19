@@ -41,7 +41,10 @@ To prepare OSM data in `.gml` format
 2) Convert the `.pbf` file into `.osm` format using [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert). 
 3) Import the `.osm` file  into QGIS using [QuickOSM](https://plugins.qgis.org/plugins/QuickOSM/) plugin, then export points and polygons layer as `points.gml` and `polygons.gml`.
 
-Once the OSM data is uploaded, it will appear in PostgreSQL tables. The agent assumes the following keys to be in the OSM data.
+If the `.gml` files generated in the above step 3 have all the information tags (such as building) grouped under the `other_tags` column, please run `./osmagent/src/main/resources/clean_and_to_gml.py` to parse out the information tags that are grouped under `other_tags`.
+Please run `clean_and_to_gml.py` for both the `points.gml` and `polygons.gml` generated in step 3 above. This will parse the needed OSM tags into their own columns instead of having them grouped under the `other_tags` column.
+
+Once the OSM data is uploaded, it will appear in PostgreSQL tables. The agent assumes the following keys to be in the OSM data, please ensure that the required columns stated below are in the final `points.gml` and `polygons.gml`.
 
 |      OSM tag      | Corresponding column in PostgreSQL |  For points or polygons  |
 |:-----------------:|:----------------------------------:|:------------------------:|
