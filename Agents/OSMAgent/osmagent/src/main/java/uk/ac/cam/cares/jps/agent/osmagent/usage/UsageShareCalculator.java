@@ -1,17 +1,6 @@
 package uk.ac.cam.cares.jps.agent.osmagent.usage;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import org.json.JSONArray;
-import uk.ac.cam.cares.jps.agent.osmagent.FileReader;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-
-import java.io.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.UUID;
 
 /**
  * UsageShareCalculator contains 3 parts that run using SQL query
@@ -97,13 +86,19 @@ public class UsageShareCalculator {
                 String materializedView ="-- Drop the materialized view if it exists\n" +
                         "DROP MATERIALIZED VIEW IF EXISTS "+schema+".buildinginfo_osm;\n" +
                         "\n" +
-                        "-- Create a new materialized view named \"buildinginfo_osm\" in the \"usage\" schema\n" +
+                        "-- Create a new materialized view named \"buildinginfo_osm\" in the \"buildinginfo\" schema\n" +
                         "CREATE MATERIALIZED VIEW "+schema+".buildinginfo_osm AS\n" +
-                        "SELECT DISTINCT u.*, COALESCE(p.name, o.name) AS name\n" +
+                        "WITH cte AS (SELECT DISTINCT COALESCE(u.building_iri, a.building_iri) AS building_iri,\n" +
+                        "u.propertyusage_iri, u.ontobuilt, u.usageshare,\n" +
+                        "a.address_iri, a.country, a.city, a.street, a.house_number, a.postcode\n" +
                         "FROM "+usageTable+" AS u\n" +
-                        "LEFT JOIN "+osmSchema+".points AS p ON u.building_iri = p.building_iri\n" +
-                        "LEFT JOIN "+osmSchema+".polygons AS o ON u.building_iri = o.building_iri\n" +
-                        "FULL OUTER JOIN "+addressTable+" AS a ON u.building_iri = a.building_iri;";
+                        "FULL OUTER JOIN "+addressTable+" AS a ON u.building_iri = a.building_iri)\n" +
+                        "\n" +
+                        "SELECT DISTINCT c.*, COALESCE(p.name, o.name) AS name\n" +
+                        "FROM cte AS c\n" +
+                        "LEFT JOIN "+osmSchema+".points AS p ON c.building_iri = p.building_iri\n" +
+                        "LEFT JOIN "+osmSchema+".polygons AS o ON c.building_iri = o.building_iri;";
+
 
                 String materializedView_geoserver= "-- Drop the materialized view if it exists\n" +
                         "DROP MATERIALIZED VIEW IF EXISTS "+schema+".buildingusage_geoserver;\n" +
