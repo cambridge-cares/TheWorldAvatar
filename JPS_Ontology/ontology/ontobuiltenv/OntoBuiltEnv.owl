@@ -157,19 +157,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasBuildingFloors -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasBuildingFloors">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
-        <rdfs:comment>A relationship between a property and its amount of floors.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
-        <rdfs:label>has building floors</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasBuiltForm -->
 
 
@@ -257,6 +244,19 @@
         <rdfs:comment>A relationship between a property and its (estimated) property value.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>has market value</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasNumberOfFloors -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasNumberOfFloors">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
+        <rdfs:comment>A relationship between a property and its number of floors.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
+        <rdfs:label>has number of floors</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -584,19 +584,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasFloorsValue -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasFloorsValue">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
-        <rdfs:comment>A relationship between the floors and its value.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
-        <rdfs:label>has floors value</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasGFA -->
 
 
@@ -632,6 +619,19 @@
         <rdfs:comment>A relationship between a property and its latest Energy Performance record (i.e. unique lodgement identifier).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>latest EPC</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasNumberOfFloorsValue -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasNumberOfFloorsValue">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>A relationship between the number of floors and its numerical value.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
+        <rdfs:label>has number of floors value</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -938,17 +938,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors">
-        <rdfs:comment>A concept to describe amount of floors in a building.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
-        <rdfs:label>Building floors</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobuiltenv/BuiltForm -->
 
 
@@ -1119,7 +1108,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/FloorsCatA">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
         <rdfs:comment>Category A of floors: data from reliable departments (e.g. government agencies)</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>floors category A</rdfs:label>
@@ -1131,7 +1120,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/FloorsCatB">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
         <rdfs:comment>Category B of floors: open source data without any guarantees (e.g. OSM)</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>floors category B</rdfs:label>
@@ -1143,7 +1132,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/FloorsCatC">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
         <rdfs:comment>Category C of floors: estimate</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>floors category C</rdfs:label>
@@ -1247,6 +1236,17 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors">
+        <rdfs:comment>A concept to describe number of floors in a building.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
+        <rdfs:label>Number of floors</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Office -->
 
 
@@ -1319,13 +1319,6 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasBuildingFloors"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuildingFloors"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasBuiltForm"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuiltForm"/>
@@ -1343,6 +1336,13 @@
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasMarketValue"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasNumberOfFloors"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>

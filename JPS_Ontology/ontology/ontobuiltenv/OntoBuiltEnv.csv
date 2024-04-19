@@ -118,12 +118,12 @@ representativeFor,Object Property,,,AveragePricePerSqm,PostalCode,,A relationshi
 representativeFor,Object Property,,,AveragePricePerSqm,PostalCode,exactly 1,,https://www.theworldavatar.com/kg/ontobuiltenv/,representative for
 Bank,Class,Non-Domestic,IS-A,,,,A property where customers can deposit and withdraw money.,https://www.theworldavatar.com/kg/ontobuiltenv/,Bank
 Pharmacy,Class,Medical,IS-A,,,,A healthcare facility where medicinal drugs are prepared or sold.,https://www.theworldavatar.com/kg/ontobuiltenv/,Pharmacy
-BuildingFloors,Class,,,Property,,,A concept to describe amount of floors in a building.,https://www.theworldavatar.com/kg/ontobuiltenv/,Building floors
-hasBuildingFloors,Object Property,,,Property,BuildingFloors,exactly 1,A relationship between a property and its amount of floors.,https://www.theworldavatar.com/kg/ontobuiltenv/,has building floors
-hasFloorsValue,Data Property,,,BuildingFloors,integer,exactly 1,A relationship between the floors and its value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has floors value
-FloorsCatA,Class,BuildingFloors,IS-A,,,,Category A of floors: data from reliable departments (e.g. government agencies),https://www.theworldavatar.com/kg/ontobuiltenv/,floors category A
-FloorsCatB,Class,BuildingFloors,IS-A,,,,Category B of floors: open source data without any guarantees (e.g. OSM),https://www.theworldavatar.com/kg/ontobuiltenv/,floors category B
-FloorsCatC,Class,BuildingFloors,IS-A,,,,Category C of floors: estimate,https://www.theworldavatar.com/kg/ontobuiltenv/,floors category C
+hasNumberOfFloors,Object Property,,,Property,NumberOfFloors,exactly 1,A relationship between a property and its number of floors.,https://www.theworldavatar.com/kg/ontobuiltenv/,has number of floors
+NumberOfFloors,Class,,,Property,,,A concept to describe number of floors in a building.,https://www.theworldavatar.com/kg/ontobuiltenv/,Number of floors
+hasNumberOfFloorsValue,Data Property,,,NumberOfFloors,integer,exactly 1,A relationship between the number of floors and its numerical value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has number of floors value
+FloorsCatA,Class,NumberOfFloors,IS-A,,,,Category A of floors: data from reliable departments (e.g. government agencies),https://www.theworldavatar.com/kg/ontobuiltenv/,floors category A
+FloorsCatB,Class,NumberOfFloors,IS-A,,,,Category B of floors: open source data without any guarantees (e.g. OSM),https://www.theworldavatar.com/kg/ontobuiltenv/,floors category B
+FloorsCatC,Class,NumberOfFloors,IS-A,,,,Category C of floors: estimate,https://www.theworldavatar.com/kg/ontobuiltenv/,floors category C
 hasGFA,Data Property,,,Property,float,exactly 1,A relationship between a building and its Gross Floor Area value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has GFA
 hasCountry,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,A relationship between an address and the respective country name.,https://www.theworldavatar.com/kg/ontobuiltenv/,has country
 hasCity,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,A relationship between an address and the respective city name.,https://www.theworldavatar.com/kg/ontobuiltenv/,has city
