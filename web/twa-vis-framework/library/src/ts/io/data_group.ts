@@ -46,9 +46,9 @@ class DataGroup {
      * 
      * @param sourceJSON JSON array of source nodes.
      */
-    public parseDataSources(sourcesJSON, value?: number) {
+    public parseDataSources(sourcesJSON, dimension: string, value?: number) {
         for (const element of sourcesJSON) {
-            let node = JSON.parse(JSON.stringify(element).replaceAll('{wildcard}', value.toString()));
+            let node = JSON.parse(JSON.stringify(element).replaceAll('{dimension}', dimension).replaceAll('{value}', value.toString()));
             // Create and store source
             let source = new DataSource(node);
 
@@ -69,9 +69,9 @@ class DataGroup {
      * @param stack base URL of the connected stack
      * @param layersJSON JSON array of layer nodes.
      */
-    public parseDataLayers(stack: string, layersJSON, value?: number) {
+    public parseDataLayers(stack: string, layersJSON, dimension: string, value?: number) {
         for (const element of layersJSON) {
-            let node = JSON.parse(JSON.stringify(element).replaceAll('{wildcard}', value.toString()));
+            let node = JSON.parse(JSON.stringify(element).replaceAll('{dimension}', dimension).replaceAll('{value}', value.toString()));
 
             // Find the data source for this layer
             let source = this.findSource(node["source"]);

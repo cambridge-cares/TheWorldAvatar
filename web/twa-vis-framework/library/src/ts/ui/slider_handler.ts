@@ -9,15 +9,13 @@ type ScenarioTimesData = {
 
 class SliderHandler {
 
-    public manager: Manager;
     /**
      * Object with dimensions and their ranges from scenario endpoint
      */
-    private scenarioTimesData: ScenarioTimesData;
+    public scenarioTimesData: ScenarioTimesData;
 
 
-    constructor(manager: Manager, scenarioTimesData: ScenarioTimesData) {
-        this.manager = manager;
+    constructor(scenarioTimesData: ScenarioTimesData) {
         this.scenarioTimesData = scenarioTimesData;
     }
 

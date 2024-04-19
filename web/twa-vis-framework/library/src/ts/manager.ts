@@ -261,7 +261,7 @@ class Manager {
         // Initialise global settings
         Manager.DATA_STORE.reset();
 
-        let promise =  Manager.DATA_STORE.loadDataGroups(dataJSON, value) as Promise<any>;
+        let promise =  Manager.DATA_STORE.loadDataGroups(dataJSON, Object.keys(this.sliderHandler.scenarioTimesData)[0], value) as Promise<any>; // the keys of scenarioTimesData is a list of all the dimensions as a string. this code just takes the first one
         return promise.then(() => {
             // Rebuild the layer tree
             this.controlHandler.rebuildTree(Manager.DATA_STORE);
@@ -271,7 +271,7 @@ class Manager {
 
     /**
      * Loads the data configuration from a URL.
-     * 
+     *
      * @param dataURL configuration file URL.
      * 
      * @returns promise object
@@ -785,7 +785,7 @@ class Manager {
             promise.then(() => {
                 self.plotData();
                 self.scenarioHandler.fetchScenarioTimes().then(scenarioTimesData => {
-                    self.sliderHandler = new SliderHandler(self, scenarioTimesData);            
+                    self.sliderHandler = new SliderHandler(scenarioTimesData);            
                     self.sliderHandler.removeSlider();  
                     self.sliderHandler.initialiseSlider(self.sliderActions);
                 }).catch(error => {
