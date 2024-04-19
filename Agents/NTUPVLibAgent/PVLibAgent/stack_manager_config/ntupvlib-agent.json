@@ -3,7 +3,7 @@
     "Name": "pvlib-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "pvlib-agent:1.0.0",
+        "Image": "ntu-pvlib-agent:1.0.0",
         "Configs": [
           {
             "ConfigName": "blazegraph"

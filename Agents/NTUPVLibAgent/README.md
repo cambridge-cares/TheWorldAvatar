@@ -1,4 +1,8 @@
-# PVLib Agent
+# NTUPVLib Agent
+
+The NTUPVLib Agent is a modified version of the PVLibAgent developed to work with the PV data available for the NTU use case. The agent assumes a standard PV for the purpose of running PVLib and then scales the output by the PV area for the building. An additional scale factor is included to scale the data to a magnitude appropriate for the 15-bus NTU test system.
+
+
 
 This agent is designed to calculate AC and DC Power output from Photovaltaic Panels based on values provided in the properties files or values queried from the knowledge graph. It will then initialise the AC and DC Power as timeseries in the knowledge graph. The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) from the JPS_BASE_LIB to interact with both the knowledge graph and database and uses [PvLib](https://pvlib-python.readthedocs.io/en/stable/) for it's AC and DC Power calculations.
 
@@ -10,10 +14,13 @@ For the agent to read data, three property files are required:
 #### dataIRIs properties
 This property file is used to determine whether there are IRIs already created for the instantiation of DC and AC Power
 in the knowledge graph. This property file can be left unchanged where the agent will then create IRIs for the keys indicated
-in the file. More information can be found in the property file `dataIRIs.properties` in the `resources` folder.
+in the file (this is the default approach for the NTU test case). 
+More information can be found in the property file `dataIRIs.properties` in the `resources` folder.
 
 #### Time-series client properties
-The time-series client property file needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
+For deployment in stack, the endpoints must be configured in `PVLibAgent/stack_utils/stack_configs.py`
+
+Otherwise, the time-series client property file needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
 - `db.query.url` the [JDBC URL](https://www.postgresql.org/docs/7.4/jdbc-use.html) for the Postgres database to query from
 - `db.query.user` the username to access the Postgres database to query from
 - `db.query.password` the password to access the Postgres database to query from
@@ -31,7 +38,9 @@ More information can be found in the property file `ts_client.properties` in the
 
 
 ## 1. PV Model Data Preparation
-####  [Option 1] Read photovoltaic model specs from property files
+####  [Option 1] Read photovoltaic model specs from property files (model-parameters-properties)
+
+This is the default option for the NTU test case.
 
 ##### Model  properties
 The model_parameters properties contains the parameters required to create a solar PV Model for calculations. The file `model_parameters.properties` can be found in the `resources` folder. It should contain the following keys:
@@ -51,40 +60,10 @@ The model_parameters properties contains the parameters required to create a sol
 ####  [Option 2] Read Photovoltaic Model Specs from Knowledge Graph
 Alternatively, the parameters required to create a solar PV Model can be read from a knowledge graph. This requires an instantiation agent to create a Knowledge Graph filled with PV model parameter values. The  [HistoricalNTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1496-dev-instantiate-historic-ntuenergyconsumptiondata-2/Agents/HistoricalNTUEnergyAgent) provides an example to instantiate a knowledge graph which includes PV model parameters.
 
+This option is currently only available for latitude and longitude. 
+
 ## 2. Weather Data Preparation
-The agent is designed to work with data from one of three sources: weather stations, irradiance sensors, and the OpenMeteo API. It is necessary to have one of the above data retrieved and instantiated on the knowledge graph before running the agent.
-
-####  [Option 1] Read data from Weather Station
-In the event that the weather data is retrieved from the weather station, the related timeseries data has to be instantiated in the knowledge graph with the following structure:
-```
-<http://test_weatherStation> rdf:type ontoems:ReportingStation .
-<http://test_weatherStation> ontoems:reports <http://test_parameter> .
-<http://test_parameter> rdf:type ontoems:AirTemperature .
-<http://test_parameter> om:hasValue <air temperature data IRI> .
-```
-see [OntoEMS ontology](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoems) for more information. The [NUSDavisWeatherStation Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/NUSDavisWeatherStationAgent) provides an example of the instantiation.
-
-The PVLib Agent will query for the latest air temperature, wind speed and global horizontal irradiance values from the knowledge graph.
-
-In the events that the instantiation of the weather station and its related timeseries data does not follow the structure above, the timeseries data IRIs for all three parameters have to be indicated in the `ts_client.properties` file. See [property file for the time-series client](#time-series-client-properties).
-
-Once It is instantiated, required to have access to a knowledge graph SPARQL endpoint.
-
-The [next section](#prerequisites) will explain the requirements to run the agent.
-
-####  [Option 2] Read data from Irradiance Sensor
-In the event that the weather data is retrieved from the irradiance sensor, the related timeseries data has to be instantiated in the knowledge graph with the following structure:
-```
-<http://test_device> rdf:type saref:Device .
-<http://test_device> rdf:type s3n:SmartSensor .
-<http://test_device> saref:measuresProperty <http://test_property> .
-<http://test_property> rdf:type saref:Property .
-<http://test_property> rdf:type om:Irradiance .
-<http://test_property> om:hasValue <irradiance data IRI> .
-```
-See [Saref ontology](https://saref.etsi.org/), [s3n ontology](https://recherche.imt-atlantique.fr/info/ontologies/sms/s3n/) and [om ontology](http://www.ontology-of-units-of-measure.org/page/om-2) for more information. The [Thingspeak Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ThingspeakAgent) provides an example of the instantiation.
-
-In the events that the instantiation of the sensor and its related timeseries data does not follow the structure above, the timeseries data IRI for irradiance have to be indicated in the `ts_client.properties` file. See [property file for the time-series client](#time-series-client-properties).
+The agent is designed to work with data from one of three sources: weather stations, irradiance sensors, and the OpenMeteo API. It is necessary to have one of the above data retrieved and instantiated on the knowledge graph before running the agent. Only option 3 is described here. For others, refer to the PVLibAgent.
 
 ####  [Option 3] Read data from OpenMeteo API
 In the event that the weather data is retrieved from the irradiance sensor, the related timeseries data has to be instantiated in the knowledge graph with the following structure:
@@ -115,34 +94,9 @@ For latitude and longitude, these values can be queried from the knowledge graph
 In the events that latitude and longitude are not instantiated in the knowledge graph with the structure above, they have to be included in the `model_parameters.properties` file. See [property file for the Solar Model](#model-parameters-properties).
 
 ## 3. Build and Run
-The agent is designed to run in two modes, either as a standalone docker container or work within a stack. The build and setup procedures are different for different running modes.
+The PVLib agent can run either as a standalone docker container or within a stack. The build and setup procedures are different for different running modes.
 
-####  [Option 1] As a standalone docker container
-Before running the agent in a standalone docker container, it is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine or need to be accessible from the host machine via a fixed URL. However, it is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database.
-
-Once a triple store and a Postgres database has been set up, modify the  `dataIRIs.properties`, `model_parameters.properties` and `ts_client.properties` in the resources folder accordingly. Refer to the property file descriptions for more information.
-
-To build and start the agent, open up the command prompt in the same directory as this README, run
-```
-docker-compose up -d
-```
-Select from one of the following to read weather data:
--  Read data from Irradiance Sensor
-```
-curl -X GET http://localhost:1020/api/v1/evaluate?device=sensor&stack=false
-```
--  Read data from Weather Station
-```
-curl -X GET http://localhost:1020/api/v1/evaluate?device=weatherStation&stack=false
-```
--  Read data from OpenMeteo API
-```
-curl -X GET http://localhost:1020/api/v1/evaluate?device=openmeteo&stack=false
-```
-If the agent runs successfully, you should see a returned Object that is similar to the one shown below.
-```
-{"AC Power(W)":7.922936051747742,"DC Power(W)":9.510628810971978,"timestamp":"Thu, 24 Nov 2022 09:54:51 GMT"}
-```
+NTUPVLib is intended for deployment in a stack (option 2). For others, refer to the PVLibAgent.
 
 ####  [Option 2] As a stacked docker container
 
@@ -165,20 +119,20 @@ A successful setup will result in 9 containers (optional 10):
 ##### Build the image
 First, build image with:
 ```
-docker build -t pvlib-agent:1.0.0 .
+docker build -t ntu-pvlib-agent:1.0.0 .
 ```
 The Dockerfile will automatically copy all properties files and mapping folder and set environment variables pointing to their location. Therefore, you do not need to shift the properties files and mapping folder nor add in environment variables manually.
 
 
 ##### Add Config to Stack Manager
 Before running the stack manager, you need to add the config files to the stack manager. The config files are located in `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/`.
-- Copy `stack-manager-config/pvlib-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
+- Copy `stack-manager-config/ntupvlib-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
 - Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it does not exist, following the below structure.
 ```json
 {
   "services": {
     "includes": [
-      "pvlib-agent",
+      "ntupvlib-agent",
       // Other agents you wish to spin up...
     ],
     "excludes": [
@@ -192,7 +146,7 @@ After this step, the stack-manager/inputs/config folder will have the following 
 ```
 config/
 |_ services/
-   |_ pvlib-agent.json
+   |_ ntupvlib-agent.json
    |_ ...
 |_ <STACK NAME>.json
 ```
@@ -202,44 +156,18 @@ More information about adding custom containers to the stack can be found [here]
 Follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack.
 
 ##### Run the agent
-Select from one of the following to read weather data:
-- Read data from Irradiance Sensor
+
+Send a GET request, with the parameters including the start and end dates and times in ISO format (UTC):
+- stack=true
+- device=openmeteo
+- start=2024-03-20T16:00:00Z
+- end=2024-03-21T15:00:00Z
+
 ```
-curl -X GET http://localhost:3838/api/v1/evaluate?device=sensor&stack=true
-```
--  Read data from Weather Station
-```
-curl -X GET http://localhost:3838/api/v1/evaluate?device=weatherStation&stack=true
-```
--  Read data from OpenMeteo API
-```
-curl -X GET http://localhost:3838/pvlib-agent/api/v1/evaluate?device=openmeteo&stack=true
+curl -X GET http://localhost:3838/pvlib-agent/api/v1/evaluate?device=openmeteo&stack=true&start=2024-03-20T16:00:00Z&end=2024-03-21T15:00:00Z
 ```
 
-If the agent runs successfully, you should see a returned Object that is similar to the one shown below.
+If the agent runs successfully, you should see a returned string
 ```
-{"AC Power(W)":7.922936051747742,"DC Power(W)":9.510628810971978,"timestamp":"Thu, 24 Nov 2022 09:54:51 GMT"}
-```
-
-## 4. Agent tests
-Several unit tests are provided in the `tests` folder. Some tests are currently commented out as they required both
-Blazegraph and PostgreSQL to be running. To run those tests, the provided docker-compose.test.yml file can be used
-to spin up these services at the specified endpoints before uncommenting them. To run the tests, please follow the steps below:
-
-1. Create a virtual environment with the following commands:
-```
-python -m venv pvlib_venv
-pvlib_venv\Scripts\activate.bat
-```
-2. Install all required packages in virtual environment:
-```
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-3. Deploy Blazegraph and Postgresql as docker containers, uncomment and run the tests:
-```
-# Uncomment integration tests and start Docker services (if wanted)
-docker compose -f "tests\docker-compose.test.yml" up -d --build 
-# Run tests
-pytest
+Success!
 ```
