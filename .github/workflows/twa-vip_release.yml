@@ -105,6 +105,6 @@ jobs:
           username: ${{secrets.CMCL_MAIL_USERNAME}}
           password: ${{secrets.CMCL_MAIL_PASSWORD}}
           subject: "New TWA release: TWA-VF ${{ env.versionFull }}"
-          to: cares-twa@lists.cam.ac.uk,all@cmcl.io
+          to: hyquek@cmcl.io
           from: Automated TWA action
           html_body: "file://${{ env.email }}"
