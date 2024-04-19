@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import uk.ac.cam.cares.jps.todo.databinding.TodoFragmentBinding;
 
@@ -26,5 +27,7 @@ public class TodoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        binding.topAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
+        binding.secondPageBt.setOnClickListener(view1 -> NavHostFragment.findNavController(this). navigate(R.id.action_todo_fragment_to_todo_second_setting));
     }
 }

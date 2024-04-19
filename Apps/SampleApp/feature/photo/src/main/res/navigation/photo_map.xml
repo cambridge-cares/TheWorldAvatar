@@ -7,6 +7,10 @@
 
     <fragment android:id="@+id/photo_fragment"
         android:name="uk.ac.cam.cares.jps.photo.PhotoFragment"
-        tools:layout="@layout/photo_fragment"/>
+        tools:layout="@layout/photo_fragment">
+        <deepLink
+            app:uri="@string/photo_fragment_link">
+        </deepLink>
+    </fragment>
 
 </navigation>

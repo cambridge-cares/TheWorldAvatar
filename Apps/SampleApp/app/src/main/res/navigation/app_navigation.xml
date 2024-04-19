@@ -2,10 +2,10 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/app_navigation"
-    app:startDestination="@id/todo_map">
+    app:startDestination="@id/home_map">
 
     <include app:graph="@navigation/todo_map"/>
     <include app:graph="@navigation/photo_map"/>
-
+    <include app:graph="@navigation/home_map"/>
 
 </navigation>

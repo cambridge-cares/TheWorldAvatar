@@ -4,12 +4,29 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/top_appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            app:navigationIcon="@drawable/back"
+            app:title="@string/todo"
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <Button
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/second_page_bt"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
         android:text="@string/get_todo"
         android:layout_margin="@dimen/component_margin_small"
         android:id="@+id/get_todo_bt"/>
@@ -19,9 +36,39 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/get_todo_bt"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
         android:text="@string/go_to_second_page"
         android:layout_margin="@dimen/component_margin_small"
         android:id="@+id/second_page_bt"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/get_todo_bt"
+        android:orientation="vertical"
+        android:layout_marginVertical="@dimen/component_margin"
+        android:layout_marginHorizontal="@dimen/component_margin_small">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="The purpose of this module is to demonstrate:"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1. navigation in the same module with action"
+            android:layout_marginStart="@dimen/component_margin_small"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2. the network -> repository -> viewmodel -> ui workflow"
+            android:layout_marginStart="@dimen/component_margin_small"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+    </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

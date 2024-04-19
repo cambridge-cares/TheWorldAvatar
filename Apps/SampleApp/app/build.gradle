@@ -17,4 +17,5 @@ dependencies {
     implementation project(path: ':core:ui')
     implementation project(path: ':feature:todo')
     implementation project(path: ':feature:photo')
+    implementation project(path: ':feature:home')
 }

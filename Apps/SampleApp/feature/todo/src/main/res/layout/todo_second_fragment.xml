@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
@@ -15,7 +16,7 @@
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
             app:navigationIcon="@drawable/back"
-            app:title="@string/photo"
+            app:title="@string/todo"
             app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -23,11 +24,12 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="This is a dummy module to show navigation in between modules"
+        android:text="@string/this_is_the_second_page_of_todo_feature"
         app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
-        android:layout_marginVertical="@dimen/component_margin"
-        android:layout_marginHorizontal="@dimen/component_margin_small"
-        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        android:layout_margin="@dimen/component_margin_small"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
