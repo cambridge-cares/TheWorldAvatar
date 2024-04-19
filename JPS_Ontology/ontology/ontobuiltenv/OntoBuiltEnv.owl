@@ -10,7 +10,7 @@
      xmlns:ontobuiltenv="https://www.theworldavatar.com/kg/ontobuiltenv/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/">
         <dc:date>19 April 2024</dc:date>
-        <rdfs:comment>The Building Environment ontology (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.</rdfs:comment>
+        <rdfs:comment>The Ontology for the Built Environment (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>

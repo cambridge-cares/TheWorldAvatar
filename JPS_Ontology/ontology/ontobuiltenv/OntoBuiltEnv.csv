@@ -1,7 +1,7 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoBuiltEnv,TBox,https://www.theworldavatar.com/kg/ontobuiltenv/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoBuiltEnv,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
-OntoBuiltEnv,TBox,"The Building Environment ontology (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoBuiltEnv,TBox,"The Ontology for the Built Environment (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoBuiltEnv,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 Property,Class,,,,,,A built structure which is available for occupation or business purposes.,https://www.theworldavatar.com/kg/ontobuiltenv/,Property
 Flat,Class,Property,IS-A,,,,A self-contained suite of rooms which occupies part of a building.,https://www.theworldavatar.com/kg/ontobuiltenv/,Flat
