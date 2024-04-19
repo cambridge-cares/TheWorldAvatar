@@ -336,8 +336,8 @@ def api():
                 # timestamp must have the format 2017-04-01T04:00:00Z
                 timestamp_list.append(wind_dates[i])
                 # scale by area
-                ac_power_value = float(pv_area) * float(results["AC Power(W)"]) * scale_factor 
-                dc_power_value = float(pv_area) * float(results["DC Power(W)"]) * scale_factor
+                ac_power_value = float(pv_area) * float(results["AC Power(W)"]) * float(scale_factor)
+                dc_power_value = float(pv_area) * float(results["DC Power(W)"]) * float(scale_factor)
                 ac_power_list.append(ac_power_value)
                 dc_power_list.append(dc_power_value)
 
