@@ -163,11 +163,18 @@ public class UsageMatcher {
         rdbStoreClient.executeUpdate(initialiseAddressTable);
 
         String copyAddress = "INSERT INTO %s (building_iri , country, city, street, house_number, postcode)\n" +
-                "SELECT o.building_iri, o.country, o.city, o.street, o.house_number, o.postcode FROM %s o\n" +
-                "WHERE o.building_iri NOT IN (SELECT building_iri FROM %s)";
+                "SELECT DISTINCT o.building_iri, o.addr_country, o.addr_city, o.addr_street, o.addr_housenumber, o.addr_postcode FROM %s o\n" +
+                "WHERE o.building_iri NOT IN (SELECT building_iri FROM %s) AND o.building_iri is NOT null AND\n" +
+                "COALESCE(o.addr_country, o.addr_city, o.addr_street, o.addr_housenumber, o.addr_postcode) IS NOT NULL";
 
         rdbStoreClient.executeUpdate(String.format(copyAddress, addressTable, polygonTable, addressTable));
         rdbStoreClient.executeUpdate(String.format(copyAddress, addressTable, pointTable, addressTable));
+
+        String updateAddressIri = "UPDATE %s\n" +
+                "SET address_iri = 'Address_' || uuid_generate_v4()::text\n" +
+                "WHERE address_iri IS NULL";
+
+        rdbStoreClient.executeUpdate(String.format(updateAddressIri, addressTable));
     }
 
     /**
