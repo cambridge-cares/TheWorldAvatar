@@ -81,7 +81,7 @@ def write(geojson_path, final_path, geometry_type):
     
     final_gdf.to_file(final_path, driver="GML")
     
-# input GeoJSON path
+# input GML path
 input_file = 
 
 # output GML path
