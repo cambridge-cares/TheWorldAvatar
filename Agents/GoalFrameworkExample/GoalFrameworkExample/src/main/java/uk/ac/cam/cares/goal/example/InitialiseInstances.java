@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -31,6 +32,9 @@ public class InitialiseInstances extends JPSAgent{
 
 	private static String baseURL = "http://goalexamplebnl:8080/GoalFrameworkExample";
 
+	private static String binemptying_agent_iri = SparqlClient.namespace + "sumvalue_agent";
+	private static String binemptying_agent_url = baseURL + BinEmptyingAgent.URL_BINEMPTYINGAGENT;
+
 	public static final String goalInstanceBaseURL = "http://goalexamplebnl.com/triplestore/repository/";
 
 
@@ -43,6 +47,7 @@ public class InitialiseInstances extends JPSAgent{
 			RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser, Config.kgpassword);
 			SparqlClient sparqlClient = new SparqlClient(storeClient);
 			GoalClient goalClient = new GoalClient(storeClient,goalInstanceBaseURL);
+			DerivationClient devClient  = new DerivationClient(storeClient,goalInstanceBaseURL);
 
 
 			LOGGER.info("Initialising new instances");
@@ -65,16 +70,11 @@ public class InitialiseInstances extends JPSAgent{
 			String sumValueRdfType = SparqlClient.getRdfTypeString(SparqlClient.SumValue);
 			String scalarValueRdfType = SparqlClient.getRdfTypeString(SparqlClient.ScalarValue);
 			String truckValueRdfType = SparqlClient.getRdfTypeString(SparqlClient.TruckValue);
-//
-//
-//			//Create ontoagent instances for SumValue
-//			devClient.createOntoAgentInstance(sumvalue_agent_iri, sumvalue_agent_url,
-//					Arrays.asList(inputDataRdfType), Arrays.asList(sumValueRdfType, scalarValueRdfType));
-//
-//			//Create ontoagent instance for TruckValue
-//			devClient.createOntoAgentInstance(truckcalling_agent_iri, truckcalling_agent_url,
-//					Arrays.asList(sumValueRdfType), Arrays.asList(truckValueRdfType));
-//
+
+
+			//Create ontoagent instances for SumValue
+			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(inputDataRdfType), Arrays.asList(sumValueRdfType, scalarValueRdfType));
+
 //			//Create sumvalue_iri
 //			String sumvalue_property = sparqlClient.createSumValue();
 //			//Initialise sumvalue to be 0
