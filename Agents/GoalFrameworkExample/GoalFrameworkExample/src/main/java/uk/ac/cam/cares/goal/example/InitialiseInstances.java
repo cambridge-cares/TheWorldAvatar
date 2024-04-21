@@ -29,7 +29,7 @@ public class InitialiseInstances extends JPSAgent{
 
 	private static final Logger LOGGER = LogManager.getLogger(InitialiseInstances.class);
 
-	private static String baseURL = "http://goalexamplebnl:8080/DerivationExample";
+	private static String baseURL = "http://goalexamplebnl:8080/GoalFrameworkExample";
 
 	public static final String goalInstanceBaseURL = "http://goalexamplebnl.com/triplestore/repository/";
 

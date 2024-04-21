@@ -29,9 +29,9 @@ public class SparqlClient {
     StoreClientInterface storeClient;
 
     // namespace
-    public static String namespace = "http://bnl_example#";
+    public static String namespace = "http://goalframework_example#";
 
-    public static String prefix = "bnl_example";
+    public static String prefix = "goalframework";
     private static Prefix p_namespace = SparqlBuilder.prefix(prefix, iri(namespace));
 
 
