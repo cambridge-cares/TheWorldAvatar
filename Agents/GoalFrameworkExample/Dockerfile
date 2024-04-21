@@ -12,7 +12,7 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
-WORKDIR /root/DerivationExample
+WORKDIR /root/GoalFrameworkExample
 # change this line to force maven to rebuild the war file
 RUN echo abcd
 RUN --mount=type=cache,target=/root/.m2/repository mvn clean install -U -DskipTests
@@ -24,7 +24,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/DerivationExample/output/GoalFrameworkExample##1.2.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/GoalFrameworkExample/output/GoalFrameworkExample##1.2.0.war $CATALINA_HOME/webapps/
 
 # these settings are only required for debug mode
 ENV JPDA_ADDRESS=0.0.0.0:8000
