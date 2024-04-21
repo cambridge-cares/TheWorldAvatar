@@ -51,4 +51,28 @@ public class GoalClient {
         this.kbClient = kbClient;
         this.sparqlClient = new GoalSparql(kbClient, goalInstanceBaseURL);
     }
+
+    /**
+     * adds a timestamp to your input following the w3c standard for unix timestamp
+     * https://www.w3.org/TR/owl-time/
+     * <entity> <hasTime> <time>, <time> <numericPosition> 123
+     *
+     * @param entity
+     */
+    public void addTimeInstance(String entity) {
+        // calls the method that adds timestamp in bulk
+        addTimeInstance(Arrays.asList(entity));
+        LOGGER.info("Added timestamp to <" + entity + "> if it doesn't have a timestamp already");
+    }
+
+    /**
+     * same method as above but in bulk
+     *
+     * @param entities
+     */
+    public void addTimeInstance(List<String> entities) {
+        this.sparqlClient.addTimeInstance(entities);
+        LOGGER.info("Added timestamps to <" + entities + "> if they don't have a timestamp already");
+    }
+
 }
