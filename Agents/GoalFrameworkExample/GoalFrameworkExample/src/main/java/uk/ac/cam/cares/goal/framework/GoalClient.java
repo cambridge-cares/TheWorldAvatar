@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.goal;
+package uk.ac.cam.cares.goal.framework;
 
 import java.time.Instant;
 import java.util.ArrayList;

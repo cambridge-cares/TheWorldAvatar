@@ -13,11 +13,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.goal.GoalClient;
+
+
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
+//GoalFramework import statements
+import uk.ac.cam.cares.goal.framework.*;
 
 @WebServlet(urlPatterns = {"/InitialiseInstances"})
 public class InitialiseInstances extends JPSAgent{
