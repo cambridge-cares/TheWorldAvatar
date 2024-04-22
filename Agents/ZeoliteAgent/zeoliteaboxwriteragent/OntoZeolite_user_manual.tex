@@ -1,0 +1,299 @@
+\documentclass{article}
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\section{Ontozeolite KG preparation
+}
+\label{sec:zeolite_data}
+
+\subsection{Quick start}
+\label{sec:zeolite_data_quick_start}
+To instantiate a copy of ontozeolite knowledge graph
+one needs:
+
+\begin{itemize}
+\item
+the input data (stored in directory \texttt{ontozeolite}), 
+
+\item
+python code (in directory \texttt{python}), 
+
+\item
+control scripts (\texttt{*.bat} files in the root directory).
+
+\item
+a running copy of Blazegraph database on a server with an empty namespace.
+\end{itemize}
+
+The data generation requires less than 10 Gb of hard drive space.
+
+The code uses several external packages.
+It is recommended to use a virtual environment to install them:
+
+\hspace{1cm}
+\verb|$ python -m venv <venv_name>|
+
+\hspace{1cm}
+\verb|$ <venv_name>\Scripts\activate.bat|
+
+\hspace{1cm}
+\verb|(<venv_name>) $|
+
+Install third-party package \texttt{pymatgen}: 
+
+\hspace{1cm}
+\verb|(<venv_name>) pip install pymatgen$|
+
+More information can be found at their 
+\href{https://pymatgen.org/installation.html}{official web-site}.
+
+Install third-party package \texttt{bibtexparser}. 
+
+The BibtexParser library requires version 2+. It has to be loaded from
+\href{https://github.com/sciunto-org/python-bibtexparser}{development branch},
+and NOT from 'pip install'. 
+Pip install currently has version 1.3 or 1.4.
+Command line to install:
+
+\hspace{1cm}
+\verb|(<venv_name>) pip install --no-cache-dir --force-reinstall|
+
+\verb|           git+https://github.com/sciunto-org/python-bibtexparser@main|
+
+More information can be found at their 
+\href{https://github.com/sciunto-org/python-bibtexparser}{official web-site}.
+
+Install Third-party package \texttt{entityrdfizer}:
+
+\hspace{1cm}
+\verb|(<venv_name>) $ pip install entityrdfizer|
+
+More details on the
+\href{https://github.com/cambridge-cares/TheWorldAvatar/tree/main/EntityRDFizer}{TWA web-site}.
+
+Install Third-party package \texttt{pyuploader}:
+
+\hspace{1cm}
+\verb|(<venv_name>) $ pip install pyuploader|
+
+More details on the 
+\href{https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_uploader}{TWA web-site}.
+
+Before instantiation change the SERVER and NAMESPACE 
+variables in file \texttt{ontozeo.bat} 
+to a valid server address and an empty namespace on that server.
+Add a password file for a server, if the server requires authentication:
+a file \texttt{blazedev.auth} in the parent directory must contain one line: \texttt{username:password}.
+
+Now the entire KG generation can be done by a single command:
+
+\hspace{1cm}
+\texttt{ontozeo.bat}
+
+The individual steps used in this script are described below. 
+
+Once fully uploaded, the KG can be queried by SPARQL queries or programmatically.
+Example SPARQL queries can be found in \texttt{ontozeolite/queries/}.
+
+\subsection{Overview}
+\label{sec:zeolite_data_overview}
+
+The zeolite knowledge graph (KG) comprises interconnected entities derived from various ontologies.
+%is particular: ontospecies, units-of-measure, bibo, ontocrystal, ontozeolite. 
+The structure of the ontology can be found in the manuscript.
+These entities are instantiated from input data using different parts of the code, as described below. 
+
+The entire data for the zeolite KG is divided into parts according to the nature of the data:
+\begin{enumerate}
+    \item[A.] Bibliography information. Uses Bib\TeX{} file(s) as input data.
+    Output is \texttt{onto\_bib} KG,
+    \item[B.] Crystal information. Uses Crystallographic Information Files (CIF) as input.
+    Output is \texttt{cif\_twa} KG,
+    \item[C.] Zeolite-specific information. Uses various input data
+    in \texttt{.json} or \texttt{.csv} format, 
+    IRIs defined in \texttt{onto\_bib}, \texttt{cif\_twa} and some other external ontologies.
+    Output is \texttt{ontozeolite\_kg} KG.
+\end{enumerate}
+
+Instantiation of the zeolite KG on a Blazegraph server
+consists of:
+\begin{enumerate}
+\item Preparation of input data,
+\item Generation of CSV files,
+\item Generation of OWL files,
+\item Uploading the data to Blazegraph server,
+%\item Testing of the data on Blazegraph server.
+\end{enumerate}
+
+The default directory for the data is \texttt{ontozeolite}.
+The file structure:
+\begin{verbatim}
+ontozeolite/biblio/bibfiles/  - input data (required)
+ontozeolite/biblio/csv/   - generated, temporary file
+ontozeolite/biblio/owl/   - generated, to upload
+ontozeolite/crystal/data/  - input data (required)
+ontozeolite/crystal/csv/  - generated, temporary files
+ontozeolite/crystal/owl/  - generated, to upload
+ontozeolite/zeolite/data/ - input data (required)
+ontozeolite/zeolite/csv/  - generated, temporary files
+ontozeolite/zeolite/owl/  - generated, to upload
+\end{verbatim}
+
+\subsection{Bibliography Information KG}
+%\subsection{Preparation of \texttt{onto\_bib.owl}}
+\label{sec:zeolite_data_biblio}
+
+Input: 
+
+\hspace{1cm} \texttt{ontozeolite/biblio/bibfiles/} -
+individual bib file(s) (one citation per file), 
+
+\hspace{1cm} \texttt{ontozeolite/biblio/bibdata\_crossref\_doi.tex}
+- a list of bibtex entries, 
+
+\hspace{1cm} \texttt{ontozeolite/biblio/bibdata\_original\_pdf.tex}
+- a list of bibtex entries.
+
+Processing: 
+
+\hspace{1cm} \texttt{python combine\_bib.py} 
+
+\hspace{1cm} \texttt{python bib2csv.py} 
+
+\hspace{1cm} 
+\verb|csv2rdf ontozeolite/biblio/csv/onto\_bib.csv --csvType=abox|
+
+Output: 
+
+\hspace{1cm} 
+\texttt{ontozeolite/biblio/csv/onto\_bib.csv} 
+- file containing bibliography information in csv format,
+
+\hspace{1cm} 
+\texttt{ontozeolite/biblio/owl/onto\_bib.owl} 
+- OWL file with all bibliography information, converted from \texttt{onto\_bib.csv} (see above),
+To be uploaded to the Blazegraph server.
+
+\hspace{1cm} 
+\texttt{ontozeolite/biblio/bib\_iri\_list.csv}
+- list of bibliography items and the corresponding IRI used in the \texttt{onto\_bib.csv} file.
+This file will be used to link ontozeolite ontology to the bibliography information.
+
+The OWL file for the bibliography part of the KG is generated from the standard Bib\TeX{} bibliography file(s). 
+Each bibliography entry is stored as an entity of \texttt{bibo:Document} class. 
+The TBox for \texttt{bibo:Document} can be found, for example, in documentation folder:
+
+\texttt{ontozeolite/docs/20210503\_ProvenanceOntologies\_jb2197.pptx} 
+
+
+%\subsection{Preparation of \texttt{cif\_twa\_XXX.owl files}}
+\subsection{Crystal Information KG}
+\label{sec:zeolite_data_crystal}
+
+Input:
+
+\hspace{1cm} 
+\texttt{a\_final\_species\_nodup.json} - a list of zeolitic materials,
+only CIF files mentioned in this list produce abox.
+
+%\texttt{ccdcfiles/}
+%\texttt{ccdc/}
+%\texttt{cod/}
+%\texttt{cifextra/}
+
+\hspace{1cm} 
+\texttt{cifdir/}
+- directories with CIF files for materials to be processed, 
+
+\hspace{1cm} 
+\texttt{CIF} - CIF files for zeolite frameworks.
+
+Processing: 
+
+\hspace{1cm} 
+\texttt{python crystalinfo.py}
+
+\hspace{1cm} 
+\verb|csv2rdf ontozeolite/crystal/csv/cif\_twa\_i.csv --csvType=abox|
+(where i=0...128).
+
+Output: 
+
+\hspace{1cm} 
+\texttt{cif\_twa\_i.csv},  (where i=0...128),
+
+\hspace{1cm} 
+\texttt{cif\_twa\_i.csv.owl},  (where i=0...128),
+
+\hspace{1cm} 
+\texttt{cif\_iri\_list.csv}.
+
+The total size of the ABox for crystal information for the zolitic materials is approximately 3.0 Gb.
+Due to limitations of the uploader the data is divided in separate files not exceeding 50 Mb. 
+
+\subsection{Zeolite KG}
+\label{sec:zeolite_data_zeolite}
+
+There are currently 256 zeolite frameworks and over 1000 materials, each material belongs to a framerowk.
+The file size for the KG containing these frameworks and materials is close to 100Mb,
+so the data is separated in 3 parts with 100, 100 and 56 frameworks, respectively.
+
+Input: 
+
+\hspace{1cm} \texttt{a\_final\_species\_nodup.json} 
+
+\hspace{1cm} \texttt{ontozeolite/zeolite/data/*.*} 
+
+\hspace{1cm} \texttt{cif\_iri\_list.csv} 
+
+\hspace{1cm} \texttt{bib\_iri\_list.csv} 
+
+%\hspace{1cm} \textcolor{Red}{Raw data}
+
+Processing: 
+
+\hspace{1cm} 
+\texttt{python csv\_maker.py -c all -f 0 -t 100 -o dir}
+
+\hspace{1cm} 
+\texttt{python csv\_maker.py -c all -f 100 -t 200 -o dir}
+
+\hspace{1cm} 
+\texttt{python csv\_maker.py -c all -f 200 -t 300 -o dir}
+
+\hspace{1cm} \texttt{python csv\_merger.py dir}
+
+\hspace{1cm} 
+\verb|csv2rdf ontozeolite/zeolite/csv/ontozeolite\_kg\_i.csv --csvType=abox|
+
+Output:
+
+\hspace{1cm} %????? 
+\texttt{ontozeolite\_kg\_0i.csv} (here i=0,1,2).
+
+\hspace{1cm} %????? 
+    \texttt{cif\_iri\_list.csv}
+
+\subsection{Generation of OWL files}
+
+OWL files are created from CSV files using rdtfizer tool: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/EntityRDFizer
+After activating the virtual environment for each csv file run:
+
+\verb|csv2rdf path/to/csv/file.csv --csvType=abox |
+
+
+\subsection{Upload OWL files to \texttt{Blazegraph}}
+
+All upload in done by a single script:
+
+\texttt{upload\_cryst.bat}
+
+The upload is implemented using 
+\verb|https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_uploader|
+
+It allows upload either to a local Blazegraph server, or remote with authentication.
+
+
+\end{document}
