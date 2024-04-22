@@ -127,3 +127,4 @@ FloorsCatC,Class,NumberOfFloors,IS-A,,,,Category C of floors: estimate,https://w
 hasGFA,Data Property,,,Property,float,exactly 1,A relationship between a building and its Gross Floor Area value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has GFA
 hasCountry,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,A relationship between an address and the respective country name.,https://www.theworldavatar.com/kg/ontobuiltenv/,has country
 hasCity,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,A relationship between an address and the respective city name.,https://www.theworldavatar.com/kg/ontobuiltenv/,has city
+hasEstimatedConstructionCost,Data Property,,,Property,float,exactly 1,A relationship between a building and its estimated construction cost.,https://www.theworldavatar.com/kg/ontobuiltenv/,has estimated construction cost

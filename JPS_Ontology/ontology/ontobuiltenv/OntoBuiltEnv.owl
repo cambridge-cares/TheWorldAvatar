@@ -584,6 +584,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasEstimatedConstructionCost -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasEstimatedConstructionCost">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment>A relationship between a building and its estimated construction cost.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
+        <rdfs:label>has estimated construction cost</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasGFA -->
 
 
