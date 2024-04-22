@@ -547,14 +547,14 @@ class CrystalInfo:
             #if not got_symm:
             if has_xyz_line(file_path):
                 with open("list_of_cif_fails.txt", "a", encoding="utf-8") as fp:
-                    #fp.write(file + "\n")
+                    fp.write(file + "\n")
                     pass
 
         if err_count > 0:
             logging.error(" Failed to load cif file '%s', aborting", file_path)
 
             with open("list_of_cif_fails.txt", "a", encoding="utf-8") as fp:
-                fp.write(file + "\n")
+                #fp.write(file + "\n")
                 pass
             return output
 
@@ -1423,14 +1423,14 @@ if __name__ == "__main__":
     #files += list_files_with_extension( os.path.join("ccdcfiles"), ".cif")
 
     files = []
-    data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "a_cifs.csv"))
+    #data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "a_cifs.csv"))
+    data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "cif_list.csv"))
     data = data[1:]  # <= removed the header line
     for line in data[:]:
         if line[5] != "" and line[5].lower() != "none":
             if line[5].lower() not in files:
                 files += line[5].lower().split()
 
-    #print("Found files:", len(files))
     files = list(set(files))
     print("Found CIF files:", len(files))
 
@@ -1445,7 +1445,8 @@ if __name__ == "__main__":
     tmp = list(files)
     files = []
     for file in tmp:
-        new_file = os.path.join(DATA_DIR, "crystal", "data", file)
+        #new_file = os.path.join(DATA_DIR, "crystal", "data", file)
+        new_file = file
         if not os.path.isfile(new_file):
             print("Missing file", new_file)
         files.append(new_file)
@@ -1472,7 +1473,7 @@ if __name__ == "__main__":
     # 2. Start processing files one by one:
     #    2a. If size exceeds size 20Mb move to the next folder
     #    2b. Keep a list of CIF uuid
-    #    2c. Once too many lines in the output - create a new file
+    #    2c. Once too many lines in the output - create a new csv file.
 
     if not os.path.isdir(DB_FOLDER):
         os.mkdir(DB_FOLDER)
@@ -1490,19 +1491,18 @@ if __name__ == "__main__":
                                  t_prefix=crystOntoPrefix + "OntoCrystal.owl",
                                  a_prefix=crystOntoPrefix)
 
-    #print("ssssssssss")
     CIF_IRI_LIST = []  # TODO possibility to load from file for extension.
     db_count = 0
     CIF_IRI_DATA = CifIriData()
     CIF_IRI_DATA.self_test()
 
-    #print("ssssssssss")
     uuid_file = os.path.join(UUID_FOLDER, "crystal_uuid_" + str(db_count) +".csv")
     uuidDB = tools.UuidDB(filename=uuid_file)
-    #print("ssssssssss")
+
     for i_file, file in enumerate(files):
         print("----------------------------------------------------------")
-        print("PyMatGenStarting cif ", i_file, " of ", len(files), ": '", file, "'.", sep="")
+        print("PyMatGenStarting cif ", i_file, " of ", len(files),
+              ": '", file, "'.", sep="")
 
         i_cif = len(CIF_IRI_LIST)
 
@@ -1523,7 +1523,7 @@ if __name__ == "__main__":
                                          new_uuid=uuid_str)
         output += tmp
 
-
+        # To limit the file size, because blazegraph cannot accept big files.
         if len(output) > 150000 or i_file == len(files) - 1:
             file_out = os.path.join(CSV_FOLDER, "cif_twa_" + str(db_count) + ".csv")
             tools.writeCsv(file_out, output)

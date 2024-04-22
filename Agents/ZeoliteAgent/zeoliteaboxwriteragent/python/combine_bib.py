@@ -316,10 +316,10 @@ def append_bib_file(folder, bibfiles, file_out, file_duplicates):
     else:
         print("Skipping bib files (debugging")
 
-    if True:
-        if len(bibfiles) > 0:
-            file1 = bibfiles[0]
+    if len(bibfiles) > 0:
+        file1 = bibfiles[0]
 
+    if os.path.isfile(file1):
         with open(file1, encoding="utf-8") as fp:
             chunk = []
             for i_line, line in enumerate(fp):
@@ -344,10 +344,10 @@ def append_bib_file(folder, bibfiles, file_out, file_duplicates):
     else:
         print("Skipping bib file (debugging")
 
-    if True:
-        if len(bibfiles) > 1:
-            file1 = bibfiles[1]
+    if len(bibfiles) > 1:
+        file1 = bibfiles[1]
 
+    if os.path.isfile(file1):
         with open(file1, encoding="utf-8") as fp:
             chunk = []
             for i_line, line in enumerate(fp):
@@ -596,6 +596,3 @@ if __name__ == "__main__":
 
     #check_zeolite_cites(INPUT_MATERIALS, FILE_IRI, FILE_DUPLICATES) 
     #check_zeolite_cites(OUTPUT_MATERIALS, FILE_IRI, FILE_DUPLICATES) 
-
-
-

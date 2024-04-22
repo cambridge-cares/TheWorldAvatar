@@ -27,7 +27,6 @@ with open(filename, encoding="utf-8") as fp:
     data = json.load(fp)
 
 
-
 files = []
 for key, val in data.items():
     f1 = None

@@ -25,6 +25,13 @@ logging.basicConfig(level = logging.ERROR)
 
 crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
 
+# Parameter to extract individual atom position from known base atom and
+# the symmetry of the unit cell. Atoms located closer than this cut-off
+# are treated as the same atom and are ignored.
+# This is adjustable parameter. Typical values from 0.06 to 2 angstrom.
+ATOM_DUPLICATE_CUTOFF = 0.06  # In angstrom.
+
+
 entriesWithUncertainties = [
              "_cell_length_a",    "_cell_length_b",   "_cell_length_c",
              "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma",
@@ -988,12 +995,19 @@ class CrystalData:
         # === end of CrystalData._dist_cart()
 
     def evalValAndErrAtom(self):
+        # Algorithm:
+        # Compute the real atom positions
+        # Compute pair-wise distances and remove (replace by None) those too close
+        # Remove the None
+
+
         if self.listAtomSymm == [] or self.listAtomSymm is None:
             #for atom in self.listAtomRaw:
             #    self.listAtomAll.append(atom)
         #else:
-            self.listAtomSymm = ["x,y,z", "x,y,-z", "x,-y,z", "-x,y,z"]  # , "-x,-y,-z"]
+            #self.listAtomSymm = ["x,y,z", "x,y,-z", "x,-y,z", "-x,y,z"]  # , "-x,-y,-z"]
             #self.listAtomSymm = ["x,y,z", "-x,-y,-z"]
+            self.listAtomSymm = ["x,y,z"]
             pass
         #logging.error(" loaded listAtomSymm, need to make atom copies")
         # Create a list of atoms with given set of symmetry
@@ -1027,17 +1041,13 @@ class CrystalData:
                     overlap = False
                     for a2 in self.listAtomAll:
                         r2 = a2.frac
-                        if self._dist_cart(r2, r1) <= 2.0:
+                        if self._dist_cart(r2, r1) <= ATOM_DUPLICATE_CUTOFF:
                             overlap = True
                             break
                     if not overlap:
                         a1 = copy.copy(atom)
                         a1.frac = r1
                         self.listAtomAll.append(a1)
-            #1/0
-            # Compute the real atom positions
-            # Compute pair-wise distances and remove (replace by None) those too close
-            # Remove the None
 
         # Compute the real coordinates:
         for atom in self.listAtomAll:

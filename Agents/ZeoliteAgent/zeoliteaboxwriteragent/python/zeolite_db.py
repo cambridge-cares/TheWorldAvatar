@@ -230,6 +230,7 @@ class ZeoliteMaterial:
         output.append([subject, "Instance", uuid_zeo, predicate, "", ""])
                        #zeoOntoPrefix + "hasZeoliticMaterial", "", ""])
 
+        print("in zeolite_db uuid_zeo =", uuid_zeo)
         #print("Starting 'name' section")
         #value = self.data["name"].replace("['", "").replace("']", "")
         if "name" in self.data:

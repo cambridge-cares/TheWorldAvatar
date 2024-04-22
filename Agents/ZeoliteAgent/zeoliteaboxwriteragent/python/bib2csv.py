@@ -692,14 +692,14 @@ class OntoBibo:
         i_iri, _ = self.uuidDB.addUUID(biboPrefix + class_name,
                                        self.abox_prefix + jShort + "_V" + issueId)
 
-        if self.uuidDB.getUUID(biboPrefix + class_name,
-                               self.abox_prefix + jShort + "_V" + issueId) is None:
+        #if self.uuidDB.getUUID(biboPrefix + class_name,
+        #                       self.abox_prefix + jShort + "_V" + issueId) is None:
 
             #i_iri, _ = self.uuidDB.addUUID(biboPrefix + class_name,
             #                               self.abox_prefix + jShort + "_V" + vol)
 
             #output.append([i_iri, "Instance", biboPrefix + class_name, "", "", ""])
-            pass
+        #    pass
 
         if i_iri not in self.known_volume:
             self.known_volume.append(i_iri)

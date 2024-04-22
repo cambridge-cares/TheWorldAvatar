@@ -765,38 +765,41 @@ class CsvMaker:
         output = []
 
         xrdFile = os.path.join(DATA_DIR, "zeolite", "data", "xrd-ed5.csv")
-        #print("data_dir =", DATA_DIR)
-        #print("xrd file =", xrdFile)
-        xrdData = tools.readCsv(xrdFile)
-        #print(xrdData[:2])
 
-        nSpectra = 0
-        xrdHead = xrdData[0]
-        xrdData = xrdData[1:]
-        for xrd in xrdData:
+        if os.path.isfile(xrdFile):
+            #print("data_dir =", DATA_DIR)
+            #print("xrd file =", xrdFile)
+            xrdData = tools.readCsv(xrdFile)
+            #print(xrdData[:2])
 
-            #print("Framework:", xrd[2])
-            if zeoname == xrd[2]:
-                nSpectra += 1
+            nSpectra = 0
+            xrdHead = xrdData[0]
+            xrdData = xrdData[1:]
+            for xrd in xrdData:
 
-                uuid_xrd, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "XRDSpectrum",
-                                                  self.zeoOntoPrefix + "XRDSpectrum" + str(nSpectra) +"_" + zeoname)
-                output.append([uuid_xrd, "Instance", self.crystOntoPrefix + "XRDSpectrum", "", "", ""])
+                #print("Framework:", xrd[2])
+                if zeoname == xrd[2]:
+                    nSpectra += 1
 
-                output.append([subject, "Instance", uuid_xrd, predicate, "", ""])
+                    uuid_xrd, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "XRDSpectrum",
+                                                      self.zeoOntoPrefix + "XRDSpectrum" + str(nSpectra) +"_" + zeoname)
+                    output.append([uuid_xrd, "Instance", self.crystOntoPrefix + "XRDSpectrum", "", "", ""])
 
-                #print(zeoname, "=====>", xrd[5])
-                #print(">>> In arrSpectrum, uuid_xrd =", uuid_xrd)
-                filename = os.path.join("ontozeolite", "zeolite", "data", xrd[5])
-                output += self.loadXRDPeaks(uuid_xrd,
-                                self.crystOntoPrefix + "hasCharacteristicPeak",
-                                zeoname + str(nSpectra), filename)
+                    output.append([subject, "Instance", uuid_xrd, predicate, "", ""])
 
-                if xrd[6] != "" and xrd[6] is not None:
-                    print("TODO Add DOI ")
+                    #print(zeoname, "=====>", xrd[5])
+                    #print(">>> In arrSpectrum, uuid_xrd =", uuid_xrd)
+                    filename = os.path.join("ontozeolite", "zeolite", "data", xrd[5])
+                    output += self.loadXRDPeaks(uuid_xrd,
+                                    self.crystOntoPrefix + "hasCharacteristicPeak",
+                                    zeoname + str(nSpectra), filename)
 
-                break
-        #if z in xrdData:
+                    if xrd[6] != "" and xrd[6] is not None:
+                        print("TODO Add DOI ")
+
+                    break
+        else:
+            print("File ", xrdFile, "does not exist in csv_maker.csv")
 
         return output
         # === end of CsvMaker.arrSpectrum()
@@ -1271,7 +1274,6 @@ class CsvMaker:
         #print("Number of zeoData in csv_maker =", len(self.zeoList))
         #print(self.zeoList)
         t_start = datetime.datetime.now()
-        # FIXME move back all iems
         #for iz, z in enumerate(["MFS"]):
         #for iz, z in enumerate(["MWW"]):
         #for iz, z in enumerate(["DFO"]):
@@ -1283,8 +1285,9 @@ class CsvMaker:
         #for iz, z in enumerate(["-CHI"]):
         #for iz, z in enumerate(["VFI"]):
         #for iz, z in enumerate(["JSN"]):
+        #for iz, z in enumerate(["GOO"]):
         for iz, z in enumerate(self.zeoList):
-            #print("In zeolist z =", z)
+            print(">>>> In zeolist z =", z)
 
             # Each framework is saved in a separate arr (and separate file):
             arr = []
@@ -1362,6 +1365,7 @@ class CsvMaker:
             for zeolite in zeoDataBase.get_framework_materials(z):
                 # getMaterialIDs return a list of tuples: cif and material
 
+                print(">>>>> starting zeolite =", zeolite)
                 #print("cif_line =", cif_line)
                 #print("mat_line =", mat_line)
                 #arr += zeoData.get_csv_arr_material(cif_line, mat_line, uuid_zeoframe,
@@ -1369,6 +1373,7 @@ class CsvMaker:
                 arr += zeolite.get_csv_arr_material(zeoframe_iri,
                                                     self.zeoOntoPrefix + "hasZeoliticMaterial")
 
+                #print(arr[-1])
                 #print(zeolite.data)
                 #1/0
                 #arr +=[[">>>>>>>>>>", "After csv_arr_material", uuid_zeoframe, zeolite.data["safe_name"]]]

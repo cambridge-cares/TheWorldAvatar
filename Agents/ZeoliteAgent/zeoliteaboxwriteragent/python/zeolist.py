@@ -46,6 +46,15 @@ testString = " ABW     ACO      AET      AFG      DFO   CSV     ETV    PTY "
 # AFI 
 
 def getZeoList( arg="main" ):
+    FRAMEWORK_LIST = os.path.join("ontozeolite", "zeolite", "data", "frameworks.txt")
+
+    if os.path.isfile(FRAMEWORK_LIST):
+        with open(FRAMEWORK_LIST, encoding="utf-8") as fp:
+            output = []
+            for fw in fp:
+                output.append(fw.strip())
+        return output
+
     outString = ""
     if   isinstance( arg, str ):
         if "all" == arg:
@@ -75,6 +84,10 @@ def getZeoList( arg="main" ):
 
 #    else:
 #         print( "Unknown argument '" + arg  "'" )
+
+    with open(FRAMEWORK_LIST, "w", encoding="utf-8") as fp:
+        for fw in output:
+            fp.write(fw + "\n")
 
     output = outString.split()
     #print( "Total ", len(output), " frameworks" )
