@@ -38,7 +38,12 @@ The ontology can be divided into these respective domains:
 
 
     "IndustrialFacility" ||--o{ "Industry" : belongsToIndustry
+```
 
+### 3.2. Subclasses of Industry
+
+```mermaid
+    erDiagram
     "Industry" }|--|| "PrintingIndustry" : "rdfs:subClassOf"
     "Industry" }|--|| "PrecisionEngineeringIndustry" : "rdfs:subClassOf"
     "Industry" }|--|| "PharmaceuticalIndustry" : "rdfs:subClassOf"
@@ -47,12 +52,14 @@ The ontology can be divided into these respective domains:
     "Industry" }|--|| "ChemicalIndustry" : "rdfs:subClassOf"
     "Industry" }|--|| "SemiconductorIndustry" : "rdfs:subClassOf"
     "Industry" }|--|| "InformationandCommunicationTechnologyIndustry" : "rdfs:subClassOf"
+```
 
+### 3.3. Subclasses of IndustrialFacility
 
+```mermaid
+    erDiagram
     "IndustrialFacility" }|--|| "DataCentre" : "rdfs:subClassOf"
     "IndustrialFacility" }|--|| "Factory" : "rdfs:subClassOf"
-    "IndustrialFacilityProperty" }|--|| "DataCentreProperty" : "rdfs:subClassOf"
-    "IndustrialFacilityProperty" }|--|| "FactoryProperty" : "rdfs:subClassOf"
     "Factory" }|--|| "ontochemplant:ChemicalPlant" : "rdfs:subClassOf"
     "Factory" }|--|| "SemiconductorPlant" : "rdfs:subClassOf"
     "Factory" }|--|| "FoodPlant" : "rdfs:subClassOf"
@@ -61,28 +68,32 @@ The ontology can be divided into these respective domains:
     "Factory" }|--|| "PrecisionEngineeringPlant" : "rdfs:subClassOf"
 ```
 
-### 3.2. Subclasses
+
+
+### 3.4. Subclasses of IndustrialFacilityProperty
 
 ```mermaid
     erDiagram
+    "IndustrialFacilityProperty" }|--|| "DataCentreProperty" : "rdfs:subClassOf"
+    "IndustrialFacilityProperty" }|--|| "FactoryProperty" : "rdfs:subClassOf"
+    "DataCentreProperty" }|--|| "MaximumITCapacity" : "rdfs:subClassOf"
+    "DataCentreProperty" }|--|| "UtilizationRate" : "rdfs:subClassOf"
+    "FactoryProperty" }|--|| "DesignCapacity" : "rdfs:subClassOf"
+    "FactoryProperty" }|--|| "SpecificEnergyConsumption" : "rdfs:subClassOf"
+    "FactoryProperty" }|--|| "ThermalEfficiency" : "rdfs:subClassOf"
+    "FactoryProperty" }|--|| "PlantCO2Emission" : "rdfs:subClassOf"
+    "FactoryProperty" }|--|| "EnergyConsumptionPerUnitFloorArea" : "rdfs:subClassOf"
+    "FactoryProperty" }|--|| "GeneratedHeatPerPrinter" : "rdfs:subClassOf"
+
     "DataCentre" ||--o{ "MaximumITCapacity" : hasMaximumITCapacity
+    "DataCentre" ||--o{ "UtilizationRate" : hasUtilizationRate
     "Factory" ||--o{ "DesignCapacity" : hasDesignCapacity
     "Factory" ||--o{ "SpecificEnergyConsumption" : hasSpecificEnergyConsumption
     "Factory" ||--o{ "ThermalEfficiency" : hasThermalEfficiency
     "Factory" ||--o{ "PlantCO2Emission" : hasPlantCO2Emission
-    
-
-
-    "IndustrialFacility" }|--|| "DataCentre" : "rdfs:subClassOf"
-    "IndustrialFacility" }|--|| "Factory" : "rdfs:subClassOf"
-    "IndustrialFacilityProperty" }|--|| "DataCentreProperty" : "rdfs:subClassOf"
-    "IndustrialFacilityProperty" }|--|| "FactoryProperty" : "rdfs:subClassOf"
-    "Factory" }|--|| "ontochemplant:ChemicalPlant" : "rdfs:subClassOf"
-    "Factory" }|--|| "SemiconductorPlant" : "rdfs:subClassOf"
-    "Factory" }|--|| "FoodPlant" : "rdfs:subClassOf"
+    "Factory" ||--o{ "EnergyConsumptionPerUnitFloorArea" : hasEnergyConsumptionPerUnitFloorArea
     "Factory" }|--|| "PrintingPlant" : "rdfs:subClassOf"
-    "Factory" }|--|| "PharmaceuticalPlant" : "rdfs:subClassOf"
-    "Factory" }|--|| "PrecisionEngineeringPlant" : "rdfs:subClassOf"
+    "PrintingPlant" }|--|| "GeneratedHeatPerPrinter" : "hasGeneratedHeatPerPrinter"
 ```
 
 
