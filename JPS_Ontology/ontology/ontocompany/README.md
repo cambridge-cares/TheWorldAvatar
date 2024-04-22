@@ -1,4 +1,4 @@
-# Ontology for Asset Management
+# Ontology for Companies and Industrial Facilities
 ## 1. Introduction
 The OntoCompany ontology has been developed to describe the properties of companies and the operations of the industrial facilities they own. It contains several classes and relations specifically included for the purpose of calculating the waste heat emissions of the industrial facilities.
 
@@ -12,7 +12,9 @@ The OntoCompany ontology has been developed to describe the properties of compan
 | [icontact](http://ontology.eil.utoronto.ca/icontact.html)                      | `http://ontology.eil.utoronto.ca/icontact.owl#` |
 | [ontochemplant](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontochemplant)                      | `https://www.theworldavatar.com/kg/ontochemplant/` |
 | [ontopowsys_powsysfunction](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontopowsys/PowSysFunction.owl) | `http://www.theworldavatar.com/kg/ontopowsys/powsysfunction/` | 
-| [ontocape_chemical_process_system](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl) | `http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsrealization/plant/` | 
+| [ontocape_chemical_process_system](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl) | `http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsrealization/plant/` |
+| [infrastructure](https://innoweb.mondragon.edu/ontologies/oema/infrastructure/1.1/index-en.html) | `http://www.purl.org/oema/infrastructure/` |
+| [ontocape_economic_performance](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl) | `http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsperformance/economicperformance/hasRevenue` | 
 
 ## 3. Data Model
 The ontology can be divided into these respective domains:
@@ -23,7 +25,7 @@ The ontology can be divided into these respective domains:
     erDiagram
     "Company" ||--o{ "IndustrialFacility" : isOwnerOf
     "Company" ||--o{ "ontopowsys_powsysfunction:PowerConsumption" : hasPowerConsumption
-    "Company" ||--o{ "Revenue" : hasRevenue
+    "Company" ||--o{ "Revenue" : "ontocape_economic_performance:hasRevenue"
     "Company" {
         hasSSICCode string
         hasProductionTechnology string
@@ -31,12 +33,13 @@ The ontology can be divided into these respective domains:
         hasYearOfEstablishment gYear
         hasNumberOfEmployees integer
     }
+    "infrastructure:Building" ||--o{ "IndustrialFacility" : "ontobim:hasFacility"
+    "ontobim:Facility" ||--o{ "IndustrialFacility" : "rdfs:subClassOf"
     "IndustrialFacility" ||--o{ "IndustrialFacilityProperty" : hasIndustrialFacilityProperty
-
+    "IndustrialFacilityProperty" }|--|| "DataCentreProperty" : "rdfs:subClassOf"
+    "IndustrialFacilityProperty" }|--|| "FactoryProperty" : "rdfs:subClassOf"
     "IndustrialFacility" ||--o{ "GeneratedHeat" : hasGeneratedHeat
     "IndustrialFacility" ||--o{ "FloorArea" : hasFloorArea
-
-
     "IndustrialFacility" ||--o{ "Industry" : belongsToIndustry
 ```
 
@@ -70,21 +73,10 @@ The ontology can be divided into these respective domains:
 
 
 
-### 3.4. Subclasses of IndustrialFacilityProperty
+### 3.4. Properties of Industrial Facilities
 
 ```mermaid
     erDiagram
-    "IndustrialFacilityProperty" }|--|| "DataCentreProperty" : "rdfs:subClassOf"
-    "IndustrialFacilityProperty" }|--|| "FactoryProperty" : "rdfs:subClassOf"
-    "DataCentreProperty" }|--|| "MaximumITCapacity" : "rdfs:subClassOf"
-    "DataCentreProperty" }|--|| "UtilizationRate" : "rdfs:subClassOf"
-    "FactoryProperty" }|--|| "DesignCapacity" : "rdfs:subClassOf"
-    "FactoryProperty" }|--|| "SpecificEnergyConsumption" : "rdfs:subClassOf"
-    "FactoryProperty" }|--|| "ThermalEfficiency" : "rdfs:subClassOf"
-    "FactoryProperty" }|--|| "PlantCO2Emission" : "rdfs:subClassOf"
-    "FactoryProperty" }|--|| "EnergyConsumptionPerUnitFloorArea" : "rdfs:subClassOf"
-    "FactoryProperty" }|--|| "GeneratedHeatPerPrinter" : "rdfs:subClassOf"
-
     "DataCentre" ||--o{ "MaximumITCapacity" : hasMaximumITCapacity
     "DataCentre" ||--o{ "UtilizationRate" : hasUtilizationRate
     "Factory" ||--o{ "DesignCapacity" : hasDesignCapacity
@@ -96,6 +88,21 @@ The ontology can be divided into these respective domains:
     "PrintingPlant" }|--|| "GeneratedHeatPerPrinter" : "hasGeneratedHeatPerPrinter"
 ```
 
+### 3.5. Address details
+
+```mermaid
+    erDiagram
+    "infrastructure:Building" ||--o{ "icontact:Address" : "icontact:hasAddress"
+    "icontact:Address" ||--o{ "LandLotDetails" : "hasLandLotDetails"
+     "LandLotDetails" {
+        hasLandLotNumber string
+        hasLotArea float
+    }
+     "icontact:Address" {
+        hasPostalCode string
+    }
+
+```
 
 
 ## Why was the OntoCompany.owl file produced by the TBox Generator edited ##
