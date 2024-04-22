@@ -39,6 +39,14 @@ class DataGroup {
      */
     public defaultExpanded: boolean = true;
 
+    public static handleDimensions(element: Object, scenarioDimensionsData: ScenarioDimensionsData, value: number) : Object {
+        let stringified = JSON.stringify(element);
+        for (const dimension in Object.keys(scenarioDimensionsData)) {
+            stringified.replaceAll(dimension, value.toString())
+        }
+        return JSON.parse(stringified);
+    }
+    
     /**
      * Parses the definition of each data set defined within the group. Note that
      * this just parse the definitions to create instance objects, it may not
@@ -46,9 +54,9 @@ class DataGroup {
      * 
      * @param sourceJSON JSON array of source nodes.
      */
-    public parseDataSources(sourcesJSON, dimension: string, value?: number) {
+    public parseDataSources(sourcesJSON) {
         for (const element of sourcesJSON) {
-            let node = JSON.parse(JSON.stringify(element).replaceAll(dimension, value.toString()));
+            let node: Object = element;
             // Create and store source
             let source = new DataSource(node);
 
@@ -68,9 +76,9 @@ class DataGroup {
      * @param stack base URL of the connected stack
      * @param layersJSON JSON array of layer nodes.
      */
-    public parseDataLayers(stack: string, layersJSON, dimension: string, value?: number) {
+    public parseDataLayers(stack: string, layersJSON) {
         for (const element of layersJSON) {
-            let node = JSON.parse(JSON.stringify(element).replaceAll(dimension, value.toString()));
+            let node = element;
 
             // Find the data source for this layer
             let source = this.findSource(node["source"]);

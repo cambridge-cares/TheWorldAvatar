@@ -6,14 +6,14 @@ class DataStore {
 
     /**
      * Array of loaded DataGroup instances.
-     */
-    public dataGroups: Array<DataGroup> = [];
-
-    /**
-     * Clears the data store.
-     */
-    public reset() {
-        this.dataGroups = [];
+    */
+   public dataGroups: Array<DataGroup> = [];
+   
+   /**
+    * Clears the data store.
+   */
+  public reset() {
+      this.dataGroups = [];
     }
 
     /**
@@ -63,19 +63,19 @@ class DataStore {
      * 
      * @returns Promise that fulfills when all loading is complete
      */
-    public loadDataGroups(dataJSON: Object, dimension: string, value: number) {
+    public loadDataGroups(dataJSON: Object) {
         if(dataJSON == null) {
             let self = this;
             
             return $.getJSON("./data.json", function(json) {
-                self.recurseLoadDataGroups(json, null, null, self.dataGroups.length, dimension, value);
+                self.recurseLoadDataGroups(json, null, null, self.dataGroups.length);
             }).fail((error) => {
                 throw error;
             });    
         }
 
         return new Promise((resolve, reject) => {
-            this.recurseLoadDataGroups(dataJSON, null, null, this.dataGroups.length, dimension, value);
+            this.recurseLoadDataGroups(dataJSON, null, null, this.dataGroups.length);
             resolve("done");
         });
     }
@@ -84,7 +84,7 @@ class DataStore {
      * Recursively parses the visualisation definition file into hierarchal
      * DataGroup instances.
      */
-    private recurseLoadDataGroups(currentNode: Object,  parentGroup: DataGroup, currentStack: string, groupID: number, dimension: string,  value: number) {
+    private recurseLoadDataGroups(currentNode: Object,  parentGroup: DataGroup, currentStack: string, groupID: number) {
         if(!currentNode["name"]) {
             throw new Error("Cannot parse a DataGroup that has no name!")
         }
@@ -116,17 +116,17 @@ class DataStore {
 
         // Parse sources and layers (if present)
         if(currentNode["sources"]) {
-            dataGroup.parseDataSources(currentNode["sources"], dimension, value);
+            dataGroup.parseDataSources(currentNode["sources"]);
         }   1
         if(currentNode["layers"]) {
-            dataGroup.parseDataLayers(currentStack, currentNode["layers"], dimension, value);
+            dataGroup.parseDataLayers(currentStack, currentNode["layers"]);
         }
 
         // Recurse into sub groups (if present)
         if(currentNode["groups"]) {
             for(let i = 0; i < currentNode["groups"].length; i++) {
                 let subNode = currentNode["groups"][i];
-                this.recurseLoadDataGroups(subNode, dataGroup, currentStack, i, dimension, value);
+                this.recurseLoadDataGroups(subNode, dataGroup, currentStack, i);
             }
         }
     }

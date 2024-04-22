@@ -18,10 +18,7 @@ class SliderHandler {
      */
     public scenarioDimensionsData: ScenarioDimensionsData;
 
-    /**
-     * Actions for the slider to trigger. e.g. repaint layers, change Feature Info Agent etc
-     */
-    public sliderActionsArray: SliderActionsArray;
+    
 
     /**
      * Pass through the manager instance to be able to call any sibling class methods
@@ -121,11 +118,4 @@ class SliderHandler {
         }
     }
 
-    /**
-     * Callback functions for the slider event listener
-     * @param sliderActions callback function that returns void 
-     */
-    public setSliderActionsArray(sliderActionsArray: SliderActionsArray) {
-        this.sliderActionsArray = sliderActionsArray
-    }
 }
