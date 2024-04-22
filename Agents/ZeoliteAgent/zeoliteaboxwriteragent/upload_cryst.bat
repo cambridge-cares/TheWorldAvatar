@@ -1,7 +1,7 @@
 @echo off
 rem Part of ontozeolite package.
 rem Generation of entire ontozeolite knowledge graph.
-rem Author: Rutkevych Pavlo
+rem Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
 rem Date: 2024/04/01
 
 rem Uploader to a blazegraph server. Requires vertual environment pyuploader_venv.
@@ -132,8 +132,6 @@ set OWL_DIR=ontozeolite\crystal\owl
 %PREFIX% pyuploader ts_upload %OWL_DIR%\cif_twa_61.csv.owl --url=%URL% %AUTH%
 %PREFIX% pyuploader ts_upload %OWL_DIR%\cif_twa_62.csv.owl --url=%URL% %AUTH%
 %PREFIX% pyuploader ts_upload %OWL_DIR%\cif_twa_63.csv.owl --url=%URL% %AUTH%
-goto EXIT
-
 %PREFIX% pyuploader ts_upload %OWL_DIR%\cif_twa_64.csv.owl --url=%URL% %AUTH%
 
 %PREFIX% pyuploader ts_upload %OWL_DIR%\cif_twa_65.csv.owl --url=%URL% %AUTH%
@@ -212,7 +210,8 @@ goto EXIT
 %PREFIX% pyuploader ts_upload %OWL_DIR%"\cif_twa_126.csv.owl" --url=%URL% %AUTH%
 %PREFIX% pyuploader ts_upload %OWL_DIR%"\cif_twa_127.csv.owl" --url=%URL% %AUTH%
 
-goto AAAAA
+rem goto EXIT
+rem goto AAAAA
 %PREFIX% pyuploader ts_upload %OWL_DIR%"\cif_twa_128.csv.owl" --url=%URL% %AUTH%
 %PREFIX% pyuploader ts_upload %OWL_DIR%"\cif_twa_129.csv.owl" --url=%URL% %AUTH%
 

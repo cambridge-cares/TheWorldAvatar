@@ -1,7 +1,7 @@
 @echo off
 rem Part ot ontozeolite package.
 rem Preparation of OntoZeolite Knowledge Graph
-rem Author: Rutkevych Pavlo 
+rem Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
 rem Date: 2024/04/01
 
 set PYTHON=python

@@ -1,7 +1,7 @@
 @echo off
 rem Part ot ontozeolite package.
 rem Preparation of crystal information (CIF) knowledge graphs.
-rem Author: Rutkevych Pavlo
+rem Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
 rem Date: 2024/04/01
 
 set PYTHON=python
@@ -36,6 +36,7 @@ if %COMMAND%==owl (
 :DATA
 echo Generate crystal data
 rem %PYTHON% %SRCDIR%check_final.py %DATADIR%
+%PYTHON% %SRCDIR%check_ciffiles.py %DATADIR%
 
 goto EXIT
 
@@ -53,12 +54,14 @@ if not exist %DATADIR%\crystal\owl (
   md %DATADIR%\crystal\owl
 )
 
-set RANGE=(0,1,64)
+set RANGE=(0,1,130)
 setlocal enabledelayedexpansion
 for /L %%i in %RANGE% do (
-  csv2rdf %DATADIR%\crystal\csv\cif_twa_%%i.csv --csvType=abox
-  sleep 1
-  move %DATADIR%\crystal\csv\cif_twa_%%i.csv.owl  %DATADIR%\crystal\owl\cif_twa_%%i.csv.owl > nul
+  if exist %DATADIR%\crystal\csv\cif_twa_%%i.csv (
+    csv2rdf %DATADIR%\crystal\csv\cif_twa_%%i.csv --csvType=abox
+    sleep 1
+    move %DATADIR%\crystal\csv\cif_twa_%%i.csv.owl  %DATADIR%\crystal\owl\cif_twa_%%i.csv.owl > nul
+  )
 )
 
 goto EXIT
