@@ -3,7 +3,7 @@ version: "3.8"
 services:
   goalframeworkexample:
     container_name: goalframeworkexample
-    image: goalframeworkexample:1.2.0
+    image: goalframeworkexample:1.0.0
     build:
       context: ./
     volumes:

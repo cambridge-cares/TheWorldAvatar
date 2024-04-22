@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 
-import uk.ac.cam.cares.goal.framework.GoalAgent;
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
@@ -25,7 +24,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 @WebServlet(urlPatterns = {BinEmptyingAgent.URL_BINEMPTYINGAGENT})
-public class BinEmptyingAgent extends GoalAgent {
+public class BinEmptyingAgent {
 
     private static final long serialVersionUID = 1L;
     public static final String URL_BINEMPTYINGAGENT = "/BinEmptyingAgent";
@@ -39,20 +38,20 @@ public class BinEmptyingAgent extends GoalAgent {
         LOGGER.info("BinEmptyingAGent is initialised.");
     }
 
-    @Override
-    public void init() throws ServletException {
-        // initialise all clients
-        Config.initProperties();
-        this.storeClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser, Config.kgpassword);
-        this.sparqlClient = new SparqlClient(this.storeClient);
-        super.devClient = new DerivationClient(this.storeClient, InitialiseInstances.goalInstanceBaseURL);
-    }
-
-
-    @Override
-    public void processRequestParameters (DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-
-        LOGGER.info("Received request: " + derivationInputs.toString());
-
-    }
+//    @Override
+//    public void init() throws ServletException {
+//        // initialise all clients
+//        Config.initProperties();
+//        this.storeClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser, Config.kgpassword);
+//        this.sparqlClient = new SparqlClient(this.storeClient);
+//        super.goalclient = new DerivationClient(this.storeClient, InitialiseInstances.goalInstanceBaseURL);
+//    }
+//
+//
+//    @Override
+//    public void processRequestParameters (DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
+//
+//        LOGGER.info("Received request: " + derivationInputs.toString());
+//
+//    }
 }

@@ -30,12 +30,12 @@ public class InitialiseInstances extends JPSAgent{
 
 	private static final Logger LOGGER = LogManager.getLogger(InitialiseInstances.class);
 
-	private static String baseURL = "http://goalexamplebnl:8080/GoalFrameworkExample";
+	private static String baseURL = "http://goalframeworkexample:8080/GoalFrameworkExample";
 
 	private static String binemptying_agent_iri = SparqlClient.namespace + "sumvalue_agent";
 	private static String binemptying_agent_url = baseURL + BinEmptyingAgent.URL_BINEMPTYINGAGENT;
 
-	public static final String goalInstanceBaseURL = "http://goalexamplebnl.com/triplestore/repository/";
+	public static final String goalInstanceBaseURL = "http://goalframeworkexample.com/triplestore/repository/";
 
 
 	@Override
