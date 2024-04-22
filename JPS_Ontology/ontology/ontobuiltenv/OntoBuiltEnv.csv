@@ -120,7 +120,7 @@ Bank,Class,Non-Domestic,IS-A,,,,A property where customers can deposit and withd
 Pharmacy,Class,Medical,IS-A,,,,A healthcare facility where medicinal drugs are prepared or sold.,https://www.theworldavatar.com/kg/ontobuiltenv/,Pharmacy
 hasNumberOfFloors,Object Property,,,Property,NumberOfFloors,exactly 1,A relationship between a property and its number of floors.,https://www.theworldavatar.com/kg/ontobuiltenv/,has number of floors
 NumberOfFloors,Class,,,Property,,,A concept to describe number of floors in a building.,https://www.theworldavatar.com/kg/ontobuiltenv/,Number of floors
-hasNumberOfFloorsValue,Data Property,,,NumberOfFloors,integer,exactly 1,A relationship between the number of floors and its numerical value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has number of floors value
+hasValue,Data Property,,,NumberOfFloors,integer,exactly 1,A relationship between the number of floors and its numerical value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has value
 FloorsCatA,Class,NumberOfFloors,IS-A,,,,Category A of floors: data from reliable departments (e.g. government agencies),https://www.theworldavatar.com/kg/ontobuiltenv/,floors category A
 FloorsCatB,Class,NumberOfFloors,IS-A,,,,Category B of floors: open source data without any guarantees (e.g. OSM),https://www.theworldavatar.com/kg/ontobuiltenv/,floors category B
 FloorsCatC,Class,NumberOfFloors,IS-A,,,,Category C of floors: estimate,https://www.theworldavatar.com/kg/ontobuiltenv/,floors category C

@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontobuiltenv="https://www.theworldavatar.com/kg/ontobuiltenv/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/">
-        <dc:date>19 April 2024</dc:date>
+        <dc:date>22 April 2024</dc:date>
         <rdfs:comment>The Ontology for the Built Environment (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -623,19 +623,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasNumberOfFloorsValue -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasNumberOfFloorsValue">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
-        <rdfs:comment>A relationship between the number of floors and its numerical value.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
-        <rdfs:label>has number of floors value</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasNumberOfHabitableRooms -->
 
 
@@ -671,6 +658,19 @@
         <rdfs:comment>A relationship between a property usage and its relative share if property has multiple usages associated with it (between 0 and 1).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>usage share</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasValue -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasValue">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>A relationship between the number of floors and its numerical value.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
+        <rdfs:label>has value</rdfs:label>
     </owl:DatatypeProperty>
     
 
