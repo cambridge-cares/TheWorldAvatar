@@ -233,6 +233,11 @@ public class GoalSparql {
         modify.insert(goal.has(isAchievedUsing,agent));
         modify.insert(goal.has(hasRealState,realstate));
 
+        ValuesPattern vp = new ValuesPattern(goal, agent, range, realstate);
+        vp.addValuePairForMultipleVariables(iri(goalIRI),iri(agent_iri) , iri(range_iri), iri(realstate_iri));
+
+        sub.select(goal, agent, range, realstate).where(GraphPatterns.and(vp));
+
         modify.prefix(prefixGoal, prefixTime).where(sub);
 
         storeClient.executeUpdate(modify.getQueryString());
