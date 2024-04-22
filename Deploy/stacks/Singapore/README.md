@@ -68,6 +68,8 @@ curl -X POST http://localhost:3838/carpark-agent/create
 ```
 
 ### GFA data
+Execute [landplot_matching.http] to match buildings with landplot. This should create a table public.matched_buildings, mapping ogc_fid of landplots to building_uui.
+
 Make sure ./gfa_config is populated with data. A copy of the data can be obtained from https://www.dropbox.com/scl/fo/9jl3cmee0h26uhm7zyy0f/h?rlkey=mm2wd0al9zrydqxrybbouxzun&dl=0 (only CARES members have access).
 
 Execute the following request to the GFA agent
@@ -115,3 +117,4 @@ The script generates the corresponding colours for each value range (population_
 [geoserver_layer.sql]: ./custom_sql_scripts/geoserver_layer.sql
 [colourbar.py]: ./colorbar_generator/colourbar.py
 [uk-population-style.sld]: ./stack-data-uploader/inputs/config/uk-population-style.sld
+[landplot_matching.http]: ./HTTP_requests/landplot_matching.http
