@@ -260,7 +260,7 @@ class Manager {
         // Initialise global settings
         Manager.DATA_STORE.reset();
         let dimensionPromises: Promise<any>[] = []
-        for (const dimension in Object.keys(this.sliderHandler.scenarioTimesData)) {
+        for (const dimension in Object.keys(this.sliderHandler.scenarioDimensionsData)) {
             dimensionPromises.push(Manager.DATA_STORE.loadDataGroups(dataJSON, dimension, value) as Promise<any>); // the keys of scenarioTimesData is a list of all the dimensions as a string. this code just takes the first one
         }
              return Promise.all(dimensionPromises).then(() => {
