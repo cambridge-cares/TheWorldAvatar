@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 import json
 import math
+import os
 import random
 
 from openai import OpenAI
@@ -41,6 +42,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--path2categories", help="JSON file containing values per categorical property"
+    )
+    parser.add_argument(
+        "--output_dir", required=True, help="Directory to save output files"
     )
     parser.add_argument("--openai_base_url")
     parser.add_argument("--openai_model")
@@ -88,11 +92,11 @@ if __name__ == "__main__":
             except json.decoder.JSONDecodeError:
                 corrupted_examples.append(new)
 
-    filename_prefix = args.filename.rsplit(".", maxsplit=1)[0]
+    os.makedirs(args.output_dir, exists_ok=True)
     if new_examples:
-        with open(filename_prefix + "_synthetic.json", "w") as f:
+        with open(os.path.join(args.output_dir, "synthetic.json"), "w") as f:
             json.dump(new_examples, f, indent=4)
 
     if corrupted_examples:
-        with open(filename_prefix + "_corrupted.txt", "w") as f:
+        with open(os.path.join(args.output_dir, "corrupted.txt"), "w") as f:
             f.write("\n".join(corrupted_examples))
