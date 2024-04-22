@@ -46,10 +46,28 @@ if __name__ == "__main__":
 
     relationships = []
     for s in entities:
-        for p, o in g.query(
-            f"SELECT DISTINCT ?p ?o  WHERE {{ ?p rdfs:domain {s.n3()} . ?p rdfs:range ?o . }}"
-        ):
-            relationships.append((s, p, o))
+        query = f"""SELECT DISTINCT ?p ?o  WHERE {{ 
+        VALUES ?s {{ {s.n3()} }}
+    {{
+        ?p rdfs:domain ?s . 
+        ?p rdfs:range ?o .
+    }} UNION {{
+        ?s rdfs:subClassOf ?Restriction .
+        ?Restriction a owl:Restriction ; owl:onProperty ?p .
+        {{
+            ?Restriction owl:allValuesFrom [ rdf:type owl:Class ; owl:unionOf ?Collection ] .
+            ?Collection rdf:rest*/rdf:first ?o .
+        }} UNION {{
+            ?Restriction owl:allValuesFrom ?o .
+        }}
+    }} UNION {{
+        VALUES ?p {{ rdfs:subClassOf }}
+        ?s ?p ?o .
+    }}
+}}"""
+        for p, o in g.query(query):
+            if isinstance(o, URIRef):
+                relationships.append((s, p, o))
 
     def flatten(x: URIRef):
         x = str(x)
@@ -63,7 +81,7 @@ if __name__ == "__main__":
     schema = dict()
     if prefixes:
         schema["prefixes"] = prefixes
-    schema["entities"] = ([flatten(e) for e in entities],)
+    schema["entities"] = [flatten(e) for e in entities]
     schema["relationships"] = [
         dict(s=flatten(s), p=flatten(p), o=flatten(o)) for s, p, o in relationships
     ]
