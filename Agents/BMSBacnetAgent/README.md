@@ -1,13 +1,13 @@
-##BMS Bacnet Agent
-This agent is an obselete version of periodically writing Data from a Bacnet network to KG as Timeseries. Reading and writing TimeSeries from/into the KG relies on the [TimeSeriesClient]. Refer to [BMSQueryAgent] which is an up-to-date agent of similar functionality.
+## BMS Bacnet Agent
+This agent is an obselete version of periodically writing data from a Bacnet network to the knowledge graph as time series. Reading and writing time series from/into the KG relies on the [TimeSeriesClient]. Refer to [BMSQueryAgent] which is an up-to-date agent of similar functionality.
 
 
 
-##Usage
-###1. Configuration
-Each reading of a physical lab device exists in the Bacnet network as an unique id. The mappings from each device id to its TimesSeries IRI has to put in the working directory as a csv file. 
+## Usage
+### 1. Configuration
+Each reading of a physical laboratory device exists in the Bacnet network with its own unique id. The mappings from each device id to its TimesSeries IRI has to put in the working directory as a csv file. 
 
-An example mapping file of the TWA lab bacnet can be downloaded from the  [dropbox]. Note that this agent is obsolete and no longer maintained, therefore the mapping file is not guaranteed to reflect the current version of the TWA lab bacnet.
+An example mapping file of the CARES laboratory Bacnet can be downloaded from this [dropbox] link. Note that this agent is obsolete and no longer maintained, therefore the mapping file is not guaranteed to reflect the current version of the CARES lab Bacnet.
 
 
 The path of this file should be defined in the [config file] as well as a few other configuration parameters.
@@ -32,9 +32,9 @@ DB_TABLE = "bms"    # Table name in DB
 UPDATE_DURATION =   # time interval in min
 ```
 
-###2. Setup
+### 2. Setup
 
-1. Note that this agent needs connections to the bacnet network, a blazegraph and a postgresql database. The connections have to be properly configured by providing the correct parameters in the [config file] above. Also, these components are assumed to already be online before this agent starts. 
+1. Note that this agent needs connections to the Bacnet network, a Blazegraph and a PostgreSQL database. The connections have to be properly configured by providing the correct parameters in the [config file] above. Also, these components are assumed to already be online before this agent starts. 
 2. To run in a docker, a Dockerfile is provided.
 ```commandline
 docker build -t bmsbacnet_image .
@@ -45,11 +45,8 @@ docker run -d --name bmsbacnet_container bmsbacnet_image
 pip install -r requirements.txt
 python app.py
 ```
-###3. Expected Output
-This agent automatically runs the update job periodically once deployed and does not provide any HTTP APIs. Upon started, the agent should add new timeseries data records to the postgresql database by the update interval (as defined in the [config file]). 
-
-###3. Expected output
-
+### 3. Expected Output
+This agent automatically runs the update job periodically once deployed and does not provide any HTTP APIs. Upon started, the agent should add new timeseries data records to the PostgreSQL database by the update interval (as defined in the [config file]). 
 
 [config file]: ./config/config.py
 
