@@ -514,14 +514,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Cost"/>
-                    <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
         <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
         <rdfs:label>has numerical value</rdfs:label>
