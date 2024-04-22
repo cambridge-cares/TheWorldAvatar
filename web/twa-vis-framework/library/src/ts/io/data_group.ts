@@ -54,7 +54,6 @@ class DataGroup {
 
             let sourceID = this.id + "." + node["id"];
             source.id = sourceID;
-
             this.dataSources.push(source);
         }
     }

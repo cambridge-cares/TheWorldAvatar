@@ -66,10 +66,6 @@ class Manager {
      */
     public unselectionCallbacks = [];
 
-    /**
-     * Actions for the slider to trigger. e.g. repaint layers, change Feature Info Agent etc
-     */
-    public sliderActions: (e: Event) => void
 
     /**
      * Optional callback to trigger once data definitions have been loaded.
@@ -201,14 +197,6 @@ class Manager {
      */
     public addTreeSelectionCallback(treeSelectionCallback) {
         this.controlHandler.addTreeSelectionCallback(treeSelectionCallback);
-    }
-
-    /**
-     * Callback functions for the slider event listener
-     * @param sliderActions callback function that returns void 
-     */
-    public setSliderActions(sliderActions: (e: Event) => void) {
-        this.sliderActions = sliderActions
     }
 
     /**
@@ -786,9 +774,9 @@ class Manager {
             promise.then(() => {
                 self.plotData();
                 self.scenarioHandler.fetchScenarioDimensions().then(scenarioTimesData => {
-                    self.sliderHandler = new SliderHandler(scenarioTimesData);            
+                    self.sliderHandler = new SliderHandler(scenarioTimesData, this);            
                     self.sliderHandler.removeSlider();  
-                    self.sliderHandler.initialiseSlider(self.sliderActions);
+                    self.sliderHandler.initialiseAllSliders(self.sliderHandler.sliderActionsArray);
                 }).catch(error => {
                     console.error('Error initialising Time Slider:', error);
                 });

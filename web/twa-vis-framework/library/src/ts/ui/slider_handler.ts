@@ -7,6 +7,10 @@ type ScenarioDimensionsData = {
     [key: string]: ScenarioDimensionStep[];
 };
 
+type SliderActions = (e: Event) => void;
+
+type SliderActionsArray = SliderActions[];
+
 class SliderHandler {
 
     /**
@@ -14,12 +18,23 @@ class SliderHandler {
      */
     public scenarioDimensionsData: ScenarioDimensionsData;
 
+    /**
+     * Actions for the slider to trigger. e.g. repaint layers, change Feature Info Agent etc
+     */
+    public sliderActionsArray: SliderActionsArray;
 
-    constructor(scenarioTimesData: ScenarioDimensionsData) {
+    /**
+     * Pass through the manager instance to be able to call any sibling class methods
+     */
+    private manager: Manager;
+
+
+    constructor(scenarioTimesData: ScenarioDimensionsData, manager: Manager) {
         this.scenarioDimensionsData = scenarioTimesData;
+        this.manager = manager;
     }
 
-    public initialiseSlider(sliderActions: (e: Event) => void): void {
+    public initialiseAllSliders(sliderActionsArray: SliderActionsArray): void {
 
         let dimensions: ScenarioDimensionStep[][] = Object.values(this.scenarioDimensionsData);
         let sliderNames: string[] = Object.keys(this.scenarioDimensionsData)
@@ -27,6 +42,7 @@ class SliderHandler {
         for (let i = 0; i < sliderNames.length; i++ ) {
             const sliderName = sliderNames[i];
             const array = dimensions[i]
+            const sliderActions = sliderActionsArray[i]
             if (Array.isArray(array) && array.length > 1) {
                 this.populateSlider(sliderName, array, sliderActions);
                 this.changeLabel(array, 0);
@@ -40,7 +56,7 @@ class SliderHandler {
             document.getElementById("timeSliderContainer").remove();
         }
     }
-    private populateSlider(sliderName: string, indexArray: Array<ScenarioDimensionStep>, sliderActions: (e: Event) => void): void {
+    private populateSlider(sliderName: string, indexArray: Array<ScenarioDimensionStep>, sliderActions: SliderActions) : void {
         const firstIndex: number = indexArray[0].value;
         const lastIndex: number = indexArray[indexArray.length - 1].value;
         const firstLabel: string = indexArray[0].label;
@@ -92,11 +108,24 @@ class SliderHandler {
     }
 
 
+    /**
+     * Change the label that shows what current timeStep is on the slider
+     * @param indexArray the array of timesteps to be passed through
+     * @param currentSliderIndex the current slider value / index to get from the above array
+     */
     private changeLabel(indexArray: Array<ScenarioDimensionStep>, currentSliderIndex: number): void {
         const label: string = indexArray[currentSliderIndex].label;
         const sliderLabel: HTMLElement | null = document.getElementById('timeSliderLabel');
         if (sliderLabel) {
             sliderLabel.innerHTML = label;
         }
+    }
+
+    /**
+     * Callback functions for the slider event listener
+     * @param sliderActions callback function that returns void 
+     */
+    public setSliderActionsArray(sliderActionsArray: SliderActionsArray) {
+        this.sliderActionsArray = sliderActionsArray
     }
 }
