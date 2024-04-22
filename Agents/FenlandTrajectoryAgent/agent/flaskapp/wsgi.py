@@ -11,7 +11,7 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
-from flaskapp import create_app
+from agent.flaskapp import create_app
 # Adjust the import path based on your project structure
 from agent.datainstantiation.data_instantiation import main as instantiate_gps_data
 
@@ -25,4 +25,4 @@ from agent.datainstantiation.data_instantiation import main as instantiate_gps_d
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(host='localhost', port=5100)
+    app.run(host='0.0.0.0', port=5000, debug=True)
