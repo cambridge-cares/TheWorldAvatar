@@ -1,7 +1,7 @@
 # NTUEnergyCluster Agent
 
 This agent is designed to group power network buses by voltage: under-, over- and nominal voltage. Two methods are coded:
-- BNN: A bubble neural network developed by the [Clean Energy Research Lab(CERL), NTU](http://eeeweba.ntu.edu.sg/power_projects/ntu-ONRG/0_default.asp) to predict voltage groups given the power load for variable consumer buses. Load values are read for the KG for the request date and time. 
+- BNN: A bubble neural network developed by the Clean Energy Research Lab(CERL), NTU to predict voltage groups given the power load for variable consumer buses. Load values are read for the KG for the request date and time. 
 - BNN with P2P: As above but this receives the power consumption values of peer-to-peer trading as input and uses a neural network to predict the voltage group of each bus in the power network. 
 - OPF: This method reads the voltage values for the network (calculated by the OPF Agent) from the KG and assigns voltage groups.
 
@@ -63,7 +63,7 @@ More information about adding custom containers to the stack can be found [here]
 
 
 ### [Step 3] Spin up a Docker Stack
-**Note: The docker container must run within the same stack as the [HistoricalNTUEnergyAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1496-dev-instantiate-historic-ntuenergyconsumptiondata-2/Agents/HistoricalNTUEnergyAgent) to get access and query the NTU Power Network Knowledge Graph for calculation.**
+**Note: The docker container must run within the same stack as the [HistoricalNTUEnergyAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent) to get access and query the NTU Power Network Knowledge Graph for calculation.**
 
 Running this agent in a docker stack can facilitate interactions between other agents and endpoints (Postgres, Blazegraph, etc,.) for deployment and visualization. The stack is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 A successful setup will result in 10 containers (optional 11):
