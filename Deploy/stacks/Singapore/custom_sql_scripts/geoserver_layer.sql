@@ -100,8 +100,8 @@ SELECT
     heat_emissions,
     objectclass.classname AS objectclass,
 	null as infrastructure_type,
-	null as calc_gfa,
-	null as ref_gfa
+	0 as calc_gfa,
+	0 as ref_gfa
 FROM 
     citydb.city_furniture
 JOIN 
