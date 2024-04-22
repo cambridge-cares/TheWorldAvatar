@@ -4,6 +4,10 @@ This is a collection of stack input configuration files to spin up a basic visua
 
 ## Dispersion
 ### Requirements
+Run [copy_tbox.sh] to copy tbox files into right places for data upload
+```
+./copy_tbox.sh
+```
 Two API keys required for weather and ship data.
 1) Obtain an API key from OpenWeather, the API key needs to have OneCall enabled (credit card required, you can set the call limit below the limit before it starts charging). Set the value of API_KEY in [weather-agent.json] to the API key obtained from OpenWeather.
 2) Obtain an API key from aisstream.io. Set the value of API_KEY in [ship-input-agent.json] to the obtained API key.
@@ -24,3 +28,4 @@ After one timestep's worth of data is added by the ship input agent (make sure t
 [ship-input-agent.json]: ./stack-manager-inputs/inputs/config/services/ship-input-agent.json
 [live-ship-updates.http]: ./http_requests/live-ship-updates.http
 [hamburg-live.http]: ./http_requests/hamburg-live.http
+[copy_tbox.sh]: ./copy_tbox.sh
