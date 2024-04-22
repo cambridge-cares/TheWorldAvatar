@@ -1,9 +1,12 @@
 # NTUData Agent
 
-The purpose of the NTUDataAgent is to create active and reactive load data for a desired date from the available historical NTU load data. This allows the test case to be run with real solar PV data for any date. 
+The purpose of the NTUDataAgent is to create 'synthetic' active and reactive load data for a desired date from the available historical NTU load data. 
+This allows the test case to be run with real weather and solar PV data for any date. 
 
-Data is simply copied from the historical data. To account for some weekly variation, the following dates with associated weekdays are used. 
+The current version of this agent simply copies load data from an appropriate historical week day i.e. it attempts to account for a weekly schedule.
+The following dates with associated weekdays are used:
 
+```
 Monday:		2020-12-01 (actually a Tuesday)
 Tuesday:	2020-09-01
 Wednesday:	2020-04-01
@@ -11,10 +14,11 @@ Thursday:	2020-10-01
 Friday:		2020-11-01 (actually a Sunday)
 Saturday:	2020-02-01
 Sunday:		2020-03-01
+```
 
 ## Prerequisites
 
-For the agent to produce data, the NTU power system knowledge graph must be instantiated by the [HistoricalNTUEnergyAgent]
+For the agent to produce data, the NTU power system knowledge graph must be instantiated by the [HistoricalNTUEnergyAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent)
 
 ## Build and deploy
 
