@@ -253,16 +253,17 @@ class Manager {
      * 
      * @returns promise object
      */
-    public loadDefinitionsFromObject(dataJSON, value: number) {
+    public loadDefinitionsFromObject(dataJSON: Object, value: number) {
         if(dataJSON == null) {
             return Promise.resolve();
         }
-
         // Initialise global settings
         Manager.DATA_STORE.reset();
-
-        let promise =  Manager.DATA_STORE.loadDataGroups(dataJSON, Object.keys(this.sliderHandler.scenarioTimesData)[0], value) as Promise<any>; // the keys of scenarioTimesData is a list of all the dimensions as a string. this code just takes the first one
-        return promise.then(() => {
+        let dimensionPromises: Promise<any>[] = []
+        for (const dimension in Object.keys(this.sliderHandler.scenarioDimensionsData)) {
+            dimensionPromises.push(Manager.DATA_STORE.loadDataGroups(dataJSON, dimension, value) as Promise<any>); // the keys of scenarioTimesData is a list of all the dimensions as a string. this code just takes the first one
+        }
+             return Promise.all(dimensionPromises).then(() => {
             // Rebuild the layer tree
             this.controlHandler.rebuildTree(Manager.DATA_STORE);
             if(this.dataLoadCallback != null) this.dataLoadCallback();
@@ -784,7 +785,7 @@ class Manager {
             let promise = self.loadDefinitionsFromObject(dataJSON, 1) as Promise<any>;
             promise.then(() => {
                 self.plotData();
-                self.scenarioHandler.fetchScenarioTimes().then(scenarioTimesData => {
+                self.scenarioHandler.fetchScenarioDimensions().then(scenarioTimesData => {
                     self.sliderHandler = new SliderHandler(scenarioTimesData);            
                     self.sliderHandler.removeSlider();  
                     self.sliderHandler.initialiseSlider(self.sliderActions);

@@ -242,10 +242,10 @@ class ScenarioHandler {
         return url;
     }
 
-    public async fetchScenarioTimes(): Promise<ScenarioTimesData> {
+    public async fetchScenarioDimensions(): Promise<ScenarioDimensionsData> {
         try {
             const response = await fetch(`${this.agentBaseURL}/getScenarioTimes/${this.selectedScenario}`);
-            const data: ScenarioTimesData = await response.json();
+            const data: ScenarioDimensionsData = await response.json();
             return data;
         } catch (error) {
             console.error('Error fetching times from CentralStackAgent/getScenarioTimes:', error);
