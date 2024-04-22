@@ -38,20 +38,5 @@ public class BinEmptyingAgent {
         LOGGER.info("BinEmptyingAGent is initialised.");
     }
 
-//    @Override
-//    public void init() throws ServletException {
-//        // initialise all clients
-//        Config.initProperties();
-//        this.storeClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser, Config.kgpassword);
-//        this.sparqlClient = new SparqlClient(this.storeClient);
-//        super.goalclient = new DerivationClient(this.storeClient, InitialiseInstances.goalInstanceBaseURL);
-//    }
-//
-//
-//    @Override
-//    public void processRequestParameters (DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-//
-//        LOGGER.info("Received request: " + derivationInputs.toString());
-//
-//    }
+
 }

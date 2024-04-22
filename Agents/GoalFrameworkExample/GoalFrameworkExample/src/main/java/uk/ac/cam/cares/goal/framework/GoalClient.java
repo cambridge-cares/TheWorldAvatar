@@ -1,5 +1,15 @@
 package uk.ac.cam.cares.goal.framework;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+
+
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,11 +36,8 @@ import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
-import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-
 
 
 public class GoalClient {
@@ -76,5 +83,32 @@ public class GoalClient {
         this.sparqlClient.addTimeInstance(entities);
         LOGGER.info("Added timestamps to <" + entities + "> if they don't have a timestamp already");
     }
+
+    /**
+     *     Create take in agent_iri, range_iri, realstate_iri, create goal instance
+     */
+
+    public Goal createGoalForNewInfo(String agent_iri, String agent_url, String range_iri, String realstate_iri){
+
+        String goalIRI = this.sparqlClient.createGoalIRI();
+        
+        return createdGoal;
+    }
+
+
+    /**
+     * Update goal
+     * Take in goal_iri
+     */
+    public void updateGoal (String goal_iri){
+        //Query for Goal_IRI "ex:isAchievedUsing"
+
+
+
+
+        //Send Request to TruckAgent with (RealState)
+
+    }
+
 
 }

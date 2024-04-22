@@ -5,52 +5,23 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
-import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatternNotTriples;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
-import org.eclipse.rdf4j.model.vocabulary.OWL;
-import org.eclipse.rdf4j.model.vocabulary.RDFS;
-import org.eclipse.rdf4j.model.vocabulary.XSD;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.apache.http.ParseException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 
 public class GoalSparql {
@@ -75,6 +46,7 @@ public class GoalSparql {
 
     // derivation types
     public static final String DERIVATION = "Derivation";
+    public static final String GOAL = "Goal";
     public static final String DERIVATIONWITHTIMESERIES = "DerivationWithTimeSeries";
     public static final String DERIVATIONASYN = "DerivationAsyn";
     public static final String ONTODERIVATION_DERIVATION = derivednamespace + DERIVATION;
@@ -86,6 +58,7 @@ public class GoalSparql {
             iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
     private static Prefix prefixDerived = SparqlBuilder.prefix("derived", iri(derivednamespace));
     private static Prefix prefixTime = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
+    private static Prefix prefixGoal = SparqlBuilder.prefix("goal",iri("http://www.theworldavatar.com/ontology/ontoagent/Goal.owl#"));
 
     // classes
     private static Iri Service = prefixAgent.iri("Service");
@@ -104,6 +77,8 @@ public class GoalSparql {
     private static Iri InstantClass = prefixTime.iri("Instant");
     private static Iri UnixTime = iri("http://dbpedia.org/resource/Unix_time");
 
+    private static Iri Goal = prefixGoal.iri(GOAL);
+
     // object properties
     private static Iri hasHttpUrl = prefixAgent.iri("hasHttpUrl");
     private static Iri hasOperation = prefixAgent.iri("hasOperation");
@@ -121,10 +96,15 @@ public class GoalSparql {
     private static Iri numericPosition = prefixTime.iri("numericPosition");
     private static Iri hasTRS = prefixTime.iri("hasTRS");
     private static Iri inTimePosition = prefixTime.iri("inTimePosition");
+    private static Iri hasGoalRange = prefixGoal.iri("hasGoalRange");
+    private static Iri hasRealState = prefixGoal.iri("hasRealState");
+    private static Iri isAchievedUsing = prefixGoal.iri("isAchievedUsing");
+
 
     // data properties
     private static Iri retrievedInputsAt = prefixDerived.iri("retrievedInputsAt");
     private static Iri uuidLock = prefixDerived.iri("uuidLock");
+
 
     /**
      * This constructor should be used to enable customised derivation instance base
@@ -210,6 +190,7 @@ public class GoalSparql {
         addTimeInstance(entitiesTimestamp);
     }
 
+
     /**
      * This method creates a new IRI for timestamp related instances.
      * @return
@@ -217,6 +198,56 @@ public class GoalSparql {
     String createTimeIRI() {
         return goalInstanceBaseURL + "time_" + UUID.randomUUID().toString();
     }
+
+
+    /**
+     * This method creates a new IRI of derivation instance.
+     *
+     * @return
+     */
+    String createGoalIRI() {
+        // create a unique IRI for this new derived quantity
+            return goalInstanceBaseURL + "_" + UUID.randomUUID().toString();
+    }
+
+    /**
+     * This method creates a new IRI of derivation instance.
+     *
+     * @return
+     */
+    String createRangeIRI() {
+        // create a unique IRI for this new derived quantity
+        return goalInstanceBaseURL + "_" +"goalRange_"+ UUID.randomUUID().toString();
+    }
+
+    private void createNewGoal(String goalIRI, String agent_iri, String range_iri, String realstate_iri){
+
+        ModifyQuery modify = Queries.MODIFY();
+        SubSelect sub = GraphPatterns.select();
+        Variable goal = SparqlBuilder.var("goal");
+        Variable agent = SparqlBuilder.var("agent");
+        Variable range = SparqlBuilder.var("range");
+        Variable realstate = SparqlBuilder.var("realstate");
+
+        modify.insert(goal.has(hasGoalRange,range));
+        modify.insert(goal.has(isAchievedUsing,agent));
+        modify.insert(goal.has(hasRealState,realstate));
+
+        modify.prefix(prefixGoal, prefixTime).where(sub);
+
+        storeClient.executeUpdate(modify.getQueryString());
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
