@@ -90,6 +90,8 @@ docker-compose down
 docker rmi goalframeworkexample:1.0.0
 docker volume remove postgres_data
 docker volume remove blazegraph_data
+
+docker-compose up -d
 ```
 
 ```

@@ -38,7 +38,7 @@ public class SparqlClient {
 
 
     // rdf:type
-    public static Iri SumValue = p_namespace.iri("SumValue");
+    public static Iri GoalRange = p_namespace.iri("SumValue");
 
     public static Iri InputData = p_namespace.iri("InputData"); // has a time series instance
     public static Iri ScalarValue = p_namespace.iri("ScalarValue");
@@ -102,12 +102,12 @@ public class SparqlClient {
      * @param SumValue
      * @return
      */
-    public String createSumValue() {
-        String sum_value_iri = namespace + UUID.randomUUID().toString();
+    public String createGoalRangeIRI() {
+        String goalRange_iri = namespace + UUID.randomUUID().toString();
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(sum_value_iri).isA(SumValue).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+        modify.insert(iri(goalRange_iri).isA(GoalRange).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
         storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
-        return sum_value_iri;
+        return goalRange_iri;
     }
 
 
@@ -118,12 +118,12 @@ public class SparqlClient {
      * @param TruckValue
      * @return
      */
-    public String createTruckValue() {
-        String truck_value_iri = namespace + UUID.randomUUID().toString();
+    public String createStateValue() {
+        String realState_iri = namespace + UUID.randomUUID().toString();
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(truck_value_iri).isA(TruckValue).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+        modify.insert(iri(realState_iri).isA(TruckValue).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
         storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
-        return truck_value_iri;
+        return realState_iri;
     }
 
 

@@ -220,7 +220,7 @@ public class GoalSparql {
         return goalInstanceBaseURL + "_" +"goalRange_"+ UUID.randomUUID().toString();
     }
 
-    private void createNewGoal(String goalIRI, String agent_iri, String range_iri, String realstate_iri){
+    public void createNewGoal(String goalIRI, String agent_iri, String range_iri, String realstate_iri){
 
         ModifyQuery modify = Queries.MODIFY();
         SubSelect sub = GraphPatterns.select();

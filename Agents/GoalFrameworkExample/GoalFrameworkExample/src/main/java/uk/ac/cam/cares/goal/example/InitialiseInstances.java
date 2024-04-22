@@ -32,10 +32,13 @@ public class InitialiseInstances extends JPSAgent{
 
 	private static String baseURL = "http://goalframeworkexample:8080/GoalFrameworkExample";
 
-	private static String binemptying_agent_iri = SparqlClient.namespace + "sumvalue_agent";
+	private static String binemptying_agent_iri = SparqlClient.namespace + "binemptying_agent";
 	private static String binemptying_agent_url = baseURL + BinEmptyingAgent.URL_BINEMPTYINGAGENT;
 
 	public static final String goalInstanceBaseURL = "http://goalframeworkexample.com/triplestore/repository/";
+
+
+	public static final String goal_key = "goal";
 
 
 	@Override
@@ -66,40 +69,43 @@ public class InitialiseInstances extends JPSAgent{
 			goalClient.addTimeInstance(input);
 
 			// register ontoagent instances in triple store
-
 //			String weightRangeRdfType = SparqlClient.getRdfTypeString(SparqlClient.Range);
 //			String weightRdfType = SparqlClient.getRdfTypeString(SparqlClient.SumValue);
 //
 //
 //			//Create ontoagent instances for SumValue
 //			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(weightRangeRdfType,weightRdfType), Arrays.asList(weightRdfType));
-
+//
 
 			//Create goal instances for Thing
 
 
-//			//Create sumvalue_iri
-//			String sumvalue_property = sparqlClient.createSumValue();
-//			//Initialise sumvalue to be 0
-//			String sum_value = sparqlClient.addValueInstance(sumvalue_property, 0);
-//			LOGGER.info("Created sum value <" + sumvalue_property + ">");
-//
+			//Create goalRange_iri
+			String goalRange_iri = sparqlClient.createGoalRangeIRI();
+			
 //			//Create truckvalue_iri
-//			String truckvalue_property = sparqlClient.createTruckValue();
+//			String realState_iri = sparqlClient.createStateValue();
+			
+//			//Initialise sumvalue to be 0
+//			String sum_value = sparqlClient.addValueInstance(goalRange_iri, 0);
+//			LOGGER.info("Created sum value <" + goalRange_iri + ">");
+//
+
 //			//Initialise truckvalue to be 0
-//			String truckvalue = sparqlClient.addStringInstance(truckvalue_property,"0");
+//			String truckvalue = sparqlClient.addStringInstance(realState_iri,"0");
 //
 //
 //
-//			// create standard derived quantities
-//			String derived_sumvalue = devClient.createDerivation(Arrays.asList(sumvalue_property,sum_value), sumvalue_agent_iri, Arrays.asList(input));
-//			LOGGER.info("Created derived quantity for min value <" + derived_sumvalue + ">");
-//
-//			String derived_truckvalue = devClient.createDerivation(Arrays.asList(truckvalue_property,truckvalue),truckcalling_agent_iri,Arrays.asList(sumvalue_property,sum_value));
+			// create standard derived quantities
+			String goal_binemptyingagent = goalClient.createGoalForNewInfo(binemptying_agent_iri, binemptying_agent_url, goalRange_iri, input);
+
+//			String derived_truckvalue = devClient.createDerivation(Arrays.asList(realState_iri,truckvalue),truckcalling_agent_iri,Arrays.asList(goalRange_iri,sum_value));
 //			LOGGER.info("Created derived quantity for truck value<"+derived_truckvalue+">");
 //
 //
+
 			JSONObject response = new JSONObject();
+			response.put(goal_key,goal_binemptyingagent);
 			return response;
         }
 
