@@ -12,19 +12,19 @@ class SliderHandler {
     /**
      * Object with dimensions and their ranges from scenario endpoint
      */
-    public scenarioTimesData: ScenarioDimensionsData;
+    public scenarioDimensionsData: ScenarioDimensionsData;
 
 
     constructor(scenarioTimesData: ScenarioDimensionsData) {
-        this.scenarioTimesData = scenarioTimesData;
+        this.scenarioDimensionsData = scenarioTimesData;
     }
 
     public initialiseSlider(sliderActions: (e: Event) => void): void {
 
-        let dimensions: ScenarioDimensionStep[][] = Object.values(this.scenarioTimesData);
-        let sliderNames: string[] = Object.keys(this.scenarioTimesData)
+        let dimensions: ScenarioDimensionStep[][] = Object.values(this.scenarioDimensionsData);
+        let sliderNames: string[] = Object.keys(this.scenarioDimensionsData)
         
-        for (const i of [...this.scenarioTimesData.keys()]) {
+        for (let i = 0; i < sliderNames.length; i++ ) {
             const sliderName = sliderNames[i];
             const array = dimensions[i]
             if (Array.isArray(array) && array.length > 1) {
