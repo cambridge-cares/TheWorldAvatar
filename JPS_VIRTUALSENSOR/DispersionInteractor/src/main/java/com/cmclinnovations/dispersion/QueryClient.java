@@ -48,6 +48,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -805,7 +806,7 @@ public class QueryClient {
 
         ServiceEndpoint ontopEndpoint = new ServiceEndpoint(ontopUrl);
 
-        query.select(derivation, scopelabelVar, pollutantType, pollutantLabel, dispXYZVar, scopeWktVar, zValueVar,
+        query.select(derivation, scope, scopelabelVar, pollutantType, pollutantLabel, dispXYZVar, scopeWktVar, zValueVar,
                 dispersionOutputSRID,timeNumericPosition);
 
         query.where(OPTIMISER_NONE,
@@ -830,6 +831,7 @@ public class QueryClient {
 
             iriToDispSimMap.computeIfAbsent(derivationIri, DispersionMetadata::new);
 
+            String scopeIri = queryResult.getJSONObject(i).getString(scope.getQueryString().substring(1));
             String scopeLabel = queryResult.getJSONObject(i).getString(scopelabelVar.getQueryString().substring(1));
             String pol = queryResult.getJSONObject(i).getString(pollutantType.getQueryString().substring(1));
             String dispXYZ = queryResult.getJSONObject(i).getString(dispXYZVar.getQueryString().substring(1));
@@ -850,7 +852,7 @@ public class QueryClient {
             }
 
             dispersionMetadata.addDispXYZ(dispXYZ, polLabel, zValue, srid);
-            dispersionMetadata.setScopeLabel(scopeLabel);
+            dispersionMetadata.setScope(scopeIri,scopeLabel);
             dispersionMetadata.setLastUpdateTime(lastUpdateTime);
 
             String wktLiteral = queryResult.getJSONObject(i).getString(scopeWktVar.getQueryString().substring(1));
@@ -1020,5 +1022,25 @@ public class QueryClient {
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         return queryResult.getJSONObject(0).getString(derivationVar.getQueryString().substring(1));
+    }
+
+    public byte[] getRaster(String filename, String scopeIri) {
+        String sqlTemplate = "WITH RasterData AS (SELECT rast, ST_SRID(rast) AS raster_srid FROM dispersion_raster " + 
+            "WHERE filename='%s'), PolygonData AS (SELECT geom, ST_SRID(geom) AS polygon_srid FROM scopes " + 
+            "WHERE iri = '%s') SELECT ST_AsTiff(ST_Clip(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid))) as rData " + 
+            "FROM RasterData, PolygonData WHERE ST_Intersects(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid))";
+        String sql = String.format(sqlTemplate, filename, scopeIri);
+        byte[] rasterBytes = new byte[0];
+        try (Connection conn = remoteRDBStoreClient.getConnection();
+        Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            while (result.next()) {
+                rasterBytes = result.getBytes("rData");
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Fail to get raster");
+        }
+        return rasterBytes;
     }
 }

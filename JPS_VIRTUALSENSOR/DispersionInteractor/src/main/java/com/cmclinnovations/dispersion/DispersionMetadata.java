@@ -15,6 +15,7 @@ import org.locationtech.jts.geom.Polygon;
 
 public class DispersionMetadata {
     private String label;
+    private String scopeIri;
     private String derivationIri;
     private Polygon scopePolygon;
     private int lastUpdateTime;
@@ -53,12 +54,17 @@ public class DispersionMetadata {
         dispXYZs.get(dispersionXYZ).output = dispersionXYZfiles;
     }
 
-    public void setScopeLabel(String label) {
+    public void setScope(String scopeIri, String label) {
+        this.scopeIri = scopeIri;
         this.label = label;
     }
 
     public String getLabel() {
         return label;
+    }
+
+    public String getScopeIri() {
+        return scopeIri;
     }
 
     public String getDerivationIri() {
@@ -72,7 +78,7 @@ public class DispersionMetadata {
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("derivationIri", derivationIri);
-
+        json.put("scopeIri", scopeIri);
         Point centroid = scopePolygon.getCentroid();
         JSONArray centroidJson = new JSONArray();
         centroidJson.put(centroid.getX());
