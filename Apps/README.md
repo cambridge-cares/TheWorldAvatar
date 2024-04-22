@@ -33,6 +33,8 @@ Each module directory will have the following files:
 * `build.gradle` : Build settings for the module
 * Proguard configuration files to shrink, optimise, and obfuscate code for release.
 
+We are still exploring how to construct and standardised tests for our apps. 
+
 ## 1.5 Next steps
 Continue on to the [template app](SampleApp/) for a tutorial on developing a new mobile interface within The World Avatar. If you are experiencing any technical difficulties, the [troubleshooting](#2-troubleshooting) section is available.
 
