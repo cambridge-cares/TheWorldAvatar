@@ -10,7 +10,7 @@ SELECT_STR = "SELECT * WHERE"
 INSERT_STR = "INSERT DATA"
 
 META_PREFIX = '''
-prefix rml4ts: <https://www.theworldavatar.com/kg/rml4ts.owl#>
+prefix rml4ts: <https://www.theworldavatar.com/kg/rml4ts/>
 prefix td: <https://www.w3.org/2019/wot/td#>
 prefix htv: <http://www.w3.org/2011/http#>
 prefix hctl: <https://www.w3.org/2019/wot/hypermedia#>

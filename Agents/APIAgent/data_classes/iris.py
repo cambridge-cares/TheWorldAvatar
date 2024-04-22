@@ -9,7 +9,7 @@ RDFS = "http://www.w3.org/2000/01/rdf-schema#"
 XSD = "http://www.w3.org/2001/XMLSchema#"
 TIME = "http://www.w3.org/2006/time#"
 TS = "https://www.theworldavatar.com/kg/ontotimeseries/"
-RML4TS = "https://www.theworldavatar.com/kg/rml4ts.owl#"
+RML4TS = "https://www.theworldavatar.com/kg/rml4ts/"
 
 
 OWL_THING = OWL + "Thing"
