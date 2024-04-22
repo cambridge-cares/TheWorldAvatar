@@ -7,13 +7,12 @@ import random
 from openai import OpenAI
 from tqdm import tqdm
 
-PROMPT = """You are a Blazegraph SPARQL expert.
+PROMPT = """You are a Blazegraph SPARQL expert creating a data set to train a robust machine learning model .
 
-Here are some examples of input-output pairs:
+### Examples:
 {examples}
 {schema}
-
-Your task is to generate {num} more input-output pairs to train a robust machine learning model. Please formulate your response as a list of objects in the JSON format exactly."""
+Your task is to generate {num} more input-output pairs that are based on the given examples and obey the provided schema. Come up with new schema-compliant question types if needed. Please formulate your response as a list of objects in the JSON format exactly."""
 
 
 def promptify_schema(filename: str):
@@ -28,6 +27,12 @@ def promptify_schema(filename: str):
             for row in schema["relationships"]
         ),
     )
+
+
+def promptify_categorical_properties(filename: str):
+    with open(filename, "r") as f:
+        categories = f.read()
+    return categories
 
 
 if __name__ == "__main__":
@@ -55,15 +60,11 @@ if __name__ == "__main__":
 
     schema = ""
     if args.path2schema:
-        schema += promptify_schema(args.path2schema)
+        schema += "\n### Schema:\n" + promptify_schema(args.path2schema)
     if args.path2categories:
-        with open(args.path2categories, "r") as f:
-            schema += f.read()
-
-    if schema:
-        schema = (
-            "\nBelow is additional schema information that you must comply by:\n"
-            + schema
+        schema += (
+            "\n\n### Categorical properties:\n"
+            + promptify_categorical_properties(args.path2categories)
         )
 
     openai_client = OpenAI(base_url=args.openai_base_url)
@@ -78,7 +79,7 @@ if __name__ == "__main__":
         for i in range(0, len(examples), args.chunk_size):
             prompt = PROMPT.format(
                 examples=json.dumps(examples[i : i + args.chunk_size], indent=4),
-                schema=schema,
+                schema=schema + "\n",
                 num=args.chunk_size * args.synthesis_multiplier,
             )
             batch_num = offset + i
@@ -92,7 +93,7 @@ if __name__ == "__main__":
             except json.decoder.JSONDecodeError:
                 corrupted_examples.append(new)
 
-    os.makedirs(args.output_dir, exists_ok=True)
+    os.makedirs(args.output_dir, exist_ok=True)
     if new_examples:
         with open(os.path.join(args.output_dir, "synthetic.json"), "w") as f:
             json.dump(new_examples, f, indent=4)
