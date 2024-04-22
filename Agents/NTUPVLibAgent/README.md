@@ -7,8 +7,8 @@ This agent is designed to calculate AC and DC Power output from Photovaltaic Pan
 For the agent to read data, three property files are required:
 - One [property file for DC and AC Power instantiation](#dataIRIs-properties) defining the IRIs for each of the keys.
 - One [property file for the time-series client](#time-series-client-properties) defining timeseries client related parameters.
-- One [property file for the Solar Model](#model-parameters-properties) defining the parameters of the Solar PV Model.
-- One [misc property file for the Solar Model](#misc-parameters-properties) defining a scale factor to apply to the calculated ac and dc power.
+- One [property file for the Solar Model](#Model-properties) defining the parameters of the Solar PV Model.
+- One [misc property file for the Solar Model](#misc-properties) defining a scale factor to apply to the calculated ac and dc power.
 
 #### dataIRIs properties
 This property file is used to determine whether there are IRIs already created for the instantiation of DC and AC Power
@@ -28,21 +28,21 @@ Otherwise, the time-series client property file needs to contain all credentials
 - `db.update.url` the [JDBC URL](https://www.postgresql.org/docs/7.4/jdbc-use.html) for the Postgres database to update to
 - `db.update.user` the username to access the Postgres database to update to
 - `db.update.password` the password to access the Postgres database to update to
-- `air.temperature.iri` the timeseries data IRI for air temperature, see [Prerequisites](#prerequisites) for more details
-- `wind.speed.iri` the timeseries data IRI for wind speed, see [Prerequisites](#prerequisites) for more details
-- `irradiance.iri` the timeseries data IRI for irradiance, see [Prerequisites](#prerequisites) for more details
-- `iri` the IRI of the sensor or weather station entity that has rdf:type s3n:SmartSensor or rdf:type ontoems:ReportingStation, see [Prerequisites](#prerequisites) for more details
+- `air.temperature.iri` the timeseries data IRI for air temperature
+- `wind.speed.iri` the timeseries data IRI for wind speed
+- `irradiance.iri` the timeseries data IRI for irradiance
+- `iri` the IRI of the sensor or weather station entity that has rdf:type s3n:SmartSensor or rdf:type ontoems:ReportingStation
 
 More information can be found in the property file `ts_client.properties` in the `resources` folder.
 
 
 ## 1. PV Model Data Preparation
-####  [Option 1] Read photovoltaic model specs from property files (model-parameters-properties)
+####  [Option 1] Read photovoltaic model specs from property files
 
 This is the default option for the NTU test case.
 
-##### Model  properties
-The model_parameters properties contains the parameters required to create a solar PV Model for calculations. The file `model_parameters.properties` can be found in the `resources` folder. It should contain the following keys:
+##### Model properties
+The model parameters properties contains the parameters required to create a solar PV Model for calculations. The file `model_parameters.properties` can be found in the `resources` folder. It should contain the following keys:
 - `temp_model` the temperature model (sapm or pvsyst)
 - `temp_model_config` the temperature model configuration (for sapm: open_rack_glass_glass or close_mount_glass_glass or open_rack_glass_polymer or insulated_back_glass_polymer, for pvsyst: freestanding or insulated)
 - `latitude` the latitude of the Solar PV Model location, can be left empty in which it will be queried from the knowledge graph
@@ -61,7 +61,7 @@ The model_parameters properties contains the parameters required to create a sol
 The agent takes a scale factor that can be applied to the calculated power. The scale_factor can be set in the file `misc_parameters.properties` found in the `resources` folder.
 
 ####  [Option 2] Read Photovoltaic Model Specs from Knowledge Graph
-Alternatively, the parameters required to create a solar PV Model can be read from a knowledge graph. This requires an instantiation agent to create a Knowledge Graph filled with PV model parameter values. The  [HistoricalNTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1496-dev-instantiate-historic-ntuenergyconsumptiondata-2/Agents/HistoricalNTUEnergyAgent) provides an example to instantiate a knowledge graph which includes PV model parameters.
+Alternatively, the parameters required to create a solar PV Model can be read from a knowledge graph. This requires an instantiation agent to create a Knowledge Graph filled with PV model parameter values. The  [HistoricalNTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent) provides an example to instantiate a knowledge graph which includes PV model parameters.
 
 This option is currently only available for latitude and longitude. 
 
@@ -94,7 +94,7 @@ For latitude and longitude, these values can be queried from the knowledge graph
 <http://test_longValue> om:hasValue <http://test_Measure2> .
 <http://test_Measure2> om:hasNumericalValue '130' .
 ```
-In the events that latitude and longitude are not instantiated in the knowledge graph with the structure above, they have to be included in the `model_parameters.properties` file. See [property file for the Solar Model](#model-parameters-properties).
+In the events that latitude and longitude are not instantiated in the knowledge graph with the structure above, they have to be included in the `model_parameters.properties` file. See [property file for the Solar Model](#Model-properties).
 
 ## 3. Build and Run
 The PVLib agent can run either as a standalone docker container or within a stack. The build and setup procedures are different for different running modes.
