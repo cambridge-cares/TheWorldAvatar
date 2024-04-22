@@ -7,10 +7,10 @@ This agent is designed to group power network buses by voltage: under-, over- an
 
 The agent returns the voltage groups (0: under, 1: nominal, 2: over) intended for visualisation.
 
-For the agent to process opf results a power system must be instantiated by the [HistoricalNTUEnergyAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1496-dev-instantiate-historic-ntuenergyconsumptiondata-2/Agents/HistoricalNTUEnergyAgent).
+For the agent to process opf results a power system must be instantiated by the [HistoricalNTUEnergyAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent).
 
 #### NTU Power System Knowledge Graph
-- For details to instantiate the NTU Power System Knowledge Graph, pleaes refer to the [HistoricalNTUEnergyAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1496-dev-instantiate-historic-ntuenergyconsumptiondata-2/Agents/HistoricalNTUEnergyAgent).
+- For details to instantiate the NTU Power System Knowledge Graph, pleaes refer to the [HistoricalNTUEnergyAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent).
 - Both NTUEnergyClusterAgent and HistoricalNTUEnergyAgent should run in the same stack in which they interact with the same Blazegraph and Postgres endpoints. For details to spin up a stack, please refer to the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 
 # 2. Build & Run
