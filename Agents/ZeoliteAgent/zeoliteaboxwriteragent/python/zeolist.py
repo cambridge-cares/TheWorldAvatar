@@ -85,11 +85,14 @@ def getZeoList( arg="main" ):
 #    else:
 #         print( "Unknown argument '" + arg  "'" )
 
+    output = outString.split()
+
     with open(FRAMEWORK_LIST, "w", encoding="utf-8") as fp:
         for fw in output:
             fp.write(fw + "\n")
+    print("Saved frameworks", output)
+    1/0
 
-    output = outString.split()
     #print( "Total ", len(output), " frameworks" )
     return output
     pass # getZeoList()
