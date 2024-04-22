@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def csvrow2jsonobj(row: pd.Series):
-    output = dict(target=row["target"])
+    output = dict()
     if row["target"] == "sparql":
         output["sparql"] = dict(
             namespace=row["sparql_namespace"], query=row["sparql_query"]
