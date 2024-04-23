@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontobuiltenv="https://www.theworldavatar.com/kg/ontobuiltenv/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/">
-        <dc:date>22 April 2024</dc:date>
+        <dc:date>23 April 2024</dc:date>
         <rdfs:comment>The Ontology for the Built Environment (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -1131,7 +1131,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
         <rdfs:comment>Category A of floors: data from reliable departments (e.g. government agencies)</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
-        <rdfs:label>floors category A</rdfs:label>
+        <rdfs:label>Floors category A</rdfs:label>
     </owl:Class>
     
 
@@ -1143,7 +1143,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
         <rdfs:comment>Category B of floors: open source data without any guarantees (e.g. OSM)</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
-        <rdfs:label>floors category B</rdfs:label>
+        <rdfs:label>Floors category B</rdfs:label>
     </owl:Class>
     
 
@@ -1155,7 +1155,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors"/>
         <rdfs:comment>Category C of floors: estimate</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
-        <rdfs:label>floors category C</rdfs:label>
+        <rdfs:label>Floors category C</rdfs:label>
     </owl:Class>
     
 
@@ -1260,7 +1260,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/NumberOfFloors">
-        <rdfs:comment>A concept to describe number of floors in a building.</rdfs:comment>
+        <rdfs:comment>A concept to describe the number of floors in a building.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/"/>
         <rdfs:label>Number of floors</rdfs:label>
     </owl:Class>
