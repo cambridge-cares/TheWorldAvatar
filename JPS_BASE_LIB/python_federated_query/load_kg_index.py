@@ -39,7 +39,7 @@ class LoadKGIndex:
         # Add title and labels
         plt.title('Class file distribution')
         plt.xlabel('Class')
-        plt.ylabel('Frequency')
+        plt.ylabel('File Frequency')
 
         # Show plot
         plt.xticks(rotation=45)
@@ -62,10 +62,8 @@ if __name__ == "__main__":
     avg_files_per_class = 0.0
     
     for class_name, files in index.items():
-        # Access each object's properties
         file_count += len(files)
         class_count += 1
     
     avg_files_per_class = file_count/class_count
-    # Print the files where the concept is there
     print(f"Total class:{class_count}; Average files per class: {avg_files_per_class}")
