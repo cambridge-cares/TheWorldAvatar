@@ -258,7 +258,7 @@ class Manager {
         }
 
         if (this.sliderHandler.scenarioDimensionsData) {
-            DataGroup.handleDimensions(dataJSON, this.sliderHandler.scenarioDimensionsData, value)
+            dataJSON = DataGroup.handleDimensions(dataJSON, this.sliderHandler.scenarioDimensionsData, value)
         }
 
         // Initialise global settings
@@ -783,8 +783,8 @@ class Manager {
             // Load its data configuration file
             let self = this;
             this.scenarioHandler.getConfiguration(function (dataJSON) {
-                self.scenarioHandler.fetchScenarioDimensions().then(scenarioTimesData => {
-                    self.sliderHandler = new SliderHandler(scenarioTimesData, this);
+                self.scenarioHandler.fetchScenarioDimensions().then(scenarioDimensionsData => {
+                    self.sliderHandler = new SliderHandler(scenarioDimensionsData, this);
                     self.sliderHandler.removeSlider();
                     self.sliderHandler.initialiseAllSliders(self.sliderActionsArray);
                     let promise = self.loadDefinitionsFromObject(dataJSON, 1) as Promise<any>
