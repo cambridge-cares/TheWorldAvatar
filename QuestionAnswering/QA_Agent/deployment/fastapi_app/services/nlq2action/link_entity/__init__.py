@@ -1,3 +1,36 @@
+from importlib.resources import files
+import json
+from typing import Dict
+
+from pydantic import TypeAdapter
+from redis import Redis
+
+from services.core.embed import IEmbedder
+from services.nlq2action.link_entity.semantic import LexiconEntry, SemanticEntityLinker
+
+
 class EntityLinkingMediator:
+    LEXICON_FILE_SUFFIX = "_lexicon.json"
+
+    def __init__(self, redis_client: Redis, embedder: IEmbedder):
+        type2lexicon: Dict[str, SemanticEntityLinker] = dict()
+
+        adapter = TypeAdapter(LexiconEntry)
+        for file in files("resources.lexicon").iterdir():
+            if file.is_file() and file.name.lower().endswith(self.LEXICON_FILE_SUFFIX):
+                entity_type = file.name[: -len(self.LEXICON_FILE_SUFFIX)]
+                linker = SemanticEntityLinker(
+                    redis_client=redis_client,
+                    embedder=embedder,
+                    key=entity_type,
+                    entries=[adapter.validate_json(obj) for obj in file.read_text()],
+                )
+                type2lexicon[entity_type] = linker
+
+        self.type2lexicon = type2lexicon
+
     def link(self, entity_type: str, surface_form: str):
-        pass
+        if entity_type not in self.type2lexicon:
+            raise ValueError("Unexpected `entity_type`: " + entity_type)
+
+        return self.type2lexicon[entity_type].link(surface_form)
