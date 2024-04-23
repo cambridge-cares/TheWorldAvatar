@@ -1,6 +1,8 @@
+from importlib.resources import files
 import json
-from typing import Iterable
+from typing import Annotated, Iterable
 
+from fastapi import Depends
 import numpy as np
 from redis import Redis
 from redis.commands.search.field import VectorField
@@ -8,9 +10,10 @@ from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 from pydantic.dataclasses import dataclass
 
+from config import QAEngine, get_qa_engine
 from services.utils.itertools_recipes import batched
-from services.core.embed import IEmbedder
-from services.core.redis import does_index_exist
+from services.core.embed import IEmbedder, get_embedder
+from services.core.redis import does_index_exist, get_redis_client
 
 
 @dataclass
@@ -92,8 +95,8 @@ class Nlq2ActionRetriever:
         knn_query = (
             Query("(*)=>[KNN {k} @vector $query_vector AS vector_score]".format(k=k))
             .sort_by("vector_score")
-            .return_field("$.nlq", "nlq")
-            .return_field("$.action", "action")
+            .return_field("$.nlq", as_field="nlq")
+            .return_field("$.action", as_field="action")
             .dialect(2)
         )
         res = self.redis_client.ft(self.EXAMPLES_INDEX_NAME).search(
@@ -104,3 +107,25 @@ class Nlq2ActionRetriever:
             Nlq2ActionExample(nlq=doc.nlq, action=json.loads(doc.action))
             for doc in res.docs
         ]
+
+    def retrieve_schema(self, nlq: str, k: int = 10):
+        pass
+
+
+def gen_nlq2action_examples(qa_engine: QAEngine):
+    for file in files("resources." + qa_engine.value).joinpath("examples").iterdir():
+        if file.is_file() and file.name.lower().endswith("json"):
+            for example in json.loads(file.read_text()):
+                yield Nlq2ActionExample(nlq=example["input"], action=example["output"])
+
+
+def get_nlq2action_retriever(
+    qa_engine: Annotated[QAEngine, Depends(get_qa_engine)],
+    redis_client: Annotated[Redis, Depends(get_redis_client)],
+    embedder: Annotated[IEmbedder, Depends(get_embedder)],
+):
+    return Nlq2ActionRetriever(
+        redis_client=redis_client,
+        embedder=embedder,
+        examples=gen_nlq2action_examples(qa_engine),
+    )
