@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.useragent;
 import org.apache.log4j.Logger;
 
 import org.jooq.DSLContext;
+import org.jooq.Name;
 import org.jooq.Query;
 import org.jooq.SQLDialect;
 import org.jooq.conf.ParamType;
@@ -28,9 +29,11 @@ public class TimelineRDBStoreHelper {
     }
 
     private void initTimelineSchema() {
-        JSONArray result = postgresRdbClient.executeQuery("SELECT schema_name \n" +
-                "FROM information_schema.schemata\n" +
-                "WHERE schema_name = 'timeline';");
+        Query query = context.select(field("schema_name"))
+                .from(table(name("information_schema", "schemata")))
+                .where(field("schema_name").eq(val("timeline")));
+        JSONArray result = postgresRdbClient.executeQuery(query.getSQL(ParamType.INLINED));
+
         LOGGER.debug(result);
         if (!result.isEmpty()) {
             return;
@@ -41,28 +44,24 @@ public class TimelineRDBStoreHelper {
     }
 
     private void initPhoneTable() {
-        JSONArray result = postgresRdbClient.executeQuery("SELECT table_name\n" +
-                "FROM information_schema.tables\n" +
-                "WHERE table_schema = 'timeline'\n" +
-                "AND table_name = 'smartPhone';");
-
-        if (!result.isEmpty()) {
-            return;
-        }
-
-        postgresRdbClient.executeUpdate("CREATE TABLE IF NOT EXISTS \"postgres\".\"timeline\".\"smartPhone\" (" +
-                "phone_id CHAR(36) PRIMARY KEY," +
-                "user_id CHAR(36));");
+        Query queryCreateTable = context.createTableIfNotExists(name("postgres", "timeline", "smartPhone"))
+                .column(column(name("phone_id"), SQLDataType.CHAR.length(36)))
+                .column(column(name("user_id"), SQLDataType.CHAR.length(36)))
+                .constraints(constraint("pk_phone_id").primaryKey(name(phoneIdColumnName)));
+        postgresRdbClient.executeUpdate(queryCreateTable.getSQL());
     }
 
     public void registerPhone(String phoneId, String userId) {
-        postgresRdbClient.executeUpdate("INSERT INTO \"timeline\".\"smartPhone\" (\"phone_id\", \"user_id\")\n" +
-                String.format("VALUES ('%s', '%s');", phoneId, userId));
+        Query query = context.insertInto(table(name("timeline", "smartPhone")))
+                        .columns(field(name("phone_id")), field(name("user_id")))
+                        .values(val(phoneId), val(userId));
+        postgresRdbClient.executeUpdate(query.getSQL());
     }
 
     public JSONArray getExistingPhoneIdRecord(String phoneId) {
         Query query = context.select(field("user_id"))
-                .from(table("\"postgres\".\"timeline\".\"smartPhone\"")).where(field("phone_id").eq(phoneId));
-        return postgresRdbClient.executeQuery(query.getSQL(ParamType.INLINED));
+                .from(table(name("postgres", "timeline", "smartPhone")))
+                .where(field("phone_id").eq(val(phoneId)));
+        return postgresRdbClient.executeQuery(query.getSQL());
     }
 }

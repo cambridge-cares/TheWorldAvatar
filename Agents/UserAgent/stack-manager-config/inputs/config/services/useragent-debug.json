@@ -1,7 +1,7 @@
 {
   "type": "basic-agent",
   "ServiceSpec": {
-    "Name": "useragent",
+    "Name": "user-agent",
     "TaskTemplate": {
       "ContainerSpec": {
         "Image": "user-agent:1.0.0",
@@ -45,9 +45,9 @@
     }
   },
   "endpoints": {
-    "useragent": {
-      "url": "http://localhost:8080/useragent/",
-      "externalPath": "/useragent/"
+    "rest": {
+      "url": "http://localhost:8080/user-agent/",
+      "externalPath": "/user-agent/"
     }
   }
 }
