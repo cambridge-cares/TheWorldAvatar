@@ -56,7 +56,6 @@ COPY ./confs ./confs
 COPY ./data_classes ./data_classes
 COPY ./downloader ./downloader
 COPY ./kg_access ./kg_access
-COPY ./tbox_dev ./tbox_dev
 COPY ./utils ./utils
 COPY ./tests ./tests
 COPY ./agent.env.test ./agent.env.test

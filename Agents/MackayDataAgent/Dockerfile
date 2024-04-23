@@ -58,8 +58,6 @@ COPY ./kg_access ./kg_access
 COPY ./tbox_dev ./tbox_dev
 COPY ./utils ./utils
 COPY ./tests ./tests
-COPY ./agent.env.test ./agent.env.test
-COPY ./agent.env.run ./agent.env.run
 
 COPY app.py ./app.py
 # Set the entrypoint
