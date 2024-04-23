@@ -121,7 +121,7 @@ class APISourceSparqlClient:
                 url_info['value_iter'] = r[0]['value_iter']
                 url_info['time_iter'] = r[0]['time_iter']
                 if 'mfunc' in r[0]:
-                    mfunc_name = r[0]['mfunc'].split('#')[-1].lower()
+                    mfunc_name = r[0]['mfunc'].split('/')[-1].lower()
                     url_info['calculation'] = 'map_function_' + mfunc_name
                 return url_info
         else:

@@ -93,7 +93,8 @@ The full time-sequence diagram of Mackay Data Agent actions are illustrated as t
     <img src="./imgs/sequenceDATAAGENT.png" alt="drawing" width="800"/>
 </p>
 
-
+# 2.3 Ontology
+We map three Mackay inputs data to quantity instances in TWA KG. A proposed version of design can be found in [tbox_dev]. Note that this is not the finalized version.
 
 
 
@@ -130,3 +131,4 @@ The full time-sequence diagram of Mackay Data Agent actions are illustrated as t
 [base.cfg]:./confs_files/base.cfg
 [data config folder]: ./confs_files
 [Mackay Calculator Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MackayCalculatorAgent
+[tbox_dev]: ./tbox_dev/quantity_triples
