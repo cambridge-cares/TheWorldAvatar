@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -16,8 +17,7 @@ import javax.ws.rs.BadRequestException;
 import java.nio.file.Path;
 
 
-@WebServlet(urlPatterns = {"/registerPhone", "/getPhoneIds"})
-
+@WebServlet(urlPatterns = {"/registerPhone", "/getPhoneIds", "/status"})
 public class UserAgent extends JPSAgent {
     private TimelineRDBStoreHelper timelineRdbStoreHelper;
     private KGQueryClient kgQueryClient;
@@ -56,13 +56,36 @@ public class UserAgent extends JPSAgent {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        if (request.getRequestURI().contains("registerPhone")) {
+        if (request.getRequestURI().contains("status")) {
+            JSONObject jo = new JSONObject();
+            jo.put("Message", "User agent is up and running");
+            return jo;
+        }
+        else if (request.getRequestURI().contains("registerPhone")) {
             validateInputRegisterPhone(requestParams);
-            timelineRdbStoreHelper.registerPhone(requestParams.getString("phoneId"), requestParams.getString("userId"));
 
+            String userId = requestParams.getString("userId");
+            String phoneId = requestParams.getString("phoneId");
+
+            JSONArray jsonArray = timelineRdbStoreHelper.getExistingPhoneIdRecord(phoneId);
+            if (!jsonArray.isEmpty()) {
+                if (jsonArray.getJSONObject(0).getString("user_id").equals(userId)) {
+                    LOGGER.info("Phone has already been registered");
+                    JSONObject result = new JSONObject();
+                    result.put("Comment", "Phone has already been registered");
+                    return result;
+                } else {
+                    LOGGER.error("Phone is already registered with another userId: " + jsonArray.getJSONObject(0).getString("user_id"));
+                    throw new JPSRuntimeException("Phone is already registered with another userId");
+                }
+            }
+
+            timelineRdbStoreHelper.registerPhone(requestParams.getString("phoneId"), requestParams.getString("userId"));
             JSONObject result = new JSONObject();
             result.put("Comment", "Phone is registered successfully.");
+            LOGGER.info(phoneId + " is registered to " + userId);
             return result;
+
         } else if (request.getRequestURI().contains("getPhoneIds")) {
             validateInputGetPhoneIds(requestParams);
             JSONArray phoneIds = kgQueryClient.getPhoneIds(requestParams.getString("userId"));

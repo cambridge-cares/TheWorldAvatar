@@ -1,15 +1,24 @@
 package uk.ac.cam.cares.jps.agent.useragent;
 
 import org.apache.log4j.Logger;
+
+import org.jooq.DSLContext;
+import org.jooq.Query;
+import org.jooq.SQLDialect;
+import org.jooq.conf.ParamType;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+
+import static org.jooq.impl.DSL.*;
 
 public class TimelineRDBStoreHelper {
     private RemoteRDBStoreClient postgresRdbClient;
     private Logger LOGGER = Logger.getLogger(TimelineRDBStoreHelper.class);
+    private DSLContext context;
 
     public TimelineRDBStoreHelper(RemoteRDBStoreClient postgresRdbClient) {
         this.postgresRdbClient = postgresRdbClient;
+        context = using(SQLDialect.POSTGRES);
         initRDBStore();
     }
 
@@ -49,5 +58,11 @@ public class TimelineRDBStoreHelper {
     public void registerPhone(String phoneId, String userId) {
         postgresRdbClient.executeUpdate("INSERT INTO \"timeline\".\"smartPhone\" (\"phone_id\", \"user_id\")\n" +
                 String.format("VALUES ('%s', '%s');", phoneId, userId));
+    }
+
+    public JSONArray getExistingPhoneIdRecord(String phoneId) {
+        Query query = context.select(field("user_id"))
+                .from(table("\"postgres\".\"timeline\".\"smartPhone\"")).where(field("phone_id").eq(phoneId));
+        return postgresRdbClient.executeQuery(query.getSQL(ParamType.INLINED));
     }
 }
