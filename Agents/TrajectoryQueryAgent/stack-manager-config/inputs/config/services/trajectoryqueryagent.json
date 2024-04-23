@@ -15,7 +15,7 @@
             "ConfigName": "geoserver"
           },
           {
-            "ConfigName": "useragent-useragent"
+            "ConfigName": "user-agent-rest"
           }
         ],
         "Secrets": [
@@ -30,7 +30,7 @@
     }
   },
   "endpoints": {
-    "isochroneagent": {
+    "rest": {
       "url": "http://localhost:8080/trajectoryqueryagent/",
       "externalPath": "/trajectoryqueryagent/"
     }

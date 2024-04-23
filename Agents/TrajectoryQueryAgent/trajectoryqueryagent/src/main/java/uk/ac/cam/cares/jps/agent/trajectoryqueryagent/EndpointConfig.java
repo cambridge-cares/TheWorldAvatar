@@ -31,7 +31,7 @@ public class EndpointConfig {
         this.dbuser = postGISEndpointConfig.getUsername();
         this.dbpassword = postGISEndpointConfig.getPassword();
 
-        BasicEndpointConfig userAgentConfig = containerClient.readEndpointConfig("useragent-useragent", BasicEndpointConfig.class);
+        BasicEndpointConfig userAgentConfig = containerClient.readEndpointConfig("user-agent-rest", BasicEndpointConfig.class);
         userAgentUrl = userAgentConfig.getUrl();
     }
     public String getKgurl() {
