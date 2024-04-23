@@ -107,8 +107,22 @@ public class SparqlClient {
         String goalRange_iri = namespace + UUID.randomUUID().toString();
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(goalRange_iri).isA(GoalRange).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+        modify.insert();
         storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
         return goalRange_iri;
+    }
+
+    /**
+     * creates a new GoalRange instance
+     * <iri> a <GoalRange>
+     * <iri> a owl:NamedIndividual
+     * @param
+     * @return
+     */
+    public void createRangeCondition(String goalRange_iri, String Maximum, String Minimum) {
+        ModifyQuery modify = Queries.MODIFY();
+        modify.insert(iri(goalRange_iri).has(hasMaximum,Maximum).andHas(hasMinimum,Minimum));
+        storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     }
 
 
@@ -231,7 +245,7 @@ public class SparqlClient {
         String key = "value";
         Variable value_iri = query.var();
         Variable value = SparqlBuilder.var(key);
-        GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasMaximum,value_iri), value_iri.has(numericalValue,value));
+        GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasValue,value_iri), value_iri.has(numericalValue,value));
 
         query.prefix(p_namespace).select(value).where(queryPattern);
 

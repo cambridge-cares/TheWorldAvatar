@@ -89,6 +89,10 @@ public class InitialiseInstances extends JPSAgent{
 
 			//Create goalRange_iri
 			String goalRange_iri = sparqlClient.createGoalRangeIRI();
+			sparqlClient.createRangeCondition(goalRange_iri,"100","0");
+
+			//Create goalCondition
+
 			
 //			//Create truckvalue_iri
 //			String realState_iri = sparqlClient.createStateValue();
