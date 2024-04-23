@@ -7,6 +7,7 @@ import org.jooq.Name;
 import org.jooq.Query;
 import org.jooq.SQLDialect;
 import org.jooq.conf.ParamType;
+import org.jooq.impl.SQLDataType;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
@@ -45,9 +46,9 @@ public class TimelineRDBStoreHelper {
 
     private void initPhoneTable() {
         Query queryCreateTable = context.createTableIfNotExists(name("postgres", "timeline", "smartPhone"))
-                .column(column(name("phone_id"), SQLDataType.CHAR.length(36)))
-                .column(column(name("user_id"), SQLDataType.CHAR.length(36)))
-                .constraints(constraint("pk_phone_id").primaryKey(name(phoneIdColumnName)));
+                .column(name("phone_id"), SQLDataType.CHAR.length(36))
+                .column(name("user_id"), SQLDataType.CHAR.length(36))
+                .constraints(constraint("pk_phone_id").primaryKey(name("phone_id")));
         postgresRdbClient.executeUpdate(queryCreateTable.getSQL());
     }
 
