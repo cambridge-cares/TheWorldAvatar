@@ -121,9 +121,10 @@ python -m pytest --docker-compose=./docker-compose-testcontainers.yml
 ```
 
 ##env files
-They are two env files in the repo. `agent.env.run` is used for running the agent in Docker. `agent.env.test` is used in pytest. The need of two separate files is due to 'localhost' should be referred to as 'host.docker.internal' from inside Docker.
+They are two env files in the repo. `agent.env.run` is used for running the agent in Docker. `agent.env.test` is used in pytest. The need of two separate files is due to 'localhost' should be referred to as 'host.docker.internal' from inside Docker. 
 
-
+##property files
+One may notice the agent, once started, creates a property file named `APIAgent.properties` under `/resources` in the working directory. This is the property file that is used to create the [TimeSeriesClient] Instance via one of the library's constructor methods. The property file is automatically created by the agent from the parameters defined in env files. No action is required on the user side.
 
 
 
