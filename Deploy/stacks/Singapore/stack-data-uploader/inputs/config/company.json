@@ -107,6 +107,25 @@
       }
     },
     {
+      "type": "vector",
+      "table": "jurong_island_buildings",
+      "skip": false,
+      "subdirectory": "jurong_island_buildings",
+      "sql": "@/inputs/config/jurong_island_buildings.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:24500",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "lon_epsg_24500",
+          "Y_POSSIBLE_NAMES": "lat_epsg_24500"
+        }
+      }
+    },
+    {
       "type": "rdf",
       "skip": "false",
       "subdirectory": "tbox"

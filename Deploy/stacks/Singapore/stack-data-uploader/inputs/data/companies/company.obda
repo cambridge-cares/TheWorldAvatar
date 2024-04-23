@@ -22,7 +22,7 @@ target          :company/{company_uuid} a ontocompany:Company;
                     rdfs:label "{company}"^^xsd:string;
                     ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
                     ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
-                    ontocompany:hasDataCentre :datacenter/{facility_uuid}.
+                    ontocompany:isOwnerOf :datacenter/{facility_uuid}.
                 :ictindustry/{industry_uuid} a ontocompany:InformationandCommunicationTechnologyIndustry;
                     rdfs:label "InformationandCommunicationTechnologyIndustry".
                 :datacenter/{facility_uuid} a ontocompany:DataCentre;
@@ -105,7 +105,6 @@ source          SELECT
                     "facility_uuid",
                     "industry_uuid",
                     "plant_name",
-                    
                     "company",
                     "ssic_code",
                     "business_activity",
@@ -155,7 +154,6 @@ source          SELECT
                     "facility_uuid",
                     "industry_uuid",
                     "plant_name",
-                    
                     "company",
                     "ssic_code",
                     "business_activity",
@@ -204,7 +202,7 @@ source          SELECT
                     "company_uuid",
                     "facility_uuid",
                     "industry_uuid",
-                    "plant_name",                    
+                    "plant_name",
                     "company",
                     "ssic_code",
                     "business_activity",
@@ -253,7 +251,7 @@ source          SELECT
                     "company_uuid",
                     "facility_uuid",
                     "industry_uuid",
-                    "plant_name",                    
+                    "plant_name",
                     "company",
                     "ssic_code",
                     "business_activity",
@@ -302,7 +300,7 @@ source          SELECT
                     "company_uuid",
                     "facility_uuid",
                     "industry_uuid",
-                    "plant_name",                   
+                    "plant_name",
                     "company",
                     "ssic_code",
                     "business_activity",
@@ -355,38 +353,48 @@ target          :company/{company_uuid} a ontocompany:Company;
                     rdfs:label "{company}"^^xsd:string;
                     ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
                     ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
-                    ontocompany:isOwnerOf :chemPlant/{company_uuid}.
-                :chemPlant/{company_uuid} a ontochemplant:ChemicalPlant;
+                    ontocompany:isOwnerOf :chemplant/{company_uuid}.
+                :chemplant/{company_uuid} a ontochemplant:ChemicalPlant;
                     rdfs:label "Chemical_Plant_{company}"^^xsd:string;
-                    geo:ehContains :plantitem/{plant_item_uuid}.               
-                :plantitem/{plant_item_uuid} a ontocape:PlantItem;
-                    ontobuiltenv:hasOntoCityGMLRepresentation cityfurniture:{city_furniture_uuid};
-                    ontochemplant:hasIndividualCO2Emission :co2/{plant_item_uuid};
-                    ontochemplant:hasGeneratedHeat :generatedheat/{plant_item_uuid}.
-                :co2/{plant_item_uuid} rdf:type ontochemplant:IndividualCO2Emission;
-                    om:hasValue :co2measure/{plant_item_uuid}.
-                :co2measure/{plant_item_uuid} om:hasNumericalValue "{co2_emissions}"^^xsd:float;
-                    om:hasUnit :co2unit/{plant_item_uuid}. 
-                :co2unit/{plant_item_uuid} skos:notation "Tons/year"^^xsd:string.
-                :generatedheat/{plant_item_uuid} rdf:type ontochemplant:GeneratedHeat;            
-                            om:hasValue :generatedheatmeasure/{plant_item_uuid}.
-                :generatedheatmeasure/{plant_item_uuid} om:hasNumericalValue "{heat_emissions}"^^xsd:float;
-                    om:hasUnit :generatedheatunit/{plant_item_uuid}. 
-                :generatedheatunit/{plant_item_uuid} skos:notation "MW"^^xsd:string.
+                    geo:ehContains :plantitem/{city_furniture_uuid}.               
+                :plantitem/{city_furniture_uuid} a ontocape:PlantItem;
+                    ontochemplant:hasIndividualCO2Emission :co2/{city_furniture_uuid};
+                    ontochemplant:hasGeneratedHeat :generatedheat/{city_furniture_uuid}.
+                :co2/{city_furniture_uuid} rdf:type ontochemplant:IndividualCO2Emission;
+                    om:hasValue :co2measure/{city_furniture_uuid}.
+                :co2measure/{city_furniture_uuid} om:hasNumericalValue "{co2_emissions}"^^xsd:float;
+                    om:hasUnit :co2unit/{city_furniture_uuid}. 
+                :co2unit/{city_furniture_uuid} skos:notation "Tons/year"^^xsd:string.
+                :generatedheat/{city_furniture_uuid} rdf:type ontochemplant:GeneratedHeat;
+                            om:hasValue :generatedheatmeasure/{city_furniture_uuid}.
+                :generatedheatmeasure/{city_furniture_uuid} om:hasNumericalValue "{heat_emissions}"^^xsd:float;
+                    om:hasUnit :generatedheatunit/{city_furniture_uuid}. 
+                :generatedheatunit/{city_furniture_uuid} skos:notation "MW"^^xsd:string.
 source          SELECT
                     "company_uuid",
-                    "plant_item_uuid",
                     "city_furniture_uuid",
                     "company",
                     "ssic_code",
                     "business_activity",
-                    "year_formation",
-                    "number_employees",
                     "co2_emissions",
                     "heat_emissions"
                 FROM
-                    "jurong_island_city_furniture" 
-                
- 
+                    "jurong_island_city_furniture"
 
+
+mappingId       jurong_island_chemical_plants
+target          :company/{company_uuid} a ontocompany:Company;
+                    rdfs:label "{company}"^^xsd:string;
+                    ontocompany:hasSSICCode "{ssic_code}"^^xsd:integer;
+                    ontocompany:hasBusinessActivity "{business_activity}"^^xsd:string;
+                    ontocompany:isOwnerOf :chemplant/{company_uuid}.
+                :chemplant/{company_uuid} a ontochemplant:ChemicalPlant;
+                    rdfs:label "Chemical_Plant_{company}"^^xsd:string.
+source          SELECT
+                    "company_uuid",
+                    "company",
+                    "ssic_code",
+                    "business_activity"
+                FROM
+                    "jurong_island_buildings"
 ]]
