@@ -1,6 +1,6 @@
 # The Ontology for the Built Environment (OntoBuiltEnv)
 ## The existing issue
-OntoBuiltEnv uses several external ontologies, such as `Ontology of units of Measure (OM)`, but it redefined some classes and properties of external ontologies, such as `om:hasValue`, `om:hasNumericalValue`, `om:hasUnit`. The example of redefinition of `om:hasValue` is shown in the following. 
+OntoBuiltEnv uses several external ontologies, such as `Ontology of units of Measure (OM)`, but it redefined some classes and properties of external ontologies, such as `om:hasValue`, `om:hasNumericalValue`, `om:hasUnit`. The example of re-definition of `om:hasValue` is shown in the following. 
 ```
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
 
@@ -21,12 +21,12 @@ OntoBuiltEnv uses several external ontologies, such as `Ontology of units of Mea
         <rdfs:label>has value</rdfs:label>
     </owl:ObjectProperty>
 ```
-This kind of definition is not correct. We should not to redefine external ontology, which might have trouble for the using of external ontology.
+This kind of definition is not correct. We should not redefine external ontology, which might have trouble for the using of external ontology.
 
-Currently, the re-definiton of external ontologies did in 1 years ago and have been used in some existing agents. To avoid break the existing works, we can not fix this issue right now. But it is an open `TO-DO` item.
+Currently, the re-definiton of external ontologies was done in a year ago and has been used in some existing agents. To avoid breaking the existing works, we can not fix this issue right now. But it is an open `TO-DO` item.
 
 ## Solution in Sea level rise project
-In current OntoBuiltEnv, `om:hasValue` and `om:hasNumericalValue` has been re-defined. So we can not it directly with `om:Cost`. The relationships to descripe `om:Cost` are shown in the following.
+In current OntoBuiltEnv, `om:hasValue` and `om:hasNumericalValue` has been re-defined, so we can not use them directly with `om:Cost`. The relationships to describe `om:Cost` are shown in the following.
 ```
 om:Cost a om:Quantity
 om:Quantity om:hasValue om:Measure
