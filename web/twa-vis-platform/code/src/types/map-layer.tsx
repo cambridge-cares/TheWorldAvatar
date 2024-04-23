@@ -1,6 +1,6 @@
 export type MapLayerGroup = {
   name: string;
-  address: string;
+  address: string; // Marks the current position of the group in the hierarchy. 0 is first group, while 0.0 is first subgroup
   subGroups?: MapLayerGroup[];
   icon?: string;
   layers?: MapLayer[];

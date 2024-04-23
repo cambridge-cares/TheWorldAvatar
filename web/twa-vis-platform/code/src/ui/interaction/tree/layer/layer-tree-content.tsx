@@ -17,6 +17,7 @@ type LayerTreeHeaderProps = {
   group: MapLayerGroup;
   depth: number;
   parentShowChildren: boolean;
+  setMapGroups: React.Dispatch<React.SetStateAction<MapLayerGroup[]>>;
 };
 
 type LayerTreeEntryProps = {
@@ -48,8 +49,10 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
       // If the user wishes to hide the group, the current state should be considered as visible (true)
       const assumedVisibilityState: boolean = props.parentShowChildren ? isExpanded : true;
       recurseToggleChildVisibility(group, assumedVisibilityState);
+      // Update the state of the map groups
+      props.setMapGroups(prevMapLayers => recursiveSubGroupFinder(prevMapLayers, group.address));
+      setIsExpanded(!isExpanded);
     }
-    setIsExpanded(!isExpanded);
   };
 
   // A function that recursively toggle the children's layers according to the present state
@@ -61,6 +64,22 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
       toggleMapLayerVisibility(layer.ids, beforeVisibleState);
     });
   }
+
+  // A recursive finder that searches for the subgroup matching the input address.
+  // If found, inverse the show children property and update the map groups state.
+  const recursiveSubGroupFinder = (mapLayers: MapLayerGroup[], address: string): MapLayerGroup[] => {
+    return mapLayers.map(layer => {
+      if (layer.address === address) {
+        // Found the subgroup with matching address
+        // Update the required property
+        return { ...layer, showChildren: !layer.showChildren };
+      } else if (layer.subGroups && layer.subGroups.length > 0) {
+        // Recursively traverse subgroups
+        return { ...layer, subGroups: recursiveSubGroupFinder(layer.subGroups, address) };
+      }
+      return layer;
+    });
+  };
 
   /** A method that toggles map layer visibility based on the current state.
    * Currently visible layers will become hidden. 
@@ -126,6 +145,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
                   group={subGroup}
                   depth={props.depth + 1}
                   parentShowChildren={isExpanded}
+                  setMapGroups={props.setMapGroups}
                 />)
             })}
           </div>

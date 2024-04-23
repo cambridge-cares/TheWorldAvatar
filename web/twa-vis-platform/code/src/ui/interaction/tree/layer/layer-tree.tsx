@@ -16,6 +16,8 @@ type LayerTreeProps = {
   map: Map;
   dataStore: DataStore;
   icons: IconSettings;
+  mapGroups: MapLayerGroup[];
+  setMapGroups: React.Dispatch<React.SetStateAction<MapLayerGroup[]>>;
 };
 
 /**
@@ -23,15 +25,19 @@ type LayerTreeProps = {
  * with optional icons, in a LayerTree component.
  */
 export default function LayerTree(props: LayerTreeProps) {
-  const structure: MapLayerGroup[] = parseIntoTreeStucture(props.dataStore, props.icons);
+  // Only parse the groups for the first render
+  if (props.mapGroups.length === 0) {
+    parseIntoTreeStucture(props.dataStore, props.icons, props.setMapGroups);
+  }
   return <div className={styles.layerTreeContainer}>
-    {structure.map((mapLayerGroup) => {
+    {props.mapGroups.map((mapLayerGroup) => {
       return (
         <LayerTreeHeader
           map={props.map}
           group={mapLayerGroup}
           depth={0}
           parentShowChildren={mapLayerGroup.showChildren}
+          setMapGroups={props.setMapGroups}
           key={mapLayerGroup.name}
         />)
     })}
@@ -47,12 +53,16 @@ export default function LayerTree(props: LayerTreeProps) {
  * @param dataStore DataStore containing groups.
  * @param icons The mappings for icon names to their corresponding url.
  */
-function parseIntoTreeStucture(dataStore: DataStore, icons: IconSettings): MapLayerGroup[] {
+function parseIntoTreeStucture(
+  dataStore: DataStore,
+  icons: IconSettings,
+  setMapGroups: React.Dispatch<React.SetStateAction<MapLayerGroup[]>>
+): void {
   const root: MapLayerGroup[] = [];
-  dataStore.getGroups().forEach((group) => {
-    recurseParseTreeStructure(root, group, null, icons);
+  dataStore.getGroups().map((group, groupIndex) => {
+    recurseParseTreeStructure(groupIndex, root, group, null, icons);
   });
-  return root;
+  setMapGroups(root);
 }
 
 /**
@@ -64,6 +74,7 @@ function parseIntoTreeStucture(dataStore: DataStore, icons: IconSettings): MapLa
  * @param icons The mappings for icon names to their corresponding url.
  */
 function recurseParseTreeStructure(
+  groupIndex: number,
   results: MapLayerGroup[],
   dataGroup: DataGroup,
   parentGroup: MapLayerGroup,
@@ -73,8 +84,8 @@ function recurseParseTreeStructure(
     name: dataGroup.name,
     address:
       parentGroup == null
-        ? dataGroup.name
-        : parentGroup.address + "." + dataGroup.name,
+        ? groupIndex.toString()
+        : parentGroup.address + "." + groupIndex,
     icon: dataGroup.treeIcon,
     layers: [],
     subGroups: [],
@@ -103,9 +114,9 @@ function recurseParseTreeStructure(
   }
 
   // Recurse down
-  for (const subGroup of dataGroup.subGroups) {
-    recurseParseTreeStructure(results, subGroup, mapLayerGroup, icons);
-  }
+  dataGroup.subGroups.map((subGroup, subGroupIndex) => {
+    recurseParseTreeStructure(subGroupIndex, results, subGroup, mapLayerGroup, icons);
+  })
 
   if (parentGroup == null) {
     results.push(mapLayerGroup);
