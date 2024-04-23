@@ -7,11 +7,11 @@ import random
 from openai import OpenAI
 from tqdm import tqdm
 
-PROMPT = """You are a Blazegraph SPARQL expert creating a data set to train a robust machine learning model .
+PROMPT_TEMPLATE = """You are a Blazegraph SPARQL expert creating a data set to train a robust machine learning model .
 
 ### Examples:
 {examples}
-{schema}
+{info}
 Your task is to generate {num} more input-output pairs that are based on the given examples and obey the provided schema. Come up with new schema-compliant question types if needed. Please formulate your response as a list of objects in the JSON format exactly."""
 
 
@@ -29,12 +29,6 @@ def promptify_schema(filename: str):
     )
 
 
-def promptify_categorical_properties(filename: str):
-    with open(filename, "r") as f:
-        categories = f.read()
-    return categories
-
-
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("filename", help="JSON file containing examples")
@@ -49,6 +43,9 @@ if __name__ == "__main__":
         "--path2categories", help="JSON file containing values per categorical property"
     )
     parser.add_argument(
+        "--path2lexicon", help="JSON file containing labels for schema items"
+    )
+    parser.add_argument(
         "--output_dir", required=True, help="Directory to save output files"
     )
     parser.add_argument("--openai_base_url")
@@ -58,14 +55,17 @@ if __name__ == "__main__":
     with open(args.filename, "r") as f:
         examples = json.load(f)
 
-    schema = ""
+    info = ""
     if args.path2schema:
-        schema += "\n### Schema:\n" + promptify_schema(args.path2schema)
+        info += "\n### Schema:\n" + promptify_schema(args.path2schema)
     if args.path2categories:
-        schema += (
-            "\n\n### Categorical properties:\n"
-            + promptify_categorical_properties(args.path2categories)
-        )
+        with open(args.path2categories, "r") as f:
+            categories = f.read()
+        info += "\n\n### Categorical properties:\n" + categories
+    if args.path2lexicon:
+        with open(args.path2lexicion, "r") as f:
+            lexicon = f.read()
+        info += "\n\n### Lexicon:\n" + lexicon
 
     openai_client = OpenAI(base_url=args.openai_base_url)
 
@@ -77,9 +77,9 @@ if __name__ == "__main__":
         random.shuffle(examples)
         offset = j * batches_per_repeat
         for i in range(0, len(examples), args.chunk_size):
-            prompt = PROMPT.format(
+            prompt = PROMPT_TEMPLATE.format(
                 examples=json.dumps(examples[i : i + args.chunk_size], indent=4),
-                schema=schema + "\n",
+                info=info + "\n",
                 num=args.chunk_size * args.synthesis_multiplier,
             )
             batch_num = offset + i
