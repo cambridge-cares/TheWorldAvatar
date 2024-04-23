@@ -1,6 +1,6 @@
 # Description #
 
-The `build_kg_index.py` module build inverted index of concepts to the files providing a base directory. It automatically considers files and files under sub-folders. It saves the inverted index in a file called `inverted_index.json`. On the other hand, `load_kg_index.py` loads an index from a saved file and produces bar-chart to see the concept to files association graph.
+The `build_kg_index.py` module build inverted index of concepts to the files providing a base directory. It automatically considers files and files under sub-folders. It saves the inverted index in a file called `inverted_index.json`. On the other hand, `load_kg_index.py` loads an index from a saved file and produces bar-chart to see the concept to files association bar-chart.
 
 # Installation
 
