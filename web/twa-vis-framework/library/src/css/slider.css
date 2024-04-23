@@ -29,7 +29,7 @@
   /* display: none; */
 }
 
-#sliderContainer:hover ~ #timeSliderLabel {
+.sliderContainer:hover #timeSliderLabel {
   background-color: var(--cmcl-blue);
   color: var(--background-color);
 
