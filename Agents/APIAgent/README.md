@@ -120,8 +120,8 @@ Note that the agent needs a triple store and an RDB to work. The access informat
 python -m pytest --docker-compose=./docker-compose-testcontainers.yml
 ```
 
-
-
+##env files
+They are two env files in the repo. `agent.env.run` is used for running the agent in Docker. `agent.env.test` is used in pytest. The need of two separate files is due to 'localhost' should be referred to as 'host.docker.internal' from inside Docker.
 
 
 
