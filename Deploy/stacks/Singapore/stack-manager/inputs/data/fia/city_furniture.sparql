@@ -14,9 +14,8 @@ select ?Property ?Value ?Unit  WHERE {
   
   SERVICE [ONTOP] {
     SELECT ?type ?Value ?Unit where {
-    ?pli ontobuiltenv:hasOntoCityGMLRepresentation [IRI].
-    ?pli rdf:type ontocape:PlantItem.
-    ?pli ?p ?qty.
+    [IRI] rdf:type ontocape:PlantItem.
+    [IRI] ?p ?qty.
     ?qty rdf:type ?type.
     ?qty om:hasValue ?measure.
     ?measure om:hasNumericalValue ?Value;
@@ -30,9 +29,8 @@ select ?Property ?Value ?Unit  WHERE {
   
     SERVICE [ONTOP] {
       SELECT ?Property ?Value where {
-        ?pli ontobuiltenv:hasOntoCityGMLRepresentation [IRI].
-        ?plant geo:ehContains ?pli.
-        ?pli rdf:type ontocape:PlantItem.
+        ?plant geo:ehContains [IRI].
+        [IRI] rdf:type ontocape:PlantItem.
         ?company_iri ontocompany:isOwnerOf ?plant.
         BIND("Company Name" AS ?Property).
         ?company_iri rdfs:label ?Value.
@@ -43,11 +41,10 @@ select ?Property ?Value ?Unit  WHERE {
   
   } UNION {
 
-      SERVICE [ONTOP] {
+      SERVICE <http://heat-ontop:8080/sparql/> {
       SELECT ?Property ?Value where {
-        ?pli ontobuiltenv:hasOntoCityGMLRepresentation [IRI].
-        ?plant geo:ehContains ?pli.
-        ?pli rdf:type ontocape:PlantItem.
+        ?plant geo:ehContains [IRI].
+        [IRI] rdf:type ontocape:PlantItem.
         ?company_iri ontocompany:isOwnerOf ?plant.
         BIND("Plant Name" AS ?Property).
         ?plant rdfs:label ?Value.
@@ -56,17 +53,16 @@ select ?Property ?Value ?Unit  WHERE {
   }
 
   } UNION {
-     SERVICE [ONTOP] {
+     SERVICE <http://heat-ontop:8080/sparql/> {
       SELECT ?p ?Value where {
-        ?pli ontobuiltenv:hasOntoCityGMLRepresentation [IRI].
-        ?plant geo:ehContains ?pli.
-        ?pli rdf:type ontocape:PlantItem.
+        ?plant geo:ehContains [IRI].
+        [IRI] rdf:type ontocape:PlantItem.
         ?company_iri ontocompany:isOwnerOf ?plant.
         ?company_iri ?p ?Value.
   
       }
   } 
-        ?p rdfs:subPropertyOf <http://www.theworldavatar.com/kg/ontocompany/hasCompanyProperty>.
+        ?p rdfs:subPropertyOf ontocompany:hasCompanyProperty.
         ?p rdfs:label ?Property.
   	
  }
