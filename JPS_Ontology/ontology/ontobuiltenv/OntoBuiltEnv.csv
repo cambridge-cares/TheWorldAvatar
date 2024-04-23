@@ -1,7 +1,7 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoBuiltEnv,TBox,https://www.theworldavatar.com/kg/ontobuiltenv/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoBuiltEnv,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
-OntoBuiltEnv,TBox,"The Building Environment ontology (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoBuiltEnv,TBox,"The Ontology for the Built Environment (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoBuiltEnv,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 Property,Class,,,,,,A built structure which is available for occupation or business purposes.,https://www.theworldavatar.com/kg/ontobuiltenv/,Property
 Flat,Class,Property,IS-A,,,,A self-contained suite of rooms which occupies part of a building.,https://www.theworldavatar.com/kg/ontobuiltenv/,Flat
@@ -118,3 +118,13 @@ representativeFor,Object Property,,,AveragePricePerSqm,PostalCode,,A relationshi
 representativeFor,Object Property,,,AveragePricePerSqm,PostalCode,exactly 1,,https://www.theworldavatar.com/kg/ontobuiltenv/,representative for
 Bank,Class,Non-Domestic,IS-A,,,,A property where customers can deposit and withdraw money.,https://www.theworldavatar.com/kg/ontobuiltenv/,Bank
 Pharmacy,Class,Medical,IS-A,,,,A healthcare facility where medicinal drugs are prepared or sold.,https://www.theworldavatar.com/kg/ontobuiltenv/,Pharmacy
+hasNumberOfFloors,Object Property,,,Property,NumberOfFloors,exactly 1,A relationship between a property and its number of floors.,https://www.theworldavatar.com/kg/ontobuiltenv/,has number of floors
+NumberOfFloors,Class,,,Property,,,A concept to describe the number of floors in a building.,https://www.theworldavatar.com/kg/ontobuiltenv/,Number of floors
+hasValue,Data Property,,,NumberOfFloors,integer,exactly 1,A relationship between the number of floors and its numerical value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has value
+FloorsCatA,Class,NumberOfFloors,IS-A,,,,Category A of floors: data from reliable departments (e.g. government agencies),https://www.theworldavatar.com/kg/ontobuiltenv/,Floors category A
+FloorsCatB,Class,NumberOfFloors,IS-A,,,,Category B of floors: open source data without any guarantees (e.g. OSM),https://www.theworldavatar.com/kg/ontobuiltenv/,Floors category B
+FloorsCatC,Class,NumberOfFloors,IS-A,,,,Category C of floors: estimate,https://www.theworldavatar.com/kg/ontobuiltenv/,Floors category C
+hasGFA,Data Property,,,Property,float,exactly 1,A relationship between a building and its Gross Floor Area value.,https://www.theworldavatar.com/kg/ontobuiltenv/,has GFA
+hasCountry,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,A relationship between an address and the respective country name.,https://www.theworldavatar.com/kg/ontobuiltenv/,has country
+hasCity,Data Property,,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,exactly 1,A relationship between an address and the respective city name.,https://www.theworldavatar.com/kg/ontobuiltenv/,has city
+hasEstimatedConstructionCost,Object Property,,,Property,http://www.ontology-of-units-of-measure.org/resource/om-2/Cost,exactly 1,A relationship between a building and its estimated construction cost.,https://www.theworldavatar.com/kg/ontobuiltenv/,has estimated construction cost
