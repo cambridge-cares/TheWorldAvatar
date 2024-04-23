@@ -25,6 +25,7 @@ public class EnvConfig {
             .parseDouble(System.getenv("TARGET_EMISSION_VOLUME_FRACTION"));
     public static final String SHIPS_LAYER_NAME = System.getenv("SHIPS_LAYER_NAME");
     public static final String NUMBER_OF_LAYERS = System.getenv("NUMBER_OF_LAYERS");
+    public static final boolean IGNORE_BUILDINGS = Boolean.parseBoolean(System.getenv("IGNORE_BUILDINGS"));
 
     private EnvConfig() {
         throw new IllegalStateException();

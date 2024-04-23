@@ -20,7 +20,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -82,9 +81,11 @@ public class AermodAgent extends DerivationAgent {
             srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
-        Map<String, Building> allBuildings = null;
-        LOGGER.info("Querying for buildings within simulation domain");
-        allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
+        Map<String, Building> allBuildings = new HashMap<>();
+        if (!EnvConfig.IGNORE_BUILDINGS) {
+            LOGGER.info("Querying for buildings within simulation domain");
+            allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
+        }
         List<StaticPointSource> staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
 
         staticPointSources.removeIf(s -> s.getLocation() == null);
@@ -102,7 +103,12 @@ public class AermodAgent extends DerivationAgent {
         queryClient.setPointSourceLabel(allSources);
 
         // new ontop way
-        List<Building> buildings = queryClient.getBuildings(allSources, allBuildings);
+        List<Building> buildings;
+        if (!EnvConfig.IGNORE_BUILDINGS) {
+            buildings = queryClient.getBuildings(allSources, allBuildings);
+        } else {
+            buildings = new ArrayList<>();
+        }
 
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
