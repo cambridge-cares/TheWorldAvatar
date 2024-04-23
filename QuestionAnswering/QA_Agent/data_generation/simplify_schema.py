@@ -50,15 +50,29 @@ if __name__ == "__main__":
         VALUES ?s {{ {s.n3()} }}
     {{
         ?p rdfs:domain ?s . 
-        ?p rdfs:range ?o .
-    }} UNION {{
-        ?s rdfs:subClassOf ?Restriction .
-        ?Restriction a owl:Restriction ; owl:onProperty ?p .
         {{
-            ?Restriction owl:allValuesFrom [ rdf:type owl:Class ; owl:unionOf ?Collection ] .
-            ?Collection rdf:rest*/rdf:first ?o .
-        }} UNION {{
-            ?Restriction owl:allValuesFrom ?o .
+            SELECT ?o WHERE {{
+                {{
+                    ?p rdfs:range ?o .
+                }} UNION {{
+                    ?p rdfs:range ?Range .
+                    ?Range rdf:type owl:Class ; owl:unionOf ?Collection .
+                    ?Collection rdf:rest*/rdf:first ?o .
+                }}
+            }}
+        }}
+    }} UNION {{
+        {{
+            SELECT ?p ?o WHERE {{
+                ?s rdfs:subClassOf ?Restriction .
+                ?Restriction a owl:Restriction ; owl:onProperty ?p .
+                {{
+                    ?Restriction owl:allValuesFrom [ rdf:type owl:Class ; owl:unionOf ?Collection ] .
+                    ?Collection rdf:rest*/rdf:first ?o .
+                }} UNION {{
+                    ?Restriction owl:allValuesFrom ?o .
+                }}
+            }}
         }}
     }} UNION {{
         VALUES ?p {{ rdfs:subClassOf }}
