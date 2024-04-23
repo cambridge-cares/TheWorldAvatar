@@ -788,7 +788,7 @@ public class QueryClient {
         Variable scopelabelVar = query.var();
         Variable pollutantType = query.var();
         Variable pollutantLabel = query.var();
-        Variable dispXYZVar = query.var();
+        Variable dispOutVar = query.var();
         Variable scopeWktVar = query.var();
         Variable zVar = query.var();
         Variable zValueVar = query.var();
@@ -799,7 +799,7 @@ public class QueryClient {
 
         ServiceEndpoint ontopEndpoint = new ServiceEndpoint(ontopUrl);
 
-        query.select(derivation, scope, scopelabelVar, pollutantType, pollutantLabel, dispXYZVar, scopeWktVar, zValueVar,
+        query.select(derivation, scope, scopelabelVar, pollutantType, pollutantLabel, dispOutVar, scopeWktVar, zValueVar,
                 dispersionOutputSRID,timeNumericPosition);
 
         query.where(OPTIMISER_NONE,
@@ -808,7 +808,7 @@ public class QueryClient {
                 timeVar.has(IN_TIME_POSITION,timePosition),timePosition.has(NUMERIC_POSITION,timeNumericPosition),
                 scope.isA(SCOPE).andHas(iri(RDFS.LABEL), scopelabelVar),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
-                        .andHas(HAS_DISPERSION_XYZ, dispXYZVar)
+                        .andHas(HAS_DISPERSION_RASTER,dispOutVar)
                         .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType)
                         .andHas(HAS_HEIGHT, zVar).andHas(HAS_SRID, dispersionOutputSRID),
                 zVar.has(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), zValueVar),
@@ -827,7 +827,7 @@ public class QueryClient {
             String scopeIri = queryResult.getJSONObject(i).getString(scope.getQueryString().substring(1));
             String scopeLabel = queryResult.getJSONObject(i).getString(scopelabelVar.getQueryString().substring(1));
             String pol = queryResult.getJSONObject(i).getString(pollutantType.getQueryString().substring(1));
-            String dispXYZ = queryResult.getJSONObject(i).getString(dispXYZVar.getQueryString().substring(1));
+            String dispOut = queryResult.getJSONObject(i).getString(dispOutVar.getQueryString().substring(1));
             int srid = queryResult.getJSONObject(i).getInt(dispersionOutputSRID.getQueryString().substring(1));
             int lastUpdateTime = queryResult.getJSONObject(i).getInt(timeNumericPosition.getQueryString().substring(1));
 
@@ -844,7 +844,7 @@ public class QueryClient {
                 polLabel = pol;
             }
 
-            dispersionMetadata.addDispXYZ(dispXYZ, polLabel, zValue, srid);
+            dispersionMetadata.addDispOut(dispOut, polLabel, zValue, srid);
             dispersionMetadata.setScope(scopeIri,scopeLabel);
             dispersionMetadata.setLastUpdateTime(lastUpdateTime);
 
@@ -903,18 +903,18 @@ public class QueryClient {
         });
     }
 
-    public void queryDispersionXYZ(List<DispersionMetadata> dispersionMetadatas,
+    public void queryDispersionOut(List<DispersionMetadata> dispersionMetadatas,
             Connection conn) {
         dispersionMetadatas.forEach(dispersionMetadata -> {
-            List<String> dispersionXYZs = dispersionMetadata.getDispXYZsIRI();
-            Long latestTime = tsClient.getMaxTime(dispersionXYZs.get(0), conn);
+            List<String> dispersionOuts = dispersionMetadata.getDispOutsIRI();
+            Long latestTime = tsClient.getMaxTime(dispersionOuts.get(0), conn);
             List<Long> simulationTimes;
             if (latestTime != null) {
-                for (String dispersionXYZ : dispersionXYZs) {
-                    TimeSeries<Long> ts = tsClient.getTimeSeries(List.of(dispersionXYZ), conn);
+                for (String dispersionOut : dispersionOuts) {
+                    TimeSeries<Long> ts = tsClient.getTimeSeries(List.of(dispersionOut), conn);
                     simulationTimes = ts.getTimes();
-                    List<String> dispersionXYZfiles = ts.getValuesAsString(dispersionXYZ);
-                    dispersionMetadata.updateDispXYZ(dispersionXYZ, simulationTimes, dispersionXYZfiles);
+                    List<String> dispersionOutfiles = ts.getValuesAsString(dispersionOut);
+                    dispersionMetadata.updateDispOut(dispersionOut, simulationTimes, dispersionOutfiles);
                 }
             }
         });

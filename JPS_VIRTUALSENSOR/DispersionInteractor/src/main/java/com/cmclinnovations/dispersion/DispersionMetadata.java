@@ -19,16 +19,16 @@ public class DispersionMetadata {
     private String derivationIri;
     private Polygon scopePolygon;
     private int lastUpdateTime;
-    private Map<String, DispXYZ> dispXYZs;
+    private Map<String, DispOut> dispOuts;
 
-    private class DispXYZ {
+    private class DispOut {
         private String pollutant;
         private int z;
         private int srid;
         private List<Long> time;
         private List<String> output;
 
-        private DispXYZ(String pollutant, int z, int srid) {
+        private DispOut(String pollutant, int z, int srid) {
             this.pollutant = pollutant;
             this.z = z;
             this.srid = srid;
@@ -37,21 +37,21 @@ public class DispersionMetadata {
 
     public DispersionMetadata(String derivationIri) {
         this.derivationIri = derivationIri;
-        dispXYZs = new HashMap<>();
+        dispOuts = new HashMap<>();
     }
 
-    public void addDispXYZ(String iri, String pollutant, int z, int srid) {
-        DispXYZ dispXYZ = new DispXYZ(pollutant, z, srid);
-        dispXYZs.put(iri, dispXYZ);
+    public void addDispOut(String iri, String pollutant, int z, int srid) {
+        DispOut dispOut = new DispOut(pollutant, z, srid);
+        dispOuts.put(iri, dispOut);
     }
 
-    public List<String> getDispXYZsIRI() {
-        return new ArrayList<>(dispXYZs.keySet());
+    public List<String> getDispOutsIRI() {
+        return new ArrayList<>(dispOuts.keySet());
     }
 
-    public void updateDispXYZ(String dispersionXYZ, List<Long> simulationTimes, List<String> dispersionXYZfiles) {
-        dispXYZs.get(dispersionXYZ).time = simulationTimes;
-        dispXYZs.get(dispersionXYZ).output = dispersionXYZfiles;
+    public void updateDispOut(String dispersionOut, List<Long> simulationTimes, List<String> dispersionOutfiles) {
+        dispOuts.get(dispersionOut).time = simulationTimes;
+        dispOuts.get(dispersionOut).output = dispersionOutfiles;
     }
 
     public void setScope(String scopeIri, String label) {
@@ -87,21 +87,21 @@ public class DispersionMetadata {
 
         json.put("centroid", centroidJson);
 
-        JSONArray xyzJson = new JSONArray();
+        JSONArray outJson = new JSONArray();
 
-        for (DispXYZ dispXYZ : dispXYZs.values()) {
-            if (dispXYZ.output.get(0) != null) {
-                JSONObject jXYZ = new JSONObject();
-                jXYZ.put("pollutant", dispXYZ.pollutant);
-                jXYZ.put("height", dispXYZ.z);
-                jXYZ.put("SRID", dispXYZ.srid);
-                jXYZ.put("time", dispXYZ.time);
-                jXYZ.put("output", dispXYZ.output);
-                xyzJson.put(jXYZ);
+        for (DispOut dispOut : dispOuts.values()) {
+            if (dispOut.output.get(0) != null) {
+                JSONObject jOut = new JSONObject();
+                jOut.put("pollutant", dispOut.pollutant);
+                jOut.put("height", dispOut.z);
+                jOut.put("SRID", dispOut.srid);
+                jOut.put("time", dispOut.time);
+                jOut.put("output", dispOut.output);
+                outJson.put(jOut);
             }
         }
 
-        json.put("outputs", xyzJson);
+        json.put("outputs", outJson);
 
         return json;
     }

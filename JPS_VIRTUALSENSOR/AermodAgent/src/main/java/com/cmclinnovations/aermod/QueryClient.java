@@ -1198,7 +1198,7 @@ public class QueryClient {
                         .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_RASTER, dispRaster)
                         .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar),
                 pollutantIri.isA(pollutant)).prefix(P_DISP)
-                .select(zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
+                .select(entity,zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         List<String> tsDataList = new ArrayList<>();
