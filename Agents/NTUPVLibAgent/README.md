@@ -60,7 +60,7 @@ The model parameters properties contains the parameters required to create a sol
 ####  [Option 2] Read Photovoltaic Model Specs from Knowledge Graph
 Alternatively, the parameters required to create a solar PV Model (see [model properties](#Model-properties) aboce) can be read from a knowledge graph. This requires an instantiation agent to create a Knowledge Graph filled with PV model parameter values. The  [HistoricalNTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent) provides an example to instantiate a knowledge graph which includes PV model parameters.
 
-Note: currently the agent is only able to retrieve the latitude and longitude (discussed [below](#Longitude-and-Magnitude-data)).
+Note: currently the agent is only able to retrieve the latitude and longitude (discussed [below](#extra-longitude-and-latitude-data)).
 
 ### Misc properties
 
@@ -82,7 +82,7 @@ The [OpenMeteo Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/mai
 
 The PVLib Agent will query for the latest air temperature, wind speed and global horizontal irradiance values from the knowledge graph.
 
-#### [Extra] Longitude and Magnitude data
+#### [Extra] Longitude and latitude data
 For latitude and longitude, these values can be queried from the knowledge graph if they have been instantiated with the following structure:
 ```
 <http://device_entity> geo:location <http://test_location> .
