@@ -5,9 +5,7 @@ import './mapbox.css';
 
 import mapboxgl, { Map } from 'mapbox-gl';
 import React, { useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 
-import { setIsStyleLoaded } from 'state/floating-panel-slice';
 import { MapSettings } from 'types/settings';
 import { getCurrentImageryOption, getDefaultCameraPosition } from '../map-helper';
 import { formatAppUrl } from 'utils/client-utils';
@@ -28,7 +26,6 @@ interface MapProperties {
  */
 export default function MapboxMapComponent(props: MapProperties) {
   const mapContainer = useRef(null);
-  const dispatch = useDispatch();
 
   // Run when component loaded
   useEffect(() => {
@@ -80,7 +77,6 @@ export default function MapboxMapComponent(props: MapProperties) {
           styleObject.time
         );
       }
-      dispatch(setIsStyleLoaded(true))
       // Map is only settable after the styles have loaded
       props.setMap(map)
     });
