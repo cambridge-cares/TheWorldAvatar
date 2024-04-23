@@ -19,7 +19,7 @@ class SGCarparksAgentConnector(AgentConnectorBase):
         self.agent = agent
         self.geocoder = geocoder
 
-    @cached_property
+    @property
     def funcs(self):
         return [
             {
@@ -42,7 +42,7 @@ class SGCarparksAgentConnector(AgentConnectorBase):
             }
         ]
 
-    @cached_property
+    @property
     def name2method(self):
         return {"find_nearest_carpark": self.find_nearest_carpark}
 

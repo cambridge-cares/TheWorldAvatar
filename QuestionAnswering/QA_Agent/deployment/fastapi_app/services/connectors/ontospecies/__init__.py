@@ -63,7 +63,7 @@ class OntoSpeciesAgentConnector(AgentConnectorBase):
         )
         self.constraint_parser = constraint_parser
 
-    @cached_property
+    @property
     def funcs(self):
         return [
             {
@@ -119,7 +119,7 @@ class OntoSpeciesAgentConnector(AgentConnectorBase):
             },
         ]
 
-    @cached_property
+    @property
     def name2method(self):
         return {
             "lookup_chemicalSpecies_attributes": self.lookup_chemicalSpecies_attributes,

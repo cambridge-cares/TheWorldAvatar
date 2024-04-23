@@ -1,18 +1,18 @@
-from collections import defaultdict
-from functools import cache
 import logging
-from typing import Annotated, Any, Dict, List, Optional, Tuple
+from typing import Annotated, Any, Dict, List, Tuple
 
 from fastapi import Depends
 
-from services.connectors.sg_land_lots.land_use import LandUseTypeStore, get_landUseType_store
+from services.connectors.sg_land_lots.land_use import (
+    LandUseTypeStore,
+    get_landUseType_store,
+)
 from services.utils.rdf import extract_name, flatten_sparql_response
 from model.aggregate import AggregateOperator
 from model.qa import QAData
 from services.core.kg import KgClient
 from services.connectors.sg import get_sg_ontopClient
-from ..model import PlotAttrKey, PlotNumAttrKey
-from ..kg import get_sgLandLots_bgClient
+from ..model import PlotNumAttrKey
 from .make_sparql import SGLandLotsSPARQLMaker, get_sgLandLots_sparqlMaker
 
 logger = logging.getLogger(__name__)
@@ -25,8 +25,7 @@ class SGLandLotsAgent:
         land_use_type_store: LandUseTypeStore,
         sparql_maker: SGLandLotsSPARQLMaker,
     ):
-        # self.ontop_client = ontop_client
-        self.ontop_client = KgClient("http://174.138.23.221:3838/ontop/ui/sparql")
+        self.ontop_client = ontop_client
         self.land_use_type_store = land_use_type_store
         self.sparql_maker = sparql_maker
 

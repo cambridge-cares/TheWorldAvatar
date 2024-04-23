@@ -16,7 +16,6 @@ class PageMetadata(BaseModel):
 class DataDomainSampleQuestions(BaseModel):
     data_domain: str
     label: str
-    description: str
     questions: List[str]
 
 

@@ -32,7 +32,7 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         self.land_use_type_retriever = land_use_type_retriever
         self.attr_agg_parser = attr_agg_parser
 
-    @cached_property
+    @property
     def funcs(self):
         return [
             {
@@ -68,7 +68,7 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
             },
         ]
 
-    @cached_property
+    @property
     def name2method(self):
         return {
             "count_plots": self.count_plots,

@@ -102,7 +102,7 @@
     <button type="submit" class="accordion">{{ qa_domain_grp["label"] }}</button>
     <div class="accordion-panel">
         {% for data_domain_grp in qa_domain_grp["subdomains"] %}
-            <p>{{ data_domain_grp["description"] }}</p>
+            <p>{{ data_domain_grp["label"] }}</p>
             <ul>
                 {% for question in data_domain_grp["questions"] %}
                 <li class="sample-question"

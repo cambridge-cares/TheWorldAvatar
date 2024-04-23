@@ -36,11 +36,11 @@ class DocsRetriever(Generic[T]):
         self.doc_key_prefix = self._KEY_PREFIX_TEMPLATE.format(key=key)
         self.index_name = self._INDEX_NAME_TEMPLATE.format(key=key)
 
-    @cached_property
+    @property
     def docs(self):
         return list(self._docs)
 
-    @cached_property
+    @property
     def tags(self):
         if self._tags:
             return list(self._tags)

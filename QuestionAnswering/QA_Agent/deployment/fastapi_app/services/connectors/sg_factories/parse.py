@@ -1,12 +1,10 @@
-from typing import Annotated, Dict, Optional
+from typing import Annotated, Dict
 
 from fastapi import Depends
 
 from model.constraint import ExtremeValueConstraint
-from services.core.align_enum import EnumAligner
 from services.core.parse import KeyAggregateParser, SchemaParser, get_schema_parser
-from services.connectors.sg_factories.align import get_industry_aligner
-from .model import FactoryNumAttrKey, Industry
+from .model import FactoryNumAttrKey
 
 
 def get_factoryAttr_aggParser(

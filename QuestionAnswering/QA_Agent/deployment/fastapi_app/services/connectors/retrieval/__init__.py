@@ -13,7 +13,7 @@ class RetrievalAgentConnector(AgentConnectorBase):
     def __init__(self, agent: RetrievalAgent):
         self.agent = agent
 
-    @cached_property
+    @property
     def funcs(self):
         return [
             {
@@ -32,7 +32,7 @@ class RetrievalAgentConnector(AgentConnectorBase):
             }
         ]
 
-    @cached_property
+    @property
     def name2method(self):
         return {"semantic_search": self.retrieve_docs}
 
