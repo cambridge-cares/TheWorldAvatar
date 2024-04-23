@@ -38,12 +38,10 @@ public class SparqlClient {
 
 
     // rdf:type
-    public static Iri GoalRange = p_namespace.iri("SumValue");
+    public static Iri GoalRange = p_namespace.iri("GoalRange");
 
     public static Iri InputData = p_namespace.iri("InputData"); // has a time series instance
     public static Iri ScalarValue = p_namespace.iri("ScalarValue");
-
-    public static Iri TruckValue = p_namespace.iri("TruckValue");
 
     // property
     public static Iri hasValue = p_namespace.iri("hasValue");
@@ -96,10 +94,10 @@ public class SparqlClient {
 
 
     /**
-     * creates a new SumValue instance
-     * <iri> a <SumValue>
+     * creates a new GoalRange instance
+     * <iri> a <GoalRange>
      * <iri> a owl:NamedIndividual
-     * @param SumValue
+     * @param GoalRange
      * @return
      */
     public String createGoalRangeIRI() {
@@ -109,23 +107,6 @@ public class SparqlClient {
         storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
         return goalRange_iri;
     }
-
-
-    /**
-     * creates a new TruckValue instance
-     * <iri> a <SumValue>
-     * <iri> a owl:NamedIndividual
-     * @param TruckValue
-     * @return
-     */
-    public String createStateValue() {
-        String realState_iri = namespace + UUID.randomUUID().toString();
-        ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(realState_iri).isA(TruckValue).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
-        storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
-        return realState_iri;
-    }
-
 
 
     /**

@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.goal.framework;
 
+import org.eclipse.rdf4j.model.vocabulary.OWL;
 import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
@@ -30,7 +31,7 @@ public class GoalSparql {
     private String goalInstanceBaseURL; // an example of this can be
     // "https://www.example.com/triplestore/repository/"
 
-    public static String derivednamespace = "https://www.theworldavatar.com/kg/ontoderivation/";
+    public static String goalnamespace = "https://www.theworldavatar.com/kg/ontogoal/";
 
 
     // placeholder string used by method getAllDerivations()
@@ -47,18 +48,13 @@ public class GoalSparql {
     // derivation types
     public static final String DERIVATION = "Derivation";
     public static final String GOAL = "Goal";
-    public static final String DERIVATIONWITHTIMESERIES = "DerivationWithTimeSeries";
-    public static final String DERIVATIONASYN = "DerivationAsyn";
-    public static final String ONTODERIVATION_DERIVATION = derivednamespace + DERIVATION;
-    public static final String ONTODERIVATION_DERIVATIONASYN = derivednamespace + DERIVATIONASYN;
-    public static final String ONTODERIVATION_DERIVATIONWITHTIMESERIES = derivednamespace + DERIVATIONWITHTIMESERIES;
+
 
     // prefix/namespace
     private static Prefix prefixAgent = SparqlBuilder.prefix("agent",
             iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
-    private static Prefix prefixDerived = SparqlBuilder.prefix("derived", iri(derivednamespace));
     private static Prefix prefixTime = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
-    private static Prefix prefixGoal = SparqlBuilder.prefix("goal",iri("http://www.theworldavatar.com/ontology/ontoagent/Goal.owl#"));
+    private static Prefix prefixGoal = SparqlBuilder.prefix("goal",iri("http://www.theworldavatar.com/ontology/Goal.owl#"));
 
     // classes
     private static Iri Service = prefixAgent.iri("Service");
@@ -66,14 +62,6 @@ public class GoalSparql {
     private static Iri MessageContent = prefixAgent.iri("MessageContent");
     private static Iri MessagePart = prefixAgent.iri("MessagePart");
     private static Iri TimePosition = prefixTime.iri("TimePosition");
-    private static Iri Derivation = prefixDerived.iri(DERIVATION);
-    private static Iri DerivationWithTimeSeries = prefixDerived.iri(DERIVATIONWITHTIMESERIES);
-    private static Iri DerivationAsyn = prefixDerived.iri(DERIVATIONASYN);
-    private static Iri Status = prefixDerived.iri("Status");
-    private static Iri Requested = prefixDerived.iri(REQUESTED);
-    private static Iri InProgress = prefixDerived.iri(INPROGRESS);
-    private static Iri Finished = prefixDerived.iri(FINISHED);
-    private static Iri Error = prefixDerived.iri(ERROR);
     private static Iri InstantClass = prefixTime.iri("Instant");
     private static Iri UnixTime = iri("http://dbpedia.org/resource/Unix_time");
 
@@ -87,11 +75,6 @@ public class GoalSparql {
     private static Iri hasMandatoryPart = prefixAgent.iri("hasMandatoryPart");
     private static Iri hasType = prefixAgent.iri("hasType");
     private static Iri hasName = prefixAgent.iri("hasName");
-    private static Iri isDerivedFrom = prefixDerived.iri("isDerivedFrom");
-    private static Iri isDerivedUsing = prefixDerived.iri("isDerivedUsing");
-    private static Iri belongsTo = prefixDerived.iri("belongsTo");
-    private static Iri hasStatus = prefixDerived.iri("hasStatus");
-    private static Iri hasNewDerivedIRI = prefixDerived.iri("hasNewDerivedIRI");
     private static Iri hasTime = prefixTime.iri("hasTime");
     private static Iri numericPosition = prefixTime.iri("numericPosition");
     private static Iri hasTRS = prefixTime.iri("hasTRS");
@@ -101,9 +84,6 @@ public class GoalSparql {
     private static Iri isAchievedUsing = prefixGoal.iri("isAchievedUsing");
 
 
-    // data properties
-    private static Iri retrievedInputsAt = prefixDerived.iri("retrievedInputsAt");
-    private static Iri uuidLock = prefixDerived.iri("uuidLock");
 
 
     /**
@@ -111,11 +91,11 @@ public class GoalSparql {
      * URL.
      *
      * @param storeClient
-     * @param derivationInstanceBaseURL
+     * @param goalInstanceBaseURL
      */
-    public GoalSparql(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
+    public GoalSparql(StoreClientInterface storeClient, String goalInstanceBaseURL) {
         this.storeClient = storeClient;
-        this.goalInstanceBaseURL = derivationInstanceBaseURL;
+        this.goalInstanceBaseURL = goalInstanceBaseURL;
     }
 
     private void addTimeInstance(Map<String, Long> entitiesTimestamp) {
@@ -151,15 +131,13 @@ public class GoalSparql {
 			// create timestamp value pairs for the given entity
 			vp.addValuePairForMultipleVariables(iri(en), iri(createTimeIRI()), iri(createTimeIRI()), Rdf.literalOf(ts));
 		});
-		GraphPattern belongsToAnyDerivationGP = instance.has(belongsTo, SparqlBuilder.var("anyDerivation"));
 		GraphPattern existTimestampGP = instance.has(
 				PropertyPaths.path(hasTime, inTimePosition, numericPosition),
 				SparqlBuilder.var("existingTime"));
 		sub.select(instance, timeInstant, timeUnix, timestamp)
 				.where(GraphPatterns.and(vp,
-						GraphPatterns.filterNotExists(belongsToAnyDerivationGP),
 						GraphPatterns.filterNotExists(existTimestampGP)));
-		modify.prefix(prefixDerived, prefixTime).where(sub);
+		modify.prefix(prefixTime).where(sub);
 
 		storeClient.executeUpdate(modify.getQueryString());
 	}
@@ -207,7 +185,12 @@ public class GoalSparql {
      */
     String createGoalIRI() {
         // create a unique IRI for this new derived quantity
-            return goalInstanceBaseURL + "_" + UUID.randomUUID().toString();
+
+        String goal_iri = goalnamespace + UUID.randomUUID().toString();
+        ModifyQuery modify = Queries.MODIFY();
+        modify.insert(iri(goal_iri).isA(Goal).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+        storeClient.executeUpdate(modify.prefix(prefixGoal).getQueryString());
+        return goal_iri;
     }
 
     /**
