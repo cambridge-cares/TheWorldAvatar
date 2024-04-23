@@ -1027,7 +1027,7 @@ public class QueryClient {
     public byte[] getRaster(String filename, String scopeIri) {
         String sqlTemplate = "WITH RasterData AS (SELECT rast, ST_SRID(rast) AS raster_srid FROM dispersion_raster " + 
             "WHERE filename='%s'), PolygonData AS (SELECT geom, ST_SRID(geom) AS polygon_srid FROM scopes " + 
-            "WHERE iri = '%s') SELECT ST_AsTiff(ST_Clip(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid))) as rData " + 
+            "WHERE iri = '%s') SELECT ST_AsTiff(ST_Clip(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid),-1.0)) as rData " + 
             "FROM RasterData, PolygonData WHERE ST_Intersects(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid))";
         String sql = String.format(sqlTemplate, filename, scopeIri);
         byte[] rasterBytes = new byte[0];
