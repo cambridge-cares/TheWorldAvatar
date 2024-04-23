@@ -47,9 +47,26 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class AermodAgent extends DerivationAgent {
     private static final Logger LOGGER = LogManager.getLogger(AermodAgent.class);
     private QueryClient queryClient;
+    private Thread thread;
 
+    // only allowing one thread at a time to prevent duplicate update
     @Override
     public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
+        try {
+            if (thread != null && thread.isAlive()) {
+                LOGGER.info("Previous thread is still alive, waiting for it to finish");
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            LOGGER.error("Error from previous thread");
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        thread = new Thread(() -> run(derivationInputs));
+        thread.start();
+    }
+
+    private void run(DerivationInputs derivationInputs) {
         String weatherStationIri = derivationInputs.getIris(QueryClient.REPORTING_STATION).get(0);
         String nxIri = derivationInputs.getIris(QueryClient.NX).get(0);
         String nyIri = derivationInputs.getIris(QueryClient.NY).get(0);
@@ -58,6 +75,11 @@ public class AermodAgent extends DerivationAgent {
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
 
         long simulationTime = queryClient.getMeasureValueAsLong(simulationTimeIri);
+
+        if (queryClient.timestepExists(simulationTime, derivationInputs.getDerivationIRI())) {
+            LOGGER.info("Duplicate request for the same timestep, ignoring request");
+            return;
+        }
 
         if (simulationTime == 0) {
             LOGGER.info("Simulation time = 0, this is from calling createSyncDerivationForNewInfo the first time");

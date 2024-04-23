@@ -1173,6 +1173,33 @@ public class QueryClient {
         return hasElevationData;
     }
 
+    boolean timestepExists(long simTime, String derivation) {
+        SelectQuery query = Queries.SELECT();
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+        Variable entity = query.var();
+        Variable dispMatrix = query.var();
+
+        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_DISPERSION_MATRIX, dispMatrix)).prefix(P_DISP);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        // this will give a list of outputs, one for each pollutant/height combo, but
+        // they are in the same time series table
+        if (queryResult.length() > 0) {
+            String dataIri = queryResult.getJSONObject(0).getString(dispMatrix.getQueryString().substring(1));
+            try (Connection conn = rdbStoreClient.getConnection()) {
+                TimeSeries<Long> ts = tsClientLong.getTimeSeriesWithinBounds(List.of(dataIri), simTime, simTime, conn);
+                return !ts.getTimes().isEmpty();
+            } catch (SQLException e) {
+                LOGGER.error("Failure in timestepExists, failed at closing connection");
+                LOGGER.error(e.getMessage());
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     void updateOutputs(String derivation, Map<String, DispersionOutput> zIriToOutputMap, boolean hasShips,
             long timeStamp, boolean hasStaticPoints, boolean hasBuildings, boolean usesElevation) {
         SelectQuery query = Queries.SELECT();
