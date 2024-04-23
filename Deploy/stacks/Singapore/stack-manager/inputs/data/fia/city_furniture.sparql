@@ -41,7 +41,7 @@ select ?Property ?Value ?Unit  WHERE {
   
   } UNION {
 
-      SERVICE <http://heat-ontop:8080/sparql/> {
+      SERVICE [ONTOP] {
       SELECT ?Property ?Value where {
         ?plant geo:ehContains [IRI].
         [IRI] rdf:type ontocape:PlantItem.
@@ -53,7 +53,7 @@ select ?Property ?Value ?Unit  WHERE {
   }
 
   } UNION {
-     SERVICE <http://heat-ontop:8080/sparql/> {
+     SERVICE [ONTOP] {
       SELECT ?p ?Value where {
         ?plant geo:ehContains [IRI].
         [IRI] rdf:type ontocape:PlantItem.
