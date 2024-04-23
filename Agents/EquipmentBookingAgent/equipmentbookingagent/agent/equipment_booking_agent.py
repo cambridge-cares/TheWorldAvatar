@@ -148,7 +148,7 @@ class EquipmentBookingAgent(ABC):
 
         return render_template(
                 'equipment_booking_delete_booking.html',
-                bookable_assets=[{'iri': eq.hasBookingSystem.instance_iri, 'display': eq.label} for eq in self.sparql_client.get_all_bookable_equipment()],
+                bookable_assets=[{'iri': eq.hasBookingSystem.instance_iri, 'display': eq.hasBookingSystem.label} for eq in self.sparql_client.get_all_bookable_equipment()],
                 selected_equipment = selected_eq, active_bookings = all_bookings
             )
 
@@ -181,7 +181,7 @@ class EquipmentBookingAgent(ABC):
         for equipment in equipments:
             bookings = self.sparql_client.get_all_bookings_of_date(booking_system_iri=equipment.hasBookingSystem.instance_iri,
                                                                    this_day=datetime.timestamp(this_date),next_day=datetime.timestamp(this_date+ timedelta(1)))
-            equipment_name = equipment.label
+            equipment_name = equipment.hasBookingSystem.label
             booking_data[equipment_name] = {}
             for booking in bookings:
                 for time_slot in time_slots:
@@ -251,7 +251,7 @@ class EquipmentBookingAgent(ABC):
         return render_template(
             'equipment_booking_make_booking.html',
             lab_users=[{'iri': usr.instance_iri, 'display': usr.name} for usr in self.sparql_client.get_all_users()],
-            bookable_assets=[{'iri': eq.hasBookingSystem.instance_iri, 'display': eq.label, 'id': eq.hasItemInventoryIdentifier,
+            bookable_assets=[{'iri': eq.hasBookingSystem.instance_iri, 'display': eq.hasBookingSystem.label, 'id': eq.hasItemInventoryIdentifier,
                               'supplier': eq.isSuppliedBy, 'manufacturer': eq.isManufacturedBy, 'location': eq.isLocatedIn, 
                               'assignee': eq.assignedTo, 'type': eq.clz} for eq in self.sparql_client.get_all_bookable_equipment()],
         )

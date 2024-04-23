@@ -30,15 +30,16 @@ class EquipmentBookingSparqlClient(PySparqlClient):
         return [list(res.values())[0] for res in response]
     
     def get_all_bookable_equipment(self):
-        query = f"""{PREFIX_RDFS} {PREFIX_RDF} SELECT ?bs ?eqIri ?eqInventoryId ?eqLabel ?eqManufacturer ?eqSupplier ?eqLocation ?eqType ?eqAssignee WHERE {{ 
+        query = f"""{PREFIX_RDFS} {PREFIX_RDF} SELECT ?bs ?bsLabel ?eqIri ?eqInventoryId ?eqLabel ?eqManufacturer ?eqSupplier ?eqLocation ?eqType ?eqAssignee WHERE {{ 
                         ?eqIri <{OAM_HASBOOKINGSYSTEM}> ?bs ;
                                 rdfs:label ?eqLabel ;
                                 rdf:type ?eqType .
+                        ?bs rdfs:label ?bsLabel .
                         OPTIONAL {{ ?eqIri <{OAM_HASITEMINVENTORYIDENTIFIER}> ?eqInventoryId . }} 
                         OPTIONAL {{ ?eqIri <{OAM_ASSIGNEDTO}>/<{OMG_HASNAME}>/rdfs:label ?eqAssignee  }}
                         OPTIONAL {{ ?eqIri <{OAM_ISMANUFACTUREDBY}>/<{OMG_HASNAME}>/rdfs:label ?eqManufacturer . }}
                         OPTIONAL {{ ?eqIri <{OAM_ISSUPPLIEDBY}>/<{OMG_HASNAME}>/rdfs:label ?eqSupplier . }}
-                        OPTIONAL {{ ?eqIri ^<{BOT_CONTAINSELEMENT}> ?eqLocation. }}
+                        OPTIONAL {{ ?eqIri ^<{BOT_CONTAINSELEMENT}>/<{ONTOBIM_HASIFCREPRESENTATION}>/rdfs:label ?eqLocation . }}
                     }}
                     ORDER BY ASC(?eqLabel)"""
         response = self.performQuery(query)
@@ -56,7 +57,7 @@ class EquipmentBookingSparqlClient(PySparqlClient):
                 clz=res['eqType'],
                 label=res['eqLabel'],
                 hasItemInventoryIdentifier=res['eqInventoryId'],
-                hasBookingSystem=BookingSystem(instance_iri=res['bs']),
+                hasBookingSystem=BookingSystem(instance_iri=res['bs'],label=res['bsLabel']),
                 isManufacturedBy=res['eqManufacturer'],
                 isSuppliedBy=res['eqSupplier'],
                 isLocatedIn=res['eqLocation'],

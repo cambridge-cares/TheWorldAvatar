@@ -17,6 +17,7 @@ from equipmentbookingagent.data_model.base_ontology import BaseOntology
 class BookingSystem(BaseOntology):
     hasBooking: Optional[Booking] = None
     clz: str = OAM_BOOKINGSYSTEM
+    label: str
 
 class Booking(BaseOntology):
     clz: str = OAM_BOOKING
