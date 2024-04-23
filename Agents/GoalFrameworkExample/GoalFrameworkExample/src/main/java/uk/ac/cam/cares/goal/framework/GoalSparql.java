@@ -186,9 +186,9 @@ public class GoalSparql {
     String createGoalIRI() {
         // create a unique IRI for this new derived quantity
 
-        String goal_iri = goalnamespace + UUID.randomUUID().toString();
+        String goal_iri = goalnamespace +GOAL+"_"+UUID.randomUUID().toString();
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(goal_iri).isA(Goal).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+        modify.insert(iri(goal_iri).isA(Goal));
         storeClient.executeUpdate(modify.prefix(prefixGoal).getQueryString());
         return goal_iri;
     }

@@ -66,16 +66,23 @@ public class InitialiseInstances extends JPSAgent{
 
 
 			// attach timestamp to input
-			goalClient.addTimeInstance(input);
+			devClient.addTimeInstance(input);
+
+			// the timestamp added using addTimeInstance is 0, this will ensure that the input is current
+			devClient.updateTimestamps(Arrays.asList(input));
+			createInputTimeSeries(input, timeSeriesClient);
+			LOGGER.info("Created input <" + input + ">");
+			InstancesDatabase.Input = input;
+
 
 			// register ontoagent instances in triple store
-//			String weightRangeRdfType = SparqlClient.getRdfTypeString(SparqlClient.Range);
-//			String weightRdfType = SparqlClient.getRdfTypeString(SparqlClient.SumValue);
-//
-//
+			String inputDataRdfType = SparqlClient.getRdfTypeString(SparqlClient.Input);
+
+
+
 //			//Create ontoagent instances for SumValue
 //			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(weightRangeRdfType,weightRdfType), Arrays.asList(weightRdfType));
-//
+
 
 			//Create goal instances for Thing
 
@@ -93,9 +100,8 @@ public class InitialiseInstances extends JPSAgent{
 
 //			//Initialise truckvalue to be 0
 //			String truckvalue = sparqlClient.addStringInstance(realState_iri,"0");
-//
-//
-//
+
+
 			// create standard derived quantities
 			String goal_binemptyingagent = goalClient.createGoalForNewInfo(binemptying_agent_iri, binemptying_agent_url, goalRange_iri, input);
 

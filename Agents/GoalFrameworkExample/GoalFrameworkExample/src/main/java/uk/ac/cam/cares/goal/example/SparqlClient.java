@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.query.algebra.In;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -34,19 +35,21 @@ public class SparqlClient {
     public static String prefix = "goalframework";
     private static Prefix p_namespace = SparqlBuilder.prefix(prefix, iri(namespace));
 
-
-
-
     // rdf:type
     public static Iri GoalRange = p_namespace.iri("GoalRange");
 
-    public static Iri InputData = p_namespace.iri("InputData"); // has a time series instance
+    public static Iri Input = p_namespace.iri("Input"); // has a time series instance
     public static Iri ScalarValue = p_namespace.iri("ScalarValue");
 
     // property
     public static Iri hasValue = p_namespace.iri("hasValue");
     public static Iri numericalValue = p_namespace.iri("numericalValue");
     public static Iri stringValue = p_namespace.iri("stringValue");
+
+    public static Iri hasMaximum = p_namespace.iri("hasMaximum");
+
+    public static Iri hasMinimum = p_namespace.iri("hasMinimum");
+
 
     public SparqlClient(StoreClientInterface storeClient) {
         this.storeClient = storeClient;
@@ -72,7 +75,7 @@ public class SparqlClient {
         String inputIRI = namespace + UUID.randomUUID().toString();
 
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(inputIRI).isA(InputData)).prefix(p_namespace);
+        modify.insert(iri(inputIRI).isA(Input)).prefix(p_namespace);
 
         // create the instance on kg
         storeClient.executeUpdate(modify.getQueryString());
@@ -97,7 +100,7 @@ public class SparqlClient {
      * creates a new GoalRange instance
      * <iri> a <GoalRange>
      * <iri> a owl:NamedIndividual
-     * @param GoalRange
+     * @param
      * @return
      */
     public String createGoalRangeIRI() {
@@ -119,7 +122,7 @@ public class SparqlClient {
     public String addValueInstance(String property, int value) {
         String value_iri = namespace + UUID.randomUUID().toString();
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(property).has(hasValue,iri(value_iri)));
+        modify.insert(iri(property).has(hasMaximum,iri(value_iri)));
         modify.insert(iri(value_iri).isA(ScalarValue).andHas(numericalValue,value));
         storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
         return value_iri;
@@ -135,7 +138,7 @@ public class SparqlClient {
     public String addStringInstance(String property, String value) {
         String value_iri = namespace + UUID.randomUUID().toString();
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(property).has(hasValue,iri(value_iri)));
+        modify.insert(iri(property).has(hasMaximum,iri(value_iri)));
         modify.insert(iri(value_iri).isA(ScalarValue).andHas(stringValue,value));
         storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
         return value_iri;
@@ -153,7 +156,7 @@ public class SparqlClient {
         String queryKey = "input";
         Variable input = SparqlBuilder.var(queryKey);
 
-        GraphPattern queryPattern = input.isA(InputData);
+        GraphPattern queryPattern = input.isA(Input);
 
         query.prefix(p_namespace).select(input).where(queryPattern);
 
@@ -183,7 +186,7 @@ public class SparqlClient {
      */
     public List<TriplePattern> addStringInstance(String quantityInstance, String valueInstance, String value) {
         List<TriplePattern> triples = new ArrayList<>();
-        triples.add(iri(quantityInstance).has(iri(getPropertyString(hasValue)), iri(valueInstance)));
+        triples.add(iri(quantityInstance).has(iri(getPropertyString(hasMaximum)), iri(valueInstance)));
         triples.add(iri(valueInstance).has(iri(getPropertyString(stringValue)), value));
         return triples;
     }
@@ -201,7 +204,7 @@ public class SparqlClient {
      */
     public List<TriplePattern> addValueInstance(String quantityInstance, String valueInstance, int value) {
         List<TriplePattern> triples = new ArrayList<>();
-        triples.add(iri(quantityInstance).has(iri(getPropertyString(hasValue)), iri(valueInstance)));
+        triples.add(iri(quantityInstance).has(iri(getPropertyString(hasMaximum)), iri(valueInstance)));
         triples.add(iri(valueInstance).has(iri(getPropertyString(numericalValue)), value));
         return triples;
     }
@@ -228,7 +231,7 @@ public class SparqlClient {
         String key = "value";
         Variable value_iri = query.var();
         Variable value = SparqlBuilder.var(key);
-        GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasValue,value_iri), value_iri.has(numericalValue,value));
+        GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasMaximum,value_iri), value_iri.has(numericalValue,value));
 
         query.prefix(p_namespace).select(value).where(queryPattern);
 
