@@ -29,14 +29,14 @@
   /* display: none; */
 }
 
-#timeSliderContainer:hover ~ #timeSliderLabel {
+#sliderContainer:hover ~ #timeSliderLabel {
   background-color: var(--cmcl-blue);
   color: var(--background-color);
 
   /* display: block; */
 }
 
-.slidercontainer {
+.sliderContainer {
   position: absolute;
   width: 40%;
   margin: auto;
