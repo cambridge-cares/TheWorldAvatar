@@ -5,9 +5,8 @@ import './mapbox.css';
 
 import mapboxgl, { Map } from 'mapbox-gl';
 import React, { useRef, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { getLatLng, getName } from 'state/map-feature-slice';
 import { setIsStyleLoaded } from 'state/floating-panel-slice';
 import { MapSettings } from 'types/settings';
 import { getCurrentImageryOption, getDefaultCameraPosition } from '../map-helper';
@@ -29,10 +28,7 @@ interface MapProperties {
  */
 export default function MapboxMapComponent(props: MapProperties) {
   const mapContainer = useRef(null);
-  const toolTip = useRef(null);
   const dispatch = useDispatch();
-  const coordinates = useSelector(getLatLng);
-  const name = useSelector(getName);
 
   // Run when component loaded
   useEffect(() => {
@@ -45,18 +41,6 @@ export default function MapboxMapComponent(props: MapProperties) {
       }
     };
   }, []);
-
-  // Run whenever coordinates are changed from moving across the map
-  useEffect(() => {
-    // Remove the tool tip if it is currently open
-    if (toolTip.current?.isOpen()) {
-      toolTip.current.remove();
-    }
-    // If there is a name, add the tool tip with the name to the map
-    if (name != null) {
-      toolTip.current?.setLngLat(coordinates).setHTML(name).addTo(props.currentMap)
-    }
-  }, [coordinates]);
 
   // Initialise the map object
   const initialiseMap = async () => {
@@ -84,17 +68,6 @@ export default function MapboxMapComponent(props: MapProperties) {
     });
 
     console.info("Initialised a new Mapbox map object.");
-
-    // Create a new pop up and assign it to the reference to keep track
-    toolTip.current = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false
-    });
-
-    // Removes the tool tip once the mouse pointer is outside the map container
-    map.on("mouseout", function () {
-      toolTip.current.remove();
-    });
 
     map.on("style.load", function () {
       // Update time if using new v3 standard style

@@ -2,7 +2,7 @@
 import mapboxgl from 'mapbox-gl';
 import { Dispatch } from 'redux';
 
-import { setLatLng, setName, setQueryTrigger, setIri, setProperties, setStack } from 'state/map-feature-slice';
+import { setQueryTrigger, setIri, setProperties, setStack } from 'state/map-feature-slice';
 import { DataStore } from 'io/data/data-store';
 
 /**
@@ -10,18 +10,10 @@ import { DataStore } from 'io/data/data-store';
  * 
  * @param {mapboxgl.Map} map - The Mapbox map object to attach the event listener to.
  * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
+ * @param {DataStore} dataStore - The data store.
  */
 export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch, dataStore: DataStore) {
-  // For any movement within the map
-  map.on("mousemove", function (e) {
-    // Access the first feature under the mouse pointer
-    const feature = map.queryRenderedFeatures(e.point)[0];
-    const name = feature?.properties.name ?? null;
-    const lngLat: mapboxgl.LngLat = e.lngLat;
-    // Store the current mouse position coordinates and feature name in a global state
-    dispatch(setLatLng({ lat: lngLat.lat, lng: lngLat.lng }));
-    dispatch(setName(name));
-  });
+  addTooltipEventListener(map);
 
   // For click events
   map.on("click", (e) => {
@@ -44,5 +36,39 @@ export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch, d
     dispatch(setProperties(feature.properties));
     dispatch(setStack(stack));
     dispatch(setQueryTrigger(queryTrigger));
+  });
+}
+
+/**
+ * Function to add event listeners to show a tooltip when hovering over a feature.
+ * 
+ * @param {mapboxgl.Map} map - The Mapbox map object to attach the event listener to.
+ */
+function addTooltipEventListener(map: mapboxgl.Map) {
+  // Create a new pop up and assign it to the reference to keep track
+  const toolTip: mapboxgl.Popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false
+  });
+
+  // For any movement within the map, a tool tip should appear when hovering a feature
+  map.on("mousemove", function (e) {
+    // Remove the tool tip if it is currently open
+    if (toolTip?.isOpen()) {
+      toolTip.remove();
+    }
+    // Access the first feature under the mouse pointer
+    const feature = map.queryRenderedFeatures(e.point)[0];
+    const name = feature?.properties.name ?? null;
+    const lngLat: mapboxgl.LngLat = e.lngLat;
+    // If there is a name, add the tool tip with the name to the map
+    if (name != null) {
+      toolTip?.setLngLat(lngLat).setHTML(name).addTo(map);
+    }
+  });
+
+  // Removes the tool tip once the mouse pointer is outside the map container
+  map.on("mouseout", function () {
+    toolTip.remove();
   });
 }
