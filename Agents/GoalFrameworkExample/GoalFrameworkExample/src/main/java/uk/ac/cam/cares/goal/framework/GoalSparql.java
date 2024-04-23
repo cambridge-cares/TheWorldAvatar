@@ -301,7 +301,7 @@ public class GoalSparql {
     String getRealStateIRI(String goalIRI){
         String queryKey = "state";
         Variable goal = SparqlBuilder.var(queryKey);
-        GraphPattern queryPattern = iri(goalIRI).has(hasRealState,queryKey);
+        GraphPattern queryPattern = iri(goalIRI).has(hasRealState,goal);
         SelectQuery query = Queries.SELECT();
 
         query.prefix(prefixGoal).select(goal).where(queryPattern);
@@ -312,11 +312,11 @@ public class GoalSparql {
 
     String getAgentIRI(String goalIRI){
         String queryKey = "agent";
-        Variable goal = SparqlBuilder.var(queryKey);
-        GraphPattern queryPattern = iri(goalIRI).has(isAchievedUsing,queryKey);
+        Variable agent = SparqlBuilder.var(queryKey);
+        GraphPattern queryPattern = iri(goalIRI).has(isAchievedUsing,agent);
         SelectQuery query = Queries.SELECT();
 
-        query.prefix(prefixGoal).select(goal).where(queryPattern);
+        query.prefix(prefixGoal).select(agent).where(queryPattern);
         storeClient.setQuery(query.getQueryString());
         String queryResult = storeClient.executeQuery().getJSONObject(0).toString();
         return queryResult;

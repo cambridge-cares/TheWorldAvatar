@@ -36,6 +36,7 @@ public class UpdateGoals extends JPSAgent {
        //Query for all goals
        List<String> goals = goalClient.getAllGoals();
 
+       goalClient.updateGoal(goals.get(0));
 
        String res_msg = "Updated goals, retrieved GoalRange, RealState";
 

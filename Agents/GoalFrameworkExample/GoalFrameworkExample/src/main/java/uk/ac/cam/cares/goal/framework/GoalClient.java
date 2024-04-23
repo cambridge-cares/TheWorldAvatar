@@ -48,6 +48,9 @@ public class GoalClient {
      */
     private static final Logger LOGGER = LogManager.getLogger(GoalClient.class);
 
+    public static final String GOALRANGE_KEY = "goalrange";
+    public static final String REALSTATE_KEY = "realstate";
+
     StoreClientInterface kbClient;
     GoalSparql sparqlClient;
 
@@ -116,6 +119,9 @@ public class GoalClient {
 
         String agentURL = goal.getAgentURL();
         JSONObject requestParams = new JSONObject();
+
+        requestParams.put(GOALRANGE_KEY, goal.getGoalRange()); // mapped IRIs of isDerivedFrom
+        requestParams.put(REALSTATE_KEY, goal.getRealState());
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost post = new HttpPost(agentURL);
