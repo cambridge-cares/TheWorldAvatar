@@ -62,7 +62,11 @@ export default function MapContainer(props: MapContainerProps) {
         map.on("load", function () {
           // Add all map event listeners
           addMapboxEventListeners(map, dispatch, mapData);
+        });
 
+        // When the base imagery is updated, all data layers are removed (point annotations are not removed)
+        // This event listener ensures that data layers are reloaded initially and after any style changes
+        map.on("styledata", function () {
           // Parse data configuration and load icons
           const iconPromise = addIcons(map, mapSettings.icons);
 
