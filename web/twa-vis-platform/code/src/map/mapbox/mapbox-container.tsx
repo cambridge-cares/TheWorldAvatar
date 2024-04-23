@@ -91,6 +91,6 @@ export default function MapboxMapComponent(props: MapProperties) {
       {/* Map will be generated here. */}
     </div>
   );
-};
+}
 
 MapboxMapComponent.displayName = "MapboxMapComponent";

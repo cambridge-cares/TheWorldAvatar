@@ -9,7 +9,11 @@ import { toast } from 'react-toastify';
 import { Map } from 'mapbox-gl';
 
 import { reduxStore } from 'app/store';
-import { CameraSettings, CameraPosition, ImagerySettings, ImageryOption } from 'types/settings';
+import { DataStore } from 'io/data/data-store';
+import { CameraSettings, CameraPosition, ImagerySettings, ImageryOption, MapSettings } from 'types/settings';
+import { addIcons } from './mapbox/mapbox-icon-loader';
+import { addAllSources } from './mapbox/mapbox-source-utils';
+import { addAllLayers } from './mapbox/mapbox-layer-utils';
 
 // Default imagery options if users do not include them in the "map-settings.json" file
 const DEFAULT_IMAGERY_OPTIONS: ImagerySettings = {
@@ -52,6 +56,27 @@ const PLACENAME_LAYERS: string[] = [
   "state-label", "country-label", "road-oneway-arrow-blue", "road-oneway-arrow-white", "transit-label",
   "path-pedestrian-label", "golf-hole-label", "gate-label", "natural-line-label"
 ]
+
+/**
+ * Add data to the map.
+ * 
+ * @param {Map} map The current Mapbox map instance.
+ * @param {MapSettings} mapSettings The user specified map settings.
+ * @param {DataStore} data The data of interest to add to the map.
+ */
+export function addData(map: Map, mapSettings: MapSettings, data: DataStore): void {
+   // Parse data configuration and load icons
+   const iconPromise = addIcons(map, mapSettings.icons);
+
+   Promise.all([iconPromise]).then(() => {
+     // Once that is done and completed...
+     console.log("Data definitions fetched and parsed.");
+
+     // Plot data
+     addAllSources(map, data);
+     addAllLayers(map, data, mapSettings.imagery);
+   });
+}
 
 /**
  * Returns the default camera position object.

@@ -17,9 +17,7 @@ import ScenarioModal from 'ui/interaction/modal/scenario';
 import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
 import { getScenario } from 'state/map-feature-slice';
 import { addMapboxEventListeners } from './event-listeners';
-import { addIcons } from './mapbox/mapbox-icon-loader';
-import { addAllSources } from './mapbox/mapbox-source-utils';
-import { addAllLayers } from './mapbox/mapbox-layer-utils';
+import { addData } from './map-helper';
 
 // Type definition of incoming properties
 interface MapContainerProps {
@@ -62,22 +60,14 @@ export default function MapContainer(props: MapContainerProps) {
         map.on("load", function () {
           // Add all map event listeners
           addMapboxEventListeners(map, dispatch, mapData);
+          // Add data when loading the map for the first time
+          addData(map, mapSettings, mapData);
         });
 
         // When the base imagery is updated, all data layers are removed (point annotations are not removed)
         // This event listener ensures that data layers are reloaded initially and after any style changes
-        map.on("styledata", function () {
-          // Parse data configuration and load icons
-          const iconPromise = addIcons(map, mapSettings.icons);
-
-          Promise.all([iconPromise]).then(() => {
-            // Once that is done and completed...
-            console.log("Data definitions fetched and parsed.");
-
-            // Plot data
-            addAllSources(map, mapData);
-            addAllLayers(map, mapData, mapSettings.imagery);
-          });
+        map.on("style.load", function () {
+          addData(map, mapSettings, mapData);
         });
       }
     }
