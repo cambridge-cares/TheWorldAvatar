@@ -46,8 +46,8 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
   const toggleExpansion = () => {
     // The data layers should be shown when parents are expanded, and hidden when closed
     if (props.map?.isStyleLoaded()) {
-      // If the user wishes to hide the group, the current state should be considered as visible (true)
-      const assumedVisibilityState: boolean = props.parentShowChildren ? isExpanded : true;
+      // In the case when parent do not want to show children, the toggle should then inverse this and show it
+      const assumedVisibilityState: boolean = props.parentShowChildren ? isExpanded : false;
       recurseToggleChildVisibility(group, assumedVisibilityState);
       // Update the state of the map groups
       props.setMapGroups(prevMapLayers => recursiveSubGroupFinder(prevMapLayers, group.address));
