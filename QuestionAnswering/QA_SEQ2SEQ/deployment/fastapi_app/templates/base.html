@@ -24,6 +24,16 @@
     <link href="./static/css/search.css" type="text/css" rel="stylesheet">
 </head>
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_measurement_id }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '{{ ga_measurement_id }}');
+</script>
+
 <body id="top" class=" header-fixed header-animated sticky-footer">
     <header id="header">
         <div class="container grid-lg">
