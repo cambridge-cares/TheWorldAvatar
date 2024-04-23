@@ -1,8 +1,13 @@
 from setuptools import setup, find_packages
 
-setup(name='myproject', version='0.0', 
-      packages=find_packages(exclude=("tests")),
-      install_requires= [
+setup(
+    name='Fenland Trajectory Agent',  # Change this to your project's name
+    version='0.1.0',  # Increment version as needed
+    author='Jiying Chen',  
+    author_email='jc2341@cam.ac.uk',  
+    package_dir={'': 'agent'},  
+    packages=find_packages(where='agent'),  # Automatically find all packages in 'agent'
+    install_requires=[
         'Flask==2.2.2',
         'pytz==2024.1',
         'configobj==5.0.6',
@@ -23,26 +28,24 @@ setup(name='myproject', version='0.0',
         'bs4==0.0.1',
         'beautifulsoup4==4.11.1',
         'urllib3==1.26.13',
-        'PySimpleGUI ==4.60.4',
+        'PySimpleGUI==4.60.4',
         'cryptography==39.0.0',
-        'python-dotenv ==0.21.0',
-        'APScheduler==3.9.1',
+        'python-dotenv==0.21.0',
         'docopt==0.6.2',
-        'Flask==2.2.2',
         'pandas==1.3.5',
         'JayDeBeApi==1.2.3',
-        'py4jps==1.0.27', 
+        'py4jps==1.0.38',
         'requests==2.28.1',
         'gunicorn==20.1.0',
         'click>=8.0',
         'werkzeug==2.2.2',
+        'psycopg2-binary==2.9.5'
     ],
     extras_require={
-        "dev": [
-            "pytest==7.2.0",
-            "pytest-mock==3.10.0",
-            "testcontainers==3.7.0",
-            "psycopg2==2.9.5"
+        'dev': [
+            'pytest==7.2.0',
+            'pytest-mock==3.10.0',
+            'testcontainers==3.7.0'
         ]
     }
-      )
+)
