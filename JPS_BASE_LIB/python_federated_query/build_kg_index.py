@@ -11,7 +11,7 @@ class BuildKGIndex:
     self.directory=directory
   
   def start_processing(self):
-    for root, dirs, files in os.walk(self.directory):
+    for root, dirs, files in os.walk(self.directory): #walks along files and sub-folders
       for filename in files:
           if filename.endswith(".owl"):  # Assuming files are owl files
               file_path = os.path.join(root, filename)
@@ -37,7 +37,6 @@ class BuildKGIndex:
     return classes
   
   def build_inverted_index(self,classes,filename):
-    # Iterate over each file in the directory
     for class_name in classes:
         if class_name not in self.class_index:
             self.class_index[class_name] = []
@@ -64,26 +63,4 @@ if __name__ == "__main__":
   #   print(f"Related Files: {related_files}")
   #   print()
     
-  # concepts=kg_index.extract_concepts_from_kg()
-  # concept_counter = 0
-  # for concept_uri in concepts:
-  #   print(concept_uri)
-  #   concept_counter+=1
-  # print(f"Total Number of Concepts {concept_counter}")
-    
-  # # Complex SPARQL example (replace with your actual query)
-  # sparql_query = """
-  # SELECT ?subject 
-  # WHERE {
-  #   ?subject rdf:type <http://purl.org/gc/Atom> .
-  # }
-  # """
-
-  # # Get results in list format
-  # results = kg.get_results(sparql_query)
   
-  # if results:
-  #   for result in results:
-  #     print(result)
-  # else:
-  #   print("No results found for the SPARQL query.")
