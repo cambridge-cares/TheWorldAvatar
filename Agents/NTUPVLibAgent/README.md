@@ -1,22 +1,24 @@
 # NTUPVLib Agent
 
-The NTUPVLib Agent is a modified version of the PVLibAgent developed to work with the PV data available for the NTU use case. The agent assumes a standard PV for the purpose of running PVLib and then scales the output by the PV area for the building. An additional scale factor is included to scale the data to a magnitude appropriate for the 15-bus NTU test system.
+The NTUPVLib Agent is a modified version of the [PVLibAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PVLibAgent) developed to work with the PV data available for the NTU use case. The agent assumes a standard PV for the purpose of running PVLib and then scales the output by the PV area for the building. An additional scale factor is included to scale the data to a magnitude appropriate for the 15-bus NTU test system.
 
 This agent is designed to calculate AC and DC Power output from Photovaltaic Panels based on values provided in the properties files or values queried from the knowledge graph. It will then initialise the AC and DC Power as timeseries in the knowledge graph. The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) from the JPS_BASE_LIB to interact with both the knowledge graph and database and uses [PvLib](https://pvlib-python.readthedocs.io/en/stable/) for it's AC and DC Power calculations.
 
-For the agent to read data, three property files are required:
+## 1. Property files
+
+For the agent to read data, four property files are required:
 - One [property file for DC and AC Power instantiation](#dataIRIs-properties) defining the IRIs for each of the keys.
 - One [property file for the time-series client](#time-series-client-properties) defining timeseries client related parameters.
 - One [property file for the Solar Model](#Model-properties) defining the parameters of the Solar PV Model.
 - One [misc property file for the Solar Model](#misc-properties) defining a scale factor to apply to the calculated ac and dc power.
 
-#### dataIRIs properties
+### dataIRIs properties
 This property file is used to determine whether there are IRIs already created for the instantiation of DC and AC Power
 in the knowledge graph. This property file can be left unchanged where the agent will then create IRIs for the keys indicated
 in the file (this is the default approach for the NTU test case). 
 More information can be found in the property file `dataIRIs.properties` in the `resources` folder.
 
-#### Time-series client properties
+### Time-series client properties
 For deployment in stack, the endpoints must be configured in `PVLibAgent/stack_utils/stack_configs.py`
 
 Otherwise, the time-series client property file needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
@@ -35,9 +37,8 @@ Otherwise, the time-series client property file needs to contain all credentials
 
 More information can be found in the property file `ts_client.properties` in the `resources` folder.
 
-
-## 1. PV Model Data Preparation
-####  [Option 1] Read photovoltaic model specs from property files
+### Solar Model Data Preparation
+#### [Option 1] Read photovoltaic model specs from property files
 
 This is the default option for the NTU test case.
 
@@ -56,20 +57,21 @@ The model parameters properties contains the parameters required to create a sol
 - `modules_per_string` the number of modules per string
 - `strings_per_inverter` the number of strings per inverter
 
-##### Misc properties
+####  [Option 2] Read Photovoltaic Model Specs from Knowledge Graph
+Alternatively, the parameters required to create a solar PV Model (see [model properties](#Model-properties) aboce) can be read from a knowledge graph. This requires an instantiation agent to create a Knowledge Graph filled with PV model parameter values. The  [HistoricalNTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent) provides an example to instantiate a knowledge graph which includes PV model parameters.
+
+Note: currently the agent is only able to retrieve the latitude and longitude (discussed [below](#Longitude-and-Magnitude-data)).
+
+### Misc properties
 
 The agent takes a scale factor that can be applied to the calculated power. The scale_factor can be set in the file `misc_parameters.properties` found in the `resources` folder.
 
-####  [Option 2] Read Photovoltaic Model Specs from Knowledge Graph
-Alternatively, the parameters required to create a solar PV Model can be read from a knowledge graph. This requires an instantiation agent to create a Knowledge Graph filled with PV model parameter values. The  [HistoricalNTUEnergy Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HistoricalNTUEnergyAgent) provides an example to instantiate a knowledge graph which includes PV model parameters.
-
-This option is currently only available for latitude and longitude. 
-
 ## 2. Weather Data Preparation
-The agent is designed to work with data from one of three sources: weather stations, irradiance sensors, and the OpenMeteo API. It is necessary to have one of the above data retrieved and instantiated on the knowledge graph before running the agent. Only option 3 is described here. For others, refer to the PVLibAgent.
+The [PVLibAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PVLibAgent) is designed to work with data from one of three sources: weather stations, irradiance sensors, and the OpenMeteo API. 
+Only the OpenMeteo API is used for the NTUPVLibAgent.
 
-####  [Option 3] Read data from OpenMeteo API
-In the event that the weather data is retrieved from the irradiance sensor, the related timeseries data has to be instantiated in the knowledge graph with the following structure:
+#### Read data from OpenMeteo API
+In the event that the weather data is retrieved from the OpenMeteo API, the related timeseries data has to be instantiated in the knowledge graph with the following structure:
 ```
 <http://test_openmeteo> rdf:type ontoems:ReportingStation .
 <http://test_openmeteo> ontoems:reports <http://test_parameter> .
