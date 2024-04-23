@@ -41,8 +41,8 @@ class DataGroup {
 
     public static handleDimensions(element: Object, scenarioDimensionsData: ScenarioDimensionsData, value: number) : Object {
         let stringified = JSON.stringify(element);
-        for (const dimension in Object.keys(scenarioDimensionsData)) {
-            stringified.replaceAll(dimension, value.toString())
+        for (const dimension of Object.keys(scenarioDimensionsData)) {
+            stringified = stringified.replaceAll(`{` + dimension + `}`, value.toString())
         }
         return JSON.parse(stringified);
     }
