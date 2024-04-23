@@ -38,7 +38,7 @@ class SGDataCentresAgentConnector(AgentConnectorBase):
         self.data_centre_constraints_parser = data_centre_constraints_parser
         self.attr_agg_parser = attr_agg_parser
 
-    @cached_property
+    @property
     def funcs(self):
         return [
             {
@@ -97,7 +97,7 @@ class SGDataCentresAgentConnector(AgentConnectorBase):
             },
         ]
 
-    @cached_property
+    @property
     def name2method(self):
         return {
             "lookup_dataCentre_attribute": self.lookup_dataCentre_attribute,

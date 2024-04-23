@@ -6,7 +6,6 @@
             {
                 "data_domain": "sg_land_lots",
                 "label": "Singapore's Land Lots",
-                "description": "Singapore's master plan zoning",
                 "questions": [
                     "What is a commercial plot?",
                     "what's the land use classification for plots that can have hospitals",
@@ -18,9 +17,16 @@
                 ]
             },
             {
+                "data_domain": "sg_buildings",
+                "label": "Singapore's Buildings",
+                "questions": [
+                    "How many restaurant buildings are there?",
+                    "What is the most common usage for buildings?"
+                ]
+            },
+            {
                 "data_domain": "sg_factories",
                 "label": "Singapore's Factories",
-                "description": "Singapore's manufacturing facilities",
                 "questions": [
                     "what's the specific energy consumption of Neste factory?",
                     "Which industry has the greatest heat emission value?",
@@ -34,7 +40,6 @@
             {
                 "data_domain": "sg_data_centres",
                 "label": "Singapore's Data Centres",
-                "description": "Singapore's data centre facilities",
                 "questions": [
                     "What is the heat emission of Keppel data centres",
                     "which company has the largest data centre by area?"
@@ -43,7 +48,6 @@
             {
                 "data_domain": "sg_dispersion",
                 "label": "Singapore's Dispersion",
-                "description": "Singapore's pollutant data",
                 "questions": [
                     "What are the concentrations of air pollutants in Jurong Island, singapore"
                 ]
@@ -51,7 +55,6 @@
             {
                 "data_domain": "sg_ships",
                 "label": "Singapore's Ships",
-                "description": "Data aboutships in Singapore",
                 "questions": [
                     "What's the maximum static draught of ship SCDF White Swordfish",
                     "what's the speed over ground of ship with MMSI 563026590"
@@ -59,8 +62,7 @@
             },
             {
                 "data_domain": "sg_norticulture",
-                "label": "Singapore's carparks",
-                "description": "Data about carparks in Singapore",
+                "label": "Singapore's Carparks",
                 "questions": [
                     "What's the carpark nearest to NUS"
                 ]

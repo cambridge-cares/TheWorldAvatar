@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, Generic, Tuple, Type, TypeVar, Union
+from typing import Dict, Generic, List, Optional, Tuple, Type, TypeVar, Union
 from redis import Redis
 
 from services.core.embed import IEmbedder
@@ -11,13 +11,22 @@ V = TypeVar("V", bound=Enum)
 
 class EnumAligner(Generic[T]):
     def __init__(
-        self, embedder: IEmbedder, redis_client: Redis, key: str, enum_cls: Type[T]
+        self,
+        embedder: IEmbedder,
+        redis_client: Redis,
+        key: str,
+        enum_cls: Type[T],
+        enum2label: Optional[Dict[T, str]] = None,
     ):
+        if not enum2label:
+            enum2label = {x: x.value for x in enum_cls}
+
         self.retriever = DocsRetriever(
             embedder=embedder,
             redis_client=redis_client,
             key=key,
-            docs=[x.value for x in enum_cls],
+            docs=[dict(value=x.value, label=label) for x, label in enum2label.items()],
+            linearize=lambda x: x["label"],
         )
         self.enum_cls = enum_cls
 
@@ -27,7 +36,7 @@ class EnumAligner(Generic[T]):
 
     def align_with_score(self, value: str):
         closest, score = self.retriever.retrieve(queries=[value], k=1)[0][0]
-        return self.enum_cls(closest), score
+        return self.enum_cls(closest["value"]), score
 
 
 class BiEnumAligner(Generic[T, V]):

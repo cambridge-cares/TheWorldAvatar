@@ -13,7 +13,7 @@ class SGShipsAgentConnector(AgentConnectorBase):
     def __init__(self, agent: SGShipsAgent):
         self.agent = agent
 
-    @cached_property
+    @property
     def funcs(self):
         return [
             {
@@ -46,7 +46,7 @@ class SGShipsAgentConnector(AgentConnectorBase):
             },
         ]
 
-    @cached_property
+    @property
     def name2method(self):
         return {
             "lookup_ship_attributes": self.lookup_ship_attributes,

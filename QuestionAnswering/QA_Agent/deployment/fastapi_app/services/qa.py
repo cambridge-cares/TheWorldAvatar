@@ -3,6 +3,10 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from services.connectors.sg_buildings import (
+    SGBuildingsAgentConnector,
+    get_sgBuildlings_agentConnector,
+)
 from services.connectors.sg_ships import (
     SGShipsAgentConnector,
     get_sgShips_agentConnector,
@@ -68,6 +72,9 @@ def get_mediator(
     sg_carparks_agent_connector: Annotated[
         SGCarparksAgentConnector, Depends(get_sgCarparks_agentConnector)
     ],
+    sg_buildings_agent_connector: Annotated[
+        SGBuildingsAgentConnector, Depends(get_sgBuildlings_agentConnector)
+    ],
 ):
     common_connectors = [retrieval_agent_connector]
     chemistry_connectors = [ontospecies_agent_connector]
@@ -78,6 +85,7 @@ def get_mediator(
         sg_dispersion_agent_connector,
         sg_ships_agent_connector,
         sg_carparks_agent_connector,
+        sg_buildings_agent_connector,
     ]
 
     return AgentConnectorMediator(

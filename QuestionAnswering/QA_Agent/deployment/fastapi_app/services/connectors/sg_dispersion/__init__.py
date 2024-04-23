@@ -19,7 +19,7 @@ class SGDispersionAgentConnector(AgentConnectorBase):
         self.agent = agent
         self.geocoder = geocoder
 
-    @cached_property
+    @property
     def funcs(self):
         return [
             {
@@ -37,7 +37,7 @@ class SGDispersionAgentConnector(AgentConnectorBase):
             }
         ]
 
-    @cached_property
+    @property
     def name2method(self):
         return {"get_pollutant_concentrations": self.get_pollutant_concentrations}
 
