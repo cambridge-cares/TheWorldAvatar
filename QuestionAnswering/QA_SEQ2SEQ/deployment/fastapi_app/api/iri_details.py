@@ -112,6 +112,7 @@ def iri_info_query(iri):
         PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
         PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
         PREFIX bibo: <http://purl.org/ontology/bibo/>
+        PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
         SELECT DISTINCT ?type ?o
         WHERE {{
@@ -130,6 +131,11 @@ def iri_info_query(iri):
             ?framework zeo:hasZeoliticMaterial <{iri}> .
             ?framework zeo:hasFrameworkCode ?o .
             ?framework rdf:type ?type .
+        }}
+        UNION
+        {{
+            <{iri}> os:name ?o .
+            BIND("Name" AS ?type)
         }}
         }}ORDER BY ?type
         """
@@ -221,6 +227,10 @@ def makeCifFile(iri):
 
                 if res["alb"]["value"] == 'T':
                     res["alb"]["value"] = 'Si'
+                if res["alb"]["value"] == 'Hfix':
+                    res["alb"]["value"] = 'H'
+                if res["alb"]["value"] == 'HO':
+                    res["alb"]["value"] = 'O'
 
                 output.append(str(res["alb"]["value"]) + "\t" +
                             str(res["afx"]["value"]) + "\t" +
