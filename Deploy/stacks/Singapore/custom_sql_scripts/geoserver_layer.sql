@@ -115,7 +115,7 @@ JOIN
 JOIN 
     citydb.objectclass ON city_furniture.objectclass_id = objectclass.id
 LEFT JOIN 
-    jurong_island_city_furniture ON uuid_table.uuid = jurong_island_city_furniture.city_furniture_uuid
+    jurong_island_city_furniture ON uuid_table.uuid = jurong_island_city_furniture.city_furniture_uuid::varchar
 WHERE 
     cityfurniture_footprint.geomval IS NOT NULL;
 
@@ -124,3 +124,5 @@ CREATE INDEX geometry_index ON usage.buildingusage_geoserver_sg USING GIST (geom
 CREATE INDEX classname_index ON usage.buildingusage_geoserver_sg (objectclass);
 CREATE INDEX infra_index ON usage.buildingusage_geoserver_sg (infrastructure_type);
 CREATE INDEX heat_index ON usage.buildingusage_geoserver_sg (heat_emissions);
+CREATE INDEX gfa_index ON usage.buildingusage_geoserver_sg (calc_gfa);
+CREATE INDEX refgfa_index ON usage.buildingusage_geoserver_sg (ref_gfa);
