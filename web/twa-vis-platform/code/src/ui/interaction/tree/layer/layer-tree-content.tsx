@@ -151,7 +151,11 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
 
   // Initial visibility state depends on only the layer's visibility
   // It will not depends on the parent component initially, as any possible states becomes tricky to enforce
-  const [isVisible, setIsVisible] = useState<boolean>(layer.isVisible);
+  const [isVisible, setIsVisible] = useState<boolean>(
+    // If the map has loaded (ie users are still on the page but switch components), retrieve the current state
+    // Else, follow the data's initial state
+    props.map?.loaded() ? props.map?.getLayoutProperty(firstLayerId, "visibility") === "visible" : layer.isVisible
+  );
 
   /** This method toggles the layer visibility when the layer icon is clicked
    */
