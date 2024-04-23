@@ -1,0 +1,91 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoZeolite,TBox,http://www.theworldavatar.com/kg/ontozeolite/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoZeolite,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,Specifies the version of the OntoZeolite ontology.,,
+OntoZeolite,TBox,OntoZeolite is an ontology developed for representing zeolitic materials,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoZeolite,TBox,,http://www.w3.org/2002/07/owl#imports,,,,Indicates external ontologies that OntoZeolite may incorporate or reference.,,
+Species,Class,,,,,,"Represents the general class of all species involved in the zeolite domain, including precursors and products.",http://www.theworldavatar.com/kg/ontozeolite/,Species
+Yield,Class,,,,,,"Denotes the class related to the yield from zeolite synthesis processes, capturing efficiency and output.",http://www.theworldavatar.com/kg/ontozeolite/,Yield
+Document,Class,,,,,,"Citation information, for example, extracted from a bibtex file.",http://purl.org/ontology/bibo/,Document
+MeasureVector,Class,,,,,,A data structure with components and units of measurements,http://www.theworldavatar.com/kg/ontocrystal/,Measure Vector
+Measure,Class,,,,,,An object to store a numerical value together with units of measurement. A class from OM-2 ontology.,http://www.ontology-of-units-of-measure.org/resource/om-2/,Measure
+CrystalInformation,Class,,,,,,"Collection of most common properties for crystal description, based on CIF standard.",http://www.theworldavatar.com/kg/ontocrystal/,Crystal Information
+ZeoliteFramework,Class,,,,,,One of the 255 zeolite frameworks known for now,http://www.theworldavatar.com/kg/ontozeolite/,Zeolite Framework
+ZeoliticMaterial,Class,,,,,,"Represents the materials that constitute zeolites, including their properties and structures.",http://www.theworldavatar.com/kg/ontozeolite/,Zeolitic Material
+Density,Class,Measure,IS-A,,,,The mass density (usually in g/cm3) of the material.,http://www.theworldavatar.com/kg/ontozeolite/,Density
+Recipe,Class,,,,,,Information related to synthesis of a given zeolitic material,http://www.theworldavatar.com/kg/ontozeolite/,Recipe
+Precursor,Class,Species,IS-A,,,,Chemical compound used for preparation of the final zeolite according to the recipe,http://www.theworldavatar.com/kg/ontozeolite/,Precursor
+ChemicalComponent,Class,,,,,,,http://www.theworldavatar.com/kg/ontozeolite/,
+TopologicalProperties,Class,,,,,,A set of characteristics to describe the geometrical and/or topological properties of a material,http://www.theworldavatar.com/kg/ontozeolite/,Topological Properties
+AccessibleVolume,Class,Measure,IS-A,,,,"The volume of cavities connected by channels, in %. Excluding izolated cavities. See also OccupiableVolume, AccessibleVolumePerCell",http://www.theworldavatar.com/kg/ontozeolite/,Accessible Volume
+OccupiableVolume,Class,Measure,IS-A,,,,"The total volume of cavities in the crystal in %. See also AccessibleVolume, OccupiableVolumePerCell",http://www.theworldavatar.com/kg/ontozeolite/,Occupiable Volume
+AccessibleAreaPerGram,Class,Measure,IS-A,,,,"Surface area of the cavities excluding isolated cavities in m^2/g. See also OccupiableAreaPerGram, AccessibleAreaPerCell, SpecificAccessibleArea.",http://www.theworldavatar.com/kg/ontozeolite/,Accessible Area Per Gram
+OccupiableAreaPerGram,Class,Measure,IS-A,,,,"Total surface area of the cavities in m^2/g. See also AccessibleAreaPerGram, OccupiableAreaPerCell, SpecificOccupiableArea",http://www.theworldavatar.com/kg/ontozeolite/,Occupiable Area Per Gram
+AccessibleVolumePerCell,Class,Measure,IS-A,,,,"The volume of cavities connected by channels, in A^3 per crystal unit cell. Excluding izolated cavities. See also OccupiableVolumePerCell, AccessibleVolume",http://www.theworldavatar.com/kg/ontozeolite/,Accessible Volume Per Cell
+OccupiableVolumePerCell,Class,Measure,IS-A,,,,"The total volume of cavities in the crystal in A^3 per crystal unit cell. See also AccessibleVolumePerCell, OccupiableVolume",http://www.theworldavatar.com/kg/ontozeolite/,Occupiable Volume Per Cell
+AccessibleAreaPerCell,Class,Measure,IS-A,,,,"Surface area of the cavities excluding isolated cavities in A^2 per crystal unit cell. See also OccupiableAreaPerCell, AccessibleAreaPerGram, SpecificAccessibleArea.",http://www.theworldavatar.com/kg/ontozeolite/,Accessible Area Per Cell
+OccupiableAreaPerCell,Class,Measure,IS-A,,,,"Total surface area of the cavities in A^2 per crystal unit cell. See also AccessibleAreaPerCell, OccupiableAreaPerGram, SpecificOccupiableArea",http://www.theworldavatar.com/kg/ontozeolite/,Occupiable Area Per Cell
+SpecificAccessibleArea,Class,Measure,IS-A,,,,"Surface area of the cavities excluding isolated cavities in m^2/cm^3. See also SpecificOccupiableArea, AccessibleAreaPerCell, AccessibleAreaPerGram.",http://www.theworldavatar.com/kg/ontozeolite/,Specific Accessible Area
+SpecificOccupiableArea,Class,Measure,IS-A,,,,"Total surface area of the cavities in m^2/cm^3. See also SpecificAccessibleArea, OccupiableAreaPerGram, OccupiableAreaPerCell",http://www.theworldavatar.com/kg/ontozeolite/,Specific Occupiable Area
+SphereDiameter,Class,MeasureVector,IS-A,,,,Characteristics of porocity. Diameter of the biggest sphere to move along a channel or to reside in a cavity. One of topological properties,http://www.theworldavatar.com/kg/ontozeolite/,Sphere Diameter
+SecondaryBU,Class,MeasureVector,IS-A,,,,Topological building unit (BU) to describe the structure of the crystal. Obsolete since 2007. See also CompositeBU,http://www.theworldavatar.com/kg/ontozeolite/,Secondary BU
+CompositeBU,Class,MeasureVector,IS-A,,,,,http://www.theworldavatar.com/kg/ontozeolite/,CompositeBU
+RingSizes,Class,MeasureVector,IS-A,,,,,http://www.theworldavatar.com/kg/ontozeolite/,Ring Sizes
+FrameworkDensity,Class,Measure,IS-A,,,,,http://www.theworldavatar.com/kg/ontozeolite/,Framework Density
+TopologicalDensity,Class,,,,,,,http://www.theworldavatar.com/kg/ontozeolite/,Topological Density
+TAtom,Class,Measure,IS-A,,,,,http://www.theworldavatar.com/kg/ontozeolite/,T Atom
+CoordinationSequence,Class,MeasureVector,IS-A,,,,An array of 10 or 12 numbers,http://www.theworldavatar.com/kg/ontozeolite/,Coordination Sequence
+VertexSymbol,Class,MeasureVector,IS-A,,,,Size and count of the smallest rings associated with 6 angles of T-atom. Each T-atom contains 6 values.,http://www.theworldavatar.com/kg/ontozeolite/,Vertex Symbol
+hasZeoliticMaterial,Object Property,,,ZeoliteFramework,ZeoliticMaterial,,"Links a ZeoliteMaterial to its structural framework, characterizing its molecular architecture.",http://www.theworldavatar.com/kg/ontozeolite/,has Zeolitic Material
+hasDensity,Object Property,,,ZeoliticMaterial,Density,,Links the material to its density.,http://www.theworldavatar.com/kg/ontozeolite/,has Density
+hasCrystalInformation,Object Property,,,ZeoliticMaterial UNION ZeoliteFramework,CrystalInformation,,Connection of the crystal entity to CrystalInformation containing the crystallographic data,http://www.theworldavatar.com/kg/ontocrystal/,has Crystal Information
+hasRecipe,Object Property,,,ZeoliticMaterial,Recipe,,"Associates a Zeolite with its Recipe, detailing the synthesis process.",http://www.theworldavatar.com/kg/ontozeolite/,has Recipe
+hasPrecursor,Object Property,,,Recipe,Precursor,,"Connects a Recipe to its Precursor(s), defining the starting materials required for zeolite synthesis.",http://www.theworldavatar.com/kg/ontozeolite/,has Precursor
+hasChemicalComposition,Object Property,,,ZeoliticMaterial UNION ZeoliteFramework,ChemicalComponent,,,http://www.theworldavatar.com/kg/ontozeolite/,
+hasTopologicalProperties,Object Property,,,ZeoliticMaterial UNION ZeoliteFramework,TopologicalProperties,,Links the material to its topological properties,http://www.theworldavatar.com/kg/ontozeolite/,has Topological Properties
+hasAccessibleVolume,Object Property,,,TopologicalProperties,AccessibleVolume,,Links the topological property to the Accessible volume,http://www.theworldavatar.com/kg/ontozeolite/,has Accessible Volume
+hasOccupiableVolume,Object Property,,,TopologicalProperties,OccupiableVolume,,Links the topological property to the Occupiable volume,http://www.theworldavatar.com/kg/ontozeolite/,has Occupiable Volume
+hasAccessibleAreaPerGram,Object Property,,,TopologicalProperties,AccessibleAreaPerGram,,Links the topological property to the AccessibleAreaPerGram,http://www.theworldavatar.com/kg/ontozeolite/,has Accessible Area Per Gram
+hasOccupiableAreaPerGram,Object Property,,,TopologicalProperties,OccupiableAreaPerGram,,Links the topological property to the Occupiable volume,http://www.theworldavatar.com/kg/ontozeolite/,has Occupiable Area Per Gram
+hasAccessibleVolumePerCell,Object Property,,,TopologicalProperties,AccessibleVolumePerCell,,Links the topological property to the OccupiableAreaPerGram,http://www.theworldavatar.com/kg/ontozeolite/,has Accessible Volume Per Cell
+hasOccupiableVolumePerCell,Object Property,,,TopologicalProperties,OccupiableVolumePerCell,,Links the topological property to the OccupiableVolumePerCell,http://www.theworldavatar.com/kg/ontozeolite/,has Occupiable Volume Per Cell
+hasAccessibleAreaPerCell,Object Property,,,TopologicalProperties,AccessibleAreaPerCell,,Links the topological property to the AccessibleAreaPerCell,http://www.theworldavatar.com/kg/ontozeolite/,has Accessible Area Per Cell
+hasOccupiableAreaPerCell,Object Property,,,TopologicalProperties,OccupiableAreaPerCell,,Links the topological property to the OccupiableAreaPerCell,http://www.theworldavatar.com/kg/ontozeolite/,has Occupiable Area Per Cell
+hasSpecificAccessibleArea,Object Property,,,TopologicalProperties,SpecificAccessibleArea,,Links the topological property to the SpecificAccessibleArea,http://www.theworldavatar.com/kg/ontozeolite/,has Specific Accessible Area
+hasSpecificOccupiableArea,Object Property,,,TopologicalProperties,SpecificOccupiableArea,,Links the topological property to the SpecificOccupiableArea,http://www.theworldavatar.com/kg/ontozeolite/,has Specific Occupiable Area
+hasSphereDiameter,Object Property,,,TopologicalProperties,SphereDiameter,,Links the topological property to its porocity characteristics,http://www.theworldavatar.com/kg/ontozeolite/,has Sphere Diameter
+hasSecondaryBU,Object Property,,,TopologicalProperties,SecondaryBU,,Links the topological property to its SecondaryBU. There may be multiple BU,http://www.theworldavatar.com/kg/ontozeolite/,has Secondary BU
+hasCompositeBU,Object Property,,,TopologicalProperties,CompositeBU,,,http://www.theworldavatar.com/kg/ontozeolite/,has Composite BU
+hasRingSizes,Object Property,,,TopologicalProperties,RingSizes,,,http://www.theworldavatar.com/kg/ontozeolite/,has Ring Sizes
+hasFrameworkDensity,Object Property,,,TopologicalProperties,FrameworkDensity,,,http://www.theworldavatar.com/kg/ontozeolite/,has Framework Density
+hasTopologicalDensity,Object Property,,,TopologicalProperties,TopologicalDensity,,,http://www.theworldavatar.com/kg/ontozeolite/,has Topological Density
+hasTAtom,Object Property,,,TopologicalProperties,TAtom,,,http://www.theworldavatar.com/kg/ontozeolite/,has T-Atom
+hasCoordinationSequence,Object Property,,,TAtom,CoordinationSequence,,,http://www.theworldavatar.com/kg/ontozeolite/,has Coordination Sequence
+hasVertexSymbol,Object Property,,,TAtom,VertexSymbol,,,http://www.theworldavatar.com/kg/ontozeolite/,has Vertex Symbol
+isInterrupted,Data Property,,,ZeoliteFramework,Boolean,,Boolean property indicating if a ZeoliteFramework is structurally interrupted.,http://www.theworldavatar.com/kg/ontozeolite/,is Interrupted
+isIntergrowth,Data Property,,,ZeoliteFramework,Boolean,,Boolean property indicating if a ZeoliteFramework has intergrowth with other structures.,http://www.theworldavatar.com/kg/ontozeolite/,is Intergrowth
+hasFrameworkCode,Data Property,,,ZeoliteFramework,String,,"For simple frameworks a 3-letter code, for interrupted or intergrowth a more complex code",http://www.theworldavatar.com/kg/ontozeolite/,has Framework Code
+isHypothetic,Data Property,,,ZeoliteFramework,Boolean,,Boolean property indicating if a ZeoliteFramework is hypothetic.,http://www.theworldavatar.com/kg/ontozeolite/,Is Hypothetic
+isReferenceZeolite,Data Property,,,ZeoliteFramework,Boolean,,The material used as a reference for studying the framework properties,http://www.theworldavatar.com/kg/ontozeolite/,is Reference Zeolite
+hasChemicalFormula,Data Property,,,ZeoliticMaterial,String,,Chemical formula in a string format,http://www.theworldavatar.com/kg/ontozeolite/,has Chemical Formula
+hasBatchPreparation,Data Property,,,Recipe,String,,Details the steps involved in the preparation of a batch for zeolite synthesis.,http://www.theworldavatar.com/kg/ontozeolite/,has Batch Preparation
+hasProductRecovery,Data Property,,,Recipe,String,,Describes the process and efficiency of recovering the final zeolite product post-synthesis.,http://www.theworldavatar.com/kg/ontozeolite/,has Product Recovery
+hasCrystallization,Data Property,,,Recipe,String,,Captures information on the crystallization phase in the zeolite synthesis recipe.,http://www.theworldavatar.com/kg/ontozeolite/,has Crystallization
+hasNotes,Data Property,,,Recipe,String,,Allows for additional annotations or remarks pertinent to the synthesis recipe of a zeolite.,http://www.theworldavatar.com/kg/ontozeolite/,has Notes
+hasComposition,Data Property,,,Recipe,String,,Describes the chemical composition of a recipe for zeolite synthesis.,http://www.theworldavatar.com/kg/ontozeolite/,has Composition
+hasBatchComposition,Data Property,,,Recipe,String,,Specifies the composition of the initial batch used in a zeolite synthesis recipe.,http://www.theworldavatar.com/kg/ontozeolite/,has Batch Composition
+hasCharacterization,Data Property,,,Recipe,String,,Human-readable description of the characterization procedure,http://www.theworldavatar.com/kg/ontozeolite/,has Characterization
+hasSourceMaterial,Data Property,,,Recipe,String,,Human-readable description of the characterization procedure,http://www.theworldavatar.com/kg/ontozeolite/,has Source Material
+hasAmount,Data Property,,,ChemicalComponent,String,,,http://www.theworldavatar.com/kg/ontozeolite/,
+isMetal,Data Property,,,ChemicalComponent,Boolean,,,http://www.theworldavatar.com/kg/ontozeolite/,
+isNonMetal,Data Property,,,ChemicalComponent,Boolean,,,http://www.theworldavatar.com/kg/ontozeolite/,
+isOH,Data Property,,,ChemicalComponent,Boolean,,,http://www.theworldavatar.com/kg/ontozeolite/,
+hasCage,Data Property,,,CompositeBU,String,,,http://www.theworldavatar.com/kg/ontozeolite/,has Cage
+hasTCage,Data Property,,,CompositeBU,String,,,http://www.theworldavatar.com/kg/ontozeolite/,has T-Cage
+hasValueTD,Data Property,,,TopologicalDensity,Decimal,,,http://www.theworldavatar.com/kg/ontozeolite/,has Value TD
+hasValueTD10,Data Property,,,TopologicalDensity,Decimal,,,http://www.theworldavatar.com/kg/ontozeolite/,has Value TD 10
+hasTAtomName,Data Property,,,TAtom,String,,,http://www.theworldavatar.com/kg/ontozeolite/,has T-Atom Name
+hasTAtomIndex,Data Property,,,TAtom,Integer,,,http://www.theworldavatar.com/kg/ontozeolite/,has T-Atom Index
+hasSymbolPosition,Data Property,,,VertexSymbol,Integer,,,http://www.theworldavatar.com/kg/ontozeolite/,has Symbol Position
+hasRingSize,Data Property,,,VertexSymbol,Integer,,,http://www.theworldavatar.com/kg/ontozeolite/,has Ring Size
+hasRingCount,Data Property,,,VertexSymbol,Integer,,,http://www.theworldavatar.com/kg/ontozeolite/,has Ring Count
+hasChannelDimension,Data Property,,,VertexSymbol,String,,,http://www.theworldavatar.com/kg/ontozeolite/,has Channel Dimension
