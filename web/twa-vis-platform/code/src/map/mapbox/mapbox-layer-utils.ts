@@ -9,11 +9,11 @@ import { getCurrentImageryOption } from '../map-helper';
  * Given a DataStore instance housing parsed DataLayer instances,
  * this function adds them all to the Mapbox map instance.
  * 
- * @param {React.MutableRefObject<Map>} map the Mapbox map instance wrapped in a mutable reference object.
+ * @param {Map} map the Mapbox map.
  * @param {dataStore} dataStore Store containing parsed DataLayer instances.
  * @param {ImagerySettings} imagerySettings - The imagery settings for the map.
  */
-export async function addAllLayers(map: React.MutableRefObject<Map>, dataStore: DataStore, imagerySettings: ImagerySettings) {
+export async function addAllLayers(map: Map, dataStore: DataStore, imagerySettings: ImagerySettings) {
     const currentStyle = getCurrentImageryOption(imagerySettings);
 
     const layerArray: DataLayer[] = dataStore.getLayerList();
@@ -24,12 +24,12 @@ export async function addAllLayers(map: React.MutableRefObject<Map>, dataStore: 
 /**
  * Adds the input DataLayer to the Mapbox map instance.
  * 
- * @param {React.MutableRefObject<Map>} map the Mapbox map instance wrapped in a mutable reference object.
+ * @param {Map} map the Mapbox map instance.
  * @param {DataLayer} layer - The input DataLayer.
  * @param {ImageryOption} currentStyle - The current imagery style.
  */
-export function addLayer(map: React.MutableRefObject<Map>, layer: DataLayer, currentStyle: ImageryOption) {
-    const collision = map.current?.getLayer(layer.id);
+export function addLayer(map: Map, layer: DataLayer, currentStyle: ImageryOption) {
+    const collision = map?.getLayer(layer.id);
 
     if (collision != null) {
         console.warn("Attempting to add a layer that's already on map: '" + layer.id + "'.");
@@ -111,6 +111,6 @@ export function addLayer(map: React.MutableRefObject<Map>, layer: DataLayer, cur
     }
 
     // Add to the map
-    map.current?.addLayer(mapboxObj);
+    map?.addLayer(mapboxObj);
     console.info("Pushed data layer to map '" + layer.id + "'.");
 }

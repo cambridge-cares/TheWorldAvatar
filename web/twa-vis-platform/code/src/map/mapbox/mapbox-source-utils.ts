@@ -7,10 +7,10 @@ import { JsonObject } from 'types/json';
  * Given a DataStore instance housing parsed DataSource instances,
  * this function adds them all to the Mapbox map object.
  * 
- * @param {React.MutableRefObject<Map>} map the Mapbox map instance wrapped in a mutable reference object.
+ * @param {Map} map the Mapbox map instance.
  * @param {DataSource} dataStore Store containing parsed DataSource instances.
  */
-export function addAllSources(map: React.MutableRefObject<Map>, dataStore: DataStore) {
+export function addAllSources(map: Map, dataStore: DataStore) {
     const sourceArray: DataSource[] = dataStore.getSourceList();
     sourceArray.forEach((source) => addSource(map, source));
     console.log("Added all registered sources to the map object.");
@@ -19,11 +19,11 @@ export function addAllSources(map: React.MutableRefObject<Map>, dataStore: DataS
 /**
  * Adds the input data source to the Mapbox map object.
  * 
- * @param {React.MutableRefObject<Map>} map the Mapbox map instance wrapped in a mutable reference object.
+ * @param {Map} map the Mapbox map instance.
  * @param {DataSource} source data source to add.
  */
-export function addSource(map: React.MutableRefObject<Map>, source: DataSource) {
-    const collision = map.current?.getSource(source.id);
+export function addSource(map: Map, source: DataSource) {
+    const collision = map?.getSource(source.id);
     if(collision != null) {
         console.warn("Attempting to add a source that's already on map: '" + source.id + "'.");
         return;
@@ -66,6 +66,6 @@ export function addSource(map: React.MutableRefObject<Map>, source: DataSource) 
     }
 
     // Add to the map
-    map.current?.addSource(source.id, mapboxObj);
+    map?.addSource(source.id, mapboxObj);
     console.info("Pushed data source to map '" + source.id + "'.");
 }

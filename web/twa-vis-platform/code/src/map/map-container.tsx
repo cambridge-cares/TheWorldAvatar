@@ -3,7 +3,7 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './map-container.module.css';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Map } from 'mapbox-gl';
 
@@ -11,7 +11,7 @@ import { MapSettings } from 'types/settings';
 import { ScenarioDefinition } from 'types/scenario';
 import { DataStore } from 'io/data/data-store';
 import { parseMapDataSettings } from 'utils/client-utils';
-import { MapboxMapComponent } from 'map/mapbox/mapbox-container';
+import MapboxMapComponent from 'map/mapbox/mapbox-container';
 import Ribbon from 'ui/interaction/ribbon/ribbon';
 import ScenarioModal from 'ui/interaction/modal/scenario';
 import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
@@ -20,7 +20,6 @@ import { addMapboxEventListeners } from './event-listeners';
 import { addIcons } from './mapbox/mapbox-icon-loader';
 import { addAllSources } from './mapbox/mapbox-source-utils';
 import { addAllLayers } from './mapbox/mapbox-layer-utils';
-import { getIsStyleLoaded } from 'state/floating-panel-slice';
 
 // Type definition of incoming properties
 interface MapContainerProps {
@@ -33,13 +32,12 @@ interface MapContainerProps {
  * Renders the map and its UI components
  */
 export default function MapContainer(props: MapContainerProps) {
-  const map = useRef<Map>(null);
   const dispatch = useDispatch();
+  const [map, setMap] = useState<Map>(null);
   const [showDialog, setShowDialog] = useState<boolean>(!!props.scenarios);
   const [mapData, setMapData] = useState<DataStore>(null);
   const mapSettings: MapSettings = JSON.parse(props.settings);
   const selectedScenario = useSelector(getScenario);
-  const isStyleLoaded: boolean = useSelector(getIsStyleLoaded);
 
   // Retrieves data settings for specified scenario from the server, else, defaults to the local file
   useEffect(() => {
@@ -59,11 +57,11 @@ export default function MapContainer(props: MapContainerProps) {
 
   // Populates the map after it has loaded and scenario selection is not required
   useEffect(() => {
-    if (map.current && isStyleLoaded && !showDialog) {
+    if (map && !showDialog) {
       if (mapSettings?.["type"] === "mapbox") {
-        map.current.on("load", function () {
+        map.on("load", function () {
           // Add all map event listeners
-          addMapboxEventListeners(map.current, dispatch, mapData);
+          addMapboxEventListeners(map, dispatch, mapData);
 
           // Parse data configuration and load icons
           const iconPromise = addIcons(map, mapSettings.icons);
@@ -79,7 +77,7 @@ export default function MapContainer(props: MapContainerProps) {
         });
       }
     }
-  }, [isStyleLoaded, mapData]);
+  }, [map, mapData]);
 
   return (
     <>
@@ -95,7 +93,8 @@ export default function MapContainer(props: MapContainerProps) {
       {mapSettings?.["type"] === "mapbox" &&
         <MapboxMapComponent
           settings={mapSettings}
-          ref={map}
+          currentMap={map}
+          setMap={setMap}
         />
       }
 

@@ -13,7 +13,7 @@ import LayerTreeHeader from './layer-tree-content';
 
 // type definition for incoming properties
 type LayerTreeProps = {
-  map: React.MutableRefObject<Map>;
+  map: Map;
   dataStore: DataStore;
   icons: IconSettings;
 };

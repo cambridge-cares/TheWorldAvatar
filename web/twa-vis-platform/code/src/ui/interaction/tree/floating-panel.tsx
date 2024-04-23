@@ -16,7 +16,7 @@ import InfoTree from './info/info-tree';
 
 // Incoming parameters for component.
 type FloatingPanelContainerProps = {
-  map: React.MutableRefObject<Map>;
+  map: Map;
   dataStore: DataStore;
   icons: IconSettings;
   legend: LegendSettings;

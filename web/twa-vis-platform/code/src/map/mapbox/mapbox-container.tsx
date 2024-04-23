@@ -4,7 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import './mapbox.css';
 
 import mapboxgl, { Map } from 'mapbox-gl';
-import React, { useRef, useEffect, forwardRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getLatLng, getName } from 'state/map-feature-slice';
@@ -16,6 +16,8 @@ import { formatAppUrl } from 'utils/client-utils';
 // Type definition of incoming properties
 interface MapProperties {
   settings: MapSettings;
+  currentMap: Map;
+  setMap: React.Dispatch<React.SetStateAction<Map>>;
 }
 
 /**
@@ -25,7 +27,7 @@ interface MapProperties {
  *
  * @returns React component for display.
  */
-export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef) => {
+export default function MapboxMapComponent(props: MapProperties) {
   const mapContainer = useRef(null);
   const toolTip = useRef(null);
   const dispatch = useDispatch();
@@ -37,10 +39,9 @@ export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef)
     initialiseMap();
 
     return () => {
-      const currentMap: React.MutableRefObject<Map> = mapRef as React.MutableRefObject<Map>;
-      if (currentMap.current) {
-        currentMap.current.remove(); // Remove the map instance
-        currentMap.current = null; // Reset the map ref
+      if (props.currentMap) {
+        props.currentMap.remove(); // Remove the map instance
+        props.setMap(null); // Reset the map ref
       }
     };
   }, []);
@@ -53,13 +54,13 @@ export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef)
     }
     // If there is a name, add the tool tip with the name to the map
     if (name != null) {
-      toolTip.current?.setLngLat(coordinates).setHTML(name).addTo((mapRef as React.MutableRefObject<Map>).current)
+      toolTip.current?.setLngLat(coordinates).setHTML(name).addTo(props.currentMap)
     }
   }, [coordinates]);
 
   // Initialise the map object
   const initialiseMap = async () => {
-    if ((mapRef as React.MutableRefObject<Map>).current) return;
+    props.currentMap?.remove();
 
     const response = await fetch(formatAppUrl("/api/map/settings"), {
       method: "GET",
@@ -81,7 +82,7 @@ export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef)
       bearing: defaultPosition["bearing"],
       pitch: defaultPosition["pitch"],
     });
-    (mapRef as React.MutableRefObject<Map>).current = map;
+
     console.info("Initialised a new Mapbox map object.");
 
     // Create a new pop up and assign it to the reference to keep track
@@ -107,6 +108,8 @@ export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef)
         );
       }
       dispatch(setIsStyleLoaded(true))
+      // Map is only settable after the styles have loaded
+      props.setMap(map)
     });
   };
 
@@ -115,6 +118,6 @@ export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef)
       {/* Map will be generated here. */}
     </div>
   );
-});
+};
 
 MapboxMapComponent.displayName = "MapboxMapComponent";
