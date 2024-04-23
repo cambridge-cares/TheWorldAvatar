@@ -10,7 +10,6 @@ import org.springframework.core.io.ClassPathResource;
 
 public class Config {
     public static Properties props = null;
-
     public static String dburl;
     public static String dbuser;
     public static String dbpassword;

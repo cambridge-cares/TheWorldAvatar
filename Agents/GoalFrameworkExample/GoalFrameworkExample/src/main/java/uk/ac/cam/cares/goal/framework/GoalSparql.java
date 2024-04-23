@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.goal.framework;
 
-import org.eclipse.rdf4j.model.vocabulary.OWL;
 import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
@@ -23,6 +22,12 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+
+
+import java.util.ArrayList;
+
+import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
+import org.json.JSONArray;
 
 
 public class GoalSparql {
@@ -49,6 +54,8 @@ public class GoalSparql {
     public static final String DERIVATION = "Derivation";
     public static final String GOAL = "Goal";
 
+    public static final String GOALRANGE = "GoalRange";
+
 
     // prefix/namespace
     private static Prefix prefixAgent = SparqlBuilder.prefix("agent",
@@ -66,6 +73,7 @@ public class GoalSparql {
     private static Iri UnixTime = iri("http://dbpedia.org/resource/Unix_time");
 
     private static Iri Goal = prefixGoal.iri(GOAL);
+    private static Iri GoalRange = prefixGoal.iri(GOALRANGE);
 
     // object properties
     private static Iri hasHttpUrl = prefixAgent.iri("hasHttpUrl");
@@ -227,6 +235,120 @@ public class GoalSparql {
     }
 
 
+//    /**
+//     * This method retrieves a list of derivations that <isDerivedUsing> a given
+//     * <agentIRI>.
+//     *
+//     * @param kbClient
+//     * @param agentIRI
+//     * @return
+//     */
+//    List<String> getGoals(String agentIRI) {
+//        String queryKey = "goal";
+//        Variable goal = SparqlBuilder.var(queryKey);
+//        GraphPattern queryPattern = goal.has(isAchievedUsing, iri(agentIRI));
+//        SelectQuery query = Queries.SELECT();
+//
+//        query.prefix(prefixGoal, prefixAgent).select(goal).where(queryPattern);
+//        storeClient.setQuery(query.getQueryString());
+//        JSONArray queryResult = storeClient.executeQuery();
+//
+//        List<String> goals = new ArrayList<>();
+//        for (int i = 0; i < queryResult.length(); i++) {
+//            goals.add(queryResult.getJSONObject(i).getString(queryKey));
+//        }
+//
+//        return goals;
+//    }
+
+
+    /**
+     * This method retrieves all Goals
+     * @param kbClient
+     * @param agentIRI
+     * @return
+     */
+    List<String> getAllGoal() {
+        String queryKey = "goal";
+        Variable goal = SparqlBuilder.var(queryKey);
+        GraphPattern queryPattern = goal.isA(Goal);
+        SelectQuery query = Queries.SELECT();
+
+        query.prefix(prefixGoal, prefixAgent).select(goal).where(queryPattern);
+        storeClient.setQuery(query.getQueryString());
+        JSONArray queryResult = storeClient.executeQuery();
+
+        List<String> goals = new ArrayList<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            goals.add(queryResult.getJSONObject(i).getString(queryKey));
+        }
+
+        return goals;
+    }
+
+    String getGoalRangeIRI(String goalIRI){
+        String queryKey = "range";
+        Variable range = SparqlBuilder.var(queryKey);
+        GraphPattern queryPattern = iri(goalIRI).has(hasGoalRange,range);
+        SelectQuery query = Queries.SELECT();
+
+        query.prefix(prefixGoal).select(range).where(queryPattern);
+        storeClient.setQuery(query.getQueryString());
+        String queryResult = storeClient.executeQuery().getJSONObject(0).toString();
+        return queryResult;
+    }
+
+    String getRealStateIRI(String goalIRI){
+        String queryKey = "state";
+        Variable goal = SparqlBuilder.var(queryKey);
+        GraphPattern queryPattern = iri(goalIRI).has(hasRealState,queryKey);
+        SelectQuery query = Queries.SELECT();
+
+        query.prefix(prefixGoal).select(goal).where(queryPattern);
+        storeClient.setQuery(query.getQueryString());
+        String queryResult = storeClient.executeQuery().getJSONObject(0).toString();
+        return queryResult;
+    }
+
+    String getAgentIRI(String goalIRI){
+        String queryKey = "agent";
+        Variable goal = SparqlBuilder.var(queryKey);
+        GraphPattern queryPattern = iri(goalIRI).has(isAchievedUsing,queryKey);
+        SelectQuery query = Queries.SELECT();
+
+        query.prefix(prefixGoal).select(goal).where(queryPattern);
+        storeClient.setQuery(query.getQueryString());
+        String queryResult = storeClient.executeQuery().getJSONObject(0).toString();
+        return queryResult;
+    }
+
+
+
+
+    /**
+     * This method queries the agentURL given agentIRI.
+     *
+     * @param agentIRI
+     * @return
+     */
+    String getAgentUrlGivenAgentIRI(String agentIRI) {
+        SelectQuery query = Queries.SELECT();
+
+        String queryKey = "url";
+        Variable url = SparqlBuilder.var(queryKey);
+
+        Iri agentIri = iri(agentIRI);
+
+        GraphPattern queryPattern = agentIri.has(PropertyPaths.path(hasOperation, hasHttpUrl), url);
+
+        query.select(url).where(queryPattern).prefix(prefixAgent);
+
+        storeClient.setQuery(query.getQueryString());
+
+        String queryResult = storeClient.executeQuery().getJSONObject(0).getString(queryKey);
+
+        return queryResult;
+    }
 
 
 

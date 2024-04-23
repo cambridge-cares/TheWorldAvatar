@@ -6,10 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-
-
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +34,11 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+
+
+import org.json.JSONObject;
 
 
 public class GoalClient {
@@ -102,14 +103,63 @@ public class GoalClient {
      * Take in goal_iri
      */
     public void updateGoal (String goal_iri){
-        //Query for Goal_IRI "ex:isAchievedUsing"
+        //Send request to TruckAgent with inputs real state & desired state
 
+        String goalRange_iri = sparqlClient.getGoalRangeIRI(goal_iri);
+        String realState_iri = sparqlClient.getRealStateIRI(goal_iri);
+        String agent_iri = sparqlClient.getAgentIRI(goal_iri);
 
+        Goal goal = new Goal(goal_iri);
+        goal.setGoalRange(goalRange_iri);
+        goal.setRealState(realState_iri);
+        goal.setAgentURL(sparqlClient.getAgentUrlGivenAgentIRI(agent_iri));
 
+        String agentURL = goal.getAgentURL();
+        JSONObject requestParams = new JSONObject();
 
-        //Send Request to TruckAgent with (RealState)
-
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpPost post = new HttpPost(agentURL);
+            StringEntity stringEntity = new StringEntity(requestParams.toString(), ContentType.APPLICATION_JSON);
+            post.setEntity(stringEntity);
+            try (CloseableHttpResponse httpResponse = httpClient.execute(post)) {
+                if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                    String msg = "Failed to update goal <" + goal.getIri() + "> with original request: "
+                            + requestParams;
+                    String body = EntityUtils.toString(httpResponse.getEntity());
+                    LOGGER.error(msg);
+                    throw new JPSRuntimeException(msg + " Error body: " + body);
+                }
+                String response = EntityUtils.toString(httpResponse.getEntity());
+                LOGGER.debug("Obtained http response from agent: " + response);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to update goal <" + goal.getIri() + "> with original request: " + requestParams, e);
+            throw new JPSRuntimeException("Failed to update goal <" + goal.getIri() + "> with original request: "
+                    + requestParams, e);
+        }
     }
+
+
+//    /**
+//     * Gets a list of goals that is derived using a given agent IRI.
+//     *
+//     * @param agentIRI
+//     * @return
+//     */
+//    public List<String> getGoals(String agentIRI) {
+//        return this.sparqlClient.getGoals(agentIRI);
+//    }
+
+    /**
+     * Gets a list of goals
+     *
+     * @param
+     * @return
+     */
+    public List<String> getAllGoals() {
+        return this.sparqlClient.getAllGoal();
+    }
+
 
 
 }

@@ -108,7 +108,7 @@ public class SparqlClient {
     public String createGoalRangeIRI() {
         String goalRange_iri = namespace + UUID.randomUUID().toString();
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(goalRange_iri).isA(GoalRange).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+        modify.insert(iri(goalRange_iri).isA(GoalRange).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andIsA(GoalRange));
         modify.insert();
         storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
         return goalRange_iri;

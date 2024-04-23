@@ -11,30 +11,51 @@ import java.util.stream.Stream;
 
 import org.json.JSONObject;
 
-import javax.swing.text.html.parser.Entity;
 
 
 public class Goal {
 
     private String iri;
 
-    private Entity goalRange; //GoalRange
+    private String goalRange; //GoalRange
 
-    private Entity realState; //RealState
+    private String realState; //RealState
 
     private String rdfType;
 
     private String agentURL;//isAchievedUsing
 
 
-    public Goal(String iri, String rdfType) {
+    public Goal(String iri) {
         this.iri = iri;
-        this.rdfType = rdfType;
         this.goalRange = goalRange;
         this.realState=realState;
-
-
     }
+
+    public String getIri() {
+        return iri;
+    }
+
+    public void setIri(String iri) {
+        this.iri = iri;
+    }
+
+    public String getGoalRange() {
+        return goalRange;
+    }
+
+    public void setGoalRange(String goalRange) {
+        this.goalRange = goalRange;
+    }
+
+    public String getRealState() {
+        return realState;
+    }
+
+    public void setRealState(String realState) {
+        this.realState = realState;
+    }
+
 
 
     public void setAgentURL(String agentURL) {
