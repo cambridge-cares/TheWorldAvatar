@@ -41,6 +41,8 @@ public class SparqlClient {
     public static Iri Input = p_namespace.iri("Input"); // has a time series instance
     public static Iri ScalarValue = p_namespace.iri("ScalarValue");
 
+    public static Iri Truck = p_namespace.iri("Truck");
+
     // property
     public static Iri hasValue = p_namespace.iri("hasValue");
     public static Iri numericalValue = p_namespace.iri("numericalValue");

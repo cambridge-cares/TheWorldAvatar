@@ -77,26 +77,16 @@ public class InitialiseInstances extends JPSAgent{
 
 			// register ontoagent instances in triple store
 			String inputDataRdfType = SparqlClient.getRdfTypeString(SparqlClient.Input);
-
-
-
-//			//Create ontoagent instances for SumValue
-//			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(weightRangeRdfType,weightRdfType), Arrays.asList(weightRdfType));
-
-
-			//Create goal instances for Thing
-
+			String truckRdfType = SparqlClient.getRdfTypeString(SparqlClient.Truck);
 
 			//Create goalRange_iri
 			String goalRange_iri = sparqlClient.createGoalRangeIRI();
+			//Create goalCondition
 			sparqlClient.createRangeCondition(goalRange_iri,"100","0");
 
-			//Create goalCondition
+			//Create ontoagent instances for SumValue
+			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(truckRdfType), Arrays.asList(truckRdfType));
 
-			
-//			//Create truckvalue_iri
-//			String realState_iri = sparqlClient.createStateValue();
-			
 //			//Initialise sumvalue to be 0
 //			String sum_value = sparqlClient.addValueInstance(goalRange_iri, 0);
 //			LOGGER.info("Created sum value <" + goalRange_iri + ">");
