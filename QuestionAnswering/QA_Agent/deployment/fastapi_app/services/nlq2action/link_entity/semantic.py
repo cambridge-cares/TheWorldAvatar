@@ -10,7 +10,7 @@ from pydantic.dataclasses import dataclass
 from services.core.embed import IEmbedder
 from services.core.redis import does_index_exist
 from services.utils.itertools_recipes import batched
-from .link import IEntityLinker
+from .link import IRI, IEntityLinker
 
 
 @dataclass
@@ -106,7 +106,7 @@ class SemanticEntityLinker(IEntityLinker):
             .dialect(2)
         )
         res = self.redis_client.ft(self.index_name).search(inverse_label_query)
-        iris = [doc.iri for doc in res.docs]
+        iris: List[IRI] = [doc.iri for doc in res.docs]
 
         k -= len(iris)
         encoded_query = self.embedder([surface_form])[0].astype(np.float32)

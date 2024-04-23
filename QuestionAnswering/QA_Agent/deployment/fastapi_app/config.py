@@ -26,14 +26,14 @@ class FunctionCallingSettings(BaseSettings):
     model: Optional[str] = None
 
 
-class QAEngine(Enum):
+class QAEngineName(Enum):
     MARIE = "marie"
     ZAHA = "zaha"
 
 
 @cache
 def get_qa_engine():
-    engine = QAEngine(os.getenv("QA_ENGINE"))
+    engine = QAEngineName(os.getenv("QA_ENGINE"))
     logger.info("QA_ENGINE: " + engine.value)
     return engine
 
