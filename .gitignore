@@ -99,3 +99,9 @@ JPS_VIRTUALSENSOR/ShipInputAgent/data/*.json
 web/uk-base-world/grafana_api_key
 web/uk-base-world/visualisation/mapbox_api_key
 web/uk-base-world/visualisation/mapbox_username
+web/twa-vis-platform/code/public/README.md
+web/twa-vis-platform/code/public/config/*
+web/twa-vis-platform/code/public/images/*
+web/twa-vis-platform/code/public/optional-pages/*
+mapbox_api_key
+mapbox_username
