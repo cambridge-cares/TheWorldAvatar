@@ -18,6 +18,27 @@ logger = logging.getLogger(__name__)
 
 
 class SparqlActionExecutor:
+    PREFIXES = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
+PREFIX gml: <http://www.opengis.net/citygml/building/2.0/>
+
+PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
+PREFIX carpark:	<https://www.theworldavatar.com/kg/ontocarpark/>
+PREFIX landplot: <https://www.theworldavatar.com/kg/landplot/>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
+PREFIX ontoplanreg: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
+PREFIX ontoplot: <https://www.theworldavatar.com/kg/ontoplot/>
+PREFIX ontozoning: <https://www.theworldavatar.com/kg/ontozoning/>
+PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
+
+"""
+
     def __init__(self, ns2kg: Dict[str, KgClient], postprocessor: SparqlPostProcessor):
         self.ns2kg = ns2kg
         self.postprocessor = postprocessor
@@ -39,6 +60,7 @@ class SparqlActionExecutor:
             )
         )
 
+        query = self.PREFIXES + query
         timestamp = time.time()
         res = self.ns2kg[action.namespace].query(query)
         latency = time.time() - timestamp
