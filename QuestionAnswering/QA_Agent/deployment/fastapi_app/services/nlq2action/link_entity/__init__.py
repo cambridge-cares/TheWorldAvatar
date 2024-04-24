@@ -1,11 +1,13 @@
 from importlib.resources import files
 import json
-from typing import Dict
+from typing import Annotated, Dict
 
+from fastapi import Depends
 from pydantic import TypeAdapter
 from redis import Redis
 
-from services.core.embed import IEmbedder
+from services.core.redis import get_redis_client
+from services.core.embed import IEmbedder, get_embedder
 from services.nlq2action.link_entity.semantic import LexiconEntry, SemanticEntityLinker
 
 
@@ -34,3 +36,10 @@ class ELMediator:
             raise ValueError("Unexpected `entity_type`: " + entity_type)
 
         return self.type2lexicon[entity_type].link(surface_form)
+
+
+def get_elMediator(
+    redis_client: Annotated[Redis, Depends(get_redis_client)],
+    embedder: Annotated[IEmbedder, Depends(get_embedder)],
+):
+    return ELMediator(redis_client=redis_client, embedder=embedder)
