@@ -4,6 +4,8 @@ A central framework for The World Avatar (TWA) Visualisations (the TWA Visualisa
 
 The contents of this repository have been structured into Development and Production. If you are a developer who is adding a new feature, fixing an existing bug, or just interested in finding out more, please read the [Development](#1-development) section. If you are setting up a visualisation for your use cases, please read the [Production](#2-production) section. When releasing the platform, please read the [Releasing](#3-release) section.
 
+A tutorial including a sample directory setup has been included in the [example](./example/) directory. Please have a look if you are looking to setup on this new platform.
+
 ## 1. Development
 
 Information on the source code and its architecture can be found in the [code](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform/code) directory. Briefly, the TWA Visualisation Platform takes the form of a [Next.js](https://nextjs.org/) project written using [TypeScript](https://www.typescriptlang.org/), utilising both client and server-side codes.

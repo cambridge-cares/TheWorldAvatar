@@ -2,7 +2,7 @@
 
 Given that the platform is designed to be generalisable, this directory exists to allow users to customise their web contents according to their needs. It acts as the target for a Docker volume or bind mount, and should be mounted to the `/twa/public` directory within the deployed container. Files within it can then be accessed using the `$HOST/...` URL route.
 
-The uploaded content provided by the deploying developer should match the directory structure below. Please read the respective sections for the specific instructions.
+The uploaded content provided by the deploying developer should match the directory structure below. Please read the respective sections for the specific instructions. If you require sample files of a working example, please have a look over at the [example](../example/) directory.
 
 - [`config/`](#1-configuration): Contains config/settings files.
 - [`images/`](#2-assets): Custom image files.
