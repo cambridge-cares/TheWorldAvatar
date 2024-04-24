@@ -109,16 +109,19 @@ class SemanticEntityLinker(IEntityLinker):
         iris: List[IRI] = [doc.iri for doc in res.docs]
 
         k -= len(iris)
-        encoded_query = self.embedder([surface_form])[0].astype(np.float32)
-        knn_query = (
-            Query("(*)=>[KNN {k} @vector $query_vector AS vector_score]".format(k=k))
-            .sort_by("vector_score")
-            .return_field("$.iri", as_field="iri")
-            .dialect(2)
-        )
-        res = self.redis_client.ft(self.index_name).search(
-            knn_query, {"query_vector": encoded_query.tobytes()}
-        )
-        iris.extend(doc.iri for doc in res.docs)
+        if k >= 0:
+            encoded_query = self.embedder([surface_form])[0].astype(np.float32)
+            knn_query = (
+                Query(
+                    "(*)=>[KNN {k} @vector $query_vector AS vector_score]".format(k=k)
+                )
+                .sort_by("vector_score")
+                .return_field("$.iri", as_field="iri")
+                .dialect(2)
+            )
+            res = self.redis_client.ft(self.index_name).search(
+                knn_query, {"query_vector": encoded_query.tobytes()}
+            )
+            iris.extend(doc.iri for doc in res.docs)
 
         return iris
