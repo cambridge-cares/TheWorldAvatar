@@ -6,10 +6,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.mapbox.bindgen.Expected;
 import com.mapbox.bindgen.None;
 import com.mapbox.bindgen.Value;
+import com.mapbox.geojson.Point;
+import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.LayerPosition;
 import com.mapbox.maps.MapView;
+import com.mapbox.maps.plugin.animation.MapAnimationOptions;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -57,10 +61,37 @@ public class TrajectoryManager {
                 Expected<String, None> layerSuccess = style.addStyleLayer(Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()), new LayerPosition(null, null, null));
                 LOGGER.debug("trajectory: layer created " + (layerSuccess.isError() ? layerSuccess.getError() : "success"));
             });
+
+            try {
+                JSONObject jsonObject = new JSONObject(trajectory);
+                JSONArray bbox = jsonObject.getJSONArray("bbox");
+                mapView.getMapboxMap().cameraAnimationsPlugin(plugin -> {
+                    Point newCenter = getBBoxCenter(bbox);
+                    if (newCenter == null) {
+                        return null;
+                    }
+
+                    plugin.flyTo(new CameraOptions.Builder()
+                            .center(getBBoxCenter(bbox))
+                            .build(),
+                            new MapAnimationOptions.Builder().duration(2000).build(),
+                            null);
+                    return null;
+                });
+            } catch (JSONException e) {
+                LOGGER.info("No trajectory retrieved, no need to reset camera");
+            }
+
         });
     }
 
-//    public void getTrajectory() {
-//        trajectoryViewModel.getTrajectory();
-//    }
+    private Point getBBoxCenter(JSONArray bbox) {
+        try {
+            double lngAvg = (bbox.getDouble(0) + bbox.getDouble(2)) / 2;
+            double latAvg = (bbox.getDouble(1) + bbox.getDouble(3)) / 2;
+            return Point.fromLngLat(lngAvg, latAvg);
+        } catch (JSONException e) {
+            return null;
+        }
+    }
 }
