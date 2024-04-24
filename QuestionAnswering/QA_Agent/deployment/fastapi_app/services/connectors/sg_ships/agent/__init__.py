@@ -8,7 +8,7 @@ from redis import Redis
 from model.qa import QAData
 from services.core.kg import KgClient
 from services.core.redis import get_redis_client
-from services.connectors.sg import get_sgDispersion_bgClient
+from services.kg import get_sgDispersion_bgClient
 from services.connectors.feature_info_client import (
     FeatureInfoClient,
     get_featureInfoClient,
@@ -91,7 +91,9 @@ class SGShipsAgent:
                     {
                         **asdict(ship),
                         **dict(
-                            key="{key} ({unit})".format(key=key, unit=ship_data["units"][i]),
+                            key="{key} ({unit})".format(
+                                key=key, unit=ship_data["units"][i]
+                            ),
                             timeseries=list(
                                 zip(ship_data["time"], ship_data["values"][i])
                             ),

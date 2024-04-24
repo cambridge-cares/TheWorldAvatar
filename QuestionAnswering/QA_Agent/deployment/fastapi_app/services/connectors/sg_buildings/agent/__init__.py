@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from model.qa import QAData
 from services.core.kg import KgClient
-from services.connectors.sg import get_sg_ontopClient
+from services.kg import get_sg_ontopClient
 from services.utils.rdf import extract_name, flatten_sparql_response
 from .make_sparql import SGBuildingsSPARQLMaker
 from ..model import PropertyUsage

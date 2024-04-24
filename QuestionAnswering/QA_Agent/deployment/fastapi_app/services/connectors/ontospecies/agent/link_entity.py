@@ -4,7 +4,7 @@ from fastapi import Depends
 
 
 from services.core.kg import KgClient
-from ..kg import get_ontospecies_kg_client
+from services.kg import get_ontospecies_kgClient
 
 
 class SpeciesLinker:
@@ -41,6 +41,6 @@ SELECT DISTINCT ?Species WHERE {{
 
 @cache
 def get_species_linker(
-    kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)]
+    kg_client: Annotated[KgClient, Depends(get_ontospecies_kgClient)]
 ):
     return SpeciesLinker(kg_client)

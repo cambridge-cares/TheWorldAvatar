@@ -1,6 +1,6 @@
 from importlib.resources import files
 import json
-from typing import Annotated, Dict
+from typing import Annotated, Dict, List
 
 from fastapi import Depends
 from pydantic import TypeAdapter
@@ -17,7 +17,7 @@ class ELMediator:
     def __init__(self, redis_client: Redis, embedder: IEmbedder):
         type2lexicon: Dict[str, SemanticEntityLinker] = dict()
 
-        adapter = TypeAdapter(LexiconEntry)
+        adapter = TypeAdapter(List[LexiconEntry])
         for file in files("resources.lexicon").iterdir():
             if file.is_file() and file.name.lower().endswith(self.LEXICON_FILE_SUFFIX):
                 entity_type = file.name[: -len(self.LEXICON_FILE_SUFFIX)]
@@ -25,7 +25,7 @@ class ELMediator:
                     redis_client=redis_client,
                     embedder=embedder,
                     key=entity_type,
-                    entries=[adapter.validate_json(obj) for obj in file.read_text()],
+                    entries=adapter.validate_json(file.read_text()),
                 )
                 type2lexicon[entity_type] = linker
 

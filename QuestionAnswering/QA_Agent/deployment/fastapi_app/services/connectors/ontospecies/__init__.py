@@ -21,7 +21,7 @@ from .constants import (
     SpeciesPropertyAttrKey,
     SpeciesUseAttrKey,
 )
-from .kg import get_ontospecies_kg_client
+from services.kg import get_ontospecies_kgClient
 from .parse import ConstraintParser, get_constraint_parser
 from .agent import OntoSpeciesAgent, get_ontospecies_agent
 
@@ -289,7 +289,7 @@ class OntoSpeciesAgentConnector(AgentConnectorBase):
 def get_ontospecies_agentConnector(
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     redis_client: Annotated[Redis, Depends(get_redis_client)],
-    kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
+    kg_client: Annotated[KgClient, Depends(get_ontospecies_kgClient)],
     ontospecies_agent: Annotated[OntoSpeciesAgent, Depends(get_ontospecies_agent)],
     constraint_parser: Annotated[ConstraintParser, Depends(get_constraint_parser)],
 ):

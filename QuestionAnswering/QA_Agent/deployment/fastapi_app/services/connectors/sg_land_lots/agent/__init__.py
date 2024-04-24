@@ -11,7 +11,7 @@ from services.utils.rdf import extract_name, flatten_sparql_response
 from model.aggregate import AggregateOperator
 from model.qa import QAData
 from services.core.kg import KgClient
-from services.connectors.sg import get_sg_ontopClient
+from services.kg import get_sg_ontopClient
 from ..model import PlotNumAttrKey
 from .make_sparql import SGLandLotsSPARQLMaker, get_sgLandLots_sparqlMaker
 

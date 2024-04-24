@@ -6,13 +6,12 @@ from fastapi import Depends
 from redis import Redis
 
 
-
 from model.qa import QAData
 from services.core.redis import get_redis_client
 from services.core.retrieve_docs import DocsRetriever
 from services.core.kg import KgClient
 from services.core.embed import IEmbedder, get_embedder
-from services.connectors.sg_land_lots.kg import get_sgLandLots_bgClient
+from services.kg import get_sgPlot_bgClient
 from .node_store import NodeDoc, NodeStore
 
 
@@ -29,7 +28,7 @@ class RetrievalAgent:
             key="triples",
             docs=itertools.chain(*node_docs_lst),
             linearize=NodeStore.linearize_doc,
-            jsonify=asdict
+            jsonify=asdict,
         )
 
     def retrieve(self, query: str):
@@ -45,7 +44,7 @@ class RetrievalAgent:
 
 
 def get_kgClients_toEmbed(
-    sgLandLots_bgClient: Annotated[KgClient, Depends(get_sgLandLots_bgClient)],
+    sgLandLots_bgClient: Annotated[KgClient, Depends(get_sgPlot_bgClient)],
 ):
     return [sgLandLots_bgClient]
 

@@ -1,4 +1,4 @@
-from functools import cache, lru_cache
+from functools import lru_cache
 from typing import Annotated, List, Optional, Tuple
 
 from fastapi import Depends
@@ -8,7 +8,7 @@ from model.aggregate import AggregateOperator
 from services.utils.rdf import add_label_to_sparql_resposne, flatten_sparql_response
 from services.core.kg import KgClient
 from services.core.label_store import LabelStore
-from services.connectors.sg import get_sg_ontopClient
+from services.kg import get_sg_ontopClient
 from services.connectors.sg_companies.agent.label_store import (
     get_sgCompanies_labesStore,
 )
@@ -55,7 +55,8 @@ VALUES ?DataCentre {{ <{iri}> }}
 ?Company ontocompany:hasDataCentre ?DataCentre .
 ?Company rdfs:label ?CompanyLabel .
 }}""".format(
-            iri=data_centre_iri)
+            iri=data_centre_iri
+        )
         res = self.ontop_client.query(query)
         bindings = res["results"]["bindings"]
         if bindings:

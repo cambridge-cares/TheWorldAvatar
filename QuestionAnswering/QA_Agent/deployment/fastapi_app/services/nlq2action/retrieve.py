@@ -10,7 +10,6 @@ from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 from pydantic.dataclasses import dataclass
 
-from config import QAEngineName, get_qa_engine
 from services.utils.itertools_recipes import batched
 from services.core.embed import IEmbedder, get_embedder
 from services.core.redis import does_index_exist, get_redis_client
@@ -112,22 +111,19 @@ class Nlq2ActionRetriever:
         pass
 
 
-def gen_nlq2action_examples(qa_engine: QAEngineName):
-    for file in files(
-        "resources.{qa_engine}.examples".format(qa_engine=qa_engine.value)
-    ).iterdir():
+def gen_nlq2action_examples(domain: str):
+    for file in files("resources.examples." + domain).iterdir():
         if file.is_file() and file.name.lower().endswith("json"):
             for example in json.loads(file.read_text()):
                 yield Nlq2ActionExample(nlq=example["input"], action=example["output"])
 
 
-def get_nlq2action_retriever(
-    qa_engine: Annotated[QAEngineName, Depends(get_qa_engine)],
+def get_sg_nlq2action_retriever(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
 ):
     return Nlq2ActionRetriever(
         redis_client=redis_client,
         embedder=embedder,
-        examples=gen_nlq2action_examples(qa_engine),
+        examples=gen_nlq2action_examples("singapore"),
     )

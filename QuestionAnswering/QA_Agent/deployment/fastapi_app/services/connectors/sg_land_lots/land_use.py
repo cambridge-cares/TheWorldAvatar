@@ -4,7 +4,7 @@ from typing import Annotated, DefaultDict, List, Set
 
 from fastapi import Depends
 
-from services.connectors.sg_land_lots.kg import get_sgLandLots_bgClient
+from services.kg import get_sgPlot_bgClient
 from services.core.kg import KgClient
 from services.connectors.sg_land_lots.model import LandUseTypeNode
 
@@ -31,7 +31,7 @@ class LandUseTypeStore:
     @lru_cache(maxsize=64)
     def get_clsnames(self, iri: str):
         return list(set([node.clsname for node in self.iri2nodes[iri]]))
-    
+
     @lru_cache(maxsize=64)
     def get_labels(self, iri: str):
         return list(set([node.label for node in self.iri2nodes[iri]]))
@@ -61,8 +61,6 @@ BIND (REPLACE(STR(?LandUseTypeClass), "^.*/([^/]*)$", "$1") as ?clsname)
 
 
 @cache
-def get_landUseType_store(
-    bg_client: Annotated[KgClient, Depends(get_sgLandLots_bgClient)]
-):
+def get_landUseType_store(bg_client: Annotated[KgClient, Depends(get_sgPlot_bgClient)]):
     nodes = get_landUseType_nodes(bg_client)
     return LandUseTypeStore(nodes)

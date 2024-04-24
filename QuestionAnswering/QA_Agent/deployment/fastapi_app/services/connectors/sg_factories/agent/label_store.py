@@ -8,13 +8,12 @@ from services.utils.bindings import agg_iri_label_pairs
 from services.core.kg import KgClient
 from services.core.label_store import LabelStore
 from services.core.redis import get_redis_client
-from services.connectors.sg import get_sg_ontopClient
-from ..kg import get_sgFactories_bgClient
+from services.kg import get_sg_ontopClient, get_sgCompany_bgClient
 
 
 @cache
 def get_factory_subclasses(
-    bg_client: Annotated[KgClient, Depends(get_sgFactories_bgClient)]
+    bg_client: Annotated[KgClient, Depends(get_sgCompany_bgClient)]
 ):
     query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>

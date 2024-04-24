@@ -10,7 +10,7 @@ from model.qa import QAData
 from services.utils.rdf import add_label_to_sparql_resposne, flatten_sparql_response
 from services.core.kg import KgClient
 from services.core.label_store import LabelStore
-from services.connectors.sg import get_sg_ontopClient
+from services.kg import get_sg_ontopClient
 from ..model import FactoryAttrKey, FactoryNumAttrKey, Industry
 from .label_store import get_sgFactories_labelStore
 from .make_sparql import SGFactoriesSPARQLMaker, get_sgFactories_sparqlmaker
