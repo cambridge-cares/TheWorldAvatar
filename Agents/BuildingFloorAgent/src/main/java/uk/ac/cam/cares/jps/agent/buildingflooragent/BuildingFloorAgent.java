@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.gfaagent;
+package uk.ac.cam.cares.jps.agent.buildingflooragent;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -31,6 +31,7 @@ public class BuildingFloorAgent extends JPSAgent{
     private String osmSchema;
     private String osmPoint;
     private String osmPolygon;
+    private String ontopUrl;
     private static final Path obdaFile = Path.of("/resources/buildingfloor.obda");
 
     public synchronized void init() {
@@ -42,6 +43,7 @@ public class BuildingFloorAgent extends JPSAgent{
         this.osmSchema = endpointConfig.getOSMSchema();
         this.osmPoint = endpointConfig.getOSMPoints();
         this.osmPolygon = endpointConfig.getOSMPolygons();
+        this.ontopUrl = endpointConfig.getOntopUrl();
     }
 
     @Override
@@ -55,7 +57,7 @@ public class BuildingFloorAgent extends JPSAgent{
         try {
             
             //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
-            IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint, osmPolygon);
+            IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint, osmPolygon, ontopUrl);
             integrateFloors.addFloorAccuracyColumn();
             integrateFloors.matchAddress(floorsCsv);
             integrateFloors.importFloorDate();

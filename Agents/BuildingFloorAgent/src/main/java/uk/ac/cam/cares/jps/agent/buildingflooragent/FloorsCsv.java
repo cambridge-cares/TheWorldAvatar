@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.gfaagent;
+package uk.ac.cam.cares.jps.agent.buildingflooragent;
 
 import com.opencsv.bean.CsvBindByName;
 

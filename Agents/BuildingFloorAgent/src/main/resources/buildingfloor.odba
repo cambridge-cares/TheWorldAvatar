@@ -7,11 +7,12 @@ twa:    https://www.theworldavatar.com/kg/
 [MappingDeclaration] @collection [[
 
 mappingId	building_floor
-target		twa:Building/{building_iri} env:hasBuildingFloors twa:BuildingFloors/{building_iri} .
-            twa:BuildingFloors/{building_iri} a env:{ontobuilt} ;
-            env:hasFloorsValue {floors}^^xsd:integer ;
-            env:hasAccuracy {storeys_above_ground_accuracy}^^xsd:string .
-source      SELECT cb.storeys_above_ground AS floors, cb.storeys_above_ground_accuracy, ccg.strval AS building_iri
+target		twa:Building/{building_iri} env:hasNumberOfFloors twa:NumberOfFloors/{building_iri} .
+            twa:NumberOfFloors/{building_iri} a env:FloorCat{storeys_above_ground_cat} ;
+            env:hasValue {floors}^^xsd:integer .
+            
+
+source      SELECT cb.storeys_above_ground AS floors, cb.storeys_above_ground_cat, ccg.strval AS building_iri
             FROM citydb.building cb, citydb.cityobject_genericattrib ccg
             WHERE cb.id = ccg.cityobject_id AND ccg.attrname = 'uuid'
 ]]

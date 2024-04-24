@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.gfaagent;
+package uk.ac.cam.cares.jps.agent.buildingflooragent;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

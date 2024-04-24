@@ -1,7 +1,8 @@
-package uk.ac.cam.cares.jps.agent.gfaagent;
+package uk.ac.cam.cares.jps.agent.buildingflooragent;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +22,12 @@ import com.intuit.fuzzymatcher.domain.ElementType;
 import com.intuit.fuzzymatcher.domain.Match;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.apache.jena.query.Query;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
 
 public class IntegrateFloors {
 
@@ -30,11 +37,13 @@ public class IntegrateFloors {
     private String osmSchema;
     private String osmPoint;
     private String osmPolygon;
+    private String ontopUrl;
+    private static final Path obdaFile = Path.of("/resources/building_usage.sparql");
 
     private RemoteRDBStoreClient postgisClient;
 
     
-    public IntegrateFloors (String postgisDb, String postgisUser, String postgisPassword, String osmSchema, String osmPoint, String osmPolygon){
+    public IntegrateFloors (String postgisDb, String postgisUser, String postgisPassword, String osmSchema, String osmPoint, String osmPolygon, String ontopUrl){
         this.dbUrl = postgisDb;
         this.user = postgisUser;
         this.password = postgisPassword;
@@ -43,11 +52,13 @@ public class IntegrateFloors {
         this.osmSchema = osmSchema;
         this.osmPoint = osmPoint;
         this.osmPolygon = osmPolygon;
+
+        this.ontopUrl = ontopUrl;
     }
 
-    //check table building has floor accuracy column
-    public void addFloorAccuracyColumn () {
-        String buildingSQLAlter = "ALTER TABLE building ADD COLUMN IF NOT EXISTS storeys_above_ground_accuracy character varying(4000);";
+    //check table building has floor Cat. column
+    public void addFloorCatColumn () {
+        String buildingSQLAlter = "ALTER TABLE building ADD COLUMN IF NOT EXISTS storeys_above_ground_cat character varying(4000);";
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
                 stmt.executeUpdate(buildingSQLAlter);
@@ -159,7 +170,7 @@ public class IntegrateFloors {
                     
                     //store floors data based on building iri from osm agent
                     Integer floors = hdbFloors.get(i).getFloors();
-                    String accuracy = "high";
+                    String catString = "A";
                     String buildingiri = null;
                     if(pointScore > polyScore && pointScore != 0) {
                         buildingiri = pointIri;
@@ -168,7 +179,7 @@ public class IntegrateFloors {
                     }
 
                     if (buildingiri != null) {
-                        updateFloors(floors, accuracy, buildingiri);
+                        updateFloors(floors, catString, buildingiri);
                     }
                     
                 }
@@ -179,8 +190,8 @@ public class IntegrateFloors {
     }
 
     public void importFloorDate () {
-        String accuracy = null;
-        String floorSQLQuery = "SELECT storeys_above_ground AS floors, storeys_above_ground_accuracy, id, cg.strval " +
+        String catString = null;
+        String floorSQLQuery = "SELECT storeys_above_ground AS floors, storeys_above_ground_cat, id, cg.strval " +
                                 "FROM building, cityobject_genericattrib cg " + 
                                 "WHERE id = cg.cityobject_id AND cg.attrname = 'uuid'";       
         Integer floors;
@@ -189,18 +200,18 @@ public class IntegrateFloors {
                 ResultSet floorsResults = stmt.executeQuery(floorSQLQuery);
                 while (floorsResults.next()) {
                     floors = floorsResults.getInt("storeys_above_ground");
-                    accuracy = floorsResults.getString("storeys_above_ground_accuracy");
+                    catString = floorsResults.getString("storeys_above_ground_cat");
                     String buildingIri = floorsResults.getString("strval");
-                    if (floors == null || accuracy == "low"){// get osm floor
+                    if (floors == null || catString == "C"){// get osm floor
                         floors = queryOSMFloor(buildingIri);
+                        catString = "B";
                         if (floors == null) {//estimate
-
+                            catString = "C";
+                            floors = estimateFloors();
                         }
                     }
 
-                    String floorsSQLUpdate = "";
-
-                    updateFloors(floors, accuracy, buildingIri);
+                    updateFloors(floors, catString, buildingIri);
                 }
                 
             }
@@ -232,11 +243,11 @@ public class IntegrateFloors {
 
     }
 
-    public void updateFloors (Integer floors, String accuracy, String buildingIri) {
+    public void updateFloors (Integer floors, String catString, String buildingIri) {
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
                 String buildingSQLUpdate = "UPDATE building b SET storeys_above_ground = " + floors + 
-                                            ", storeys_above_ground_accuracy = " + accuracy +
+                                            ", storeys_above_ground_cat = " + catString +
                                             " FROM cityobject_genericattrib cg\n" + 
                                             "WHERE b.id = cg.cityobject_id AND cg.strval = '" + buildingIri + "';";
                 postgisClient.executeUpdate(buildingSQLUpdate);
@@ -246,6 +257,24 @@ public class IntegrateFloors {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
         
+
+    }
+
+    public Integer estimateFloors () {
+        try {
+            RemoteStoreClient storeClient = new RemoteStoreClient(this.ontopUrl);
+            WhereBuilder wb = new WhereBuilder()
+                    .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                    .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
+                    .addPrefix("twa", OntologyURIHelper.getOntologyUri(OntologyURIHelper.twa))
+                    .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                    .addPrefix("rdfs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdfs))
+                    .addPrefix("ic", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ic));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
 
     }
 }
