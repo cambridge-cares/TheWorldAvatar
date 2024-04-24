@@ -38,6 +38,13 @@ HISTORY_GROUPS = {
     for domain in domains if domain == "chemistry"
 }
 
+ONTOLOGY_GROUPS = {
+    domain: json.loads(
+        files("resources." + domain).joinpath("ontology.json").read_text()
+    )
+    for domain in domains if domain == "chemistry"
+}
+
 METADATA = {
     domain: json.loads(
         files("resources." + domain).joinpath("metadata.json").read_text()
@@ -73,5 +80,6 @@ async def home(request: Request):
             search_groups=SEARCH_GROUPS[superdomain],
             explore_groups=EXPLORE_GROUPS[superdomain],
             history_groups=HISTORY_GROUPS[superdomain],
+            ontology_groups=ONTOLOGY_GROUPS[superdomain],
         ),
     )

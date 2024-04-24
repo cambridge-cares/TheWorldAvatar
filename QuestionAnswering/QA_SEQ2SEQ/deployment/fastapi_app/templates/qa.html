@@ -181,6 +181,58 @@
 </section>
 
 <section class="three-quarter-width">
+    <button type="submit" class="accordion">Ontologies</button>
+    <div class="accordion-panel">
+        {% for ontology_group in ontology_groups %}
+        <button type="submit" class="accordion">{{ ontology_group["label"] }}</button>
+        <div class="accordion-panel">
+            <p>{{ ontology_group["description"] }}</p>
+            {% if ontology_group["tbox"] %}
+            <p><b>Download:</b></p>
+            <ul>
+                {% for item in ontology_group["tbox"] %}
+                <li id="content">
+                    {{ item|safe }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if ontology_group["access"] %}
+            <p><b>Access:</b></p>
+            <ul>
+                {% for item in ontology_group["access"] %}
+                <li id="content">
+                    {{ item|safe }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if ontology_group["publications"] %}
+            <p><b>Publications:</b></p>
+            <ul>
+                {% for item in ontology_group["publications"] %}
+                <li id="content">
+                    {{ item|safe }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if ontology_group["preprints"] %}
+            <p><b>Preprints:</b></p>
+            <ul>
+                {% for item in ontology_group["preprints"] %}
+                <li id="content">
+                    {{ item|safe }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="three-quarter-width">
     <button type="submit" class="accordion">History</button>
     <div class="accordion-panel">
         {% for history_group in history_groups %}
