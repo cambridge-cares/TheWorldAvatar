@@ -803,8 +803,8 @@ public class QueryClient {
                 dispersionOutputSRID,timeNumericPosition);
 
         query.where(OPTIMISER_NONE,
-                ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), scopeWktVar)),
                 derivation.has(isDerivedFrom, scope).andHas(HAS_TIME, timeVar),
+                ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), scopeWktVar)),
                 timeVar.has(IN_TIME_POSITION,timePosition),timePosition.has(NUMERIC_POSITION,timeNumericPosition),
                 scope.isA(SCOPE).andHas(iri(RDFS.LABEL), scopelabelVar),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
