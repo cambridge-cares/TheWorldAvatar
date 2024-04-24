@@ -356,8 +356,8 @@ target          :company/{company_uuid} a ontocompany:Company;
                     ontocompany:isOwnerOf :chemplant/{company_uuid}.
                 :chemplant/{company_uuid} a ontochemplant:ChemicalPlant;
                     rdfs:label "Chemical_Plant_{company}"^^xsd:string;
-                    geo:ehContains :plantitem/{city_furniture_uuid}.               
-                :plantitem/{city_furniture_uuid} a ontocape:PlantItem;
+                    geo:ehContains cityfurniture:{city_furniture_uuid}.               
+                cityfurniture:{city_furniture_uuid} a ontocape:PlantItem;
                     ontochemplant:hasIndividualCO2Emission :co2/{city_furniture_uuid};
                     ontochemplant:hasGeneratedHeat :generatedheat/{city_furniture_uuid}.
                 :co2/{city_furniture_uuid} rdf:type ontochemplant:IndividualCO2Emission;
