@@ -525,7 +525,6 @@ p {
 
 #metaTreeContainer {
     height: 100%;
-    overflow-y: scroll
 }
 
 #metaTimeContainer {
@@ -849,7 +848,6 @@ label[for=select-feature] {
 
 * {
     scrollbar-width: auto;
-    scrollbar-color: #4b4b4b #c8c8c8
 }
 
 ::-webkit-scrollbar {
@@ -868,14 +866,6 @@ label[for=select-feature] {
     border-radius: 10px;
     border: 2px solid transparent;
     background-clip: padding-box
-}
-
-.json-container {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-    background-color: #fff;
-    color: grey;
-    box-sizing: border-box
 }
 
 .json-container .line {
@@ -901,7 +891,6 @@ label[for=select-feature] {
 }
 
 .json-container .json-key {
-    color: #444;
     margin-right: 4px;
     margin-left: 4px
 }
@@ -958,11 +947,10 @@ label[for=select-feature] {
     margin-right: 0 !important;
     font-size: 9pt !important;
     font-family: Inter, sans-serif !important;
-    color: #000 !important
 }
 
 .json-value {
-    color: navy !important;
+    color: var(--cmcl-blue) !important;
     font-size: 9pt !important;
     font-family: Inter, sans-serif !important;
     margin-left: 4px !important
