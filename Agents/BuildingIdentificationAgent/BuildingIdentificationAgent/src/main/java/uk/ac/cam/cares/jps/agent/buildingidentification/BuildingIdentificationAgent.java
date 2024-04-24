@@ -17,8 +17,11 @@ import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
@@ -123,12 +126,8 @@ public class BuildingIdentificationAgent extends JPSAgent {
             Path obdaFile = null;
 
             if (requestParams.has(KEY_MAPPING)) {
-                String ontopFileName = requestParams.getString(KEY_MAPPING);
-                try {
-                    obdaFile = new ClassPathResource(ontopFileName).getFile().toPath();
-                } catch (IOException e) {
-                    throw new RuntimeException(e.getMessage());
-                }
+                String ontopFileName = "/resources/" + requestParams.getString(KEY_MAPPING);
+                obdaFile = Path.of(ontopFileName);
             }
 
             // Reset all variables
@@ -177,9 +176,15 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 }
 
                 if (obdaFile != null) {
-                    OntopClient ontopClient = OntopClient.getInstance();
-                    ontopClient.updateOBDA(obdaFile);
+                    try {
+                        OntopClient ontopClient = OntopClient.getInstance();
+                        ontopClient.updateOBDA(obdaFile);
+                    } catch (Exception e) {
+                        LOGGER.error("Could not retrieve ontop mapping file {}", obdaFile);
+                    }
+
                 }
+
             } else {
                 String route = requestParams.getString(KEY_REQ_URL);
                 LOGGER.fatal("{}{}", "The Building Identification Agent does not support the route ", route);
