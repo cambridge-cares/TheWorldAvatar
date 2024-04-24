@@ -21,3 +21,18 @@ The `src` directory contains the core source code of the application, structured
 * `/ui`: Houses the UI components of the application. It includes reusable UI elements, layout components, and styling information.
 
 * `/utils`: A collection of utility functions that provide common functionalities used across the application includes date formatting, data transformations, or custom hooks.
+
+## UI 
+
+UI components have been organised into the following directories for clarity:
+* `/css`: Contains the global css file.
+
+* `/graphic`: Contains any graphic or figure related component such as charts, icons, and tables.
+
+* `/interaction`: Contains interactive components that will be updated as users interact with them.
+
+* `/navigation`: Contains components that facilitates navigation within the app.
+
+* `/pages`: Contains components to display pages such as the landing page or generic static content page.
+
+* `/text`: Contains text related components.

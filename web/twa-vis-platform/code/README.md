@@ -28,6 +28,8 @@ The project structure should match the recommended Next.js project structure (yo
 * `server.js`: Starts a custom HTTP server that allows hosting of additional static-resource directories
 * `tsconfig.json`: Configuration for the Typescript compiler
 
+CSS colors, font and icon sizes are standardised and available as variables in `src/ui/css/globals.css`. If you require additional colors or sizes, add them to the file. Having global css variables is preferable to accommodate dark and light themes while improving maintainence.
+
 ### 1.1 Routing
 
 Following Next.js' current routing system (known as the `AppRouter`), rather that the older `PagesRouter`, the [app/page.tsx](./src/app/page.tsx) file acts as the entry point to the application when accessed by the user via a web browser. This reads the UI settings file on the server and then proceeds to load the Landing Page or, if disabled, the Map container.

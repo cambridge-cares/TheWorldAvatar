@@ -6,4 +6,4 @@ Copy the contents of the `images/defaults` and `images/utils` directory [here](h
 
 The original `uploads` [directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform/uploads) hosts the minimal setup required to run the platform.
 
-For stack deployments, ensure the `vip.json` config is added to the `stack-manager/inputs/config/services` directory and start the stack with the added service.
+For stack deployments, ensure the `vip.json` config is added to the `stack-manager/inputs/config/services` directory and start the stack with the added service. The service will be exposed at the `visualisation` path, e.g. `localhost:3838/visualisation`.
