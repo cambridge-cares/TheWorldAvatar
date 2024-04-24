@@ -2,7 +2,7 @@
 export const Routes: {
   [key: string]: string;
 } = {
-  HOME: "",
+  HOME: "/",
   MAP: "explore",
   DASHBOARD: "analytics",
   HELP: "help",
