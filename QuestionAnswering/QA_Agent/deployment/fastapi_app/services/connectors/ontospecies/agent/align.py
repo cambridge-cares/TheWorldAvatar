@@ -7,7 +7,7 @@ from services.core.embed import IEmbedder, get_embedder
 from services.core.redis import get_redis_client
 from services.core.kg import KgClient
 from services.core.retrieve_docs import DocsRetriever
-from ..kg import get_ontospecies_kg_client
+from services.kg import get_ontospecies_kgClient
 
 
 class OntoSpeciesLiteralAligner:
@@ -81,7 +81,7 @@ SELECT DISTINCT ?Label WHERE {
 def get_ontospecies_literal_aligner(
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     redis_client: Annotated[Redis, Depends(get_redis_client)],
-    kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
+    kg_client: Annotated[KgClient, Depends(get_ontospecies_kgClient)],
 ):
     return OntoSpeciesLiteralAligner(
         embedder=embedder,

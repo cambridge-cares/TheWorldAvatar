@@ -1,13 +1,13 @@
 import logging
 import time
-from typing import Annotated, List
+from typing import Annotated, Dict, List
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from model.qa import QAData, QAStep
-from services.qa import get_mediator
-from services.connectors import AgentConnectorMediator
+from services.qa import get_dataSupporter_byDomain
+from services.support_data import DataSupporter
 
 
 class QARequest(BaseModel):
@@ -33,13 +33,15 @@ router = APIRouter()
 @router.post("/")
 def qa(
     req: QARequest,
-    mediator: Annotated[AgentConnectorMediator, Depends(get_mediator)],
+    data_supporter_by_domain: Annotated[
+        Dict[str, DataSupporter], Depends(get_dataSupporter_byDomain)
+    ],
 ):
     logger.info("Received request to QA endpoint with the following request body")
     logger.info(req)
 
     timestamp = time.time()
-    steps, data = mediator.query(req.question, domain=req.qa_domain)
+    steps, data = data_supporter_by_domain[req.qa_domain].query(req.question)
     latency = time.time() - timestamp
 
     metadata = QAResponseMetadata(latency=latency, steps=steps)

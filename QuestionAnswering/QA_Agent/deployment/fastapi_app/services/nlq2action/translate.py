@@ -1,11 +1,11 @@
+from functools import cache
 import json
 import os
-from typing import Annotated
-from fastapi import Depends
+from typing import List
 from openai import OpenAI
 
 from .execute_action.model import ActionBase, FuncAction, SparqlAction
-from .retrieve import Nlq2ActionRetriever, get_nlq2action_retriever
+from .retrieve import Nlq2ActionExample
 
 
 class Nlq2ActionTranslator:
@@ -21,17 +21,14 @@ Your task is to translate the following question to an executable action. Please
 
     def __init__(
         self,
-        retriever: Nlq2ActionRetriever,
         openai_base_url: str,
         openai_api_key: str,
         openai_model: str,
     ):
-        self.retriever = retriever
         self.openai_client = OpenAI(base_url=openai_base_url, api_key=openai_api_key)
         self.model = openai_model
 
-    def translate(self, nlq: str) -> ActionBase:
-        examples = self.retriever.retrieve_examples(nlq, k=10)
+    def translate(self, nlq: str, examples: List[Nlq2ActionExample]) -> ActionBase:
         prompt = self.PROMPT_TEMPLATE.format(
             examples="\n".join(
                 '"{input}" => {output}'.format(
@@ -64,11 +61,9 @@ Your task is to translate the following question to an executable action. Please
         raise Exception("Invalid action: " + str(action))
 
 
-def get_nlq2action_translator(
-    retriever: Annotated[Nlq2ActionRetriever, Depends(get_nlq2action_retriever)]
-):
+@cache
+def get_nlq2action_translator():
     return Nlq2ActionTranslator(
-        retriever=retriever,
         openai_base_url=os.getenv("TRANSLATOR_OPENAI_BASE_URL"),
         openai_api_key=os.getenv("TRANSLATOR_OPENAI_API_KEY"),
         openai_model=os.getenv("TRANSLATOR_OPENAI_MODEL"),

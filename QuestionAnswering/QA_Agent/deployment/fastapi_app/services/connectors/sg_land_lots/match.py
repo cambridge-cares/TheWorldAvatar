@@ -1,19 +1,14 @@
 from dataclasses import asdict
-from functools import cache
 from typing import Annotated
 
 from fastapi import Depends
 from redis import Redis
-from pydantic.dataclasses import dataclass
 
-from .land_use import LandUseTypeStore, get_landUseType_store
 from services.core.embed import IEmbedder, get_embedder
 from services.core.redis import get_redis_client
-from services.core.kg import KgClient
 from services.core.retrieve_docs import DocsRetriever
-from .kg import get_sgLandLots_bgClient
 from .model import LandUseTypeNode
-
+from .land_use import LandUseTypeStore, get_landUseType_store
 
 
 def _linearize_landUseType(datum: LandUseTypeNode):

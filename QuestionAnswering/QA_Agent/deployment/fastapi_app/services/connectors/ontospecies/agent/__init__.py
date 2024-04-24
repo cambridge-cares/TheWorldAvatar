@@ -6,7 +6,7 @@ from fastapi import Depends
 from model.qa import QAData
 from model.constraint import CompoundComparativeConstraint
 from services.core.kg import KgClient
-from ..kg import get_ontospecies_kg_client
+from services.kg import get_ontospecies_kgClient
 from ..constants import (
     SpeciesAttrKey,
     SpeciesChemicalClassAttrKey,
@@ -262,7 +262,7 @@ LIMIT 1""".format(
 
 
 def get_ontospecies_agent(
-    kg_client: Annotated[KgClient, Depends(get_ontospecies_kg_client)],
+    kg_client: Annotated[KgClient, Depends(get_ontospecies_kgClient)],
     species_linker: Annotated[SpeciesLinker, Depends(get_species_linker)],
     ontospecies_literal_aligner: Annotated[
         OntoSpeciesLiteralAligner, Depends(get_ontospecies_literal_aligner)

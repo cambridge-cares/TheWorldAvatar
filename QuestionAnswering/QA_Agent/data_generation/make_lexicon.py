@@ -8,7 +8,7 @@ from openai import OpenAI
 PROMPT_TEMPLATE = """Below are some entity and relationship data:
 {data}
 
-Your task is to generate {k} surface forms for each entity and relationship. Do not provide any explanation and please formulate your response as a list of objects with keys "iri" and "surfaceForms", in the JSON format exactly."""
+Your task is to generate {k} surface forms for each entity and relationship. Do not provide any explanation and please formulate your response as a list of objects with keys "iri" and "surface_forms", in the JSON format exactly."""
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -62,7 +62,7 @@ if __name__ == "__main__":
                     item = dict(
                         iri=item["iri"],
                         label=iri2label[item["iri"]],
-                        surfaceForms=item["surfaceForms"],
+                        surfaceForms=item["surface_forms"],
                     )
                     f.write(json.dumps(item))
                     f.write("\n")
