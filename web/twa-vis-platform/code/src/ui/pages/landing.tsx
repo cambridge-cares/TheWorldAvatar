@@ -7,14 +7,11 @@ import 'github-markdown-css/github-markdown.css';
 
 import React from 'react';
 import Link from 'next/link';
-import { Tooltip } from '@mui/material';
 import markdownit from 'markdown-it';
 
 import { Routes } from 'io/config/routes';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
-import PageThumbnail from './page-thumbnail';
-import AppLink from 'ui/navigation/link/link';
-import IconComponent from 'ui/graphic/icon/icon';
+import { DefaultPageThumbnail, MarkdownPageThumbnail } from './page-thumbnail';
 
 // Utilities to render markdown into HTML
 const markdowner = markdownit({
@@ -46,22 +43,6 @@ export default function LandingPage(props: LandingPageProps) {
     // Get thumbnails for static content pages
     const thumbnails = getThumbnails();
 
-    // Button to open map page.
-    const mapButton = buildButton(
-        "Geospatial map",
-        "Explore assets, connections, and failures visually.",
-        "/images/defaults/icons/map.svg",
-        Routes.MAP
-    );
-
-    // Button to open dashboard page.
-    const dashButton = buildButton(
-        "Analytics dashboard",
-        "Investigate all data across all scenarios.",
-        "/images/defaults/icons/dash.svg",
-        Routes.DASHBOARD
-    );
-
     return (
         <div className={styles.container}>
 
@@ -71,11 +52,6 @@ export default function LandingPage(props: LandingPageProps) {
                         className={introClasses}
                         dangerouslySetInnerHTML={{ __html: introContent }}
                     />
-
-                    <div className={styles.introLower}>
-                        {props.hasMap && mapButton}
-                        {props.hasDashboard && dashButton}
-                    </div>
                     <footer className={styles.footer}>
                         <span>Powered by </span>
                         <Link href="https://theworldavatar.io">The World Avatar</Link>
@@ -85,39 +61,24 @@ export default function LandingPage(props: LandingPageProps) {
 
             <div className={styles.thumbnailContainer}>
                 {thumbnails}
+                {props.hasMap && (
+                    <DefaultPageThumbnail
+                        title="Explore"
+                        description="Discover geospatial relationships in our environment"
+                        icon="/images/defaults/icons/map.svg"
+                        redirectUrl={Routes.MAP}
+                    />
+                )}
+                {props.hasDashboard && (
+                    <DefaultPageThumbnail
+                        title="Analyse"
+                        description="Discover trends and insights at a glance"
+                        icon="/images/defaults/icons/dash.svg"
+                        redirectUrl={Routes.DASHBOARD}
+                    />
+                )}
             </div>
         </div>
-    )
-}
-
-/**
- * Build a custom button to navigate to another page.
- * 
- * @param title page title. 
- * @param description page description.
- * @param icon image icon.
- * @param url page URL.
- * 
- * @returns generated React element.
- */
-function buildButton(title: string, description: string, icon: string, url: string): React.ReactElement {
-    const tooltipText = "Open the '" + title + "' page.";
-
-    return (
-        <Tooltip title={tooltipText} enterDelay={1000} leaveDelay={100}>
-            <AppLink url={url} className={styles.button}>
-                {/* Add thumbnail */}
-                <IconComponent icon={icon} classes={styles.buttonIcon} />
-                {/* Page title */}
-                <div className={styles.buttonTitle}>
-                    <h1>{title}</h1>
-                </div>
-                {/* Page description */}
-                <div className={styles.buttonDescription}>
-                    {description}
-                </div>
-            </AppLink>
-        </Tooltip>
     )
 }
 
@@ -148,7 +109,7 @@ function getThumbnails(): React.ReactElement[] {
     const components: React.ReactElement[] = [];
     pages.forEach(page => {
         const thumbnail = (
-            <PageThumbnail
+            <MarkdownPageThumbnail
                 page={page}
             />
         );

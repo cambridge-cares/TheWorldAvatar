@@ -59,77 +59,12 @@
     font-size: var(--font-size-primary-text) !important;
 }
 
-.introLower {
-    height: 30%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: row;
-}
-
 .thumbnailContainer {
     flex: 40%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-}
-
-.button {
-    width: 50%;
-    max-height: 100%;
-
-    margin: 20px;
-    padding: 5px;
-
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    align-items: flex-start;
-
-    justify-content: center;
-    cursor: pointer;
-
-    color: var(--text-color-primary) !important;
-    background-color: var(--background-secondary) !important;
-    border-radius: 20px !important;
-}
-
-.button:hover {
-    background-color: var(--background-tertiary) !important;
-    outline: 1px solid var(--border-secondary) !important;
-}
-
-.buttonIcon {
-    flex-grow: 1;
-    overflow: hidden;
-    width: 100%;
-    height: 5vh;
-    filter: drop-shadow(4px 4px 2px rgb(0 0 0 / 0.25));
-}
-
-.buttonTitle {
-    flex-grow: 0;
-    width: 100%;
-    margin: auto;
-    margin-bottom: 5px;
-    text-align: center;
-}
-
-.buttonTitle::after {
-    content: "";
-    display: block;
-    height: 1px;
-    width: 80%;
-    margin: 0 auto;
-    background-color: var(--border-secondary);
-}
-
-.buttonDescription {
-    flex-grow: 0;
-    width: 100%;
-    font-size: var(--font-size-secondary-text);
-    text-align: center;
-    margin-bottom: 4px;
 }
 
 .footer {
