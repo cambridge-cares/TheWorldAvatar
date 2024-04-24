@@ -10,6 +10,7 @@ import { Map } from 'mapbox-gl';
 import { MapLayerGroup, MapLayer } from 'types/map-layer';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import IconComponent from 'ui/graphic/icon/icon';
+import { formatAppUrl } from 'utils/client-utils';
 
 // type definition for incoming properties
 type LayerTreeHeaderProps = {
@@ -112,7 +113,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
         {/* Tree icon, if present */}
         {group.icon != null && (
           <div className={styles.icon + " " + styles.treeIcon}>
-            <SVG src={group.icon} />
+            <SVG src={formatAppUrl(group.icon)} />
           </div>
         )}
 

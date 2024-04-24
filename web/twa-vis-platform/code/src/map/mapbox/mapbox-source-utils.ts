@@ -2,6 +2,7 @@ import { AnySourceData, CanvasSourceRaw, GeoJSONSourceRaw, ImageSourceRaw, Map, 
 import { DataSource } from 'io/data/data-source';
 import { DataStore } from 'io/data/data-store';
 import { JsonObject } from 'types/json';
+import { formatAppUrl } from 'utils/client-utils';
 
 /**
  * Given a DataStore instance housing parsed DataSource instances,
@@ -31,11 +32,16 @@ export function addSource(map: Map, source: DataSource) {
 
     // Clone the original source definition
     const options: JsonObject = {...source.definition};
-
     // Remove properties not expected by Mapbox
     if(options["id"] != null) delete options["id"];
     if(options["metaFiles"] != null) delete options["metaFiles"];
     if(options["timeseriesFiles"] != null) delete options["timeseriesFiles"];
+
+    // Ensure data have been formatted for the app
+    if (options["data"]) {
+        const dataUrl: string = options["data"] as string;
+        options["data"] = formatAppUrl(dataUrl);
+    }
 
     // Add attributions if missing
     if(!options["attribution"]) {
