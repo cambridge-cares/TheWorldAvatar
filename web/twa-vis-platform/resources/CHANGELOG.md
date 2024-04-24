@@ -2,6 +2,17 @@
 
 # TWA-VF Change Log
 
+## 5.0.1
+
+### Features
+
+* _No features present._
+
+### Bug Fixes
+
+* As intended, map layers retain current state even as users switch away from the layer tree
+* As intended, map layers will reset to default when switching pages
+
 ## 5.0.0
 
 ### Features
