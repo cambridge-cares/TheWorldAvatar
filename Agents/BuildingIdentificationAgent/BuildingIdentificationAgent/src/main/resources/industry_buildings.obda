@@ -19,9 +19,9 @@ geo:            http://www.opengis.net/ont/geosparql#
 [MappingDeclaration] @collection [[
 
 mappingId       datacentrebuildings
-target          building:{building_uuid} ontobim:hasFacility :datacenter/{facility_uuid};
-                                         ontobuiltenv:hasAddress icontact:address/{building_uuid}.
-                icontact:address/{building_uuid} icontact:hasStreet "{address}"^^xsd:string;
+target          building:{building_uuid} ontobim:hasFacility :datacenter/{facility_uuid}.
+                :datacenter/{facility_uuid} ontocompany:hasAddress icontact:address/{facility_uuid}.
+                icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
                     "facility_uuid",
@@ -34,9 +34,9 @@ source          SELECT
 
 
 mappingId       chemicalbuildings
-target          building:{building_uuid} ontobim:hasFacility :chemplant/{facility_uuid};
-                                         ontobuiltenv:hasAddress icontact:address/{building_uuid}.
-                icontact:address/{building_uuid} icontact:hasStreet "{address}"^^xsd:string;
+target          building:{building_uuid} ontobim:hasFacility :chemplant/{facility_uuid}.
+                :chemplant/{facility_uuid} ontocompany:hasAddress icontact:address/{facility_uuid}.
+                icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
                     "facility_uuid",
@@ -48,9 +48,9 @@ source          SELECT
                 WHERE "infrastructure_type" = 'Chemical Plant'
 
 mappingId       semiconductorbuildings
-target          building:{building_uuid} ontobim:hasFacility :waferPlant/{facility_uuid};
-                                         ontobuiltenv:hasAddress icontact:address/{building_uuid}.
-                icontact:address/{building_uuid} icontact:hasStreet "{address}"^^xsd:string;
+target          building:{building_uuid} ontobim:hasFacility :waferPlant/{facility_uuid}.
+                :waferPlant/{facility_uuid} ontocompany:hasAddress icontact:address/{facility_uuid}.
+                icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
                     "facility_uuid",
@@ -62,9 +62,9 @@ source          SELECT
                 WHERE "infrastructure_type" = 'Semiconductor Plant'
 
 mappingId       foodbuildings
-target          building:{building_uuid} ontobim:hasFacility :foodPlant/{facility_uuid};
-                                         ontobuiltenv:hasAddress icontact:address/{building_uuid}.
-                icontact:address/{building_uuid} icontact:hasStreet "{address}"^^xsd:string;
+target          building:{building_uuid} ontobim:hasFacility :foodPlant/{facility_uuid}.
+                :foodPlant/{facility_uuid} ontocompany:hasAddress icontact:address/{facility_uuid}.
+                icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
                     "facility_uuid",
@@ -76,9 +76,9 @@ source          SELECT
                 WHERE "infrastructure_type" = 'Food Plant'
 
 mappingId       pharmaceuticalbuildings
-target          building:{building_uuid} ontobim:hasFacility :pharmaPlant/{facility_uuid};
-                                         ontobuiltenv:hasAddress icontact:address/{building_uuid}.
-                icontact:address/{building_uuid} icontact:hasStreet "{address}"^^xsd:string;
+target          building:{building_uuid} ontobim:hasFacility :pharmaPlant/{facility_uuid}.
+                :pharmaPlant/{facility_uuid}    ontocompany:hasAddress icontact:address/{facility_uuid}.
+                icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
                     "facility_uuid",
@@ -90,9 +90,9 @@ source          SELECT
                 WHERE "infrastructure_type" = 'Pharmaceutical Plant'
 
 mappingId       precisionbuildings
-target          building:{building_uuid} ontobim:hasFacility :precisionPlant/{facility_uuid};
-                                         ontobuiltenv:hasAddress icontact:address/{building_uuid}.
-                icontact:address/{building_uuid} icontact:hasStreet "{address}"^^xsd:string;
+target          building:{building_uuid} ontobim:hasFacility :precisionPlant/{facility_uuid}.
+                :precisionPlant/{facility_uuid}  ontocompany:hasAddress icontact:address/{facility_uuid}.
+                icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
                     "facility_uuid",
@@ -103,9 +103,9 @@ source          SELECT
                     "precision_engineering"
 
 mappingId       printingbuildings
-target          building:{building_uuid} ontobim:hasFacility :printingPlant/{facility_uuid};
-                                         ontobuiltenv:hasAddress icontact:address/{building_uuid}.
-                icontact:address/{building_uuid} icontact:hasStreet "{address}"^^xsd:string;
+target          building:{building_uuid} ontobim:hasFacility :printingPlant/{facility_uuid}.
+                :printingPlant/{facility_uuid} ontocompany:hasAddress icontact:address/{facility_uuid}.
+                icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
                     "facility_uuid",
@@ -116,8 +116,8 @@ source          SELECT
                     "printing"
 
 mappingId       jurong_island_chemical_plants_buildings
-target          :building/{building_uuid} ontobim:hasFacility :chemplant/{company_uuid};
-                                         ontobuiltenv:hasAddress icontact:address/{building_uuid}.
+target          building:{building_uuid} ontobim:hasFacility :chemplant/{company_uuid};
+                                         ontocompany:hasAddress icontact:address/{building_uuid}.
                 icontact:address/{building_uuid} ontocompany:hasLandLotDetails ontocompany:landlotdetails/{building_uuid}.
                 ontocompany:landlotdetails/{building_uuid} ontocompany:hasLandLotNumber "{land_lot_number}"^^xsd:string.              
 source          SELECT
