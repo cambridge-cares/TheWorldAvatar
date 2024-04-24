@@ -138,7 +138,7 @@ public class SparqlClient {
     public String addValueInstance(String property, int value) {
         String value_iri = namespace + UUID.randomUUID().toString();
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(property).has(hasMaximum,iri(value_iri)));
+        modify.insert(iri(property).has(hasValue,iri(value_iri)));
         modify.insert(iri(value_iri).isA(ScalarValue).andHas(numericalValue,value));
         storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
         return value_iri;
@@ -255,6 +255,45 @@ public class SparqlClient {
 
         return queryResult.getJSONObject(0).getInt(key);
     }
+
+    /**
+     * query <instance> <hasValue> ?x, ?x <numericalValue> ?value
+     * @param instance
+     * @return
+     */
+    public int getMaxValue(String instance) {
+        SelectQuery query = Queries.SELECT();
+
+        String key = "maxvalue";
+        Variable value_iri = query.var();
+        Variable value = SparqlBuilder.var(key);
+        GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasMaximum,value));
+
+        query.prefix(p_namespace).select(value).where(queryPattern);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        return queryResult.getJSONObject(0).getInt(key);
+    }
+
+    /**
+     * query <instance> <hasValue> ?x, ?x <numericalValue> ?value
+     * @param instance
+     * @return
+     */
+    public int getMinValue(String instance) {
+        SelectQuery query = Queries.SELECT();
+
+        String key = "minvalue";
+        Variable value_iri = query.var();
+        Variable value = SparqlBuilder.var(key);
+        GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasMinimum,value));
+
+        query.prefix(p_namespace).select(value).where(queryPattern);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        return queryResult.getJSONObject(0).getInt(key);
+    }
+
 
 
 

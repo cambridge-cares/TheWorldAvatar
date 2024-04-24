@@ -294,7 +294,7 @@ public class GoalSparql {
 
         query.prefix(prefixGoal).select(range).where(queryPattern);
         storeClient.setQuery(query.getQueryString());
-        String queryResult = storeClient.executeQuery().getJSONObject(0).toString();
+        String queryResult = storeClient.executeQuery().getJSONObject(0).getString(queryKey);
         return queryResult;
     }
 
@@ -306,7 +306,7 @@ public class GoalSparql {
 
         query.prefix(prefixGoal).select(goal).where(queryPattern);
         storeClient.setQuery(query.getQueryString());
-        String queryResult = storeClient.executeQuery().getJSONObject(0).toString();
+        String queryResult = storeClient.executeQuery().getJSONObject(0).getString(queryKey);
         return queryResult;
     }
 
@@ -318,7 +318,7 @@ public class GoalSparql {
 
         query.prefix(prefixGoal).select(agent).where(queryPattern);
         storeClient.setQuery(query.getQueryString());
-        String queryResult = storeClient.executeQuery().getJSONObject(0).toString();
+        String queryResult = storeClient.executeQuery().getJSONObject(0).getString(queryKey);
         return queryResult;
     }
 

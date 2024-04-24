@@ -85,6 +85,7 @@ If this is not successful, it may be the case that the `derivationexamplebnl` co
 
 
 ## Shortcuts for developing this agent
+Docker shortcuts for spinning down and developing the container
 ```
 docker-compose down
 docker rmi goalframeworkexample:1.0.0
@@ -96,4 +97,6 @@ docker-compose up -d
 
 ```
 curl http://localhost:8081/GoalFrameworkExample/InitialiseInstances
+curl http://localhost:8081/GoalFrameworkExample/UpdateGoals
+curl http://localhost:8081/GoalFrameworkExample/InputAgent
 ```
