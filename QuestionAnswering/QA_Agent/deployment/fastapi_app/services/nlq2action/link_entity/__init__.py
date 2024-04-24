@@ -9,7 +9,7 @@ from services.core.embed import IEmbedder
 from services.nlq2action.link_entity.semantic import LexiconEntry, SemanticEntityLinker
 
 
-class EntityLinkingMediator:
+class ELMediator:
     LEXICON_FILE_SUFFIX = "_lexicon.json"
 
     def __init__(self, redis_client: Redis, embedder: IEmbedder):

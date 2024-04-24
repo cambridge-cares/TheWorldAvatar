@@ -3,6 +3,8 @@ import os
 from typing import Annotated
 from fastapi import Depends
 from openai import OpenAI
+
+from .execute_action.model import ActionBase, FuncAction, SparqlAction
 from .retrieve import Nlq2ActionRetriever, get_nlq2action_retriever
 
 
@@ -28,7 +30,7 @@ Your task is to translate the following question to an executable action. Please
         self.openai_client = OpenAI(base_url=openai_base_url, api_key=openai_api_key)
         self.model = openai_model
 
-    def translate(self, nlq: str) -> dict:
+    def translate(self, nlq: str) -> ActionBase:
         examples = self.retriever.retrieve_examples(nlq, k=10)
         prompt = self.PROMPT_TEMPLATE.format(
             examples="\n".join(
@@ -47,7 +49,19 @@ Your task is to translate the following question to an executable action. Please
                 {"role": "user", "content": prompt},
             ],
         )
-        return json.loads(res.choices[0].message.content)
+        action = json.loads(res.choices[0].message.content)
+
+        try:
+            if "sparql" in action:
+                return SparqlAction(**action["sparql"])
+            elif "func" in action:
+                faction = action["func"]
+                return FuncAction(
+                    name=faction["name"], args=json.loads(faction["args"])
+                )
+        except:
+            pass
+        raise Exception("Invalid action: " + str(action))
 
 
 def get_nlq2action_translator(
