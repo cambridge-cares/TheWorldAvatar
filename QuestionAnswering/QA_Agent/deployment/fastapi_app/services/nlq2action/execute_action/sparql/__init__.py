@@ -48,7 +48,7 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
 
         logger.info("Input query:\n" + action.query)
         timestamp = time.time()
-        query = self.postprocessor.postprocess(action.query)
+        query, var2iri2label = self.postprocessor.postprocess(action.query)
         latency = time.time() - timestamp
         logger.info("Processed query:\n" + query)
         steps.append(
@@ -73,6 +73,18 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
         )
 
         vars, bindings = flatten_sparql_response(res)
+        for varname in var2iri2label.keys():
+            try:
+                idx = vars.index(varname)
+            except:
+                continue
+            vars.insert(idx + 1, varname + "Name")
+
+        for binding in bindings:
+            for varname, iri2label in var2iri2label.items():
+                if varname in binding:
+                    binding[varname + "Name"] = iri2label[binding[varname]]
+
         return steps, QAData(vars=vars, bindings=bindings)
 
 

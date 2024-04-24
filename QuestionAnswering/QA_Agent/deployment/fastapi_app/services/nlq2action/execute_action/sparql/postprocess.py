@@ -1,9 +1,11 @@
 from functools import cache
-from typing import Annotated
+from typing import Annotated, Dict
 
 from fastapi import Depends
 
-from .link_entity import SparqlEntityLinker, get_sparql_entityLinker
+from services.nlq2action.link_entity.link import EntityIRI, EntityLabel
+
+from .link_value import SparqlEntityLinker, get_sparql_entityLinker
 
 
 class SparqlPostProcessor:
@@ -11,6 +13,8 @@ class SparqlPostProcessor:
         self.entity_linker = entity_linker
 
     def postprocess(self, sparql: str):
+        varname2iri2label: Dict[str, Dict[EntityIRI, EntityLabel]] = dict()
+
         idx = 0
         while idx < len(sparql):
             # VALUES ?LandUseType { <LandUseType:\"residential\"> }
@@ -29,10 +33,13 @@ class SparqlPostProcessor:
                 break
 
             idx_start += 1
-            while idx_start < len(sparql) and sparql[idx_start].isalnum():
-                idx_start += 1
-            if idx_start >= len(sparql):
+            idx = idx_start + 1
+            while idx < len(sparql) and sparql[idx].isalnum():
+                idx += 1
+            if idx >= len(sparql):
                 break
+            varname = sparql[idx_start:idx]
+            idx_start = idx
 
             while idx_start < len(sparql) and sparql[idx_start].isspace():
                 idx_start += 1
@@ -80,15 +87,22 @@ class SparqlPostProcessor:
                 break
             idx_end = token_start
 
-            values = " ".join(
-                value for token in tokens for value in self.entity_linker.link(token)
-            )
+            values = []
+            iri2label = dict()
+            for token in tokens:
+                _values, _iri2label = self.entity_linker.link(token)
+                values.extend(_values)
+                iri2label.update(_iri2label)
+
+            values = " ".join(values)
+            varname2iri2label[varname] = iri2label
 
             sparql = "{before}{{ {values} }}{after}".format(
                 before=sparql[:idx_start], values=values, after=sparql[idx_end + 1 :]
             )
             idx = idx_start + 2 + len(values) + 2
-        return sparql
+
+        return sparql, varname2iri2label
 
 
 @cache

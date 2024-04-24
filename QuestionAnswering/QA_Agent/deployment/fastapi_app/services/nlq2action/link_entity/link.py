@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Tuple
 
-IRI = str
+EntityIRI = str
+EntityLabel = str
+
 
 class IEntityLinker(ABC):
     @abstractmethod
-    def link(self, surface_form: str) -> List[IRI]:
+    def link(self, surface_form: str, k: int) -> List[Tuple[EntityIRI, EntityLabel]]:
         pass

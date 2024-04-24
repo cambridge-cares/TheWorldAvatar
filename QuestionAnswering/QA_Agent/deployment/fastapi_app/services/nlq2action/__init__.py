@@ -34,7 +34,7 @@ class Nlq2Action2Data(DataSupporter):
             QAStep(
                 action="retrieve_examples",
                 arguments=dict(nlq=query, k=10),
-                results=examples,
+                results=examples[:3] + ["..."],
                 latency=latency,
             )
         )
