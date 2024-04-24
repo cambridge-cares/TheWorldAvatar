@@ -21,6 +21,7 @@ import javax.ws.rs.BadRequestException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 
 
 @WebServlet(urlPatterns = "/createlayer")
@@ -78,6 +79,12 @@ public class TrajectoryQueryAgent extends JPSAgent {
         String altitudeIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getAltitudeIRIArray(smartphoneIRI));
         String speedIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getSpeedIRIArray(smartphoneIRI));
         String bearingIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getBearingIRIArray(smartphoneIRI));
+
+        if (pointIRI == null || altitudeIRI == null || speedIRI == null || bearingIRI == null) {
+            JSONObject response = new JSONObject();
+            response.put("message", "Measurement IRI is missing");
+            return response;
+        }
 
         //Create Geoserver layer
         createGeoserver(pointIRI,altitudeIRI,speedIRI,bearingIRI );
