@@ -257,7 +257,7 @@ class Manager {
             return Promise.resolve();
         }
 
-        if (this.sliderHandler.scenarioDimensionsData) {
+        if (this.sliderHandler && this.sliderHandler.scenarioDimensionsData) {
             dataJSON = DataGroup.handleDimensions(dataJSON, this.sliderHandler.scenarioDimensionsData, value)
         }
 

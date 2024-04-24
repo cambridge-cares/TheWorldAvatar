@@ -4,6 +4,12 @@
 
 ## 4.7.0
 
+### Bug Fixes
+
+* Fixed issue where data with no dimensions was looking for a `SliderHandler`
+
+## 4.7.0
+
 ### Features
 
 * Added functionality to scenario handler to fetch time series data from scenario endpoint
