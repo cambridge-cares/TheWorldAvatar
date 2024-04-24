@@ -69,7 +69,7 @@ public class InitialiseInstances extends JPSAgent{
 			//Create goalRange_iri
 			String goalRange_iri = sparqlClient.createGoalRangeIRI();
 			//Create goalCondition
-			sparqlClient.createRangeCondition(goalRange_iri,"100","0");
+			sparqlClient.createRangeCondition(goalRange_iri,"500","0");
 
 			//Create ontoagent instances for SumValue
 			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(truckRdfType), Arrays.asList(truckRdfType));

@@ -63,18 +63,17 @@ public class BinEmptyingAgent extends JPSAgent {
         Integer maxvalue = sparqlClient.getMaxValue(range_iri);
         Integer minvalue = sparqlClient.getMinValue(range_iri);
 
+        String res_msg;
         if (realStateValue<maxvalue && realStateValue>minvalue)
         {
-            String res_msg = "Bin do nothing";
+            res_msg = "Bin do nothing";
             LOGGER.info(res_msg);
         }
         else{
-            String res_msg = "Bin do something";
+            res_msg = "Bin do something";
             LOGGER.info(res_msg);
         }
 
-        String res_msg = "Bin do something";
-        LOGGER.info(res_msg);
         JSONObject response = new JSONObject();
         response.put("status", res_msg);
         return response;
