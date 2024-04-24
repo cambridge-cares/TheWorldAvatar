@@ -49,7 +49,7 @@ public class AermodAgent extends DerivationAgent {
     private QueryClient queryClient;
     private Thread thread;
 
-    // only allowing one thread at a time to prevent duplicate update
+    // only allowing one thread at a time to prevent duplicate request updates
     @Override
     public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
         try {
@@ -64,6 +64,12 @@ public class AermodAgent extends DerivationAgent {
         }
         thread = new Thread(() -> run(derivationInputs));
         thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
     }
 
     private void run(DerivationInputs derivationInputs) {
