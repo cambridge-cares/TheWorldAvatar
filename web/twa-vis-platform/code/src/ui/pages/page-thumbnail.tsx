@@ -22,9 +22,8 @@ interface DefaultPageThumbnailProps {
 }
 
 interface PageThumbnailTemplateProps {
-  title: string;
+  header: string;
   description: string;
-  tooltipText: string;
   icon: string;
   redirectUrl: string;
 }
@@ -36,16 +35,13 @@ interface PageThumbnailTemplateProps {
  * @param {OptionalPage} page Markdown page content.
  */
 export function MarkdownPageThumbnail({ page }: Readonly<MarkdownPageThumbnailProps>) {
-  const tooltipText = "Click to open the '" + page.title + "' page.";
-
   const thumbnail = page.thumbnail ?? "/images/defaults/icons/info.svg";
   const url = `/posts/${page.slug}`;
 
   return (
     <PageThumbnailTemplate
-      title={page.title}
+      header={page.title}
       description={page.description}
-      tooltipText={tooltipText}
       icon={thumbnail}
       redirectUrl={url}
     />
@@ -55,19 +51,16 @@ export function MarkdownPageThumbnail({ page }: Readonly<MarkdownPageThumbnailPr
 /**
  * A default page thumbnail that is always available and can redirect to the specified url when clicked.
  * 
- * @param {string} title Title.
+ * @param {string} title Thumbnail title.
  * @param {string} description Description.
  * @param {string} icon Icon to display.
  * @param {string} redirectUrl Redirects to this url when clicked.
  */
 export function DefaultPageThumbnail(props: Readonly<DefaultPageThumbnailProps>): React.ReactElement {
-  const tooltipText = "Open the '" + props.title + "' page.";
-
   return (
     <PageThumbnailTemplate
-      title={props.title}
+      header={props.title}
       description={props.description}
-      tooltipText={tooltipText}
       icon={props.icon}
       redirectUrl={props.redirectUrl}
     />
@@ -77,28 +70,38 @@ export function DefaultPageThumbnail(props: Readonly<DefaultPageThumbnailProps>)
 /**
  * A component template that can be reused for page thumbnail components.
  * 
- * @param {string} title Title.
+ * @param {string} header Title for thumbnail.
  * @param {string} description Description.
- * @param {string} tooltipText Tool tip text when hovering the thumbnail.
  * @param {string} icon Icon to display.
  * @param {string} redirectUrl Redirects to this url when clicked.
  */
 function PageThumbnailTemplate(props: Readonly<PageThumbnailTemplateProps>): React.ReactElement {
-  const imageDescription = "Thumbnail icon for the '" + props.title + "' page.";
-
+  const tooltipText = "Click to open the '" + props.header + "' page.";
+  // In order to add custom child components to MUI's tooltip component, we need to forward the Ref to prevent errors
   return (
-    <Tooltip title={props.tooltipText} enterDelay={1000} leaveDelay={100}>
-      <AppLink url={props.redirectUrl} className={styles.container}>
-        <AppImage url={props.icon} height={50} width={50} alt={imageDescription} classes={styles.thumbnail} />
-        <div className={styles.content}>
-          <div className={styles.title}>
-            <h1>{props.title}</h1>
-          </div>
-          <div className={styles.description}>
-            {props.description}
-          </div>
-        </div>
-      </AppLink>
+    <Tooltip title={tooltipText} enterDelay={1000} leaveDelay={100}>
+      <ForwardedPageThumbnailTemplate header={props.header}
+        description={props.description}
+        icon={props.icon}
+        redirectUrl={props.redirectUrl} />
     </Tooltip>
   );
 }
+
+const ForwardedPageThumbnailTemplate = React.forwardRef<HTMLDivElement, Readonly<PageThumbnailTemplateProps>>(
+  function ForwardedPageThumbnailTemplate({ header, description, icon, redirectUrl, ...rest }, ref): React.ReactElement {
+    const imageDescription = "Thumbnail icon for the '" + header + "' page.";
+    return (
+      <AppLink url={redirectUrl} className={styles.container}>
+        <AppImage url={icon} height={50} width={50} alt={imageDescription} classes={styles.thumbnail} />
+        <div ref={ref} {...rest} className={styles.content}>
+          <div className={styles.title}>
+            <h1>{header}</h1>
+          </div>
+          <div className={styles.description}>
+            {description}
+          </div>
+        </div>
+      </AppLink>
+    );
+  });
