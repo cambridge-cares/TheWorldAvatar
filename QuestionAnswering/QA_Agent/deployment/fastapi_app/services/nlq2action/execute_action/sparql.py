@@ -1,10 +1,15 @@
+from functools import cache
 import logging
-from typing import Dict
+from typing import Annotated, Dict
 
+from fastapi import Depends
+
+from services.connectors.sg_land_lots.kg import get_sgLandLots_bgClient
+from services.connectors.sg import get_sg_ontopClient
 from model.qa import QAData
 from services.core.kg import KgClient
 from services.utils.rdf import flatten_sparql_response
-from ..link_entity import ELMediator
+from ..link_entity import ELMediator, get_elMediator
 from .model import SparqlAction
 
 
@@ -83,7 +88,7 @@ class SparqlPostProcessor:
 
             values = " ".join(
                 value
-                for token in sparql[idx_start + 1: idx_end].strip().split()
+                for token in sparql[idx_start + 1 : idx_end].strip().split()
                 for value in self.entity_linker.link(token)
             )
 
@@ -105,3 +110,33 @@ class SparqlActionExecutor:
         vars, bindings = flatten_sparql_response(res)
 
         return QAData(vars=vars, bindings=bindings)
+
+
+@cache
+def get_sparql_entityLinker(
+    el_mediator: Annotated[ELMediator, Depends(get_elMediator)]
+):
+    return SparqlEntityLinker(el_mediator)
+
+
+@cache
+def get_sparql_postprocessor(
+    entity_linker: Annotated[SparqlEntityLinker, Depends(get_sparql_entityLinker)]
+):
+    return SparqlPostProcessor(entity_linker)
+
+
+@cache
+def get_ns2kg(
+    ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
+    plot_client: Annotated[KgClient, Depends(get_sgLandLots_bgClient)],
+):
+    return {"ontop": ontop_client, "plot": plot_client}
+
+
+@cache
+def get_sparqlAction_executor(
+    ns2kg: Annotated[Dict[str, KgClient], Depends(get_ns2kg)],
+    postprocessor: Annotated[SparqlPostProcessor, Depends(get_sparql_postprocessor)],
+):
+    return SparqlActionExecutor(ns2kg=ns2kg, postprocessor=postprocessor)
