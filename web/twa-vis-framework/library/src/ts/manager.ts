@@ -782,7 +782,7 @@ class Manager {
 
             // Load its data configuration file
             let self = this;
-            this.scenarioHandler.getConfiguration(function (dataJSON) {
+            this.scenarioHandler.getConfiguration(function (dataJSON: Object) {
                 self.scenarioHandler.fetchScenarioDimensions().then(scenarioDimensionsData => {
                     self.sliderHandler = new SliderHandler(scenarioDimensionsData, this);
                     self.sliderHandler.removeSlider();

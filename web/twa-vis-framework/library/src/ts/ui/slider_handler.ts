@@ -26,8 +26,8 @@ class SliderHandler {
     private manager: Manager;
 
 
-    constructor(scenarioTimesData: ScenarioDimensionsData, manager: Manager) {
-        this.scenarioDimensionsData = scenarioTimesData;
+    constructor(scenarioDimensionsData: ScenarioDimensionsData, manager: Manager) {
+        this.scenarioDimensionsData = scenarioDimensionsData;
         this.manager = manager;
     }
 
