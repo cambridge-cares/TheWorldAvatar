@@ -397,6 +397,7 @@
         {
             "name": "Population Data",
             "stack": "http://165.232.172.16:3838",
+            "expanded": false,
             "sources": [
                 {
                     "id": "openpopgrid",
@@ -425,10 +426,11 @@
             "groups": [
                 {
                     "name": "Fully operational",
+                    "expanded": false,
                     "groups": [
                         {   
 
-                            "name": "Water Network (Synthetic)",
+                            "name": "Water Network",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/water",
                             "sources": [
                                 {
@@ -1897,7 +1899,7 @@
                             ]
                         },
                         {
-                            "name": "Power Network (Synthetic)",
+                            "name": "Power Network",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/power",
                             "sources": [
                                 {
@@ -2879,7 +2881,7 @@
                             ]
                         },      
                         {
-                            "name": "Connectivity (Synthetic)",
+                            "name": "Connectivity",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/central",
                             "groups": [
                                 {
@@ -3237,6 +3239,9 @@
                                     "type": "line",
                                     "order": 100,
                                     "minzoom": 12,
+                                    "layout": {
+                                        "visibility": "none"
+                                    },
                                     "paint": {
                                         "line-color": "#86C3EB",
                                         "line-width": 3
@@ -3251,6 +3256,7 @@
                                     "order": 100,
                                     "minzoom": 12,
                                     "layout": {
+                                        "visibility": "none",
                                         "icon-image": "arrow",
                                         "icon-rotate": 90,
                                         "icon-allow-overlap": true,
@@ -3270,6 +3276,9 @@
                                     "type": "line",
                                     "order": 99,
                                     "minzoom": 12,
+                                    "layout": {
+                                        "visibility": "none"
+                                    },
                                     "filter": [
                                         "<", ["to-number", ["get", "state"]], 1.0
                                     ],
@@ -3304,10 +3313,11 @@
                 },
                 {
                     "name": "Disrupted operations",
+                    "expanded": false,
                     "groups": [
                         {   
 
-                            "name": "Water Network (Synthetic)",
+                            "name": "Water Network",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/water",
                             "sources": [
                                 {
@@ -4776,7 +4786,7 @@
                             ]
                         },
                         {
-                            "name": "Power Network (Synthetic)",
+                            "name": "Power Network",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/power",
                             "sources": [
                                 {
@@ -5758,7 +5768,7 @@
                             ]
                         },      
                         {
-                            "name": "Connectivity (Synthetic)",
+                            "name": "Connectivity",
                             "stack": "https://kg.cmclinnovations.com/credo/phase2/central",
                             "groups": [
                                 {
@@ -6116,6 +6126,9 @@
                                     "type": "line",
                                     "order": 100,
                                     "minzoom": 12,
+                                    "layout": {
+                                        "visibility": "none"
+                                    },
                                     "paint": {
                                         "line-color": "#86C3EB",
                                         "line-width": 3
@@ -6130,6 +6143,7 @@
                                     "order": 100,
                                     "minzoom": 12,
                                     "layout": {
+                                        "visibility": "none",
                                         "icon-image": "arrow",
                                         "icon-rotate": 90,
                                         "icon-allow-overlap": true,
@@ -6149,6 +6163,9 @@
                                     "type": "line",
                                     "order": 99,
                                     "minzoom": 12,
+                                    "layout": {
+                                        "visibility": "none"
+                                    },
                                     "filter": [
                                         "<", ["to-number", ["get", "state"]], 1.0
                                     ],
