@@ -41,7 +41,11 @@ For deployment on the [TWA stack](https://github.com/cambridge-cares/TheWorldAva
 4. Populate this directory with your require visualisation configuration files
 5. Start the stack as per usual
 
-If you are creating a custom visualisation service on the stack, please note to update the `BASE_PATH` environment variable for your subpath.
+> Custom Service
+
+At the moment, the `visualisation` service defaults to the [Visualisation Framework](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework). To set this service up, please set up a custom service. A minimal example is available in `example/vip.json`.
+
+If you wish to use other subpaths, please note to update the `BASE_PATH` environment variable to match the external path property.
 
 ## 3. Release
 
