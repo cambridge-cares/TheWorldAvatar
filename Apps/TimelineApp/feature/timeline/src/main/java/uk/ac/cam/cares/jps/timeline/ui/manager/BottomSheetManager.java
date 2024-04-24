@@ -4,6 +4,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
@@ -69,6 +70,10 @@ public class BottomSheetManager {
         normalBottomSheet = new NormalBottomSheet(context);
 
         trajectoryViewModel.trajectoryError.observe(lifecycleOwner, error -> {
+            if (error.equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_trajectory_found))) {
+                ((TextView) normalBottomSheet.getBottomSheet().findViewById(R.id.trajectory_info_tv)).setText(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_trajectory_found);
+              return;
+            }
             errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.TRAJECTORY_ERROR);
             setAndExtendBottomSheet(errorBottomSheet);
         });
@@ -76,9 +81,17 @@ public class BottomSheetManager {
         trajectoryViewModel.isFetchingTrajecjtory.observe(lifecycleOwner, isFetching -> {
             if (isFetching) {
                 normalBottomSheet.getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.VISIBLE);
+                normalBottomSheet.getBottomSheet().findViewById(R.id.trajectory_info_tv).setVisibility(View.GONE);
+
+
             } else {
                 normalBottomSheet.getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.GONE);
+                normalBottomSheet.getBottomSheet().findViewById(R.id.trajectory_info_tv).setVisibility(View.VISIBLE);
             }
+        });
+
+        trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectory -> {
+            ((TextView) normalBottomSheet.getBottomSheet().findViewById(R.id.trajectory_info_tv)).setText(R.string.more_information_about_the_trajectory_will_be_shown_here);
         });
     }
 

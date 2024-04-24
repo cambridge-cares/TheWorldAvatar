@@ -33,7 +33,7 @@ public class TrajectoryViewModel extends ViewModel {
         // todo: be careful on the concurrency issue because this method is called at multiple places!
         _isFetchingTrajectory.setValue(true);
 
-        trajectoryRepository.getTrajectory(new RepositoryCallback<String>() {
+        trajectoryRepository.getTrajectory(new RepositoryCallback<>() {
             @Override
             public void onSuccess(String result) {
                 _trajectory.postValue(result);
@@ -43,6 +43,7 @@ public class TrajectoryViewModel extends ViewModel {
             @Override
             public void onFailure(Throwable error) {
                 _trajectoryError.postValue(error.getMessage());
+                _isFetchingTrajectory.postValue(false);
             }
         });
     }
