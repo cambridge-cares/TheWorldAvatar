@@ -167,6 +167,7 @@ python csv_maker.py -c all -f 100 -t 200 -o dir
 python csv_maker.py -c all -f 200 -t 300 -o dir
 python csv_merger.py dir
 csv2rdf ontozeolite/zeolite/csv/ontozeolite_kg_i.csv --csvType=abox
+```
 
 Output:
 
@@ -179,6 +180,7 @@ OWL files are created from CSV files using the [EntityRDFizer](https://github.co
 
 ```bash
 csv2rdf path/to/csv/file.csv --csvType=abox
+```
 
 ## Upload OWL files to \texttt{Blazegraph}
 
