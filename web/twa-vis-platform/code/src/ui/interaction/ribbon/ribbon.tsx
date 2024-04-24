@@ -25,7 +25,7 @@ import {
 
 // Type definition for Ribbon parameters
 export type RibbonProps = {
-  map: React.MutableRefObject<Map>,
+  map: Map,
   startingIndex: number,
   mapSettings: MapSettings,
   hasScenario: boolean,

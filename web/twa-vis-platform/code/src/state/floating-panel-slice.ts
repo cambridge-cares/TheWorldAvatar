@@ -11,18 +11,14 @@ export const floatingPanelSlice = createSlice({
         setIndex: (state, action) => {
             state.index = action.payload.index;
         },
-        setIsStyleLoaded: (state, action) => {
-            state.isStyleLoaded = action.payload;
-        },
     }
 })
 
 // Export selectors 
 export const getIndex = (state: ReduxState) => state.floatingPanel.index;
-export const getIsStyleLoaded = (state: ReduxState) => state.floatingPanel.isStyleLoaded;
 
 // Export the actions
-export const { setIndex, setIsStyleLoaded } = floatingPanelSlice.actions;
+export const { setIndex } = floatingPanelSlice.actions;
 
 // Export the reducer
 export default floatingPanelSlice.reducer;

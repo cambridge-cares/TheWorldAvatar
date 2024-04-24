@@ -4,11 +4,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import './mapbox.css';
 
 import mapboxgl, { Map } from 'mapbox-gl';
-import React, { useRef, useEffect, forwardRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useRef, useEffect } from 'react';
 
-import { getLatLng, getName } from 'state/map-feature-slice';
-import { setIsStyleLoaded } from 'state/floating-panel-slice';
 import { MapSettings } from 'types/settings';
 import { getCurrentImageryOption, getDefaultCameraPosition } from '../map-helper';
 import { formatAppUrl } from 'utils/client-utils';
@@ -16,6 +13,8 @@ import { formatAppUrl } from 'utils/client-utils';
 // Type definition of incoming properties
 interface MapProperties {
   settings: MapSettings;
+  currentMap: Map;
+  setMap: React.Dispatch<React.SetStateAction<Map>>;
 }
 
 /**
@@ -25,41 +24,24 @@ interface MapProperties {
  *
  * @returns React component for display.
  */
-export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef) => {
+export default function MapboxMapComponent(props: MapProperties) {
   const mapContainer = useRef(null);
-  const toolTip = useRef(null);
-  const dispatch = useDispatch();
-  const coordinates = useSelector(getLatLng);
-  const name = useSelector(getName);
 
   // Run when component loaded
   useEffect(() => {
     initialiseMap();
 
     return () => {
-      const currentMap: React.MutableRefObject<Map> = mapRef as React.MutableRefObject<Map>;
-      if (currentMap.current) {
-        currentMap.current.remove(); // Remove the map instance
-        currentMap.current = null; // Reset the map ref
+      if (props.currentMap) {
+        props.currentMap.remove(); // Remove the map instance
+        props.setMap(null); // Reset the map ref
       }
     };
   }, []);
 
-  // Run whenever coordinates are changed from moving across the map
-  useEffect(() => {
-    // Remove the tool tip if it is currently open
-    if (toolTip.current?.isOpen()) {
-      toolTip.current.remove();
-    }
-    // If there is a name, add the tool tip with the name to the map
-    if (name != null) {
-      toolTip.current?.setLngLat(coordinates).setHTML(name).addTo((mapRef as React.MutableRefObject<Map>).current)
-    }
-  }, [coordinates]);
-
   // Initialise the map object
   const initialiseMap = async () => {
-    if ((mapRef as React.MutableRefObject<Map>).current) return;
+    props.currentMap?.remove();
 
     const response = await fetch(formatAppUrl("/api/map/settings"), {
       method: "GET",
@@ -81,19 +63,8 @@ export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef)
       bearing: defaultPosition["bearing"],
       pitch: defaultPosition["pitch"],
     });
-    (mapRef as React.MutableRefObject<Map>).current = map;
+
     console.info("Initialised a new Mapbox map object.");
-
-    // Create a new pop up and assign it to the reference to keep track
-    toolTip.current = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false
-    });
-
-    // Removes the tool tip once the mouse pointer is outside the map container
-    map.on("mouseout", function () {
-      toolTip.current.remove();
-    });
 
     map.on("style.load", function () {
       // Update time if using new v3 standard style
@@ -106,7 +77,8 @@ export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef)
           styleObject.time
         );
       }
-      dispatch(setIsStyleLoaded(true))
+      // Map is only settable after the styles have loaded
+      props.setMap(map)
     });
   };
 
@@ -115,6 +87,6 @@ export const MapboxMapComponent = forwardRef<Map, MapProperties>((props, mapRef)
       {/* Map will be generated here. */}
     </div>
   );
-});
+}
 
 MapboxMapComponent.displayName = "MapboxMapComponent";

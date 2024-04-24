@@ -9,7 +9,11 @@ import { toast } from 'react-toastify';
 import { Map } from 'mapbox-gl';
 
 import { reduxStore } from 'app/store';
-import { CameraSettings, CameraPosition, ImagerySettings, ImageryOption } from 'types/settings';
+import { DataStore } from 'io/data/data-store';
+import { CameraSettings, CameraPosition, ImagerySettings, ImageryOption, MapSettings } from 'types/settings';
+import { addIcons } from './mapbox/mapbox-icon-loader';
+import { addAllSources } from './mapbox/mapbox-source-utils';
+import { addAllLayers } from './mapbox/mapbox-layer-utils';
 
 // Default imagery options if users do not include them in the "map-settings.json" file
 const DEFAULT_IMAGERY_OPTIONS: ImagerySettings = {
@@ -52,6 +56,27 @@ const PLACENAME_LAYERS: string[] = [
   "state-label", "country-label", "road-oneway-arrow-blue", "road-oneway-arrow-white", "transit-label",
   "path-pedestrian-label", "golf-hole-label", "gate-label", "natural-line-label"
 ]
+
+/**
+ * Add data to the map.
+ * 
+ * @param {Map} map The current Mapbox map instance.
+ * @param {MapSettings} mapSettings The user specified map settings.
+ * @param {DataStore} data The data of interest to add to the map.
+ */
+export function addData(map: Map, mapSettings: MapSettings, data: DataStore): void {
+   // Parse data configuration and load icons
+   const iconPromise = addIcons(map, mapSettings.icons);
+
+   Promise.all([iconPromise]).then(() => {
+     // Once that is done and completed...
+     console.log("Data definitions fetched and parsed.");
+
+     // Plot data
+     addAllSources(map, data);
+     addAllLayers(map, data, mapSettings.imagery);
+   });
+}
 
 /**
  * Returns the default camera position object.
@@ -162,21 +187,21 @@ export function getCurrentImageryOption(imagerySettings: ImagerySettings): Image
 /**
  * Set the base map imagery to the current option.
  * 
- * @param {React.MutableRefObject<Map>} map The current Mapbox map instance wrapped in a mutable reference object.
+ * @param {Map} map The current Mapbox map instance.
  */
-export function setImagery(imagerySettings: ImagerySettings, map: React.MutableRefObject<Map>): void {
+export function setImagery(imagerySettings: ImagerySettings, map: Map): void {
   const imageryOption: ImageryOption = getCurrentImageryOption(imagerySettings);
 
   // Update map
-  map.current.setStyle(imageryOption.url);
-  map.current.setProjection({
+  map.setStyle(imageryOption.url);
+  map.setProjection({
     name: 'mercator'
   });
 
-  map.current.on('style.load', () => {
+  map.on('style.load', () => {
     if (imageryOption.time != null) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (map.current as any).setConfigProperty('basemap', 'lightPreset', imageryOption.time);
+      (map as any).setConfigProperty('basemap', 'lightPreset', imageryOption.time);
     }
 
     // Ensure placenames match previous state
@@ -188,9 +213,9 @@ export function setImagery(imagerySettings: ImagerySettings, map: React.MutableR
  * Toggle the display of all placenames on the map based on the current imagery option.
  * 
  * @param {ImagerySettings} imageryOption Current imagery option object.
- * @param {React.MutableRefObject<Map>} map The current Mapbox map instance wrapped in a mutable reference object.
+ * @param {Map} map The current Mapbox map instance.
  */
-export function togglePlacenames(imagerySettings: ImagerySettings, map: React.MutableRefObject<Map>): void {
+export function togglePlacenames(imagerySettings: ImagerySettings, map: Map): void {
   const reduxState = reduxStore.getState();
   const items = reduxState.ribbonComponents.items;
   let shouldHide = true;
@@ -201,21 +226,21 @@ export function togglePlacenames(imagerySettings: ImagerySettings, map: React.Mu
 
   if (imageryOption.time != null) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map.current as any).setConfigProperty('basemap', 'showPlaceLabels', !shouldHide);
+    (map as any).setConfigProperty('basemap', 'showPlaceLabels', !shouldHide);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map.current as any).setConfigProperty('basemap', 'showRoadLabels', !shouldHide);
+    (map as any).setConfigProperty('basemap', 'showRoadLabels', !shouldHide);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map.current as any).setConfigProperty('basemap', 'showPointOfInterestLabels', !shouldHide);
+    (map as any).setConfigProperty('basemap', 'showPointOfInterestLabels', !shouldHide);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map.current as any).setConfigProperty('basemap', 'showTransitLabels', !shouldHide);
+    (map as any).setConfigProperty('basemap', 'showTransitLabels', !shouldHide);
   } else {
     // The above only works when using the "Standard" style from Mapbox v3, if using any
     // other style (such as "Light", or "Dark"), then it will fail. In which case we do it
     // the old fashioned way by toggling individual layers.
-    const layers = map.current.getStyle().layers;
+    const layers = map.getStyle().layers;
     layers.forEach(layer => {
       if (PLACENAME_LAYERS.includes(layer["id"])) {
-        map.current.setLayoutProperty(
+        map.setLayoutProperty(
           layer["id"],
           "visibility",
           (shouldHide ? "none" : "visible")
@@ -229,23 +254,23 @@ export function togglePlacenames(imagerySettings: ImagerySettings, map: React.Mu
  * Toggle's 3D terrain.
  * 
  * @param {boolean} state toggle flag
- * @param {React.MutableRefObject<Map>} map The current Mapbox map instance wrapped in a mutable reference object.
+ * @param {Map} map The current Mapbox map instance.
  */
-export function set3DTerrain(state: boolean, map: React.MutableRefObject<Map>): void {
+export function set3DTerrain(state: boolean, map: Map): void {
   if (state) {
-    map.current.addSource('mapbox-3d-terrain', {
+    map.addSource('mapbox-3d-terrain', {
       type: 'raster-dem',
       url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
       tileSize: 512,
       maxzoom: 14
     });
-    map.current.setTerrain({
+    map.setTerrain({
       source: 'mapbox-3d-terrain',
       exaggeration: 1.5
     });
   } else {
-    map.current.setTerrain(null);
-    map.current.removeSource('mapbox-3d-terrain');
+    map.setTerrain(null);
+    map.removeSource('mapbox-3d-terrain');
   }
 }
 
@@ -253,9 +278,9 @@ export function set3DTerrain(state: boolean, map: React.MutableRefObject<Map>): 
  * Reset the camera to the current position (as defined in Redux state).
  * 
  * @param {CameraSettings} cameraSettings The camera settings.
- * @param {React.MutableRefObject<Map>} map The current Mapbox map instance wrapped in a mutable reference object.
+ * @param {Map} map The current Mapbox map instance.
  */
-export function resetCamera(cameraSettings: CameraSettings, map: React.MutableRefObject<Map>): void {
+export function resetCamera(cameraSettings: CameraSettings, map: Map): void {
   const reduxState = reduxStore.getState();
   const items = reduxState.ribbonComponents.items;
   let position: CameraPosition;
@@ -267,7 +292,7 @@ export function resetCamera(cameraSettings: CameraSettings, map: React.MutableRe
   }
 
   // Move the map
-  map.current.flyTo({
+  map.flyTo({
     ...position,
     essential: true
   });
@@ -276,16 +301,16 @@ export function resetCamera(cameraSettings: CameraSettings, map: React.MutableRe
 /**
  * If given permission by browser alert, this moves the map to the user's location.
  * 
- * @param {React.MutableRefObject<Map>} map The current Mapbox map instance wrapped in a mutable reference object.
+ * @param {Map} map The current Mapbox map instance.
  */
-export function locateUser(map: React.MutableRefObject<Map>): void {
+export function locateUser(map: Map): void {
   navigator.geolocation.getCurrentPosition(
     (geolocation) => {
       const long = geolocation["coords"]["longitude"];
       const lat = geolocation["coords"]["latitude"];
 
       // Move the map
-      map.current.flyTo({
+      map.flyTo({
         center: [long, lat],
         zoom: 12,
         essential: true
