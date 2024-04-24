@@ -2,7 +2,7 @@
 
 # TWA-VF Change Log
 
-## 4.7.0
+## 4.7.1
 
 ### Bug Fixes
 
