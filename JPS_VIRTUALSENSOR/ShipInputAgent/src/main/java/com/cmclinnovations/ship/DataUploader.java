@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -124,7 +126,10 @@ public class DataUploader {
                 updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(index + 1)));
             } else {
                 // increment timeOffset and start a new cycle
-                timeOffset += fileNamesAsInt.size();
+                Instant firstTime = Instant.ofEpochSecond(fileNamesAsInt.get(0));
+                Instant lastTime = Instant.ofEpochSecond(fileNamesAsInt.get(fileNamesAsInt.size()-1));
+                Duration timeRange = Duration.between(firstTime,lastTime);
+                timeOffset += (int) timeRange.toHours()+1;
                 updateFile(timeOffsetFile, String.valueOf(timeOffset));
                 updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(0)));
                 dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + JSON_EXT).toFile();
