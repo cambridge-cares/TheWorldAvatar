@@ -80,6 +80,22 @@ class EquipmentBookingSparqlClient(PySparqlClient):
             ))
         return user_list
 
+    def get_all_lab_users(self):
+        query = f"""{PREFIX_RDFS} SELECT ?userIri ?userName WHERE {{
+             ?userIri a <{FIBO_PERSON}> ;
+                    <{OMG_PLAYSROLE}>/rdfs:label "Lab User" ;
+                    <{OMG_HASNAME}>/rdfs:label  ?userName .
+             }}
+             ORDER BY ASC(?userName)"""
+        response = self.performQuery(query)
+        user_list = list()
+        for res in response:
+            user_list.append(Fibo_Person(
+                instance_iri=res['userIri'],
+                name=res['userName']
+            ))
+        return user_list
+
     def get_all_bookings_in_system(self, booking_system_iri: str):
         booking_system_iri = trimIRI(booking_system_iri)
         query = f"""{PREFIX_RDFS} SELECT ?booking ?bookingStart ?bookingEnd ?booker WHERE {{ 

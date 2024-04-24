@@ -250,7 +250,7 @@ class EquipmentBookingAgent(ABC):
     def booking_page(self):
         return render_template(
             'equipment_booking_make_booking.html',
-            lab_users=[{'iri': usr.instance_iri, 'display': usr.name} for usr in self.sparql_client.get_all_users()],
+            lab_users=[{'iri': usr.instance_iri, 'display': usr.name} for usr in self.sparql_client.get_all_lab_users()],
             bookable_assets=[{'iri': eq.hasBookingSystem.instance_iri, 'display': eq.hasBookingSystem.label, 'id': eq.hasItemInventoryIdentifier,
                               'supplier': eq.isSuppliedBy, 'manufacturer': eq.isManufacturedBy, 'location': eq.isLocatedIn, 
                               'assignee': eq.assignedTo, 'type': eq.clz} for eq in self.sparql_client.get_all_bookable_equipment()],
