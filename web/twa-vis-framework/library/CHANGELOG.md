@@ -2,6 +2,12 @@
 
 # TWA-VF Change Log
 
+## 4.7.1
+
+### Bug Fixes
+
+* Fixed issue where data with no dimensions was looking for a `SliderHandler`
+
 ## 4.7.0
 
 ### Features
