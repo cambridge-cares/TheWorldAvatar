@@ -31,7 +31,6 @@
 log4j2.xml
 catalog-v001.xml
 
-
 # Maven:
 target/
 
@@ -61,6 +60,16 @@ dist/
 
 # Windows-specific files:
 Thumbs.db
+
+# Common API keys and password names
+
+mapbox_api_key
+mapbox_username
+postgis_password
+geoserver_password
+blazegraph_password
+grafana_password
+grafana_api_key
 
 # Miscellaneous files/folders:
 /JPS_BMS/workingdir/rdf-xml-output
@@ -96,6 +105,6 @@ obsolete/*
 **/credentials/repo_*
 JPS_VIRTUALSENSOR/ShipInputAgent/data/*.json
 *.tif
-web/uk-base-world/grafana_api_key
-web/uk-base-world/visualisation/mapbox_api_key
-web/uk-base-world/visualisation/mapbox_username
+web/twa-vis-platform/code/public/config/*
+web/twa-vis-platform/code/public/images/*
+web/twa-vis-platform/code/public/optional-pages/*
