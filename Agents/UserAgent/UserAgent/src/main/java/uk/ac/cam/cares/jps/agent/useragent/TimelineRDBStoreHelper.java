@@ -56,13 +56,13 @@ public class TimelineRDBStoreHelper {
         Query query = context.insertInto(table(name("timeline", "smartPhone")))
                         .columns(field(name("phone_id")), field(name("user_id")))
                         .values(val(phoneId), val(userId));
-        postgresRdbClient.executeUpdate(query.getSQL());
+        postgresRdbClient.executeUpdate(query.getSQL(ParamType.INLINED));
     }
 
     public JSONArray getExistingPhoneIdRecord(String phoneId) {
         Query query = context.select(field("user_id"))
                 .from(table(name("postgres", "timeline", "smartPhone")))
                 .where(field("phone_id").eq(val(phoneId)));
-        return postgresRdbClient.executeQuery(query.getSQL());
+        return postgresRdbClient.executeQuery(query.getSQL(ParamType.INLINED));
     }
 }
