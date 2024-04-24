@@ -3,11 +3,7 @@
 
 Zeolite ontology abox writer.
 
-For the installation and running instructions see file OntoZeolite_user_manual-2.pdf
-
-
-# Authors #
-Pavlo Rutkevych (pr521@cam.ac.uk), 01 Apr 2024
+<!-- For the installation and running instructions see file OntoZeolite_user_manual-2.pdf -->
 
 # Ontozeolite KG preparation
 
@@ -24,23 +20,14 @@ The data generation requires less than 10 GB of hard drive space.
 
 The code uses several external packages. It is recommended to use a virtual environment to install them:
 
-=======================
-
-
-
-
-\hspace{1cm}
 `$ python -m venv <venv_name>`
 
-\hspace{1cm}
 `$ <venv_name>\Scripts\activate.bat`
 
-\hspace{1cm}
 `(<venv_name>) $`
 
 Install third-party package `pymatgen`:
 
-\hspace{1cm}
 `(<venv_name>) pip install pymatgen$`
 
 More information can be found at their [official web-site](https://pymatgen.org/installation.html).
@@ -53,21 +40,18 @@ and NOT from 'pip install'.
 Pip install currently has version 1.3 or 1.4.
 Command line to install:
 
-\hspace{1cm}
 `(<venv_name>) pip install --no-cache-dir --force-reinstall git+https://github.com/sciunto-org/python-bibtexparser@main`
 
 More information can be found at their [official web-site](https://github.com/sciunto-org/python-bibtexparser).
 
 Install Third-party package `entityrdfizer`:
 
-\hspace{1cm}
 `(<venv_name>) $ pip install entityrdfizer`
 
 More details on the [TWA web-site](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/EntityRDFizer).
 
 Install Third-party package `pyuploader`:
 
-\hspace{1cm}
 `(<venv_name>) $ pip install pyuploader`
 
 More details on the [TWA web-site](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_uploader).
@@ -80,7 +64,6 @@ a file `blazedev.auth` in the parent directory must contain one line: `username:
 
 Now the entire KG generation can be done by a single command:
 
-\hspace{1cm}
 `ontozeo.bat`
 
 The individual steps used in this script are described below.
@@ -192,3 +175,6 @@ The upload is implemented using
 [pyuploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_uploader)
 
 It allows upload either to a local Blazegraph server, or remote with authentication.
+
+# Authors #
+Pavlo Rutkevych (pr521@cam.ac.uk), 01 Apr 2024
