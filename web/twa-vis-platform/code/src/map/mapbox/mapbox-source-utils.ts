@@ -44,9 +44,10 @@ export function addSource(map: Map, source: DataSource) {
     }
 
     // Add attributions if missing
-    if(!options["attribution"]) {
+    if (!options["attribution"]) {
         options["attribution"] = "CMCL";
     }
+    options["attribution"] = "Powered by The World Avatar | " + (options["attribution"] as string);
 
     // Have to cast to type specific object to meet Mapbox's API
     let mapboxObj: AnySourceData;

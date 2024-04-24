@@ -6,7 +6,6 @@ import styles from './landing.module.css';
 import 'github-markdown-css/github-markdown.css';
 
 import React from 'react';
-import Link from 'next/link';
 import markdownit from 'markdown-it';
 
 import { Routes } from 'io/config/routes';
@@ -52,10 +51,7 @@ export default function LandingPage(props: LandingPageProps) {
                         className={introClasses}
                         dangerouslySetInnerHTML={{ __html: introContent }}
                     />
-                    <footer className={styles.footer}>
-                        <span>Powered by </span>
-                        <Link href="https://theworldavatar.io">The World Avatar</Link>
-                    </footer>
+                    
                 </div>
             </div>
 

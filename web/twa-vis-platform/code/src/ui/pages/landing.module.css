@@ -66,9 +66,3 @@
     align-items: center;
     justify-content: center;
 }
-
-.footer {
-    flex-grow: 0;
-    margin: 5px;
-    text-align: center;
-}
