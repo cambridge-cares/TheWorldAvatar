@@ -12,7 +12,7 @@ import markdownit from 'markdown-it';
 
 import { Routes } from 'io/config/routes';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
-import StaticPageThumbnail from './static-page-thumbnail';
+import PageThumbnail from './page-thumbnail';
 import AppLink from 'ui/navigation/link/link';
 import IconComponent from 'ui/graphic/icon/icon';
 
@@ -148,7 +148,7 @@ function getThumbnails(): React.ReactElement[] {
     const components: React.ReactElement[] = [];
     pages.forEach(page => {
         const thumbnail = (
-            <StaticPageThumbnail
+            <PageThumbnail
                 page={page}
             />
         );
