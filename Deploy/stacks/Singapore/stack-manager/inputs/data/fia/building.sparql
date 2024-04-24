@@ -251,16 +251,16 @@ WHERE {
       } UNION {
         SERVICE [ONTOP] {
           SELECT ?facility ?Property ?Value where {
-            [IRI] obm:hasFacility ?facility;
-             ontocompany:hasAddress/icontact:hasStreet ?Value.
+            [IRI] obm:hasFacility ?facility.
+            ?facility ontocompany:hasAddress/icontact:hasStreet ?Value.
             BIND("Address" AS ?Property).
           }
         }
       } UNION {
         SERVICE [ONTOP] {
           SELECT ?facility ?Property ?Value where {
-            [IRI] obm:hasFacility ?facility;
-             ontocompany:hasAddress ?address.
+            [IRI] obm:hasFacility ?facility.
+            ?facility ontocompany:hasAddress ?address.
             ?address ontocompany:hasLandLotDetails/ontocompany:hasLandLotNumber ?Value.
             BIND("Land Lot Number" AS ?Property).
           }
