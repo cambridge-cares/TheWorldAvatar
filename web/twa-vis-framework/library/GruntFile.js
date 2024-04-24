@@ -10,7 +10,7 @@ module.exports = function (grunt) {
                     "./output/ts/mapbox/*.js",
                     "./output/ts/cesium/*.js"
                 ],
-                dest: "./output/twa-vf.temp.js"
+                dest: "./output/twa-vf.min.js"
             }
         },
         uglify: {
@@ -71,5 +71,6 @@ module.exports = function (grunt) {
 
     // Register Tasks
 	// To build an unminified version of the code, temporarily remove the "uglify" task here.
-    grunt.registerTask("package", ["concat", "uglify", "cssmin", "clean", "copy"]);
+    //grunt.registerTask("package", ["concat", "uglify", "cssmin", "clean", "copy"]);
+    grunt.registerTask("package", ["concat", "cssmin", "clean", "copy"]);
 }

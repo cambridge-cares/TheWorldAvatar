@@ -1,0 +1,1 @@
+.osm files can be found on https://www.openstreetmap.org/ and a xml config file can be found on https://github.com/pgRouting/osm2pgrouting/blob/main/mapconfig.xml.

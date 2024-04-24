@@ -9,30 +9,26 @@ class IconHandler {
      * 
      * @param {String} imageName name of image
      * @param {String} imageURL image URL  
+     * @param callback callback function
      */
-     public async loadIcon(imageName, imageURL) {
-        await new Promise<void>((resolve, reject) => {
+     public loadIcon(imageName, imageURL, callback) {
 
-            MapHandler.MAP.loadImage(
-                imageURL,
-                (error, image) => {
-
-                    if(error) {
-                        console.log("ERROR: Could not load image at URL " + imageURL);
-                        reject(error);
-
-                    } else {
-                        // If the imageURL contains ("-sdf"), load as an SDF image
-                        MapHandler.MAP.addImage(
-                            imageName, 
-                            image, 
-                            { "sdf": imageURL.includes("-sdf") }
-                        );
-                        resolve(image);
-                    }
+        MapHandler.MAP.loadImage(
+            imageURL,
+            (error, image) => {
+                if(error) {
+                    console.log("ERROR: Could not load image at URL " + imageURL);
+                } else {
+                    // If the imageURL contains ("-sdf"), load as an SDF image
+                    MapHandler.MAP.addImage(
+                        imageName, 
+                        image, 
+                        { "sdf": imageURL.includes("-sdf") }
+                    );
                 }
-            );
-        });
+                callback();
+            }
+        );
     }
 
 }

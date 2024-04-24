@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "6005",
+            "preLaunchTask": "compose-deploy",
+            "projectName": "${workspaceFolderBasename}"
+        },
+        {
+            "type": "java",
+            "name": "Build and Debug",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "6005",
+            "preLaunchTask": "compose-build-deploy",
+            "projectName": "${workspaceFolderBasename}"
+        },
+        {
+            "type": "java",
+            "name": "Reattach and Debug",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "6005",
+            "projectName": "${workspaceFolderBasename}"
+        }
+    ]
+}

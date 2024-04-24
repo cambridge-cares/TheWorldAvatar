@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="host"></string>
+<string name="lab_host"></string>
+
+<string name="bms_query_agent_retrieve_lab_path">bms-query-agent/retrieve/lab</string>
+<string name="bms_query_agent_retrieve_equipment_path">bms-query-agent/retrieve/equipment</string>
+<string name="bms_update_agent_wacnet_write_path">bms-update-agent/wacnet/write</string>
+<string name="bms_update_agent_set_path">bms-update-agent/set</string>
+<string name="feature_info_agent_get_path">feature-info-agent/get</string>
+
+<!-- fumehood iri, setpoint iri and control mode iri-->
+<string name="VAV_E7_1_flow_sp"></string>
+<string name="VAV_E7_1_control_mode"></string>
+<string name="VAV_E7_1_iri"></string>
+
+<string name="VAV_E7_2_flow_sp"></string>
+<string name="VAV_E7_2_control_mode"></string>
+<string name="VAV_E7_2_iri"></string>
+
+<string name="CH_7_7_CAV_flow_sp"></string>
+<string name="CH_7_7_CAV_control_mode"></string>
+<string name="CH_7_7_CAV_iri"></string>
+</resources>

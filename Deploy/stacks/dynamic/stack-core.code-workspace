@@ -20,6 +20,9 @@
 		},
 		{
 			"path": "../../../JPS_BASE_LIB"
+		},
+		{
+			"path": "third-party/postgis"
 		}
 	],
 	"settings": {

@@ -1,0 +1,4 @@
+Add national grid Substations / Transformers ShapeFile files here. Download as .zip from https://connecteddata.nationalgrid.co.uk/dataset/?groups=system-and-network&res_format=ZIP. 
+
+### Required Files
+[132kV Transformers](https://connecteddata.nationalgrid.co.uk/dataset/132kv_gm_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [66kV Ground Mounted Substations](https://connecteddata.nationalgrid.co.uk/dataset/66kv_gm_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [33kV Transformers](https://connecteddata.nationalgrid.co.uk/dataset/33kv-transformers), [11kV Transformers](https://connecteddata.nationalgrid.co.uk/dataset/11kv-transformers)

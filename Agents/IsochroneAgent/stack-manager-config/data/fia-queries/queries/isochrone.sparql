@@ -1,0 +1,91 @@
+PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX iso: <https://www.theworldavatar.com/kg/ontoisochrone/>
+
+SELECT DISTINCT ?Property ?Value ?Unit
+WHERE {
+SERVICE [ONTOP] {
+SELECT DISTINCT ?Property ?Value ?Unit
+WHERE {
+            {
+                [IRI] iso:assumesTransportMode ?transportmode_iri.
+                ?transportmode_iri a ?TransportMode.
+              
+                BIND ("Transport Mode" AS ?Property )
+                BIND (replace(str(?TransportMode), str(iso:), '') AS ?Value)
+            }
+          UNION
+                      {
+                [IRI] iso:originatesFrom ?poi_iri.
+                ?poi_iri a ?poi_type.
+                ?poi_iri obe:hasPropertyUsage ?usage.
+                ?usage obe:hasUsageLabel ?Value.
+              
+                BIND ("Isochrone Origins" AS ?Property )
+            }
+          UNION
+                      
+          {
+                [IRI] iso:hasTimeThreshold ?timeThreshold.
+           
+              
+                BIND ("Time Threshold" AS ?Property )
+                BIND (?timeThreshold AS ?Value)
+                BIND ("minutes" AS ?Unit)
+            }
+          UNION
+                    
+            {
+                [IRI] iso:hasRoadCondition ?roadcondition_iri.
+                ?roadcondition_iri a ?RoadCondition.
+              
+                BIND ("Road Condition" AS ?Property )
+                BIND (replace(str(?RoadCondition), str(iso:), '') AS ?Value)
+            }
+          UNION
+           {
+                [IRI] iso:hasTotalPopulation ?totalpopulation.
+              
+                BIND ("Total Population" AS ?Property )
+                BIND (?totalpopulation AS ?Value)
+            }
+          UNION
+          {
+            [IRI] iso:hasMenPopulation ?population_men
+            BIND ("Male Population" AS ?Property)
+            BIND (?population_men AS ?Value)
+          }
+          UNION
+          {
+            [IRI] iso:hasWomenPopulation ?population_female
+            BIND ("Female Population" AS ?Property)
+            BIND (?population_female AS ?Value)
+          }
+                    UNION
+          {
+            [IRI] iso:hasWomenofReproductiveAge ?repro_population_female
+            BIND ("Women of Reproductive Age Population" AS ?Property)
+            BIND (?repro_population_female AS ?Value)
+          }
+                    UNION
+          {
+            [IRI] iso:hasChildrenPopulation ?population_child
+            BIND ("Children Population" AS ?Property)
+            BIND (?population_child AS ?Value)
+          }
+                              UNION
+          {
+            [IRI] iso:hasYouthPopulation ?population_youth
+            BIND ("Youth Population" AS ?Property)
+            BIND (?population_youth AS ?Value)
+          }
+                                        UNION
+          {
+            [IRI] iso:hasElderlyPopulation ?population_elderly
+            BIND ("Elderly Population" AS ?Property)
+            BIND (?population_elderly AS ?Value)
+          }
+    }
+}
+}

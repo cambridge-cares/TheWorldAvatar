@@ -49,16 +49,6 @@ public class ContainerClient extends BaseClient {
         return dockerClient.getCommandErrorCode(execId);
     }
 
-    protected void handleErrors(ByteArrayOutputStream errorStream, String execId, Logger logger) {
-        long commandErrorCode = getCommandErrorCode(execId);
-        if (0 != commandErrorCode) {
-            throw new RuntimeException("Docker exec command returned '" + commandErrorCode
-                    + "' and wrote the following to stderr:\n" + errorStream.toString());
-        } else {
-            logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
-        }
-    }
-
     protected final Optional<String> getEnvironmentVariable(String containerId, String key) {
         return dockerClient.getEnvironmentVariable(containerId, key);
     }
@@ -126,6 +116,16 @@ public class ContainerClient extends BaseClient {
 
     protected final String getContainerId(String containerName) {
         return dockerClient.getContainerId(containerName);
+    }
+
+    protected final void handleErrors(ByteArrayOutputStream errorStream, String execId, Logger logger) {
+        long commandErrorCode = getCommandErrorCode(execId);
+        if (0 != commandErrorCode) {
+            throw new RuntimeException("Docker exec command returned '" + commandErrorCode
+                    + "' and wrote the following to stderr:\n" + errorStream.toString());
+        } else {
+            logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
+        }
     }
 
 }

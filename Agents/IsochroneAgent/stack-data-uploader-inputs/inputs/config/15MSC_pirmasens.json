@@ -1,0 +1,197 @@
+{
+    "name": "15MSC_pirmasens",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "15MSC_pirmasens",
+	"namespace": "kb",
+    "dataSubsets": [
+      {
+        "type": "raster",
+        "name": "population",
+        "skip": false,
+        "subdirectory": "population",
+        "gdalTranslateOptions": {
+            "sridIn": "EPSG:4326"
+        },
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "twa:uk-population-style"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_childrenU5",
+        "skip": false,
+        "subdirectory": "population_childrenU5",
+        "gdalTranslateOptions": {
+            "sridIn": "EPSG:4326"
+        },
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "twa:uk-population-style"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_elderly",
+        "skip": false,
+        "subdirectory": "population_elderly",
+        "gdalTranslateOptions": {
+            "sridIn": "EPSG:4326"
+        },
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "twa:uk-population-style"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_men",
+        "skip": false,
+        "subdirectory": "population_men",
+        "gdalTranslateOptions": {
+            "sridIn": "EPSG:4326"
+        },
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "twa:uk-population-style"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_women",
+        "skip": false,
+        "subdirectory": "population_women",
+        "gdalTranslateOptions": {
+            "sridIn": "EPSG:4326"
+        },
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "twa:uk-population-style"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_women_reproductive",
+        "skip": false,
+        "subdirectory": "population_women_reproductive",
+        "gdalTranslateOptions": {
+            "sridIn": "EPSG:4326"
+        },
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "twa:uk-population-style"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_youth",
+        "skip": false,
+        "subdirectory": "population_youth",
+        "gdalTranslateOptions": {
+            "sridIn": "EPSG:4326"
+        },
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "twa:uk-population-style"
+            }
+        }
+    },{
+        "type": "OSMRouting",
+        "skip": false,
+        "schema": "public",
+        "subdirectory": "routing",
+        "name": "routing",
+        "verticesGeoServerSettings": {
+            "virtualTable": {
+                "name": "routing",
+                "sql": "@/inputs/data/pirmasens/sql/nearest_vertex.sql",
+                "escapeSql": false,
+                "geometry": {
+                    "name": "the_geom",
+                    "type": "Point",
+                    "srid": 4326
+                },
+                "parameters": [
+                    {
+                        "name": "lon",
+                        "defaultValue": "1",
+                        "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                    },
+                    {
+                        "name": "lat",
+                        "defaultValue": "10",
+                        "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                    }
+                ]
+            }
+        },            
+        "waysGeoServerSettings": {
+            "virtualTable": {
+                "name": "routing",
+                "sql": "@/inputs/data/pirmasens/sql/roaddisplay.sql",
+                "escapeSql": false,
+                "geometry": {
+                    "name": "the_geom",
+                    "type": "MultiLineString",
+                    "srid": 4326
+                }
+            }
+        },
+        "poiGeoServerSettings": {
+            "virtualTable": {
+                "name": "routing",
+                "sql": "@/inputs/data/pirmasens/sql/shortest_paths.sql",
+                "escapeSql": false,
+                "geometry": {
+                    "name": "the_geom",
+                    "type": "MultiLineString",
+                    "srid": 4326
+                },
+                "parameters": [
+                    {
+                        "name": "source",
+                        "defaultValue": "1",
+                        "regexpValidator": "^[\\d]+$"
+                    },
+                    {
+                        "name": "target",
+                        "defaultValue": "10",
+                        "regexpValidator": "^[\\d]+$"
+                    }
+                ]
+            }
+        }
+    },
+	        {
+            "type": "rdf",
+			"subdirectory": "ontoisochrone",
+            "skip": false
+        }
+
+	],
+    "styles": [
+        {
+            "name": "uk-population-style",
+            "file": "uk-population-style.sld"
+        }
+    ]
+}

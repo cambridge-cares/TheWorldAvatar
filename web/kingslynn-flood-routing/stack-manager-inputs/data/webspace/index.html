@@ -1,0 +1,650 @@
+<!DOCTYPE !DOCTYPE html>
+<html lang="en" xml:lang="en">
+
+<head>
+    <title>Flood Routing Tool</title>
+
+    <!-- JS -->
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+    <script
+        src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
+    <script src="./twa-vf/twa-vf.min.js" charset="utf-8"></script>
+    <script src="./local.js"></script>
+
+    <!-- CSS -->
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css"
+        rel="stylesheet">
+    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+    <link href="./twa-vf/twa-vf.min.css" rel="stylesheet" />
+    <link href="./local.css" rel="stylesheet" />
+
+</head>
+
+<body>
+    <!-- Container the map will be added to -->
+    <div id="map"></div>
+
+    <!-- ===== CUSTOMISABLE ===== -->
+    <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
+
+    <!-- Element for depth of field overlay -->
+    <div id="tiltShift"></div>
+
+    <!-- Element the map controls will be added to (normally on the left) -->
+    <div id="controlsContainer">
+        <div id="controlContainer">
+
+            <!-- Camera controls -->
+            <div id="cameraContainer" class="controlBlock">
+                <div id="controlTitle" class="controlTitle">
+                    <p>Camera</p>
+                    <div class="tooltip">
+                        <label class="switch"><input type="checkbox"
+                                onclick="MapboxUtils.setTiltshift(this.checked)"><span class="slider round">
+                                <p>DoF</p></label>
+                        <span class="tooltiptext">Toggle depth of field effect</span>
+                    </div>
+                </div>
+                <div class="controlContents">
+                    <a href="#" onclick="MapboxUtils.resetCamera()">Reset to default</a><br />
+                </div>
+            </div>
+
+            <!-- Terrain controls -->
+            <div id="terrainContainer" class="controlBlock">
+                <div id="controlTitle" class="controlTitle">
+                    <p>Imagery</p>
+                    <div class="tooltip">
+                        <label class="switch"><input type="checkbox"
+                                onclick="MapboxUtils.set3DTerrain(this.checked)"><span class="slider round">
+                                <p>3D</p></label>
+                        <span class="tooltiptext">Toggle 3D terrain</span>
+                    </div>
+                </div>
+                <div id="imageryContainer" class="controlContents">
+                </div>
+            </div>
+
+            <!-- Layer controls -->
+            <div id="layerContainer" class="controlBlock">
+                <div id="controlTitle" class="controlTitle">
+                    <p>Layers</p>
+                    <div class="tooltip" id="placenameContainer">
+                        <label class="switch"><input type="checkbox"
+                                onclick="MapboxUtils.setPlacenames(this.checked)"><span class="slider round">
+                                <p>PNs</p></label>
+                        <span class="tooltiptext">Toggle place names, labels, and roads </span>
+                    </div>
+                </div>
+                <div class="controlContents">
+                    <div id="layerTreeContainer">
+                        <div class="hummingbird-treeview-converter"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Container for the clickable box for routing routes -->
+            <div id="routesContainer" class="controlBlock">
+                <div id="controlTitle" class="controlTitle">
+
+                    <p>Show Routes</p>
+
+                    <div class="tooltip" id="routeTooltip">
+                        <span class="tooltiptext">Different vehicles have different wading capability.</span>
+                        <span>?</span>
+
+                    </div>
+                </div>
+                <div class="controlContents">
+                    <div>
+                        <input type="checkbox" id="toggleRoutesCheckbox1" checked
+                            onclick="MapHandler.MAP.setLayoutProperty('my-layer-10', 'visibility', (this.checked) ? 'visible' : 'none');">
+                        <span>10cm Wading Depth</span>
+                        <div id="displayValue_10"></div>
+
+                    </div>
+
+                    <div>
+
+                        <input type="checkbox" id="toggleRoutesCheckbox2" checked
+                            onclick="MapHandler.MAP.setLayoutProperty('my-layer-30', 'visibility', (this.checked) ? 'visible' : 'none');">
+                        <span>30cm Wading Depth</span>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="toggleRoutesCheckbox3" checked
+                            onclick="MapHandler.MAP.setLayoutProperty('my-layer-90', 'visibility', (this.checked) ? 'visible' : 'none');">
+                        <span>90cm Wading Depth</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Container for the clickable box for TSP TSP -->
+            <div id="tspContainer" class="controlBlock">
+                <div id="controlTitle" class="controlTitle">
+
+                    <p>Show TSP</p>
+
+                    <div class="tooltip" id="routeTooltip">
+                        <span class="tooltiptext">Fastest route to fix all the flooded power stations.</span>
+                        <span>?</span>
+
+                    </div>
+                </div>
+                <div class="controlContents">
+                    <div>
+                        <input type="checkbox" id="toggleTSPCheckbox_normal"
+                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-normal', 'visibility', (this.checked) ? 'visible' : 'none');
+                                     MapHandler.MAP.setLayoutProperty('tsp-layer-normal_seq', 'visibility', (this.checked) ? 'visible' : 'none');">
+                        <span>Normal road conditions</span>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="toggleTSPCheckbox_30"
+                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-30', 'visibility', (this.checked) ? 'visible' : 'none');
+                                     MapHandler.MAP.setLayoutProperty('tsp-layer-30_seq', 'visibility', (this.checked) ? 'visible' : 'none');">
+                        <span>30cm Wading Depth</span>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="toggleTSPCheckbox_90"
+                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-90', 'visibility', (this.checked) ? 'visible' : 'none');
+                                     MapHandler.MAP.setLayoutProperty('tsp-layer-90_seq', 'visibility', (this.checked) ? 'visible' : 'none');">
+                        <span>90cm Wading Depth</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Container for developer info -->
+            <div id="developerContainer" class="controlBlock" style="display: none;">
+                <div class="tooltip" id="coordEditor" style="float: right;">
+                    <i class="fas fa-pencil-alt"
+                        onclick="event.stopPropagation(); manager.getControlHandler().editInfoPanel()"></i>
+                    <span class="tooltiptext">Change map position</span>
+                </div>
+                <div id="coordsContainer" style="width: 100%; height: 100%;"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Distance container to show lengths of routes -->
+    <div id="distance" class="distance-container">
+        <p>Select start and end points</p>
+    </div>
+
+    <!-- Side panel for content and metdata -->
+    <div id="sidePanel" class="large expanded">
+        <div class="tooltip" id="slideButtonContainer">
+            <i class="fas fa-chevron-right" id="slideButton" width="16px" class="leftButton" height="16px"
+                onclick="manager.getPanelHandler().toggleExpansion()"></i>
+            <span class="tooltiptext">Expand/Collapse</span>
+        </div>
+        <div class="tooltip" id="expandButtonContainer">
+            <i class="fas fa-expand" id="expandButton" width="16px" class="rightButton" height="16px"
+                onclick="manager.getPanelHandler().toggleMode()"></i>
+            <span class="tooltiptext">Maximise/Minimise</span>
+        </div>
+        <div id="sidePanelInner">
+            <ul>
+                <li><a href="#sidePanelGeneral">General</a></li>
+                <li><a href="#sidePanelLinks">Attributions</a></li>
+            </ul>
+            <div id="sidePanelGeneral">
+                <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
+                <div id="contentContainer"></div>
+            </div>
+            <div id="sidePanelLinks">
+                <p>Contains OS data &copy; Crown copyright and database rights 2022 (100025252)<br><br>
+                    Contains public sector information licensed under the Open Government Licence v3.0.<br><br>
+                    This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"
+                </p>
+            </div>
+            <div id="footerContainer">
+                <div id="footerContent"></div>
+            </div>
+        </div>
+        <div id="returnContainer" style="display: none;">
+            <div id="innerReturnContainer">
+                <a href="#" onclick="manager.getPanelHandler().returnToDefault()"><i class="fas fa-arrow-left"
+                        width="16px" height="16px"></i> Return</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code entry point -->
+    <script>
+        // Log the version of the TWA-VF being used.
+        getVisVersion().then(result => console.log("Using TWA-VF " + result));
+
+        $("#sidePanelInner").tabs();
+
+        // Create a new manager instance
+        var manager = new Manager(MapProvider.MAPBOX);
+        window.manager = manager;
+
+        // Read credentials
+        manager.readCredentials().then(() => {
+
+            // Only start the map after data definitions have been read.
+            var dataPromise = manager.loadDefinitions();
+            dataPromise.then(() => start());
+            dataPromise.then(() => getRouteStart());
+            dataPromise.then(() => addHospital());
+
+            // Start when credentials and definitions have been loaded
+
+            /**
+             * Starts the visualisation setup process.
+             */
+            function start() {
+                // Initialise the map object
+                manager.initialiseMap();
+                manager.getPanelHandler().setTitle("<h1>Flood Routing tool</h1>");
+                manager.getPanelHandler().setContent(`
+                <p>
+                    This demonstrator visualisation is instantiated in The World Avatar&trade;.<br><br>
+
+                    It combines flood, elevation, open road data and population data. Building data has been hidden for this demonstrator but can be enabled in TWA configuration. <br><br>
+
+                    Drag and drop the pins to view the best available routes between two points in the given flood scenario. Different wading depths represent different vehicle types. Vehicles with deeper water wading capability bight be required to access certain flooded areas. <br><br>
+
+                    Isochrones represent areas of equal travel time from the hospital, and can be used to evaluate what population is unreachable in target time during the flood scenario. Click on the red unreachable population shape to view the number of residents unreachable. <br><br>
+
+                    Asset owners can utilise a similar instantiation to analyse access to their locations in a quickest 'traveling salesman problem' way during a flood. Example used here are synthetically placed power substations. <br><br>
+
+                    Use the layer controls to show/hide various layers. 
+                  </p>
+                `);
+
+                manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+                manager.getPanelHandler().addWaveAnimation();
+
+                // Save general tab state as default
+                manager.getPanelHandler().storeDefault();
+
+                // Once the underlying style has loaded...
+                MapHandler.MAP.on("style.load", function () {
+                    // Load registered images and linked files
+                    manager.loadImagesAndLinks().then(() => {
+                        manager.plotData();
+                    });
+                });
+
+            }
+
+            function addHospital() {
+                var markerCoordinates = [0.44596810988223834, 52.75684401611818];
+                var hospitalIcon = "https://theworldavatar.io/demos/flood-routing/geoserver/www/icons/health-hospital.png";
+
+                // Create a new marker instance with the hospital icon
+                new mapboxgl.Marker({
+                    element: createHospitalIconElement(hospitalIcon), // Create a custom icon element
+                    draggable: false
+                })
+                    .setLngLat(markerCoordinates)
+                    .addTo(MapHandler.MAP);
+
+                // Create the box container
+                var boxContainer = document.createElement('div');
+                boxContainer.className = 'box-container';
+                boxContainer.innerHTML = '<h2>Mapbox JS Div Container Display</h2>' +
+                    '<p>This is a box displayed as a JS-generated div container on top of the Mapbox map.</p>';
+                document.body.appendChild(boxContainer);
+            }
+
+            // Function to create a custom hospital icon element
+            function createHospitalIconElement(iconUrl) {
+                var iconElement = document.createElement('div');
+                iconElement.className = 'custom-marker';
+                iconElement.style.backgroundImage = 'url(' + iconUrl + ')';
+                iconElement.style.backgroundSize = 'cover';
+                iconElement.style.width = '30px';
+                iconElement.style.height = '30px';
+                iconElement.style.zIndex = 1;
+                return iconElement;
+            }
+
+            // Global object to store data and layers
+            var routeData = {
+                'my-data-10': null,
+                'my-data-30': null,
+                'my-data-90': null,
+                'my-layer-10': null,
+                'my-layer-30': null,
+                'my-layer-90': null,
+                'tsp-data-normal': null,
+                'tsp-layer-normal': null,
+                'tsp-data-30': null,
+                'tsp-layer-30': null,
+                'tsp-data-90': null,
+                'tsp-layer-90': null,
+                'tsp-data-normal_seq': null,
+                'tsp-layer-normal_seq': null,
+                'tsp-data-30_seq': null,
+                'tsp-layer-30_seq': null,
+                'tsp-data-90_seq': null,
+                'tsp-layer-90_seq': null
+            };
+
+
+
+
+            function getRouteStart() {
+                // draggable marker for starting point
+                var sourceMarker = new mapboxgl.Marker({
+                    draggable: true,
+                    color: "#808080"
+                })
+                    .setLngLat([0.43321000694120926, 52.77256458644632])
+                    .addTo(MapHandler.MAP);
+                sourceMarker.getElement().style.zIndex = 999;
+
+                sourceMarker.on("dragend", function (e) {
+                    console.log('Start Point moved to', e.target.getLngLat());
+                    selectedPoint = e.target.getLngLat();
+                    getVertex(selectedPoint);
+
+                    removeLayer();
+                    let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
+                    let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
+                    let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
+
+                    let tsp_normal = getRouteTSP('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
+                    let tsp_30 = getRouteTSP('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
+                    let tsp_90 = getRouteTSP('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
+                    let tsp_normal_seq = getRouteTSP_seq('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
+                    let tsp_30_seq = getRouteTSP_seq('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
+                    let tsp_90_seq = getRouteTSP_seq('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
+                    Promise.all([promise_10, promise_30, promise_90, tsp_normal, tsp_30, tsp_90, tsp_normal_seq, tsp_30_seq, tsp_90_seq,]).then(() => { populateDistanceContainer() });
+                });
+
+
+
+                // draggable marker for destination point
+                var targetMarker = new mapboxgl.Marker({
+                    draggable: true,
+                    color: "#FF0000"
+                })
+                    .setLngLat([0.42379297261513216, 52.75383051061422])
+                    .addTo(MapHandler.MAP);
+                targetMarker.getElement().style.zIndex = 998; // Set a high z-index value
+
+                targetMarker.on("dragend", function (e) {
+                    console.log('End Point moved to', e.target.getLngLat());
+                    selectedPoint = e.target.getLngLat();
+                    getVertex(selectedPoint);
+                    removeLayer();
+                    let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
+                    let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
+                    let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
+                    Promise.all([promise_10, promise_30, promise_90]).then(() => { populateDistanceContainer() });
+                });
+
+                function getVertex(selectedPoint) {
+                    var url = `https://theworldavatar.io/demos/flood-routing/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn:routing_ways_vertices_pgr&outputformat=application/json&viewparams=lon:${selectedPoint.lng};lat:${selectedPoint.lat};`;
+
+                    $.ajax({
+                        url: url,
+                        async: false,
+                        success: function (data) {
+                            loadVertex(
+                                data,
+                                selectedPoint.toString() === sourceMarker.getLngLat().toString()
+                            );
+                        }
+                    });
+                }
+                // function to update the source and target nodes as returned from geoserver for later querying
+                function loadVertex(response, isSource) {
+                    var features = response.features;
+                    if (isSource) {
+                        source = features[0].properties.id;
+                    } else {
+                        target = features[0].properties.id;
+                    }
+                }
+
+                // function to get TSP routes
+                function getRouteTSP(sourceName, layerId, checkboxId, lineColour, typeName) {
+                    var url = `https://theworldavatar.io/demos/flood-routing/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}&outputFormat=application%2Fjson&viewparams=target:${source};`
+
+                    // Retrieve the GeoJSON data from the URL
+                    return fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Add the GeoJSON data as a source
+                            MapHandler.MAP.addSource(sourceName, {
+                                type: 'geojson',
+                                data: data
+                            });
+                            routeData[sourceName] = data;
+                            routeData[layerId] = MapHandler.MAP.addLayer({
+                                id: layerId,
+                                type: 'line',
+                                source: sourceName,
+                                paint: {
+                                    'line-color': lineColour,
+                                    'line-opacity': 1,
+                                    'line-width': 3
+                                }
+                            });
+
+                            // Set layer visibility based on checkbox state
+                            var checkbox = document.getElementById(checkboxId);
+                            if (checkbox.checked) {
+                                MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'visible');
+                            } else {
+                                MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'none');
+                            }
+                        });
+
+                }
+
+                // function to get TSP routes
+                function getRouteTSP_seq(sourceName, layerId, checkboxId, lineColour, typeName) {
+
+                    var tspSeqUrl = `https://theworldavatar.io/demos/flood-routing/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}_seq&outputFormat=application%2Fjson&viewparams=target:${source};`
+                    // Add the TSP sequence layer
+                    return fetch(tspSeqUrl)
+                        .then(response => response.json())
+                        .then(seqData => {
+                            MapHandler.MAP.addSource(`${sourceName}_seq`, {
+                                type: 'geojson',
+                                data: seqData
+                            });
+
+                            routeData[`${sourceName}_seq`] = seqData;
+
+                            routeData[`${layerId}_seq`] = MapHandler.MAP.addLayer({
+                                id: `${layerId}_seq`,
+                                type: 'symbol',
+                                source: `${sourceName}_seq`,
+                                layout: {
+                                    'text-field': [
+                                        'case',
+                                        ['!=', ['get', 'seq'], null], // Check if 'seq' is not null
+                                        ['get', 'seq'],
+                                        'Unreachable' // Default value if 'seq' is null
+                                    ],
+                                    'text-size': 50,
+                                    'text-offset': [0, -1.5],
+                                    'symbol-spacing': 10, // Adjust the spacing between symbols
+                                },
+                                paint: {
+                                    'text-color': lineColour,
+                                    'text-halo-blur': 10,
+                                    'text-halo-color': '#FFFFFF',
+                                    "text-halo-width": 10
+                                }
+                            });
+
+
+
+
+                            // Set layer visibility based on checkbox state
+                            var checkbox = document.getElementById(checkboxId);
+                            if (checkbox.checked) {
+                                MapHandler.MAP.setLayoutProperty(`${layerId}_seq`, 'visibility', 'visible');
+                            } else {
+                                MapHandler.MAP.setLayoutProperty(`${layerId}_seq`, 'visibility', 'none');
+                            }
+                        });
+
+
+                }
+
+                // // function to get the shortest path from the give source and target nodes
+                function getRoute(sourceName, layerId, checkboxId, lineColour, typeName) {
+                    var url = `https://theworldavatar.io/demos/flood-routing/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=${typeName}&outputformat=application/json&viewparams=source:${source};target:${target};`;
+
+                    // Retrieve the GeoJSON data from the URL
+                    return fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Add the GeoJSON data as a source
+                            MapHandler.MAP.addSource(sourceName, {
+                                type: 'geojson',
+                                data: data
+                            });
+                            routeData[sourceName] = data;
+                            routeData[layerId] = MapHandler.MAP.addLayer({
+                                id: layerId,
+                                type: 'line',
+                                source: sourceName,
+                                paint: {
+                                    'line-color': lineColour,
+                                    'line-opacity': 1,
+                                    'line-width': 3
+                                }
+                            });
+                            // Set layer visibility based on checkbox state
+                            var checkbox = document.getElementById(checkboxId);
+                            if (checkbox.checked) {
+                                MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'visible');
+                            } else {
+                                MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'none');
+                            }
+                        });
+                };
+
+                // function to remove the layer
+                function removeLayer() {
+                    // Remove main layers and sources and set variables to null
+                    removeMainLayer('my-layer-90', 'my-data-90');
+                    removeMainLayer('my-layer-30', 'my-data-30');
+                    removeMainLayer('my-layer-10', 'my-data-10');
+
+                    // Remove TSP sequence layers and sources
+                    removeTSPLayer('tsp-layer-normal', 'tsp-data-normal');
+                    removeTSPLayer('tsp-layer-30', 'tsp-data-30');
+                    removeTSPLayer('tsp-layer-90', 'tsp-data-90');
+                }
+
+                function removeMainLayer(layerId, sourceId) {
+                    if (MapHandler.MAP.getLayer(layerId) != null) {
+                        MapHandler.MAP.removeLayer(layerId);
+                        MapHandler.MAP.removeSource(sourceId);
+                    }
+                }
+
+                function removeTSPLayer(layerId, sourceId) {
+                    // Remove TSP sequence layer and source
+                    if (MapHandler.MAP.getLayer(layerId) != null) {
+                        MapHandler.MAP.removeLayer(layerId);
+                        MapHandler.MAP.removeSource(sourceId);
+                    }
+
+                    // Remove TSP sequence layer and source
+                    const seqLayerId = `${layerId}_seq`;
+                    const seqSourceId = `${sourceId}_seq`;
+                    if (MapHandler.MAP.getLayer(seqLayerId) != null) {
+                        MapHandler.MAP.removeLayer(seqLayerId);
+                        MapHandler.MAP.removeSource(seqSourceId);
+                    }
+                }
+                // function to populate distance container
+                function populateDistanceContainer() {
+                    const distanceContainer = document.getElementById('distance');
+                    const value = document.createElement('pre');
+
+                    let shortestRoute = {
+                        sourceName: '',
+                        totalLength: Number.MAX_SAFE_INTEGER, // Initialize to a high value
+                        description: '',
+                    };
+
+
+                    for (const sourceName of ['my-data-10', 'my-data-30', 'my-data-90']) {
+                        const data = routeData[sourceName];
+                        if (data?.features) {
+                            const features = data.features;
+                            const lineStrings = features.map((feature) => feature.geometry);
+                            const totalLength = lineStrings.reduce((acc, lineString) => {
+                                return acc + turf.length(lineString, { units: 'kilometres' });
+                            }, 0);
+                            console.log(totalLength)
+                            if (totalLength < shortestRoute.totalLength && totalLength > 0) {
+                                shortestRoute.sourceName = sourceName;
+                                shortestRoute.totalLength = totalLength;
+                            }
+                        }
+                    }
+
+                    if (shortestRoute.totalLength !== Number.MAX_SAFE_INTEGER) {
+                        if (shortestRoute.sourceName === 'my-data-10' && shortestRoute.totalLength !== 0) {
+                            console.log("10cm route available");
+                            shortestRoute.description = `Best available route: ${shortestRoute.totalLength.toLocaleString()} km, by any vehicle`;
+                        } else if (shortestRoute.sourceName === 'my-data-30' && shortestRoute.totalLength !== 0) {
+                            console.log("30cm route available");
+                            shortestRoute.description = `Best available route: ${shortestRoute.totalLength.toLocaleString()} km, by vehicle with medium wading depth`;
+                        } else if (shortestRoute.sourceName === 'my-data-90' && shortestRoute.totalLength !== 0) {
+                            console.log("90cm route available");
+                            shortestRoute.description = `Best available route: ${shortestRoute.totalLength.toLocaleString()} km, by vehicle with deep wading depth`;
+                        }
+                    } else {
+                        // No route available
+                        console.log("No possible route.");
+                        shortestRoute.description = `Area inaccessible`;
+                    }
+
+                    // Populate the distanceContainer with the shortest route
+                    value.textContent = shortestRoute.description;
+                    distanceContainer.innerHTML = '';
+                    distanceContainer.appendChild(value);
+                }
+                //To get initial route
+                function initialRoute() {
+                    getVertex(sourceMarker.getLngLat());
+                    getVertex(targetMarker.getLngLat());
+                    let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
+                    let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
+                    let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
+
+                    let tsp_normal = getRouteTSP('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
+                    let tsp_30 = getRouteTSP('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
+                    let tsp_90 = getRouteTSP('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
+                    let tsp_normal_seq = getRouteTSP_seq('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
+                    let tsp_30_seq = getRouteTSP_seq('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
+                    let tsp_90_seq = getRouteTSP_seq('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
+                    Promise.all([promise_10, promise_30, promise_90, tsp_normal, tsp_30, tsp_90, tsp_normal_seq, tsp_30_seq, tsp_90_seq,]).then(() => { populateDistanceContainer() });
+                }
+                dataPromise.then(() => initialRoute());
+            }
+        });
+    </script>
+
+
+</body>
+
+</html>
+
+</html>

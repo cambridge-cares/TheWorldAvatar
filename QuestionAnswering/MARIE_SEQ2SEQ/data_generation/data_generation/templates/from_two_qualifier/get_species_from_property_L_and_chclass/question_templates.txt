@@ -1,0 +1,21 @@
+Give me a list of species that have {PropertyName} lower than {value} and are classified as {ChemClass}
+Provide a compilation of chemical species with a {PropertyName} beneath {value}, categorized as {ChemClass}.
+List molecules having {PropertyName} less than {value} and falling under the classification of {ChemClass}.
+Enumerate compounds that exhibit a {PropertyName} below {value} and are designated as {ChemClass}.
+Give me a roster of chemical entities with {PropertyName} lower than {value}, belonging to the {ChemClass} category.
+Offer a record of species displaying a {PropertyName} beneath {value} and being characterized as {ChemClass}.
+Compile a list of molecules having {PropertyName} less than {value} and falling into the {ChemClass} grouping.
+Provide a catalogue of compounds exhibiting a {PropertyName} below {value} and classified as {ChemClass}.
+List chemical species with {PropertyName} lower than {value} and falling under the {ChemClass} classification.
+Enumerate molecules that display a {PropertyName} beneath {value} and are categorized as {ChemClass}.
+Give me a rundown of compounds showing {PropertyName} less than {value} and being assigned to {ChemClass}.
+Offer a collection of chemical entities with {PropertyName} lower than {value} and falling within the {ChemClass} category.
+Compile a registry of molecules exhibiting {PropertyName} below {value} and classified under {ChemClass}.
+Provide a comprehensive list of compounds having {PropertyName} less than {value} and falling into the {ChemClass} class.
+List chemical species demonstrating a {PropertyName} beneath {value} and being categorized as {ChemClass}.
+Enumerate molecules exhibiting {PropertyName} lower than {value} and being designated as {ChemClass}.
+Give me a record of compounds with {PropertyName} below {value} and falling under the classification of {ChemClass}.
+Offer a rundown of chemical entities that have {PropertyName} less than {value} and are categorized within {ChemClass}.
+Provide a catalog of molecules displaying {PropertyName} beneath {value} and classified as {ChemClass}.
+List compounds showing {PropertyName} lower than {value} and belonging to the {ChemClass} category.
+Compile a list of chemical species with {PropertyName} below {value} and falling into the {ChemClass} classification.

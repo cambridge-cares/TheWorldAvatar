@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} higher than {value1} and {PropertyName2} higher than {value2}
+Provide a catalog of chemical species exhibiting {PropertyName1} exceeding {value1} and {PropertyName2} surpassing {value2}.
+Enumerate molecules showcasing {PropertyName1} greater than {value1} and {PropertyName2} exceeding {value2}.
+List compounds with {PropertyName1} above {value1} and {PropertyName2} surpassing {value2}.
+Furnish a compilation of chemical entities having {PropertyName1} surpassing {value1} and {PropertyName2} higher than {value2}.
+Offer a roster of species demonstrating {PropertyName1} surpassing {value1} and {PropertyName2} exceeding {value2}.
+Present a register of molecules with {PropertyName1} higher than {value1} and {PropertyName2} surpassing {value2}.
+Detail a lineup of compounds featuring {PropertyName1} exceeding {value1} and {PropertyName2} higher than {value2}.
+Give a rundown of chemical species displaying {PropertyName1} surpassing {value1} and {PropertyName2} greater than {value2}.
+Share a list of molecules indicating {PropertyName1} surpassing {value1} and {PropertyName2} surpassing {value2}.
+Compile a record of compounds manifesting {PropertyName1} exceeding {value1} and {PropertyName2} exceeding {value2}.
+Provide an inventory of chemical entities with {PropertyName1} higher than {value1} and {PropertyName2} surpassing {value2}.
+List down molecules showcasing {PropertyName1} surpassing {value1} and {PropertyName2} surpassing {value2}.
+Offer a collection of compounds with {PropertyName1} above {value1} and {PropertyName2} exceeding {value2}.
+Furnish a database of chemical species exhibiting {PropertyName1} exceeding {value1} and {PropertyName2} higher than {value2}.
+Enumerate species showing {PropertyName1} greater than {value1} and {PropertyName2} surpassing {value2}.
+Provide a catalog of chemical compounds demonstrating {PropertyName1} surpassing {value1} and {PropertyName2} surpassing {value2}.
+List chemical species with {PropertyName1} above {value1} and {PropertyName2} exceeding {value2}.
+Present molecules with {PropertyName1} higher than {value1} and {PropertyName2} surpassing {value2}.
+Give a rundown of compounds featuring {PropertyName1} surpassing {value1} and {PropertyName2} higher than {value2}.
+Share a list of chemical entities indicating {PropertyName1} surpassing {value1} and {PropertyName2} surpassing {value2}.

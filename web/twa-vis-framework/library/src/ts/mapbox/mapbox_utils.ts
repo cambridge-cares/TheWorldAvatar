@@ -4,6 +4,16 @@
 class MapboxUtils {
 
     /**
+     * IRI of currently hovered feature.
+     */
+    public static HOVERED_IRI;
+
+    /**
+     * IRI of currently selected feature.
+     */
+    public static SELECTED_IRI;
+
+    /**
      * Returns true if the input feature is contained within a layer
      * created by CMCL (rather than an existing one from Mapbox).
      * 
@@ -24,10 +34,6 @@ class MapboxUtils {
                 if(!layer["metadata"]["attribution"] || layer["metadata"]["attribution"] !== "CMCL") {
                     return false;
                 }
-
-                if(!layer["metadata"]["clickable"]) {
-                    return false;
-                }
             }
 
             return true;
@@ -42,63 +48,40 @@ class MapboxUtils {
      * 
      * @param feature selected feature
      */
-    public static showPopup(event: Object, feature: Object) {
+    public static showPopup(feature: Object) {
         if(MapboxUtils.isCluster(feature)) {
-            MapboxUtils.showClusterPopup(event, feature);
+            MapboxUtils.showClusterPopup(feature);
             return;
         }
 
+        // Get metadata
         let properties = feature["properties"];
+        if(properties == null) return;
 
-        // Get feature details
-        let name = properties["name"];
-        if(name === null || name === undefined) return;
-
-        let desc = properties["description"];
-        if(desc == null && properties["desc"]) {
-            desc = properties["desc"];
-        }
-
-        // Make HTML string
-        let html = "";
-        if(desc == null) {
-            html += "<h3 style='text-align: center !important;'>" + name + "</h3>";
-        } else {
-            html += "<h3>" + name + "</h3>";
-            if(desc.length > 100) {
-                html += "<div class='desc-popup long-popup'></br>" + desc + "</div>";
-            } else {
-                html += "<div class='desc-popup'></br>" + desc + "</div>";
-            }
-        }
-
-        // Add thumbnail if present
-        if(properties["thumbnail"]) {
-            html += "<br/><br/>";
-            html += "<img class='thumbnail' src='" + properties["thumbnail"] + "'>";
-        }
-
-        // Show popup
-        MapHandler_Mapbox.POPUP.setLngLat(event["lngLat"])
-            .setHTML(html)
-            .addTo(MapHandler.MAP);
+        // Update and show popup
+        PopupHandler.updatePopup(properties);
+        PopupHandler.setVisibility(true);
     }
 
     /**
      * Build a popup for cluster features.
      */
-    private static showClusterPopup(event: Object, feature: Object) {
+    private static showClusterPopup(feature: Object) {
         let name = "Multiple locations";
         let desc = `
             This feature represents a cluster of ` + feature["properties"]["point_count"] + 
             ` (or more) closely spaced, individual locations.<br/>Click to see details on the underlying locations.
         `;
 
-        // Show popup
-        let html = "<h3>" + name + "</h3>" + desc;
-        MapHandler_Mapbox.POPUP.setLngLat(event["lngLat"])
-            .setHTML(html)
-            .addTo(MapHandler.MAP);
+        // Emulate feature metadata
+        let properties = {
+            "name": name,
+            "desc": desc
+        }
+
+        // Update and show popup
+        PopupHandler.updatePopup(properties);
+        PopupHandler.setVisibility(true);
     }   
 
     /**
@@ -158,8 +141,8 @@ class MapboxUtils {
      * @returns true if any layers present
      */
     public static anyLayersAdded(layerIDs) {
-        for(let i = 0; i < layerIDs.length; i++) {
-            let layerID = layerIDs[i];
+        for(const element of layerIDs) {
+            let layerID = element;
 
             if(MapHandler.MAP.getLayer(layerID) != null) {
                 return true;
@@ -171,30 +154,48 @@ class MapboxUtils {
     /**
      * True if any layers are currently visible
      */
-    public static anyLayersVisible(layerIDs: Array<String>) {
-        for(let i = 0; i < layerIDs.length; i++) {
-            let layerID = layerIDs[i];
+    public static anyLayersVisible(layerIDs: Array<string>) {
+        for(const element of layerIDs) {
+            let layerID = element;
             let prop = MapHandler.MAP.getLayoutProperty(layerID, "visibility");
             if(prop === "visible") return true;
         }
         return false;
     }
 
+    /**
+     * Returns true if the layer hosting the input feature is considered
+     * clickable.
+     * 
+     * @param feature feature within layer.
+     */
+    public static isLayerClickable(feature) {
+        let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
+        if(layer == null) return false;
+
+        let clickable = (layer.interactions === "all" || layer.interactions === "click-only");
+        return clickable;
+    }
 
     /**
-     * Change the underlying Mapbox style.
+     * Change the underlying Mapbox imagery style.
      * 
-     * @param {String} mode {"light", "dark", "satellite", "satellite-streets"}
+     * @param {String} mode terrain mode (i.e. "light", "dark" etc.)
      */
     public static  changeTerrain(mode) {
+        // Skip if selecting the same again
+        if(window.terrain.toUpperCase() === mode.toUpperCase()) return;
+
+        // Get the imagery URL for the chosen setting.
         let imagerySettings = Manager.SETTINGS.getSetting("imagery");
         if(imagerySettings == null) return;
 
+        // Update the imagery URL 
         let url = imagerySettings[mode];
         if(url == null) return;
-        
         if(url.endsWith("_token=")) url += MapHandler.MAP_API;
 
+        // Push new style URL to Mapbox map
         MapHandler.MAP.setStyle(url);
         MapHandler.MAP.setProjection({
             name: 'mercator'
@@ -202,42 +203,26 @@ class MapboxUtils {
 
         // Store the current terrain as a global variable
         window.terrain = mode;
-        
-        // Hide default building outlines
-        MapboxUtils.hideBuildings();
     }
 
     /**
      * Generates a JSON object defining the default imagery options if none is provided
      * by the developer in the settings.json file.
      */
-      public static generateDefaultImagery() {
+    public static generateDefaultImagery() {
         let imagerySettings = {};
 
         // Add possible imagery options
         imagerySettings["Light"] = "mapbox://styles/mapbox/light-v11?optimize=true";
         imagerySettings["Dark"] = "mapbox://styles/mapbox/dark-v11?optimize=true";
-        imagerySettings["Outdoors"] = "mapbox://styles/mapbox/outdoors-v11?optimize=true";
-        imagerySettings["Satellite"] = "mapbox://styles/mapbox/satellite-streets-v11?optimize=true";
+        imagerySettings["Outdoors"] = "mapbox://styles/mapbox/outdoors-v12?optimize=true";
+        imagerySettings["Satellite"] = "mapbox://styles/mapbox/satellite-streets-v12?optimize=true";
 
         // Set default imagery to Light
         imagerySettings["default"] = "Light";
 
         // Push settings
         Manager.SETTINGS.putSetting("imagery", imagerySettings);
-    }
-
-    /**
-     * Hide building outlines provided by Mapbox as these may conflict with custom
-     * building data.
-     */
-    public static hideBuildings() {
-        if(MapHandler.MAP == null) return;
-
-        let ids = ["building", "building-outline", "building-underground"];
-        ids.forEach(id => {
-            if(MapHandler.MAP.getLayer(id) != null) MapHandler.MAP.setLayoutProperty(id, "visibility", "none");
-        });
     }
 
     /**
@@ -365,58 +350,32 @@ class MapboxUtils {
 	 * @param {boolean} visible desired visibility.
 	 */
 	public static toggleLayer(layerID, visible) {
-		if(MapHandler.MAP.getLayer(layerID) === undefined) return;
-        if(layerID.endsWith("_cluster")) return;
+        // Get the original layer definition
+        let layerObject = Manager.DATA_STORE.getLayerWithID(layerID);
+        if(layerObject == null) return;
 
+        // Skip if setting to the same value
+        if(layerObject.getVisibility() === visible) return;
+
+        // Push the visibility to the Mapbox map
         MapHandler.MAP.setLayoutProperty(
             layerID,
             "visibility",
             (visible ? "visible" : "none")
         );
 
-        // Is there a corresponding _clickable layer?
-        if(MapHandler.MAP.getLayer(layerID + "_clickable") != null) {
-            MapHandler.MAP.setLayoutProperty(
-                layerID + "_clickable",
-                "visibility",
-                (visible ? "visible" : "none")
-            );
-        }
-
-        // Is there a corresponding _cluster layer?
-        if(MapHandler.MAP.getLayer(layerID + "_cluster") != null) {
-            MapHandler.MAP.setLayoutProperty(
-                layerID + "_cluster",
-                "visibility",
-                (visible ? "visible" : "none")
-            );
-        }
-
-        // Is there a corresponding _arrows layer?
-        if(MapHandler.MAP.getLayer(layerID + "_arrows") != null) {
-            MapHandler.MAP.setLayoutProperty(
-                layerID + "_arrows",
-                "visibility",
-                (visible ? "visible" : "none")
-            );
-        }
-
-        // Is there a corresponding -highlight layer?
-        if(MapHandler.MAP.getLayer(layerID + "-highlight") != null) {
-            MapHandler.MAP.setLayoutProperty(
-                layerID + "-highlight",
-                "visibility",
-                (visible ? "visible" : "none")
-            );
-        }
+        // Update the cached state within the layer definition
+        layerObject.cacheVisibility(visible);
+        console.log("Storing visibility for layer " + layerID + ", is now " + visible);
 	}
 
     /**
      * Given a list of features, this returns a new list without any
      * duplicates (as defined by matching IDs).
      * 
-     * @param features 
-     * @returns 
+     * @param features input feature list.
+     * 
+     * @returns deduplicated feature list.
      */
     public static deduplicate(features: Object[]) {
         let result = [];
@@ -454,6 +413,99 @@ class MapboxUtils {
             // @ts-ignore
             searchSelect.add(option);
         }
+    }
+
+    /**
+     * Updates certain layers style and filter to inject (or clear) any
+     * IRIs for the currently hovered or selected feature. Setting one of
+     * the input IRIs to null will clear that parameter (i.e. revert back
+     * to the placeholder string).
+     * 
+     * @param hoveredIRI IRI of hovered feature (can be null).
+     * @param selectedIRI IRI of selected feature (can be null).
+     */
+    public static updateStyleFilterInjections(hoveredIRI, selectedIRI) {
+        if(hoveredIRI === MapboxUtils.HOVERED_IRI && selectedIRI === MapboxUtils.SELECTED_IRI) return;
+
+        let layers = Manager.DATA_STORE.getLayerList();
+        layers.forEach(layer => {
+
+            if(hoveredIRI !== MapboxUtils.HOVERED_IRI) {
+                // Hover state changed, update properties
+                MapboxUtils.handleInjections(
+                    layer,
+                    "hover",
+                    (hoveredIRI == null) ? "[HOVERED-IRI]" : hoveredIRI,
+                    "[HOVERED-IRI]"
+                )
+            }
+
+            if(selectedIRI !== MapboxUtils.SELECTED_IRI) {
+                // Selection state changed, update properties
+                MapboxUtils.handleInjections(
+                    layer,
+                    "select",
+                    (selectedIRI == null) ? "[SELECTED-IRI]" : selectedIRI,
+                    "[SELECTED-IRI]"
+                )
+            }
+        });
+
+        // Cache the IRIs as we'll need to remove them from filters later.
+        MapboxUtils.HOVERED_IRI = hoveredIRI;
+        MapboxUtils.SELECTED_IRI = selectedIRI;
+    }
+
+
+    /**
+     * Injects/clears the IRIs of hovered or selected features from
+     * the style of the layer within the input ID.
+     * 
+     * @param layerObject target layer.
+     * @param injectionType type of injection ("hover", "select").
+     * @param newIRI IRI value to inject (null to clear).
+     * @param oldIRI IRI value to replace (could be null).
+     */
+    private static handleInjections(layerObject, injectionType, newIRI, oldIRI) {
+        // Skip is map is still loading the layer
+        if(MapHandler.MAP.getLayer(layerObject.id) == null) return;
+
+        let paintProps = layerObject.getCachedProperties(injectionType, "paint");
+        if(paintProps != null) {
+            for (const [key, value] of Object.entries(paintProps)) {
+                let newValue = MapboxUtils.updateProperty(value, newIRI, oldIRI);
+                MapHandler.MAP.setPaintProperty(layerObject.id, key, newValue);
+            }
+        }
+
+        let layoutProps = layerObject.getCachedProperties(injectionType, "layout");
+        if(layoutProps != null) {
+            for (const [key, value] of Object.entries(layoutProps)) {
+                let newValue = MapboxUtils.updateProperty(value, newIRI, oldIRI);
+                MapHandler.MAP.setLayoutProperty(layerObject.id, key, newValue);
+            }
+        }
+
+        let filter = layerObject.getCachedProperties(injectionType, "filter");
+        if(filter != null) {
+            let newValue = MapboxUtils.updateProperty(filter, newIRI, oldIRI);
+            MapHandler.MAP.setFilter(layerObject.id, newValue);
+        }
+    }
+
+    /**
+     * Handles injection for a single property/filter.
+     * 
+     * @param property property (JSON Object);
+     * @param newIRI IRI to be injected (null to clear);
+     * @param oldIRI IRI/placeholder to be replaced.
+     */
+    private static updateProperty(property, newIRI, oldIRI) {
+        if(newIRI === oldIRI) return property;
+
+        let propertyStr = JSON.stringify(property);
+        propertyStr = propertyStr.replaceAll(oldIRI, newIRI);
+        return JSON.parse(propertyStr);
     }
 
 }

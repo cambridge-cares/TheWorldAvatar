@@ -1,0 +1,2 @@
+# only require if required to run simulations with static point source
+POST http://localhost:3838/jurong-island-input-agent/update

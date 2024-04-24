@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  example:
+    image: ntu-data-agent:1.0.0
+    build: .
+    container_name: ntu-data-agent
+    ports:
+      - 1020:5000

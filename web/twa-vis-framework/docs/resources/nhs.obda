@@ -42,8 +42,8 @@ source          SELECT "OrganisationID" AS id ,
                 'GPPractice' AS type 
                 FROM "nhs_gp_practices"
 
-mappingId       nhs-gp-practitoner
-target          nhs:practitoner/{id} a nhs:Practitioner ;
+mappingId       nhs-gp-practitioner
+target          nhs:practitioner/{id} a nhs:Practitioner ;
                     nhs:hasId {id}^^xsd:string ;
                     nhs:hasName {name}^^xsd:string ;
                     nhs:hasType {type}^^xsd:string ;

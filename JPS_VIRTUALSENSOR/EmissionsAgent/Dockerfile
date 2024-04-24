@@ -16,7 +16,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 WORKDIR /root/code
 
 COPY pom.xml ./pom.xml
-RUN mvn clean dependency:resolve
+RUN --mount=type=cache,id=emission,target=/root/.m2/repository,sharing=locked mvn clean dependency:resolve
 
 #==================================================================================================
 
@@ -34,7 +34,7 @@ COPY pom.xml ./
 COPY src ./src/
 COPY WEB-INF ./WEB-INF/
 
-RUN mvn clean package -DskipTests -U
+RUN --mount=type=cache,id=emission,target=/root/.m2/repository,sharing=locked mvn package -DskipTests -U -P prod-profile
 
 #==================================================================================================
 

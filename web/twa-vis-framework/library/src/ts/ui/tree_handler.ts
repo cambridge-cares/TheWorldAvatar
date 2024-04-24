@@ -4,12 +4,27 @@
 class TreeHandler {
     
     /**
+     * Optional callbacks that fire with two lists of layerIDs (visible, hidden)
+     * when any change in the tree's selection state takes place.
+     */
+    private treeSelectionCallbacks = [];
+
+    /**
+     * Adds a callback that will fire fire with two lists of layerIDs (visible, hidden)
+     * when any change in the tree's selection state takes place.
+     * 
+     * @param treeSelectionCallback callback function.
+     */
+    public addTreeSelectionCallback(treeSelectionCallback) {
+        this.treeSelectionCallbacks.push(treeSelectionCallback);
+    }
+
+    /**
      * Triggers when any selection states in the tree change.
      */
     private registerEvents(dataStore: DataStore) {
-
         // Triggers when check events complete
-        // @ts-ignore
+        let self  = this;
         $("#treeview").on("CheckUncheckDone", function() {
 
             // Get all checked nodes
@@ -47,7 +62,11 @@ class TreeHandler {
                     hidden.forEach(layer => CesiumUtils.toggleLayer(layer, false));
                 break;
             }
-          
+
+            // Fire state change callbacks
+            self.treeSelectionCallbacks.forEach(callback => {
+                callback(visible, hidden);
+            });
         });
     }
 
@@ -55,7 +74,7 @@ class TreeHandler {
      * Rebuilds the tree based on the input DataStore instance.
      */
     public rebuild(dataStore: DataStore) {
-        // // Reset the element
+        // Reset the element
         let element = document.getElementById("treeview");
         element.innerHTML = "";
 
@@ -168,7 +187,7 @@ class TreeHandler {
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
                     let mbLayer = <MapboxLayer> value[0];
-                    if(mbLayer.isVisible()) preCheck.push(dataID);
+                    if(mbLayer.getVisibility()) preCheck.push(dataID);
                 break;
 
                 case MapProvider.CESIUM:
@@ -177,9 +196,13 @@ class TreeHandler {
 
                     if(dataSources == null || dataSources.length === 0) {
                         let visibility = csLayer.definition["visibility"];
+                        if(visibility == null && csLayer.definition.hasOwnProperty("layout")) {
+                            visibility = csLayer.definition["layout"]["visibility"];
+                        }
+            
                         if(visibility == null || visibility === "visible") preCheck.push(dataID);
                     } else {
-                        if(csLayer.isVisible()) preCheck.push(dataID);
+                        if(csLayer.getVisibility()) preCheck.push(dataID);
                     }
                 break;
             }

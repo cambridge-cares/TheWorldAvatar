@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  travellingsalesmanagent:
+    image: ghcr.io/cambridge-cares/travellingsalesmanagent:1.0.0
+    build: .
+    ports:
+      - "10106:8080"
+    volumes:
+      - ./inputs:/inputs
+

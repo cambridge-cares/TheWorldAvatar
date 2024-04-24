@@ -1,0 +1,78 @@
+{
+    "name": "upload_osmagent_results",
+    "database": "postgres",
+    "workspace": "twa",
+    "namespace": "kb",
+    "datasetDirectory": "osmagent_results",
+    "externalDatasets": [
+        "building-pirmasens"
+    ],
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "polygon",
+            "table": "polygons"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "point",
+            "table": "points"
+        },
+        {
+            "type": "Vector",
+            "sql": "@/inputs/data/osmagent_results/results/osmagent_results.sql",
+            "name": "building_usage",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "building_usage",
+                    "sql": "@/inputs/data/osmagent_results/results/sql/building_usage.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geometry",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "polygon"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmsie02f",
+            "skip": false,
+            "subdirectory": "sie02f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "areas_construction_with_names",
+                    "sql": "SELECT *, CASE\nWHEN \"OBJART_TXT\" = 'AX_IndustrieUndGewerbeflaeche' THEN 'Industrie/Gewerbe'\nWHEN \"OBJART_TXT\" = 'AX_SportFreizeitUndErholungsflaeche' THEN 'Sport/Freizeit/Erholung'\nWHEN \"OBJART_TXT\" = 'AX_Wohnbauflaeche' THEN 'Wohnbau'\nWHEN \"OBJART_TXT\" = 'AX_FlaecheGemischterNutzung' THEN 'Gemischte Nutzung'\nWHEN \"OBJART_TXT\" = 'AX_FlaecheBesondererFunktionalerPraegung' THEN 'Besondere Funktion'\nWHEN \"OBJART_TXT\" = 'AX_Friedhof' THEN 'Friedhof'\nELSE 'Andere Nutzung'\nEND AS name\nFROM \"dlmsie02f\"\n",
+                    "escapeSql": true,
+                    "keyColumn": "ogc_fid",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Polygon",
+                        "srid": 25832
+                    }
+                }
+            }
+        }
+        ,
+        {
+            "type": "rdf",
+            "subdirectory": "ontobuiltenv",
+            "skip": false
+        }
+    ],
+    "mappings": [
+        "building_usage.obda"
+    ]
+    
+}

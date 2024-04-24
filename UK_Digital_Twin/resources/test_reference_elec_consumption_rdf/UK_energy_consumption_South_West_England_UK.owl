@@ -1,0 +1,1533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#"
+   xmlns:ns2="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:ns3="http://www.w3.org/2002/07/owl#"
+   xmlns:ns4="https://dbpedia.org/ontology/"
+   xmlns:ns5="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Sedgemoor">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Sedgemoor"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Bristol">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Bristol"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Bristol"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bristol"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Torbay">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E06000027</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_East_Devon">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_East_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_East_Devon"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#North_Somerset">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_North_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/North_Somerset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Bournemouth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Bournemouth"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Bournemouth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Forest_of_Dean">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">171.46</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Poole">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Poole"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Poole"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Purbeck">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">352.22</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Forest_of_Dean">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Forest_of_Dean"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Forest_of_Dean"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Forest_of_Dean"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Christchurch">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">193.49</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Isles_of_Scilly">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">9.52</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Forest_of_Dean">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">427.9</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_South_Gloucestershire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_South_Gloucestershire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_South_Hams">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">462.52</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Wiltshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2176.1</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Bath_and_North_East_Somerset">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">660.87</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Mid_Devon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Mid_Devon"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Mid_Devon"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Mid_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Cheltenham">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Cheltenham"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Cheltenham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Cheltenham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_South_Somerset">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">333.92</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#South_West_England">
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#North_Dorset"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#West_Somerset"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Gloucester"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Cheltenham"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Bournemouth"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Cotswold"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Mendip"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Forest_of_Dean"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Teignbridge"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Purbeck"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#South_Somerset"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#West_Devon"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#East_Devon"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_South_West_England"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#North_Devon"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Stroud"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Taunton_Deane"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Torbay"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#West_Dorset"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Bath_and_North_East_Somerset"/>
+    <ns2:isExclusivelySubsystemOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999.owl#energyConsumptionIn9999"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Torridge"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Exeter"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Isles_of_Scilly"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Plymouth"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#East_Dorset"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Swindon"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Mid_Devon"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Weymouth_and_Portland"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Cornwall"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Christchurch"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Wiltshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Bristol"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#South_Hams"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Poole"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#North_Somerset"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Tewkesbury"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/South_West_England"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#South_Gloucestershire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Sedgemoor"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Hams">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">257.8</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/South_Hams">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000044</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Torbay">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Torbay"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Torbay"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Torbay"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Somerset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">402.7</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Forest_of_Dean">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Forest_of_Dean"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Forest_of_Dean"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_West_Somerset">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">81.46</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_East_Devon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">271.34</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Mendip">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Mendip"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Mendip"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Somerset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_West_Dorset">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">232.38</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Isles_of_Scilly">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Isles_of_Scilly"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Isles_of_Scilly"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Isles_of_Scilly"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_North_Dorset">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">140.55</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Cotswold">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">431.82</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Torbay">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Torbay"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Torbay"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Purbeck">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Purbeck"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Purbeck">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Purbeck"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Torbay">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Torbay"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Swindon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">344.72</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Cornwall">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Cornwall"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Cornwall"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Gloucestershire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Gloucestershire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Devon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Christchurch">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Christchurch"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Christchurch"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Bristol">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Bristol"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Taunton_Deane">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000190</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/South_West_England">
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Purbeck"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Bath_and_North_East_Somerset"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/South_Hams"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Mendip"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Teignbridge"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Taunton_Deane"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/South_Gloucestershire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Sedgemoor"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Gloucester"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Poole"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Isles_of_Scilly"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Exeter"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/West_Somerset"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Forest_of_Dean"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Mid_Devon"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Cheltenham"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/North_Somerset"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Swindon"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Weymouth_and_Portland"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Torridge"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/West_Devon"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/East_Dorset"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Stroud"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Tewkesbury"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Cotswold"/>
+    <rdf:type rdf:resource="https://dbpedia.org/ontology/Region"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Christchurch"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/South_Somerset"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Torbay"/>
+    <ns4:areaCode>E12000009</ns4:areaCode>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Cornwall"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Plymouth"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/North_Dorset"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/West_Dorset"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Bristol"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/North_Devon"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Bournemouth"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Wiltshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/East_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Poole">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Poole"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Exeter">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">179.58</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Gloucester">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">366.71</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Mendip">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Mendip"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_South_Somerset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_South_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Exeter">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Exeter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Christchurch">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Christchurch"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_West_Devon">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_West_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Cotswold">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">205.92</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Stroud">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Stroud"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Stroud"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/West_Devon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000047</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Dorset">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">142.87</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_South_West_England">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_South_West_England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Torbay">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Torbay"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Bristol">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Bristol"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Bristol"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Cheltenham">
+    <ns4:areaCode>E07000078</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Taunton_Deane">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Taunton_Deane"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Taunton_Deane"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Taunton_Deane"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Cornwall">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Cornwall"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Cornwall"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Cornwall"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Tewkesbury">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">488.96</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Torridge">
+    <ns4:areaCode>E07000046</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_South_Hams">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">204.72</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_North_Somerset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_North_Somerset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Stroud">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">224.75</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Teignbridge">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Teignbridge"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Teignbridge"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Teignbridge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Bath_and_North_East_Somerset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Bath_and_North_East_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bath_and_North_East_Somerset"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Bath_and_North_East_Somerset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Gloucester">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">568.21</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Gloucester">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">201.5</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Torbay">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">237.04</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">142.53</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_South_Hams">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_South_Hams"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_South_Hams"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Hams"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#East_Dorset">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_East_Dorset"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/East_Dorset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Sedgemoor">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">381.39</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Torbay">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">213.68</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Purbeck">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Purbeck"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Purbeck"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Isles_of_Scilly">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Isles_of_Scilly"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Plymouth">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Plymouth"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Plymouth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#West_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/West_Dorset"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_West_Dorset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/North_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000050</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Teignbridge">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">249.25</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Teignbridge">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">248.23</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Isles_of_Scilly">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">17.54</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Taunton_Deane">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">204.08</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#East_Devon">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_East_Devon"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/East_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Gloucester">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Gloucester"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_West_Somerset">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">82.87</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bournemouth">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bournemouth"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Purbeck">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">262.25</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Dorset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Dorset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Plymouth">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">910.09</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_West_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_West_Dorset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Isles_of_Scilly">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Isles_of_Scilly"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Purbeck">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Purbeck"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Purbeck"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Purbeck"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Bournemouth">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">317.08</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Stroud">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Stroud"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_West_Somerset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_West_Somerset"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_West_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_West_Somerset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Poole">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Poole"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Cheltenham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">314.71</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Swindon">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Swindon"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Swindon"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Swindon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Weymouth_and_Portland">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">100.95</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_South_West_England">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_South_West_England"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_South_West_England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_West_England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Christchurch">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Christchurch"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Christchurch"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Christchurch"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_West_Dorset">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">220.13</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Cornwall">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1353.38</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Poole">
+    <ns4:areaCode>E06000029</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Cornwall">
+    <ns4:areaCode>E06000052</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Torridge">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Torridge"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Torridge"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Torridge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_South_West_England">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10163.72</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Cotswold">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Cotswold"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Cotswold"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Torridge">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">138.37</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Gloucester">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Gloucester"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Gloucester"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Mid_Devon">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">192.26</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <ns3:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Taunton_Deane">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">223.84</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_East_Dorset">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_East_Dorset"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Dorset"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_East_Dorset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Mendip">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Mendip"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_South_Hams">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_South_Hams"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_West_Dorset">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">452.51</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Exeter">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Exeter"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Exeter"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Exeter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Forest_of_Dean">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">256.45</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_West_Somerset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_West_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Weymouth_and_Portland">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Weymouth_and_Portland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Plymouth">
+    <ns4:areaCode>E06000026</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Bournemouth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Bournemouth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Mid_Devon">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">157.57</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_North_Somerset">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_North_Somerset"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_North_Somerset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Stroud">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Stroud"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Stroud"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Stroud"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Tewkesbury">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Tewkesbury"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Mendip">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">323.9</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_South_Somerset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_South_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_South_Somerset"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Somerset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Gloucester">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Gloucester"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Bath_and_North_East_Somerset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E06000022</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_East_Devon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_East_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Bournemouth">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Bournemouth"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Bournemouth"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bournemouth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Christchurch">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Christchurch"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/South_Gloucestershire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E06000025</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Mid_Devon">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">349.83</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Poole">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Poole"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Poole"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Poole"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Wiltshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Wiltshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#South_Hams">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/South_Hams"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_South_Hams"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Christchurch">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">108.29</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Gloucester">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Gloucester"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Gloucester"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Gloucester"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Swindon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Swindon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bournemouth">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">355.82</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Taunton_Deane">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Taunton_Deane"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Gloucestershire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">698.27</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_North_Dorset">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_North_Dorset"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_North_Dorset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Dorset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Somerset">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">412.37</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_West_Devon">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">132.97</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Sedgemoor">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Sedgemoor"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Sedgemoor"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Sedgemoor"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Bath_and_North_East_Somerset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Bath_and_North_East_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_West_Devon">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">249.57</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Cheltenham">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">197.96</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Tewkesbury">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Tewkesbury"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Plymouth">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">515.91</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Bath_and_North_East_Somerset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">318.77</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Mendip">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">537.57</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Wiltshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">973.39</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Taunton_Deane">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Taunton_Deane"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Taunton_Deane"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_North_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_North_Dorset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Tewkesbury">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Tewkesbury"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Tewkesbury"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Teignbridge">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Teignbridge"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Teignbridge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Torridge">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Torridge"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_East_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_East_Dorset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Exeter">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Exeter"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Exeter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Teignbridge">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">497.48</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Bath_and_North_East_Somerset">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Bath_and_North_East_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Bath_and_North_East_Somerset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Sedgemoor">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Sedgemoor"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Weymouth_and_Portland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">108.1</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Torridge">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Torridge"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Torridge"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Cotswold">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000079</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_West_Devon">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">116.59</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Weymouth_and_Portland">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Weymouth_and_Portland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Weymouth_and_Portland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_North_Somerset">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">355.98</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Wiltshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1202.71</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Tewkesbury">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">331.56</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Torridge">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Torridge"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_West_Devon">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_West_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Isles_of_Scilly">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Isles_of_Scilly"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Isles_of_Scilly"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_East_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">166.86</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/East_Devon">
+    <ns4:areaCode>E07000040</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Purbeck">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">89.97</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Swindon">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Swindon"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Swindon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/North_Devon">
+    <ns4:areaCode>E07000043</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Weymouth_and_Portland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000053</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_North_Devon">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">453.32</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Plymouth">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Plymouth"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Plymouth"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Plymouth"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_West_Somerset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">164.33</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Wiltshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Wiltshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Wiltshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Wiltshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Cotswold">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Cotswold"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Bournemouth">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">672.91</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Cotswold">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Cotswold"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_West_England">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">13406.93</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Purbeck">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000051</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Wiltshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Wiltshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Sedgemoor">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">607.89</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Tewkesbury">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">157.4</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Christchurch">
+    <ns4:areaCode>E07000048</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Stroud">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000082</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Mendip">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">213.67</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Swindon">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1068.43</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Devon">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">239.16</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_West_England">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_West_England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Bristol">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">679.89</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bath_and_North_East_Somerset">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">342.1</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Stroud">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">544.54</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_North_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">283.42</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Mid_Devon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Mid_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Torridge">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">269.93</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Mid_Devon">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Mid_Devon"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Mid_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Mendip">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Mendip"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Mendip"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Mendip"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Stroud">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">319.79</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Exeter">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">388.28</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Dorset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Cornwall">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1289.28</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_South_West_England">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">23570.65</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Tewkesbury">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000083</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#North_Dorset">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/North_Dorset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_North_Dorset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_West_Devon">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_West_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_West_Devon"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_West_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_North_Devon">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_North_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_North_Devon"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Poole">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">253.93</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_East_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">309.39</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Sedgemoor">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">226.49</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/East_Dorset">
+    <ns4:areaCode>E07000049</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_West_Dorset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_West_Dorset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bristol">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1122.68</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_East_Devon">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">510.5</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Torridge">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">131.55</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/West_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000052</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#West_Somerset">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/West_Somerset"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_West_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Cheltenham">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Cheltenham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Exeter">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">567.85</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Exeter">
+    <ns4:areaCode>E07000041</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Stroud">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Stroud"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Mid_Devon">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Mid_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Cheltenham">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Cheltenham"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Cheltenham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Cotswold">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">225.9</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_North_Devon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">183.74</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_South_Gloucestershire">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Gloucestershire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_South_Gloucestershire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_South_Gloucestershire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bristol">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bristol"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Swindon">
+    <ns4:areaCode>E06000030</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Forest_of_Dean">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Forest_of_Dean"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_South_Gloucestershire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1140.14</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Devon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">269.59</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_North_Devon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_North_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Cheltenham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Cheltenham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#South_Gloucestershire">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/South_Gloucestershire"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_South_Gloucestershire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Wiltshire">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Wiltshire"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Wiltshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_West_Dorset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_West_Dorset"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_West_Dorset"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_West_Dorset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Forest_of_Dean">
+    <ns4:areaCode>E07000080</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/North_Somerset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E06000024</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Teignbridge">
+    <ns4:areaCode>E07000045</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Hams">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Hams"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Taunton_Deane">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Taunton_Deane"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#North_Devon">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_North_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/North_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Somerset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Teignbridge">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Teignbridge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Bristol">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1802.57</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_South_Somerset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">736.62</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Weymouth_and_Portland">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">209.05</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Teignbridge">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Teignbridge"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Cornwall">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2642.66</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Sedgemoor">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Sedgemoor"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Sedgemoor"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Swindon">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Swindon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#South_Somerset">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/South_Somerset"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_South_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Plymouth">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Plymouth"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Isles_of_Scilly">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E06000053</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Cotswold">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Cotswold"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Cotswold"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Cotswold"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/South_Somerset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000189</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Forest_of_Dean">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Forest_of_Dean"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Sedgemoor">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000188</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Weymouth_and_Portland">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Weymouth_and_Portland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Isles_of_Scilly">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">8.02</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Cornwall">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Cornwall"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Christchurch">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">85.2</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Poole">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">396.82</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Tewkesbury">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Tewkesbury"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Tewkesbury"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Tewkesbury"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Devon">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Exeter">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Exeter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Plymouth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Plymouth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Poole">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">650.76</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#West_Devon">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/West_Devon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_West_Devon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bath_and_North_East_Somerset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bath_and_North_East_Somerset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Total_Electricity_Consumption_of_Weymouth_and_Portland">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Weymouth_and_Portland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Weymouth_and_Portland"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Weymouth_and_Portland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Taunton_Deane">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">427.92</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/West_Somerset">
+    <ns4:areaCode>E07000191</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Swindon">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">723.71</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_North_Somerset">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">768.35</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_South_Gloucestershire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">441.87</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Cheltenham">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">512.68</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Domestic_Electricity_Consumption_of_Cornwall">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Cornwall"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Mendip">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E07000187</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Bristol">
+    <ns4:areaCode>E06000023</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Mid_Devon">
+    <ns4:areaCode>E07000042</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_West_Somerset">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_West_Somerset"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Domestic_Electricity_Consumption_of_Plymouth">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">394.18</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Gloucester">
+    <ns4:areaCode>E07000081</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/South_West_England.owl#value_Total_Electricity_Consumption_of_Torbay">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">450.72</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Bournemouth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E06000028</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Wiltshire">
+    <ns4:areaCode>E06000054</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+</rdf:RDF>

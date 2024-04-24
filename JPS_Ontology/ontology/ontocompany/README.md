@@ -1,0 +1,3 @@
+## Why was the OntoCompany.owl file produced by the TBox Generator edited ##
+
+The generated OWL file was edited to describe the fact that a chemical plant belongs to the chemical industry, a beverage plant belongs to the beverage industry, a food plant belongs to the food industry, and so on. Suppose we put the union of the classes Chemical Plant, Beverage Plant and Food Plant in the domain and the union of the classes Chemical Industry, Beverage Industry and Food Industry in the range of the object property belongs to. In that case, it can be interpreted that a chemical plant belongs to the chemical, beverage, or food industries (or all these industry classes). In order to stop this interpretation, we added the belongs to property in the definition of each plant class.

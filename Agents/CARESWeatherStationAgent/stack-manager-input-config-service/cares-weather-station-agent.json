@@ -1,0 +1,45 @@
+{
+  "ServiceSpec": {
+    "Name": "cares-weather-station-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "docker.io/library/caresweatherstation-agent:1.5.0",
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/mnt/c/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/CARESWeatherStationAgent/config",
+            "Target": "/root/config"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+              "ConfigName": "postgis"
+          },
+          {
+              "ConfigName": "geoserver"
+          }
+      ],
+      "Secrets": [
+          {
+              "SecretName": "blazegraph_password"
+          },
+          {
+              "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
+          }
+      ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/caresweatherstation-agent/",
+      "externalPath": "/cares-weather-station-agent/"
+    }
+  }
+}

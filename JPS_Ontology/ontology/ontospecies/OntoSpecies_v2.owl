@@ -7,13 +7,35 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:OntoSpecies="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:dc="http://purl.org/dc/elements/1.1/">
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:dcterms="http://purl.org/dc/terms/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 June 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">20 September 2023</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoSpecies is an ontology developed for representing chemical species.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</owl:versionInfo>
+        <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">"Copyright (C) 2021 Prof. Markus Kraft (mk306@cam.ac.uk), Cambridge CARES (https://www.cares.cam.ac.uk/), the Computational Modelling Group (https://como.ceb.cam.ac.uk/), and Computational Modelling Cambridge Ltd. (https://cmclinnovations.com/)."</dc:rights>
+        <dcterms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This ontology is licensed under the MIT License. For more details, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/main/LICENSE.txt</dcterms:license>
     </owl:Ontology>
+
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#date -->
+
+
+    <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
     
 
 
@@ -68,9 +90,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#fromGeometry">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Xcoordinate"/>
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Ycoordinate"/>
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Zcoordinate"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Coordinate"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Geometry"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -284,11 +304,9 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasBoilingPoint">
-        <rdfs:domain rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#BoilingPoint"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species and its boiling point.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an element and its boiling point.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -442,11 +460,9 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasDensity">
-        <rdfs:domain rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Density"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species and its density.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an element and its density.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -624,7 +640,6 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasFunctionalGroup">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#FunctionalGroup"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species and the functional group in the species.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -780,11 +795,9 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasInChI">
-        <rdfs:domain rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#InChI"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species and its InChI string.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an element and its InChI string.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -794,11 +807,9 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasInChIKey">
-        <rdfs:domain rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#InChIKey"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species and its InChI key.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an element and its InChI key.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -810,18 +821,6 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasInstrumentType">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SpectralInformation"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#InstrumentType"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasIonizationEnergy -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasIonizationEnergy">
-        <rdfs:domain rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IonizationEnergy"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an element and its ionization energy.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -938,11 +937,9 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMeltingPoint">
-        <rdfs:domain rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MeltingPoint"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species and its melting point. </rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an element and its melting point. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -1292,7 +1289,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The date when a web page was accessed.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
@@ -1454,6 +1451,186 @@
     
 
 
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000470 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000470">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MassSpectrometry"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000497 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000497">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#GCMS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000524 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000524">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#LCMS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000701 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000701">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MSMS"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000800 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000800">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SpectralInformation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000835 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000835">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#NMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000837 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000837">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#13CNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000839 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000839">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#31PNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000843 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000843">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#11BNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000844 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000844">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#15NNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000845 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000845">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#19FNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000890 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000890">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#1H13CNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0000932 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0000932">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#2DNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0001189 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0001189">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#17ONMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0001928 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0001928">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#1DNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0001955 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0001955">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#29SiNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0002203 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0002203">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MALDI"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0002419 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0002419">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#1HNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0002420 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0002420">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#1H1HNMRSpectra"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/CHMO_0002818 -->
+
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/CHMO_0002818">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#OpticalRotation"/>
+    </owl:Class>
+    
+
+
     <!-- http://purl.org/gc/Atom -->
 
 
@@ -1484,6 +1661,421 @@
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A chemical entity constituting the smallest component of an element having the chemical properties of the element.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/gc</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000018 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000018">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000042 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000042">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000059 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000059">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#InChIKey"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000061 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000061">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000063 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000063">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomicBond"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000068 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000068">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#FunctionalGroup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000084 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000084">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomicWeight"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000107 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000107">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IUPACName"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000113 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000113">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#InChI"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000121 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000121">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Electronegativity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000125 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000125">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomicRadius"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000131 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000131">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000140 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000140">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CID"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000191 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000191">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IonizationEnergy"/>
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IonizationPotential"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000202 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000202">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#TautomerCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000205 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000205">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomChiralCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000206 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000206">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomChiralDefCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000212 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000212">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomChiralUndefCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000213 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000213">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#BondChiralCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000214 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000214">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#BondChiralDefCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000215 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000215">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#BondChiralUndefCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000216 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000216">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000217 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000217">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ExactMass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000218 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000218">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MonoIsotopicWeight"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000241 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000241">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#StandardEnthalpyOfFormation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000244 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000244">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HydrogenBondDonorCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000245 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000245">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HydrogenBondAcceptorCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000251 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000251">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#LogP"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000254 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000254">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#RotatableBondCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000256 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000256">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MeltingPoint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000257 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000257">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#BoilingPoint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000258 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000258">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Solubility"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000280 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000280">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CovalentUnitCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000300 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000300">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HeavyAtomCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000301 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000301">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IsotopeAtomCount"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000307 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000307">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#PolarSurfaceArea"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000390 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000390">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CompoundComplexity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000407 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000407">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ChebiID"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000416 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000416">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Density"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000417 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000417">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#FlashPoint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000418 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000418">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HeatOfVaporization"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000419 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000419">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#VaporPressure"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000420 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000420">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SurfaceTension"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000433 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000433">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HenrysLawConstant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000440 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000440">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#VaporDensity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://semanticscience.org/resource/CHEMINF_000444 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000444">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AutoignitionTemperature"/>
     </owl:Class>
     
 
@@ -1560,12 +2152,6 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasIonizationEnergy"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IonizationEnergy"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasOxidationStates"/>
                 <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#OxidationStates"/>
             </owl:Restriction>
@@ -1616,7 +2202,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomChiralCount">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000205"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atom stereocenter (atom that is related to four distinct atoms) count.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -1628,7 +2213,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomChiralDefCount">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000206"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defined atom stereocenter (atom that is related to four distinct atoms) count.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -1640,7 +2224,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomChiralUndefCount">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000212"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Undefined atom stereocenter (atom that is related to four distinct atoms) count.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -1652,7 +2235,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomicBond">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000063"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#definedBy"/>
@@ -1669,7 +2251,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomicRadius">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000125"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radius of an atom.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -1681,7 +2262,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AtomicWeight">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000084"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass of an atom.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -1693,7 +2273,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#AutoignitionTemperature">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000444"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The lowest temperature at which the substance will spontaneously ignite in a normal atmosphere without an external source of ignition (e.g., spark or flame).</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -1705,7 +2284,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#BoilingPoint">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000257"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ThermoProperty"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The temperature at which this compound changes state from liquid to gas at a given atmospheric pressure.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -1717,7 +2295,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#BondChiralCount">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000213"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bond stereocenter count.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -1729,7 +2306,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#BondChiralDefCount">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000214"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defined bond stereocenter count.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -1741,583 +2317,9 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#BondChiralUndefCount">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000215"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Undefined bond stereocenter count.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000018 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000018">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000042 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000042">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000059 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000059">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#InChIKey"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000061 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000061">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Identifier"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000063 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000063"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000068 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000068">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#FunctionalGroup"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000084 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000084"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000107 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000107">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IUPACName"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000113 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000113">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#InChI"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000121 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000121">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Electronegativity"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000125 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000125"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000131 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000131">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000140 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000140">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CID"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000191 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000191">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IonizationEnergy"/>
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IonizationPotential"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000202 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000202">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#TautomerCount"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000205 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000205"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000206 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000206"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000212 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000212"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000213 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000213"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000214 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000214"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000215 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000215"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000216 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000216">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000217 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000217">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ExactMass"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000218 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000218">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MonoIsotopicWeight"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000241 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000241">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#StandardEnthalpyOfFormation"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000244 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000244">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HydrogenBondDonorCount"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000245 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000245">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HydrogenBondAcceptorCount"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000251 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000251">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#LogP"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000254 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000254">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#RotatableBondCount"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000256 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000256">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MeltingPoint"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000257 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000257"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000258 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000258">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Solubility"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000280 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000280">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CovalentUnitCount"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000300 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000300">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HeavyAtomCount"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000301 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000301">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IsotopeAtomCount"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000307 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000307">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#PolarSurfaceArea"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000390 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000390">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CompoundComplexity"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000407 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000407">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ChebiID"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000416 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000416">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Density"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000417 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000417">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#FlashPoint"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000418 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000418">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HeatOfVaporization"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000419 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000419">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#VaporPressure"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000420 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000420">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SurfaceTension"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000433 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000433">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HenrysLawConstant"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000440 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000440">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#VaporDensity"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000444 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHEMINF_000444"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000470 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000470">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MassSpectrometry"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000497 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000497">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#GCMS"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000524 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000524">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#LCMS"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000701 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000701">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MSMS"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000800 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000800">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SpectralInformation"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000835 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000835">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#NMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000837 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000837">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#13CNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000839 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000839">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#31PNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000843 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000843">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#11BNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000844 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000844">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#15NNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000845 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000845">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#19FNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000890 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000890">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#1H13CNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000932 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0000932">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#2DNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0001189 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0001189">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#17ONMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0001928 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0001928">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#1DNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0001955 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0001955">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#29SiNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0002203 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0002203">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MALDI"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0002419 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0002419">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#1HNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0002420 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0002420">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#1H1HNMRSpectra"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0002818 -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CHMO_0002818">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#OpticalRotation"/>
     </owl:Class>
     
 
@@ -2415,6 +2417,16 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CompoundComplexity">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Property"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicator that denotes how complicated a structure is.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Coordinate -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Coordinate">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atom coordinate in space</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -3287,12 +3299,6 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasFunctionalGroup"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#FunctionalGroup"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGCMS"/>
                 <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#GCMS"/>
             </owl:Restriction>
@@ -3671,6 +3677,7 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#XCoordinate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Coordinate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atom X coordinate in space.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -3688,27 +3695,14 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Xcoordinate -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Xcoordinate"/>
-    
-
-
     <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#YCoordinate -->
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#YCoordinate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Coordinate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atom Y coordinate in space.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Ycoordinate -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Ycoordinate"/>
     
 
 
@@ -3716,16 +3710,10 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ZCoordinate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Coordinate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atom Z coordinate in space.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Zcoordinate -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Zcoordinate"/>
     
 
 

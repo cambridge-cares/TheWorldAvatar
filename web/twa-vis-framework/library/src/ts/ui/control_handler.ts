@@ -23,6 +23,12 @@ class ControlHandler {
     constructor() {
         window.terrain = "light";
         this.treeHandler = new TreeHandler();
+
+        // Remove deprecated Cesium popup element
+        if(Manager.PROVIDER === MapProvider.CESIUM) {
+            let oldElement = document.getElementById("cesiumMetaBox");
+            if(oldElement != null) document.body.removeChild(oldElement);
+        }
     }
 
     /**
@@ -43,6 +49,16 @@ class ControlHandler {
                 }
             });
         });
+    }
+
+    /**
+     * Adds a callback that will fire with two arrays of layerIDs (visible, hidden)
+     * when any selection state in the layer tree changes.
+     * 
+     * @param treeSelectionCallback callback function.
+     */
+      public addTreeSelectionCallback(treeSelectionCallback) {
+        this.treeHandler.addTreeSelectionCallback(treeSelectionCallback);
     }
 
 	/**

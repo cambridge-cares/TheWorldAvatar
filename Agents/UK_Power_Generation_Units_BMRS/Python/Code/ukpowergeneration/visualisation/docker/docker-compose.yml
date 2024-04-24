@@ -1,0 +1,21 @@
+version: "3.8"
+
+# All Services
+services:
+
+  # UK Power Grid Agent Visualisation
+  power-grid-visualisation:
+    image: ghcr.io/cambridge-cares/power-grid-visualisation:1.0.0
+    container_name: power-grid-visualisation
+    build:
+      context: "../"
+      dockerfile: "./docker/Dockerfile"
+      target: "dev"
+      labels:
+        authors: "support@cmclinnovations"
+        description: "UK Power Grid Agent."
+    # Mounts local directory to a destination directory on docker.
+    volumes:
+    - ../:/var/www/html
+    ports:
+      - "65082:80"

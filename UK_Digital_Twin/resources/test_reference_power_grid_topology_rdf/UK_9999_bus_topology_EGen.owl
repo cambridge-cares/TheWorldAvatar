@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.w3.org/2002/07/owl#"
+   xmlns:ns2="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl">
+    <ns1:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <ns1:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#10_bus_model">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem"/>
+    <ns2:isExclusivelySubsystemOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology.owl#UK_power_grid_topology"/>
+  </rdf:Description>
+</rdf:RDF>

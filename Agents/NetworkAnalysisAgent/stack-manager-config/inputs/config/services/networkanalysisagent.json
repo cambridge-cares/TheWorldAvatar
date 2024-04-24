@@ -1,0 +1,42 @@
+{
+    "ServiceSpec": {
+        "Name": "networkanalysisagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/networkanalysisagent:1.0.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/NetworkAnalysisAgent/inputs",
+                        "Target": "/inputs"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "networkanalysisagent": {
+          "url": "http://localhost:8080/networkanalysisagent/",
+          "externalPath": "/networkanalysisagent/"
+        }
+    }
+}
