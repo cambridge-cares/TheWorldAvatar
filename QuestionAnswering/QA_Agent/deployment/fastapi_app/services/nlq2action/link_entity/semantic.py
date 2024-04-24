@@ -78,7 +78,7 @@ class SemanticEntityLinker(IEntityLinker):
         redis_client: Redis,
         embedder: IEmbedder,
         key: str,
-        entries: Iterable[LexiconEntry],
+        lexicon: Iterable[LexiconEntry],
     ):
         doc_key_prefix = key + ":"
         index_name = f"idx:{key}_vss"
@@ -89,7 +89,7 @@ class SemanticEntityLinker(IEntityLinker):
                 embedder=embedder,
                 key_prefix=doc_key_prefix,
                 index_name=index_name,
-                entries=entries,
+                entries=lexicon,
             )
 
         self.redis_client = redis_client

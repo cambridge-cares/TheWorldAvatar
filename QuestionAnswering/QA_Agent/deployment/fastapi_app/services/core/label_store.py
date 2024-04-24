@@ -29,14 +29,13 @@ class LabelStore:
     def __init__(
         self,
         redis_client: Redis,
-        key_prefix: str,
-        index_name,
+        key: str,
         bindings: Iterable[IRIWithLabels],
     ):
         # TODO: validate the bindings are not None
         self.redis_client = redis_client
-        self.key_prefix = key_prefix
-        self.index_name = index_name
+        self.key_prefix = key + ":"
+        self.index_name = "idx:" + key
         self._bindings = bindings
 
     @cached_property

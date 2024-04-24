@@ -29,7 +29,7 @@ def semantic_entity_linker(redis_client, embedder):
         redis_client=redis_client,
         embedder=embedder,
         key="landUseTypes",
-        entries=iter(entries),
+        lexicon=iter(entries),
     )
 
 

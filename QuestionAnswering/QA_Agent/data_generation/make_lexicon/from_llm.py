@@ -59,11 +59,11 @@ if __name__ == "__main__":
                 )
                 items = json.loads(res.choices[0].message.content)
                 for item in items:
-                    item = dict(
-                        iri=item["iri"],
-                        label=iri2label[item["iri"]],
-                        surfaceForms=item["surface_forms"],
-                    )
+                    item = {
+                        "iri": item["iri"],
+                        "label": iri2label[item["iri"]],
+                        "surface_forms": item["surface_forms"],
+                    }
                     f.write(json.dumps(item))
                     f.write("\n")
                 f.flush()
