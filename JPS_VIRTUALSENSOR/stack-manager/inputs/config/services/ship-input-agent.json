@@ -3,20 +3,21 @@
         "Name": "ship-input-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.3",
+                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.4",
 				"Env": [
 					"DATABASE=postgres",
 					"DATA_DIR=/data",
 					"LAST_READ_FILE=/misc/last_read_file",
 					"TIME_OFFSET_FILE=/misc/time_offset_file",
 					"GEOSERVER_WORKSPACE=dispersion",
-					"EMISSIONS_AGENT_URL=http://ship-stack-emissions-agent:8080/EmissionsAgent/",
-					"EMISSIONS_AGENT_IRI=http://theworldavatar.com/kg/dispersion/EmissionsAgent",
-					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000",
+					"EMISSIONS_AGENT_URL=http://${STACK_NAME}-emissions-agent:8080/EmissionsAgent/",
+					"EMISSIONS_AGENT_IRI=https://www.theworldavatar.com/kg/dispersion/EmissionsAgent",
+					"PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000",
 					"PARALLELISE_CALCULATIONS=true",
-					"SHIP_IRI_LOOKUP_TABLE=ship_location_iri",
-					"SCOPE_TABLE_NAME=scopes",
-					"SHIPS_LAYER_NAME=ships"
+					"USE_LIVE_DATA=false",
+					"API_KEY=",
+					"BOUNDING_BOXES=[[[1.219097, 103.776165], [1.3096076, 103.9019436]], [[1.2162967, 103.6518113], [1.3067911, 103.741632]]]",
+					"UPLOAD_INTERVAL_MINUTES=10"
 				],
 				"Configs": [
 					{
@@ -41,11 +42,6 @@
 					}
 				],
                 "Mounts": [
-                    {
-                        "Type": "volume",
-                        "Source": "logs",
-                        "Target": "/root/.jps"
-                    },
 					{
                         "Type": "volume",
                         "Source": "misc",
