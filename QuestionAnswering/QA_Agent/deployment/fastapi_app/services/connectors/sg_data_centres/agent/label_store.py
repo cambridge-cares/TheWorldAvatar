@@ -36,7 +36,6 @@ def get_sgDataCentres_labelStore(
 ):
     return LabelStore(
         redis_client=redis_client,
-        key_prefix="singapore:data_centres:",
-        index_name="idx:singapore:data_centres",
+        key="singapore:data_centres",
         bindings=sgDataCentres_bindings_gen(ontop_client),
     )

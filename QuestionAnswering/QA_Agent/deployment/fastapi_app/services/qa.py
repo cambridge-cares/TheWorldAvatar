@@ -20,6 +20,6 @@ def get_dataSupporter_byDomain(
 ):
     return {
         "chemistry": chemistry_agent_mediator,
-        "singapore": singapore_agent_mediator,
-        # "singapore": singapore_nlq2action
+        # "singapore": singapore_agent_mediator,
+        "singapore": singapore_nlq2action
     }

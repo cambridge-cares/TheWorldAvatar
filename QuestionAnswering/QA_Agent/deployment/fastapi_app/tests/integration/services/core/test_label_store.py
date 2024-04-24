@@ -13,8 +13,7 @@ class TestLabelStore:
         # Arrange
         labels_store = LabelStore(
             redis_client=redis_client,
-            key_prefix="test:",
-            index_name="idx:test",
+            key="test",
             bindings=self.SAMPLE_BINDINGS,
         )
 
@@ -29,8 +28,7 @@ class TestLabelStore:
         # Arrange
         labels_store = LabelStore(
             redis_client=redis_client,
-            key_prefix="test:",
-            index_name="idx:test",
+            key="test",
             bindings=self.SAMPLE_BINDINGS,
         )
 

@@ -32,7 +32,7 @@ class QAEngineName(Enum):
 
 
 @cache
-def get_qa_engine():
+def get_qa_engine_name():
     engine = QAEngineName(os.getenv("QA_ENGINE"))
     logger.info("QA_ENGINE: " + engine.value)
     return engine

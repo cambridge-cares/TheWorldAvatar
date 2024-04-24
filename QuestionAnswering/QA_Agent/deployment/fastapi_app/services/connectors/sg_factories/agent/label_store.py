@@ -59,8 +59,7 @@ def get_sgFactories_labelStore(
 ):
     return LabelStore(
         redis_client=redis_client,
-        key_prefix="sg_factories:factories:",
-        index_name="idx:sg_factories:factories",
+        key="sg_factories:factories",
         bindings=sgFactories_bindings_gen(
             factory_subclasses=factory_subclasses, ontop_client=ontop_client
         ),

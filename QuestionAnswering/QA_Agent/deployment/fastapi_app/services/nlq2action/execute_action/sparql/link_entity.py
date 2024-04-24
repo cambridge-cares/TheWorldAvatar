@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from services.nlq2action.link_entity import ELMediator, get_elMediator
+from services.nlq2action.link_entity import ELMediator, get_el_mediator
 
 
 logger = logging.getLogger(__name__)
@@ -39,6 +39,6 @@ class SparqlEntityLinker:
 
 @cache
 def get_sparql_entityLinker(
-    el_mediator: Annotated[ELMediator, Depends(get_elMediator)]
+    el_mediator: Annotated[ELMediator, Depends(get_el_mediator)]
 ):
     return SparqlEntityLinker(el_mediator)

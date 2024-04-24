@@ -35,7 +35,6 @@ def get_sgCompanies_labesStore(
 ):
     return LabelStore(
         redis_client=redis_client,
-        key_prefix="singapore:companies:",
-        index_name="idx:singapore:companies",
+        key="singapore:companies",
         bindings=sgCompanies_bindings_gen(ontop_client),
     )

@@ -100,8 +100,7 @@ def sg_factories_labels_store(
 ):
     yield LabelStore(
         redis_client=redis_client,
-        key_prefix="sg_factories:factories:",
-        index_name="idx:sg_factories:factories",
+        key="sg_factories:factories",
         bindings=sgFactories_bindings_gen(
             factory_subclasses=factory_subclasses,
             ontop_client=sg_factories_ontop_client,
