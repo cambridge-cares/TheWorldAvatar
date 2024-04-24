@@ -64,12 +64,22 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/nested_scroll_view">
+        android:id="@+id/nested_scroll_view"
+        android:layout_marginVertical="@dimen/component_margin_small">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/more_information_about_the_trajectory_will_be_shown_here"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:gravity="center"
+                android:id="@+id/trajectory_info_tv"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

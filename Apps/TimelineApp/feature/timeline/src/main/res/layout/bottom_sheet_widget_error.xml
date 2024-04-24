@@ -7,8 +7,7 @@
     android:layout_gravity="bottom"
     android:orientation="vertical"
     android:paddingHorizontal="@dimen/component_margin"
-    android:paddingTop="@dimen/component_margin_xs"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+    android:paddingTop="@dimen/component_margin_xs">
 
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
         android:id="@+id/drag_handle"
