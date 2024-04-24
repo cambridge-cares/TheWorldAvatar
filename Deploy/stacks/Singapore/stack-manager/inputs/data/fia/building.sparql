@@ -252,7 +252,7 @@ WHERE {
         SERVICE [ONTOP] {
           SELECT ?facility ?Property ?Value where {
             [IRI] obm:hasFacility ?facility;
-             ontobuiltenv:hasAddress/icontact:hasStreet ?Value.
+             ontocompany:hasAddress/icontact:hasStreet ?Value.
             BIND("Address" AS ?Property).
           }
         }
@@ -260,7 +260,7 @@ WHERE {
         SERVICE [ONTOP] {
           SELECT ?facility ?Property ?Value where {
             [IRI] obm:hasFacility ?facility;
-             ontobuiltenv:hasAddress ?address.
+             ontocompany:hasAddress ?address.
             ?address ontocompany:hasLandLotDetails/ontocompany:hasLandLotNumber ?Value.
             BIND("Land Lot Number" AS ?Property).
           }
