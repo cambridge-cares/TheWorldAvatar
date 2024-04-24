@@ -2,7 +2,7 @@
 
 A central framework for The World Avatar (TWA) Visualisations (the TWA Visualisation Platform, or TWA-ViP) has been created to standardise and simplify the visualisation process. The goal is that a developer does not have to worry about web design, and can set up a reasonable web visualisation displaying landing pages, descriptions, dashboards, and geospatial maps, with some basic configuration files. The platform is the next stage of the Visualisation Framework, and can be almost deployed following the same steps.
 
-The contents of this repository have been structured into Development and Production. If you are a developer who is adding a new feature, fixing an existing bug, or just interested in finding out more, please read the [Development](#1-development) section. If you are setting up a visualisation for your use cases, please read the [Production](#2-production) section.
+The contents of this repository have been structured into Development and Production. If you are a developer who is adding a new feature, fixing an existing bug, or just interested in finding out more, please read the [Development](#1-development) section. If you are setting up a visualisation for your use cases, please read the [Production](#2-production) section. When releasing the platform, please read the [Releasing](#3-release) section.
 
 ## 1. Development
 
@@ -40,3 +40,9 @@ For deployment on the [TWA stack](https://github.com/cambridge-cares/TheWorldAva
 5. Start the stack as per usual
 
 If you are creating a custom visualisation service on the stack, please note to update the `BASE_PATH` environment variable for your subpath.
+
+## 3. Release
+
+Github Actions has been configured to automatically compile, build, and release the platform when the pull request has been merged. However, before merging the pull request, update the `CHANGELOG.md` and `VERSION` accordingly. Look at the [Wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Versioning) for the versioning format.
+
+Once merged, a release email will be sent to the mailing list based on the `CHANGELOG.md`. 
