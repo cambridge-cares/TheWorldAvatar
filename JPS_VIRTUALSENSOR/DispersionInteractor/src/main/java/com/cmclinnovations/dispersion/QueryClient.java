@@ -799,16 +799,17 @@ public class QueryClient {
 
         ServiceEndpoint ontopEndpoint = new ServiceEndpoint(ontopUrl);
 
-        query.select(derivation, scope, scopelabelVar, pollutantType, pollutantLabel, dispOutVar, scopeWktVar, zValueVar,
-                dispersionOutputSRID,timeNumericPosition);
+        query.select(derivation, scope, scopelabelVar, pollutantType, pollutantLabel, dispOutVar, scopeWktVar,
+                zValueVar,
+                dispersionOutputSRID, timeNumericPosition);
 
         query.where(OPTIMISER_NONE,
                 derivation.has(isDerivedFrom, scope).andHas(HAS_TIME, timeVar),
                 ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), scopeWktVar)),
-                timeVar.has(IN_TIME_POSITION,timePosition),timePosition.has(NUMERIC_POSITION,timeNumericPosition),
+                timeVar.has(IN_TIME_POSITION, timePosition), timePosition.has(NUMERIC_POSITION, timeNumericPosition),
                 scope.isA(SCOPE).andHas(iri(RDFS.LABEL), scopelabelVar),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
-                        .andHas(HAS_DISPERSION_RASTER,dispOutVar)
+                        .andHas(HAS_DISPERSION_RASTER, dispOutVar)
                         .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType)
                         .andHas(HAS_HEIGHT, zVar).andHas(HAS_SRID, dispersionOutputSRID),
                 zVar.has(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), zValueVar),
@@ -845,7 +846,7 @@ public class QueryClient {
             }
 
             dispersionMetadata.addDispOut(dispOut, polLabel, zValue, srid);
-            dispersionMetadata.setScope(scopeIri,scopeLabel);
+            dispersionMetadata.setScope(scopeIri, scopeLabel);
             dispersionMetadata.setLastUpdateTime(lastUpdateTime);
 
             String wktLiteral = queryResult.getJSONObject(i).getString(scopeWktVar.getQueryString().substring(1));
@@ -891,14 +892,20 @@ public class QueryClient {
             if (latestTime != null) {
                 String dispersionRaster = dispersionSimulation
                         .getDispersionRaster(dispersionSimulation.getPollutants().get(0));
-                simulationTimes = tsClient
-                        .getTimeSeriesWithinBounds(List.of(dispersionRaster), latestTime - 86400, latestTime, conn)
-                        .getTimes();
-                // 86400 = 24 hours
+                if (Config.VIS_TIME_LIMIT > 0.) {
+                    simulationTimes = tsClient
+                            .getTimeSeriesWithinBounds(List.of(dispersionRaster), latestTime - Config.VIS_TIME_LIMIT,
+                                    latestTime, conn)
+                            .getTimes();// VIS_TIME_LIMIT = 86400 = 24 hours
+                } else {
+                    Long firstTime = tsClient.getMinTime(dispersionLayers.get(0), conn);
+                    simulationTimes = tsClient
+                            .getTimeSeriesWithinBounds(List.of(dispersionRaster), firstTime, latestTime, conn)
+                            .getTimes();
+                }
             } else {
                 simulationTimes = new ArrayList<>();
             }
-
             dispersionSimulation.setTimesteps(simulationTimes);
         });
     }
@@ -1018,14 +1025,15 @@ public class QueryClient {
     }
 
     public byte[] getRaster(String filename, String scopeIri) {
-        String sqlTemplate = "WITH RasterData AS (SELECT rast, ST_SRID(rast) AS raster_srid FROM dispersion_raster " + 
-            "WHERE filename='%s'), PolygonData AS (SELECT geom, ST_SRID(geom) AS polygon_srid FROM scopes " + 
-            "WHERE iri = '%s') SELECT ST_AsTiff(ST_Clip(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid),-1.0)) as rData " + 
-            "FROM RasterData, PolygonData WHERE ST_Intersects(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid))";
+        String sqlTemplate = "WITH RasterData AS (SELECT rast, ST_SRID(rast) AS raster_srid FROM dispersion_raster " +
+                "WHERE filename='%s'), PolygonData AS (SELECT geom, ST_SRID(geom) AS polygon_srid FROM scopes " +
+                "WHERE iri = '%s') SELECT ST_AsTiff(ST_Clip(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid),-1.0)) as rData "
+                +
+                "FROM RasterData, PolygonData WHERE ST_Intersects(RasterData.rast, ST_Transform(PolygonData.geom, RasterData.raster_srid))";
         String sql = String.format(sqlTemplate, filename, scopeIri);
         byte[] rasterBytes = new byte[0];
         try (Connection conn = remoteRDBStoreClient.getConnection();
-        Statement stmt = conn.createStatement()) {
+                Statement stmt = conn.createStatement()) {
             ResultSet result = stmt.executeQuery(sql);
             while (result.next()) {
                 rasterBytes = result.getBytes("rData");
