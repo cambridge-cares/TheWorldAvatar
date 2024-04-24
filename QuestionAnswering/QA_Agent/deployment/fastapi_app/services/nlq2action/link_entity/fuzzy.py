@@ -18,4 +18,6 @@ class FuzzyEntityLinker(IEntityLinker):
         )
 
     def link(self, surface_form: str):
-        return self.label_store.link_entity(surface_form)
+        iris = self.label_store.link_entity(surface_form)
+        labels = [self.label_store.lookup_labels(iri)[0] for iri in iris]
+        return list(zip(iris, labels))

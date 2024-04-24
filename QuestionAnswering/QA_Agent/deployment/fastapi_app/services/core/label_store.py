@@ -106,7 +106,7 @@ class LabelStore:
             self._create_index()
 
         labels = [
-            label
+            label if isinstance(label, str) else str(label)
             for doc in self.redis_client.ft(self.index_name)
             .search(
                 Query(

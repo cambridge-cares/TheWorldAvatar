@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from services.nlq2action.execute_action.sparql.link_entity import (
+from services.nlq2action.execute_action.sparql.link_value import (
     SparqlEntityLinker,
 )
 from services.nlq2action.link_entity import ELMediator
@@ -11,7 +11,9 @@ class TestSparqlEntityLinker:
     def test_link(self):
         # Arrange
         class MockELMediator(ELMediator):
-            def __init__(self, expected_io: List[Tuple[Tuple[str, str], List[str]]]):
+            def __init__(
+                self, expected_io: List[Tuple[Tuple[str, str], List[Tuple[str, str]]]]
+            ):
                 self.expected_io = {
                     expected_input: output for expected_input, output in expected_io
                 }
@@ -29,8 +31,8 @@ class TestSparqlEntityLinker:
                 (
                     ("LandUseType", "residential"),
                     [
-                        "http://example.org/LandUseType_0",
-                        "http://example.org/LandUseType_1",
+                        ("http://example.org/LandUseType_0", "residential 0"),
+                        ("http://example.org/LandUseType_1", "residential 1"),
                     ],
                 )
             ]
@@ -38,10 +40,16 @@ class TestSparqlEntityLinker:
         entity_linker = SparqlEntityLinker(el_mediator)
 
         # Act
-        actual = entity_linker.link('<LandUseType:"residential">')
+        actual_values, actual_iri2label = entity_linker.link(
+            '<LandUseType:"residential">'
+        )
 
         # Assert
-        assert actual == [
+        assert actual_values == [
             "<http://example.org/LandUseType_0>",
             "<http://example.org/LandUseType_1>",
         ]
+        assert actual_iri2label == {
+            "http://example.org/LandUseType_0": "residential 0",
+            "http://example.org/LandUseType_1": "residential 1",
+        }

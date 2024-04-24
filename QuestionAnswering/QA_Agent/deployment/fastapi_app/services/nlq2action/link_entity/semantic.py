@@ -1,4 +1,4 @@
-from typing import Iterable, List
+from typing import Iterable, List, Tuple
 
 import numpy as np
 from redis import Redis
@@ -10,7 +10,7 @@ from pydantic.dataclasses import dataclass
 from services.core.embed import IEmbedder
 from services.core.redis import does_index_exist
 from services.utils.itertools_recipes import batched
-from .link import IRI, IEntityLinker
+from .link import EntityIRI, IEntityLinker, EntityLabel
 
 
 @dataclass
@@ -103,10 +103,11 @@ class SemanticEntityLinker(IEntityLinker):
         inverse_label_query = (
             Query('@label:"{label}"'.format(label=surface_form))
             .return_field("$.iri", as_field="iri")
+            .return_field("$.label", as_field="label")
             .dialect(2)
         )
         res = self.redis_client.ft(self.index_name).search(inverse_label_query)
-        iris: List[IRI] = [doc.iri for doc in res.docs]
+        iris: List[Tuple[EntityIRI, EntityLabel]] = [(doc.iri, doc.label) for doc in res.docs]
 
         k -= len(iris)
         if k >= 0:
@@ -117,11 +118,12 @@ class SemanticEntityLinker(IEntityLinker):
                 )
                 .sort_by("vector_score")
                 .return_field("$.iri", as_field="iri")
+                .return_field("$.label", as_field="label")
                 .dialect(2)
             )
             res = self.redis_client.ft(self.index_name).search(
                 knn_query, {"query_vector": encoded_query.tobytes()}
             )
-            iris.extend(doc.iri for doc in res.docs)
+            iris.extend((doc.iri, doc.label) for doc in res.docs)
 
         return iris
