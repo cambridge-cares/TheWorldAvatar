@@ -5,7 +5,7 @@ from mycolorpy import colorlist as mcp
 
 def create_colors():
     # Heat emissions
-    bounds = range(0, 31, 5)
+    bounds = [0, 10, 20, 30, 50, 100, 200, 400, 600]
 
     fig, ax = plt.subplots(figsize=(6, 1))
     fig.subplots_adjust(bottom=0.5)
@@ -26,7 +26,6 @@ def create_colors():
     cb2 = mpl.colorbar.ColorbarBase(ax, cmap=cmap,
                                     norm=norm,
                                     ticks=bounds,
-                                    spacing='proportional',
                                     orientation='horizontal')
     cb2.set_label('Heat emissions (MW)')
     plt.savefig("heat_emissions_colorbar.png", bbox_inches='tight',

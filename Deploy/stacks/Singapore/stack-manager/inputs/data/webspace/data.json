@@ -1587,7 +1587,7 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                5
+                                10
                             ],
                             "#00ffff",
                             [
@@ -1596,25 +1596,34 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                10
-                            ],
-                            "#2ad5ff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
-                                15
-                            ],
-                            "#55aaff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
                                 20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
                             ],
                             "#807fff",
                             [
@@ -1623,18 +1632,27 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                25
+                                200
                             ],
-                            "#aa55ff",
+                            "#a05fff",
                             [
                                 "<=",
                                 [
                                     "get",
                                     "heat_emissions"
                                 ],
-                                31
+                                400
                             ],
-                            "#d52aff",
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
                             "#8D99AE"
                         ],
                         "fill-extrusion-base": 0,
@@ -1690,7 +1708,7 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                5
+                                10
                             ],
                             "#00ffff",
                             [
@@ -1699,25 +1717,34 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                10
-                            ],
-                            "#2ad5ff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
-                                15
-                            ],
-                            "#55aaff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
                                 20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
                             ],
                             "#807fff",
                             [
@@ -1726,18 +1753,27 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                25
+                                200
                             ],
-                            "#aa55ff",
+                            "#a05fff",
                             [
                                 "<=",
                                 [
                                     "get",
                                     "heat_emissions"
                                 ],
-                                31
+                                400
                             ],
-                            "#d52aff",
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
                             "#8D99AE"
                         ],
                         "fill-extrusion-base": 0,
@@ -1793,7 +1829,7 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                5
+                                10
                             ],
                             "#00ffff",
                             [
@@ -1802,25 +1838,34 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                10
-                            ],
-                            "#2ad5ff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
-                                15
-                            ],
-                            "#55aaff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
                                 20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
                             ],
                             "#807fff",
                             [
@@ -1829,18 +1874,27 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                25
+                                200
                             ],
-                            "#aa55ff",
+                            "#a05fff",
                             [
                                 "<=",
                                 [
                                     "get",
                                     "heat_emissions"
                                 ],
-                                31
+                                400
                             ],
-                            "#d52aff",
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
                             "#8D99AE"
                         ],
                         "fill-extrusion-base": 0,
@@ -1896,7 +1950,7 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                5
+                                10
                             ],
                             "#00ffff",
                             [
@@ -1905,25 +1959,34 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                10
-                            ],
-                            "#2ad5ff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
-                                15
-                            ],
-                            "#55aaff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
                                 20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
                             ],
                             "#807fff",
                             [
@@ -1932,18 +1995,27 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                25
+                                200
                             ],
-                            "#aa55ff",
+                            "#a05fff",
                             [
                                 "<=",
                                 [
                                     "get",
                                     "heat_emissions"
                                 ],
-                                31
+                                400
                             ],
-                            "#d52aff",
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
                             "#8D99AE"
                         ],
                         "fill-extrusion-base": 0,
