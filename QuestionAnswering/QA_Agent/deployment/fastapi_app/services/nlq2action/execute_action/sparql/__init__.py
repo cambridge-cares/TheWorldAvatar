@@ -24,14 +24,17 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 PREFIX unit: <http://qudt.org/vocab/unit/>
 PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
 PREFIX gml: <http://www.opengis.net/citygml/building/2.0/>
+PREFIX grp: <http://www.opengis.net/citygml/cityobjectgroup/2.0/>
 
 PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
 PREFIX carpark:	<https://www.theworldavatar.com/kg/ontocarpark/>
 PREFIX landplot: <https://www.theworldavatar.com/kg/landplot/>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
+PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>
 PREFIX ontoplanreg: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
 PREFIX ontoplot: <https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX ontozoning: <https://www.theworldavatar.com/kg/ontozoning/>

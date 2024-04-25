@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import itertools
 import json
 import os
 
@@ -19,9 +20,6 @@ class KgClient:
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument(
-        "--bg_endpoint", required=True, help="SPARQL endpoint to ontocompany TBox"
-    )
-    parser.add_argument(
         "--ontop_endpoint", required=True, help="SPARQL endpoint to ontocompany ABox"
     )
     parser.add_argument("--out", required=True, help="Path to output JSON file")
@@ -30,25 +28,12 @@ if __name__ == "__main__":
     query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
-SELECT DISTINCT ?IRI WHERE {
-?IRI rdfs:subClassOf* ontocompany:Factory .
+SELECT ?Facility ?FacilityName ?CompanyName ?pred WHERE {
+  ?Company rdfs:label ?CompanyName .
+  VALUES ?pred { ontocompany:isOwnerOf ontocompany:hasDataCentre }
+  ?Company ?pred ?Facility .
+  ?Facility rdfs:label ?FacilityName .
 }"""
-    bg_client = KgClient(args.bg_endpoint)
-    res = bg_client.query(query)
-    clses = [x["IRI"]["value"] for x in res["results"]["bindings"]]
-
-    query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
-PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>
-
-SELECT ?IRI ?label WHERE {{
-    VALUES ?Type {{ {types} }}
-    ?IRI rdf:type ?Type .
-    ?IRI rdfs:label ?label .
-}}""".format(
-        types=" ".join(["<{iri}>".format(iri=iri) for iri in clses])
-    )
 
     ontop_client = KgClient(args.ontop_endpoint)
     res = ontop_client.query(query)
@@ -59,9 +44,25 @@ SELECT ?IRI ?label WHERE {{
 
     data = [
         {
-            "iri": binding["IRI"],
-            "label": binding["label"],
-            "surface_forms": [],
+            "iri": binding["Facility"],
+            "label": binding["FacilityName"],
+            "surface_forms": [
+                binding["FacilityName"] + suffix
+                for suffix in itertools.chain(
+                    [""],
+                    (
+                        [" factory", " plant"]
+                        if binding["pred"]
+                        == "http://www.theworldavatar.com/kg/ontocompany/isOwnerOf"
+                        else (
+                            [" data centre"]
+                            if binding["pred"]
+                            == "http://www.theworldavatar.com/kg/ontocompany/hasDataCentre"
+                            else []
+                        )
+                    ),
+                )
+            ],
         }
         for binding in bindings
     ]

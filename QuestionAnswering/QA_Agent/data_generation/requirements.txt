@@ -2,3 +2,4 @@ pandas
 openai
 tqdm
 rdflib
+SPARQLWrapper
