@@ -26,23 +26,17 @@
                 ]
             },
             {
-                "data_domain": "sg_factories",
-                "label": "Singapore's Factories",
+                "data_domain": "sg_industries",
+                "label": "Singapore's Factories & Data Centres",
                 "questions": [
                     "what's the specific energy consumption of Springleaf Confectionery?",
+                    "What is the heat emission of Keppel Datahub",
                     "Which industry has the greatest heat emission value?",
                     "What is the average thermal efficiency of food plants?",
                     "Which semiconductor plant has the highest production rate?",
                     "Which companies have the largest heat emissions in each manufacturing industry?",
                     "How many manufacturing companies are currently operating in Singapore?",
-                    "What are the different types of factories in Singapore?"
-                ]
-            },
-            {
-                "data_domain": "sg_data_centres",
-                "label": "Singapore's Data Centres",
-                "questions": [
-                    "What is the heat emission of SIN3 (Keppel Datahub - T25)",
+                    "What are the different types of factories in Singapore?",
                     "which company has the largest data centre by area?"
                 ]
             },
