@@ -95,36 +95,45 @@ This guide outlines a set of standards and best practices to ensure consistency 
 
 For example, `page.tsx` contains a JSX page render, and `json.ts` contains type definition for JSON objects.
 
-### 2.2 React Components
+- The corresponding `.css` files should be placed directly with their associated component.
 
-- Use functional components instead of class components.
-- Props should use interfaces for type checking.
+### 2.2 Code conventions
 
-**Example**
+- Type definitions in the `type` folder should use `type` instead of `interface`.
+
+**React components**
+- Use functional components instead of class components for React Components.
+- Props for React components should use `interface` for type checking.
 
 ```
 // Good
 interface ButtonProps {
-    text: string;
-    onClick: () => void;
+  text: string;
+  onClick: () => void;
 }
 
-const Button: React.FC<ButtonProps> = ({ text, onClick }) => {
-    return <button onClick={onClick}>{text}</button>;
+function Button(props: ButtonProps) {
+  return <button onClick={onClick}>{text}</button>;
 };
 
 // Avoid
 type ButtonProps = {
-    text: string;
-    onClick: () => void;
+  text: string;
+  onClick: () => void;
 };
 
 class Button extends React.Component<ButtonProps> {
-    render() {
-        return <button onClick={this.props.onClick}>{this.props.text}</button>;
-    }
+  render() {
+    return <button onClick={this.props.onClick}>{this.props.text}</button>;
+  }
 }
 ```
+
+### 2.3 Client-Side
+
+All client-side elements using relative pathing should be wrapped around the `formatAppUrl` method in `utils/client-utils.ts`. This is necessary to ensure that the elements will properly retrieve the url when reverse proxy is utilised.
+
+Additionally, reusable components are provided to facilitate this. For navigation, `AppLink` is available at `ui/navigation/link/link.tsx`. For graphics, import either `AppImage` or `IconComponent` from `ui/graphic/image/image.tsx` and `ui/graphic/icon/icon.tsx` respectively.
 
 ## 3. Local Development Workflow
 
