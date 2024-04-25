@@ -14,12 +14,12 @@ def get_dataSupporter_byDomain(
     singapore_agent_mediator: Annotated[
         DataSupporter, Depends(get_singapore_agentMediator)
     ],
-    singapore_nlq2action: Annotated[
-        DataSupporter, Depends(get_singapore_nlq2action2data)
-    ],
+    # singapore_nlq2action: Annotated[
+    #     DataSupporter, Depends(get_singapore_nlq2action2data)
+    # ],
 ):
     return {
         "chemistry": chemistry_agent_mediator,
-        # "singapore": singapore_agent_mediator,
-        "singapore": singapore_nlq2action
+        "singapore": singapore_agent_mediator,
+        # "singapore": singapore_nlq2action
     }

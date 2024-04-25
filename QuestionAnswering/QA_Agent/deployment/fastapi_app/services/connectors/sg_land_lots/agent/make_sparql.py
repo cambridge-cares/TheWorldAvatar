@@ -2,11 +2,20 @@ from functools import cache
 from typing import List, Tuple
 
 from model.aggregate import AggregateOperator
-from ..model import PlotAttrKey, PlotCatAttrKey, PlotNumAttrKey
+from ..model import PlotNumAttrKey
 from ..constants import LAND_USE_TYPE_PREDICATE, PLOT_NUM_ATTR_PREDICATES
 
 
 class SGLandLotsSPARQLMaker:
+    def explain_landUses(self, landUseType_iris: List[str]):
+        return """SELECT DISTINCT * WHERE {{
+    VALUES ?LandUseType {{ {values} }}
+    ?LandUseType rdfs:label ?LandUseLabel .
+    ?LandUseType rdfs:comment ?LandUseComment .
+}}""".format(
+            values=" ".join("<{iri}>".format(iri=iri) for iri in landUseType_iris)
+        )
+
     def _make_clauses_to_locate_plots(self, land_use_type_iris: List[str] = []):
         select_vars = []
         ontop_patterns = ["?IRI rdf:type ontoplot:Plot ."]

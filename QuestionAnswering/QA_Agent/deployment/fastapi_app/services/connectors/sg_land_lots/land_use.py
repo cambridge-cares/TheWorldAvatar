@@ -25,8 +25,8 @@ class LandUseTypeStore:
     def get_all(self):
         return self.nodes
 
-    def get_iris(self, clsname: str):
-        return list(self.clsname2iris[clsname])
+    # def get_iris(self, clsname: str):
+    #     return list(self.clsname2iris[clsname])
 
     @lru_cache(maxsize=64)
     def get_clsnames(self, iri: str):
