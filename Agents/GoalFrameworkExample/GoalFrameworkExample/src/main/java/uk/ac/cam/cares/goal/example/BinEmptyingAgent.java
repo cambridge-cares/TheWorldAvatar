@@ -53,6 +53,7 @@ public class BinEmptyingAgent extends DerivationAgent  {
 
         String range_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.GoalRange)).get(0);
         String realstate_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Weight)).get(0);
+        String goal_iri = sparqlClient.getGoalIRI();
 
         Integer realStateValue = (timeSeriesClient.getLatestData(realstate_iri)).getValuesAsInteger(realstate_iri).get(0);
 
@@ -68,10 +69,10 @@ public class BinEmptyingAgent extends DerivationAgent  {
         else{
             res_msg = "Bin do something";
             LOGGER.info(res_msg);
-
         }
 
         // write the output triples to derivationOutputs
+
         String desiredstate_iri = SparqlClient.namespace +SparqlClient.DesiredState+"_"+ UUID.randomUUID().toString();
         derivationOutputs.createNewEntity(desiredstate_iri, SparqlClient.getRdfTypeString(SparqlClient.Weight));
         derivationOutputs.addTriple(desiredstate_iri, RDF.TYPE.toString(), OWL.NAMEDINDIVIDUAL.toString());
