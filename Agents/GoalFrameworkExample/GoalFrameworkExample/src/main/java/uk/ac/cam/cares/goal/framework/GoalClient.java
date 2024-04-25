@@ -166,6 +166,22 @@ public class GoalClient {
         return this.sparqlClient.getAllGoal();
     }
 
+    public String getInputIRIGivenGoalRangeIRI (String goalrange_iri){
+         return sparqlClient.getInputIRIGivenGoalRangeIRI(goalrange_iri);
+    }
+
+
+    public void addHasDesiredState(String goalrange_iri, String desired_state_iri) {
+
+        sparqlClient.addHasDesiredState(goalrange_iri,desired_state_iri);
+
+    }
+
+
+
+
+
+
 
 
 }

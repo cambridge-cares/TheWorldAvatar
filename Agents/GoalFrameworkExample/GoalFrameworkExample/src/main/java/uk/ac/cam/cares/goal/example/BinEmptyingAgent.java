@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import uk.ac.cam.cares.goal.framework.Goal;
 import uk.ac.cam.cares.goal.framework.GoalClient;
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
@@ -53,7 +54,7 @@ public class BinEmptyingAgent extends DerivationAgent  {
 
         String range_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.GoalRange)).get(0);
         String realstate_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Weight)).get(0);
-        String goal_iri = sparqlClient.getGoalIRI();
+        String goal_iri = goalClient.getInputIRIGivenGoalRangeIRI(range_iri);
 
         Integer realStateValue = (timeSeriesClient.getLatestData(realstate_iri)).getValuesAsInteger(realstate_iri).get(0);
 
@@ -73,7 +74,8 @@ public class BinEmptyingAgent extends DerivationAgent  {
 
         // write the output triples to derivationOutputs
 
-        String desiredstate_iri = SparqlClient.namespace +SparqlClient.DesiredState+"_"+ UUID.randomUUID().toString();
+        String desiredstate_iri = SparqlClient.namespace+"_"+ UUID.randomUUID().toString();
+        goalClient.addHasDesiredState(goal_iri,desiredstate_iri);
         derivationOutputs.createNewEntity(desiredstate_iri, SparqlClient.getRdfTypeString(SparqlClient.Weight));
         derivationOutputs.addTriple(desiredstate_iri, RDF.TYPE.toString(), OWL.NAMEDINDIVIDUAL.toString());
         String value_iri = SparqlClient.namespace + UUID.randomUUID().toString();

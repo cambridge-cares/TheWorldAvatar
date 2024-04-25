@@ -354,6 +354,46 @@ public class GoalSparql {
         return queryResult;
     }
 
+    public String getInputIRIGivenGoalRangeIRI(String goalrange_iri) {
+        SelectQuery query = Queries.SELECT();
+
+        String queryKey = "Goal";
+        Variable goal = SparqlBuilder.var(queryKey);
+
+        Iri goalrangeIri = iri(goalrange_iri);
+
+        GraphPattern queryPattern = goal.has(PropertyPaths.path(hasGoalRange), goalrangeIri);
+
+        query.select(goal).where(queryPattern).prefix(prefixAgent).prefix(prefixGoal);
+
+        storeClient.setQuery(query.getQueryString());
+
+        String queryResult = storeClient.executeQuery().getJSONObject(0).getString(queryKey);
+
+        return queryResult;
+
+    }
+
+    public void addHasDesiredState(String goal_iri, String desiredstate_iri){
+        ModifyQuery modify = Queries.MODIFY();
+        SubSelect sub = GraphPatterns.select();
+        Variable goal = SparqlBuilder.var("goal");
+        Variable desiredstate = SparqlBuilder.var("desiredstate");
+
+
+        modify.insert(goal.has(hasDesiredState,desiredstate));
+
+
+        ValuesPattern vp = new ValuesPattern(goal, desiredstate);
+        vp.addValuePairForMultipleVariables(iri(goal_iri),iri(desiredstate_iri));
+
+        sub.select(goal, desiredstate).where(GraphPatterns.and(vp));
+
+        modify.prefix(prefixGoal, prefixTime).where(sub);
+
+        storeClient.executeUpdate(modify.getQueryString());
+    }
+
 
 
 

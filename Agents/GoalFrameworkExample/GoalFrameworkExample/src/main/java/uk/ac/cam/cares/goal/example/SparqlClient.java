@@ -33,11 +33,12 @@ public class SparqlClient {
     public static String om_namespace = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
 
     public static String prefix = "goalframework";
-    public static String om = "om";
+    public static String prefix_om = "om";
     private static Prefix p_namespace = SparqlBuilder.prefix(prefix, iri(namespace));
-    private static Prefix p_om_namespace = SparqlBuilder.prefix(om, iri(om_namespace));
+    private static Prefix p_om_namespace = SparqlBuilder.prefix(prefix_om, iri(om_namespace));
 
     // rdf:type
+
     public static Iri GoalRange = p_namespace.iri("GoalRange");
 
     public static Iri Weight = p_om_namespace.iri("Weight"); // has a time series instance
@@ -96,7 +97,10 @@ public class SparqlClient {
      * @return
      */
     public static String getRdfTypeString(Iri clz) {
-        return clz.getQueryString().replaceAll(prefix + ":", namespace);
+        String queryString = clz.getQueryString();
+        queryString = queryString.replaceAll(prefix + ":", namespace);
+        queryString = queryString.replaceAll(prefix_om + ":", om_namespace);
+        return queryString;
     }
 
 
@@ -192,6 +196,9 @@ public class SparqlClient {
             throw new JPSRuntimeException("Input is probably not initialised yet/properly, please run InitialiseInstances");
         }
     }
+
+
+
 
     /**
      * This method generates below triples given <propertyIRI> and <valueIRI>:
@@ -307,10 +314,6 @@ public class SparqlClient {
         storeClient.executeUpdate(modify.prefix(p_namespace).prefix(p_om_namespace).getQueryString());
         return desiredValue_iri;
     }
-
-
-
-
 
 
 }
