@@ -25,7 +25,7 @@ public class AccelerometerHandler extends AbstractSensorHandler {
         float z = event.values[2];
 
         // Log the accelerometer values
-        Log.d("Accelerometer", "X: " + x + " Y: " + y + " Z: " + z);
+     //   Log.d("Accelerometer", "X: " + x + " Y: " + y + " Z: " + z);
     }
 
     @Override

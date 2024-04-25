@@ -1,6 +1,7 @@
 package com.example.notsensorlogger2;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -141,7 +142,7 @@ public class MainActivity extends Activity {
         humiditySensorHandler = new RelativeHumiditySensorHandler(sensorManager);
         pressureSensorHandler = new PressureSensorHandler(sensorManager);
         gravitySensorHandler = new GravitySensorHandler(sensorManager);
-        locationTracker = new LocationHandler(this);
+        locationTracker = new LocationHandler((Context) this, (PressureSensorHandler) pressureSensorHandler);
         soundLevelHandler = new SoundLevelHandler(this, sensorManager);
 
         // After initializing all sensors and handlers, call the setup method for RecyclerView
@@ -442,7 +443,7 @@ public class MainActivity extends Activity {
 
 
     private void sendPostRequest(JSONArray sensorData) {
-        String url = "https://eou1bwdjb3p7r6h.m.pipedream.net";    //https://eo5qowv4nlk2w03.m.pipedream.net       //10.0.2.2:3838      //https://eou1bwdjb3p7r6h.m.pipedream.net   //http://192.168.1.60:3838/sensorloggermobileappagent/update
+        String url = "http://10.0.2.2:3838/sensorloggermobileappagent/update";    //https://eo5qowv4nlk2w03.m.pipedream.net       //10.0.2.2:3838      //https://eou1bwdjb3p7r6h.m.pipedream.net   //http://192.168.1.60:3838/sensorloggermobileappagent/update
         RequestQueue queue = Volley.newRequestQueue(this);
         String sessionId = UUID.randomUUID().toString();
         int messageId = generateMessageId();
