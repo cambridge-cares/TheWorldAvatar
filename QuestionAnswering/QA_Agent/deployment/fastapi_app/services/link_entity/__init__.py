@@ -10,8 +10,8 @@ from redis import Redis
 from config import QAEngineName, get_qa_engine_name
 from services.core.redis import get_redis_client
 from services.core.embed import IEmbedder, get_embedder
-from services.nlq2action.link_entity.fuzzy import FuzzyEntityLinker
-from services.nlq2action.link_entity.semantic import LexiconEntry, SemanticEntityLinker
+from .fuzzy import FuzzyEntityLinker
+from .semantic import LexiconEntry, SemanticEntityLinker
 
 
 @dataclass(frozen=True)

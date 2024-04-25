@@ -4,8 +4,8 @@ from typing import Annotated, Dict, List, Tuple
 
 from fastapi import Depends
 
-from services.nlq2action.link_entity import ELMediator, get_el_mediator
-from services.nlq2action.link_entity.link import EntityIRI, EntityLabel
+from services.link_entity import ELMediator, get_el_mediator
+from services.link_entity.link import EntityIRI, EntityLabel
 
 
 logger = logging.getLogger(__name__)

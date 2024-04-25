@@ -1,9 +1,9 @@
-from typing import Iterable, List
+from typing import List
 
 from redis import Redis
 
 from services.core.label_store import IRIWithLabels, LabelStore
-from services.nlq2action.link_entity.semantic import LexiconEntry
+from .semantic import LexiconEntry
 from .link import IEntityLinker
 
 

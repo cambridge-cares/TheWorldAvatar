@@ -3,7 +3,7 @@ from typing import Annotated, Dict
 
 from fastapi import Depends
 
-from services.nlq2action.link_entity.link import EntityIRI, EntityLabel
+from services.link_entity.link import EntityIRI, EntityLabel
 
 from .link_value import SparqlEntityLinker, get_sparql_entityLinker
 
