@@ -1,0 +1,10 @@
+[
+    {
+        "clsname": "LandUseType",
+        "el_strategy": "semantic"
+    },
+    {
+        "clsname": "Facility",
+        "el_strategy": "fuzzy"
+    }
+]

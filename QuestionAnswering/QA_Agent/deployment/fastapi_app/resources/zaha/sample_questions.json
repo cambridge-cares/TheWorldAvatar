@@ -20,6 +20,7 @@
                 "data_domain": "sg_buildings",
                 "label": "Singapore's Buildings",
                 "questions": [
+                    "what's the building height of Jurong Island Desalination Plant",
                     "How many restaurant buildings are there?",
                     "What is the most common usage for buildings?"
                 ]
@@ -28,7 +29,7 @@
                 "data_domain": "sg_factories",
                 "label": "Singapore's Factories",
                 "questions": [
-                    "what's the specific energy consumption of Neste factory?",
+                    "what's the specific energy consumption of Springleaf Confectionery?",
                     "Which industry has the greatest heat emission value?",
                     "What is the average thermal efficiency of food plants?",
                     "Which semiconductor plant has the highest production rate?",

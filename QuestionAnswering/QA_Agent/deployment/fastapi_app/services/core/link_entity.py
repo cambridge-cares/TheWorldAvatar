@@ -1,7 +1,7 @@
+from collections import defaultdict
 from functools import cache
 from importlib.resources import files
 import json
-import regex
 from typing import Annotated, Dict, Iterable, List, Literal, Optional, Tuple
 
 from fastapi import Depends
@@ -13,12 +13,15 @@ from redis.commands.search.field import TextField, VectorField, TagField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 from pydantic.dataclasses import dataclass
+import regex
 
 from config import QAEngineName, get_qa_engine_name
 from services.core.embed import IEmbedder, get_embedder
 from services.core.redis import does_index_exist, get_redis_client
 from services.utils.itertools_recipes import batched
 
+EntityIRI = str
+EntityLabel = str
 ELStrategy = Literal["fuzzy", "semantic"]
 
 
@@ -80,6 +83,8 @@ class EntityLinker:
             pipeline = redis_client.pipeline()
             for i, (entry, embedding) in enumerate(zip(chunk, embeddings)):
                 redis_key = cls.KEY_PREFIX + str(offset + i)
+                if entry.label not in entry.surface_forms:
+                    entry.surface_forms.append(entry.label)
                 doc = dict(
                     iri=entry.iri,
                     clsname=entry.clsname,
@@ -180,26 +185,29 @@ class EntityLinker:
 
         return iris
 
-    def _all_surface_forms(self, clsname: Optional[str]) -> List[str]:
+    def _all_surface_forms(self, clsname: Optional[str]):
         # TODO: accumulate pages from Redis to ensure all labels are retrieved
         query = (
             Query(self._make_filter_query(clsname))
-            .return_field("$.surface_forms", as_field="surface_forms_serialized")
-            .paging(0, 10000)
+            .return_field("$.iri", as_field="iri")
+            .return_field(
+                "$.surface_forms", as_field="surface_forms_serialized"
+            ).paging(0, 10000)
         )
         res = self.redis_client.ft(self.INDEX_NAME).search(query)
-        surface_forms = [
-            sf for doc in res.docs for sf in json.loads(doc.surface_forms_serialized)
-        ]
-        return list(set(surface_forms))
+        # return [
+        #     sf for doc in res.docs for sf in json.loads(doc.surface_forms_serialized)
+        # ]
+        return [(doc.iri, json.loads(doc.surface_forms_serialized)) for doc in res.docs]
 
     def _lookup_iris(self, surface_form: str) -> List[str]:
         query = Query(
-            "@surface_forms:{{{surface_form}}}".format(
-                label=regex.escape(surface_form, special_only=False)
+            '@surface_forms:"{surface_form}"'.format(
+                surface_form=regex.escape(surface_form, special_only=False)
             )
         ).return_field("iri")
-        res = self.redis_client.ft(self.INDEX_NAME).search(query).docs
+        print(query._query_string)
+        res = self.redis_client.ft(self.INDEX_NAME).search(query)
         iris = [doc.iri for doc in res.docs]
         return list(set(iris))
 
@@ -212,7 +220,15 @@ class EntityLinker:
         k -= len(iris)
         if k >= 0:
             # TODO: use a strategy to retrieve a subset of surface forms rather than all
-            choices = self._all_surface_forms(clsname)
+            # choices = self._all_surface_forms(clsname)
+            iri_and_sfs = self._all_surface_forms(clsname)
+
+            sf2iris = defaultdict(list)
+            for iri, sfs in iri_and_sfs:
+                for sf in sfs:
+                    sf2iris[sf].append(iri)
+            choices = [sf for _, sfs in iri_and_sfs for sf in sfs]
+
             lst = rapidfuzz.process.extract(
                 surface_form,
                 choices,
@@ -221,9 +237,11 @@ class EntityLinker:
                 processor=rapidfuzz.utils.default_process,
             )
             surface_forms = [sf for sf, _, _ in lst]
-            iris.extend([iri for sf in surface_forms for iri in self._lookup_iris(sf)])
+            # iris.extend([iri for sf in surface_forms for iri in self._lookup_iris(sf)])
+            for sf in surface_forms:
+                iris.extend(sf2iris[sf])
 
-        return iris
+        return list(set(iris))
 
     def link(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
         strategy = self.clsname2strategy.get(clsname, "fuzzy") if clsname else "fuzzy"
