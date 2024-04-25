@@ -40,6 +40,7 @@ public class SparqlClient {
 
     public static Iri Input = p_namespace.iri("Input"); // has a time series instance
     public static Iri ScalarValue = p_namespace.iri("ScalarValue");
+    public static Iri DesiredState = p_namespace.iri("DesiredState");
 
     public static Iri Truck = p_namespace.iri("Truck");
 
@@ -292,6 +293,17 @@ public class SparqlClient {
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         return queryResult.getJSONObject(0).getInt(key);
+    }
+
+
+    /**
+     */
+    public String createDesiredValue() {
+        String desiredValue_iri = namespace + UUID.randomUUID().toString();
+        ModifyQuery modify = Queries.MODIFY();
+        modify.insert(iri(desiredValue_iri).isA(DesiredState).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+        storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+        return desiredValue_iri;
     }
 
 

@@ -33,7 +33,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 @WebServlet(urlPatterns = {BinEmptyingAgent.URL_BINEMPTYINGAGENT})
-public class BinEmptyingAgent extends JPSAgent {
+public class BinEmptyingAgent extends DerivationAgent  {
 
     private static final long serialVersionUID = 1L;
     public static final String URL_BINEMPTYINGAGENT = "/BinEmptyingAgent";
@@ -43,20 +43,31 @@ public class BinEmptyingAgent extends JPSAgent {
     TripleStoreClientInterface storeClient;
     SparqlClient sparqlClient;
 
+    GoalClient goalClient;
     public BinEmptyingAgent() {
         LOGGER.info("BinEmptyingAGent is initialised.");
     }
 
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
 
-        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser, Config.kgpassword);
-        SparqlClient sparqlClient = new SparqlClient(storeClient);
-        GoalClient goalClient = new GoalClient(storeClient,InitialiseInstances.goalInstanceBaseURL);
+    @Override
+    public void init() throws ServletException {
+        // initialise all clients
+        Config.initProperties();
+        this.storeClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser, Config.kgpassword);
+        this.sparqlClient = new SparqlClient(this.storeClient);
+        this.goalClient = new GoalClient(this.storeClient, InitialiseInstances.goalInstanceBaseURL);
+        super.devClient = new DerivationClient(this.storeClient, InitialiseInstances.goalInstanceBaseURL);
+    }
+
+    @Override
+    public void processRequestParameters (DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
+
         TimeSeriesClient<Instant> timeSeriesClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 
-        String range_iri = requestParams.get(goalClient.GOALRANGE_KEY).toString();
-        String realstate_iri = requestParams.get(goalClient.REALSTATE_KEY).toString();
+        System.out.println("something");
+
+        String range_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.GoalRange)).get(0);
+        String realstate_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Input)).get(0);
 
         Integer realStateValue = (timeSeriesClient.getLatestData(realstate_iri)).getValuesAsInteger(realstate_iri).get(0);
 
@@ -73,10 +84,6 @@ public class BinEmptyingAgent extends JPSAgent {
             res_msg = "Bin do something";
             LOGGER.info(res_msg);
         }
-
-        JSONObject response = new JSONObject();
-        response.put("status", res_msg);
-        return response;
     }
 
 
