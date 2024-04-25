@@ -62,17 +62,8 @@ public class BinEmptyingAgent extends DerivationAgent  {
         Integer minvalue = sparqlClient.getMinValue(range_iri);
 
         String res_msg;
-        if (realStateValue<maxvalue && realStateValue>minvalue)
-        {
-            res_msg = "Bin do nothing";
-            LOGGER.info(res_msg);
-        }
-        else{
-            res_msg = "Bin do something";
-            LOGGER.info(res_msg);
-        }
 
-        // write the output triples to derivationOutputs
+        Integer oldDesiredState_value = sparqlClient.getValue(goalClient.getDesiredStateIRI(goal_iri));
 
         String desiredstate_iri = SparqlClient.namespace+"_"+ UUID.randomUUID().toString();
         goalClient.addHasDesiredState(goal_iri,desiredstate_iri);
@@ -80,7 +71,18 @@ public class BinEmptyingAgent extends DerivationAgent  {
         derivationOutputs.addTriple(desiredstate_iri, RDF.TYPE.toString(), OWL.NAMEDINDIVIDUAL.toString());
         String value_iri = SparqlClient.namespace + UUID.randomUUID().toString();
         derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
-        derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, 50));
+
+        if (realStateValue<maxvalue && realStateValue>minvalue)
+        {
+            res_msg = "Bin do nothing";
+            derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, oldDesiredState_value));
+            LOGGER.info(res_msg);
+        }
+        else{
+            res_msg = "Bin do something";
+            derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, 0));
+            LOGGER.info(res_msg);
+        }
         LOGGER.info("Created a new min value instance <" + desiredstate_iri + ">, and its value instance <" + value_iri + ">");
     }
 

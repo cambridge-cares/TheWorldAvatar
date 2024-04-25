@@ -71,7 +71,7 @@ public class InitialiseInstances extends JPSAgent{
 			//Create goalRange_iri
 			String goalRange_iri = sparqlClient.createGoalRangeIRI();
 			//Create goalCondition
-			sparqlClient.createRangeCondition(goalRange_iri,"1","0");
+			sparqlClient.createRangeCondition(goalRange_iri,"10000","0");
 
 			//Create ontoagent instances for Derivations
 			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(goalRangeType,input), Arrays.asList(desiredStateType));
@@ -80,7 +80,7 @@ public class InitialiseInstances extends JPSAgent{
 			//Create sumvalue_iri
 			String desiredValue_property = sparqlClient.createDesiredValue();
 			//Initialise sumvalue to be 0
-			String desiredValue = sparqlClient.addValueInstance(desiredValue_property, 0);
+			String desiredValue = sparqlClient.addValueInstance(desiredValue_property, 50);
 
 			//create goal
 			String goal_binemptyingagent = goalClient.createGoalForNewInfo(binemptying_agent_iri, binemptying_agent_url, goalRange_iri, input, desiredValue_property);

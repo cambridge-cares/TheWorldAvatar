@@ -230,7 +230,7 @@ public class SparqlClient {
      */
     public List<TriplePattern> addValueInstance(String quantityInstance, String valueInstance, int value) {
         List<TriplePattern> triples = new ArrayList<>();
-        triples.add(iri(quantityInstance).has(iri(getPropertyString(hasMaximum)), iri(valueInstance)));
+        triples.add(iri(quantityInstance).has(iri(getPropertyString(hasValue)), iri(valueInstance)));
         triples.add(iri(valueInstance).has(iri(getPropertyString(numericalValue)), value));
         return triples;
     }

@@ -326,6 +326,19 @@ public class GoalSparql {
         return queryResult;
     }
 
+    String getDesiredStateIRI(String goalIRI){
+        String queryKey = "agent";
+        Variable agent = SparqlBuilder.var(queryKey);
+        GraphPattern queryPattern = iri(goalIRI).has(hasDesiredState,agent);
+        SelectQuery query = Queries.SELECT();
+
+        query.prefix(prefixGoal).select(agent).where(queryPattern);
+        storeClient.setQuery(query.getQueryString());
+        String queryResult = storeClient.executeQuery().getJSONObject(0).getString(queryKey);
+        return queryResult;
+    }
+
+
 
 
 
@@ -393,15 +406,6 @@ public class GoalSparql {
 
         storeClient.executeUpdate(modify.getQueryString());
     }
-
-
-
-
-
-
-
-
-
 
 
 }

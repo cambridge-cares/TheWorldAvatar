@@ -36,9 +36,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
 public class Goal {
-
-
-
     private String iri;
 
     private String goalRange; //GoalRange
@@ -48,7 +45,6 @@ public class Goal {
     private String rdfType;
 
     private String agentURL;//isAchievedUsing
-
 
     public Goal(String iri) {
         this.iri = iri;
@@ -80,8 +76,6 @@ public class Goal {
         this.realState = realState;
     }
 
-
-
     public void setAgentURL(String agentURL) {
         this.agentURL = agentURL;
     }
@@ -89,7 +83,5 @@ public class Goal {
     public String getAgentURL() {
         return this.agentURL;
     }
-
-
 
 }

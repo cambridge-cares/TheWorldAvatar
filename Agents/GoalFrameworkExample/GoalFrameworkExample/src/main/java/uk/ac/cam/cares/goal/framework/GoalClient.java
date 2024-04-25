@@ -170,12 +170,15 @@ public class GoalClient {
          return sparqlClient.getInputIRIGivenGoalRangeIRI(goalrange_iri);
     }
 
+    public String getDesiredStateIRI (String goal_iri){
+        return sparqlClient.getDesiredStateIRI(goal_iri);
+    }
+
 
     public void addHasDesiredState(String goalrange_iri, String desired_state_iri) {
-
         sparqlClient.addHasDesiredState(goalrange_iri,desired_state_iri);
-
     }
+
 
 
 
