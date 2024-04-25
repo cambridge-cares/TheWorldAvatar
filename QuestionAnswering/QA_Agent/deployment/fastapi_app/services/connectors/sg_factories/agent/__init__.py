@@ -7,12 +7,11 @@ from fastapi import Depends
 from model.constraint import ExtremeValueConstraint
 from model.aggregate import AggregateOperator
 from model.qa import QAData
-from services.utils.rdf import add_label_to_sparql_resposne, flatten_sparql_response
+from services.core.link_entity import EntityLinker, get_entity_linker
+from services.utils.rdf import flatten_sparql_response
 from services.core.kg import KgClient
-from services.core.label_store import LabelStore
 from services.kg import get_sg_ontopClient
 from ..model import FactoryAttrKey, FactoryNumAttrKey, Industry
-from .label_store import get_sgFactories_labelStore
 from .make_sparql import SGFactoriesSPARQLMaker, get_sgFactories_sparqlmaker
 
 
@@ -23,11 +22,11 @@ class SGFactoriesAgent:
     def __init__(
         self,
         ontop_client: KgClient,
-        label_store: LabelStore,
+        entity_linker: EntityLinker,
         sparql_maker: SGFactoriesSPARQLMaker,
     ):
         self.ontop_client = ontop_client
-        self.label_store = label_store
+        self.entity_linker = entity_linker
         self.sparql_maker = sparql_maker
 
     def _lookup_company_names(self, factory_iris: List[str]):
@@ -56,6 +55,16 @@ FILTER ( ?Factory IN ( {values} ) )
 
         return [factory2company[factory] for factory in factory_iris]
 
+    def _add_factory_label(self, vars: List[str], bindings: List[dict]):
+        try:
+            iri_idx = vars.index("IRI")
+        except ValueError:
+            raise ValueError("IRI must be present, found: " + str(vars))
+
+        vars.insert(iri_idx + 1, "FactoryName")
+        for binding in bindings:
+            binding["FactoryName"] = self.entity_linker.lookup_label(binding["IRI"])
+
     def _add_company_label(self, vars: List[str], bindings: List[dict]):
         try:
             iri_idx = vars.index("IRI")
@@ -68,15 +77,13 @@ FILTER ( ?Factory IN ( {values} ) )
             binding["Company"] = company
 
     def lookup_factory_attribute(self, name: str, attr_key: FactoryAttrKey):
-        iris = self.label_store.link_entity(name)
+        iris = self.entity_linker.link(name, "Facility")
 
         query = self.sparql_maker.lookup_factory_attribute(iris=iris, attr_key=attr_key)
         res = self.ontop_client.query(query)
 
         vars, bindings = flatten_sparql_response(res)
-        add_label_to_sparql_resposne(
-            self.label_store, vars, bindings, label_header="FactoryName"
-        )
+        self._add_factory_label(vars, bindings)
         self._add_company_label(vars, bindings)
 
         return QAData(vars=vars, bindings=bindings)
@@ -122,9 +129,7 @@ FILTER ( ?Factory IN ( {values} ) )
                 industry=_industry, numattr_constraints=numattr_constraints, limit=limit
             ),
         )
-        add_label_to_sparql_resposne(
-            self.label_store, vars, bindings, label_header="FactoryName"
-        )
+        self._add_factory_label(vars, bindings)
         self._add_company_label(vars, bindings)
 
         return QAData(vars=vars, bindings=bindings)
@@ -177,11 +182,13 @@ FILTER ( ?Factory IN ( {values} ) )
 
 def get_sgFactories_agent(
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
-    label_store: Annotated[LabelStore, Depends(get_sgFactories_labelStore)],
+    entity_linker: Annotated[EntityLinker, Depends(get_entity_linker)],
     sparql_maker: Annotated[
         SGFactoriesSPARQLMaker, Depends(get_sgFactories_sparqlmaker)
     ],
 ):
     return SGFactoriesAgent(
-        ontop_client=ontop_client, label_store=label_store, sparql_maker=sparql_maker
+        ontop_client=ontop_client,
+        entity_linker=entity_linker,
+        sparql_maker=sparql_maker,
     )

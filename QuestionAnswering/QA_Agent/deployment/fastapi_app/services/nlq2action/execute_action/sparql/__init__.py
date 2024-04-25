@@ -5,12 +5,13 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends
 
+from services.core.link_entity import EntityLinker, get_entity_linker
 from services.kg import get_sgPlot_bgClient, get_sg_ontopClient
 from model.qa import QAData, QAStep
 from services.core.kg import KgClient
 from services.utils.collections import FrozenDict
 from services.utils.rdf import flatten_sparql_response
-from .postprocess import SparqlPostProcessor, get_sparql_postprocessor
+from .postprocess import SparqlPostProcessor
 from ..model import SparqlAction
 
 
@@ -42,16 +43,17 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
 
 """
 
-    def __init__(self, ns2kg: Dict[str, KgClient], postprocessor: SparqlPostProcessor):
+    def __init__(self, ns2kg: Dict[str, KgClient], entity_linker: EntityLinker):
         self.ns2kg = ns2kg
-        self.postprocessor = postprocessor
+        self.postprocessor = SparqlPostProcessor(entity_linker)
+        self.entity_linker = entity_linker
 
     def exec(self, action: SparqlAction):
         steps: List[QAStep] = []
 
         logger.info("Input query:\n" + action.query)
         timestamp = time.time()
-        query, var2iri2label = self.postprocessor.postprocess(action.query)
+        query, varnames = self.postprocessor.postprocess(action.query)
         latency = time.time() - timestamp
         logger.info("Processed query:\n" + query)
         steps.append(
@@ -76,7 +78,7 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
         )
 
         vars, bindings = flatten_sparql_response(res)
-        for varname in var2iri2label.keys():
+        for varname in varnames:
             try:
                 idx = vars.index(varname)
             except:
@@ -84,9 +86,11 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
             vars.insert(idx + 1, varname + "Name")
 
         for binding in bindings:
-            for varname, iri2label in var2iri2label.items():
+            for varname in varnames:
                 if varname in binding:
-                    binding[varname + "Name"] = iri2label[binding[varname]]
+                    binding[varname + "Name"] = self.entity_linker.lookup_label(
+                        binding[varname]
+                    )
 
         return steps, QAData(vars=vars, bindings=bindings)
 
@@ -102,6 +106,6 @@ def get_ns2kg(
 @cache
 def get_sparqlAction_executor(
     ns2kg: Annotated[FrozenDict[str, KgClient], Depends(get_ns2kg)],
-    postprocessor: Annotated[SparqlPostProcessor, Depends(get_sparql_postprocessor)],
+    entity_linker: Annotated[EntityLinker, Depends(get_entity_linker)],
 ):
-    return SparqlActionExecutor(ns2kg=ns2kg, postprocessor=postprocessor)
+    return SparqlActionExecutor(ns2kg=ns2kg, entity_linker=entity_linker)
