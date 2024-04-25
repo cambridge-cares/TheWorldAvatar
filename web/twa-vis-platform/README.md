@@ -10,7 +10,7 @@ A tutorial including a sample directory setup has been included in the [example]
 
 Information on the source code and its architecture can be found in the [code](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform/code) directory. Briefly, the TWA Visualisation Platform takes the form of a [Next.js](https://nextjs.org/) project written using [TypeScript](https://www.typescriptlang.org/), utilising both client and server-side codes.
 
-The development process can occur locally or in a Docker container. Please do note that it is faster to develop the platform locally, and instructions are available in the [code](./code#2-local-development-workflow) directory.
+The development process can occur locally or in a Docker container. Please do note that it is faster to develop the platform locally, and instructions are available in the [code](./code#3-local-development-workflow) directory.
 
 On the other hand, Docker deployment is simplified and requires minimal setup. In order to start a Docker container, please ensure the following:
 
