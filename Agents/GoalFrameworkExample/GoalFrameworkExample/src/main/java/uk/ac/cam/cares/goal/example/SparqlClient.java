@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.rdf4j.model.vocabulary.OWL;
-import org.eclipse.rdf4j.query.algebra.In;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -31,14 +30,17 @@ public class SparqlClient {
 
     // namespace
     public static String namespace = "http://goalframework_example#";
+    public static String om_namespace = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
 
     public static String prefix = "goalframework";
+    public static String om = "om";
     private static Prefix p_namespace = SparqlBuilder.prefix(prefix, iri(namespace));
+    private static Prefix p_om_namespace = SparqlBuilder.prefix(om, iri(om_namespace));
 
     // rdf:type
     public static Iri GoalRange = p_namespace.iri("GoalRange");
 
-    public static Iri Input = p_namespace.iri("Input"); // has a time series instance
+    public static Iri Weight = p_om_namespace.iri("Weight"); // has a time series instance
     public static Iri ScalarValue = p_namespace.iri("ScalarValue");
     public static Iri DesiredState = p_namespace.iri("DesiredState");
 
@@ -78,7 +80,7 @@ public class SparqlClient {
         String inputIRI = namespace + UUID.randomUUID().toString();
 
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(inputIRI).isA(Input)).prefix(p_namespace);
+        modify.insert(iri(inputIRI).isA(Weight)).prefix(p_om_namespace).prefix(p_om_namespace);
 
         // create the instance on kg
         storeClient.executeUpdate(modify.getQueryString());
@@ -111,7 +113,7 @@ public class SparqlClient {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(goalRange_iri).isA(GoalRange).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andIsA(GoalRange));
         modify.insert();
-        storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+        storeClient.executeUpdate(modify.prefix(p_namespace).prefix(p_om_namespace).getQueryString());
         return goalRange_iri;
     }
 
@@ -125,7 +127,7 @@ public class SparqlClient {
     public void createRangeCondition(String goalRange_iri, String Maximum, String Minimum) {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(goalRange_iri).has(hasMaximum,Maximum).andHas(hasMinimum,Minimum));
-        storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+        storeClient.executeUpdate(modify.prefix(p_namespace).prefix(p_om_namespace).getQueryString());
     }
 
 
@@ -141,7 +143,7 @@ public class SparqlClient {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(property).has(hasValue,iri(value_iri)));
         modify.insert(iri(value_iri).isA(ScalarValue).andHas(numericalValue,value));
-        storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+        storeClient.executeUpdate(modify.prefix(p_namespace).prefix(p_om_namespace).getQueryString());
         return value_iri;
     }
 
@@ -157,7 +159,7 @@ public class SparqlClient {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(property).has(hasMaximum,iri(value_iri)));
         modify.insert(iri(value_iri).isA(ScalarValue).andHas(stringValue,value));
-        storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+        storeClient.executeUpdate(modify.prefix(p_namespace).prefix(p_om_namespace).getQueryString());
         return value_iri;
     }
 
@@ -173,9 +175,9 @@ public class SparqlClient {
         String queryKey = "input";
         Variable input = SparqlBuilder.var(queryKey);
 
-        GraphPattern queryPattern = input.isA(Input);
+        GraphPattern queryPattern = input.isA(Weight);
 
-        query.prefix(p_namespace).select(input).where(queryPattern);
+        query.prefix(p_namespace).prefix(p_om_namespace).select(input).where(queryPattern);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
@@ -250,7 +252,7 @@ public class SparqlClient {
         Variable value = SparqlBuilder.var(key);
         GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasValue,value_iri), value_iri.has(numericalValue,value));
 
-        query.prefix(p_namespace).select(value).where(queryPattern);
+        query.prefix(p_namespace).prefix(p_om_namespace).select(value).where(queryPattern);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
@@ -270,7 +272,7 @@ public class SparqlClient {
         Variable value = SparqlBuilder.var(key);
         GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasMaximum,value));
 
-        query.prefix(p_namespace).select(value).where(queryPattern);
+        query.prefix(p_namespace).prefix(p_om_namespace).select(value).where(queryPattern);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         return queryResult.getJSONObject(0).getInt(key);
@@ -289,7 +291,7 @@ public class SparqlClient {
         Variable value = SparqlBuilder.var(key);
         GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasMinimum,value));
 
-        query.prefix(p_namespace).select(value).where(queryPattern);
+        query.prefix(p_namespace).prefix(p_om_namespace).select(value).where(queryPattern);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         return queryResult.getJSONObject(0).getInt(key);
@@ -301,8 +303,8 @@ public class SparqlClient {
     public String createDesiredValue() {
         String desiredValue_iri = namespace + UUID.randomUUID().toString();
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(desiredValue_iri).isA(DesiredState).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
-        storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+        modify.insert(iri(desiredValue_iri).isA(Weight).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+        storeClient.executeUpdate(modify.prefix(p_namespace).prefix(p_om_namespace).getQueryString());
         return desiredValue_iri;
     }
 

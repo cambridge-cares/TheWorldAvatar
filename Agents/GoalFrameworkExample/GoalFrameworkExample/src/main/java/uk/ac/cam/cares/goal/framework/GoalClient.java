@@ -92,10 +92,10 @@ public class GoalClient {
      *     Create take in agent_iri, range_iri, realstate_iri, create goal instance
      */
 
-    public String createGoalForNewInfo(String agent_iri, String agent_url, String range_iri, String realstate_iri){
+    public String createGoalForNewInfo(String agent_iri, String agent_url, String range_iri, String realstate_iri, String desiredstate_iri){
 
         String goalIRI = this.sparqlClient.createGoalIRI();
-        this.sparqlClient.createNewGoal(goalIRI,agent_iri,range_iri,realstate_iri);
+        this.sparqlClient.createNewGoal(goalIRI,agent_iri,range_iri,realstate_iri,desiredstate_iri);
         LOGGER.info("Instantiated goal with time series <" + goalIRI + ">");
         return goalIRI;
     }

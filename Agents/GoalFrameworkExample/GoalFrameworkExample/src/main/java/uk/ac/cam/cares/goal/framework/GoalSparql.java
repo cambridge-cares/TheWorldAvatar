@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.goal.framework;
 
+import org.mapdb.Atomic;
 import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
@@ -89,6 +90,7 @@ public class GoalSparql {
     private static Iri inTimePosition = prefixTime.iri("inTimePosition");
     private static Iri hasGoalRange = prefixGoal.iri("hasGoalRange");
     private static Iri hasRealState = prefixGoal.iri("hasRealState");
+    private static Iri hasDesiredState = prefixGoal.iri("hasDesiredState");
     private static Iri isAchievedUsing = prefixGoal.iri("isAchievedUsing");
 
 
@@ -211,7 +213,7 @@ public class GoalSparql {
         return goalInstanceBaseURL + "_" +"goalRange_"+ UUID.randomUUID().toString();
     }
 
-    public void createNewGoal(String goalIRI, String agent_iri, String range_iri, String realstate_iri){
+    public void createNewGoal(String goalIRI, String agent_iri, String range_iri, String realstate_iri, String desiredstate_iri){
 
         ModifyQuery modify = Queries.MODIFY();
         SubSelect sub = GraphPatterns.select();
@@ -219,15 +221,17 @@ public class GoalSparql {
         Variable agent = SparqlBuilder.var("agent");
         Variable range = SparqlBuilder.var("range");
         Variable realstate = SparqlBuilder.var("realstate");
+        Variable desiredstate = SparqlBuilder.var("desiredstate");
 
         modify.insert(goal.has(hasGoalRange,range));
         modify.insert(goal.has(isAchievedUsing,agent));
         modify.insert(goal.has(hasRealState,realstate));
+        modify.insert(goal.has(hasDesiredState,desiredstate));
 
-        ValuesPattern vp = new ValuesPattern(goal, agent, range, realstate);
-        vp.addValuePairForMultipleVariables(iri(goalIRI),iri(agent_iri) , iri(range_iri), iri(realstate_iri));
+        ValuesPattern vp = new ValuesPattern(goal, agent, range, realstate,desiredstate);
+        vp.addValuePairForMultipleVariables(iri(goalIRI),iri(agent_iri) , iri(range_iri), iri(realstate_iri),iri(desiredstate_iri));
 
-        sub.select(goal, agent, range, realstate).where(GraphPatterns.and(vp));
+        sub.select(goal, agent, range, realstate, desiredstate).where(GraphPatterns.and(vp));
 
         modify.prefix(prefixGoal, prefixTime).where(sub);
 

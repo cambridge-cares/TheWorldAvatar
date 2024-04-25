@@ -1,35 +1,20 @@
 package uk.ac.cam.cares.goal.example;
-import java.sql.Time;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.ws.rs.BadRequestException;
 
-import org.apache.jena.sparql.syntax.ElementService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import uk.ac.cam.cares.goal.framework.GoalClient;
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import javax.servlet.annotation.WebServlet;
-import org.json.JSONObject;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 @WebServlet(urlPatterns = {BinEmptyingAgent.URL_BINEMPTYINGAGENT})
@@ -67,7 +52,7 @@ public class BinEmptyingAgent extends DerivationAgent  {
         System.out.println("something");
 
         String range_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.GoalRange)).get(0);
-        String realstate_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Input)).get(0);
+        String realstate_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Weight)).get(0);
 
         Integer realStateValue = (timeSeriesClient.getLatestData(realstate_iri)).getValuesAsInteger(realstate_iri).get(0);
 
@@ -83,7 +68,17 @@ public class BinEmptyingAgent extends DerivationAgent  {
         else{
             res_msg = "Bin do something";
             LOGGER.info(res_msg);
+
         }
+
+        // write the output triples to derivationOutputs
+        String desiredstate_iri = SparqlClient.namespace +SparqlClient.DesiredState+"_"+ UUID.randomUUID().toString();
+        derivationOutputs.createNewEntity(desiredstate_iri, SparqlClient.getRdfTypeString(SparqlClient.Weight));
+        derivationOutputs.addTriple(desiredstate_iri, RDF.TYPE.toString(), OWL.NAMEDINDIVIDUAL.toString());
+        String value_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+        derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
+        derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, 50));
+        LOGGER.info("Created a new min value instance <" + desiredstate_iri + ">, and its value instance <" + value_iri + ">");
     }
 
 

@@ -63,27 +63,29 @@ public class InitialiseInstances extends JPSAgent{
 			InstancesDatabase.Input = input;
 
 			// register ontoagent instances in triple store
-			String inputDataRdfType = SparqlClient.getRdfTypeString(SparqlClient.Input);
+			String inputDataRdfType = SparqlClient.getRdfTypeString(SparqlClient.Weight);
 			String truckRdfType = SparqlClient.getRdfTypeString(SparqlClient.Truck);
 			String goalRangeType = SparqlClient.getRdfTypeString(SparqlClient.GoalRange);
-			String desiredStateType = SparqlClient.getRdfTypeString(SparqlClient.DesiredState);
+			String desiredStateType = SparqlClient.getRdfTypeString(SparqlClient.Weight);
 
 			//Create goalRange_iri
 			String goalRange_iri = sparqlClient.createGoalRangeIRI();
 			//Create goalCondition
-			sparqlClient.createRangeCondition(goalRange_iri,"500","0");
+			sparqlClient.createRangeCondition(goalRange_iri,"1","0");
 
 			//Create ontoagent instances for Derivations
 			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(goalRangeType,input), Arrays.asList(desiredStateType));
-
-			//create goal
-			String goal_binemptyingagent = goalClient.createGoalForNewInfo(binemptying_agent_iri, binemptying_agent_url, goalRange_iri, input);
 
 			//create derivation
 			//Create sumvalue_iri
 			String desiredValue_property = sparqlClient.createDesiredValue();
 			//Initialise sumvalue to be 0
 			String desiredValue = sparqlClient.addValueInstance(desiredValue_property, 0);
+
+			//create goal
+			String goal_binemptyingagent = goalClient.createGoalForNewInfo(binemptying_agent_iri, binemptying_agent_url, goalRange_iri, input, desiredValue_property);
+
+
 			String derived_desiredValue = devClient.createDerivation(Arrays.asList(desiredValue_property,desiredValue), binemptying_agent_iri, Arrays.asList(input,goalRange_iri));
 
 
