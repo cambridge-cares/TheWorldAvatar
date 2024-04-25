@@ -1,0 +1,13 @@
+- The code shared across features should be put here
+  - shared UI in ui
+  - shared strings and functionality in utils
+- The code in this module is usually unit testable. And modularization in this way decouples modules and enhances the testability
+- Modules in core can reference other modules in core freely
+- Intro to each module:
+  - data: contain repository classes
+  - model: data model shared by data, network features
+  - network: contain network source classes
+  - ui: shared UI related resources (eg. shared drawable, themes, values) and functions
+  - utils: shared general resources (eg. network configuration, deep navigation link, dev credentials) and functions (eg. provide RequestQueue)
+    - the RequestQueue is a network connection specific object. Even though it sounds like should be included in network module, but if multiple modules (eg. login and network) need network connection it makes sense to put in the utils
+    - So it is recommended to copy ui and utils module when start a new project

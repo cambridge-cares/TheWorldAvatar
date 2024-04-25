@@ -1,0 +1,3 @@
+- Home page of the app
+  - contains 2 buttons to navigate to photo feature and todo feature
+- demostrate navigation with deep link to other modules without depending on other feature

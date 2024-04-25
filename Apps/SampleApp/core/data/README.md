@@ -1,0 +1,6 @@
+- Correspond to the repository level in the App Architecture
+- RepositoryCallback.java is the interface between ViewModel and Repository
+  - It is created and defined in ViewModel in feature and passed to repository
+  - It defines what the ViewModel should do when the repository received results from network
+- di/ is for dependency injection. It defines how 
+  - Noted: all repository objects are single instance. So they can be used to persist data through out the life cycle of the application. Different viewmodel objects can share data with 

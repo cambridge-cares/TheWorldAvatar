@@ -1,0 +1,5 @@
+- All network source class
+  - Local source should be in a separate module
+  - Each type of data should have a source class
+  - Network sources are all single instance
+- RequestQueue is provided by utils module, so this module depends on utils

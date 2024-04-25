@@ -1,0 +1,13 @@
+- Contains 
+  - The single activity that host feature fragments. 
+  - Application
+- Any configuration layout need to be set as application level or activity level should be done in this module
+  - eg. displaying content from edge to edge behind status bar and system navigation bar
+  - eg. setting global top app bar
+    - But this is not configure in this sample app, because it is recommended to configure the app bar in each feature if they are different
+  - provide application level and activity level context
+    - though the application level context is mainly handled by the dependency injection with Hilt
+    - activity level context is usually used if want ViewModel persists even after the fragment ends
+- It have visibility to all the navigation graph and host the nav graph.
+- Top level in the dependency graph
+  - No other module can depend on app. Otherwise will cause circular dependency and not able to be computed
