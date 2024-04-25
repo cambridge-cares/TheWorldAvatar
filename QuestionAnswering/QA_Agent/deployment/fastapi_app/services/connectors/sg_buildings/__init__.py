@@ -7,7 +7,7 @@ from fastapi import Depends
 
 from model.qa import QAStep
 from services.core.align_enum import EnumAligner
-from services.connectors.sg_buildings.model import PropertyUsage
+from services.connectors.sg_buildings.model import BuildingAttrKey, PropertyUsage
 from services.connectors.agent_connector import AgentConnectorBase
 from .agent import SGBuildingsAgent, get_sgBuildings_agent
 from .align import get_propertyUsage_aligner
@@ -43,14 +43,35 @@ class SGBuildingsAgentConnector(AgentConnectorBase):
                         },
                     },
                 },
-            }
+            },
+            {
+                "name": "lookup_building_attribute",
+                "description": "Look up a building attribute e.g. building height, building footprint",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "facility_name": {
+                            "type": "string",
+                            "description": "Name of a facility located in the building of interest",
+                        },
+                        "attribute": {
+                            "type": "string",
+                            "enum": ["Height", "FootPrint"],
+                        },
+                    },
+                },
+                "required": ["facility_name", "attribute"]
+            },
         ]
 
     @property
     def name2method(
         self,
     ):
-        return {"count_buildings": self.count_buildings}
+        return {
+            "count_buildings": self.count_buildings,
+            "lookup_building_attribute": self.lookup_building_attribute,
+        }
 
     def count_buildings(self, usage: Optional[str] = None, groupby_usage: bool = False):
         steps: List[QAStep] = []
@@ -82,6 +103,26 @@ class SGBuildingsAgentConnector(AgentConnectorBase):
                     usage=aligned_usage,
                     groupby_usage=groupby_usage,
                 ),
+                latency=latency,
+            )
+        )
+
+        return steps, data
+
+    def lookup_building_attribute(self, facility_name: str, attribute: str):
+        steps: List[QAStep] = []
+
+        attr_key = BuildingAttrKey(attribute)
+
+        timestamp = time.time()
+        data = self.agent.lookup_building_attribute(
+            facility_name=facility_name, attr_key=attr_key
+        )
+        latency = time.time() - timestamp
+        steps.append(
+            QAStep(
+                action="lookup_buildling_attribute",
+                arguments=dict(facility_name=facility_name, attr_key=attr_key.value),
                 latency=latency,
             )
         )

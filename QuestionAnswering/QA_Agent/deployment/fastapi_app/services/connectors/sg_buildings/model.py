@@ -26,3 +26,8 @@ class PropertyUsage(Enum):
     SPORTS_FACILITY = "SportsFacility"
     TRANSPORT_FACILITY = "TransportFacility"
     UNIVERSITY = "University"
+
+
+class BuildingAttrKey(Enum):
+    HEIGHT = "Height"
+    FOOTPRINT = "FootPrint"
