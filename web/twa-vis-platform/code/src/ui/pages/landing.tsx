@@ -51,7 +51,7 @@ export default function LandingPage(props: LandingPageProps) {
                         className={introClasses}
                         dangerouslySetInnerHTML={{ __html: introContent }}
                     />
-                    
+
                 </div>
             </div>
 
@@ -73,6 +73,12 @@ export default function LandingPage(props: LandingPageProps) {
                         redirectUrl={Routes.DASHBOARD}
                     />
                 )}
+                <DefaultPageThumbnail
+                    title="Help Center"
+                    description="Get help for this web platform"
+                    icon="/images/defaults/icons/twa.svg"
+                    redirectUrl={Routes.HELP}
+                />
             </div>
         </div>
     )
@@ -98,8 +104,8 @@ function getThumbnails(): React.ReactElement[] {
     // Get all pages
     let pages = OptionalPages.getAllPages();
 
-    // Filter out the object that defines the landing page content
-    pages = pages.filter(page => page.slug !== "landing");
+    // Filter out the object that defines the landing or help page content
+    pages = pages.filter(page => page.slug !== "landing" && page.slug !== "help");
 
     // Create thumbnail components for each page
     const components: React.ReactElement[] = [];
