@@ -58,7 +58,7 @@ public class BuildingFloorAgent extends JPSAgent{
             
             //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
             IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint, osmPolygon, ontopUrl);
-            integrateFloors.addFloorAccuracyColumn();
+            integrateFloors.addFloorCatColumn();
             integrateFloors.matchAddress(floorsCsv);
             integrateFloors.importFloorDate();
     

@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.agent.buildingflooragent;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,6 +18,7 @@ import java.util.List;
 import java.util.ArrayList;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
@@ -38,10 +42,9 @@ public class IntegrateFloors {
     private String osmPoint;
     private String osmPolygon;
     private String ontopUrl;
-    private static final Path obdaFile = Path.of("/resources/building_usage.sparql");
 
     private RemoteRDBStoreClient postgisClient;
-
+    private static final String sparqlFile = "/resources/building_usage.sparql";
     
     public IntegrateFloors (String postgisDb, String postgisUser, String postgisPassword, String osmSchema, String osmPoint, String osmPolygon, String ontopUrl){
         this.dbUrl = postgisDb;
@@ -59,7 +62,7 @@ public class IntegrateFloors {
     //check table building has floor Cat. column
     public void addFloorCatColumn () {
         String buildingSQLAlter = "ALTER TABLE building ADD COLUMN IF NOT EXISTS storeys_above_ground_cat character varying(4000);";
-        try (Connection srcConn = postgisClient.getConnection()) {
+        try (Connection srcConn = this.postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
                 stmt.executeUpdate(buildingSQLAlter);
             }
@@ -207,7 +210,7 @@ public class IntegrateFloors {
                         catString = "B";
                         if (floors == null) {//estimate
                             catString = "C";
-                            floors = estimateFloors();
+                            // floors = estimateFloors();
                         }
                     }
 
@@ -222,7 +225,7 @@ public class IntegrateFloors {
 
     public Integer queryOSMFloor (String buildingIri) {
         String osmFloorQuery = "";
-        Integer floors;
+        Integer floors = null;
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
                 ResultSet floorsResults = stmt.executeQuery(osmFloorQuery);
@@ -230,17 +233,17 @@ public class IntegrateFloors {
                     floors = floorsResults.getInt("");
 
                     if (floors == null ){
-                        return null;
+                        //return null;
                     }else {
-                        return floors;
+                        //return floors;
                     }
                 }
 
             }
+            return floors;
         }catch (SQLException e) {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
-
     }
 
     public void updateFloors (Integer floors, String catString, String buildingIri) {
@@ -260,9 +263,31 @@ public class IntegrateFloors {
 
     }
 
-    public Integer estimateFloors () {
-        try {
+    // public Integer estimateFloors () {
+        
+    //     try {
+            
+
+    //     }catch (Exception e) {
+    //         e.printStackTrace();
+    //         throw new JPSRuntimeException("Error connecting to source database: " + e);
+    //     }
+
+    // }
+
+    public List<OSMBuilding> queryOSMBuilding () {
+        String fileContent = "";
+        StringBuilder contentBuilder = new StringBuilder();
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(sparqlFile))){
             RemoteStoreClient storeClient = new RemoteStoreClient(this.ontopUrl);
+
+            // String sCurrentLine;
+            // while ((sCurrentLine = br.readLine()) != null) 
+            // {
+            //     contentBuilder.append(sCurrentLine).append("\n");
+            // }
+
             WhereBuilder wb = new WhereBuilder()
                     .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
@@ -270,11 +295,28 @@ public class IntegrateFloors {
                     .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                     .addPrefix("rdfs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdfs))
                     .addPrefix("ic", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ic));
-        }
-        catch (Exception e) {
+
+                wb.addWhere("?building", "env:hasPropertyUsage", "?property")
+                    .addWhere("?property", "a", "?usage");
+
+            SelectBuilder sb = new SelectBuilder()
+                    .addVar("?building")
+                    .addVar("?usage")
+                    .addWhere(wb);
+
+            String query = sb.build().toString();
+            JSONArray queryResultArray = storeClient.executeQuery(query);
+
+            List<OSMBuilding> osmBuildings = new ArrayList<>();
+
+            for (int i = 0; i < queryResultArray.length(); i++) {
+                // OSMBuilding osmBuilding = 
+                // queryResultArray.getJSONObject(i).getString("sCurrentLine")
+            }
+            return osmBuildings;
+        }catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
-
     }
 }

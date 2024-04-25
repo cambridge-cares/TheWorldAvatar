@@ -26,7 +26,7 @@ public class OntologyURIHelper {
      */
     
     static {
-        try {
+   
 
             ontologyUriMap.put(unitOntology, "http://www.ontology-of-units-of-measure.org/resource/om-2/");
             ontologyUriMap.put(rdf, "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -35,15 +35,7 @@ public class OntologyURIHelper {
             ontologyUriMap.put(ic, "http://ontology.eil.utoronto.ca/icontact.owl#");
             ontologyUriMap.put(twa, "https://www.theworldavatar.com/kg/");
 
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException("config.properties file not found");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
-        }
+
     }
 
     /**
