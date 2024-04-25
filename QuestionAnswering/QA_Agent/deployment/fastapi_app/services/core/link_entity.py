@@ -1,38 +1,68 @@
+from functools import cache
+from importlib.resources import files
 import json
-from typing import Iterable, List, Optional, Tuple
+import regex
+from typing import Annotated, Dict, Iterable, List, Literal, Optional, Tuple
 
+from fastapi import Depends
 import numpy as np
+from pydantic import TypeAdapter
 import rapidfuzz
 from redis import Redis
 from redis.commands.search.field import TextField, VectorField, TagField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 from pydantic.dataclasses import dataclass
-import regex
 
-from services.core.embed import IEmbedder
-from services.core.redis import does_index_exist
+from config import QAEngineName, get_qa_engine_name
+from services.core.embed import IEmbedder, get_embedder
+from services.core.redis import does_index_exist, get_redis_client
 from services.utils.itertools_recipes import batched
 
-EntityIRI = str
-EntityLabel = str
+ELStrategy = Literal["fuzzy", "semantic"]
+
+
+@dataclass(frozen=True)
+class ELConfigEntry:
+    clsname: str
+    el_strategy: ELStrategy
 
 
 @dataclass
 class LexiconEntry:
     iri: str
+    clsname: str
     label: str
     surface_forms: List[str]
 
 
 class EntityLinker:
+    LEXICON_FILE_SUFFIX = "_lexicon.json"
+    KEY_PREFIX = "entities:"
+    INDEX_NAME = "idx:entities"
+
+    @classmethod
+    def _load_lexicon(cls, config: Tuple[ELConfigEntry, ...]):
+        return [
+            LexiconEntry(
+                iri=obj["iri"],
+                clsname=entry.clsname,
+                label=obj["label"],
+                surface_forms=obj["surface_forms"],
+            )
+            for entry in config
+            for obj in json.loads(
+                files("resources.lexicon")
+                .joinpath(entry.clsname + cls.LEXICON_FILE_SUFFIX)
+                .read_text()
+            )
+        ]
+
     @classmethod
     def _insert_entries_and_create_index(
         cls,
         redis_client: Redis,
         embedder: IEmbedder,
-        key_prefix: str,
-        index_name: str,
         entries: Iterable[LexiconEntry],
     ):
         offset = 0
@@ -49,9 +79,10 @@ class EntityLinker:
 
             pipeline = redis_client.pipeline()
             for i, (entry, embedding) in enumerate(zip(chunk, embeddings)):
-                redis_key = key_prefix + str(offset + i)
+                redis_key = cls.KEY_PREFIX + str(offset + i)
                 doc = dict(
                     iri=entry.iri,
+                    clsname=entry.clsname,
                     label=entry.label,
                     surface_forms=entry.surface_forms,
                     surface_forms_embedding=embedding,
@@ -63,11 +94,12 @@ class EntityLinker:
 
         if vector_dim is None:
             raise ValueError(
-                f"Index {index_name} is not found and must be created. Therefore, `entries` must not be None."
+                f"Index {cls.INDEX_NAME} is not found and must be created. Therefore, `entries` must not be None."
             )
 
         schema = (
             TagField("$.iri", as_name="iri"),
+            TagField("$.clsname", as_name="clsname"),
             TextField("$.label", as_name="label"),
             TextField("$.surface_forms.*", as_name="surface_forms"),
             VectorField(
@@ -77,44 +109,52 @@ class EntityLinker:
                 as_name="vector",
             ),
         )
-        definition = IndexDefinition(prefix=[key_prefix], index_type=IndexType.JSON)
-        redis_client.ft(index_name).create_index(fields=schema, definition=definition)
+        definition = IndexDefinition(prefix=[cls.KEY_PREFIX], index_type=IndexType.JSON)
+        redis_client.ft(cls.INDEX_NAME).create_index(
+            fields=schema, definition=definition
+        )
 
     def __init__(
         self,
         redis_client: Redis,
         embedder: IEmbedder,
-        key: str,
-        lexicon: Iterable[LexiconEntry],
+        config: Tuple[ELConfigEntry, ...],
     ):
-        doc_key_prefix = key + ":"
-        index_name = f"idx:{key}_vss"
-
-        if not does_index_exist(redis_client, index_name):
+        if not does_index_exist(redis_client, self.INDEX_NAME):
+            lexicon = self._load_lexicon(config)
             self._insert_entries_and_create_index(
                 redis_client=redis_client,
                 embedder=embedder,
-                key_prefix=doc_key_prefix,
-                index_name=index_name,
                 entries=lexicon,
             )
 
         self.redis_client = redis_client
         self.embedder = embedder
-        self.index_name = index_name
+        self.clsname2strategy: Dict[str, ELStrategy] = {
+            entry.clsname: entry.el_strategy for entry in config
+        }
 
-    def link_exact(self, surface_form: str) -> List[Tuple[EntityIRI, EntityLabel]]:
+    def link_exact(self, surface_form: str) -> List[str]:
         """Performs exact matching over canonical labels."""
         inverse_label_query = (
             Query('@label:"{label}"'.format(label=surface_form))
             .return_field("$.iri", as_field="iri")
-            .return_field("$.label", as_field="label")
             .dialect(2)
         )
-        res = self.redis_client.ft(self.index_name).search(inverse_label_query)
-        return [(doc.iri, doc.label) for doc in res.docs]
+        res = self.redis_client.ft(self.INDEX_NAME).search(inverse_label_query)
+        return [doc.iri for doc in res.docs]
 
-    def link_semantic(self, surface_form: str, k: int = 3):
+    def _make_filter_query(self, clsname: Optional[str]):
+        if clsname is None:
+            return "*"
+        else:
+            return "@clsname:{{{clsname}}}".format(
+                clsname=regex.escape(clsname, special_only=False)
+            )
+
+    def link_semantic(
+        self, surface_form: str, clsname: Optional[str] = None, k: int = 3
+    ):
         """Performs vector similarity search over candidate surface forms.
         If input surface form exactly matches any label, preferentially return the associated IRIs.
         """
@@ -125,28 +165,29 @@ class EntityLinker:
             encoded_query = self.embedder([surface_form])[0].astype(np.float32)
             knn_query = (
                 Query(
-                    "(*)=>[KNN {k} @vector $query_vector AS vector_score]".format(k=k)
+                    "({filter_query})=>[KNN {k} @vector $query_vector AS vector_score]".format(
+                        filter_query=self._make_filter_query(clsname), k=k
+                    )
                 )
                 .sort_by("vector_score")
                 .return_field("$.iri", as_field="iri")
-                .return_field("$.label", as_field="label")
                 .dialect(2)
             )
-            res = self.redis_client.ft(self.index_name).search(
+            res = self.redis_client.ft(self.INDEX_NAME).search(
                 knn_query, {"query_vector": encoded_query.tobytes()}
             )
-            iris.extend((doc.iri, doc.label) for doc in res.docs)
+            iris.extend(doc.iri for doc in res.docs)
 
         return iris
 
-    def _all_surface_forms(self) -> List[str]:
+    def _all_surface_forms(self, clsname: Optional[str]) -> List[str]:
         # TODO: accumulate pages from Redis to ensure all labels are retrieved
         query = (
-            Query("*")
+            Query(self._make_filter_query(clsname))
             .return_field("$.surface_forms", as_field="surface_forms_serialized")
             .paging(0, 10000)
         )
-        res = self.redis_client.ft(self.index_name).search(query)
+        res = self.redis_client.ft(self.INDEX_NAME).search(query)
         surface_forms = [
             sf for doc in res.docs for sf in json.loads(doc.surface_forms_serialized)
         ]
@@ -158,11 +199,11 @@ class EntityLinker:
                 label=regex.escape(surface_form, special_only=False)
             )
         ).return_field("iri")
-        res = self.redis_client.ft(self.index_name).search(query).docs
+        res = self.redis_client.ft(self.INDEX_NAME).search(query).docs
         iris = [doc.iri for doc in res.docs]
         return list(set(iris))
 
-    def link_fuzzy(self, surface_form: str, k: int = 3):
+    def link_fuzzy(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
         """Performs fuzzy search over candidate surface forms.
         If input surface form exactly matches any label, preferentially return the associated IRIs.
         """
@@ -170,7 +211,8 @@ class EntityLinker:
 
         k -= len(iris)
         if k >= 0:
-            choices = self._all_surface_forms()
+            # TODO: use a strategy to retrieve a subset of surface forms rather than all
+            choices = self._all_surface_forms(clsname)
             lst = rapidfuzz.process.extract(
                 surface_form,
                 choices,
@@ -183,9 +225,34 @@ class EntityLinker:
 
         return iris
 
+    def link(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
+        strategy = self.clsname2strategy.get(clsname, "fuzzy") if clsname else "fuzzy"
+
+        if strategy == "fuzzy":
+            return self.link_fuzzy(surface_form, clsname, k)
+        else:
+            return self.link_semantic(surface_form, clsname, k)
+
     def lookup_label(self, iri: str) -> Optional[str]:
         query = Query(
             "@iri:{{{iri}}}".format(iri=regex.escape(iri, special_only=False))
         ).return_field("$.label", as_field="label")
-        res = self.redis_client.ft(self.index_name).search(query)
+        res = self.redis_client.ft(self.INDEX_NAME).search(query)
         return res.docs[0].label if len(res.docs) > 0 else None
+
+
+@cache
+def get_el_config(qa_engine: Annotated[QAEngineName, Depends(get_qa_engine_name)]):
+    adapter = TypeAdapter(Tuple[ELConfigEntry, ...])
+    return adapter.validate_json(
+        files("resources." + qa_engine.value).joinpath("el_config.json").read_text()
+    )
+
+
+@cache
+def get_entity_linker(
+    redis_client: Annotated[Redis, Depends(get_redis_client)],
+    embedder: Annotated[IEmbedder, Depends(get_embedder)],
+    config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_config)],
+):
+    return EntityLinker(redis_client=redis_client, embedder=embedder, config=config)

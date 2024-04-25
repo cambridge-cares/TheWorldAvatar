@@ -1,19 +1,40 @@
-from functools import cache
-from typing import Annotated, Dict
+import logging
+from typing import List
 
-from fastapi import Depends
+from services.core.link_entity import EntityLinker
 
-from services.link_entity.link import EntityIRI, EntityLabel
 
-from .link_value import SparqlEntityLinker, get_sparql_entityLinker
+logger = logging.getLogger(__name__)
 
 
 class SparqlPostProcessor:
-    def __init__(self, entity_linker: SparqlEntityLinker):
+    def __init__(self, entity_linker: EntityLinker):
         self.entity_linker = entity_linker
 
+    def link(self, token: str):
+        # '<LandUseType:\"residential\">' -> ['<https://example.org/LandUseType_1>', '<https://example.org/LandUseType_2>']
+        if not token.startswith("<") or not token.endswith(">"):
+            return [token]
+
+        try:
+            entity_type, surface_form = token[1:-1].split(":", maxsplit=1)
+        except:
+            return [token]
+
+        if not surface_form.startswith('"') or not surface_form.endswith('"'):
+            return [token]
+        surface_form = surface_form[1:-1]
+
+        try:
+            iris = self.entity_linker.link(entity_type, surface_form)
+        except Exception as e:
+            logger.error("Error during entity linking: " + str(e))
+            return [token]
+
+        return ["<{iri}>".format(iri=iri) for iri in iris]
+
     def postprocess(self, sparql: str):
-        varname2iri2label: Dict[str, Dict[EntityIRI, EntityLabel]] = dict()
+        varnames: List[str] = []
 
         idx = 0
         while idx < len(sparql):
@@ -88,25 +109,16 @@ class SparqlPostProcessor:
             idx_end = token_start
 
             values = []
-            iri2label = dict()
             for token in tokens:
-                _values, _iri2label = self.entity_linker.link(token)
+                _values = self.entity_linker.link(token)
                 values.extend(_values)
-                iri2label.update(_iri2label)
 
             values = " ".join(values)
-            varname2iri2label[varname] = iri2label
+            varnames.append(varname)
 
             sparql = "{before}{{ {values} }}{after}".format(
                 before=sparql[:idx_start], values=values, after=sparql[idx_end + 1 :]
             )
             idx = idx_start + 2 + len(values) + 2
 
-        return sparql, varname2iri2label
-
-
-@cache
-def get_sparql_postprocessor(
-    entity_linker: Annotated[SparqlEntityLinker, Depends(get_sparql_entityLinker)]
-):
-    return SparqlPostProcessor(entity_linker)
+        return sparql, varnames

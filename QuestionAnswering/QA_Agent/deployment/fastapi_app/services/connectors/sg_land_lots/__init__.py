@@ -8,8 +8,7 @@ from model.qa import QAStep
 from services.core.align_enum import BiEnumAligner
 from services.core.parse import KeyAggregateParser
 from services.connectors.agent_connector import AgentConnectorBase
-from services.link_entity import ELMediator, get_el_mediator
-from services.link_entity.link import EntityIRI, EntityLabel
+from services.core.link_entity import EntityLinker, get_entity_linker
 from .model import PlotCatAttrKey, PlotNumAttrKey
 from .agent import SGLandLotsAgent, get_sgLandLots_agent
 from .parse import get_plotAttr_aggParser
@@ -23,7 +22,7 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         self,
         agent: SGLandLotsAgent,
         attr_key_aligner: BiEnumAligner[PlotCatAttrKey, PlotNumAttrKey],
-        entity_linker: ELMediator,
+        entity_linker: EntityLinker,
         attr_agg_parser: KeyAggregateParser[PlotNumAttrKey],
     ):
         self.agent = agent
@@ -111,23 +110,26 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         logger.info("Align land use classification: " + land_use_type)
 
         timestamp = time.time()
-        candidates = self.entity_linker.link("LandUseType", land_use_type)
+        candidates = self.entity_linker.link(land_use_type, "LandUseType")
         latency = time.time() - timestamp
+
+        labels = [self.entity_linker.lookup_label(iri) for iri in candidates]
         step = QAStep(
             action="align_land_use_type",
             arguments=land_use_type,
-            results=[label for _, label in candidates],
+            results=labels,
             latency=latency,
         )
 
-        logger.info("Aligned land use classification: " + str(candidates))
+        data = list(zip(candidates, labels))
+        logger.info("Aligned land use classification: " + str(data))
 
-        return candidates, step
+        return data, step
 
     def explain_landUses(self, land_use_types: List[str]):
         steps: List[QAStep] = []
 
-        aligned_land_uses: List[Tuple[EntityIRI, EntityLabel]] = []
+        aligned_land_uses: List[Tuple[str, Optional[str]]] = []
         for land_use in land_use_types:
             aligned, step = self._align_land_use_type(land_use)
             aligned_land_uses.extend(aligned)
@@ -227,7 +229,7 @@ def get_sgLandLots_agentConnector(
     attr_key_aligner: Annotated[
         BiEnumAligner[PlotCatAttrKey, PlotNumAttrKey], Depends(get_plotAttrKey_aligner)
     ],
-    entity_linker: Annotated[ELMediator, Depends(get_el_mediator)],
+    entity_linker: Annotated[EntityLinker, Depends(get_entity_linker)],
     attr_agg_parser: Annotated[
         KeyAggregateParser[PlotNumAttrKey], Depends(get_plotAttr_aggParser)
     ],
