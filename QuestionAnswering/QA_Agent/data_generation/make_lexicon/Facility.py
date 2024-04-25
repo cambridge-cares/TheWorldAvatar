@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-import itertools
 import json
 import os
 
@@ -20,6 +19,9 @@ class KgClient:
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument(
+        "--bg_endpoint", required=True, help="SPARQL endpoint to ontocompany TBox"
+    )
+    parser.add_argument(
         "--ontop_endpoint", required=True, help="SPARQL endpoint to ontocompany ABox"
     )
     parser.add_argument("--out", required=True, help="Path to output JSON file")
@@ -28,12 +30,23 @@ if __name__ == "__main__":
     query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
-SELECT ?Facility ?FacilityName ?CompanyName ?pred WHERE {
-  ?Company rdfs:label ?CompanyName .
-  VALUES ?pred { ontocompany:isOwnerOf ontocompany:hasDataCentre }
-  ?Company ?pred ?Facility .
-  ?Facility rdfs:label ?FacilityName .
+SELECT * WHERE {
+  ?s rdfs:subClassOf* <http://www.theworldavatar.com/kg/ontocompany/IndustrialFacility>
 }"""
+    bg_client = KgClient(args.bg_endpoint)
+    res = bg_client.query(query)
+    clses = [binding["s"]["value"] for binding in res["results"]["bindings"]]
+
+    query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
+
+SELECT ?Facility ?FacilityName ?CompanyName ?pred WHERE {{
+  VALUES ?FacilityType {{ {types} }}
+  ?Facility rdf:type ?FacilityType .
+  ?Facility rdfs:label ?FacilityName .
+}}""".format(
+        types=" ".join("<{iri}>".format(iri=iri) for iri in clses)
+    )
 
     ontop_client = KgClient(args.ontop_endpoint)
     res = ontop_client.query(query)
@@ -46,23 +59,7 @@ SELECT ?Facility ?FacilityName ?CompanyName ?pred WHERE {
         {
             "iri": binding["Facility"],
             "label": binding["FacilityName"],
-            "surface_forms": [
-                binding["FacilityName"] + suffix
-                for suffix in itertools.chain(
-                    [""],
-                    (
-                        [" factory", " plant"]
-                        if binding["pred"]
-                        == "http://www.theworldavatar.com/kg/ontocompany/isOwnerOf"
-                        else (
-                            [" data centre"]
-                            if binding["pred"]
-                            == "http://www.theworldavatar.com/kg/ontocompany/hasDataCentre"
-                            else []
-                        )
-                    ),
-                )
-            ],
+            "surface_forms": [],
         }
         for binding in bindings
     ]
