@@ -6,11 +6,11 @@
     <string name="mapbox_access_token">sk.eyJ1IjoieWFzaG5hbGx1cmkiLCJhIjoiY2x0M3JwdTl5MjBzczJybXVpMjAyZzh6MSJ9.XBRqrPDGkbq4-H33eYHZug</string>
 
     <string name="start_button_text">
-        Start
+        Start Recording
     </string>
 
     <string name="stop_button_text">
-        Stop
+        Stop Recording
     </string>
     <string name="record_sensor_data">Record Sensor Data</string>
 </resources>

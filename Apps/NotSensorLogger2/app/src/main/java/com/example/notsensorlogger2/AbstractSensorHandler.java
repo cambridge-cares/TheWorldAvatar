@@ -66,22 +66,6 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
         }
     }
 
-//    @Override
-//    public void onSensorChanged(SensorEvent event) {
-//        JSONObject dataPoint = new JSONObject();
-//        try {
-//            dataPoint.put("sensor", this.sensorName);
-//            dataPoint.put("time", System.nanoTime());
-//           // dataPoint.put("seconds_elapsed", (System.currentTimeMillis() - startTime) / 1000.0);
-//            dataPoint.put("x", event.values[0]);
-//            dataPoint.put("y", event.values[1]);
-//            dataPoint.put("z", event.values[2]);
-//            sensorData.put(dataPoint);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public void clearSensorData() {
         sensorData = new JSONArray();
     }

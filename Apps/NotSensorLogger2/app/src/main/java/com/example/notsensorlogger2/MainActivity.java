@@ -13,6 +13,8 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -27,6 +29,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import android.Manifest;
@@ -46,21 +50,78 @@ public class MainActivity extends Activity {
     private String deviceId;
     private Handler handler = new Handler();
     private Runnable sendDataRunnable;
-    private static final long SEND_INTERVAL = 8000; // Interval in milliseconds
+    private RecyclerView sensorsRecyclerView;
+    private SensorAdapter sensorAdapter;
+    private List<SensorItem> sensorItems;
+    private static final long SEND_INTERVAL = 7000; // Interval in milliseconds
     private boolean isDataCollectionActive = true;
     private static final int PERMISSION_REQUEST_RECORD_AUDIO = 101;
+
+
+    // This method will initialize your sensor list and RecyclerView
+    private void setupSensorList() {
+        // Initialize your sensor handler list here
+        sensorItems = new ArrayList<>();
+        sensorItems.add(new SensorItem("Accelerometer", R.drawable.ic_accelerometer, false, accelerometerHandler));
+        sensorItems.add(new SensorItem("Gravity", R.drawable.ic_gravity, false, gravitySensorHandler));
+        sensorItems.add(new SensorItem("Gyroscope", R.drawable.ic_gyroscope, false, gyroscopeHandler));
+        sensorItems.add(new SensorItem("Light", R.drawable.ic_light, false, lightSensorHandler));
+        sensorItems.add(new SensorItem("Location", R.drawable.ic_location, false, locationTracker));  // Now directly using LocationHandler
+        sensorItems.add(new SensorItem("Magnetometer", R.drawable.ic_magnetometer, false, magnetometerHandler));
+        sensorItems.add(new SensorItem("Barometer", R.drawable.ic_barometer, false, pressureSensorHandler));
+        sensorItems.add(new SensorItem("Relative Humidity", R.drawable.ic_relative_humidity, false, humiditySensorHandler));
+        sensorItems.add(new SensorItem("Sound Pressure", R.drawable.ic_sound_level, false, soundLevelHandler));
+
+        // Initialize RecyclerView
+        sensorsRecyclerView = findViewById(R.id.sensors_recycler_view);
+        sensorsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Initialize the adapter
+        sensorAdapter = new SensorAdapter(sensorItems, new SensorAdapter.OnSensorToggleListener() {
+            @Override
+            public void onSensorToggled(SensorItem sensor, boolean isChecked) {
+                if (isChecked) {
+                    sensor.getHandler().start(); // Start recording for this sensor
+                } else {
+                    sensor.getHandler().stop();  // Stop recording for this sensor
+                }
+            }
+        }, new SensorAdapter.OnSensorDetailsListener() {
+            @Override
+            public void onSensorDetailsRequested(SensorItem sensor) {
+                // Your logic to show sensor details
+            }
+        });
+
+        // Set the adapter to the RecyclerView
+        sensorsRecyclerView.setAdapter(sensorAdapter);
+    }
 
 
     private void checkAndRequestAudioPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_REQUEST_RECORD_AUDIO);
-        } else {
-            initializeAudioSensor();
         }
+        // The initialization of SoundLevelHandler has been moved to onCreate, so we don't initialize it here anymore.
     }
 
-    private void initializeAudioSensor() {
-        soundLevelHandler = new SoundLevelHandler(sensorManager); // Assuming soundLevelHandler is declared in your MainActivity
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission was granted, start the audio recording if the handler has been initialized
+                if (soundLevelHandler != null) {
+                    soundLevelHandler.start();
+                }
+            } else {
+                Log.e("MainActivity", "Permission Denied to record audio.");
+                // Handle the case where permission is not granted.
+                // You could disable the SoundLevelHandler or inform the user that they cannot record audio without permission.
+            }
+        }
     }
 
 
@@ -81,24 +142,59 @@ public class MainActivity extends Activity {
         pressureSensorHandler = new PressureSensorHandler(sensorManager);
         gravitySensorHandler = new GravitySensorHandler(sensorManager);
         locationTracker = new LocationHandler(this);
+        soundLevelHandler = new SoundLevelHandler(this, sensorManager);
 
-        ImageView imageView = (ImageView) findViewById(R.id.locationButton);
-        imageView.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-            startActivity(intent);
-        });
+        // After initializing all sensors and handlers, call the setup method for RecyclerView
+        setupSensorList();
+//        ImageView imageView = (ImageView) findViewById(R.id.locationButton);
+//        imageView.setOnClickListener(v -> {
+//            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+//            startActivity(intent);
+//        });
 
-        Button stopDataButton = findViewById(R.id.stop_button);
+
+        Button stopDataButton = findViewById(R.id.start_recording_button);
+        stopDataButton.setText(R.string.start_button_text); // Initialize with "Start" text
+        isDataCollectionActive = false; // Ensure collection is inactive at start
+
         stopDataButton.setOnClickListener(v -> {
-            if (isDataCollectionActive) {
-                stopDataCollection();
-                stopDataButton.setText(R.string.start_button_text);
-            } else {
+            if (!isDataCollectionActive) {
                 startDataCollection();
                 stopDataButton.setText(R.string.stop_button_text);
+                isDataCollectionActive = true;
+            } else {
+                stopDataCollection();
+                stopDataButton.setText(R.string.start_button_text);
+                isDataCollectionActive = false;
             }
-            isDataCollectionActive = !isDataCollectionActive;
         });
+
+
+//        Button stopDataButton = findViewById(R.id.start_recording_button);
+//        stopDataButton.setOnClickListener(v -> {
+//            if (!isDataCollectionActive) {
+//                startDataCollection();
+//                stopDataButton.setText(R.string.stop_button_text);
+//                isDataCollectionActive = true;
+//            } else {
+//                stopDataCollection();
+//                stopDataButton.setText(R.string.start_button_text);
+//                isDataCollectionActive = false;
+//            }
+//        });
+
+
+//        Button stopDataButton = findViewById(R.id.start_recording_button);
+//        stopDataButton.setOnClickListener(v -> {
+//            if (isDataCollectionActive) {
+//                stopDataCollection();
+//                stopDataButton.setText(R.string.start_button_text);
+//            } else {
+//                startDataCollection();
+//                stopDataButton.setText(R.string.stop_button_text);
+//            }
+//            isDataCollectionActive = !isDataCollectionActive;
+//        });
 
         sendDataRunnable = new Runnable() {
             @Override
@@ -109,61 +205,13 @@ public class MainActivity extends Activity {
         };
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initializeAudioSensor();
-            } else {
-                Log.e("MainActivity", "Permission Denied to record audio.");
-                // Optionally disable features or handle the case where permission is not granted.
-            }
-        }
-    }
-
-//    @Override
-//    public final void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-//        deviceId = DeviceIdManager.getDeviceId(this);
-//        Log.d("DeviceId", "Device ID: " + deviceId);
-//
-//        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-//        accelerometerHandler = new AccelerometerHandler(sensorManager);
-//        gyroscopeHandler = new GyroscopeHandler(sensorManager);
-//        magnetometerHandler = new MagnetometerHandler(sensorManager);
-//        lightSensorHandler = new LightSensorHandler(sensorManager);
-//        humiditySensorHandler = new RelativeHumiditySensorHandler(sensorManager);
-//        pressureSensorHandler = new PressureSensorHandler(sensorManager);
-//        gravitySensorHandler = new GravitySensorHandler(sensorManager);
-//        locationTracker = new LocationHandler(this);
-//
-//        ImageView imageView = (ImageView) findViewById(R.id.locationButton);
-//        imageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-//                startActivity(intent);
-//            }
-//        });
-//
-//        sendDataRunnable = new Runnable() {
-//            @Override
-//            public void run() {
-//                sendSensorData();
-//                handler.postDelayed(this, SEND_INTERVAL);
-//            }
-//        };
-//    }
-
 
     @Override
     protected void onResume() {
         super.onResume();
+        // No auto-start of data collection
+        checkAndRequestAudioPermission();
         if (isDataCollectionActive) {
-            checkAndRequestAudioPermission();
             startDataCollection();
         }
     }
@@ -191,15 +239,46 @@ public class MainActivity extends Activity {
 //        handler.removeCallbacks(sendDataRunnable);
 //    }
 
+
     private void startDataCollection() {
-        startSensors();
-        handler.post(sendDataRunnable);
+        for (SensorItem item : sensorItems) {
+            if (item.isToggled() && item.getHandler() != null) {
+                item.getHandler().start();
+            }
+        }
+        // Start sending data only if it's not already being sent
+        if (!isDataCollectionActive) {
+            handler.postDelayed(sendDataRunnable, SEND_INTERVAL);
+            isDataCollectionActive = true;
+        }
     }
 
     private void stopDataCollection() {
-        stopSensors();
-        handler.removeCallbacks(sendDataRunnable);
+        for (SensorItem item : sensorItems) {
+            if (item.isToggled() && item.getHandler() != null) {
+                item.getHandler().stop();
+            }
+        }
+        // Stop sending data
+        if (isDataCollectionActive) {
+            handler.removeCallbacks(sendDataRunnable);
+            isDataCollectionActive = false;
+        }
     }
+
+//    private void startDataCollection() {
+//        startSensors();
+//        handler.post(sendDataRunnable);
+//    }                                                     //WORKING ONES
+//
+//    private void stopDataCollection() {
+//        stopSensors();
+//        handler.removeCallbacks(sendDataRunnable);
+//    }
+
+
+
+
 
 
 //    private void sendSensorData() {
@@ -235,6 +314,21 @@ public class MainActivity extends Activity {
     private void sendSensorData() {
         JSONArray allSensorData = collectSensorData();
         sendPostRequest(allSensorData);
+        clearAllSensorData();
+    }
+
+    private void clearAllSensorData() {
+        accelerometerHandler.clearSensorData();
+        gyroscopeHandler.clearSensorData();
+        magnetometerHandler.clearSensorData();
+        lightSensorHandler.clearSensorData();
+        humiditySensorHandler.clearSensorData();
+        pressureSensorHandler.clearSensorData();
+        gravitySensorHandler.clearSensorData();
+        locationTracker.clearSensorData();
+        if (soundLevelHandler != null) {
+            soundLevelHandler.clearSensorData();
+        }
     }
 
     private JSONArray collectSensorData() {
@@ -346,47 +440,9 @@ public class MainActivity extends Activity {
         }
     }
 
-    // Code for second version, with sensor button names
-//    private void sendPostRequest(JSONObject sensorData) {
-//        String url = "http://192.168.1.60:3838/sensorloggermobileappagent/update";  //https://eo5qowv4nlk2w03.m.pipedream.net
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//
-//        String sessionId = UUID.randomUUID().toString();
-//        int messageId = generateMessageId();
-//
-//        try {
-//            JSONObject payloadWrapper = new JSONObject();
-//            payloadWrapper.put("deviceId", deviceId);
-//            payloadWrapper.put("messageId", messageId);
-//            payloadWrapper.put("payload", sensorData); // Changed to JSONObject
-//            payloadWrapper.put("sessionId", sessionId);
-//
-//            final String requestBody = payloadWrapper.toString();
-//
-//            StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-//                    response -> Log.d("Response", response),
-//                    error -> Log.d("Error.Response", error.toString())
-//            ) {
-//                @Override
-//                public byte[] getBody() {
-//                    return requestBody.getBytes(StandardCharsets.UTF_8);
-//                }
-//
-//                @Override
-//                public String getBodyContentType() {
-//                    return "application/json; charset=utf-8";
-//                }
-//            };
-//
-//            queue.add(postRequest);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
 
     private void sendPostRequest(JSONArray sensorData) {
-        String url = "https://eou1bwdjb3p7r6h.m.pipedream.net";     //10.0.2.2:3838      //https://eo5qowv4nlk2w03.m.pipedream.net   //http://192.168.1.60:3838/sensorloggermobileappagent/update
+        String url = "https://eou1bwdjb3p7r6h.m.pipedream.net";    //https://eo5qowv4nlk2w03.m.pipedream.net       //10.0.2.2:3838      //https://eou1bwdjb3p7r6h.m.pipedream.net   //http://192.168.1.60:3838/sensorloggermobileappagent/update
         RequestQueue queue = Volley.newRequestQueue(this);
         String sessionId = UUID.randomUUID().toString();
         int messageId = generateMessageId();
@@ -425,90 +481,10 @@ public class MainActivity extends Activity {
         queue.add(postRequest);
     }
 
-
-
-//    private void sendPostRequest(JSONArray sensorData) {
-//        String url = "https://eo5qowv4nlk2w03.m.pipedream.net";
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//        String sessionId = UUID.randomUUID().toString();
-//        int messageId = generateMessageId();
-//
-//        // Instead of wrapping sensor data in a payloadWrapper JSONObject, send the JSONArray directly
-//        final String requestBody = sensorData.toString();
-//
-//        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-//                response -> Log.d("Response", response),
-//                error -> Log.d("Error.Response", error.toString())
-//        ) {
-//            @Override
-//            public byte[] getBody() {
-//                return requestBody.getBytes(StandardCharsets.UTF_8);
-//            }
-//
-//            @Override
-//            public String getBodyContentType() {
-//                return "application/json; charset=utf-8";
-//            }
-//        };
-//
-//        queue.add(postRequest);
-//    }
-
-
-
-    // Code for first version
-//    private void sendPostRequest(JSONArray sensorData) {
-//        String url = "https://eo5qowv4nlk2w03.m.pipedream.net";
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//
-//        String sessionId = UUID.randomUUID().toString();
-//        int messageId = generateMessageId();
-//
-//        try {
-//            JSONObject payloadWrapper = new JSONObject();
-//            payloadWrapper.put("deviceId", deviceId);
-//            payloadWrapper.put("messageId", messageId);
-//            payloadWrapper.put("payload", sensorData);
-//            payloadWrapper.put("sessionId", sessionId);
-//
-//            final String requestBody = payloadWrapper.toString();
-//
-//            StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-//                    new Response.Listener<String>() {
-//                        @Override
-//                        public void onResponse(String response) {
-//                            Log.d("Response", response);
-//                        }
-//                    },
-//                    new Response.ErrorListener() {
-//                        @Override
-//                        public void onErrorResponse(VolleyError error) {
-//                            Log.d("Error.Response", error.toString());
-//                        }
-//                    }
-//            ) {
-//                @Override
-//                public byte[] getBody() {
-//                    return requestBody.getBytes(StandardCharsets.UTF_8);
-//                }
-//
-//                @Override
-//                public String getBodyContentType() {
-//                    return "application/json; charset=utf-8";
-//                }
-//            };
-//
-//            queue.add(postRequest);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     private int generateMessageId() {
         return new Random().nextInt(1000);
     }
 }
-
 
 
 

@@ -7,56 +7,40 @@
     android:background="@color/white"
     tools:context=".MainActivity">
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
-        android:text="@string/record_sensor_data"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sensors_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/start_recording_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.349" />
+        tools:listitem="@layout/item_sensor" />
 
     <Button
-        android:id="@+id/start_button"
-        android:layout_width="125dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="52dp"
-        android:background="@drawable/start_button_config"
-        android:text="@string/start_button_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <Button
-        android:id="@+id/stop_button"
-        android:layout_width="127dp"
-        android:layout_height="54dp"
-        android:layout_marginEnd="52dp"
-        android:background="@drawable/red_oval_button"
-        android:text="@string/stop_button_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/locationButton"
-        android:layout_width="65dp"
-        android:layout_height="72dp"
+        android:id="@+id/start_recording_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@color/white"
-        android:backgroundTint="@color/white"
-        android:src="@android:drawable/ic_menu_mylocation"
+        android:layout_marginBottom="24dp"
+        android:text="Start Recording"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_mylocation" />
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!--    <ImageView-->
+    <!--        android:id="@+id/locationButton"-->
+    <!--        android:layout_width="53dp"-->
+    <!--        android:layout_height="47dp"-->
+    <!--        android:layout_marginEnd="164dp"-->
+    <!--        android:layout_marginBottom="8dp"-->
+    <!--        android:background="@color/white"-->
+    <!--        android:backgroundTint="@color/white"-->
+    <!--        android:src="@android:drawable/ic_menu_mylocation"-->
+    <!--        app:layout_constraintBottom_toTopOf="@+id/start_recording_button"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

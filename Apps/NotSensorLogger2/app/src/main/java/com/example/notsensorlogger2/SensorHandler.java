@@ -9,5 +9,6 @@ public interface SensorHandler {
     void start();
     void stop();
     JSONArray getSensorData();
+    void clearSensorData();
 }
 

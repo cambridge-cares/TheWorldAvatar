@@ -3,6 +3,8 @@ package com.example.notsensorlogger2;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +18,14 @@ public class AccelerometerHandler extends AbstractSensorHandler {
     @Override
     public void onSensorChanged(SensorEvent event) {
         super.onSensorChanged(event);
+
+        // Capture the x, y, and z values from the sensor event
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        // Log the accelerometer values
+        Log.d("Accelerometer", "X: " + x + " Y: " + y + " Z: " + z);
     }
 
     @Override
