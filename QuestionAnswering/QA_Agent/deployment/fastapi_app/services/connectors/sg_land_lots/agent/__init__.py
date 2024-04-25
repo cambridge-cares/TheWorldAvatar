@@ -3,10 +3,7 @@ from typing import Annotated, Any, Dict, List, Tuple
 
 from fastapi import Depends
 
-from services.connectors.sg_land_lots.land_use import (
-    LandUseTypeStore,
-    get_landUseType_store,
-)
+from services.link_entity import ELMediator, get_el_mediator
 from services.utils.rdf import extract_name, flatten_sparql_response
 from model.aggregate import AggregateOperator
 from model.qa import QAData
@@ -23,12 +20,12 @@ class SGLandLotsAgent:
         self,
         ontop_client: KgClient,
         bg_client: KgClient,
-        land_use_type_store: LandUseTypeStore,
+        entity_linker: ELMediator,
         sparql_maker: SGLandLotsSPARQLMaker,
     ):
         self.ontop_client = ontop_client
         self.bg_client = bg_client
-        self.land_use_type_store = land_use_type_store
+        self.entity_linker = entity_linker
         self.sparql_maker = sparql_maker
 
     def _add_landUseType(self, vars: List[str], bindings: List[dict]):
@@ -36,8 +33,8 @@ class SGLandLotsAgent:
             idx = vars.index("LandUseTypeIRI")
             vars.insert(idx + 1, "LandUseType")
             for binding in bindings:
-                binding["LandUseType"] = ", ".join(
-                    self.land_use_type_store.get_labels(binding["LandUseTypeIRI"])
+                binding["LandUseType"] = self.entity_linker.lookup_label(
+                    "LandUseType", binding["LandUseTypeIRI"]
                 )
         except:
             pass
@@ -87,12 +84,12 @@ class SGLandLotsAgent:
 def get_sgLandLots_agent(
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
     bg_client: Annotated[KgClient, Depends(get_sgPlot_bgClient)],
-    land_use_type_store: Annotated[LandUseTypeStore, Depends(get_landUseType_store)],
+    entity_linker: Annotated[ELMediator, Depends(get_el_mediator)],
     sparql_maker: Annotated[SGLandLotsSPARQLMaker, Depends(get_sgLandLots_sparqlMaker)],
 ):
     return SGLandLotsAgent(
         ontop_client=ontop_client,
         bg_client=bg_client,
-        land_use_type_store=land_use_type_store,
+        entity_linker=entity_linker,
         sparql_maker=sparql_maker,
     )
