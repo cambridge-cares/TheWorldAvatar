@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from config import QAEngineName, get_qa_engine
+from config import QAEngineName, get_qa_engine_name
 from services.html import (
     PageMetadata,
     QADomainSampleQuestions,
@@ -23,7 +23,7 @@ router = APIRouter()
 @router.get("/", response_class=HTMLResponse)
 async def home(
     request: Request,
-    qa_engine: Annotated[QAEngineName, Depends(get_qa_engine)],
+    qa_engine: Annotated[QAEngineName, Depends(get_qa_engine_name)],
     metadata: Annotated[PageMetadata, Depends(get_metadata)],
     sample_questions: Annotated[
         List[QADomainSampleQuestions], Depends(get_sample_questions)
