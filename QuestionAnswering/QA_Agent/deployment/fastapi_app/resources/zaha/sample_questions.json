@@ -7,11 +7,11 @@
                 "data_domain": "sg_land_lots",
                 "label": "Singapore's Land Lots",
                 "questions": [
-                    "What is a commercial plot?",
-                    "what's the land use classification for plots that can have hospitals",
-                    "what's the difference between Business 1 and Business 2 land uses?",
+                    "What does Special Use mean as a land use category?",
+                    "What is the official land uses classification of plots for hospitals?",
+                    "what's the difference between Business 1 and Business 2 land use classifications?",
                     "How many land plots are designated for commercial use?",
-                    "what is the area of the largest residential lot?",
+                    "What is the area of the smallest agriculture lot?",
                     "what is the minimum gross plot ratio of lots designated for health and medical care facilities",
                     "average gross floor area allowed for lots for business activities"
                 ]
