@@ -5,7 +5,8 @@ from fastapi import Depends
 
 from model.qa import QAData
 from model.aggregate import AggregateOperator
-from services.utils.rdf import add_label_to_sparql_resposne, flatten_sparql_response
+from services.core.link_entity import EntityLinker, get_entity_linker
+from services.utils.rdf import flatten_sparql_response
 from services.core.kg import KgClient
 from services.core.label_store import LabelStore
 from services.kg import get_sg_ontopClient
@@ -14,7 +15,6 @@ from services.connectors.sg_companies.agent.label_store import (
 )
 from ..model import DataCentreAttrKey, DataCentreConstraints
 from .make_sparql import SGDataCentresSPARQLMaker, get_sgDataCentres_sparqlMaker
-from .label_store import get_sgDataCentres_labelStore
 
 
 class SGDataCentresAgent:
@@ -22,12 +22,12 @@ class SGDataCentresAgent:
         self,
         ontop_client: KgClient,
         company_label_store: LabelStore,
-        data_centre_label_store: LabelStore,
+        entity_linker: EntityLinker,
         sparql_maker: SGDataCentresSPARQLMaker,
     ):
         self.ontop_client = ontop_client
         self.company_label_store = company_label_store
-        self.data_centre_label_store = data_centre_label_store
+        self.entity_linker = entity_linker
         self.sparql_maker = sparql_maker
 
     def _lookup_dataCentres(self, company_iris: List[str]):
@@ -63,6 +63,18 @@ VALUES ?DataCentre {{ <{iri}> }}
             return bindings[0]["CompanyLabel"]["value"]
         return None
 
+    def _add_datacentre_label(self, vars: List[str], bindings: List[str]):
+        try:
+            iri_idx = vars.index("IRI")
+        except ValueError:
+            raise ValueError("IRI must be present, found: " + str(vars))
+
+        vars.insert(iri_idx + 1, "DataCentreName")
+        for binding in bindings:
+            if "IRI" not in binding:
+                raise ValueError("IRI key not found in binding: " + binding)
+            binding["DataCentreName"] = self.entity_linker.lookup_label(binding["IRI"])
+
     def _add_company_label(self, vars: List[str], bindings: List[dict]):
         try:
             iri_idx = vars.index("IRI")
@@ -88,7 +100,7 @@ VALUES ?DataCentre {{ <{iri}> }}
             data_centre_iris = self._lookup_dataCentres(company_iris)
             iris.extend(data_centre_iris)
         if name:
-            data_centre_iris = self.data_centre_label_store.link_entity(name)
+            data_centre_iris = self.entity_linker.link(name, "Facility")
             iris.extend(data_centre_iris)
 
         query = self.sparql_maker.lookup_dataCentre_attribute(
@@ -97,12 +109,7 @@ VALUES ?DataCentre {{ <{iri}> }}
         res = self.ontop_client.query(query)
 
         vars, bindings = flatten_sparql_response(res)
-        add_label_to_sparql_resposne(
-            self.data_centre_label_store,
-            vars=vars,
-            bindings=bindings,
-            label_header="DataCentreName",
-        )
+        self._add_datacentre_label(vars=vars, bindings=bindings)
         self._add_company_label(vars=vars, bindings=bindings)
 
         return QAData(vars=vars, bindings=bindings)
@@ -116,12 +123,7 @@ VALUES ?DataCentre {{ <{iri}> }}
         res = self.ontop_client.query(query)
 
         vars, bindings = flatten_sparql_response(res)
-        add_label_to_sparql_resposne(
-            self.data_centre_label_store,
-            vars=vars,
-            bindings=bindings,
-            label_header="DataCentreName",
-        )
+        self._add_datacentre_label(vars=vars, bindings=bindings)
         self._add_company_label(vars=vars, bindings=bindings)
 
         return QAData(vars=vars, bindings=bindings)
@@ -144,9 +146,7 @@ VALUES ?DataCentre {{ <{iri}> }}
 def get_sgDataCentres_agent(
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
     company_label_store: Annotated[LabelStore, Depends(get_sgCompanies_labesStore)],
-    data_centre_label_store: Annotated[
-        LabelStore, Depends(get_sgDataCentres_labelStore)
-    ],
+    entity_linker: Annotated[EntityLinker, Depends(get_entity_linker)],
     sparql_maker: Annotated[
         SGDataCentresSPARQLMaker, Depends(get_sgDataCentres_sparqlMaker)
     ],
@@ -154,6 +154,6 @@ def get_sgDataCentres_agent(
     return SGDataCentresAgent(
         ontop_client=ontop_client,
         company_label_store=company_label_store,
-        data_centre_label_store=data_centre_label_store,
+        entity_linker=entity_linker,
         sparql_maker=sparql_maker,
     )
