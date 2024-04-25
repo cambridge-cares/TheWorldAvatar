@@ -7,5 +7,6 @@ content-type: application/json
     "column": "lod1Geometry",
     "oneToMany": "true",
     "filterColumns": ["LU_DESC"],
-    "excludedValues": [["ROAD", "PARK"]]
+    "excludedValues": [["ROAD", "PARK"]],
+    "newTable": "landplot_buildings"
 }

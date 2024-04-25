@@ -57,7 +57,7 @@ WITH uuid_table AS (
         THEN ("GPR"::double precision * public.ST_Area("lod1Geometry", true))
 		ELSE 0
         END AS ref_gfa
-    FROM public.landplot AS pl, public.matched_buildings AS mb
+    FROM public.landplot AS pl, public.landplot_buildings AS mb
     WHERE pl.ogc_fid = mb.ogc_fid 
 )
 
