@@ -42,7 +42,7 @@
                 "data_domain": "sg_data_centres",
                 "label": "Singapore's Data Centres",
                 "questions": [
-                    "What is the heat emission of Keppel data centres",
+                    "What is the heat emission of SIN3 (Keppel Datahub - T25)",
                     "which company has the largest data centre by area?"
                 ]
             },
