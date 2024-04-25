@@ -1,6 +1,13 @@
-[//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
 # TWA-VF Change Log
+
+[//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
+
+## 5.0.2
+
+### Bug Fixes
+
+* Removed dependecy on vulnerable `requests` package
 
 ## 5.0.1
 
