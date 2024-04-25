@@ -10,8 +10,7 @@ from redis import Redis
 from config import QAEngineName, get_qa_engine_name
 from services.core.redis import get_redis_client
 from services.core.embed import IEmbedder, get_embedder
-from .fuzzy import FuzzyEntityLinker
-from .semantic import LexiconEntry, SemanticEntityLinker
+from .link import LexiconEntry, EntityLinker
 
 
 @dataclass(frozen=True)
@@ -36,30 +35,33 @@ class ELMediator:
                 config_entry.entity_type + self.LEXICON_FILE_SUFFIX
             )
             lexicon = adapter.validate_json(path.read_text())
-
-            if config_entry.el_strategy == "fuzzy":
-                return FuzzyEntityLinker(
-                    redis_client=redis_client,
-                    key=config_entry.entity_type,
-                    lexicon=lexicon,
-                )
-            else:
-                return SemanticEntityLinker(
-                    redis_client=redis_client,
-                    embedder=embedder,
-                    key=config_entry.entity_type,
-                    lexicon=lexicon,
-                )
+            return EntityLinker(
+                redis_client=redis_client,
+                embedder=embedder,
+                key=config_entry.entity_type,
+                lexicon=lexicon,
+            )
 
         self.type2linker = {
-            config.entity_type: load_linker(config) for config in config
+            entry.entity_type: (load_linker(entry), entry.el_strategy)
+            for entry in config
         }
 
-    def link(self, entity_type: str, surface_form: str):
+    def _get_linker(self, entity_type: str):
         if entity_type not in self.type2linker:
             raise ValueError("Unexpected `entity_type`: " + entity_type)
+        return self.type2linker[entity_type]
 
-        return self.type2linker[entity_type].link(surface_form)
+    def link(self, entity_type: str, surface_form: str):
+        linker, strategy = self._get_linker(entity_type)
+        if strategy == "fuzzy":
+            return linker.link_fuzzy(surface_form)
+        else:
+            return linker.link_semantic(surface_form)
+
+    def lookup_label(self, entity_type: str, iri: str):
+        linker, _ = self._get_linker(entity_type)
+        return linker.lookup_label(iri)
 
 
 @cache
