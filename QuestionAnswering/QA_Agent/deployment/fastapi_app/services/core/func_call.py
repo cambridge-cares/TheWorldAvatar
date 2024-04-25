@@ -26,7 +26,13 @@ class OpenAIFuncCaller(IFuncCaller):
     def _predict(self, funcs: List[dict], query: str) -> Tuple[str, dict]:
         response = self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": query}],
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are an AI assistant that always return a function call. Do not respond to the user directly.",
+                },
+                {"role": "user", "content": query},
+            ],
             tools=[{"type": "function", "function": func} for func in funcs],
             tool_choice="auto",
             temperature=0,

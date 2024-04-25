@@ -11,7 +11,7 @@ from services.utils.rdf import extract_name, flatten_sparql_response
 from model.aggregate import AggregateOperator
 from model.qa import QAData
 from services.core.kg import KgClient
-from services.kg import get_sg_ontopClient
+from services.kg import get_sg_ontopClient, get_sgPlot_bgClient
 from ..model import PlotNumAttrKey
 from .make_sparql import SGLandLotsSPARQLMaker, get_sgLandLots_sparqlMaker
 
@@ -22,10 +22,12 @@ class SGLandLotsAgent:
     def __init__(
         self,
         ontop_client: KgClient,
+        bg_client: KgClient,
         land_use_type_store: LandUseTypeStore,
         sparql_maker: SGLandLotsSPARQLMaker,
     ):
         self.ontop_client = ontop_client
+        self.bg_client = bg_client
         self.land_use_type_store = land_use_type_store
         self.sparql_maker = sparql_maker
 
@@ -46,14 +48,15 @@ class SGLandLotsAgent:
                 if k.endswith("Unit") and isinstance(v, str):
                     binding[k] = extract_name(v)
 
-    def count_plots(self, land_use_types: List[str] = []):
-        landUseType_iris = [
-            iri
-            for clsname in land_use_types
-            for iri in self.land_use_type_store.get_iris(clsname)
-        ]
+    def explain_landUses(self, land_use_types: List[str]):
+        query = self.sparql_maker.explain_landUses(land_use_types)
+        res = self.bg_client.query(query)
+        vars, bindings = flatten_sparql_response(res)
 
-        query = self.sparql_maker.count_plots(landUseType_iris)
+        return QAData(vars=vars, bindings=bindings)
+
+    def count_plots(self, land_use_types: List[str] = []):
+        query = self.sparql_maker.count_plots(land_use_types)
 
         res = self.ontop_client.query(query)
         vars, bindings = flatten_sparql_response(res)
@@ -68,13 +71,8 @@ class SGLandLotsAgent:
         attr_agg: Tuple[PlotNumAttrKey, AggregateOperator],
         land_use_types: List[str] = [],
     ):
-        landUseType_iris = [
-            iri
-            for clsname in land_use_types
-            for iri in self.land_use_type_store.get_iris(clsname)
-        ]
         query = self.sparql_maker.compute_aggregate_plot_attribute(
-            attr_agg, landUseType_iris
+            attr_agg, land_use_types
         )
 
         res = self.ontop_client.query(query)
@@ -88,11 +86,13 @@ class SGLandLotsAgent:
 
 def get_sgLandLots_agent(
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
+    bg_client: Annotated[KgClient, Depends(get_sgPlot_bgClient)],
     land_use_type_store: Annotated[LandUseTypeStore, Depends(get_landUseType_store)],
     sparql_maker: Annotated[SGLandLotsSPARQLMaker, Depends(get_sgLandLots_sparqlMaker)],
 ):
     return SGLandLotsAgent(
         ontop_client=ontop_client,
+        bg_client=bg_client,
         land_use_type_store=land_use_type_store,
         sparql_maker=sparql_maker,
     )
