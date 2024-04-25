@@ -25,11 +25,12 @@ public class InitialiseInstances extends JPSAgent{
 
 	private static final Logger LOGGER = LogManager.getLogger(InitialiseInstances.class);
 
-	private static String baseURL = "http://goalframeworkexample:8080/GoalFrameworkExample";
+	public static String baseURL = "http://goalframeworkexample:8080/GoalFrameworkExample";
 
 	private static String binemptying_agent_iri = SparqlClient.namespace + "binemptying_agent";
 
 	private static String binemptying_agent_url = baseURL + BinEmptyingAgent.URL_BINEMPTYINGAGENT;
+
 
 	public static final String goalInstanceBaseURL = "http://goalframeworkexample.com/triplestore/repository/";
 
@@ -71,7 +72,7 @@ public class InitialiseInstances extends JPSAgent{
 			//Create goalRange_iri
 			String goalRange_iri = sparqlClient.createGoalRangeIRI();
 			//Create goalCondition
-			sparqlClient.createRangeCondition(goalRange_iri,"10000","0");
+			sparqlClient.createRangeCondition(goalRange_iri,"100","0");
 
 			//Create ontoagent instances for Derivations
 			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(goalRangeType,input), Arrays.asList(desiredStateType));

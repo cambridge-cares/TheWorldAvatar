@@ -4,16 +4,26 @@ import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.json.JSONObject;
+import uk.ac.cam.cares.goal.actuator.Actuator;
 import uk.ac.cam.cares.goal.framework.Goal;
 import uk.ac.cam.cares.goal.framework.GoalClient;
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -31,7 +41,7 @@ public class BinEmptyingAgent extends DerivationAgent  {
 
     GoalClient goalClient;
     public BinEmptyingAgent() {
-        LOGGER.info("BinEmptyingAGent is initialised.");
+        LOGGER.info("BinEmptyingAgent is initialised.");
     }
 
 
@@ -82,9 +92,30 @@ public class BinEmptyingAgent extends DerivationAgent  {
             res_msg = "Bin do something";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, 0));
             LOGGER.info(res_msg);
+            callActuator(goal_iri);
         }
         LOGGER.info("Created a new min value instance <" + desiredstate_iri + ">, and its value instance <" + value_iri + ">");
     }
 
+    private void callActuator(String goal){
+            JSONObject requestParams = new JSONObject();
+            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                try (CloseableHttpResponse httpResponse = httpClient.execute(new HttpPost(InitialiseInstances.baseURL+Actuator.URL_ACTUATOR))) {
+                    if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                        String msg = "Failed to update goal <" + goal + "> with original request: "
+                                + requestParams;
+                        String body = EntityUtils.toString(httpResponse.getEntity());
+                        LOGGER.error(msg);
+                        throw new JPSRuntimeException(msg + " Error body: " + body);
+                    }
+                    String response = EntityUtils.toString(httpResponse.getEntity());
+                    LOGGER.debug("Obtained http response from agent: " + response);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Failed to update goal <" + goal + "> with original request: " + requestParams, e);
+                throw new JPSRuntimeException("Failed to update goal <" + goal + "> with original request: "
+                        + requestParams, e);
+            }
+        }
 
 }
