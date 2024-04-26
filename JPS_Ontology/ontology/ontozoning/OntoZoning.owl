@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontozoning/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">05 February 2024</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 April 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoZoning is an ontology developed to represent relationships between zones, their land use types and land uses.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -2471,13 +2471,6 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Place Of Worship</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/Plot -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
     
 
 
