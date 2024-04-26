@@ -22,7 +22,7 @@ def entity_store(redis_client, embedder):
             iri="http://example.org/add",
             clsname="operator",
             label="addition",
-            surface_forms=["plus", "add"],
+            surface_forms=["plus", "add", "a_d_d"],
         ),
         LexiconEntry(
             iri="http://example.org/minus",
@@ -68,7 +68,7 @@ class TestEntityStore:
 
     def test_linkFuzzy(self, entity_store: EntityStore):
         # Arrange
-        surface_form = "one"
+        surface_form = "one 1"
         expected = ["http://example.org/1"]
 
         # Act

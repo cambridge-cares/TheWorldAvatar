@@ -18,6 +18,7 @@ import regex
 from config import QAEngineName, get_qa_engine_name
 from core.embed import IEmbedder, get_embedder
 from core.redis import does_index_exist, get_redis_client
+from utils.collections import FrozenDict
 from utils.itertools_recipes import batched
 from utils.str import escape_for_redis
 
@@ -32,12 +33,12 @@ class ELConfigEntry:
     el_strategy: ELStrategy
 
 
-@dataclass
+@dataclass(frozen=True)
 class LexiconEntry:
     iri: str
     clsname: str
     label: str
-    surface_forms: List[str]
+    surface_forms: Tuple[str, ...]
 
 
 class EntityStore:
@@ -66,8 +67,9 @@ class EntityStore:
             pipeline = redis_client.pipeline()
             for i, (entry, embedding) in enumerate(zip(chunk, embeddings)):
                 redis_key = cls.KEY_PREFIX + str(offset + i)
+                surface_forms = list(entry.surface_forms)
                 if entry.label not in entry.surface_forms:
-                    entry.surface_forms.append(entry.label)
+                    surface_forms.append(entry.label)
                 doc = dict(
                     iri=entry.iri,
                     clsname=entry.clsname,
@@ -145,7 +147,7 @@ class EntityStore:
             return "*"
         else:
             return "@clsname:{{{clsname}}}".format(
-                clsname=regex.escape(clsname, special_only=False)
+                clsname=regex.escape(clsname, special_only=False, literal_spaces=True)
             )
 
     def link_semantic(
@@ -189,17 +191,6 @@ class EntityStore:
         ]
         return list(set(sfs))
 
-    def _lookup_iris(self, surface_form: str) -> List[str]:
-        query = Query(
-            '@surface_forms:"{surface_form}"'.format(
-                surface_form=regex.escape(surface_form, special_only=False)
-            )
-        ).return_field("iri")
-        print(query._query_string)
-        res = self.redis_client.ft(self.INDEX_NAME).search(query)
-        iris = [doc.iri for doc in res.docs]
-        return list(set(iris))
-
     def link_fuzzy(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
         """Performs fuzzy search over candidate surface forms.
         If input surface form exactly matches any label, preferentially return the associated IRIs.
@@ -208,17 +199,20 @@ class EntityStore:
 
         k -= len(iris)
         if k >= 0:
-            # TODO: use a strategy to retrieve a subset of surface forms rather than all
-            choices = self._all_surface_forms(clsname)
-            lst = rapidfuzz.process.extract(
-                surface_form,
-                choices,
-                scorer=rapidfuzz.fuzz.WRatio,
-                limit=k,
-                processor=rapidfuzz.utils.default_process,
-            )
-            surface_forms = [sf for sf, _, _ in lst]
-            iris.extend([iri for sf in surface_forms for iri in self._lookup_iris(sf)])
+            fuzzy_query = Query(
+                "@surface_forms:{label}".format(
+                    label=" ".join(
+                        "%{word}%".format(
+                            word=regex.escape(
+                                word, special_only=False, literal_spaces=True
+                            )
+                        )
+                        for word in surface_form.split()
+                    )
+                )
+            ).return_field("$.iri", as_field="iri")
+            res = self.redis_client.ft(self.INDEX_NAME).search(fuzzy_query)
+            iris.extend(doc.iri for doc in res.docs)
 
         return list(set(iris))
 
@@ -232,7 +226,9 @@ class EntityStore:
 
     def lookup_label(self, iri: str) -> Optional[str]:
         query = Query(
-            "@iri:{{{iri}}}".format(iri=regex.escape(iri, special_only=False))
+            "@iri:{{{iri}}}".format(
+                iri=regex.escape(iri, special_only=False, literal_spaces=True)
+            )
         ).return_field("$.label", as_field="label")
         res = self.redis_client.ft(self.INDEX_NAME).search(query)
         return res.docs[0].label if len(res.docs) > 0 else None
@@ -248,35 +244,39 @@ def get_el_config(qa_engine: Annotated[QAEngineName, Depends(get_qa_engine_name)
 
 @cache
 def get_lexicon(config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_config)]):
-    return [
-        LexiconEntry(
-            iri=obj["iri"],
-            clsname=entry.clsname,
-            label=obj["label"],
-            surface_forms=obj["surface_forms"],
-        )
-        for entry in config
-        for obj in json.loads(
-            files("resources.lexicon")
-            .joinpath(entry.clsname + "_lexicon.json")
-            .read_text()
-        )
-    ]
+    return tuple(
+        [
+            LexiconEntry(
+                iri=obj["iri"],
+                clsname=entry.clsname,
+                label=obj["label"],
+                surface_forms=tuple(obj["surface_forms"]),
+            )
+            for entry in config
+            for obj in json.loads(
+                files("resources.lexicon")
+                .joinpath(entry.clsname + "_lexicon.json")
+                .read_text()
+            )
+        ]
+    )
 
 
 @cache
 def get_clsname2strategy(
     config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_config)]
 ):
-    return {entry.clsname: entry.el_strategy for entry in config}
+    return FrozenDict({entry.clsname: entry.el_strategy for entry in config})
 
 
 @cache
 def get_entity_linker(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
-    lexicon: Annotated[Iterable[LexiconEntry], Depends(get_lexicon)],
-    clsname2strategy: Annotated[Dict[str, ELStrategy], Depends(get_clsname2strategy)],
+    lexicon: Annotated[Tuple[LexiconEntry, ...], Depends(get_lexicon)],
+    clsname2strategy: Annotated[
+        FrozenDict[str, ELStrategy], Depends(get_clsname2strategy)
+    ],
 ):
     return EntityStore(
         redis_client=redis_client,
