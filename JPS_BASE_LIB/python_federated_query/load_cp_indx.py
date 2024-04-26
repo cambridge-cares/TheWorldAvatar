@@ -35,10 +35,6 @@ class LoadKGIndex:
         else:
             return None
 
-    # def analyse(self):
-    #     for class_name, files in self.cp_index.items():
-    #         self.class_names.append(self.get_substring_from_last(class_name))
-    #         self.class_files.append(len(files))
     def analyse(self):
         for class_name, prop_dict in self.cp_index.items():
             for prop, files in prop_dict.items():
@@ -52,7 +48,7 @@ class LoadKGIndex:
         cp_count = 0
         file_count = 0
         avg_files_per_cp = 0.0
-        total_class_prop = 0
+
         print(f"Total number of class-property key: {len(self.cp_name)}")  
         for i in range(len(self.cp_name)):
             file_count += self.cp_files[i]
