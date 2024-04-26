@@ -15,6 +15,24 @@ We also recommend to install the SonarLint plugin for linting purposes.
 ## 1.3 Architecture
 The apps adopt the [Modern App Architecture](https://developer.android.com/topic/architecture) following the official documentation. Briefly, The World Avatar mobile interfaces utilises only the Data and UI layer. The Data layer contains the business logic of how the app creates, stores, and changes data, and is intended to interact with the knowledge model in The World Avatar. The UI layer displays the application data on the screen via state holders and UI elements for user interactions. Please read the [official documentation](https://developer.android.com/topic/architecture) for more details.
 
+We also briefly introduce some terms specific to Android development:
+* Activity
+
+An `Activity` is the basic building block of an Android app's user interface. Each activity serves as an entry point for user interactions through a single screen representation, for example, a login screen, settings screen, and etc.
+Activities are responsible for managing their own lifecycle and UI components, handling user input, and responding to system events. 
+The TWA apps follow a Single Activity paradigm, where all app functionality is available within a single activity for each application. This simplifies app architecture, navigation flow, and code maintenance.
+
+* Fragment
+
+A `Fragment` is a modular section of an activity's user interface and behavior that MUST be hosted by an activity or another fragment. 
+Fragments can be thought of as "sub-activities" that can be combined within an activity to build a multi-pane UI, allowing flexible and reusable UI components across different screen sizes and orientations.
+
+* Application Context
+
+The `Application Context` is a global context provided by the Android system, representing the entire application. 
+It provides access to application-specific resources and services, such as accessing files, databases, preferences, and starting activities. 
+Unlike an activity context, the application context does not depend on the lifecycle of an activity and can be used safely throughout the entire application.
+
 ## 1.4 Directory Structure
 The application is structured as modules that can be injected for various purposes to ensure consistency, reusability, and maintainability. At the top level, common build configurations are available at the root, and three modules are available:
 * `app`: Serves as the entry point into the application that integrates functionality from the other two modules
@@ -37,10 +55,12 @@ Each module directory will have the following files:
 * `build.gradle` : Build settings for the module
 * Proguard configuration files to shrink, optimise, and obfuscate code for release.
 
+Do note that the internal dependency graph are available in each module's `build.gradle` file to understand how each module is connected to each other.
+
 ## 1.5 Test
 At present, we are exploring testing strategies for our apps and expect that this section will continue to be updated over time as we explore and consolidate best practices.
 
-Any testing configuration and dependencies should be added to the global app build settings at `<root>/app/build.gradle`. This will allow the test dependencies to be build across all modules.
+Any testing configuration and dependencies should be added to the common build settings at `<root>/common.gradle`. This will allow the test dependencies to be build across all modules.
 
 At the moment, users have to individually run the tests at the module level in Android Studio. We are still looking into setting up a test suite to automate this aspect. 
 To do so, right click on the module directory in Android Studio and select `Run 'All Tests'` to run the tests for that module.
