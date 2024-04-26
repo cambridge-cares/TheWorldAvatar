@@ -80,11 +80,11 @@ public class IntegrateFloors {
     public void matchAddress (String floorsCsv) throws IOException{
         MatchService matchService = new MatchService();
         //query address infor from osm db
-        List<Document> polyDoc = new ArrayList<>();
-        List<Document> pointDoc = new ArrayList<>();
+        // List<Document> polyDoc = new ArrayList<>();
+        // List<Document> pointDoc = new ArrayList<>();
 
-        String polygonSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM " + this.osmSchema + "." + this.osmPolygon + " WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
-        String pointSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM " + this.osmSchema + "." + this.osmPoint + " WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
+        // String polygonSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM " + this.osmSchema + "." + this.osmPolygon + " WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
+        // String pointSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM " + this.osmSchema + "." + this.osmPoint + " WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
     
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
@@ -288,21 +288,51 @@ public class IntegrateFloors {
             //     contentBuilder.append(sCurrentLine).append("\n");
             // }
 
-            WhereBuilder wb = new WhereBuilder()
+            WhereBuilder wbUsage = new WhereBuilder()                   
+                    .addWhere("?building", "env:hasPropertyUsage", "?property")
+                    .addWhere("?property", "a", "?usage");
+
+            WhereBuilder wbAddress1 = new WhereBuilder()
+                    .addWhere("?building", "env:hasAddress", "?address")
+                    .addWhere("?address", "rdf:type", "ic:Address")
+                    .addWhere("?address", "env:hasCountry", "?Value")
+                    .addBind("Country", "?Property");
+
+            WhereBuilder wbAddress2 = new WhereBuilder()
+                    .addWhere("?building", "env:hasAddress", "?address")
+                    .addWhere("?address", "rdf:type", "ic:Address")
+                    .addWhere("?address", "env:hasStreet", "?Value")
+                    .addBind("Street", "?Property");
+            
+            WhereBuilder wbAddress3 = new WhereBuilder()
+                    .addWhere("?building", "env:hasAddress", "?address")
+                    .addWhere("?address", "rdf:type", "ic:Address")
+                    .addWhere("?address", "env:hasUnitNumber", "?Value")
+                    .addBind("Unit number", "?Property");
+
+            WhereBuilder wbAddress4 = new WhereBuilder()
+                    .addWhere("?building", "env:hasAddress", "?address")
+                    .addWhere("?address", "rdf:type", "ic:Address")
+                    .addWhere("?address", "env:hasPostalCode", "?Value")
+                    .addBind("Post code", "?Property");
+ 
+            WhereBuilder wbAddress5 = new WhereBuilder()
+                    .addWhere("?building", "env:hasAddress", "?address")
+                    .addWhere("?address", "rdf:type", "ic:Address")
+                    .addWhere("?address", "env:hasStreet", "?Value")
+                    .addBind("Steet", "?Property");       
+
+            SelectBuilder sb = new SelectBuilder()
                     .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                     .addPrefix("twa", OntologyURIHelper.getOntologyUri(OntologyURIHelper.twa))
                     .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                     .addPrefix("rdfs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdfs))
-                    .addPrefix("ic", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ic));
-
-                wb.addWhere("?building", "env:hasPropertyUsage", "?property")
-                    .addWhere("?property", "a", "?usage");
-
-            SelectBuilder sb = new SelectBuilder()
+                    .addPrefix("ic", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ic))
                     .addVar("?building")
-                    .addVar("?usage")
-                    .addWhere(wb);
+                    .addVar("?property")
+                    .addVar("?Value")
+                    .addUnion(wbUsage, wbAddress1, wbAddress2, wbAddress3, wbAddress4, wbAddress5);
 
             String query = sb.build().toString();
             JSONArray queryResultArray = storeClient.executeQuery(query);
