@@ -5,12 +5,12 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends
 
-from services.link_entity import EntityLinker, get_entity_linker
+from services.entity_store import EntityStore, get_entity_linker
 from services.kg import get_sgPlot_bgClient, get_sg_ontopClient
 from model.qa import QAData, QAStep
 from core.kg import KgClient
-from services.utils.collections import FrozenDict
-from services.utils.rdf import flatten_sparql_response
+from utils.collections import FrozenDict
+from utils.rdf import flatten_sparql_response
 from .postprocess import SparqlPostProcessor
 from ..model import SparqlAction
 
@@ -43,7 +43,7 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
 
 """
 
-    def __init__(self, ns2kg: Dict[str, KgClient], entity_linker: EntityLinker):
+    def __init__(self, ns2kg: Dict[str, KgClient], entity_linker: EntityStore):
         self.ns2kg = ns2kg
         self.postprocessor = SparqlPostProcessor(entity_linker)
         self.entity_linker = entity_linker
@@ -106,6 +106,6 @@ def get_ns2kg(
 @cache
 def get_sparqlAction_executor(
     ns2kg: Annotated[FrozenDict[str, KgClient], Depends(get_ns2kg)],
-    entity_linker: Annotated[EntityLinker, Depends(get_entity_linker)],
+    entity_linker: Annotated[EntityStore, Depends(get_entity_linker)],
 ):
     return SparqlActionExecutor(ns2kg=ns2kg, entity_linker=entity_linker)

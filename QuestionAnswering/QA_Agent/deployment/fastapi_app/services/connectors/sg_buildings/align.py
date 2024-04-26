@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import Depends
 from redis import Redis
 
-from services.utils.str import camel_case_split
+from utils.str import camel_case_split
 from core.redis import get_redis_client
 from core.embed import IEmbedder, get_embedder
 from core.align_enum import EnumAligner

@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from pydantic.dataclasses import dataclass
 
-from services.utils.rdf import extract_name
+from utils.rdf import extract_name
 from core.kg import KgClient
 
 

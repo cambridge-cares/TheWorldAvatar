@@ -1,14 +1,14 @@
 import logging
 from typing import List
 
-from services.link_entity import EntityLinker
+from services.entity_store import EntityStore
 
 
 logger = logging.getLogger(__name__)
 
 
 class SparqlPostProcessor:
-    def __init__(self, entity_linker: EntityLinker):
+    def __init__(self, entity_linker: EntityStore):
         self.entity_linker = entity_linker
 
     def link(self, token: str):

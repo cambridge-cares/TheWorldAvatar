@@ -7,8 +7,8 @@ from fastapi import Depends
 from model.constraint import ExtremeValueConstraint
 from model.aggregate import AggregateOperator
 from model.qa import QAData
-from services.link_entity import EntityLinker, get_entity_linker
-from services.utils.rdf import flatten_sparql_response
+from services.entity_store import EntityStore, get_entity_linker
+from utils.rdf import flatten_sparql_response
 from core.kg import KgClient
 from services.kg import get_sg_ontopClient
 from ..model import FactoryAttrKey, FactoryNumAttrKey, Industry
@@ -22,7 +22,7 @@ class SGFactoriesAgent:
     def __init__(
         self,
         ontop_client: KgClient,
-        entity_linker: EntityLinker,
+        entity_linker: EntityStore,
         sparql_maker: SGFactoriesSPARQLMaker,
     ):
         self.ontop_client = ontop_client
@@ -182,7 +182,7 @@ FILTER ( ?Factory IN ( {values} ) )
 
 def get_sgFactories_agent(
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
-    entity_linker: Annotated[EntityLinker, Depends(get_entity_linker)],
+    entity_linker: Annotated[EntityStore, Depends(get_entity_linker)],
     sparql_maker: Annotated[
         SGFactoriesSPARQLMaker, Depends(get_sgFactories_sparqlmaker)
     ],
