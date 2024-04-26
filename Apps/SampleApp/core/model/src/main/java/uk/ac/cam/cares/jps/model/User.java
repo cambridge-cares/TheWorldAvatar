@@ -5,27 +5,27 @@ package uk.ac.cam.cares.jps.model;
  * But it only keeps id, name, username and email.
  * The original response is shown as below
  * {
- *     "id": 1,
- *     "name": "Leanne Graham",
- *     "username": "Bret",
- *     "email": "Sincere@april.biz",
- *     "address": {
- *         "street": "Kulas Light",
- *         "suite": "Apt. 556",
- *         "city": "Gwenborough",
- *         "zipcode": "92998-3874",
- *         "geo": {
- *             "lat": "-37.3159",
- *             "lng": "81.1496"
- *         }
- *     },
- *     "phone": "1-770-736-8031 x56442",
- *     "website": "hildegard.org",
- *     "company": {
- *         "name": "Romaguera-Crona",
- *         "catchPhrase": "Multi-layered client-server neural-net",
- *         "bs": "harness real-time e-markets"
- *     }
+ * "id": 1,
+ * "name": "Leanne Graham",
+ * "username": "Bret",
+ * "email": "Sincere@april.biz",
+ * "address": {
+ * "street": "Kulas Light",
+ * "suite": "Apt. 556",
+ * "city": "Gwenborough",
+ * "zipcode": "92998-3874",
+ * "geo": {
+ * "lat": "-37.3159",
+ * "lng": "81.1496"
+ * }
+ * },
+ * "phone": "1-770-736-8031 x56442",
+ * "website": "hildegard.org",
+ * "company": {
+ * "name": "Romaguera-Crona",
+ * "catchPhrase": "Multi-layered client-server neural-net",
+ * "bs": "harness real-time e-markets"
+ * }
  * }
  */
 public class User {
@@ -34,6 +34,14 @@ public class User {
     String username;
     String email;
 
+    /**
+     * Constructor
+     *
+     * @param id       ID returned from the API.
+     * @param name     User's name returned from the API.
+     * @param username Username returned from the API.
+     * @param email    User's email returned from the API.
+     */
     public User(String id, String name, String username, String email) {
         this.id = id;
         this.name = name;
@@ -41,18 +49,38 @@ public class User {
         this.email = email;
     }
 
+    /**
+     * Getter method to return ID.
+     *
+     * @return ID returned from the API.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Getter method to return user's name.
+     *
+     * @return User's name returned from the API.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Getter method to return username.
+     *
+     * @return Username returned from the API.
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Getter method to return user's email.
+     *
+     * @return User's email returned from the API.
+     */
     public String getEmail() {
         return email;
     }
