@@ -34,7 +34,7 @@ class SGLandLotsAgent:
             vars.insert(idx + 1, "LandUseType")
             for binding in bindings:
                 binding["LandUseType"] = self.entity_linker.lookup_label(
-                    "LandUseType", binding["LandUseTypeIRI"]
+                    binding["LandUseTypeIRI"]
                 )
         except:
             pass
