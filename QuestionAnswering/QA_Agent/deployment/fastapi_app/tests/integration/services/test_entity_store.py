@@ -15,7 +15,7 @@ def entity_store(redis_client, embedder):
         LexiconEntry(
             iri="http://example.org/2",
             clsname="number",
-            label="two_2 (TWO-\\)",
+            label="two_2 (TWO-)",
             surface_forms=["two", "2", "\\Two"],
         ),
         LexiconEntry(
@@ -45,11 +45,34 @@ class TestEntityStore:
         "surface_form, expected",
         [
             ("one", ["http://example.org/1"]),
-            ("two_2 (TWO-\\)", ["http://example.org/2"]),
+            ("two_2 (TWO-)", ["http://example.org/2"]),
         ],
     )
-    def test_linkExact_alphanumericLabel(
-        self, entity_store: EntityStore, surface_form, expected
-    ):
+    def test_linkExact(self, entity_store: EntityStore, surface_form, expected):
         actual = entity_store.link_exact(surface_form)
+        assert actual == expected
+
+    def test_linkSemantic(self, entity_store: EntityStore):
+        # Arrange
+        surface_form = "+"
+        clsname = "operator"
+        expected = ["http://example.org/add"]
+
+        # Act
+        actual = entity_store.link_semantic(
+            surface_form=surface_form, clsname=clsname, k=1
+        )
+
+        # Assert
+        assert actual == expected
+
+    def test_linkFuzzy(self, entity_store: EntityStore):
+        # Arrange
+        surface_form = "one"
+        expected = ["http://example.org/1"]
+
+        # Act
+        actual = entity_store.link_fuzzy(surface_form=surface_form, k=1)
+
+        # Assert
         assert actual == expected
