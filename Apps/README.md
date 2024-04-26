@@ -6,6 +6,7 @@ This repository contains the mobile interfaces developed for users to interact w
 # 1 Getting Started
 ## 1.1 IDE Recommendation 
 We highly recommend using Android Studio as the Integrated Development Environment (IDE) for any app development in The World Avatar. Android Studio provides powerful tools and features specifically tailored for Android app development. Please participate in the [code lab](https://developer.android.com/codelabs/build-your-first-android-app) to familiarise yourself with the IDE.
+We also recommend to install the SonarLint plugin for linting purposes.
 
 ## 1.2 App Requirements
 * Java 17 (jdk17)
@@ -26,16 +27,25 @@ The application is structured as modules that can be injected for various purpos
 * `feature`: Encapsulate specific features or user-facing functionalities of our application.
 
 Each module directory will have the following files:
-* `src/main`
-    * `sub.package.names.any.thing.goes`: Contains code
-    * `res`: Contains various resources for designing the UI, such as layout XML files, drawable images, string values, colors, dimensions, and more.
-    * `AndroidManifest.xml`: Describes essential information about the app to the Android system such as package name, permissions, services, and more
+* `src`
+  * `main` 
+      * `java/sub.package.names.any.thing.goes`: Contains code
+      * `res`: Contains various resources for designing the UI, such as layout XML files, drawable images, string values, colors, dimensions, and more.
+      * `AndroidManifest.xml`: Describes essential information about the app to the Android system such as package name, permissions, services, and more
+  * `test/java/sub.package.names.any.thing.goes`: Contains unit tests
+  * `androidTest/java/sub.package.names.any.thing.goes`: Contains instrumented tests
 * `build.gradle` : Build settings for the module
 * Proguard configuration files to shrink, optimise, and obfuscate code for release.
 
-We are still exploring how to construct and standardised tests for our apps. 
+## 1.5 Test
+At present, we are exploring testing strategies for our apps and expect that this section will continue to be updated over time as we explore and consolidate best practices.
 
-## 1.5 Next steps
+Any testing configuration and dependencies should be added to the global app build settings at `<root>/app/build.gradle`. This will allow the test dependencies to be build across all modules.
+
+At the moment, users have to individually run the tests at the module level in Android Studio. We are still looking into setting up a test suite to automate this aspect. 
+To do so, right click on the module directory in Android Studio and select `Run 'All Tests'` to run the tests for that module.
+
+## 1.6 Next steps
 Continue on to the [template app](SampleApp/) for a tutorial on developing a new mobile interface within The World Avatar. If you are experiencing any technical difficulties, the [troubleshooting](#2-troubleshooting) section is available.
 
 # 2 Troubleshooting
