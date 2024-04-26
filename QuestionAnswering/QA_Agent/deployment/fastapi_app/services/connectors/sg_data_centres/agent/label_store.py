@@ -17,7 +17,7 @@ PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
 SELECT DISTINCT ?IRI ?company ?label WHERE {
     ?IRI rdf:type ontocompany:DataCentre .
-    ?IRI ^ontocompany:hasDataCentre/rdfs:label ?company .
+    ?IRI ^ontocompany:isOwnerOf/rdfs:label ?company .
     ?IRI rdfs:label ?label .
 }"""
     bindings = [
