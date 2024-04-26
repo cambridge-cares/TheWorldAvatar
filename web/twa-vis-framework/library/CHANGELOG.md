@@ -1,6 +1,6 @@
-[//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
-
 # TWA-VF Change Log
+
+[//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
 ## 4.7.2
 
