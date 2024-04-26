@@ -30,6 +30,20 @@ class LoadKGIndex:
             
     def get_substring_from_last(self,string):
         return string.rsplit('/', 1)[-1].rsplit('#', 1)[-1]
+    
+    def print_key_value_stats(self):
+        class_count = 0
+        file_count = 0
+        avg_files_per_class = 0.0
+        
+        print(f"Total number of class-property key: {len(self.class_names)}")  
+        for i in range(len(self.class_names)):
+            file_count += self.class_files[i]
+            class_count += 1
+            print(f"{self.class_names[i]} : {self.class_files[i]}")          
+        
+        avg_files_per_class = file_count/class_count
+        print(f"Total class:{class_count}; Average files per class: {avg_files_per_class}")
         
     def bar_plt(self):
         # Create bar chart
@@ -55,15 +69,5 @@ if __name__ == "__main__":
     index=kgs.load_inverted_index(index_file)
     # files=kgs.search_concept("http://theworldavatar.com/kb/ontokin/ontokin.owl#Element")
     kgs.analyse()
+    kgs.print_key_value_stats()
     kgs.bar_plt()
-
-    class_count = 0
-    file_count = 0
-    avg_files_per_class = 0.0
-    
-    for class_name, files in index.items():
-        file_count += len(files)
-        class_count += 1
-    
-    avg_files_per_class = file_count/class_count
-    print(f"Total class:{class_count}; Average files per class: {avg_files_per_class}")
