@@ -83,7 +83,7 @@ Create a database in PostGIS called `aqmesh`.
 
 Requires a database and a Blazegraph namespace, both called `aqmesh`. The Blazegraph namespace should be created via the data uploader while uploading the aboxes.
 
-If they are not named `aqmesh`, [client.properties (aqmesh)] will have to be modified accordingly.
+If they are not named `aqmesh`, [client.properties (aqmesh)] and [aqmesh-input-agent.json] will have to be modified accordingly.
 
 Modify `db.password` in [client.properties].
 
@@ -132,6 +132,7 @@ The script generates the corresponding colours for each value range (population_
 [stack-manager]: ./stack-manager/
 [stack-data-uploader]: ./stack-data-uploader/
 [ship-input-agent.json]: ./stack-manager/inputs/config/services/ship-input-agent.json
+[aqmesh-input-agent.json]: ./stack-manager/inputs/config/services/aqmesh-input-agent.json
 [weather-agent.json]: ./stack-manager/inputs/config/services/weather-agent.json
 [company.http]: <./HTTP_requests/company.http>
 [start-live-updates.http]: <./HTTP_requests/start-live-updates.http>
