@@ -3,7 +3,7 @@ from yarl import URL
 
 from services.connectors.retrieval.agent.node_store import NodeStore
 from core.kg import KgClient
-from tests.integration.services.utils import TriplesManager
+from tests.integration.utils import TriplesManager
 
 
 @pytest.fixture(scope="class")

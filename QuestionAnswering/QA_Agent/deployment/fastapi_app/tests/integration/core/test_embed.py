@@ -1,6 +1,6 @@
 import numpy as np
 
-from services.utils.numerical import cosine_similarity
+from utils.numerical import cosine_similarity
 
 class TestEmbedder:
     def test_tritonMpnetEmbedder_semantic(self, embedder):

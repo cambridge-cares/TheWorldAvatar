@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from services.utils.numerical import cosine_similarity
+from utils.numerical import cosine_similarity
 
 
 class TestNumerical:

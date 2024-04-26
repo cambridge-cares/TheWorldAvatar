@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from model.qa import QAData
-from services.utils.rdf import flatten_sparql_response
+from utils.rdf import flatten_sparql_response
 from core.kg import KgClient
 from services.connectors.feature_info_client import (
     FeatureInfoClient,

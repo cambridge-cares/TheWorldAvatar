@@ -18,7 +18,7 @@ from services.connectors.sg_factories.agent.label_store import (
 from services.connectors.sg_factories.agent.make_sparql import (
     SGFactoriesSPARQLMaker,
 )
-from tests.integration.services.utils import TriplesManager
+from tests.integration.utils import TriplesManager
 
 
 @pytest.fixture(scope="class")

@@ -18,7 +18,8 @@ import regex
 from config import QAEngineName, get_qa_engine_name
 from core.embed import IEmbedder, get_embedder
 from core.redis import does_index_exist, get_redis_client
-from services.utils.itertools_recipes import batched
+from utils.itertools_recipes import batched
+from utils.str import escape_for_redis
 
 EntityIRI = str
 EntityLabel = str
@@ -39,27 +40,9 @@ class LexiconEntry:
     surface_forms: List[str]
 
 
-class EntityLinker:
-    LEXICON_FILE_SUFFIX = "_lexicon.json"
+class EntityStore:
     KEY_PREFIX = "entities:"
     INDEX_NAME = "idx:entities"
-
-    @classmethod
-    def _load_lexicon(cls, config: Tuple[ELConfigEntry, ...]):
-        return [
-            LexiconEntry(
-                iri=obj["iri"],
-                clsname=entry.clsname,
-                label=obj["label"],
-                surface_forms=obj["surface_forms"],
-            )
-            for entry in config
-            for obj in json.loads(
-                files("resources.lexicon")
-                .joinpath(entry.clsname + cls.LEXICON_FILE_SUFFIX)
-                .read_text()
-            )
-        ]
 
     @classmethod
     def _insert_entries_and_create_index(
@@ -88,8 +71,8 @@ class EntityLinker:
                 doc = dict(
                     iri=entry.iri,
                     clsname=entry.clsname,
-                    label=entry.label,
-                    surface_forms=entry.surface_forms,
+                    label=regex.escape(entry.label, special_only=True),
+                    surface_forms=[regex.escape(sf) for sf in entry.surface_forms],
                     surface_forms_embedding=embedding,
                 )
                 pipeline.json().set(redis_key, "$", doc)
@@ -123,10 +106,10 @@ class EntityLinker:
         self,
         redis_client: Redis,
         embedder: IEmbedder,
-        config: Tuple[ELConfigEntry, ...],
+        lexicon: Iterable[LexiconEntry],
+        clsname2strategy: Dict[str, ELStrategy],
     ):
         if not does_index_exist(redis_client, self.INDEX_NAME):
-            lexicon = self._load_lexicon(config)
             self._insert_entries_and_create_index(
                 redis_client=redis_client,
                 embedder=embedder,
@@ -135,17 +118,16 @@ class EntityLinker:
 
         self.redis_client = redis_client
         self.embedder = embedder
-        self.clsname2strategy: Dict[str, ELStrategy] = {
-            entry.clsname: entry.el_strategy for entry in config
-        }
+        self.clsname2strategy = clsname2strategy
 
     def link_exact(self, surface_form: str) -> List[str]:
         """Performs exact matching over canonical labels."""
-        inverse_label_query = (
-            Query('@label:"{label}"'.format(label=surface_form))
-            .return_field("$.iri", as_field="iri")
-            .dialect(2)
-        )
+        inverse_label_query = Query(
+            '@label:"{label}"'.format(
+                label=regex.escape(surface_form, special_only=False)
+            )
+        ).return_field("$.iri", as_field="iri")
+
         res = self.redis_client.ft(self.INDEX_NAME).search(inverse_label_query)
         return [doc.iri for doc in res.docs]
 
@@ -190,9 +172,8 @@ class EntityLinker:
         query = (
             Query(self._make_filter_query(clsname))
             .return_field("$.iri", as_field="iri")
-            .return_field(
-                "$.surface_forms", as_field="surface_forms_serialized"
-            ).paging(0, 10000)
+            .return_field("$.surface_forms", as_field="surface_forms_serialized")
+            .paging(0, 10000)
         )
         res = self.redis_client.ft(self.INDEX_NAME).search(query)
         # return [
@@ -268,9 +249,40 @@ def get_el_config(qa_engine: Annotated[QAEngineName, Depends(get_qa_engine_name)
 
 
 @cache
+def get_lexicon(config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_config)]):
+    return [
+        LexiconEntry(
+            iri=obj["iri"],
+            clsname=entry.clsname,
+            label=obj["label"],
+            surface_forms=obj["surface_forms"],
+        )
+        for entry in config
+        for obj in json.loads(
+            files("resources.lexicon")
+            .joinpath(entry.clsname + "_lexicon.json")
+            .read_text()
+        )
+    ]
+
+
+@cache
+def get_clsname2strategy(
+    config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_config)]
+):
+    return {entry.clsname: entry.el_strategy for entry in config}
+
+
+@cache
 def get_entity_linker(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
-    config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_config)],
+    lexicon: Annotated[Iterable[LexiconEntry], Depends(get_lexicon)],
+    clsname2strategy: Annotated[Dict[str, ELStrategy], Depends(get_clsname2strategy)],
 ):
-    return EntityLinker(redis_client=redis_client, embedder=embedder, config=config)
+    return EntityStore(
+        redis_client=redis_client,
+        embedder=embedder,
+        lexicon=lexicon,
+        clsname2strategy=clsname2strategy,
+    )

@@ -1,5 +1,5 @@
 import pytest
-from services.utils.rdf import extract_name
+from utils.rdf import extract_name
 
 
 class TestRdf:

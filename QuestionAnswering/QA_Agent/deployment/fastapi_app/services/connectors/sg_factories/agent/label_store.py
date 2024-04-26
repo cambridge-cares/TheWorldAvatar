@@ -4,7 +4,7 @@ from typing import Annotated, Tuple
 from fastapi import Depends
 from redis import Redis
 
-from services.utils.bindings import agg_iri_label_pairs
+from utils.bindings import agg_iri_label_pairs
 from core.kg import KgClient
 from core.label_store import LabelStore
 from core.redis import get_redis_client
