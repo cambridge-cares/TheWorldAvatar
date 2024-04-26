@@ -1,6 +1,6 @@
 ################################################
 # Authors: Jiying Chen  #
-#                            #
+#                       #
 ################################################
 
 # The purpose of this module is to retrieve relevant settings from Stack clients
@@ -14,17 +14,16 @@ logger = agentlogging.get_logger('prod')
 
 # Define the database name and namespace
 DATABASE_NAME = 'postgres'
-NAMESPACE = 'fenlandtrajectory'
+NAMESPACE = 'gps_trajectory'
 
 
 def retrieve_stack_settings():
     """
     Reads settings from Stack clients
     """
-
     # Import stack gateway module only when needed to avoid import issues/
     # potentially unnecessary installation of py4jps StackClients resource
-    from .stack_gateway import stackClientsGw
+    from agent.utils.stack_gateway import stackClientsGw
 
     # Create module views to relevant Stack clients
     stackClientsView = stackClientsGw.createModuleView()
@@ -55,5 +54,4 @@ def retrieve_stack_settings():
     return DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 
 
-# Retrieve settings from Stack clients when module is imported
 DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT = retrieve_stack_settings()

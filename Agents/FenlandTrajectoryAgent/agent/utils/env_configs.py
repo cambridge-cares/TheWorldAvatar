@@ -13,7 +13,6 @@ from py4jps import agentlogging
 
 from .stack_configs import retrieve_stack_settings
 
-
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
@@ -141,5 +140,48 @@ def retrieve_default_settings():
     logger.info(f"SPARQL_UPDATE_ENDPOINT: {SPARQL_UPDATE_ENDPOINT}")
 
 
-# Run when module is imported
-retrieve_default_settings()
+
+# def retrieve_default_settings():
+#     """
+#     Reads default settings from hardcoded values as global variables, 
+#     i.e. only global within this sub-module
+#     """
+#     global STACK_NAME, NAMESPACE, DATABASE, \
+#            DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
+#            OVERWRITE_FORECAST, ROUNDING
+
+#     # Hardcoded values for testing
+#     STACK_NAME = 'CEW-DT'
+#     NAMESPACE = 'gps_trajectory'
+#     DATABASE = 'postgres'
+#     DB_URL = ""
+#     DB_USER = "postgres"
+#     DB_PASSWORD = "1111"
+#     SPARQL_QUERY_ENDPOINT = "http://174.138.27.240:3840/blazegraph/namespace/gps_trajectory/sparql"
+#     SPARQL_UPDATE_ENDPOINT = SPARQL_QUERY_ENDPOINT
+#     OVERWRITE_FORECAST = True  # Assuming you want to maintain the default behavior for overwriting forecasts
+#     ROUNDING = 2  # Assuming default rounding to 2 decimal places is still appropriate
+
+#     # Logging the hardcoded settings for verification
+#     logger.info('Using hardcoded settings for testing:')
+#     logger.info(f"STACK_NAME: {STACK_NAME}")
+#     logger.info(f"NAMESPACE: {NAMESPACE}")
+#     logger.info(f"DATABASE: {DATABASE}")
+#     logger.info(f"DB_URL: {DB_URL}")
+#     logger.info(f"DB_USER: {DB_USER}")
+#     logger.info(f"DB_PASSWORD: {DB_PASSWORD}")
+#     logger.info(f"SPARQL_QUERY_ENDPOINT: {SPARQL_QUERY_ENDPOINT}")
+#     logger.info(f"SPARQL_UPDATE_ENDPOINT: {SPARQL_UPDATE_ENDPOINT}")
+#     logger.info(f"OVERWRITE_FORECAST: {OVERWRITE_FORECAST}")
+#     logger.info(f"ROUNDING: {ROUNDING}")
+
+#     # Ensure that the `if` block that checks the STACK_NAME and possibly calls retrieve_stack_settings is correctly adjusted
+#     # If you don't need to check for stack settings beyond the hardcoded values, you can remove or comment out this section.
+#     # if STACK_NAME != 'default_stack_name':
+#     #     db_url, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT = \
+#     #         retrieve_stack_settings(database=DATABASE, namespace=NAMESPACE)
+#     #     if DATABASE != '':
+#     #         DB_URL = db_url
+
+# # Run when module is imported
+# retrieve_default_settings()
