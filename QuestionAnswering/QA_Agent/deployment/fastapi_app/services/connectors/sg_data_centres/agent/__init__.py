@@ -36,7 +36,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
 SELECT ?DataCentre WHERE {{
-?Company ontocompany:hasDataCentre ?DataCentre .
+?Company ontocompany:isOwnerOf ?DataCentre .
 FILTER ( ?Company IN ({companies}) )
 }}""".format(
             companies=", ".join(["<{iri}>".format(iri=iri) for iri in company_iris])
@@ -52,7 +52,7 @@ PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 
 SELECT ?CompanyLabel WHERE {{
 VALUES ?DataCentre {{ <{iri}> }}
-?Company ontocompany:hasDataCentre ?DataCentre .
+?Company ontocompany:isOwnerOf ?DataCentre .
 ?Company rdfs:label ?CompanyLabel .
 }}""".format(
             iri=data_centre_iri
