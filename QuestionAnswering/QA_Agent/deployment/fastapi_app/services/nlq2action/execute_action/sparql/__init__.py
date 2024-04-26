@@ -5,10 +5,10 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends
 
-from services.core.link_entity import EntityLinker, get_entity_linker
+from services.link_entity import EntityLinker, get_entity_linker
 from services.kg import get_sgPlot_bgClient, get_sg_ontopClient
 from model.qa import QAData, QAStep
-from services.core.kg import KgClient
+from core.kg import KgClient
 from services.utils.collections import FrozenDict
 from services.utils.rdf import flatten_sparql_response
 from .postprocess import SparqlPostProcessor

@@ -4,10 +4,10 @@ from typing import Annotated, List, Optional
 
 from fastapi import Depends
 
-from services.core.parse import KeyAggregateParser
+from core.parse import KeyAggregateParser
 from model.qa import QAStep
 from services.connectors.sg_data_centres.model import DataCentreAttrKey
-from services.core.align_enum import EnumAligner
+from core.align_enum import EnumAligner
 from services.connectors.sg_data_centres.agent import (
     SGDataCentresAgent,
     get_sgDataCentres_agent,

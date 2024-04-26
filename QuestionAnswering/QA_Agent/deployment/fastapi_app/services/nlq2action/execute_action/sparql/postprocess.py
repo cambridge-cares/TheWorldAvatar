@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from services.core.link_entity import EntityLinker
+from services.link_entity import EntityLinker
 
 
 logger = logging.getLogger(__name__)

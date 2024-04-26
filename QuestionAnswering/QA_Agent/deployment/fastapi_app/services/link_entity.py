@@ -16,8 +16,8 @@ from pydantic.dataclasses import dataclass
 import regex
 
 from config import QAEngineName, get_qa_engine_name
-from services.core.embed import IEmbedder, get_embedder
-from services.core.redis import does_index_exist, get_redis_client
+from core.embed import IEmbedder, get_embedder
+from core.redis import does_index_exist, get_redis_client
 from services.utils.itertools_recipes import batched
 
 EntityIRI = str

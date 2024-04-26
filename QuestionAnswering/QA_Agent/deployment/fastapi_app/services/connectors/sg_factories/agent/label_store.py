@@ -5,9 +5,9 @@ from fastapi import Depends
 from redis import Redis
 
 from services.utils.bindings import agg_iri_label_pairs
-from services.core.kg import KgClient
-from services.core.label_store import LabelStore
-from services.core.redis import get_redis_client
+from core.kg import KgClient
+from core.label_store import LabelStore
+from core.redis import get_redis_client
 from services.kg import get_sg_ontopClient, get_sgCompany_bgClient
 
 

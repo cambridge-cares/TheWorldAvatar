@@ -3,11 +3,11 @@ from typing import Annotated, Any, Dict, List, Tuple
 
 from fastapi import Depends
 
-from services.core.link_entity import EntityLinker, get_entity_linker
+from services.link_entity import EntityLinker, get_entity_linker
 from services.utils.rdf import extract_name, flatten_sparql_response
 from model.aggregate import AggregateOperator
 from model.qa import QAData
-from services.core.kg import KgClient
+from core.kg import KgClient
 from services.kg import get_sg_ontopClient, get_sgPlot_bgClient
 from ..model import PlotNumAttrKey
 from .make_sparql import SGLandLotsSPARQLMaker, get_sgLandLots_sparqlMaker

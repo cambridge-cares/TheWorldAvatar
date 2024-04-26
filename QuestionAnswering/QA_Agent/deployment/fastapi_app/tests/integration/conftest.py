@@ -4,9 +4,9 @@ import pytest
 from redis import Redis
 from yarl import URL
 
-from services.core.embed import TritonMPNetEmbedder
-from services.core.func_call import OpenAIFuncCaller
-from services.core.parse import SchemaParser
+from core.embed import TritonMPNetEmbedder
+from core.func_call import OpenAIFuncCaller
+from core.parse import SchemaParser
 
 
 @pytest.fixture(scope="module")

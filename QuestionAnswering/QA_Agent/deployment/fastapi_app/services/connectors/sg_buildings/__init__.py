@@ -6,7 +6,7 @@ from typing import Annotated, List, Optional
 from fastapi import Depends
 
 from model.qa import QAStep
-from services.core.align_enum import EnumAligner
+from core.align_enum import EnumAligner
 from services.connectors.sg_buildings.model import BuildingAttrKey, PropertyUsage
 from services.connectors.agent_connector import AgentConnectorBase
 from .agent import SGBuildingsAgent, get_sgBuildings_agent

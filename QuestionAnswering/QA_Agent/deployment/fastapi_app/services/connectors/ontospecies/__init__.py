@@ -1,4 +1,3 @@
-from functools import cached_property
 import logging
 import time
 from typing import Annotated, List
@@ -9,10 +8,10 @@ import unit_parse
 
 from model.qa import QAStep
 from model.constraint import UnaryComparativeConstraint, CompoundComparativeConstraint
-from services.core.redis import get_redis_client
-from services.core.embed import IEmbedder, get_embedder
-from services.core.kg import KgClient
-from services.core.retrieve_docs import DocsRetriever
+from core.redis import get_redis_client
+from core.embed import IEmbedder, get_embedder
+from core.kg import KgClient
+from core.retrieve_docs import DocsRetriever
 from services.connectors.agent_connector import AgentConnectorBase
 from .constants import (
     SpeciesAttrKey,

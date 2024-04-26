@@ -1,4 +1,4 @@
-from services.core.label_store import IRIWithLabels, LabelStore
+from core.label_store import IRIWithLabels, LabelStore
 
 
 class TestLabelStore:

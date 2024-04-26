@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from model.constraint import ExtremeValueConstraint
-from services.core.parse import KeyAggregateParser, SchemaParser, get_schema_parser
+from core.parse import KeyAggregateParser, SchemaParser, get_schema_parser
 from .model import DataCentreAttrKey
 
 

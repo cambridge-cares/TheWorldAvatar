@@ -10,7 +10,7 @@ from model.constraint import (
     LogicalOperator,
     ComparativeOperator,
 )
-from services.core.kg import KgClient
+from core.kg import KgClient
 from fastapi_app.services.connectors.sg_land_lots.model import PlotAttrKey
 from services.connectors.sg_land_lots.agent import PlotConstraints, SGLandLotsAgent
 

@@ -7,7 +7,7 @@ from model.constraint import (
     CompoundComparativeConstraint,
     LogicalOperator,
 )
-from services.core.parse import SchemaParser, get_schema_parser
+from core.parse import SchemaParser, get_schema_parser
 
 
 class ConstraintParser:

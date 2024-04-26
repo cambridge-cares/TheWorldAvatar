@@ -7,10 +7,10 @@ from redis import Redis
 
 
 from model.qa import QAData
-from services.core.redis import get_redis_client
-from services.core.retrieve_docs import DocsRetriever
-from services.core.kg import KgClient
-from services.core.embed import IEmbedder, get_embedder
+from core.redis import get_redis_client
+from core.retrieve_docs import DocsRetriever
+from core.kg import KgClient
+from core.embed import IEmbedder, get_embedder
 from services.kg import get_sgPlot_bgClient
 from .node_store import NodeDoc, NodeStore
 

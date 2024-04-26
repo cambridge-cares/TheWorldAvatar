@@ -3,7 +3,7 @@ from typing import Annotated, List
 from fastapi import Depends
 
 
-from services.core.kg import KgClient
+from core.kg import KgClient
 from services.kg import get_ontospecies_kgClient
 
 

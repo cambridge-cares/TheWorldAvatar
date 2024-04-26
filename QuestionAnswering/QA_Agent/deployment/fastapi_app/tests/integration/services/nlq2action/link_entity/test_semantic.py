@@ -2,7 +2,7 @@ import pytest
 
 from services.nlq2action.link_entity.semantic import LexiconEntry, SemanticEntityLinker
 from services.nlq2action.retrieve import Nlq2ActionExample, Nlq2ActionRetriever
-from services.core.retrieve_docs import DocsRetriever
+from core.retrieve_docs import DocsRetriever
 
 
 @pytest.fixture(scope="class")
