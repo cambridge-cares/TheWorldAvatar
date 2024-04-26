@@ -1,46 +1,30 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, request, jsonify
 import os
+import sys
 import glob
-from agent.datainstantiation.gps_process_package import process_gps_csv_file, instantiate_gps_data
+import agent.datainstantiation.gps_client as gdi
 from agent.kgutils.utils import utils
 from agent.utils.baselib_gateway import jpsBaseLibGW
-from kgutils.kgclient import KGClient
-from kgutils.tsclient import TSClient
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.tsclient import TSClient
 from agent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
 
 # Blueprint configuration
 gps_instantiation_bp = Blueprint('gps_instantiation_bp', __name__)
 
 # Define the route for instantiating GPS data
-@gps_instantiation_bp.route('/instantiate_gps_data', methods=['GET'])
-def instantiate_gps_data_route():
-    try:
-        # Set the path to the target folder containing CSV files
-        script_directory = os.path.dirname(os.path.realpath(__file__))
-        target_folder_path = os.path.join(script_directory, '..', '..', 'datainstantiation', 'raw_data', 'gps_target_folder', '*.csv')
+@gps_instantiation_bp.route('/fenlandtrajectoryagent/process_and_instantiate', methods=['POST'])
+def process_and_instantiate():
+    file_path = request.json.get('file_path')
+    gps_object = gdi.process_gps_csv_file(file_path)
+    if not gps_object:
+        return jsonify({"error": "Failed to process file or file has missing/incomplete columns"}), 400
+    kg_client, ts_client, double_class = gdi.setup_clients()
+    result = gdi.instantiate_gps_data(gps_object, kg_client, ts_client, double_class)
+    if result is None:
+        return jsonify({"error": "Failed to instantiate GPS data"}), 500
+    return jsonify({"message": "GPS data successfully processed and instantiated"}), 200
 
-        # Find all CSV files in the target folder
-        csv_files = glob.glob(target_folder_path)
-        if not csv_files:
-            return jsonify({'message': 'No CSV files found in the specified directory'})
 
-        # Initialize database and RDF store
-        utils.create_postgres_db()  # Initialize PostgreSQL database
-        utils.create_blazegraph_namespace()  # Initialize Blazegraph namespace for RDF data
-
-        # Initialize KGClient and TSClient
-        kg_client = KGClient(utils.QUERY_ENDPOINT, utils.UPDATE_ENDPOINT)
-        ts_client = TSClient(kg_client, DB_URL, DB_USER, DB_PASSWORD)
-
-        # Process each CSV file
-        for csv_file in csv_files:
-            gps_object = process_gps_csv_file(csv_file)
-            instantiate_gps_data(gps_object, kg_client, ts_client)
-
-        return jsonify({'message': f'Successfully processed {len(csv_files)} GPS data files.'})
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-# Ensure to register the blueprint with your Flask app in the main app file
-# app.register_blueprint(gps_instantiation_bp)
+# if __name__ == '__main__':
+#     @gps_instantiation_bp.run(debug=True, host='0.0.0.0', port=5000)
