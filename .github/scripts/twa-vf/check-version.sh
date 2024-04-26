@@ -15,29 +15,55 @@ if [ "$VERSION" == "" ]; then
 fi
 echo "TWA-VF defined in file as: $VERSION"
 
-# Get the VERSION file from the main branch of the repo, check that this new version does not match
-MAIN_VERSION=$(curl -s "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/web/twa-vis-framework/library/VERSION")
-if [ "$VERSION" == "$MAIN_VERSION" ]; then
-	echo "Contents of VERSION file on this branch match that on the main branch!"
+VIP_VERSION=$(cat -s "./web/twa-vis-platform/resources/VERSION" 2>/dev/null)
+if [ "$VIP_VERSION" == "" ]; then
+	echo "The VERSION file of the TWA-ViP has no content!"
 	exit 1
 fi
-echo "Does not match version on main, which is: $MAIN_VERSION"
+echo "TWA-ViP defined in file as: $VIP_VERSION"
 
-# Check that there's no -SNAPSHOT in the version
+# Get the VERSION file from the main branch of the repo, check that this new version is updated ie does not match
+MAIN_VERSION=$(curl -s "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/web/twa-vis-framework/library/VERSION")
+if [ "$VERSION" == "$MAIN_VERSION" ]; then
+	echo "The TWA-VF VERSION file on this branch match that on the main branch! Update the VERSION file before merging."
+	exit 1
+fi
+echo "The updated version of the TWA-VF is: $MAIN_VERSION"
+
+VIP_MAIN_VERSION=$(curl -s "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/web/twa-vis-platform/resources/VERSION")
+if [ "$VIP_VERSION" == "$VIP_MAIN_VERSION" ]; then
+	echo "The TWA-ViP VERSION file on this branch match that on the main branch! Update the VERSION file before merging."
+	exit 1
+fi
+echo "The updated version of the TWA-ViP is: $VIP_MAIN_VERSION"
+
+# Check that there's no -SNAPSHOT in both version
 TOKEN="-SNAPSHOT"
 if [[ "$VERSION" == *"$TOKEN"* ]]; then
-  echo "Version still contains the -SNAPSHOT qualifier!"
+  echo "Remove the -SNAPSHOT qualifier in TWA-VF version file! "
   exit 1
 fi
-echo "Version does not contain -SNAPSHOT qualifier."
 
-# Check that the change log contains an entry for that version
+if [[ "$VIP_VERSION" == *"$TOKEN"* ]]; then
+  echo "Remove the -SNAPSHOT qualifier in TWA-ViP version file! "
+  exit 1
+fi
+
+# Check that the change log contains an entry for the updated versions
 CHANGELOG="./web/twa-vis-framework/library/CHANGELOG.md"
 TOKEN="# $VERSION"
 if ! grep -q "$TOKEN" "$CHANGELOG"; then
-	echo "Could not find corresponding node in CHANGELOG.md file!"
+	echo "Could not find corresponding node for the updated TWA-VF in CHANGELOG.md file!"
 	exit 1
 fi
-echo "CHANGELOG has node for the current version."
+
+VIP_CHANGELOG="./web/twa-vis-platform/resources/CHANGELOG.md"
+VIP_TOKEN="# $VIP_VERSION"
+if ! grep -q "$VIP_TOKEN" "$VIP_CHANGELOG"; then
+	echo "Could not find corresponding node for the updated TWA-ViP in CHANGELOG.md file!"
+	exit 1
+fi
+
+echo "CHANGELOG is updated for both visualisation tools."
 
 exit 0
