@@ -5,8 +5,7 @@ setup(
     version='0.1.0',  # Increment version as needed
     author='Jiying Chen',  
     author_email='jc2341@cam.ac.uk',  
-    package_dir={'': 'agent'},  
-    packages=find_packages(where='agent'),  # Automatically find all packages in 'agent'
+    packages=find_packages(),  # Automatically find all packages 
     install_requires=[
         'Flask==2.2.2',
         'pytz==2024.1',
@@ -24,8 +23,6 @@ setup(
         'matplotlib==3.6.2',
         'scipy==1.9.3',
         'seaborn==0.12.2',
-        'datetime==4.7',
-        'bs4==0.0.1',
         'beautifulsoup4==4.11.1',
         'urllib3==1.26.13',
         'PySimpleGUI==4.60.4',
