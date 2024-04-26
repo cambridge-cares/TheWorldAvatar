@@ -7,13 +7,13 @@ name: Check TWA-VF Version
 
 
 # Trigger this workflow during pull requests to the 'main' branch,
-# but ONLY when files within the TWA-VF source code are changed.
+# but ONLY when files within the TWA-ViP directory are changed.
 on:
   pull_request:
     branches:
       - main
     paths:
-      - web/twa-vis-framework/library/**
+      - web/twa-vis-platform/**
 
 
 # Job definitions
@@ -34,6 +34,6 @@ jobs:
       - name: Run version check script
         working-directory: ./
         run: |
-          chmod +x ./.github/scripts/twa-vf/check-version.sh
-          ./.github/scripts/twa-vf/check-version.sh
+          chmod +x ./.github/scripts/twa-vf/check-vip-version.sh
+          ./.github/scripts/twa-vf/check-vip-version.sh
   
