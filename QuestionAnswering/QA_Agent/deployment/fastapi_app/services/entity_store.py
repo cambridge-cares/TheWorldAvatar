@@ -71,8 +71,13 @@ class EntityStore:
                 doc = dict(
                     iri=entry.iri,
                     clsname=entry.clsname,
-                    label=regex.escape(entry.label, special_only=True),
-                    surface_forms=[regex.escape(sf) for sf in entry.surface_forms],
+                    label=regex.escape(
+                        entry.label, special_only=False, literal_spaces=True
+                    ),
+                    surface_forms=[
+                        regex.escape(sf, special_only=False, literal_spaces=True)
+                        for sf in entry.surface_forms
+                    ],
                     surface_forms_embedding=embedding,
                 )
                 pipeline.json().set(redis_key, "$", doc)
@@ -107,7 +112,7 @@ class EntityStore:
         redis_client: Redis,
         embedder: IEmbedder,
         lexicon: Iterable[LexiconEntry],
-        clsname2strategy: Dict[str, ELStrategy],
+        clsname2strategy: Dict[str, ELStrategy] = dict(),
     ):
         if not does_index_exist(redis_client, self.INDEX_NAME):
             self._insert_entries_and_create_index(
@@ -121,10 +126,14 @@ class EntityStore:
         self.clsname2strategy = clsname2strategy
 
     def link_exact(self, surface_form: str) -> List[str]:
-        """Performs exact matching over canonical labels."""
+        """Performs exact matching over canonical labels.
+        Note: This does not work if either the surface form or stored label contains forward slash.
+        """
         inverse_label_query = Query(
             '@label:"{label}"'.format(
-                label=regex.escape(surface_form, special_only=False)
+                label=regex.escape(
+                    surface_form, special_only=False, literal_spaces=True
+                )
             )
         ).return_field("$.iri", as_field="iri")
 
@@ -171,15 +180,14 @@ class EntityStore:
         # TODO: accumulate pages from Redis to ensure all labels are retrieved
         query = (
             Query(self._make_filter_query(clsname))
-            .return_field("$.iri", as_field="iri")
             .return_field("$.surface_forms", as_field="surface_forms_serialized")
             .paging(0, 10000)
         )
         res = self.redis_client.ft(self.INDEX_NAME).search(query)
-        # return [
-        #     sf for doc in res.docs for sf in json.loads(doc.surface_forms_serialized)
-        # ]
-        return [(doc.iri, json.loads(doc.surface_forms_serialized)) for doc in res.docs]
+        sfs = [
+            sf for doc in res.docs for sf in json.loads(doc.surface_forms_serialized)
+        ]
+        return list(set(sfs))
 
     def _lookup_iris(self, surface_form: str) -> List[str]:
         query = Query(
@@ -201,15 +209,7 @@ class EntityStore:
         k -= len(iris)
         if k >= 0:
             # TODO: use a strategy to retrieve a subset of surface forms rather than all
-            # choices = self._all_surface_forms(clsname)
-            iri_and_sfs = self._all_surface_forms(clsname)
-
-            sf2iris = defaultdict(list)
-            for iri, sfs in iri_and_sfs:
-                for sf in sfs:
-                    sf2iris[sf].append(iri)
-            choices = [sf for _, sfs in iri_and_sfs for sf in sfs]
-
+            choices = self._all_surface_forms(clsname)
             lst = rapidfuzz.process.extract(
                 surface_form,
                 choices,
@@ -218,9 +218,7 @@ class EntityStore:
                 processor=rapidfuzz.utils.default_process,
             )
             surface_forms = [sf for sf, _, _ in lst]
-            # iris.extend([iri for sf in surface_forms for iri in self._lookup_iris(sf)])
-            for sf in surface_forms:
-                iris.extend(sf2iris[sf])
+            iris.extend([iri for sf in surface_forms for iri in self._lookup_iris(sf)])
 
         return list(set(iris))
 

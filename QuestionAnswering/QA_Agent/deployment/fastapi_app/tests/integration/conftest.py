@@ -13,7 +13,7 @@ from core.parse import SchemaParser
 def redis_client():
     client = Redis(os.getenv("TEST_REDIS_HOST", "localhost"))
     yield client
-    # client.flushdb()
+    client.flushdb()
 
 
 @pytest.fixture(scope="module")
