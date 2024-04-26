@@ -13,7 +13,7 @@ from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
 from agent.flaskapp import create_app
 # Adjust the import path based on your project structure
-from agent.datainstantiation.data_instantiation import main as instantiate_gps_data
+from agent.datainstantiation.GPS_data_instantiation import main as instantiate_gps_data
 
 # Initialise background scheduler and add a recurring background task
 # Here, you can define how often you want your data instantiation process to run
