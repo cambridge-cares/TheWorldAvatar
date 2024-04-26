@@ -3,6 +3,7 @@ from rdflib.plugins.stores.sparqlstore import SPARQLStore
 import os
 import json
 import requests
+from tqdm import tqdm
 
 class BuildKGIndex:
   
@@ -34,7 +35,6 @@ class BuildKGIndex:
             ?property != rdfs:label
             )
     }
-    LIMIT 10
     """
     
     try:
@@ -46,16 +46,19 @@ class BuildKGIndex:
         # Send the SPARQL query to the endpoint
         response = requests.post(endpoint_url, data={"query": sparql_query}, headers=headers)
 
+        
         # Check if the request was successful (status code 200)
         if response.status_code == 200:
             # Parse the JSON response
             json_response = response.json()
+            
+            progress_bar = tqdm(total=len(json_response["results"]["bindings"]), desc="Processing triples", unit="triple")
             # Process the results
             for binding in json_response["results"]["bindings"]:
                 class_uri = binding["class"]["value"]
                 property_uri = binding["property"]["value"]
                 
-                print(f"Class: {class_uri}, Property: {property_uri}")
+                # print(f"Class: {class_uri}, Property: {property_uri}")
                 
                 # Check if class_uri and property_uri are not empty
                 if not class_uri or not property_uri:
@@ -72,6 +75,11 @@ class BuildKGIndex:
                 # Append filename to the list of filenames for property_uri
                 if endpoint_url not in self.cp_index[class_uri][property_uri]:
                   self.cp_index[class_uri][property_uri].append(endpoint_url)
+                  
+                # Update progress bar for each triple processed
+                progress_bar.update(1)
+                
+            progress_bar.close()
         else:
             print("Error:", response.status_code, response.text)
             
