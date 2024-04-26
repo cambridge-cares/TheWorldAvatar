@@ -15,9 +15,28 @@ The platform offers a web map and dashboard tool for data exploration and trend 
 
 Users can navigate the platform by clicking on buttons or the navigation bar at the top of the screen.
 
+<figure style="text-align:center;">
+    <img src="/images/defaults/help/return.svg" width="20" height="20">
+    <figcaption style="font-size:0.8rem">Fig 1a: Button to return to previous page</figcaption>
+</figure>
+
+<figure style="text-align:center;">
+    <img src="/images/defaults/help/navbar.svg" width="300" height="30">
+    <figcaption style="font-size:0.8rem">Fig 1b: Navigation bar at top of the screen</figcaption>
+</figure>
+
 ### Map exploration
 
 Interaction is enabled for mouse or pointing device, but keyboard shortcuts are not supported at the time of writing. The user can pan by holding the left mouse button, rotate by holding the right mouse button, and zoom using the scroll wheel.
+
+<figure style="text-align: center;">
+    <div>
+        <img src="/images/defaults/help/pan.svg" width="150" height="150">
+        <img src="/images/defaults/help/rotate.svg" width="150" height="150">
+        <img src="/images/defaults/help/zoom.svg" width="150" height="150">
+    </div>
+    <figcaption style="font-size:0.8rem">Fig 2: Mouse controls</figcaption>
+</figure>
 
 Additionally, an information panel containing the map layers, legend, and feature information is available at the left hand side of the screen. The visibility of map layers can be toggled. Users can also switch between the metadata and time series data for each feature if available.
 
