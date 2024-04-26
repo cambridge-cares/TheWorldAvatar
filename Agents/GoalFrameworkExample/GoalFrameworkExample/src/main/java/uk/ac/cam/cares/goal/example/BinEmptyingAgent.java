@@ -96,6 +96,7 @@ public class BinEmptyingAgent extends DerivationAgent  {
 
     private void callActuator(String goal){
             JSONObject requestParams = new JSONObject();
+            requestParams.put()
             try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
                 try (CloseableHttpResponse httpResponse = httpClient.execute(new HttpPost(InitialiseInstances.baseURL+Actuator.URL_ACTUATOR))) {
                     if (httpResponse.getStatusLine().getStatusCode() != 200) {

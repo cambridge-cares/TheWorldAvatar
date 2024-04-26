@@ -61,16 +61,16 @@ public class InitialiseInstances extends JPSAgent{
 			 */
 
 			// record the IRIs of the created instances to link them later
-			String input = sparqlClient.createInputData(sparqlClient.BinInput);
+			String input_iri = sparqlClient.createInputData(sparqlClient.BinInput);
 
-			// attach timestamp to input
-			devClient.addTimeInstance(input);
+			// attach timestamp to input_iri
+			devClient.addTimeInstance(input_iri);
 
-			// the timestamp added using addTimeInstance is 0, this will ensure that the input is current
-			devClient.updateTimestamps(Arrays.asList(input));
-			createInputTimeSeries(input, timeSeriesClient);
-			LOGGER.info("Created input <" + input + ">");
-			InstancesDatabase.Input = input;
+			// the timestamp added using addTimeInstance is 0, this will ensure that the input_iri is current
+			devClient.updateTimestamps(Arrays.asList(input_iri));
+			createInputTimeSeries(input_iri, timeSeriesClient);
+			LOGGER.info("Created input_iri <" + input_iri + ">");
+			InstancesDatabase.Input = input_iri;
 
 			// register ontoagent instances in triple store
 			String weightRdfType = SparqlClient.getRdfTypeString(SparqlClient.Weight);
@@ -85,7 +85,7 @@ public class InitialiseInstances extends JPSAgent{
 			sparqlClient.createRangeCondition(goalRange_iri,"100","0");
 
 			//Create ontoagent instances for Derivations
-			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(goalRangeType,input), Arrays.asList(desiredStateType));
+			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(goalRangeType, binInputRdfType,weightRdfType), Arrays.asList(desiredStateType));
 
 			//create derivation
 			//Create sumvalue_iri
@@ -94,10 +94,10 @@ public class InitialiseInstances extends JPSAgent{
 			String desiredValue = sparqlClient.addValueInstance(desiredValue_property, 50);
 
 			//create goal
-			String goal_binemptyingagent = goalClient.createGoalForNewInfo(binemptying_agent_iri, binemptying_agent_url, goalRange_iri, input, desiredValue_property);
+			String goal_binemptyingagent = goalClient.createGoalForNewInfo(binemptying_agent_iri, binemptying_agent_url, goalRange_iri, input_iri, desiredValue_property);
 
 			//create derivation
-			String derived_desiredValue = devClient.createDerivation(Arrays.asList(desiredValue_property,desiredValue), binemptying_agent_iri, Arrays.asList(input,goalRange_iri));
+			String derived_desiredValue = devClient.createDerivation(Arrays.asList(desiredValue_property,desiredValue), binemptying_agent_iri, Arrays.asList(input_iri,goalRange_iri));
 
 
 			/**
