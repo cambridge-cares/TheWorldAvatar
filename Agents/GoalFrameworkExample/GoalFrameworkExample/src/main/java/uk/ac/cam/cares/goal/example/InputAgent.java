@@ -8,6 +8,8 @@ import java.util.Random;
 
 import javax.servlet.annotation.WebServlet;
 
+import org.apache.logging.log4j.CloseableThreadContext;
+import org.eclipse.rdf4j.query.algebra.Str;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -24,6 +26,8 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 @WebServlet(urlPatterns = {"/InputAgent"}) 
 public class InputAgent extends JPSAgent {
 	private static final long serialVersionUID = 1L;
+    private static String input_type;
+    private final String INPUT_KEY = "input";
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -32,8 +36,24 @@ public class InputAgent extends JPSAgent {
         SparqlClient sparqlClient = new SparqlClient(storeClient);
         DerivationClient devClient = new DerivationClient(storeClient, InitialiseInstances.goalInstanceBaseURL);
 
-        if (InstancesDatabase.Input == null) {
-            InstancesDatabase.Input = sparqlClient.getInputIRI();
+        String input_iri;
+
+
+
+        this.input_type = requestParams.getString(INPUT_KEY);
+
+        if (InstancesDatabase.Input == null || InstancesDatabase.InputTruck ==null) {
+            InstancesDatabase.Input = sparqlClient.getInputIRI(sparqlClient.BinInput);
+            InstancesDatabase.InputTruck = sparqlClient.getInputIRI(sparqlClient.TruckInput);
+        }
+
+        if (input_type.equals("truck")){
+             input_iri = InstancesDatabase.InputTruck;
+        } else if (input_type.equals("bin")) {
+            input_iri = InstancesDatabase.Input;
+        }else
+        {
+            return new JSONObject().put("status", "Wrong input type given");
         }
 
 
@@ -46,12 +66,13 @@ public class InputAgent extends JPSAgent {
         List<List<?>> values = new ArrayList<>();
         List<Integer> value_column = Arrays.asList(rand.nextInt(1000) + 1);
         values.add(value_column);
-        TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(InstancesDatabase.Input), values);
+
+        TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(input_iri), values);
 
         tsClient.addTimeSeriesData(ts);
 
-        devClient.updateTimestamps(Arrays.asList(InstancesDatabase.Input));
+        devClient.updateTimestamps(Arrays.asList(input_iri));
 
-        return new JSONObject().put("status", "Updated <" + InstancesDatabase.Input + ">");
+        return new JSONObject().put("status", "Updated <" + input_iri + ">");
 	}
 }

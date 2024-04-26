@@ -28,20 +28,20 @@ import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-@WebServlet(urlPatterns = {BinEmptyingAgent.URL_BINEMPTYINGAGENT})
-public class BinEmptyingAgent extends DerivationAgent  {
+@WebServlet(urlPatterns = {TruckEmptyingAgent.URL_TRUCKEMPTYINGAGENT})
+public class TruckEmptyingAgent extends DerivationAgent  {
 
     private static final long serialVersionUID = 1L;
-    public static final String URL_BINEMPTYINGAGENT = "/BinEmptyingAgent";
-    private static final Logger LOGGER = LogManager.getLogger(BinEmptyingAgent.class);
+    public static final String URL_TRUCKEMPTYINGAGENT = "/TruckEmptyingAgent";
+    private static final Logger LOGGER = LogManager.getLogger(TruckEmptyingAgent.class);
 
 
     TripleStoreClientInterface storeClient;
     SparqlClient sparqlClient;
 
     GoalClient goalClient;
-    public BinEmptyingAgent() {
-        LOGGER.info("BinEmptyingAgent is initialised.");
+    public TruckEmptyingAgent() {
+        LOGGER.info("TruckEmptyingAgent is initialised.");
     }
 
 
@@ -59,6 +59,7 @@ public class BinEmptyingAgent extends DerivationAgent  {
     public void processRequestParameters (DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 
         TimeSeriesClient<Instant> timeSeriesClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+
         String range_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.GoalRange)).get(0);
         String realstate_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Weight)).get(0);
         String goal_iri = goalClient.getInputIRIGivenGoalRangeIRI(range_iri);
@@ -81,12 +82,12 @@ public class BinEmptyingAgent extends DerivationAgent  {
 
         if (realStateValue<maxvalue && realStateValue>minvalue)
         {
-            res_msg = "Bin do nothing";
+            res_msg = "Truck do nothing";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, oldDesiredState_value));
             LOGGER.info(res_msg);
         }
         else{
-            res_msg = "Bin do something";
+            res_msg = "Truck do something";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, 0));
             LOGGER.info(res_msg);
             callActuator(goal_iri);
@@ -95,24 +96,24 @@ public class BinEmptyingAgent extends DerivationAgent  {
     }
 
     private void callActuator(String goal){
-            JSONObject requestParams = new JSONObject();
-            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-                try (CloseableHttpResponse httpResponse = httpClient.execute(new HttpPost(InitialiseInstances.baseURL+Actuator.URL_ACTUATOR))) {
-                    if (httpResponse.getStatusLine().getStatusCode() != 200) {
-                        String msg = "Failed to update goal <" + goal + "> with original request: "
-                                + requestParams;
-                        String body = EntityUtils.toString(httpResponse.getEntity());
-                        LOGGER.error(msg);
-                        throw new JPSRuntimeException(msg + " Error body: " + body);
-                    }
-                    String response = EntityUtils.toString(httpResponse.getEntity());
-                    LOGGER.debug("Obtained http response from agent: " + response);
+        JSONObject requestParams = new JSONObject();
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            try (CloseableHttpResponse httpResponse = httpClient.execute(new HttpPost(InitialiseInstances.baseURL+Actuator.URL_ACTUATOR))) {
+                if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                    String msg = "Failed to update goal <" + goal + "> with original request: "
+                            + requestParams;
+                    String body = EntityUtils.toString(httpResponse.getEntity());
+                    LOGGER.error(msg);
+                    throw new JPSRuntimeException(msg + " Error body: " + body);
                 }
-            } catch (Exception e) {
-                LOGGER.error("Failed to update goal <" + goal + "> with original request: " + requestParams, e);
-                throw new JPSRuntimeException("Failed to update goal <" + goal + "> with original request: "
-                        + requestParams, e);
+                String response = EntityUtils.toString(httpResponse.getEntity());
+                LOGGER.debug("Obtained http response from agent: " + response);
             }
+        } catch (Exception e) {
+            LOGGER.error("Failed to update goal <" + goal + "> with original request: " + requestParams, e);
+            throw new JPSRuntimeException("Failed to update goal <" + goal + "> with original request: "
+                    + requestParams, e);
         }
+    }
 
 }

@@ -31,10 +31,14 @@ public class InitialiseInstances extends JPSAgent{
 
 	private static String binemptying_agent_url = baseURL + BinEmptyingAgent.URL_BINEMPTYINGAGENT;
 
+	private static String truckemptying_agent_iri = SparqlClient.namespace + "truckemptying_agent";
+
+	private static String truckemptying_agent_url = baseURL + TruckEmptyingAgent.URL_TRUCKEMPTYINGAGENT;
 
 	public static final String goalInstanceBaseURL = "http://goalframeworkexample.com/triplestore/repository/";
 
-	public static final String goal_key = "goal";
+	public static final String bin_goal_key = "bin_goal";
+	public static final String truck_goal_key = "truck_goal";
 
 	@Override
 		public JSONObject processRequestParameters (JSONObject requestParams)
@@ -51,8 +55,13 @@ public class InitialiseInstances extends JPSAgent{
 			sparqlClient.clearKG();
 			LOGGER.info("Instances deleted");
 
+
+			/**
+			 * Create Goal and Derivation for Bins
+			 */
+
 			// record the IRIs of the created instances to link them later
-			String input = sparqlClient.createInputData();
+			String input = sparqlClient.createInputData(sparqlClient.BinInput);
 
 			// attach timestamp to input
 			devClient.addTimeInstance(input);
@@ -68,33 +77,68 @@ public class InitialiseInstances extends JPSAgent{
 			String truckRdfType = SparqlClient.getRdfTypeString(SparqlClient.Truck);
 			String goalRangeType = SparqlClient.getRdfTypeString(SparqlClient.GoalRange);
 			String desiredStateType = SparqlClient.getRdfTypeString(SparqlClient.Weight);
+//
+//			//Create goalRange_iri
+//			String goalRange_iri = sparqlClient.createGoalRangeIRI();
+//			//Create goalCondition
+//			sparqlClient.createRangeCondition(goalRange_iri,"100","0");
+//
+//			//Create ontoagent instances for Derivations
+//			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(goalRangeType,input), Arrays.asList(desiredStateType));
+//
+//			//create derivation
+//			//Create sumvalue_iri
+//			String desiredValue_property = sparqlClient.createDesiredValue();
+//			//Initialise sumvalue to be 0
+//			String desiredValue = sparqlClient.addValueInstance(desiredValue_property, 50);
+//
+//			//create goal
+//			String goal_binemptyingagent = goalClient.createGoalForNewInfo(binemptying_agent_iri, binemptying_agent_url, goalRange_iri, input, desiredValue_property);
+//
+//			//create derivation
+//			String derived_desiredValue = devClient.createDerivation(Arrays.asList(desiredValue_property,desiredValue), binemptying_agent_iri, Arrays.asList(input,goalRange_iri));
+//
+
+			/**
+			 * Create goal and derivation for truck
+			 */
+
+			// record the IRIs of the created instances to link them later
+			String inputTruck = sparqlClient.createInputData(sparqlClient.TruckInput);
+
+			// attach timestamp to inputTruck
+			devClient.addTimeInstance(inputTruck);
+
+			// the timestamp added using addTimeInstance is 0, this will ensure that the inputTruck is current
+			devClient.updateTimestamps(Arrays.asList(inputTruck));
+			createInputTimeSeries(inputTruck, timeSeriesClient);
+			LOGGER.info("Created inputTruck <" + inputTruck + ">");
+			InstancesDatabase.InputTruck = inputTruck;
 
 			//Create goalRange_iri
-			String goalRange_iri = sparqlClient.createGoalRangeIRI();
+			String truck_goalRange_iri = sparqlClient.createGoalRangeIRI();
 			//Create goalCondition
-			sparqlClient.createRangeCondition(goalRange_iri,"100","0");
+			sparqlClient.createRangeCondition(truck_goalRange_iri,"500","0");
 
 			//Create ontoagent instances for Derivations
-			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(goalRangeType,input), Arrays.asList(desiredStateType));
+			devClient.createOntoAgentInstance(truckemptying_agent_iri, truckemptying_agent_url, Arrays.asList(goalRangeType,inputTruck), Arrays.asList(desiredStateType));
 
 			//create derivation
 			//Create sumvalue_iri
-			String desiredValue_property = sparqlClient.createDesiredValue();
+			String truck_desiredValue_property = sparqlClient.createDesiredValue();
 			//Initialise sumvalue to be 0
-			String desiredValue = sparqlClient.addValueInstance(desiredValue_property, 50);
+			String truck_desiredValue = sparqlClient.addValueInstance(truck_desiredValue_property, 20);
 
 			//create goal
-			String goal_binemptyingagent = goalClient.createGoalForNewInfo(binemptying_agent_iri, binemptying_agent_url, goalRange_iri, input, desiredValue_property);
+			String goal_truckemptyingagent = goalClient.createGoalForNewInfo(truckemptying_agent_iri, truckemptying_agent_url, truck_goalRange_iri, inputTruck, truck_desiredValue_property);
 
-
-			String derived_desiredValue = devClient.createDerivation(Arrays.asList(desiredValue_property,desiredValue), binemptying_agent_iri, Arrays.asList(input,goalRange_iri));
-
-
-
+			//create derivation
+			String derived_truck_desiredValue = devClient.createDerivation(Arrays.asList(truck_desiredValue_property,truck_desiredValue), truckemptying_agent_iri, Arrays.asList(inputTruck,truck_goalRange_iri));
 
 
 			JSONObject response = new JSONObject();
-			response.put(goal_key,goal_binemptyingagent);
+//			response.put(bin_goal_key,goal_binemptyingagent);
+			response.put(truck_goal_key,goal_truckemptyingagent);
 			return response;
         }
 

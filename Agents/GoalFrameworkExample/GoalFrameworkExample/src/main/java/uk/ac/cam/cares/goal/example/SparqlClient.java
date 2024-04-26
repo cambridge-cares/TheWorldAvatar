@@ -47,6 +47,9 @@ public class SparqlClient {
 
     public static Iri Truck = p_namespace.iri("Truck");
 
+    public static Iri BinInput = p_namespace.iri("BinInput");
+    public static Iri TruckInput = p_namespace.iri("TruckInput");
+
     // property
     public static Iri hasValue = p_namespace.iri("hasValue");
     public static Iri numericalValue = p_namespace.iri("numericalValue");
@@ -76,12 +79,12 @@ public class SparqlClient {
     }
 
 
-    public String createInputData() {
+    public String createInputData(Iri inputRdfType) {
 
         String inputIRI = namespace + UUID.randomUUID().toString();
 
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(inputIRI).isA(Weight)).prefix(p_om_namespace).prefix(p_om_namespace);
+        modify.insert(iri(inputIRI).isA(Weight).andIsA(inputRdfType)).prefix(p_om_namespace).prefix(p_namespace);
 
         // create the instance on kg
         storeClient.executeUpdate(modify.getQueryString());
@@ -174,12 +177,12 @@ public class SparqlClient {
      * returns the input instance. There can only be one input instance at a time based on the way it is initialised
      * @return
      */
-    public String getInputIRI() {
+    public String getInputIRI(Iri inputRdfType) {
         SelectQuery query = Queries.SELECT();
         String queryKey = "input";
         Variable input = SparqlBuilder.var(queryKey);
 
-        GraphPattern queryPattern = input.isA(Weight);
+        GraphPattern queryPattern = input.isA(Weight).andIsA(inputRdfType);
 
         query.prefix(p_namespace).prefix(p_om_namespace).select(input).where(queryPattern);
 
