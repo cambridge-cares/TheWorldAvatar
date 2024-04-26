@@ -110,7 +110,9 @@ class SGLandLotsAgentConnector(AgentConnectorBase):
         logger.info("Align land use classification: " + land_use_type)
 
         timestamp = time.time()
-        candidates = self.entity_linker.link(land_use_type, "LandUseType")
+        candidates = self.entity_linker.link(
+            surface_form=land_use_type, clsname="LandUseType"
+        )
         latency = time.time() - timestamp
 
         labels = [self.entity_linker.lookup_label(iri) for iri in candidates]
