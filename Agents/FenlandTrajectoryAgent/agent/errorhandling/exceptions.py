@@ -3,3 +3,6 @@ class InvalidInput(Exception):
 
 class TSException(Exception):
     """Raise in case of exception when using the TimeSeriesClient."""
+
+class KGException(Exception):
+    """Raise in case of exception when executing SPARQL queries/updates."""
