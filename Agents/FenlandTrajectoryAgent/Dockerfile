@@ -1,6 +1,6 @@
 # Install the fenland_trajectory_agent agent in Docker container
 #==================================================================================================
-FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM ghcr.io/cambridge-cares/stack-client:1.27.1 as stackclients
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
