@@ -15,7 +15,8 @@
             "buildingidentificationagent",
             "carpark-agent",
             "osmagent",
-            "gfaagent"
+            "gfaagent",
+            "aqmesh-input-agent"
         ],
         "excludes": []
     },

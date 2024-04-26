@@ -11,7 +11,7 @@ At the moment, a working understanding of these two tools will suffice for the d
 ### Stack manager
 Recommended stack name: sg
 
-Important note: Instances where 'sg' is committed - [access-agent.json], [sg.json (manager)], [sg.json (uploader)], [client.properties]
+Important note: Instances where 'sg' is committed - [access-agent.json], [sg.json (manager)], [sg.json (uploader)], [client.properties (carpark)], [client.properties (aqmesh)]
 1) Add four secret files in [stack-manager-secrets]
     - geoserver_password
 	- postgis_password
@@ -78,6 +78,32 @@ curl -X POST http://localhost:3838/gfaagent/calculation
 ```
 Check contents of the table citydb.cityobject_genericattrib, there should be rows with attrname=GFA.
 
+## AQ mesh data
+Create a database in PostGIS called `aqmesh`.
+
+Requires a database and a Blazegraph namespace, both called `aqmesh`. The Blazegraph namespace should be created via the data uploader while uploading the aboxes.
+
+If they are not named `aqmesh`, [client.properties (aqmesh)] will have to be modified accordingly.
+
+Modify `db.password` in [client.properties].
+
+Modify `aqmesh.username` and `aqmesh.password` in [api.properties].
+
+Run the following request to start scheduled data retrieval, the request is also available at [aqmesh.http] to execute,
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"interval\":\"1\",\"timeunit\":\"hours\"}" http://localhost:3838/aqmesh-input-agent/retrieve
+```
+
+Run the following request to stop scheduled data retrieval, the request is also available at [aqmesh.http] to execute,
+```
+curl -X POST http://localhost:3838/aqmesh-input-agent/stopScheduler
+```
+
+Run the following request to instantiate geolocation, the request is also available at [aqmesh.http] to execute,
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"iri\":\"http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl/AQMesh123\",\"name\":\"AQMesh\"}" http://localhost:3838/aqmesh-input-agent/instantiateGeoLocation
+```
+
 ### GeoServer layer for buildings
 Currently the creation of the layer is not automated through the data uploader because it requires data from different sources (city furniture, heat emissions from companies etc.).
 
@@ -94,7 +120,7 @@ The script generates the corresponding colours for each value range (heat_emissi
 
 2) Colourbar for population density
 The script generates the corresponding colours for each value range (population_density_colours.txt) and the colourbar (population_density.png). The colour codes are used in [uk-population-style.sld].
- 
+
 
 [access-agent.json]: ./stack-manager/inputs/config/services/access-agent.json
 [sg.json (manager)]: ./stack-manager/inputs/config/sg.json
@@ -112,9 +138,13 @@ The script generates the corresponding colours for each value range (population_
 [jurong-live.http]: <./HTTP_requests/jurong-live.http>
 [mbs-live.http]: <./HTTP_requests/mbs-live.http>
 [dispersion-interactor.json]: ./stack-manager/inputs/config/services/dispersion-interactor.json
-[client.properties]: ./carpark_config/client.properties
+[client.properties (carpark)]: ./carpark_config/client.properties
+[client.properties (aqmesh)]: ./aqmesh_config/client.properties
 [cityfurniture-footprint-height.sql]: ./custom_sql_scripts/cityfurniture-footprint-height.sql
 [geoserver_layer.sql]: ./custom_sql_scripts/geoserver_layer.sql
 [colourbar.py]: ./colorbar_generator/colourbar.py
 [uk-population-style.sld]: ./stack-data-uploader/inputs/config/uk-population-style.sld
 [landplot_matching.http]: ./HTTP_requests/landplot_matching.http
+[aqmesh.http]: ./HTTP_requests/aqmesh.http
+[client.properties]: ./aqmesh_config/client.properties
+[api.properties]: ./aqmesh_config/api.properties
