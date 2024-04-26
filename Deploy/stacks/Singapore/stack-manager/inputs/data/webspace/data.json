@@ -518,7 +518,7 @@
                 },
                 {
                     "id": "AQMesh-layer",
-                    "name": "aqmesh",
+                    "name": "AQMesh sensor",
                     "source": "AQMesh-source",
                     "source-layer": "aqmesh",
                     "type": "symbol",
