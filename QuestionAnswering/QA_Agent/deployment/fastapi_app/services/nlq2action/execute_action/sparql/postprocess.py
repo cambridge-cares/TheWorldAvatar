@@ -110,8 +110,14 @@ class SparqlPostProcessor:
 
             values = []
             for token in tokens:
-                _values = self.entity_linker.link(token)
-                values.extend(_values)
+                if token.startswith("<") and token.endswith(">") and ":" in token:
+                    clsname, surface_form = token[1:-1].split(":", maxsplit=1)
+                    iris = self.entity_linker.link(
+                        surface_form=surface_form, clsname=clsname
+                    )
+                    values.extend("<{iri}>".format(iri=iri) for iri in iris)
+                else:
+                    values.append(token)
 
             values = " ".join(values)
             varnames.append(varname)

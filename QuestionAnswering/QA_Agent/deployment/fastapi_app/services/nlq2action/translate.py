@@ -45,6 +45,7 @@ Your task is to translate the following question to an executable action. Please
                 {"role": "system", "content": self.SYSTEM_MSG},
                 {"role": "user", "content": prompt},
             ],
+            temperature=0
         )
         action = json.loads(res.choices[0].message.content)
 

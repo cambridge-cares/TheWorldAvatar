@@ -65,9 +65,9 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
             )
         )
 
-        query = self.PREFIXES + query
+        prefixed_query = self.PREFIXES + query
         timestamp = time.time()
-        res = self.ns2kg[action.namespace].query(query)
+        res = self.ns2kg[action.namespace].query(prefixed_query)
         latency = time.time() - timestamp
         steps.append(
             QAStep(

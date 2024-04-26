@@ -58,7 +58,7 @@ const globalState = (function () {
 })()
 
 /* 
-------------------------------
+------------------------------.
 API calls
 ------------------------------
 */
@@ -110,6 +110,11 @@ function renderDataTable(vars, bindings, id, containerElem) {
             if (typeof valueset[varname] !== "string") {
                 cell_content = JSON.stringify(cell_content)
             }
+            cell_content = cell_content.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
             content += `<td>${cell_content}</td>`
         })
         content += "</tr>"
@@ -140,6 +145,11 @@ function renderBootstrapTable(vars, bindings, id, containerElem) {
             if (typeof valueset[varname] !== "string") {
                 cell_content = JSON.stringify(cell_content)
             }
+            cell_content = cell_content.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
             content += `<td>${cell_content}</td>`
         })
         content += "</tr>"
