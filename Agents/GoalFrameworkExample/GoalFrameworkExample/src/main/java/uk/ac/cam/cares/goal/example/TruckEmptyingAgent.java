@@ -61,7 +61,7 @@ public class TruckEmptyingAgent extends DerivationAgent  {
         TimeSeriesClient<Instant> timeSeriesClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 
         String range_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.GoalRange)).get(0);
-        String realstate_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Weight)).get(0);
+        String realstate_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.TruckInput)).get(0);
         String goal_iri = goalClient.getInputIRIGivenGoalRangeIRI(range_iri);
 
         Integer realStateValue = (timeSeriesClient.getLatestData(realstate_iri)).getValuesAsInteger(realstate_iri).get(0);
