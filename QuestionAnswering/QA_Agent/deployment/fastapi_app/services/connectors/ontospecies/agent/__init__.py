@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from model.qa import QAData
 from model.constraint import CompoundComparativeConstraint
-from services.core.kg import KgClient
+from core.kg import KgClient
 from services.kg import get_ontospecies_kgClient
 from ..constants import (
     SpeciesAttrKey,

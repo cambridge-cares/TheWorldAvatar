@@ -3,9 +3,9 @@ from fastapi import Depends
 from redis import Redis
 
 
-from services.core.embed import IEmbedder, get_embedder
-from services.core.redis import get_redis_client
-from services.core.align_enum import EnumAligner
+from core.embed import IEmbedder, get_embedder
+from core.redis import get_redis_client
+from core.align_enum import EnumAligner
 from .model import FactoryIndustryKey, FactoryNumAttrKey, Industry
 
 def get_factoryIndustryKey_aligner(

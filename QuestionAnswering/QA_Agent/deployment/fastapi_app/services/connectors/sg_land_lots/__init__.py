@@ -5,10 +5,10 @@ from typing import Annotated, List, Optional, Tuple
 from fastapi import Depends
 
 from model.qa import QAStep
-from services.core.align_enum import BiEnumAligner
-from services.core.parse import KeyAggregateParser
+from core.align_enum import BiEnumAligner
+from core.parse import KeyAggregateParser
 from services.connectors.agent_connector import AgentConnectorBase
-from services.core.link_entity import EntityLinker, get_entity_linker
+from services.link_entity import EntityLinker, get_entity_linker
 from .model import PlotCatAttrKey, PlotNumAttrKey
 from .agent import SGLandLotsAgent, get_sgLandLots_agent
 from .parse import get_plotAttr_aggParser

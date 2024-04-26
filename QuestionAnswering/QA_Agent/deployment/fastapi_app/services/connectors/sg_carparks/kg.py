@@ -1,7 +1,7 @@
 from functools import cache
 import os
 
-from services.core.kg import KgClient
+from core.kg import KgClient
 
 
 @cache

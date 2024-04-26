@@ -4,8 +4,8 @@ from typing import Annotated, List, Optional
 from fastapi import Depends
 
 from model.qa import QAData
-from services.core.kg import KgClient
-from services.core.link_entity import EntityLinker, get_entity_linker
+from core.kg import KgClient
+from services.link_entity import EntityLinker, get_entity_linker
 from services.kg import get_sg_ontopClient
 from services.utils.rdf import extract_name, flatten_sparql_response
 from .make_sparql import SGBuildingsSPARQLMaker

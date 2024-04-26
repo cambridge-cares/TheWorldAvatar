@@ -5,8 +5,8 @@ from yarl import URL
 from model.constraint import ExtremeValueConstraint
 from model.qa import QAData
 from model.aggregate import AggregateOperator
-from services.core.label_store import LabelStore
-from services.core.kg import KgClient
+from core.label_store import LabelStore
+from core.kg import KgClient
 from services.connectors.sg_factories.model import (
     FactoryNumAttrKey,
     Industry,

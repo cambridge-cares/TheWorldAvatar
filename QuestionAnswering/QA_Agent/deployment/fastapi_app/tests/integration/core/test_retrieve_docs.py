@@ -1,5 +1,5 @@
 import pytest
-from services.core.retrieve_docs import DocsRetriever
+from core.retrieve_docs import DocsRetriever
 
 
 @pytest.fixture(scope="class")

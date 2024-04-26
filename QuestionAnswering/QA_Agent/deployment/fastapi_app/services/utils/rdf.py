@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from services.core.label_store import LabelStore
+from core.label_store import LabelStore
 
 
 def extract_name(iri: str):

@@ -7,9 +7,9 @@ from fastapi import Depends
 from model.constraint import ExtremeValueConstraint
 from model.aggregate import AggregateOperator
 from model.qa import QAData
-from services.core.link_entity import EntityLinker, get_entity_linker
+from services.link_entity import EntityLinker, get_entity_linker
 from services.utils.rdf import flatten_sparql_response
-from services.core.kg import KgClient
+from core.kg import KgClient
 from services.kg import get_sg_ontopClient
 from ..model import FactoryAttrKey, FactoryNumAttrKey, Industry
 from .make_sparql import SGFactoriesSPARQLMaker, get_sgFactories_sparqlmaker

@@ -3,10 +3,10 @@ from typing import Annotated, List, Tuple
 from fastapi import Depends
 from redis import Redis
 
-from services.core.embed import IEmbedder, get_embedder
-from services.core.redis import get_redis_client
-from services.core.kg import KgClient
-from services.core.retrieve_docs import DocsRetriever
+from core.embed import IEmbedder, get_embedder
+from core.redis import get_redis_client
+from core.kg import KgClient
+from core.retrieve_docs import DocsRetriever
 from services.kg import get_ontospecies_kgClient
 
 

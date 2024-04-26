@@ -5,7 +5,7 @@ from typing import Annotated, Generic, Type, TypeVar
 from fastapi import Depends
 
 from model.aggregate import AggregateOperator
-from services.core.func_call import IFuncCaller, get_func_caller
+from core.func_call import IFuncCaller, get_func_caller
 
 
 class SchemaParser:

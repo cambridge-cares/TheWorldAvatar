@@ -1,4 +1,3 @@
-from functools import cached_property
 from typing import Callable, Generic, Iterable, List, Optional, TypeVar, Union
 
 import numpy as np

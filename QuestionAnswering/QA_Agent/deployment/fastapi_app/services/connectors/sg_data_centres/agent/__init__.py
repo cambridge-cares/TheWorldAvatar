@@ -5,10 +5,10 @@ from fastapi import Depends
 
 from model.qa import QAData
 from model.aggregate import AggregateOperator
-from services.core.link_entity import EntityLinker, get_entity_linker
+from services.link_entity import EntityLinker, get_entity_linker
 from services.utils.rdf import flatten_sparql_response
-from services.core.kg import KgClient
-from services.core.label_store import LabelStore
+from core.kg import KgClient
+from core.label_store import LabelStore
 from services.kg import get_sg_ontopClient
 from services.connectors.sg_companies.agent.label_store import (
     get_sgCompanies_labesStore,

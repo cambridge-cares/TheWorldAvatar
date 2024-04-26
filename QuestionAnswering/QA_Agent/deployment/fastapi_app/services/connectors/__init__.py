@@ -7,7 +7,7 @@ from functools import cache
 from fastapi import Depends
 
 from model.qa import QAStep
-from services.core.func_call import IFuncCaller, get_func_caller
+from core.func_call import IFuncCaller, get_func_caller
 from services.support_data import DataSupporter
 from .agent_connector import AgentConnectorBase
 from .retrieval import (

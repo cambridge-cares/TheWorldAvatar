@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from services.core.parse import (
+from core.parse import (
     KeyAggregateParser,
     SchemaParser,
     get_schema_parser,

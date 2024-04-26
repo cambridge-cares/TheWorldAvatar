@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import Depends
 from redis import Redis
 
-from services.core.kg import KgClient
-from services.core.redis import get_redis_client
-from services.core.label_store import LabelStore
+from core.kg import KgClient
+from core.redis import get_redis_client
+from core.label_store import LabelStore
 from services.utils.bindings import agg_iri_label_pairs
 from services.kg import get_sg_ontopClient
 

@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic.dataclasses import dataclass
 
 from services.utils.rdf import extract_name
-from services.core.kg import KgClient
+from core.kg import KgClient
 
 
 @dataclass
