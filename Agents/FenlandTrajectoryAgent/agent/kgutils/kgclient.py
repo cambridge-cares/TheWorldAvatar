@@ -8,7 +8,7 @@
 
 import json
 from py4jps import agentlogging
-from agent.errorhandling.exceptions import KGException
+from agent.errorhandling.exceptions import InvalidInput, TSException, KGException
 from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
 
 # Initialise logger
