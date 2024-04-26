@@ -3,7 +3,7 @@
 		"Name": "aermod-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "aermod-agent:1.6-dev-cleanup-dispersion-data-SNAPSHOT",
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.6-dev-cleanup-dispersion-data-SNAPSHOT",
 				"Env": [
 					"PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000/getAermodGeoJSON",
 					"AERMAP_EXE=/root/aermod/aermap",
@@ -26,7 +26,8 @@
 					"PARALLELISE_EMISSIONS_UPDATE=true",
 					"TARGET_EMISSION_VOLUME_FRACTION=0.001",
 					"SHIPS_LAYER_NAME=ships",
-					"NUMBER_OF_LAYERS=20"
+					"NUMBER_OF_LAYERS=20",
+					"IGNORE_BUILDINGS=false"
 				],
 				"Configs": [
 					{
