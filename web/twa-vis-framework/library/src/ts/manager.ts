@@ -56,6 +56,8 @@ class Manager {
      */
     private scenarioHandler: ScenarioHandler;
 
+    public selectScenarioResolved: boolean = false;
+
     /**
      * Optional callbacks to trigger once a singluar feature has been selected.
      */
@@ -747,7 +749,7 @@ class Manager {
         let scenarioDataset = Manager.SETTINGS.getSetting("scenarioDataset");
 
         if (this.scenarioHandler == null && scenarioURL != null) {
-            this.scenarioHandler = new ScenarioHandler(scenarioURL, scenarioDataset);
+            this.scenarioHandler = new ScenarioHandler(scenarioURL, scenarioDataset, this);
             scenarioButton.style.display = "block";
             return true;
         }
