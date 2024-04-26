@@ -10,10 +10,6 @@ from model.qa import QAStep
 from core.func_call import IFuncCaller, get_func_caller
 from services.support_data import DataSupporter
 from .agent_connector import AgentConnectorBase
-from .retrieval import (
-    RetrievalAgentConnector,
-    get_retrieval_agentConnector,
-)
 from .sg_buildings import (
     SGBuildingsAgentConnector,
     get_sgBuildlings_agentConnector,
@@ -97,9 +93,6 @@ class AgentConnectorMediator(DataSupporter):
 @cache
 def get_chemistry_agentMediator(
     func_call_predictor: Annotated[IFuncCaller, Depends(get_func_caller)],
-    retrieval_agent_connector: Annotated[
-        RetrievalAgentConnector, Depends(get_retrieval_agentConnector)
-    ],
     ontospecies_agent_connector: Annotated[
         OntoSpeciesAgentConnector,
         Depends(get_ontospecies_agentConnector),
@@ -107,16 +100,13 @@ def get_chemistry_agentMediator(
 ):
     return AgentConnectorMediator(
         func_call_predictor=func_call_predictor,
-        connectors=[retrieval_agent_connector, ontospecies_agent_connector],
+        connectors=[ontospecies_agent_connector],
     )
 
 
 @cache
 def get_singapore_agentMediator(
     func_call_predictor: Annotated[IFuncCaller, Depends(get_func_caller)],
-    retrieval_agent_connector: Annotated[
-        RetrievalAgentConnector, Depends(get_retrieval_agentConnector)
-    ],
     sg_land_lots_agent_connector: Annotated[
         SGLandLotsAgentConnector,
         Depends(get_sgLandLots_agentConnector),
@@ -143,7 +133,6 @@ def get_singapore_agentMediator(
     return AgentConnectorMediator(
         func_call_predictor=func_call_predictor,
         connectors=[
-            retrieval_agent_connector,
             sg_land_lots_agent_connector,
             sg_factories_agent_connector,
             sg_data_centres_agent_connector,
