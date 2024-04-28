@@ -6,7 +6,7 @@
 from flask import Blueprint, request, jsonify
 
 import agentlogging
-from agent.datainstantiation.readings import upload_all, upload_elec_data_to_KG, upload_gas_data_to_KG, upload_fuel_poverty_to_KG, upload_Geoinfo_to_KG, upload_hadUK_climate_to_KG
+from agent.datainstantiation.readings import *
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
@@ -26,7 +26,8 @@ def api_instantiate_electricity():
                         Provided arguments will be neglected.")
     try:
         # Download and instantiate
-        num_elec = upload_elec_data_to_KG()
+        data = retrieve_elec_data()
+        num_elec = upload_elec_data_to_KG(data)
         print(f'Number of LSOA area with instantiated Electricity consumption/meters :{num_elec}')
         return jsonify({'LSOA_with_electricity':num_elec})
 
@@ -45,7 +46,8 @@ def api_instantiate_gas():
                         Provided arguments will be neglected.")
     try:
         # Download and instantiate
-        num_gas = upload_gas_data_to_KG()
+        data = retrieve_gas_data()
+        num_gas = upload_gas_data_to_KG(data)
         print(f'Number of LSOA area with instantiated Gas consumption/meters/nonmeters :{num_gas}')
         return jsonify({'LSOA_with_gas':num_gas})
 
@@ -64,7 +66,8 @@ def api_instantiate_fuelpoverty():
                         Provided arguments will be neglected.")
     try:
         # Download and instantiate
-        num_fuelpoor = upload_fuel_poverty_to_KG()
+        data = retrieve_fuel_poverty_data()
+        num_fuelpoor = upload_fuel_poverty_to_KG(data)
         print(f'Number of LSOA area with instantiated Fuel Poverty :{num_fuelpoor}')
         return jsonify({'LSOA_with_fuelpoverty':num_fuelpoor})
 
@@ -102,7 +105,8 @@ def api_instantiate_shape():
                         Provided arguments will be neglected.")
     try:
         # Instantiate
-        num_shape = upload_Geoinfo_to_KG()
+        LSOA_codes, wkt_codes = retrieve_geo_data()
+        num_shape = upload_Geoinfo_to_KG(LSOA_codes, wkt_codes)
         print(f'Number of LSOA area with instantiated geometric shape data :{num_shape}')
         return jsonify({'LSOA_with_shape':num_shape})
 

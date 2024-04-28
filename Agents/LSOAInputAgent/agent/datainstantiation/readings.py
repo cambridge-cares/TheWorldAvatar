@@ -784,7 +784,7 @@ def upload_all(year: str = YEAR, query_endpoint: str = QUERY_ENDPOINT, update_en
     print("\nUploading the ONS geographic data:")
     logger.info("Uploading the ONS geographic data...")
     t1 = time.time()
-    LSOA_codes, wkt_codes = retrieve_geo_data(year)
+    LSOA_codes, wkt_codes = retrieve_geo_data()
     num_shape = upload_Geoinfo_to_KG(LSOA_codes, wkt_codes, query_endpoint, update_endpoint)
     print(f"Number of LOSA output area with instantiated ONS geographic data: {num_elec}")
     t2= time.time()
