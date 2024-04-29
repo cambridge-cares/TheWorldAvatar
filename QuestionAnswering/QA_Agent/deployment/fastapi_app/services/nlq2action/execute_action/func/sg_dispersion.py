@@ -1,19 +1,22 @@
+from functools import cache
 import logging
+import os
 import time
-from typing import List
+from typing import Annotated, List
 
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
 import requests
 from model.qa import QAData, QAStep
-from services.entity_store import EntityStore
-from services.feature_info_client import FeatureInfoClient
-from services.geocoding import IGeocoder
+from services.entity_store import EntityStore, get_entity_store
+from services.feature_info_client import FeatureInfoClient, get_featureInfoClient
+from services.geocoding import IGeocoder, get_geocoder
+from .base import Name2Func
 
 
 logger = logging.getLogger(__name__)
 
 
-class SGDispersionFuncExecutor:
+class SGDispersionFuncExecutor(Name2Func):
     def __init__(
         self,
         pollutant_conc_endpoint: str,
@@ -25,6 +28,13 @@ class SGDispersionFuncExecutor:
         self.geocoder = geocoder
         self.entity_store = entity_store
         self.feature_info_client = feature_info_client
+
+    def get_name2func(self):
+        return {
+            "get_pollutant_conc": self.get_pollutant_conc,
+            "lookup_ship_attributes": self.lookup_ship_attributes,
+            "lookup_ship_timeseries": self.lookup_ship_timeseries,
+        }
 
     def get_pollutant_conc(self, location: str):
         steps: List[QAStep] = []
@@ -206,3 +216,23 @@ class SGDispersionFuncExecutor:
         )
 
         return steps, data
+
+
+@cache
+def get_pollutantConc_endpoint():
+    return os.getenv("ENDPOINT_POLLUTANT_CONCENTRATIONS")
+
+
+@cache
+def get_sgDispersion_funcExecutor(
+    pollutant_conc_endpoint: Annotated[str, Depends(get_pollutantConc_endpoint)],
+    geocoder: Annotated[IGeocoder, Depends(get_geocoder)],
+    entity_store: Annotated[EntityStore, Depends(get_entity_store)],
+    feature_info_client: Annotated[FeatureInfoClient, Depends(get_featureInfoClient)],
+):
+    return SGDispersionFuncExecutor(
+        pollutant_conc_endpoint=pollutant_conc_endpoint,
+        geocoder=geocoder,
+        entity_store=entity_store,
+        feature_info_client=feature_info_client,
+    )

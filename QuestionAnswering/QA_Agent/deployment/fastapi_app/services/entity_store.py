@@ -270,7 +270,7 @@ def get_clsname2strategy(
 
 
 @cache
-def get_entity_linker(
+def get_entity_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     lexicon: Annotated[Tuple[LexiconEntry, ...], Depends(get_lexicon)],

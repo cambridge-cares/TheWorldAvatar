@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from model.qa import QAData
 from model.aggregate import AggregateOperator
-from services.entity_store import EntityStore, get_entity_linker
+from services.entity_store import EntityStore, get_entity_store
 from utils.rdf import flatten_sparql_response
 from core.kg import KgClient
 from core.label_store import LabelStore
@@ -146,7 +146,7 @@ VALUES ?DataCentre {{ <{iri}> }}
 def get_sgDataCentres_agent(
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
     company_label_store: Annotated[LabelStore, Depends(get_sgCompanies_labesStore)],
-    entity_linker: Annotated[EntityStore, Depends(get_entity_linker)],
+    entity_linker: Annotated[EntityStore, Depends(get_entity_store)],
     sparql_maker: Annotated[
         SGDataCentresSPARQLMaker, Depends(get_sgDataCentres_sparqlMaker)
     ],

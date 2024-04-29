@@ -5,14 +5,14 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends
 
-from services.entity_store import EntityStore, get_entity_linker
+from services.entity_store import EntityStore, get_entity_store
 from services.kg import get_sgCompany_bgClient, get_sgPlot_bgClient, get_sg_ontopClient
 from model.qa import QAData, QAStep
 from core.kg import KgClient
 from utils.collections import FrozenDict
 from utils.rdf import flatten_sparql_response
-from .postprocess import SparqlPostProcessor
 from ..model import SparqlAction
+from .postprocess import SparqlPostProcessor
 
 
 logger = logging.getLogger(__name__)
@@ -112,6 +112,6 @@ def get_ns2kg(
 @cache
 def get_sparqlAction_executor(
     ns2kg: Annotated[FrozenDict[str, KgClient], Depends(get_ns2kg)],
-    entity_linker: Annotated[EntityStore, Depends(get_entity_linker)],
+    entity_linker: Annotated[EntityStore, Depends(get_entity_store)],
 ):
     return SparqlActionExecutor(ns2kg=ns2kg, entity_linker=entity_linker)
