@@ -47,7 +47,7 @@ export function addSource(map: Map, source: DataSource) {
     if (!options["attribution"]) {
         options["attribution"] = "CMCL";
     }
-    options["attribution"] = "Powered by The World Avatar | " + (options["attribution"] as string);
+    options["attribution"] = '<a href="https://theworldavatar.io/" target = "_blank" title = "TWA" aria - label="TheWorldAvatar">The World Avatar &#8482;</a> | <a href="https://cmcl.io/" target = "_blank" title = "CMCL" aria - label="CMCL">'  + (options["attribution"] + " </a>" as string);
 
     // Have to cast to type specific object to meet Mapbox's API
     let mapboxObj: AnySourceData;
