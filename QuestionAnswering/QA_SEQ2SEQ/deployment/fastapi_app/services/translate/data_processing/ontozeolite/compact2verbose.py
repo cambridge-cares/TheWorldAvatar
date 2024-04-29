@@ -527,17 +527,17 @@ class OZCompact2VerboseConverter:
             return None
 
         """
-        ?Material zeo:hasGuestCompound ?Guest .
+        ?Material zeo:hasGuestComponent ?Guest .
         SERVICE <{ONTOSPECIES_ENDPOINT}> {
-            ?Guest rdfs:label ?GuestCompoundLabel
+            ?Guest rdfs:label ?GuestLabel
         }
         """
         vars = ["?Guest"]
         triples = [
-            TriplePattern.from_triple(subj, "zeo:hasGuestCompound", "?Guest"),
+            TriplePattern.from_triple(subj, "zeo:hasGuestComponent", "?Guest"),
         ]
         ontospecies_triples = [
-            TriplePattern.from_triple("?Guest", "rdfs:label", "?GuestCompoundLabel")
+            TriplePattern.from_triple("?Guest", "rdfs:label", "?GuestLabel")
         ]
         return vars, triples, ontospecies_triples
 
@@ -552,8 +552,8 @@ class OZCompact2VerboseConverter:
             return None
 
         """
-        ?Material zeo:hasGuestCompound ?Guest1 .
-        ?Material zeo:hasGuestCompound ?Guest2 .
+        ?Material zeo:hasGuestComponent ?Guest1 .
+        ?Material zeo:hasGuestComponent ?Guest2 .
         SERVICE <{ONTOSPECIES_ENDPOINT}> {
             ?Guest1 ?hasIdentifier1 [ a/rdfs:subClassOf os:Identifier ; os:value "H2O" ] .
             ?Guest2 ?hasIdentifier2 [ a/rdfs:subClassOf os:Identifier ; os:value "Cl-" ] .
@@ -567,7 +567,7 @@ class OZCompact2VerboseConverter:
             varnode = "?Guest" + str(i + 1)
             vars.append(varnode)
             triples.append(
-                TriplePattern.from_triple(subj, "zeo:hasGuestCompound", varnode)
+                TriplePattern.from_triple(subj, "zeo:hasGuestComponent", varnode)
             )
             ontospecies_triples.append(
                 TriplePattern.from_triple(
