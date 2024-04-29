@@ -1,8 +1,4 @@
 package uk.ac.cam.cares.goal.example;
-import java.time.Instant;
-import java.util.UUID;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -17,7 +13,6 @@ import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.json.JSONObject;
 import uk.ac.cam.cares.goal.actuator.Actuator;
-import uk.ac.cam.cares.goal.framework.Goal;
 import uk.ac.cam.cares.goal.framework.GoalClient;
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
@@ -27,6 +22,11 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import java.time.Instant;
+import java.util.UUID;
 
 @WebServlet(urlPatterns = {BinEmptyingAgent.URL_BINEMPTYINGAGENT})
 public class BinEmptyingAgent extends DerivationAgent  {

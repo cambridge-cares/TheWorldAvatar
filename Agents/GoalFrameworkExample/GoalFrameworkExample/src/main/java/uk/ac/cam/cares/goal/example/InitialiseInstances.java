@@ -87,9 +87,9 @@ public class InitialiseInstances extends JPSAgent{
 			devClient.createOntoAgentInstance(binemptying_agent_iri, binemptying_agent_url, Arrays.asList(goalRangeType, binInputRdfType,weightRdfType), Arrays.asList(desiredStateType));
 
 			//create derivation
-			//Create sumvalue_iri
+			//Create desiredValue_iri
 			String desiredValue_property = sparqlClient.createDesiredValue();
-			//Initialise sumvalue to be 0
+			//Initialise desiredValue to be 0
 			String desiredValue = sparqlClient.addValueInstance(desiredValue_property, 50);
 
 			//create goal
@@ -123,9 +123,9 @@ public class InitialiseInstances extends JPSAgent{
 			devClient.createOntoAgentInstance(truckemptying_agent_iri, truckemptying_agent_url, Arrays.asList(goalRangeType,truckInputRdfType,weightRdfType), Arrays.asList(desiredStateType));
 
 			//create derivation
-			//Create sumvalue_iri
+			//Create desiredValue_iri for truck
 			String truck_desiredValue_property = sparqlClient.createDesiredValue();
-			//Initialise sumvalue to be 0
+			//Initialise desiredValue for truck to be 0
 			String truck_desiredValue = sparqlClient.addValueInstance(truck_desiredValue_property, 20);
 
 			//create goal

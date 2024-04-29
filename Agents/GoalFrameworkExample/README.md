@@ -1,16 +1,18 @@
 # Goal Framework Example (Bin Related)
 
 ## Purpose
-This exercise is a modification from [DerivationExample (Synchronous)](../DerivationExample/) whereby the example demonstrates the usage of the derivation framework (DerivationInputs, DerivationOutputs, DerivationAgent, DerivationClient, and DerivationSparql class) from jps-base-lib. The purpose of this exercise to implement a simple example for BNL Use Case. 
+This exercise is an application of Derived Information Framework and Goal Framework.
+
 
 ## Setup
 This example uses a docker stack with three containers:
 
 1. derivationexample (containing the following servlets)
-    - DerivationExample/InitialiseInstances
-    - DerivationExample/InputAgent
-    - DerivationExample/SumValueAgent
-    - DerivationExample/TruckCountingAgent
+    - GoalFrameworkExample/InitialiseInstances
+    - GoalFrameworkExample/InputAgent
+    - GoalFrameworkExample/BinEmptyingAgent
+    - GoalFrameworkExample/TruckEmptyingAgent
+    - GoalFrameworkExample/Actuator
 2. postgres
 3. blazegraph
 
@@ -48,7 +50,7 @@ docker-compose up -d
 The default port numbers for the containers are:
 | container | port number |
 | --- | --- |
-| derivationexamplebnl | 8081 |
+| GoalFrameworkExample | 8081 |
 | blazegraph | 8889 |
 | postgres | 7432 |
 
@@ -57,50 +59,46 @@ Once the docker stack is up and running, you should be able to access the blazeg
 ## Logs
 By default, logs are written to `/root/.jps/` within the docker container. To copy this file into your local directory, run the following command in the terminal
 ```
-docker cp derivationexamplebnl:root/.jps/ .
+docker cp goalframeworkexample:root/.jps/ .
 ```
 
 ## Initialisation
 A more visual illustration can be found below:
+1) Goal Framework
+![Alt text](https://lucid.app/publicSegments/view/2db91170-c758-4c48-895b-54f94ef39185/image.png)
 
-![Alt text](https://lucid.app/publicSegments/view/2ca9228e-b5cf-4ec4-8bd0-4a65dfadba51/image.jpeg)
-
+2) Goal Framework Example
+![Alt text](https://lucid.app/publicSegments/view/cc671f70-a694-4eef-b737-e4efab0d7d01/image.png)
 Assuming the stack is up and running, the instances can be initialised by running the following command:
 ```
-curl http://localhost:8081/DerivationExample/InitialiseInstances
+curl http://localhost:8081/GoalFrameworkExample/InitialiseInstances
 ```
-If it is successful, you should receive a HTTP response with the IRIs of the newly created instances, e.g.
-```json
-{"input":"http://bnl_example#7f758542-fca1-4973-968c-0060b975335c","derivation of truck value":"http://derivationexample.com/triplestore/repository/Derivation_8d976d70-b231-4a02-8fd2-8140e33e7e14","truck value":"http://bnl_example#
-5792cb5e-7256-48a3-a871-fa07d96d8cde","sum value":"http://bnl_example#93bcd78a-11b8-48e6-ae23-785c1053b8ab","derivation of sum value":"http://derivationexample.com/triplestore/repository/Derivation_7085e7fd-f34d-47c7-9028-8f5accffcd89"}
 
+## Modifying the input instances
+Request Parameters
+`input`: Specify either `truck` or `bin` to indicate the type of input instances you want to modify.
+`value`: An integer representing the value to be added into the timeseries.
+
+This command adds a new timestamp and value into the specific timeseries instance of either the bin, or the truck.
 ```
-If this is not successful, it may be the case that the `derivationexamplebnl` container is still loading up, check the console of the container and ensure that the you see a line like this 
-```
-16-Aug-2021 17:03:05.847 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [3196] milliseconds
+curl "http://localhost:8081/GoalFrameworkExample/InputAgent?input=bin&value=400"
 ```
 
 ## Updating the derivations
-
-
+This command activates the update derivations to check whether the inputs of `truck` and `bin` are outdated and subsequently call the linked agents. 
+```
+curl http://localhost:8081/GoalFrameworkExample/UpdateDerivations
+```
 
 ## Shortcuts for developing this agent
 Docker shortcuts for spinning down and developing the container
 ```
+## Shortcut commands for debugging and rebuilding purposes
+## Spinning down the stack; Removing the image; Removing the data volumes (i.e., postgres_data, blazegraph_data); Rebuilding the image
 docker-compose down
 docker rmi goalframeworkexample:1.0.0
 docker volume remove postgres_data
 docker volume remove blazegraph_data
 
 docker-compose up -d
-```
-
-```
-curl http://localhost:8081/GoalFrameworkExample/InitialiseInstances
-curl "http://localhost:8081/GoalFrameworkExample/InputAgent?input=bin&value=400"
-curl http://localhost:8081/GoalFrameworkExample/UpdateDerivations
-
-curl http://localhost:8081/GoalFrameworkExample/InputAgent?input=truck
-
-
 ```
