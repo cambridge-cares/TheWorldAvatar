@@ -170,7 +170,11 @@ function renderTimeseriesGraphs(title_template, vars, bindings, container) {
             return {
                 type: "scatter",
                 mode: "lines",
-                name: vars.filter(key => !(key in ["timeseries", "key"])).map(key => binding[key]).join(", "),
+                name: vars.filter(key =>
+                    ["timeseries", "key"].every(bkey => key != bkey) &&
+                    TWA_ABOX_IRI_PREFIXES
+                        .every(abox_prefix => !binding[key].startsWith(abox_prefix))
+                ).map(key => binding[key]).join(", "),
                 x: binding["timeseries"].map(obs => obs[0]),
                 y: binding["timeseries"].map(obs => obs[1]),
             }

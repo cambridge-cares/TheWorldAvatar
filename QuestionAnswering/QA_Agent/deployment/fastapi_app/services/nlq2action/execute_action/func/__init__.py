@@ -15,7 +15,7 @@ class FuncActionExecutor:
         }
 
     def exec(self, action: FuncAction):
-        return self.name2func[action.name](action.args)
+        return self.name2func[action.name](**action.args)
 
 
 def get_funcAction_executor(

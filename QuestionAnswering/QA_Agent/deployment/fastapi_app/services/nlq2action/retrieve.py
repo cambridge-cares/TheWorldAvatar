@@ -113,7 +113,7 @@ class Nlq2ActionRetriever:
 
 def gen_nlq2action_examples(domain: str):
     for file in files("resources.examples." + domain).iterdir():
-        if file.is_file() and file.name.lower().endswith("json"):
+        if file.is_file() and file.name.lower().endswith("_examples.json"):
             for example in json.loads(file.read_text()):
                 yield Nlq2ActionExample(nlq=example["input"], action=example["output"])
 

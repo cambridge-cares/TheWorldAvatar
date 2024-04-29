@@ -6,5 +6,9 @@
     {
         "clsname": "Facility",
         "el_strategy": "fuzzy"
+    },
+    {
+        "clsname": "Ship",
+        "el_strategy": "fuzzy"
     }
 ]
