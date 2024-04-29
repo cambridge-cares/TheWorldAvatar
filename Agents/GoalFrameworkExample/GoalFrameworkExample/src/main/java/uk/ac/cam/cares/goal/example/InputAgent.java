@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
 import javax.servlet.annotation.WebServlet;
-
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -39,34 +37,32 @@ public class InputAgent extends JPSAgent {
         SparqlClient sparqlClient = new SparqlClient(storeClient);
         DerivationClient devClient = new DerivationClient(storeClient, InitialiseInstances.goalInstanceBaseURL);
 
+        //Declare local input_iri variable
         String input_iri;
 
         this.input_type = requestParams.getString(INPUT_KEY);
         this.input_value = requestParams.getInt(INPUT_NUMBER_KEY);
 
-        //Retrieve input IRI
+        //Retrieve input IRI from InstanceDatabase
         if (InstancesDatabase.Input == null || InstancesDatabase.InputTruck ==null) {
             InstancesDatabase.Input = sparqlClient.getInputIRI(sparqlClient.BinInput);
             InstancesDatabase.InputTruck = sparqlClient.getInputIRI(sparqlClient.TruckInput);
         }
-
         TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 
-        // add random value to value column
-        Random rand = new Random();
+        //Add value based on input type
         List<Integer> value_column;
         List<Instant> time_column = Arrays.asList(Instant.now());
 
-        if (input_type.equals(TRUCK_INSTANCE_KEY)){
-             input_iri = InstancesDatabase.InputTruck;
+        if(input_type.equals(TRUCK_INSTANCE_KEY)){
+            input_iri = InstancesDatabase.InputTruck;
             value_column = Arrays.asList(input_value);
-        } else if (input_type.equals(BIN_INSTANCE_KEY)) {
+        }else if (input_type.equals(BIN_INSTANCE_KEY)) {
             input_iri = InstancesDatabase.Input;
             value_column = Arrays.asList(input_value);
-        }else
-        {
+        }else{
             return new JSONObject().put("status", "Wrong input type given");
-        }
+            }
         List<List<?>> values = new ArrayList<>();
         values.add(value_column);
         TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(input_iri), values);

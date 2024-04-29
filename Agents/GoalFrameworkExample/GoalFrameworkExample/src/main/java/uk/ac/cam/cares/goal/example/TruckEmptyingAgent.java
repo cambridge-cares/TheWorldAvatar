@@ -35,7 +35,6 @@ public class TruckEmptyingAgent extends DerivationAgent  {
     public static final String URL_TRUCKEMPTYINGAGENT = "/TruckEmptyingAgent";
     private static final Logger LOGGER = LogManager.getLogger(TruckEmptyingAgent.class);
 
-
     TripleStoreClientInterface storeClient;
     SparqlClient sparqlClient;
 

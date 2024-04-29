@@ -34,17 +34,12 @@ public class BinEmptyingAgent extends DerivationAgent  {
     private static final long serialVersionUID = 1L;
     public static final String URL_BINEMPTYINGAGENT = "/BinEmptyingAgent";
     private static final Logger LOGGER = LogManager.getLogger(BinEmptyingAgent.class);
-
-
     TripleStoreClientInterface storeClient;
     SparqlClient sparqlClient;
-
     GoalClient goalClient;
     public BinEmptyingAgent() {
         LOGGER.info("BinEmptyingAgent is initialised.");
     }
-
-
     @Override
     public void init() throws ServletException {
         // initialise all clients
