@@ -97,7 +97,9 @@ docker-compose up -d
 
 ```
 curl http://localhost:8081/GoalFrameworkExample/InitialiseInstances
+curl http://localhost:8081/GoalFrameworkExample/InputAgent?input=bin
 curl http://localhost:8081/GoalFrameworkExample/UpdateDerivations
+
 curl http://localhost:8081/GoalFrameworkExample/InputAgent?input=truck
 
 

@@ -97,8 +97,15 @@ public class TruckEmptyingAgent extends DerivationAgent  {
 
     private void callActuator(String goal){
         JSONObject requestParams = new JSONObject();
+
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            try (CloseableHttpResponse httpResponse = httpClient.execute(new HttpPost(InitialiseInstances.baseURL+Actuator.URL_ACTUATOR))) {
+            //Actuator to remove weight from truck
+            requestParams.put(Actuator.FUNCTION_KEY,Actuator.FUNCTION_EMPTYTRUCK_VALUE);
+            HttpPost post = new HttpPost(InitialiseInstances.baseURL+Actuator.URL_ACTUATOR);
+            StringEntity stringEntity = new StringEntity(requestParams.toString(), ContentType.APPLICATION_JSON);
+            post.setEntity(stringEntity);
+
+            try (CloseableHttpResponse httpResponse = httpClient.execute(post)) {
                 if (httpResponse.getStatusLine().getStatusCode() != 200) {
                     String msg = "Failed to update goal <" + goal + "> with original request: "
                             + requestParams;
@@ -115,5 +122,4 @@ public class TruckEmptyingAgent extends DerivationAgent  {
                     + requestParams, e);
         }
     }
-
 }

@@ -94,26 +94,32 @@ public class BinEmptyingAgent extends DerivationAgent  {
         LOGGER.info("Created a new min value instance <" + desiredstate_iri + ">, and its value instance <" + value_iri + ">");
     }
 
-    private void callActuator(String goal){
-            JSONObject requestParams = new JSONObject();
-            requestParams.put()
-            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-                try (CloseableHttpResponse httpResponse = httpClient.execute(new HttpPost(InitialiseInstances.baseURL+Actuator.URL_ACTUATOR))) {
-                    if (httpResponse.getStatusLine().getStatusCode() != 200) {
-                        String msg = "Failed to update goal <" + goal + "> with original request: "
-                                + requestParams;
-                        String body = EntityUtils.toString(httpResponse.getEntity());
-                        LOGGER.error(msg);
-                        throw new JPSRuntimeException(msg + " Error body: " + body);
-                    }
-                    String response = EntityUtils.toString(httpResponse.getEntity());
-                    LOGGER.debug("Obtained http response from agent: " + response);
-                }
-            } catch (Exception e) {
-                LOGGER.error("Failed to update goal <" + goal + "> with original request: " + requestParams, e);
-                throw new JPSRuntimeException("Failed to update goal <" + goal + "> with original request: "
-                        + requestParams, e);
-            }
-        }
+    private void callActuator(String goal) {
 
+        JSONObject requestParams = new JSONObject();
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            //Add weight onto truck
+            requestParams.put(Actuator.FUNCTION_KEY,Actuator.FUNCTION_FILLTRUCK_VALUE);
+            HttpPost post = new HttpPost(InitialiseInstances.baseURL+Actuator.URL_ACTUATOR);
+            StringEntity stringEntity = new StringEntity(requestParams.toString(), ContentType.APPLICATION_JSON);
+            post.setEntity(stringEntity);
+
+            try (CloseableHttpResponse httpResponse = httpClient.execute(post)) {
+                if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                    String msg = "Failed to update goal <" + goal + "> with original request: "
+                            + requestParams;
+                    String body = EntityUtils.toString(httpResponse.getEntity());
+                    LOGGER.error(msg);
+                    throw new JPSRuntimeException(msg + " Error body: " + body);
+                }
+                String response = EntityUtils.toString(httpResponse.getEntity());
+                LOGGER.debug("Obtained http response from agent: " + response);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to update goal <" + goal + "> with original request: " + requestParams, e);
+            throw new JPSRuntimeException("Failed to update goal <" + goal + "> with original request: "
+                    + requestParams, e);
+        }
+    }
 }

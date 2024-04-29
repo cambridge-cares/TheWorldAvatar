@@ -59,7 +59,6 @@ public class InitialiseInstances extends JPSAgent{
 			/**
 			 * Create Goal and Derivation for Bins
 			 */
-
 			// record the IRIs of the created instances to link them later
 			String input_iri = sparqlClient.createInputData(sparqlClient.BinInput);
 

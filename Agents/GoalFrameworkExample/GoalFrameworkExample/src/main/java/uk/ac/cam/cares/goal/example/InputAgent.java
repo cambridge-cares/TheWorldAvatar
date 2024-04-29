@@ -23,11 +23,12 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  * @author Kok Foong Lee
  *
  */
-@WebServlet(urlPatterns = {"/InputAgent"}) 
+@WebServlet(urlPatterns = {InputAgent.URL_INPUTAGENT})
 public class InputAgent extends JPSAgent {
 	private static final long serialVersionUID = 1L;
     private static String input_type;
     private final String INPUT_KEY = "input";
+    public static final String URL_INPUTAGENT = "/InputAgent";
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -38,40 +39,40 @@ public class InputAgent extends JPSAgent {
 
         String input_iri;
 
-
-
         this.input_type = requestParams.getString(INPUT_KEY);
 
+        //Retrieve input IRI
         if (InstancesDatabase.Input == null || InstancesDatabase.InputTruck ==null) {
             InstancesDatabase.Input = sparqlClient.getInputIRI(sparqlClient.BinInput);
             InstancesDatabase.InputTruck = sparqlClient.getInputIRI(sparqlClient.TruckInput);
         }
 
-        if (input_type.equals("truck")){
-             input_iri = InstancesDatabase.InputTruck;
-        } else if (input_type.equals("bin")) {
-            input_iri = InstancesDatabase.Input;
-        }else
-        {
-            return new JSONObject().put("status", "Wrong input type given");
-        }
 
+        //
 
         TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 
         // add random value to value column
         Random rand = new Random();
+        List<Integer> value_column;
         List<Instant> time_column = Arrays.asList(Instant.now());
 
+        if (input_type.equals("truck")){
+             input_iri = InstancesDatabase.InputTruck;
+            value_column = Arrays.asList(rand.nextInt(1000) + 1);
+        } else if (input_type.equals("bin")) {
+            input_iri = InstancesDatabase.Input;
+            value_column = Arrays.asList(rand.nextInt(1000) + 1);
+        }else
+        {
+            return new JSONObject().put("status", "Wrong input type given");
+        }
         List<List<?>> values = new ArrayList<>();
-        List<Integer> value_column = Arrays.asList(rand.nextInt(1000) + 1);
         values.add(value_column);
-
         TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(input_iri), values);
-
         tsClient.addTimeSeriesData(ts);
-
         devClient.updateTimestamps(Arrays.asList(input_iri));
+
 
         return new JSONObject().put("status", "Updated <" + input_iri + ">");
 	}
