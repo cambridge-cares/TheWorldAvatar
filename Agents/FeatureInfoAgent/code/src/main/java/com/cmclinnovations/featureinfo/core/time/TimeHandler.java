@@ -373,6 +373,12 @@ public class TimeHandler {
                 return new ImmutablePair<>(boundOne, boundTwo);
             }
 
+            case SPECIFIED: {
+                Instant boundOne = classMatch.getTime();
+                Instant boundTwo = offsetTime(timeLimit * -1, timeUnit, boundOne);
+                return new ImmutablePair<>(boundOne, boundTwo);
+            }
+
             default:
                 return null;
         }

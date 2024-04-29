@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -52,6 +53,11 @@ public class ConfigEntry {
      * Time reference type (may be null).
      */
     private TimeReference timeReference;
+
+    /**
+     * Time reference (may be null).
+     */
+    private Instant time;
 
     /**
      * Time limit value (may be null).
@@ -120,6 +126,15 @@ public class ConfigEntry {
      */
     public TimeReference getTimeReference() {
         return this.timeReference;
+    }
+
+    /**
+     * Time reference.
+     * 
+     * @return Time reference.
+     */
+    public Instant getTime() {
+        return this.time;
     }
 
     /**
@@ -316,7 +331,20 @@ public class ConfigEntry {
             if (timeReference == null) {
                 entry.timeReference = TimeReference.NOW;
             } else {
-                entry.timeReference = TimeReference.valueOf(timeReference.toUpperCase());
+                entry.timeReference = TimeReference.valueOfLabel(timeReference.toUpperCase());
+                if (entry.timeReference == null) {
+                    try {
+                        entry.time = Instant.parse(timeReference);
+                    } catch (Exception ex) {
+                        throw new IllegalArgumentException(
+                                "timeReference is not set as a \"NOW\", \"LATEST\", \"FIRST\" nor can be parsed as an Instant.",
+                                ex);
+                    }
+                    entry.timeReference = TimeReference.SPECIFIED;
+                } else if (entry.timeReference == TimeReference.SPECIFIED) {
+                    throw new IllegalArgumentException(
+                            "timeReference is set as a \"SPECIFIED\" but now time specified.");
+                }
             }
 
             if (timeLimitUnit == null) {
