@@ -3,7 +3,7 @@ from typing import Annotated, Any, Dict, List, Tuple
 
 from fastapi import Depends
 
-from services.entity_store import EntityStore, get_entity_linker
+from services.entity_store import EntityStore, get_entity_store
 from utils.rdf import extract_name, flatten_sparql_response
 from model.aggregate import AggregateOperator
 from model.qa import QAData
@@ -84,7 +84,7 @@ class SGLandLotsAgent:
 def get_sgLandLots_agent(
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
     bg_client: Annotated[KgClient, Depends(get_sgPlot_bgClient)],
-    entity_linker: Annotated[EntityStore, Depends(get_entity_linker)],
+    entity_linker: Annotated[EntityStore, Depends(get_entity_store)],
     sparql_maker: Annotated[SGLandLotsSPARQLMaker, Depends(get_sgLandLots_sparqlMaker)],
 ):
     return SGLandLotsAgent(

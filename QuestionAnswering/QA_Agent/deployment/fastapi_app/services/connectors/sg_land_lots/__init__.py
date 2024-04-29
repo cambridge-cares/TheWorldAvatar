@@ -8,7 +8,7 @@ from model.qa import QAStep
 from core.align_enum import BiEnumAligner
 from core.parse import KeyAggregateParser
 from services.connectors.agent_connector import AgentConnectorBase
-from services.entity_store import EntityStore, get_entity_linker
+from services.entity_store import EntityStore, get_entity_store
 from .model import PlotCatAttrKey, PlotNumAttrKey
 from .agent import SGLandLotsAgent, get_sgLandLots_agent
 from .parse import get_plotAttr_aggParser
@@ -231,7 +231,7 @@ def get_sgLandLots_agentConnector(
     attr_key_aligner: Annotated[
         BiEnumAligner[PlotCatAttrKey, PlotNumAttrKey], Depends(get_plotAttrKey_aligner)
     ],
-    entity_linker: Annotated[EntityStore, Depends(get_entity_linker)],
+    entity_linker: Annotated[EntityStore, Depends(get_entity_store)],
     attr_agg_parser: Annotated[
         KeyAggregateParser[PlotNumAttrKey], Depends(get_plotAttr_aggParser)
     ],

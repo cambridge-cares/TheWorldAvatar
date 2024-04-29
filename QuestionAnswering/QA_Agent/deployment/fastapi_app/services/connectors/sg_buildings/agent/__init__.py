@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from model.qa import QAData
 from core.kg import KgClient
-from services.entity_store import EntityStore, get_entity_linker
+from services.entity_store import EntityStore, get_entity_store
 from services.kg import get_sg_ontopClient
 from utils.rdf import extract_name, flatten_sparql_response
 from .make_sparql import SGBuildingsSPARQLMaker
@@ -51,6 +51,6 @@ class SGBuildingsAgent:
 @cache
 def get_sgBuildings_agent(
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
-    entity_linker: Annotated[EntityStore, Depends(get_entity_linker)],
+    entity_linker: Annotated[EntityStore, Depends(get_entity_store)],
 ):
     return SGBuildingsAgent(ontop_client=ontop_client, entity_linker=entity_linker)
