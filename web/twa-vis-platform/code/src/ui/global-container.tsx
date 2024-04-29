@@ -9,6 +9,7 @@ import ContextMenu from './interaction/context-menu/context-menu';
 import Navbar from './navigation/navbar/navbar';
 import { reduxStore } from 'app/store';
 import { DefaultSettings } from 'types/settings';
+import Footer from './text/footer';
 
 // Incoming properties for global container
 type GlobalContainerProps = {
@@ -89,6 +90,7 @@ export default class GlobalContainer extends React.Component<
 
           <Konami action={this.setPopup} timeout={6000} resetDelay={1000} />
           {this.state.popup && <Trex callback={this.setPopup} />}
+          <Footer />
         </div>
       </Provider>
     );

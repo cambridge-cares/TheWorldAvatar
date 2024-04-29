@@ -4,7 +4,7 @@ This directory contains the source code, configuration files, and build-time res
 
 The TWA Visualisation Platform takes the form of a [Next.js](https://nextjs.org/) project written using [TypeScript](https://www.typescriptlang.org/), utilising both client and server-side codes. Next.js is a framework that sits atop the [React.js library](https://react.dev/); on top of the component-based UI offering from React, Next.js adds support for server-side code, custom routing, and update data fetching routines.
 
-This document is split into two key sections: [Architecture](#1-architecture) and [Local Development](#2-local-development-workflow).
+This document is split into three key sections: [Architecture](#1-architecture), [Style Guide](#2-style-guide) and [Local Development](#3-local-development-workflow).
 
 ## 1. Architecture
 
@@ -12,21 +12,23 @@ The code architecture adheres to industry-standard practices for Next.js and Rea
 
 The project structure should match the recommended Next.js project structure (you can read about that [here](https://nextjs.org/docs/getting-started/project-structure)), utilising the optional `src` directory. More details can be found on the Next.js website, but a brief rundown is presented below.
 
-* `src/`: Contains the application's source code, primarily in Typescript.
-  * `_tests/`: Jest based unit tests
-  * `app`: The app router directory contains publicly discoverable pages and API routes
-  * `io`: Logic classes for input/output handling
-  * `map`: Map container and their related utility methods
-  * `state`: State management container based on Redux to ensure consistent application behaviour
-  * `types`: Custom data types used in the project
-  * `ui`: Custom UI components
-  * `utils`: Common utilities
-* `.eslintrc.js`: Configuration for ESLint
-* `next-env.d.ts`: Exports Next.js types for the Typescript compiler
-* `next.config.js`: Configuration module for Next.js projects
-* `package.json`: Node project configuration file (also contains configuration for Jest)
-* `server.js`: Starts a custom HTTP server that allows hosting of additional static-resource directories
-* `tsconfig.json`: Configuration for the Typescript compiler
+- `src/`: Contains the application's source code, primarily in Typescript.
+  - `_tests/`: Jest based unit tests
+  - `app`: The app router directory contains publicly discoverable pages and API routes
+  - `io`: Logic classes for input/output handling
+  - `map`: Map container and their related utility methods
+  - `state`: State management container based on Redux to ensure consistent application behaviour
+  - `types`: Custom data types used in the project
+  - `ui`: Custom UI components
+  - `utils`: Common utilities
+- `.eslintrc.js`: Configuration for ESLint
+- `next-env.d.ts`: Exports Next.js types for the Typescript compiler
+- `next.config.js`: Configuration module for Next.js projects
+- `package.json`: Node project configuration file (also contains configuration for Jest)
+- `server.js`: Starts a custom HTTP server that allows hosting of additional static-resource directories
+- `tsconfig.json`: Configuration for the Typescript compiler
+
+CSS colors, font and icon sizes are standardised and available as variables in `src/ui/css/globals.css`. If you require additional colors or sizes, add them to the file. Having global css variables is preferable to accommodate dark and light themes while improving maintainence.
 
 ### 1.1 Routing
 
@@ -66,54 +68,106 @@ Next.js uses the `public` directory by default to house resources such as images
 
 The uploaded content provided by the deploying developer should match the directory structure below.
 
-* `config/`: Should contain config/settings files.
-  * `data.json`: Specifies data sources and layers to be mapped.
-  * `map-settings.json`: Non-data specific configuration for maps. The format is documented [here](../docs/map-settings.md)
-  * `ui-settings.json`: UI configuration settings, format is documented [here](../docs/ui-settings.json).
-* `images/`: Custom image files.
-* `optional-pages/`: Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
-* `style-overrides.css`: Optional CSS overrides.
+- `config/`: Should contain config/settings files.
+  - `data.json`: Specifies data sources and layers to be mapped.
+  - `map-settings.json`: Non-data specific configuration for maps. The format is documented [here](../docs/map-settings.md)
+  - `ui-settings.json`: UI configuration settings, format is documented [here](../docs/ui-settings.json).
+- `images/`: Custom image files.
+- `optional-pages/`: Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
+- `style-overrides.css`: Optional CSS overrides.
 
 ### 1.6 Reverse Proxy urls
+
 The default Next.js configuration is designed to function seamlessly when the base URL starts directly from the domain with no page paths. However, in cases where page paths are utilised (e.g., http://www.example.org/page/), as seen in stack deployment and reverse proxy scenarios, additional configuration is necessary for Next.js to operate. This includes specifying the `assetPrefix` option in the `next.config.js` file.
 
 To accommodate developers deploying applications to various subdomains and environments, this option within the platform is configured to retrieve an environment variable called `BASE_PATH`. If this variable is not set, the `assetPrefix` defaults to an empty string. It is advisable to define the `BASE_PATH` variable primarily when deploying in a stack or for containers utilising subdomains.
 
 It's important to note that this URL configuration impacts both routes and images referenced with relative paths within your Next.js application.
 
-## 2. Local Development Workflow
+## 2. Style Guide
 
-### 2.1 Requirements
+This guide outlines a set of standards and best practices to ensure consistency and maintainability in our codebase. While the codebase is still being developed and may not fully comply with the following standards, please follow the conventions stated here.
+
+### 2.1 File extensions:
+
+- The `.tsx` extension should be employed for files containing JSX, inclusive of React components.
+- The `.ts` extension should be employed for pure Typescript files for functions and constants.
+
+For example, `page.tsx` contains a JSX page render, and `json.ts` contains type definition for JSON objects.
+
+- The corresponding `.css` files should be placed directly with their associated component.
+
+### 2.2 Code conventions
+
+- Type definitions in the `type` folder should use `type` instead of `interface`.
+
+**React components**
+- Use functional components instead of class components for React Components.
+- Props for React components should use `interface` for type checking.
+
+```
+// Good
+interface ButtonProps {
+  text: string;
+  onClick: () => void;
+}
+
+function Button(props: ButtonProps) {
+  return <button onClick={onClick}>{text}</button>;
+};
+
+// Avoid
+type ButtonProps = {
+  text: string;
+  onClick: () => void;
+};
+
+class Button extends React.Component<ButtonProps> {
+  render() {
+    return <button onClick={this.props.onClick}>{this.props.text}</button>;
+  }
+}
+```
+
+### 2.3 Client-Side
+
+All client-side elements using relative pathing should be wrapped around the `formatAppUrl` method in `utils/client-utils.ts`. This is necessary to ensure that the elements will properly retrieve the url when reverse proxy is utilised.
+
+Additionally, reusable components are provided to facilitate this. For navigation, `AppLink` is available at `ui/navigation/link/link.tsx`. For graphics, import either `AppImage` or `IconComponent` from `ui/graphic/image/image.tsx` and `ui/graphic/icon/icon.tsx` respectively.
+
+## 3. Local Development Workflow
+
+### 3.1 Requirements
 
 Before attempting local development with the platform, the below software needs to be installed and configured.
 
-* Node.js & npm
-* `MAPBOX_USER` environment variable
-* `MAPBOX_API_KEY` environment variable
+- Node.js & npm
+- `MAPBOX_USER` environment variable
+- `MAPBOX_API_KEY` environment variable
 
 Note that the environment variables listed above are only needed during local development. In production, Docker secrets within The Stack will handle these.
 
 In addition to the above software requirements, it is also recommended that developers bring themselves up to date with the basics of the core technologies being utilised. The most critical for a basic understanding of the code are listed below.
 
-* Typescript
-  * [W3C's TypeScript Tutorial](https://www.w3schools.com/typescript/)
-  * [Other TypeScript Tutorials](https://www.typescripttutorial.net/)
-* React
-  * [React Quick Start](https://react.dev/learn)
-  * [Tutorial from tutorialspoint](https://www.tutorialspoint.com/reactjs/index.htm)
-* Next.js
-  * [Create a Next.js App](https://nextjs.org/learn-pages-router/basics/create-nextjs-app)
-  * [A Complete Beginner's Guide to Next.js](https://welearncode.com/beginners-guide-nextjs/)
+- Typescript
+  - [W3C's TypeScript Tutorial](https://www.w3schools.com/typescript/)
+  - [Other TypeScript Tutorials](https://www.typescripttutorial.net/)
+- React
+  - [React Quick Start](https://react.dev/learn)
+  - [Tutorial from tutorialspoint](https://www.tutorialspoint.com/reactjs/index.htm)
+- Next.js
+  - [Create a Next.js App](https://nextjs.org/learn-pages-router/basics/create-nextjs-app)
+  - [A Complete Beginner's Guide to Next.js](https://welearncode.com/beginners-guide-nextjs/)
 
-## 2.2 Installation
+## 3.2 Installation
 
 To install on the host machine, navigate to the `code` directory and run the `npm install` command. This will read the `package.json` file and install all required modules within a new `node_modules` directory (that should not be committed); this process may take several minutes.
 
-## 2.3 Configuration
+## 3.3 Configuration
 
 In order to ensure that the code runs as expected, set the contents of the `uploads` directory to `<root>\code\public\`.
 
-## 2.4 Execution
+## 3.4 Execution
 
 Once installed and the required configuration files are provided, the project can be run in development mode by using the `npm run dev` command, again from within the `code` directory.
 
