@@ -199,8 +199,6 @@ public class BuildingIdentificationAgent extends JPSAgent {
     /**
      * Checks validity of incoming request
      * 
-     * @param requestParams Request parameters as JSONObject
-     * @return Validity of request
      */
     @Override
     public boolean validateInput(JSONObject requestParams) {
@@ -296,22 +294,19 @@ public class BuildingIdentificationAgent extends JPSAgent {
      * Identifies the building whose envelope centroid is closest to the coordinates
      * of each point in the user-specified JSONArray.
      * 
-     * @param dbSrid: SRID used to store buildings data in citydb schema
      * 
-     * @return list of matchde building UUIDs
+     * For this function to work efficiently for large numbers of points,
+     * one must create a spatial index on footprint_geometry
+     * as follows:
      * 
-     *         For this function to work efficiently for large numbers of points,
-     *         one must create a spatial index on footprint_geometry
-     *         as follows:
+     * create index "building_footprint_index" on building_footprints
+     * using gist(footprint_geometry) ;
      * 
-     *         create index "building_footprint_index" on building_footprints
-     *         using gist(footprint_geometry) ;
-     * 
-     *         Also, the <-> operator should be used to find nearest neighbours.
-     *         Using ST_DISTANCE causes POSTGIS to execute a sequential scan
-     *         on the envelope column of cityobject, which can increase the running
-     *         time by a few orders of magnitude. See
-     *         https://www.crunchydata.com/blog/a-deep-dive-into-postgis-nearest-neighbor-search
+     * Also, the <-> operator should be used to find nearest neighbours.
+     * Using ST_DISTANCE causes POSTGIS to execute a sequential scan
+     * on the envelope column of cityobject, which can increase the running
+     * time by a few orders of magnitude. See
+     * https://www.crunchydata.com/blog/a-deep-dive-into-postgis-nearest-neighbor-search
      * 
      * 
      */
@@ -526,89 +521,6 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
     DSLContext getContext(Connection conn) {
         return DSL.using(conn, SQLDialect.POSTGRES);
-    }
-
-    @Deprecated
-    public void updateBuildings(Map<Integer, String> buildings, String tableName) {
-
-        try (Connection conn = rdbStoreClient.getConnection();
-                Statement stmt = conn.createStatement();) {
-
-            String sqlString = String.format("ALTER TABLE %s " +
-                    "DROP COLUMN IF EXISTS %s ", tableName, BUILDINGS_COLUMN);
-            stmt.executeUpdate(sqlString);
-
-            sqlString = String.format("ALTER TABLE %s " +
-                    " ADD COLUMN %s character varying (10000) ", tableName, BUILDINGS_COLUMN);
-
-            stmt.executeUpdate(sqlString);
-
-            sqlString = String.format(" UPDATE %s SET %s  = CASE  ", tableName, BUILDINGS_COLUMN);
-
-            StringBuilder update = new StringBuilder(sqlString);
-
-            update.append(System.lineSeparator());
-
-            for (Map.Entry<Integer, String> entry : buildings.entrySet()) {
-                String val = String.format("WHEN ogc_fid = %d THEN '%s' ", entry.getKey(), entry.getValue());
-                update.append(val);
-                update.append(System.lineSeparator());
-            }
-
-            update.append("END;");
-
-            stmt.executeUpdate(update.toString());
-
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
-        }
-
-    }
-
-    @Deprecated
-    public void updateMultipleBuildings(String userTable, String tableName, Map<Integer, List<String>> buildings) {
-
-        userTable = userTable.replace(".", "_");
-
-        try (Connection conn = rdbStoreClient.getConnection();
-                Statement stmt = conn.createStatement();) {
-
-            String sqlString = String.format(" DROP TABLE IF EXISTS %s ;", tableName);
-            stmt.executeUpdate(sqlString);
-
-            sqlString = String.format("CREATE TABLE %s (" +
-                    " \"%s_ogc_fid\" bigint NOT NULL, " +
-                    " \"%s\" character varying (10000) ) ;", tableName, userTable, BUILDINGS_COLUMN);
-
-            stmt.executeUpdate(sqlString);
-
-            sqlString = String.format(" INSERT INTO %s (\"%s_ogc_fid\", \"%s\")  VALUES  ", tableName, userTable,
-                    BUILDINGS_COLUMN);
-
-            StringBuilder update = new StringBuilder(sqlString);
-
-            update.append(System.lineSeparator());
-
-            for (Map.Entry<Integer, List<String>> entry : buildings.entrySet()) {
-                List<String> iriList = entry.getValue();
-                iriList.stream().forEach(iri -> {
-                    String val = String.format("(%d, '%s'),", entry.getKey(), iri);
-                    update.append(val);
-                    update.append(System.lineSeparator());
-
-                });
-            }
-
-            String updateString = update.toString();
-            int lastIndex = updateString.lastIndexOf(",");
-            String finalString = updateString.substring(0, lastIndex);
-            finalString = finalString.concat(";");
-            stmt.executeUpdate(finalString);
-
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
-        }
-
     }
 
     /**
