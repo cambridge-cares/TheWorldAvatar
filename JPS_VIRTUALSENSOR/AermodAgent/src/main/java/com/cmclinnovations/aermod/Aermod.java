@@ -66,8 +66,8 @@ public class Aermod {
     private Path aermodDirectory;
     private Path rasterDirectory;
     private static final String AERMET_INPUT = "aermet.inp";
-    // this keeps 50 unique timesteps in the geoserver layers to keep performance
-    // reasonable
+    // this keeps the number of timesteps in the GeoServer layers to the number
+    // specified by NUMBER_OF_LAYERS
     String sqlCleanupTemplate = """
             DELETE FROM %s WHERE time NOT IN (
                 SELECT DISTINCT time
