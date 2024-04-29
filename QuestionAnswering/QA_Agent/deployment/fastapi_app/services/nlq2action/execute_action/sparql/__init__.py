@@ -68,6 +68,7 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
         )
 
         prefixed_query = self.PREFIXES + query
+        logger.info("Executing query at: " + self.ns2kg[action.namespace].sparql.endpoint)
         timestamp = time.time()
         res = self.ns2kg[action.namespace].query(prefixed_query)
         latency = time.time() - timestamp
