@@ -1,5 +1,15 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.1.0
+
+### Features
+
+* _Add ability to query for specific times.
+
+### Bug Fixes
+
+* _No bug_fixes present._
+
 # 3.0.1
 
 ### Features
