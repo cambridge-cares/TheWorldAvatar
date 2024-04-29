@@ -100,7 +100,7 @@
             "time": {
                 "queryFile": "aqmesh_time.sparql",
                 "database": "aqmesh",
-                "limit": 1,
+                "limit": 24,
                 "unit": "hours",
                 "reference": "latest"
             }
