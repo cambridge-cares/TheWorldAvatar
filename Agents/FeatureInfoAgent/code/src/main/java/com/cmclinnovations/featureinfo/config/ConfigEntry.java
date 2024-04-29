@@ -331,7 +331,7 @@ public class ConfigEntry {
             if (timeReference == null) {
                 entry.timeReference = TimeReference.NOW;
             } else {
-                entry.timeReference = TimeReference.valueOfLabel(timeReference.toUpperCase());
+                entry.timeReference = TimeReference.valueOfLabel(timeReference.toLowerCase());
                 if (entry.timeReference == null) {
                     try {
                         entry.time = Instant.parse(timeReference);
