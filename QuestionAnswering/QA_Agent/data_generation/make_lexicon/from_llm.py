@@ -38,7 +38,7 @@ if __name__ == "__main__":
     with open(args.filename, "r") as f:
         data = json.load(f)
 
-    class_data = data["classes"]
+    class_data = data.get("classes")
     instance_data = data["instances"]
 
     # If output JSONL file exists, filter input for those that have not been processed
@@ -65,17 +65,34 @@ if __name__ == "__main__":
                     k=args.surface_form_num,
                 )
 
+                print("Prompt:")
+                print(prompt)
+
+                expected_iris = set([row["iri"] for row in chunk])
+
                 try_num = 0
                 while try_num < 5:
                     try:
+                        print("try_num: " + str(try_num))
                         res = openai_client.chat.completions.create(
                             model=args.model,
                             messages=[{"role": "user", "content": prompt}],
                         )
                         items = json.loads(res.choices[0].message.content)
+
+                        actual_iris = set([item["iri"] for item in items])
+                        if actual_iris != expected_iris:
+                            raise ValueError(
+                                f"Output IRIs do not match input IRIs.\nInput IRIs:\n{expected_iris}\nOutput IRIs:\n{actual_iris}"
+                            )
+
                         break
-                    except:
+                    except Exception as e:
+                        print(e)
                         try_num += 1
+
+                if try_num >= 5:
+                    raise ValueError("Receive no valid JSON response after 5 tries.")
 
                 for item in items:
                     item = {
