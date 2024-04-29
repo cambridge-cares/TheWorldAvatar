@@ -2,7 +2,7 @@
 
 The `Fenland Trajectory Agent` is dedicated to process time series GPS data stored in the relational database, instantiate this data as triples based on relevant ontologies, and then upload the triples into the knowledge graph.
 
-Currently this agent is focusing on the data provided from Fenland Study to analyze the interaction between GPS trajectories and environmental features in the digital twin. The example data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample gps data.csv
+Currently, this agent is focusing on the data provided from Fenland Study to analyze the interaction between GPS trajectories and environmental features in the digital twin. The example data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample gps data.csv
 The data instatiated in the knowledge graph follows the ontology of device (ontodevice) https://www.theworldavatar.com/kg/ontodevice in the https://github.com/cambridge-cares/TheWorldAvatar. 
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager. `
 
