@@ -57,17 +57,26 @@ if __name__ == "__main__":
         openai_client = OpenAI(base_url=args.openai_base_url)
 
         with open(out_jsonl, "a+") as f:
-            for i in range(0, len(data), args.chunk_size):
+            for i in range(0, len(instance_data), args.chunk_size):
                 chunk = instance_data[i : i + args.chunk_size]
                 prompt = PROMPT_TEMPLATE.format(
                     class_data=json.dumps(class_data, indent=4),
                     instance_data=json.dumps(chunk, indent=4),
                     k=args.surface_form_num,
                 )
-                res = openai_client.chat.completions.create(
-                    model=args.model, messages=[{"role": "user", "content": prompt}]
-                )
-                items = json.loads(res.choices[0].message.content)
+
+                try_num = 0
+                while try_num < 5:
+                    try:
+                        res = openai_client.chat.completions.create(
+                            model=args.model,
+                            messages=[{"role": "user", "content": prompt}],
+                        )
+                        items = json.loads(res.choices[0].message.content)
+                        break
+                    except:
+                        try_num += 1
+
                 for item in items:
                     item = {
                         "iri": item["iri"],
