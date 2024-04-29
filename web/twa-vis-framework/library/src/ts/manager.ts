@@ -763,16 +763,7 @@ class Manager {
         if (this.scenarioHandler != null) {
             this.scenarioHandler.showSelector();
         }
-        let scenarioInnerChildren = Array.from(document.getElementById("scenario-inner").children);
-        for (let element of scenarioInnerChildren) {
-            if (element.id == this.scenarioHandler.selectedScenario) {
-                element.classList.add("current-scenario-element"); // style the current 
-            } else {
-                element.classList.remove("current-scenario-element");
-            }
-        }
     }
-
 
     /**
      * Selects and loads data from the input scenario.

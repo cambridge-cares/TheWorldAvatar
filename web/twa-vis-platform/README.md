@@ -45,4 +45,4 @@ If you are creating a custom visualisation service on the stack, please note to 
 
 Github Actions has been configured to automatically compile, build, and release the platform when the pull request has been merged. However, before merging the pull request, update the `CHANGELOG.md` and `VERSION` accordingly. Look at the [Wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Versioning) for the versioning format.
 
-Once merged, a release email will be sent to the mailing list based on the `CHANGELOG.md`.
+Once merged, a release email will be sent to the mailing list based on the `CHANGELOG.md`. 
