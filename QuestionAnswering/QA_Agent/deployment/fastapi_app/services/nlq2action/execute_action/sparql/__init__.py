@@ -6,7 +6,7 @@ from typing import Annotated, Dict, List
 from fastapi import Depends
 
 from services.entity_store import EntityStore, get_entity_linker
-from services.kg import get_sgPlot_bgClient, get_sg_ontopClient
+from services.kg import get_sgCompany_bgClient, get_sgPlot_bgClient, get_sg_ontopClient
 from model.qa import QAData, QAStep
 from core.kg import KgClient
 from utils.collections import FrozenDict
@@ -45,7 +45,9 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
 
     def __init__(self, ns2kg: Dict[str, KgClient], entity_linker: EntityStore):
         self.ns2kg = ns2kg
-        self.postprocessor = SparqlPostProcessor(entity_linker)
+        self.postprocessor = SparqlPostProcessor(
+            entity_linker, ns2uri={ns: kg.sparql.endpoint for ns, kg in ns2kg.items()}
+        )
         self.entity_linker = entity_linker
 
     def exec(self, action: SparqlAction):
@@ -99,8 +101,11 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
 def get_ns2kg(
     ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
     plot_client: Annotated[KgClient, Depends(get_sgPlot_bgClient)],
+    company_client: Annotated[KgClient, Depends(get_sgCompany_bgClient)],
 ):
-    return FrozenDict({"ontop": ontop_client, "plot": plot_client})
+    return FrozenDict(
+        {"ontop": ontop_client, "plot": plot_client, "company": company_client}
+    )
 
 
 @cache
