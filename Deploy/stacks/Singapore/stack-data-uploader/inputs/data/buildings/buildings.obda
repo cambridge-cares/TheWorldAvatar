@@ -71,12 +71,4 @@ mappingId	Building - LoDFootprint
 target		city:cityobject/{"id"} bldg:lod0FootPrint city:geometry/{"lod0_footprint_id"} . 
 source		SELECT "id", "lod0_footprint_id"
 			FROM "citydb"."building"
-
-mappingId   Building GFA
-target      city:cityobject/{id} plot:hasCalculatedGFA {realval}^^www:XMLSchema#double .
-source      SELECT id, realval FROM citydb.cityobject_genericattrib WHERE attrname='GFA'
-
-mappingId   landplot to buildings
-target      plot:{ogc_fid} plot:containsBuilding twa:Building/{building_uuid} .
-source      SELECT ogc_fid, building_uuid from landplot_buildings
 ]]

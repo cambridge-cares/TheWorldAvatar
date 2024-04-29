@@ -68,7 +68,7 @@ curl -X POST http://localhost:3838/carpark-agent/create
 ```
 
 ### GFA data
-Execute [landplot_matching.http] to match buildings with landplot. This should create a table public.matched_buildings, mapping ogc_fid of landplots to building_uui.
+Execute [landplot_matching.http] to match buildings with landplot. This should create a table public.landplot_buildings, mapping ogc_fid of landplots to building_uuid.
 
 Make sure ./gfa_config is populated with data. A copy of the data can be obtained from https://www.dropbox.com/scl/fo/9jl3cmee0h26uhm7zyy0f/h?rlkey=mm2wd0al9zrydqxrybbouxzun&dl=0 (only CARES members have access).
 
@@ -77,6 +77,8 @@ Execute the following request to the GFA agent
 curl -X POST http://localhost:3838/gfaagent/calculation
 ```
 Check contents of the table citydb.cityobject_genericattrib, there should be rows with attrname=GFA.
+
+Add contents of [gfa.obda] manually into the mapping file in the Ontop container. The mapping file is located in /ontop/ontop.obda.
 
 ## AQ mesh data
 Create a database in PostGIS called `aqmesh`.
@@ -149,3 +151,4 @@ The script generates the corresponding colours for each value range (population_
 [aqmesh.http]: ./HTTP_requests/aqmesh.http
 [client.properties]: ./aqmesh_config/client.properties
 [api.properties]: ./aqmesh_config/api.properties
+[gfa.obda]: ./gfa.obda
