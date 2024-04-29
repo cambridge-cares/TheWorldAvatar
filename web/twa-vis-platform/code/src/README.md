@@ -22,9 +22,10 @@ The `src` directory contains the core source code of the application, structured
 
 * `/utils`: A collection of utility functions that provide common functionalities used across the application includes date formatting, data transformations, or custom hooks.
 
-## UI 
+## UI
 
 UI components have been organised into the following directories for clarity:
+
 * `/css`: Contains the global css file.
 
 * `/graphic`: Contains any graphic or figure related component such as charts, icons, and tables.

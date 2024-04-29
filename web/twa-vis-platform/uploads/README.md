@@ -73,6 +73,7 @@ Icons on the map are shown by default in the layer tree. Additional legend items
 
 > [!NOTE]  
 > The comments seen below are for explanation purposes only. They are not valid JSON and should be removed.
+
 ```json
 {
   "legend": {
@@ -292,7 +293,7 @@ The following fields are supported, and must be added to the top of the file bef
 
 A sample markdown file for the landing page:
 
-```
+```markdown
 ---
 title: CReDo // Customisable
 slug: landing // This must always be set to landing for the landing page
