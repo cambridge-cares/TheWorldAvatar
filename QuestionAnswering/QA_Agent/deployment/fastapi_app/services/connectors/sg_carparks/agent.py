@@ -4,7 +4,7 @@ from fastapi import Depends
 from model.qa import QAData
 from utils.rdf import flatten_sparql_response
 from core.kg import KgClient
-from services.connectors.feature_info_client import (
+from services.feature_info_client import (
     FeatureInfoClient,
     get_featureInfoClient,
 )

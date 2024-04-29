@@ -1,4 +1,4 @@
-from services.connectors.sg_dispersion.geocoding import NominatimGeocoder, Place
+from services.geocoding import NominatimGeocoder, Place
 
 
 class TestNominatimGeocoder:
