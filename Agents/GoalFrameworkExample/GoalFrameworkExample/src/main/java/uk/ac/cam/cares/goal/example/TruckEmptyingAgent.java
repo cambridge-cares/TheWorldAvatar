@@ -82,12 +82,12 @@ public class TruckEmptyingAgent extends DerivationAgent  {
 
         if (realStateValue<maxvalue && realStateValue>minvalue)
         {
-            res_msg = "Truck operating weight is within range. Do nothing.";
+            res_msg = "<TRUCK> Truck operating weight is within range, do nothing.";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, oldDesiredState_value));
             LOGGER.info(res_msg);
         }
         else{
-            res_msg = "Truck operating weight is out of range. Empty bins.";
+            res_msg = "<TRUCK> Truck operating weight is out of range, call actuator to empty bins and truck.";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, 0));
             LOGGER.info(res_msg);
             callActuator(goal_iri);

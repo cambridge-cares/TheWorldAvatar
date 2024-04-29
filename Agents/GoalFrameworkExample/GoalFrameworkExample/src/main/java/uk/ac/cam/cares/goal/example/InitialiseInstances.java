@@ -68,7 +68,7 @@ public class InitialiseInstances extends JPSAgent{
 			// the timestamp added using addTimeInstance is 0, this will ensure that the input_iri is current
 			devClient.updateTimestamps(Arrays.asList(input_iri));
 			createInputTimeSeries(input_iri, timeSeriesClient);
-			LOGGER.info("Created input_iri <" + input_iri + ">");
+			LOGGER.info("Created bin input iri <" + input_iri + ">");
 			InstancesDatabase.Input = input_iri;
 
 			// register ontoagent instances in triple store
@@ -148,8 +148,8 @@ public class InitialiseInstances extends JPSAgent{
 			Random rand = new Random();
 			List<Instant> time_column = Arrays.asList(Instant.now());
 			List<List<?>> values = new ArrayList<>();
-			//Generate a random number between 1-1000
-			List<Integer> value_column = Arrays.asList(rand.nextInt(1000) + 1);
+			//Initialise with 0
+			List<Integer> value_column = Arrays.asList(0);
 			values.add(value_column);
 			TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(input_iri), values);
 

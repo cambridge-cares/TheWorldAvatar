@@ -81,12 +81,12 @@ public class BinEmptyingAgent extends DerivationAgent  {
 
         if (realStateValue<maxvalue && realStateValue>minvalue)
         {
-            res_msg = "Bin operating weight within range, nothing is done.";
+            res_msg = "<BIN> Bin operating weight within range, nothing is done.";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, oldDesiredState_value));
             LOGGER.info(res_msg);
         }
         else{
-            res_msg = "Bin operating weight is out of range. Calling actuator.";
+            res_msg = "<BIN> Bin operating weight is out of range, calls actuator.";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, 0));
             LOGGER.info(res_msg);
             callActuator(goal_iri);

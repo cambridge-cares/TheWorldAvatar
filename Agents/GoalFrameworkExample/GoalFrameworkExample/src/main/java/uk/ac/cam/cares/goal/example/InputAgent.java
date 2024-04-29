@@ -8,8 +8,6 @@ import java.util.Random;
 
 import javax.servlet.annotation.WebServlet;
 
-import org.apache.logging.log4j.CloseableThreadContext;
-import org.eclipse.rdf4j.query.algebra.Str;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -27,7 +25,11 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 public class InputAgent extends JPSAgent {
 	private static final long serialVersionUID = 1L;
     private static String input_type;
-    private final String INPUT_KEY = "input";
+    private static Integer input_value;
+    public static final String INPUT_KEY = "input";
+    public static final String INPUT_NUMBER_KEY = "value";
+    public static final String TRUCK_INSTANCE_KEY = "truck";
+    public static final String BIN_INSTANCE_KEY = "bin";
     public static final String URL_INPUTAGENT = "/InputAgent";
 
 	@Override
@@ -40,6 +42,7 @@ public class InputAgent extends JPSAgent {
         String input_iri;
 
         this.input_type = requestParams.getString(INPUT_KEY);
+        this.input_value = requestParams.getInt(INPUT_NUMBER_KEY);
 
         //Retrieve input IRI
         if (InstancesDatabase.Input == null || InstancesDatabase.InputTruck ==null) {
@@ -54,12 +57,12 @@ public class InputAgent extends JPSAgent {
         List<Integer> value_column;
         List<Instant> time_column = Arrays.asList(Instant.now());
 
-        if (input_type.equals("truck")){
+        if (input_type.equals(TRUCK_INSTANCE_KEY)){
              input_iri = InstancesDatabase.InputTruck;
-            value_column = Arrays.asList(rand.nextInt(1000) + 1);
-        } else if (input_type.equals("bin")) {
+            value_column = Arrays.asList(input_value);
+        } else if (input_type.equals(BIN_INSTANCE_KEY)) {
             input_iri = InstancesDatabase.Input;
-            value_column = Arrays.asList(rand.nextInt(1000) + 1);
+            value_column = Arrays.asList(input_value);
         }else
         {
             return new JSONObject().put("status", "Wrong input type given");
