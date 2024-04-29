@@ -2,7 +2,8 @@
 
 The `Fenland Trajectory Agent` is dedicated to process time series GPS data stored in the relational database, instantiate this data as triples based on relevant ontologies, and then upload the triples into the knowledge graph.
 
-Currently this agent is focusing on the data provided from Fenland Study to  analyze the interaction between GPS trajectories and environmental features in the digital twin. The data instatiated in the knowledge graph follows the ontology of device (ontodevice) https://www.theworldavatar.com/kg/ontodevice in the https://github.com/cambridge-cares/TheWorldAvatar. 
+Currently this agent is focusing on the data provided from Fenland Study to analyze the interaction between GPS trajectories and environmental features in the digital twin. The example data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample gps data.csv
+The data instatiated in the knowledge graph follows the ontology of device (ontodevice) https://www.theworldavatar.com/kg/ontodevice in the https://github.com/cambridge-cares/TheWorldAvatar. 
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager. `
 
 # Environment setup (Optional)
@@ -47,6 +48,8 @@ This section outlines the minimum requirements for building and deploying the Do
 ### *1) Place the GPS trajectory in the target position*
 
 In this case, the format of the GPS data table is .csv. Each table consists of a series of record points, each point containing six essential pieces of information. They are UTC date, UTC time, longitude, latitude, speed, and the distance between the current record point and the position corresponding to the previous record point. After preparing all files, please place them in `./FenlandTrajectoryAgent/agent/raw_data/gps_target_data
+
+
 folder.
 
 ### *2) The environment variables used by the agent container*
@@ -58,9 +61,8 @@ bash
 STACK_NAME            # Name of stack to which agent shall be deployed
 NAMESPACE             # Blazegraph namespace into which to instantiate data
 DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`)
-LAYERNAME             # Geoserver ayer name, ALSO table name for geospatial features in PostGIS
+LAYERNAME             # Geoserver layer name, Also table name for geospatial features in PostGIS
 GEOSERVER_WORKSPACE   
-ONTOP_FILE            # Path to ontop mapping file (i.e. within Docker container)
 
 ### *3) Accessing Github's Container registry*
 
@@ -68,10 +70,6 @@ While building the Docker image of the agent, it also gets pushed to the [Github
 
 docker login ghcr.io -u <github_username>
 <github_personal_access_token>
-
-### *4) VS Code specifics*
-
-In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
 &nbsp;
 ## 1.2 Spinning up the stack
@@ -94,10 +92,9 @@ After spinning up the stack, the GUI endpoints to the running containers can be 
 &nbsp;
 ## 1.3 Deploying the agent to the stack
 
-This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.26`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the commands provided below shall suffice to compile the latest `StackClients` resource locally and install it inside the Docker container using the provided [Dockerfile]. Please note, that compiling requires a [Java Development Kit version >=11]. Updating the [JPS_BASE_LIB] resource is ONLY required if a pre-release version is needed, which is (currently) not the case for this agent.
+As mentioned earlier, this agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.32`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the commands provided below shall suffice to compile the latest `StackClients` resource locally and install it inside the Docker container using the provided [Dockerfile]. If you encounter any error for spinning up the stack, please manually execute commands mentioned in Stack Client Settings section in this page.
 
 Simply execute the following command in the same folder as this `README` to build the required [Stack-Clients] resource and spin up the production version of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
-bash
 
 
 # Buildings the agent Docker image and pushing it
@@ -110,7 +107,6 @@ bash ./stack.sh start <STACK_NAME>
 &nbsp;
 # 2. Using the Agent
  
-
 ## Provided functionality
 
 The agent will automatically register a task upon startup to assimilate the data in our target GPS folder into the KG. This background task can be triggered by an HTTP request after the agent starts up, accessible at http://localhost:5000/. 
