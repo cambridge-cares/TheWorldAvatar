@@ -7,11 +7,11 @@
                 "Env": [
                     "DATABASE=postgres",
                     "SCOPE_TABLE_NAME=scopes",
-                    "AERMOD_AGENT_IRI=http://theworldavatar.com/kg/dispersion/AermodAgent",
+                    "AERMOD_AGENT_IRI=https://www.theworldavatar.com/kg/dispersion/AermodAgent",
                     "AERMOD_AGENT_URL=http://${STACK_NAME}-aermod-agent:8080/AermodAgent/",
                     "WEATHER_AGENT_URL=http://${STACK_NAME}-weather-agent:8080/WeatherAgent/CreateStation",
                     "SHIP_INPUT_AGENT=http://${STACK_NAME}-ship-input-agent:8080/ShipInputAgent/update",
-                    "VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
+                    "VIRTUAL_SENSOR_AGENT_IRI=https://www.theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
                     "GEOSERVER_WORKSPACE=dispersion",
                     "SENSORS_TABLE_NAME=sensors",
 					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
