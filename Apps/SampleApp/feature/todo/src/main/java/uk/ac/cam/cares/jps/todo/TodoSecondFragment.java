@@ -16,6 +16,7 @@ public class TodoSecondFragment extends Fragment {
 
     private TodoSecondFragmentBinding binding;
 
+    // Inflate the XML layout for this fragment into a collection of View objects that can be manipulated in code.
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -23,6 +24,7 @@ public class TodoSecondFragment extends Fragment {
         return binding.getRoot();
     }
 
+    // Actions to be taken after view is created
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

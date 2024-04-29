@@ -16,21 +16,29 @@ import uk.ac.cam.cares.jps.model.*;
 @HiltViewModel
 public class TodoViewModel extends ViewModel {
     private TodoRepository todoRepository;
-
+    // LiveData to hold these states
     private MutableLiveData<Todo> _todo = new MutableLiveData<>();
     private MutableLiveData<User> _user = new MutableLiveData<>();
     private MutableLiveData<Boolean> _hasError = new MutableLiveData<>();
 
+    // Expose immutable LiveData to observe these states
     private LiveData<Todo> todo = _todo;
     private LiveData<User> user = _user;
     private LiveData<Boolean> hasError = _hasError;
 
-
+    /**
+     * Constructor for TodoViewModel.
+     *
+     * @param todoRepository Repository for managing the data.
+     */
     @Inject
     public TodoViewModel(TodoRepository todoRepository) {
         this.todoRepository = todoRepository;
     }
 
+    /**
+     * Fetches the data.
+     */
     public void getTodoAndUser() {
         todoRepository.getTodoAndUserInfo("2", new RepositoryCallback<>() {
             @Override
@@ -46,6 +54,8 @@ public class TodoViewModel extends ViewModel {
         });
     }
 
+    // Getters to retrieve the current data in immutable states
+    // Prevent any accidental data manipulation to the backend if we only wish to observe data
     public LiveData<Todo> getTodo() {
         return todo;
     }

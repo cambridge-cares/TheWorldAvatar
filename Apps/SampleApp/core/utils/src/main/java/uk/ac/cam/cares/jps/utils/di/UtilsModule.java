@@ -17,6 +17,13 @@ import dagger.hilt.components.SingletonComponent;
 @Module
 @InstallIn(SingletonComponent.class)
 public class UtilsModule {
+
+    /**
+     * Provides a singleton instance of RequestQueue for making network requests.
+     *
+     * @param applicationContext The application context.
+     * @return A singleton instance of RequestQueue.
+     */
     @Provides
     @Singleton
     public RequestQueue provideRequestQueue(@ApplicationContext Context applicationContext) {
