@@ -1,9 +1,9 @@
 #
-# Checks that the version of the TWA-VF has been updated.
+# Checks that the version of the TWA-ViP has been updated.
 #
 # Author: Michael Hillman (mdhillman<@>cmcl.io)
 #
-name: Check TWA-VF Version
+name: Check TWA-ViP Version
 
 
 # Trigger this workflow during pull requests to the 'main' branch,
