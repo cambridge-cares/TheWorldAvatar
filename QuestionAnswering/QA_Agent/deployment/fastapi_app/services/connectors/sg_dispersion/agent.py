@@ -36,7 +36,7 @@ class SGDispersionAgent:
 
 @cache
 def get_dispersion_url():
-    return os.getenv("ENDPOINT_GET_POLLUTANT_CONCENTRATIONS")
+    return os.getenv("ENDPOINT_POLLUTANT_CONCENTRATIONS")
 
 
 @cache
