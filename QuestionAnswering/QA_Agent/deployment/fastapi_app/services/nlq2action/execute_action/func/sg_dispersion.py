@@ -36,7 +36,7 @@ class SGDispersionFuncExecutor(Name2Func):
             "lookup_ship_timeseries": self.lookup_ship_timeseries,
         }
 
-    def get_pollutant_conc(self, location: str):
+    def get_pollutant_conc(self, location: str, **kwargs):
         steps: List[QAStep] = []
 
         logger.info("Get coordinates for the location: " + location)
@@ -99,7 +99,7 @@ class SGDispersionFuncExecutor(Name2Func):
             text = text[1:-1]
         return text
 
-    def lookup_ship_attributes(self, surface_form: str):
+    def lookup_ship_attributes(self, surface_form: str, **kwargs):
         """
         Given ship name or MMSI, returns MMSI, maximum static draught, dimension, IMO number, ship type, call sign
         """
@@ -107,7 +107,7 @@ class SGDispersionFuncExecutor(Name2Func):
 
         logger.info("Perform entity linking for: " + surface_form)
         timestamp = time.time()
-        iris = self.entity_store.link(surface_form)
+        iris = self.entity_store.link(surface_form, clsname="Ship", k=1)
         latency = time.time() - timestamp
         steps.append(
             QAStep(
@@ -151,7 +151,7 @@ class SGDispersionFuncExecutor(Name2Func):
 
         return steps, data
 
-    def lookup_ship_timeseries(self, surface_form: str):
+    def lookup_ship_timeseries(self, surface_form: str, **kwargs):
         """
         Given ship name or MMSI, returns speed over ground, course over ground, longitude, latitude
         """
@@ -159,7 +159,7 @@ class SGDispersionFuncExecutor(Name2Func):
 
         logger.info("Perform entity linking for: " + surface_form)
         timestamp = time.time()
-        iris = self.entity_store.link(surface_form)
+        iris = self.entity_store.link(surface_form, clsname="Ship", k=1)
         latency = time.time() - timestamp
         steps.append(
             QAStep(

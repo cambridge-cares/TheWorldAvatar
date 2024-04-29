@@ -1,3 +1,4 @@
+import logging
 import time
 from typing import Annotated, List
 
@@ -11,6 +12,9 @@ from services.nlq2action.retrieve import (
 from services.support_data import DataSupporter
 from .execute_action import ActionExecMediator, get_actionExec_mediator
 from .translate import Nlq2ActionTranslator, get_nlq2action_translator
+
+
+logger = logging.getLogger(__name__)
 
 
 class Nlq2Action2Data(DataSupporter):
@@ -27,9 +31,11 @@ class Nlq2Action2Data(DataSupporter):
     def query(self, query: str):
         steps: List[QAStep] = []
 
+        logger.info("Retrieve examples for: " + query)
         timestamp = time.time()
         examples = self.retriever.retrieve_examples(nlq=query, k=10)
         latency = time.time() - timestamp
+        logger.info("Retrieve examples: " + str(examples))
         steps.append(
             QAStep(
                 action="retrieve_examples",
@@ -42,6 +48,7 @@ class Nlq2Action2Data(DataSupporter):
         timestamp = time.time()
         action = self.translator.translate(nlq=query, examples=examples)
         latency = time.time() - timestamp
+        logger.info("Predicted action: " + str(action))
         steps.append(
             QAStep(
                 action="nlq2action", arguments=query, results=action, latency=latency

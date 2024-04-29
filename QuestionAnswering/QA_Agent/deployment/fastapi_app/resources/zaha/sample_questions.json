@@ -44,19 +44,13 @@
                 "data_domain": "sg_dispersion",
                 "label": "Singapore's Dispersion",
                 "questions": [
-                    "What are the concentrations of air pollutants in Jurong Island, singapore"
+                    "What are the concentrations of air pollutants in Jurong Island, Singapore",
+                    "What's the maximum static draught of ship Legend Aquarius",
+                    "what's the speed over ground of ship with MMSI 563071620"
                 ]
             },
             {
-                "data_domain": "sg_ships",
-                "label": "Singapore's Ships",
-                "questions": [
-                    "What's the maximum static draught of ship SCDF White Swordfish",
-                    "what's the speed over ground of ship with MMSI 563026590"
-                ]
-            },
-            {
-                "data_domain": "sg_norticulture",
+                "data_domain": "sg_carpark",
                 "label": "Singapore's Carparks",
                 "questions": [
                     "What's the carpark nearest to NUS"

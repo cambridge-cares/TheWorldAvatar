@@ -176,7 +176,7 @@ class EntityStore:
             )
             iris.extend(doc.iri for doc in res.docs)
 
-        return iris
+        return list(set(iris))[:k]
 
     def _all_surface_forms(self, clsname: Optional[str]):
         # TODO: accumulate pages from Redis to ensure all labels are retrieved
@@ -214,7 +214,7 @@ class EntityStore:
             res = self.redis_client.ft(self.INDEX_NAME).search(fuzzy_query)
             iris.extend(doc.iri for doc in res.docs)
 
-        return list(set(iris))
+        return list(set(iris))[:k]
 
     def link(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
         strategy = self.clsname2strategy.get(clsname, "fuzzy") if clsname else "fuzzy"
