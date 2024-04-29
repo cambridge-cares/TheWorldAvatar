@@ -81,17 +81,17 @@ public class BinEmptyingAgent extends DerivationAgent  {
 
         if (realStateValue<maxvalue && realStateValue>minvalue)
         {
-            res_msg = "Bin do nothing";
+            res_msg = "Bin operating weight within range, nothing is done.";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, oldDesiredState_value));
             LOGGER.info(res_msg);
         }
         else{
-            res_msg = "Bin do something";
+            res_msg = "Bin operating weight is out of range. Calling actuator.";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, 0));
             LOGGER.info(res_msg);
             callActuator(goal_iri);
         }
-        LOGGER.info("Created a new min value instance <" + desiredstate_iri + ">, and its value instance <" + value_iri + ">");
+        LOGGER.info("Created a new desired value instance <" + desiredstate_iri + "> for bin, and its value instance <" + value_iri + ">");
     }
 
     private void callActuator(String goal) {

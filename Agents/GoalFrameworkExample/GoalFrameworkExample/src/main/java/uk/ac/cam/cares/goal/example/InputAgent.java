@@ -47,9 +47,6 @@ public class InputAgent extends JPSAgent {
             InstancesDatabase.InputTruck = sparqlClient.getInputIRI(sparqlClient.TruckInput);
         }
 
-
-        //
-
         TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 
         // add random value to value column
@@ -72,7 +69,6 @@ public class InputAgent extends JPSAgent {
         TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(input_iri), values);
         tsClient.addTimeSeriesData(ts);
         devClient.updateTimestamps(Arrays.asList(input_iri));
-
 
         return new JSONObject().put("status", "Updated <" + input_iri + ">");
 	}

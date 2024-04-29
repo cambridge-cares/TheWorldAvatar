@@ -10,10 +10,12 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import uk.ac.cam.cares.goal.example.InitialiseInstances;
-import uk.ac.cam.cares.goal.example.InputAgent;
+import uk.ac.cam.cares.goal.example.*;
+import uk.ac.cam.cares.goal.framework.GoalClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -34,9 +36,10 @@ public class Actuator extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject incomingRequestParams) {
 
+
         this.function = incomingRequestParams.getString(FUNCTION_KEY);
         if (function.equals(FUNCTION_FILLTRUCK_VALUE)){
-            System.out.println("Truck is being filled.");
+            LOGGER.info("<ACTUATOR> Truck is being filled.");
 
             JSONObject requestParams = new JSONObject();
 
@@ -63,10 +66,25 @@ public class Actuator extends JPSAgent {
                 throw new JPSRuntimeException("Failed to update input weight with original request: "
                         + requestParams, e);
             }
-            System.out.println("Truck is full");
+            LOGGER.info("<ACTUATOR> Truck is full.");
         }
         else if (function.equals(FUNCTION_EMPTYTRUCK_VALUE)){
-            System.out.println("Truck is moving to MRF.");
+
+            LOGGER.info("<ACTUATOR> Truck moving to MRF, emptying both bins and trucks");
+
+//            RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser, Config.kgpassword);
+//            SparqlClient sparqlClient = new SparqlClient(storeClient);
+//            GoalClient goalClient = new GoalClient(storeClient,InitialiseInstances.goalInstanceBaseURL);
+//            DerivationClient devClient  = new DerivationClient(storeClient,InitialiseInstances.goalInstanceBaseURL);
+//
+//            //Retrieve input IRI
+//            if (InstancesDatabase.Input == null || InstancesDatabase.InputTruck ==null) {
+//                InstancesDatabase.Input = sparqlClient.getInputIRI(sparqlClient.BinInput);
+//                InstancesDatabase.InputTruck = sparqlClient.getInputIRI(sparqlClient.TruckInput);
+//            }
+
+
+
         }
 
         String res_msg = "Actuator did something";

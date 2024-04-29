@@ -54,11 +54,8 @@ public class SparqlClient {
     public static Iri hasValue = p_namespace.iri("hasValue");
     public static Iri numericalValue = p_namespace.iri("numericalValue");
     public static Iri stringValue = p_namespace.iri("stringValue");
-
     public static Iri hasMaximum = p_namespace.iri("hasMaximum");
-
     public static Iri hasMinimum = p_namespace.iri("hasMinimum");
-
 
     public SparqlClient(StoreClientInterface storeClient) {
         this.storeClient = storeClient;

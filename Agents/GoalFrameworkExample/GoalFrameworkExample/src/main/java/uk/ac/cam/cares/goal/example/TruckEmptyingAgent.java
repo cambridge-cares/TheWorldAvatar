@@ -82,17 +82,17 @@ public class TruckEmptyingAgent extends DerivationAgent  {
 
         if (realStateValue<maxvalue && realStateValue>minvalue)
         {
-            res_msg = "Truck do nothing";
+            res_msg = "Truck operating weight is within range. Do nothing.";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, oldDesiredState_value));
             LOGGER.info(res_msg);
         }
         else{
-            res_msg = "Truck do something";
+            res_msg = "Truck operating weight is out of range. Empty bins.";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, 0));
             LOGGER.info(res_msg);
             callActuator(goal_iri);
         }
-        LOGGER.info("Created a new min value instance <" + desiredstate_iri + ">, and its value instance <" + value_iri + ">");
+        LOGGER.info("Created a new desired value instance <" + desiredstate_iri + "> for truck, and its value instance <" + value_iri + ">");
     }
 
     private void callActuator(String goal){

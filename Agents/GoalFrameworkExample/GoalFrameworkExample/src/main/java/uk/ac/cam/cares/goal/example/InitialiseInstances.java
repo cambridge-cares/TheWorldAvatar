@@ -102,7 +102,6 @@ public class InitialiseInstances extends JPSAgent{
 			/**
 			 * Create goal and derivation for truck
 			 */
-
 			// record the IRIs of the created instances to link them later
 			String inputTruck_iri = sparqlClient.createInputData(sparqlClient.TruckInput);
 
