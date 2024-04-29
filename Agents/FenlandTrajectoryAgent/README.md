@@ -71,10 +71,6 @@ While building the Docker image of the agent, it also gets pushed to the [Github
 docker login ghcr.io -u <github_username>
 <github_personal_access_token>
 
-### *4) VS Code specifics*
-
-In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
-
 &nbsp;
 ## 1.2 Spinning up the stack
 
