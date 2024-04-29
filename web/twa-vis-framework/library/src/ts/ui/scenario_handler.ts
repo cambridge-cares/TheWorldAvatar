@@ -17,7 +17,7 @@ class ScenarioHandler {
     /**
      * JSON object holding definitions of possible scenarios.
      */
-    private definitions: JSON;
+    public definitions: JSON;
 
     /**
      * ID of currently selected scenario.
@@ -74,18 +74,18 @@ class ScenarioHandler {
      */
     public showSelector() {
         let container = document.getElementById("scenario-container");
-        
+
         if (container == null) {
             // Create and add the UI element
             container = document.createElement("div");
             container.id = "scenario-container";
-            
+
             container.innerHTML = `
                 <div id="scenario-blocker"></div>
                 <div id="scenario-popup">
-                <button id="scenario-close"><i class="fa fa-times"></i></button>
                 <div id="scenario-header">
                 <b style="font-size: 120%;">Select a scenario:</b><br/><br/>
+                <button id="scenario-close"><i class="fa fa-times"></i></button>
                 <p>Please identify a scenario from the list below, then select the 'View' button to plot its data.</p>
                     </div>
                     <div id="scenario-inner">
@@ -93,19 +93,19 @@ class ScenarioHandler {
                             <img style="width: 200px;" src="loading.gif"></img>
                             <p style="color: grey; font-style: italic;">Loading scenario details, please wait...</p>
                             </div>
-                            </div>
-                            </div>
+                        </div>
+                    </div>
                             `;
-                            document.body.appendChild(container);
-                            
-                            // Send of request to get the scenario details
-                            let self = this;
+            document.body.appendChild(container);
+
+            // Send of request to get the scenario details
+            let self = this;
             let promise = this.queryForScenarios() as Promise<any>;
             promise.then(() => {
                 this.buildComponents();
             });
         }
-        
+
         this.handleEscButton();
 
 
@@ -185,9 +185,8 @@ class ScenarioHandler {
 
             // Set contents
             element.innerHTML = `
-                <b> ` + scenario["name"] + `</b><br/><br/>
+                <b> ` + scenario["name"] + `</b><br/><br/>s
                 <p>` + scenario["description"] + `</p><br/>
-                <button type="button" class="scenario-button" id="` + element.id + `" name="` + scenario["name"] + `" + onclick="manager.selectScenario(this.id, this.name)">View</button>
             `;
 
             // Add to container
