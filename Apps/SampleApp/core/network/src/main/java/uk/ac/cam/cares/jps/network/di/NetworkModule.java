@@ -18,14 +18,26 @@ import uk.ac.cam.cares.jps.network.UserNetworkSource;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    // RequestQueue is provided in utils. The whole app will share the single instance of RequestQueue.
-    // It is placed in the utils is because some other modules, which are not included in this project, will require the RequestQueue
+    /**
+     * Provides a singleton instance of TodoNetworkSource.
+     *
+     * @param requestQueue The RequestQueue instance shared across the app.
+     * @param context      The application context.
+     * @return A singleton instance of TodoNetworkSource.
+     */
     @Provides
     @Singleton
     public TodoNetworkSource provideTodoNetworkSource(RequestQueue requestQueue, @ApplicationContext Context context) {
         return new TodoNetworkSource(requestQueue, context);
     }
 
+    /**
+     * Provides a singleton instance of UserNetworkSource.
+     *
+     * @param requestQueue The RequestQueue instance shared across the app.
+     * @param context      The application context.
+     * @return A singleton instance of UserNetworkSource.
+     */
     @Provides
     @Singleton
     public UserNetworkSource provideUserNetworkSource(RequestQueue requestQueue, @ApplicationContext Context context) {

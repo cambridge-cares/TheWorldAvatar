@@ -12,12 +12,18 @@ import org.json.JSONObject;
 
 import okhttp3.HttpUrl;
 import uk.ac.cam.cares.jps.model.Todo;
-import uk.ac.cam.cares.jps.utils.R;
 
 public class TodoNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(TodoNetworkSource.class);
     private RequestQueue requestQueue;
     private Context context;
+
+    /**
+     * Constructor.
+     *
+     * @param requestQueue The RequestQueue used for making network requests.
+     * @param context      The Context used to access resources such as URLs.
+     */
     public TodoNetworkSource(RequestQueue requestQueue, Context context) {
         this.requestQueue = requestQueue;
         this.context = context;
@@ -48,6 +54,7 @@ public class TodoNetworkSource {
                         throw new RuntimeException(e);
                     }
                 },
+                // Error listener for failed request
                 volleyError -> {
                     LOGGER.error(volleyError.getMessage());
                     onFailureUpper.onErrorResponse(volleyError);

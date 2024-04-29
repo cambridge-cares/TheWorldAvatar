@@ -17,11 +17,25 @@ public class UserNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(UserNetworkSource.class);
     private RequestQueue requestQueue;
     private Context context;
+
+    /**
+     * Constructor.
+     *
+     * @param requestQueue The RequestQueue used for making network requests.
+     * @param context      The Context used to access resources such as URLs.
+     */
     public UserNetworkSource(RequestQueue requestQueue, Context context) {
         this.requestQueue = requestQueue;
         this.context = context;
     }
 
+    /**
+     * Get user from https://jsonplaceholder.typicode.com/users/{id} with the specified id
+     *
+     * @param id             The id of the user to be retrieved
+     * @param onSuccessUpper A callback passed from repository to be called when the http request is returned, so the upper level get notified of the result
+     * @param onFailureUpper A callback passed from repository to be called when the http request is failed, so the upper level get notified of the failure
+     */
     public void getUser(String id, Response.Listener<User> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         String url = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.users_url)).newBuilder()
                 .addPathSegments(id)
