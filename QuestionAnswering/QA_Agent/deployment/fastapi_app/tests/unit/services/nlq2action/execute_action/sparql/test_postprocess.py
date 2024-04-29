@@ -1,93 +1,106 @@
-from typing import Dict, List, Tuple
+from typing import List, Optional, Tuple
 
-from services.nlq2action.execute_action.sparql.link_value import SparqlEntityLinker
+
+from services.entity_store import EntityStore
 from services.nlq2action.execute_action.sparql.postprocess import SparqlPostProcessor
 from tests.exceptions import UnexpectedMethodCallError
 
 
 class TestSparqlPostProcessor:
-    def test_postprocess(self):
-        class MockSparqlEntityLinker(SparqlEntityLinker):
-            def __init__(
-                self,
-                expected_io: List[Tuple[Tuple[str], Tuple[List[str], Dict[str, str]]]],
-            ):
-                self.expected_io = {
-                    expected_input: output for expected_input, output in expected_io
-                }
+    class MockEntityStore(EntityStore):
+        def __init__(
+            self,
+            link_expected_io: List[
+                Tuple[Tuple[str, Optional[str], int], List[str]]
+            ] = dict(),
+        ):
+            self.link_expected_io = {
+                expected_input: output for expected_input, output in link_expected_io
+            }
 
-            def link(self, token: str):
-                try:
-                    return self.expected_io[(token,)]
-                except:
-                    raise UnexpectedMethodCallError(
-                        f"Unexpected postprocessing request with token={token}"
-                    )
+        def link(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
+            try:
+                return self.link_expected_io[(surface_form, clsname, k)]
+            except Exception as e:
+                print(e)
+                raise UnexpectedMethodCallError(
+                    f"Unexpected postprocessing request with surface_form={surface_form}, clsname={clsname}, k={k}"
+                )
 
-        entity_linker = MockSparqlEntityLinker(
+    def test_linkEntities(self):
+        # Arrange
+        entity_linker = self.MockEntityStore(
             [
                 (
-                    (
-                        ('<LandUseType:"residential">',),
-                        (
-                            ["<http://example.org/LandUseType_0>"],
-                            {"http://example.org/LandUseType_0": "residential"},
-                        ),
-                    )
+                    ("residential", "LandUseType", 3),
+                    ["http://example.org/LandUseType_0"],
                 ),
                 (
-                    (
-                        ('<AirUseType:"recreational">',),
-                        (
-                            ["<http://example.org/AirUseType_3>"],
-                            {"http://example.org/AirUseType_3": "recreational"},
-                        ),
-                    )
+                    ("recreational", "AirUseType", 3),
+                    ["http://example.org/AirUseType_3"],
                 ),
                 (
-                    (
-                        ('<AirUseType:"plane port">',),
-                        (
-                            [
-                                "<http://example.org/AirUseType_0>",
-                                "<http://example.org/AirUseType_1>",
-                            ],
-                            {
-                                "http://example.org/AirUseType_0": "plane port 0",
-                                "http://example.org/AirUseType_1": "plane port 1",
-                            },
-                        ),
-                    )
+                    ("plane port", "AirUseType", 3),
+                    [
+                        "http://example.org/AirUseType_0",
+                        "http://example.org/AirUseType_1",
+                    ],
                 ),
             ]
         )
         postprocessor = SparqlPostProcessor(entity_linker)
 
-        # Act
-        actual_sparql, actual_var2iri2label = postprocessor.postprocess(
-            """SELECT ?LandUseType ?AirUseType ?Plot WHERE {
+        sparql_in = """SELECT ?LandUseType ?AirUseType ?Plot WHERE {
     VALUES ?LandUseType { <LandUseType:"residential"> }
     ?Plot ontozoning:hasLandUseType ?LandUseType .
     VALUES ?AirUseType { <AirUseType:"plane port">  <AirUseType:"recreational"> }
     ?Plot ontozoning:hasAirUseType ?AirUseType .
 }"""
-        )
-
-        # Assert
-        assert (
-            actual_sparql
-            == """SELECT ?LandUseType ?AirUseType ?Plot WHERE {
+        expected_sparql = """SELECT ?LandUseType ?AirUseType ?Plot WHERE {
     VALUES ?LandUseType { <http://example.org/LandUseType_0> }
     ?Plot ontozoning:hasLandUseType ?LandUseType .
     VALUES ?AirUseType { <http://example.org/AirUseType_0> <http://example.org/AirUseType_1> <http://example.org/AirUseType_3> }
     ?Plot ontozoning:hasAirUseType ?AirUseType .
 }"""
-        )
-        assert actual_var2iri2label == {
-            "LandUseType": {"http://example.org/LandUseType_0": "residential"},
-            "AirUseType": {
-                "http://example.org/AirUseType_0": "plane port 0",
-                "http://example.org/AirUseType_1": "plane port 1",
-                "http://example.org/AirUseType_3": "recreational",
-            },
+        expected_varnames = ["LandUseType", "AirUseType"]
+
+        # Act
+        actual_sparql, actual_varnames = postprocessor.link_entities(sparql_in)
+
+        # Assert
+        assert actual_sparql == expected_sparql
+        assert actual_varnames == expected_varnames
+
+    def test_injectServiceEndpoint(self):
+        # Arrange
+        entity_store = self.MockEntityStore()
+        ns2uri = {
+            "ontop": "http://example.org/ontop/sparql",
+            "bg": "http://example.come/blazegraph/sparql",
         }
+        postprocessor = SparqlPostProcessor(entity_store=entity_store, ns2uri=ns2uri)
+
+        sparql_in = """SELECT ?s ?p ?o WHERE {
+    ?s ?p ?o .
+    SERVICE <bg> {
+        ?o ?p ?s .
+    }
+    SERVICE <ontop> {
+        ?p ?s ?o .
+    }
+}"""
+        expected = """SELECT ?s ?p ?o WHERE {
+    ?s ?p ?o .
+    SERVICE <http://example.come/blazegraph/sparql> {
+        ?o ?p ?s .
+    }
+    SERVICE <http://example.org/ontop/sparql> {
+        ?p ?s ?o .
+    }
+}"""
+
+        # Act
+        actual = postprocessor.inject_service_endpoint(sparql_in)
+
+        # Assert
+        assert actual == expected
