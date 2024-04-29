@@ -8,7 +8,7 @@ import requests
 from model.qa import QAStep
 from services.connectors.agent_connector import AgentConnectorBase
 from .agent import SGDispersionAgent, get_sgDisperson_agent
-from .geocoding import IGeocoder, get_geocoder
+from services.geocoding import IGeocoder, get_geocoder
 
 logger = logging.getLogger(__name__)
 

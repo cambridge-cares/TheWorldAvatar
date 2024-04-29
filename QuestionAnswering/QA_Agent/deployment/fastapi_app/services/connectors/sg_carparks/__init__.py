@@ -6,7 +6,7 @@ from typing import Annotated, List
 from fastapi import Depends
 
 from model.qa import QAStep
-from services.connectors.sg_dispersion.geocoding import IGeocoder, get_geocoder
+from services.geocoding import IGeocoder, get_geocoder
 from services.connectors.sg_carparks.agent import SGCarparksAgent, get_sgCarpark_agent
 from services.connectors.agent_connector import AgentConnectorBase
 
