@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Dict, List
 
 from services.entity_store import EntityStore
 
@@ -8,32 +8,22 @@ logger = logging.getLogger(__name__)
 
 
 class SparqlPostProcessor:
-    def __init__(self, entity_linker: EntityStore):
-        self.entity_linker = entity_linker
+    def __init__(self, entity_store: EntityStore, ns2uri: Dict[str, str] = dict()):
+        self.entity_store = entity_store
+        self.ns2uri = ns2uri
 
-    def link(self, token: str):
-        # '<LandUseType:\"residential\">' -> ['<https://example.org/LandUseType_1>', '<https://example.org/LandUseType_2>']
-        if not token.startswith("<") or not token.endswith(">"):
-            return [token]
+    def _link_token(self, token: str):
+        if token.startswith("<") and token.endswith(">") and ":" in token:
+            clsname, surface_form = token[1:-1].split(":", maxsplit=1)
+            if surface_form.startswith('"') and surface_form.endswith('"'):
+                surface_form = surface_form[1:-1]
+                iris = self.entity_store.link(
+                    surface_form=surface_form, clsname=clsname
+                )
+                return ["<{iri}>".format(iri=iri) for iri in iris]
+        return [token]
 
-        try:
-            entity_type, surface_form = token[1:-1].split(":", maxsplit=1)
-        except:
-            return [token]
-
-        if not surface_form.startswith('"') or not surface_form.endswith('"'):
-            return [token]
-        surface_form = surface_form[1:-1]
-
-        try:
-            iris = self.entity_linker.link(entity_type, surface_form)
-        except Exception as e:
-            logger.error("Error during entity linking: " + str(e))
-            return [token]
-
-        return ["<{iri}>".format(iri=iri) for iri in iris]
-
-    def postprocess(self, sparql: str):
+    def link_entities(self, sparql: str):
         varnames: List[str] = []
 
         idx = 0
@@ -110,14 +100,7 @@ class SparqlPostProcessor:
 
             values = []
             for token in tokens:
-                if token.startswith("<") and token.endswith(">") and ":" in token:
-                    clsname, surface_form = token[1:-1].split(":", maxsplit=1)
-                    iris = self.entity_linker.link(
-                        surface_form=surface_form, clsname=clsname
-                    )
-                    values.extend("<{iri}>".format(iri=iri) for iri in iris)
-                else:
-                    values.append(token)
+                values.extend(self._link_token(token))
 
             values = " ".join(values)
             varnames.append(varname)
@@ -128,3 +111,31 @@ class SparqlPostProcessor:
             idx = idx_start + 2 + len(values) + 2
 
         return sparql, varnames
+
+    def inject_service_endpoint(self, sparql: str):
+        idx = 0
+        while idx < len(sparql):
+            start = sparql.find("SERVICE", idx)
+            if start < 0:
+                break
+
+            start += len("SERVICE")
+            while start < len(sparql) and sparql[start].isspace():
+                start += 1
+            if start >= len(sparql) or sparql[start] != "<":
+                break
+
+            end = sparql.find(">", start)
+            ns = sparql[start + 1 : end]
+            if ns in self.ns2uri:
+                sparql = "{before}<{uri}>{after}".format(
+                    before=sparql[:start], uri=self.ns2uri[ns], after=sparql[end + 1 :]
+                )
+                idx = start + len(self.ns2uri[ns]) + 1
+            else:
+                idx = end + 1
+        return sparql
+
+    def postprocess(self, sparql: str):
+        sparql = self.inject_service_endpoint(sparql)
+        return self.link_entities(sparql)
