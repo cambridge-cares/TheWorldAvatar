@@ -81,6 +81,12 @@ The mechanics is as follows:
 2. Click on the `Run 'app'` button or `Shift + F10` 
 3. The app should run in the selected emulator after building
 
+## 3. Building the app
+
+1. Open the `SampleApp` folder in Android Studio
+2. Click on the `Run 'app'` button or `Shift + F10`
+3. The app should run in the selected emulator after building
+
 # Architecture Example: Todo Pipeline
 This section shows an example of the Android app architecture (Data Source - Repository - State Holders/ViewModel - UI elements) with the Todo feature. Todo and its user information are fetched from network, processed in repository and show in TodoFragment.
 
@@ -88,11 +94,11 @@ This section shows an example of the Android app architecture (Data Source - Rep
   stateDiagram-v2
     direction LR
 
-    [*] --> ToDoFragment: 1. Click 'Get Todo' button
+    [*] --> TodoFragment: 1. Click 'Get Todo' button
 
     state UI {
       TodoFragment --> TodoViewModel: 2. Call getTodoAndUser()
-      TodoViewModel --> ToDoFragment
+      TodoViewModel --> TodoFragment: 11. MutableLiveData _todo and _user are updated (and hence LiveData), TodoFragment updates the view
     }
 
     TodoViewModel --> TodoRepository: 3. Call getTodoAndUserInfo(String, RepositoryCallback)
@@ -110,7 +116,6 @@ This section shows an example of the Android app architecture (Data Source - Rep
     }
 
     TodoRepository --> TodoViewModel: 10. Notify TodoViewModel the result via RepositoryCallback<Pair<Todo, User>>
-    TodoViewModel --> TodoFragment: 11. MutableLiveData _todo and _user are updated (and hence LiveData), TodoFragment updates the view
 ```
 
 Note
