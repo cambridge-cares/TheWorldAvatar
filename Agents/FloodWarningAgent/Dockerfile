@@ -1,7 +1,7 @@
 # Install the Flood Alerts/Warnings Agent in Docker container
 #==================================================================================================
 # Reference published Docker image for Stack-Client resources to use
-FROM ghcr.io/cambridge-cares/stack-client:1.20.1 as stackclients
+FROM ghcr.io/cambridge-cares/stack-client:1.24.0 as stackclients
 
 #------------------------------------------------------
 # Base image to be reused

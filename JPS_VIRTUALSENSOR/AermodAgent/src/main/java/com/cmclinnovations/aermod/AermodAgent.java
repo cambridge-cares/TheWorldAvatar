@@ -20,7 +20,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -48,9 +47,32 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class AermodAgent extends DerivationAgent {
     private static final Logger LOGGER = LogManager.getLogger(AermodAgent.class);
     private QueryClient queryClient;
+    private Thread thread;
 
+    // only allowing one thread at a time to prevent duplicate request updates
     @Override
     public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
+        try {
+            if (thread != null && thread.isAlive()) {
+                LOGGER.info("Previous thread is still alive, waiting for it to finish");
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            LOGGER.error("Error from previous thread");
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        thread = new Thread(() -> run(derivationInputs));
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void run(DerivationInputs derivationInputs) {
         String weatherStationIri = derivationInputs.getIris(QueryClient.REPORTING_STATION).get(0);
         String nxIri = derivationInputs.getIris(QueryClient.NX).get(0);
         String nyIri = derivationInputs.getIris(QueryClient.NY).get(0);
@@ -58,18 +80,12 @@ public class AermodAgent extends DerivationAgent {
         String scopeIri = derivationInputs.getIris(QueryClient.SCOPE).get(0);
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
 
-        // citiesNamespaceIri will be null if this parameter was excluded from the POST
-        // request sent to DispersionInteractor
-        String citiesNamespace = null;
-        if (derivationInputs.getIris(QueryClient.CITIES_NAMESPACE) != null) {
-            String citiesNamespaceIri = derivationInputs.getIris(QueryClient.CITIES_NAMESPACE).get(0);
-            citiesNamespace = queryClient.getCitiesNamespace(citiesNamespaceIri);
-        } else {
-            LOGGER.info("No citieskg namespace was specified in the POST request to Dispersion Interactor." +
-                    "Static point sources will not be included in this AERMOD run.");
-        }
-
         long simulationTime = queryClient.getMeasureValueAsLong(simulationTimeIri);
+
+        if (queryClient.timestepExists(simulationTime, derivationInputs.getDerivationIRI())) {
+            LOGGER.info("Duplicate request for the same timestep, ignoring request");
+            return;
+        }
 
         if (simulationTime == 0) {
             LOGGER.info("Simulation time = 0, this is from calling createSyncDerivationForNewInfo the first time");
@@ -83,9 +99,6 @@ public class AermodAgent extends DerivationAgent {
         // get ships within a scope and time
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
 
-        List<StaticPointSource> staticPointSources = new ArrayList<>();
-        BuildingsData bd = null;
-
         // compute srid
         int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180) / 6);
         int srid;
@@ -96,59 +109,33 @@ public class AermodAgent extends DerivationAgent {
             srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
-        Map<String, Building> allBuildings = null;
-        if (citiesNamespace != null) {
-            String namespaceCRS = queryClient.getNamespaceCRS(citiesNamespace);
-            queryClient.setcitiesNamespaceCRS(citiesNamespace, namespaceCRS);
-            try {
-                staticPointSources = queryClient.getStaticPointSourcesWithinScope(scope);
-                bd = new BuildingsData(namespaceCRS, queryClient);
-                bd.setStaticPointSourceProperties(staticPointSources);
-            } catch (ParseException e) {
-                e.printStackTrace();
-                throw new JPSRuntimeException("Could not set static point source properties.");
-            }
-
-        } else {
+        Map<String, Building> allBuildings = new HashMap<>();
+        if (!EnvConfig.IGNORE_BUILDINGS) {
+            LOGGER.info("Querying for buildings within simulation domain");
             allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
-            staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
         }
+        List<StaticPointSource> staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
 
         staticPointSources.removeIf(s -> s.getLocation() == null);
-        if (citiesNamespace != null && citiesNamespace.contentEquals("jriEPSG24500")) {
-            // the JI data has static point sources at different heights, yielding weird
-            // results with AERMOD
-            LOGGER.info("Cities namespace = {}", citiesNamespace);
-            LOGGER.info("Setting point source heights to 0");
-            staticPointSources.forEach(s -> s.setHeight(0));
-        }
-
-        queryClient.setStaticPointSourceLabel(staticPointSources);
 
         long timeBuffer = 1800; // 30 minutes
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
+
+        // update ensure ship derivations use the right simulation time
+        queryClient.attachSimTimeToShips(ships, simulationTimeIri);
 
         List<PointSource> allSources = new ArrayList<>();
         allSources.addAll(staticPointSources);
         allSources.addAll(ships);
 
-        List<Building> buildings = new ArrayList<>(); // that are near point sources
-        if (citiesNamespace != null) {
-            try {
-                // too many buildings in JI to process
-                if (!citiesNamespace.contentEquals("jriEPSG24500")) {
-                    buildings.addAll(bd.getBuildings(allSources));
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-                throw new JPSRuntimeException("Could not set building properties.");
-            }
-            if (!buildings.isEmpty()) {
-                queryClient.createBuildingsLayer(buildings, derivationInputs.getDerivationIRI(), simulationTime);
-            }
-        } else {
-            // new ontop way
+        queryClient.setPointSourceLabel(allSources);
+
+        // new ontop way
+        List<Building> buildings;
+        if (!EnvConfig.IGNORE_BUILDINGS) {
             buildings = queryClient.getBuildings(allSources, allBuildings);
+        } else {
+            buildings = new ArrayList<>();
         }
 
         // update derivation of ships (on demand)
@@ -161,7 +148,9 @@ public class AermodAgent extends DerivationAgent {
 
         // get emissions and set the values in the ships
         LOGGER.info("Querying emission values");
-        queryClient.setEmissions(allSources);
+
+        // filter out sources without emissions due to ships with ongoing calculations
+        List<PointSource> sourcesWithEmissions = queryClient.setEmissions(allSources);
 
         // update weather station with simulation time
         updateWeatherStation(weatherStationIri, simulationTime);
@@ -178,7 +167,7 @@ public class AermodAgent extends DerivationAgent {
         boolean usesElevation = false;
         if (queryClient.tableExists(EnvConfig.ELEVATION_TABLE) && queryClient.hasElevationData(scope)) {
             usesElevation = true;
-            queryClient.setElevation(allSources, buildings, srid);
+            queryClient.setElevation(sourcesWithEmissions, buildings, srid);
 
             // queries elevation data for each receptor point from PostGIS
             aermod.createAERMODReceptorInput(scope, nx, ny, srid,
@@ -189,7 +178,7 @@ public class AermodAgent extends DerivationAgent {
 
         // produces buildings input for aermod main code
         if (!buildings.isEmpty()) {
-            aermod.createBPIPPRMInput(allSources, buildings, srid);
+            aermod.createBPIPPRMInput(sourcesWithEmissions, buildings, srid);
             aermod.runBPIPPRM();
         }
 
@@ -209,6 +198,10 @@ public class AermodAgent extends DerivationAgent {
                     derivationInputs.getDerivationIRI());
         }
 
+        if (!ships.isEmpty()) {
+            aermod.createShipsLayer(ships, simulationTime, derivationInputs.getDerivationIRI());
+        }
+
         // The receptor.dat file may have been previously created by running AERMAP. If
         // so, it should not be overwritten.
         Path receptorPath = simulationDirectory.resolve("aermod").resolve("receptor.dat");
@@ -224,12 +217,12 @@ public class AermodAgent extends DerivationAgent {
         List<JSONObject> elevationJson = new ArrayList<>();
 
         Pollutant.getPollutantList().parallelStream()
-                .filter(pollutantType -> allSources.stream().allMatch(p -> p.hasPollutant(pollutantType)))
+                .filter(pollutantType -> sourcesWithEmissions.stream().allMatch(p -> p.hasPollutant(pollutantType)))
                 .forEach(pollutantType -> zIriList.parallelStream().forEach(zIri -> {
                     aermod.createSimulationSubDirectory(pollutantType, zMap.get(zIri));
 
                     // create emissions input
-                    aermod.createPointsFile(allSources, srid, pollutantType, zMap.get(zIri));
+                    aermod.createPointsFile(sourcesWithEmissions, srid, pollutantType, zMap.get(zIri));
                     aermod.runAermod(pollutantType, zMap.get(zIri));
 
                     // Upload files used by scripts within Python Service to file server.

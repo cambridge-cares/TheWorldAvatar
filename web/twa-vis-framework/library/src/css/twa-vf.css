@@ -6,19 +6,22 @@
 * a tool that can do it for me, looks like it'll beed to be done manually.
 */
 
-@media (prefers-color-scheme: light) {
-    :root {
-        /* Background colors */
-        --cmcl-blue: #18677a;
-    }
+/* @media (prefers-color-scheme: light) { */
+:root {
+    --cmcl-blue: #18677a;
+    --text-color: #3f464f;
+    --background-color: #f6f8fa;
 }
 
+/* } */
+/* 
 @media (prefers-color-scheme: dark) {
     :root {
-        /* Background colors */
         --cmcl-blue: #18677a;
+        --text-color: #adbac7;
+        --background-color: #22272e;
     }
-}
+} */
 
 html,
 body {
@@ -47,7 +50,8 @@ h6 {
     height: 100%;
     float: left;
     z-index: 0;
-    background-color: #cad2d3
+    background-color: #cad2d3;
+    flex-grow: 1;
 }
 
 .mapboxgl-popup-content {
@@ -185,6 +189,7 @@ h6 {
     width: 100%;
     display: flex;
     flex-direction: column;
+    position: absolute;
     height: calc(100% - 27px)
 }
 
@@ -239,9 +244,10 @@ p {
     text-align: center;
     height: 40px;
     position: absolute;
-    bottom: 30;
+    bottom: 30px;
     left: 0;
-    right: 0
+    right: 0;
+    z-index: 1
 }
 
 #returnContainer {
@@ -519,7 +525,6 @@ p {
 
 #metaTreeContainer {
     height: 100%;
-    overflow-y: scroll
 }
 
 #metaTimeContainer {
@@ -843,7 +848,6 @@ label[for=select-feature] {
 
 * {
     scrollbar-width: auto;
-    scrollbar-color: #4b4b4b #c8c8c8
 }
 
 ::-webkit-scrollbar {
@@ -862,14 +866,6 @@ label[for=select-feature] {
     border-radius: 10px;
     border: 2px solid transparent;
     background-clip: padding-box
-}
-
-.json-container {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-    background-color: #fff;
-    color: grey;
-    box-sizing: border-box
 }
 
 .json-container .line {
@@ -895,7 +891,6 @@ label[for=select-feature] {
 }
 
 .json-container .json-key {
-    color: #444;
     margin-right: 4px;
     margin-left: 4px
 }
@@ -952,11 +947,10 @@ label[for=select-feature] {
     margin-right: 0 !important;
     font-size: 9pt !important;
     font-family: Inter, sans-serif !important;
-    color: #000 !important
 }
 
 .json-value {
-    color: navy !important;
+    color: var(--cmcl-blue) !important;
     font-size: 9pt !important;
     font-family: Inter, sans-serif !important;
     margin-left: 4px !important
@@ -1005,7 +999,8 @@ label[for=select-feature] {
     bottom: 0;
     border: none;
     padding-top: 0;
-    height: 35px
+    height: 35px;
+    z-index: 2;
 }
 
 .ui-widget-content {
@@ -1045,23 +1040,19 @@ label[for=select-feature] {
 #sidePanelFailure {
     position: relative;
     overflow: auto;
-    /* background: linear-gradient(white, rgba(255, 255, 255, 0));
+    /* TODO
+
+    background: linear-gradient(white, rgba(255, 255, 255, 0));
     -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);        <-- nice effect but messing with the scroll bar. Can't rn figure how to fix 
     mask-image: linear-gradient(to bottom, black 95%, transparent); 
     margin-bottom: 35px; */
-    padding: 1em 1em 3em
+    padding-bottom: 10em;
 }
 
 #contentContainer {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    padding-bottom: 150px;
-}
-
-#sidePanelLinks {
-    height: calc(100% - 50px);
-    font-size: 10pt
 }
 
 #sidePanelLinks a {
@@ -1519,7 +1510,7 @@ li {
 }
 
 #helpandsearch {
-    display: flex
+    display: flex;
 }
 
 #searchIconContainer {
@@ -1588,10 +1579,11 @@ li {
     position: absolute;
     width: 25px;
     height: 25px;
-    top: 15px;
-    right: 15px;
+    top: 0px;
+    right: 0px;
     text-align: center;
-    display: table
+    display: table;
+    z-index: 1;
 }
 
 #scenario-close i {
@@ -1607,7 +1599,8 @@ li {
     height: 75px;
     right: 15px;
     font-family: Inter, sans-serif !important;
-    font-size: 1.1em
+    font-size: 1.1em;
+    z-index: 2;
 }
 
 #scenario-inner {
@@ -1639,6 +1632,11 @@ li {
     font-size: 80%;
     line-height: 110%;
     position: relative
+}
+
+.current-scenario-element {
+    border-color: #d3d3d344;
+    background-color: #ffffffaa;
 }
 
 .scenario-element:hover {
