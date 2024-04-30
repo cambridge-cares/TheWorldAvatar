@@ -71,31 +71,31 @@ Usage:
 
 Options:
 --csvType=<type> Type of the csv file.
-                 Choose between abox/tbox   [default: abox]
+                 Choose one of abox/tbox   [default: abox]
 --outDir=<dir>   Output directory path
---csvTbox=<tbox> TBox in csv format to validate the input abox csv file (for abox writer only)
+--csvTbox=<tbox> TBox in csv format to validate the input ABox csv file (for ABox writer only)
 ```
 
-## csv file format for abox
+## csv file format for ABox
 
 The input csv file must have at least 6 columns: A,B,C,D,E,F.
 Extra columns are ignored.
 
-The csvTbox file should follow the format in examples
+The file specified for parameter `--csvTbox` should follow the format in examples
 EntityRDFizer/tests/test_tboxes/ontocompchem/
 
 Rows in csv file contain one of the following:
 
-### Ontology description containing prefixes for the tbox and the abox.
-For Abox prefix:
-- Col A: Abox file name (actually not used, but col A cannot be empty)
+### Ontology description containing prefixes for the TBox and the ABox.
+For ABox prefix:
+- Col A: ABox file name (actually not used, but col A cannot be empty)
 - Col B: "Ontology"
-- Col C: http://www.theworldavatar.com/kb/ontospecies for abox (To be changed accordingly)
+- Col C: http://www.theworldavatar.com/kb/ontospecies for ABox (To be changed accordingly)
 - Col D: "base"
 - Col E,F are not used.
 
-Fot Tbox prefix:
-- Col A: not used (but Col A cannot be empty!)???
+Fot TBox prefix:
+- Col A: not used (Col A cannot be empty)
 - Col B: "Ontology"
 - Col C: http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl (To be changed accordingly)
 - Col D: "http://www.w3.org/2002/07/owl#imports"
@@ -109,7 +109,7 @@ respectively.
 
 ### Definition of an instance of class
 The name of the instance can be either a full path or relative to the base ontology.
-- Col A: short class name for the ontology defined in the tbox, or a full IRI
+- Col A: short class name for the ontology defined in the TBox, or a full IRI
          of class name for a class from an external ontologies
 - Col B: "Instance"
 - Col C: The new instance name. It is possible to provide a full IRI
