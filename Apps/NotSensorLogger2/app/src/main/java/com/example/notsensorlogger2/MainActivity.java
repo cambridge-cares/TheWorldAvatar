@@ -8,9 +8,7 @@ import android.os.Bundle;
 import android.hardware.SensorManager;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -19,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.notsensorlogger2.gpsfunctionality.MainActivity2;
@@ -32,11 +28,19 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import android.Manifest;
 
-
+/**
+ * The MainActivity is the central hub for managing various sensor handlers and initiating sensor data collection.
+ * It initializes and manages accelerometer, gyroscope, magnetometer, light, humidity, pressure, gravity,
+ * sound level sensors, and location tracking. This activity provides functionality to start and stop the collection
+ * of data from these sensors and send this data to a specified server endpoint periodically.
+ *
+ * This activity also handles runtime permissions necessary for accessing sensors and location data.
+ * It sets up a user interface with a RecyclerView to toggle sensors on and off and a button to start and stop data collection.
+ * Additionally, there's functionality to navigate to a secondary activity that handles specific GPS-based functionalities.
+ */
 public class MainActivity extends Activity {
     private SensorManager sensorManager;
     private SensorHandler accelerometerHandler;
@@ -57,12 +61,15 @@ public class MainActivity extends Activity {
     private static final long SEND_INTERVAL = 2000; // Interval in milliseconds
     private boolean isDataCollectionActive = true;
     private static final int PERMISSION_REQUEST_RECORD_AUDIO = 101;
-    private int messageId = 1; // Start messageId from 1
+    private int messageId = 1;
 
-
-    // This method will initialize your sensor list and RecyclerView
+    /**
+     * Initializes the list of sensors and their respective handlers and sets up the RecyclerView for sensor control.
+     * This method populates the sensorItems list with all available sensors and assigns each a corresponding handler.
+     * It also configures the adapter for the RecyclerView, setting toggle listeners for each sensor to start or stop data collection.
+     */
     private void setupSensorList() {
-        // Initialize your sensor handler list here
+        // Initialize sensor handler list
         sensorItems = new ArrayList<>();
         sensorItems.add(new SensorItem("Accelerometer", R.drawable.ic_accelerometer, false, accelerometerHandler));
         sensorItems.add(new SensorItem("Gravity", R.drawable.ic_gravity, false, gravitySensorHandler));
@@ -83,66 +90,55 @@ public class MainActivity extends Activity {
             @Override
             public void onSensorToggled(SensorItem sensor, boolean isChecked) {
                 if (isChecked) {
-                    sensor.getHandler().start(); // Start recording for this sensor
+                    sensor.getHandler().start();
                 } else {
-                    sensor.getHandler().stop();  // Stop recording for this sensor
+                    sensor.getHandler().stop();
                 }
             }
         }, new SensorAdapter.OnSensorDetailsListener() {
             @Override
             public void onSensorDetailsRequested(SensorItem sensor) {
-                // Your logic to show sensor details
+                // Not needed to implement
             }
         });
-
-        // Set the adapter to the RecyclerView
         sensorsRecyclerView.setAdapter(sensorAdapter);
     }
 
-
+    /**
+     * Checks if the audio recording permission is granted and requests it if not.
+     * Necessary for initializing the SoundLevelHandler.
+     */
     private void checkAndRequestAudioPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_REQUEST_RECORD_AUDIO);
         }
-        // The initialization of SoundLevelHandler has been moved to onCreate, so we don't initialize it here anymore.
     }
 
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                // Permission was granted, start the audio recording if the handler has been initialized
-//                if (soundLevelHandler != null) {
-//                    soundLevelHandler.start();
-//                }
-//            } else {
-//                Log.e("MainActivity", "Permission Denied to record audio.");
-//                // Handle the case where permission is not granted.
-//                // You could disable the SoundLevelHandler or inform the user that they cannot record audio without permission.
-//            }
-//        }
-//    }
-
+    /**
+     * Callback for the result from requesting permissions. This method is invoked for every call on requestPermissions.
+     *
+     * @param requestCode  The request code passed in requestPermissions.
+     * @param permissions  The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission was granted
                 if (soundLevelHandler != null) {
-                    soundLevelHandler.initAudioRecord(); // Make sure this method is public in SoundLevelHandler
-                    //  soundLevelHandler.start();
+                    soundLevelHandler.initAudioRecord();
                 }
-            } else {
-                Log.e("MainActivity", "Permission Denied to record audio.");
-                // Optionally update the UI or disable related functionality
             }
         }
     }
 
-
+    /**
+     * Sets up sensor list and RecyclerView for sensor toggling, initializes sensor handlers, and checks permissions.
+     * Initializes and configures buttons for controlling data collection and navigating to other activities.
+     *
+     * @param savedInstanceState Contains data supplied in onSaveInstanceState(Bundle) or null if no data was supplied.
+     */
     public final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -158,24 +154,16 @@ public class MainActivity extends Activity {
         humiditySensorHandler = new RelativeHumiditySensorHandler(sensorManager);
         pressureSensorHandler = new PressureSensorHandler(sensorManager);
         gravitySensorHandler = new GravitySensorHandler(sensorManager);
-        locationTracker = new LocationHandler((Context) this, (PressureSensorHandler) pressureSensorHandler);
+        locationTracker = new LocationHandler((Context) this);
         soundLevelHandler = new SoundLevelHandler(this, sensorManager);
 
         // After initializing all sensors and handlers, call the setup method for RecyclerView
         setupSensorList();
-//        ImageView imageView = (ImageView) findViewById(R.id.locationButton);
-//        imageView.setOnClickListener(v -> {
-//            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-//            startActivity(intent);
-//        });
-
 
         Button stopDataButton = findViewById(R.id.start_recording_button);
+        stopDataButton.setText(R.string.start_button_text);
 
-        Button btnOpenActivity2 = findViewById(R.id.open_activity2_button);
-
-        stopDataButton.setText(R.string.start_button_text); // Initialize with "Start" text
-        isDataCollectionActive = false; // Ensure collection is inactive at start
+        isDataCollectionActive = false;
 
         stopDataButton.setOnClickListener(v -> {
             if (!isDataCollectionActive) {
@@ -189,37 +177,11 @@ public class MainActivity extends Activity {
             }
         });
 
+        Button btnOpenActivity2 = findViewById(R.id.open_activity2_button);
         btnOpenActivity2.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity2.class);
             startActivity(intent);
         });
-
-
-//        Button stopDataButton = findViewById(R.id.start_recording_button);
-//        stopDataButton.setOnClickListener(v -> {
-//            if (!isDataCollectionActive) {
-//                startDataCollection();
-//                stopDataButton.setText(R.string.stop_button_text);
-//                isDataCollectionActive = true;
-//            } else {
-//                stopDataCollection();
-//                stopDataButton.setText(R.string.start_button_text);
-//                isDataCollectionActive = false;
-//            }
-//        });
-
-
-//        Button stopDataButton = findViewById(R.id.start_recording_button);
-//        stopDataButton.setOnClickListener(v -> {
-//            if (isDataCollectionActive) {
-//                stopDataCollection();
-//                stopDataButton.setText(R.string.start_button_text);
-//            } else {
-//                startDataCollection();
-//                stopDataButton.setText(R.string.stop_button_text);
-//            }
-//            isDataCollectionActive = !isDataCollectionActive;
-//        });
 
         sendDataRunnable = new Runnable() {
             @Override
@@ -230,17 +192,21 @@ public class MainActivity extends Activity {
         };
     }
 
-
+    /**
+     * Resumes the activity, checks necessary permissions, and resumes data collection if it was active before pausing.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        // No auto-start of data collection
         checkAndRequestAudioPermission();
         if (isDataCollectionActive) {
             startDataCollection();
         }
     }
 
+    /**
+     * Pauses the activity and stops data collection if it was active.
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -249,96 +215,49 @@ public class MainActivity extends Activity {
         }
     }
 
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        startSensors();
-//        handler.post(sendDataRunnable);              WORKING ONES. UNCOMMENT LATER
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        stopSensors();
-//        handler.removeCallbacks(sendDataRunnable);
-//    }
-
-
+    /**
+     * Starts the data collection from all active sensors and schedules periodic data sending to the server.
+     */
     private void startDataCollection() {
-        messageId = 1; // Reset messageId to 1 each time data collection starts
+        messageId = 1;
         for (SensorItem item : sensorItems) {
             if (item.isToggled() && item.getHandler() != null) {
                 item.getHandler().start();
             }
         }
-        // Start sending data only if it's not already being sent
         if (!isDataCollectionActive) {
             handler.postDelayed(sendDataRunnable, SEND_INTERVAL);
             isDataCollectionActive = true;
         }
     }
 
+    /**
+     * Stops the data collection from all sensors and cancels the periodic sending of data to the server.
+     */
     private void stopDataCollection() {
         for (SensorItem item : sensorItems) {
             if (item.isToggled() && item.getHandler() != null) {
                 item.getHandler().stop();
             }
         }
-        // Stop sending data
         if (isDataCollectionActive) {
             handler.removeCallbacks(sendDataRunnable);
             isDataCollectionActive = false;
         }
     }
 
-//    private void startDataCollection() {
-//        startSensors();
-//        handler.post(sendDataRunnable);
-//    }                                                     //WORKING ONES
-//
-//    private void stopDataCollection() {
-//        stopSensors();
-//        handler.removeCallbacks(sendDataRunnable);
-//    }
-
-
-//    private void sendSensorData() {
-//        JSONArray allSensorData = collectSensorData();
-//        sendPostRequest(allSensorData);
-//
-//        // Clear sensor data after sending
-//        ((AbstractSensorHandler) accelerometerHandler).clearSensorData();
-//        ((AbstractSensorHandler) gyroscopeHandler).clearSensorData();
-//        ((AbstractSensorHandler) magnetometerHandler).clearSensorData();
-//        ((AbstractSensorHandler) lightSensorHandler).clearSensorData();
-//        ((AbstractSensorHandler) humiditySensorHandler).clearSensorData();
-//        ((AbstractSensorHandler) pressureSensorHandler).clearSensorData();
-//        ((AbstractSensorHandler) gravitySensorHandler).clearSensorData();
-//        locationTracker.clearLocationData();
-//    }
-
-//    private void sendSensorData() {
-//        JSONObject allSensorData = collectSensorData();
-//        sendPostRequest(allSensorData);
-//
-//        // Clear sensor data after sending
-//        ((AbstractSensorHandler) accelerometerHandler).clearSensorData();
-//        ((AbstractSensorHandler) gyroscopeHandler).clearSensorData();
-//        ((AbstractSensorHandler) magnetometerHandler).clearSensorData();
-//        ((AbstractSensorHandler) lightSensorHandler).clearSensorData();
-//        ((AbstractSensorHandler) humiditySensorHandler).clearSensorData();
-//        ((AbstractSensorHandler) pressureSensorHandler).clearSensorData();
-//        ((AbstractSensorHandler) gravitySensorHandler).clearSensorData();
-//        locationTracker.clearLocationData(); // Ensure locationTracker has a method to clear data
-//    }
-
+    /**
+     * Sends the collected sensor data to the server.
+     */
     private void sendSensorData() {
         JSONArray allSensorData = collectSensorData();
         sendPostRequest(allSensorData);
         clearAllSensorData();
     }
 
+    /**
+     * Clears all sensor data from the memory.
+     */
     private void clearAllSensorData() {
         accelerometerHandler.clearSensorData();
         gyroscopeHandler.clearSensorData();
@@ -353,10 +272,14 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * Collects data from all initialized sensors and returns it in a JSONArray.
+     *
+     * @return JSONArray containing data from all sensors.
+     */
     private JSONArray collectSensorData() {
         JSONArray allSensorData = new JSONArray();
         try {
-            // Directly add all elements of each sensor's data to the single array
             addAllSensorData(allSensorData, accelerometerHandler.getSensorData());
             addAllSensorData(allSensorData, gyroscopeHandler.getSensorData());
             addAllSensorData(allSensorData, lightSensorHandler.getSensorData());
@@ -364,112 +287,40 @@ public class MainActivity extends Activity {
             addAllSensorData(allSensorData, pressureSensorHandler.getSensorData());
             addAllSensorData(allSensorData, gravitySensorHandler.getSensorData());
             addAllSensorData(allSensorData, magnetometerHandler.getSensorData());
-            addAllSensorData(allSensorData, locationTracker.getLocationData());
+            addAllSensorData(allSensorData, locationTracker.getSensorData());
             if (soundLevelHandler != null) {
                 addAllSensorData(allSensorData, soundLevelHandler.getSensorData());
             }
-            // add other sensors similarly
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return allSensorData;
     }
 
+    /**
+     * Adds sensor data from a specific sensor into a collective JSONArray.
+     *
+     * @param allSensorData JSONArray containing all collected sensor data.
+     * @param sensorData    JSONArray containing data from a specific sensor.
+     * @throws JSONException If there is a problem parsing the data.
+     */
     private void addAllSensorData(JSONArray allSensorData, JSONArray sensorData) throws JSONException {
         for (int i = 0; i < sensorData.length(); i++) {
             allSensorData.put(sensorData.get(i));
         }
     }
 
-
-//    private JSONArray collectSensorData() {
-//        JSONArray allSensorData = new JSONArray();
-//        try {
-//            // Concatenate all sensor data arrays into one array
-//            allSensorData.put(new JSONArray(accelerometerHandler.getSensorData().toString()));
-//            allSensorData.put(new JSONArray(gyroscopeHandler.getSensorData().toString()));
-//            allSensorData.put(new JSONArray(lightSensorHandler.getSensorData().toString()));
-//            allSensorData.put(new JSONArray(humiditySensorHandler.getSensorData().toString()));
-//            allSensorData.put(new JSONArray(pressureSensorHandler.getSensorData().toString()));
-//            allSensorData.put(new JSONArray(gravitySensorHandler.getSensorData().toString()));
-//            allSensorData.put(new JSONArray(magnetometerHandler.getSensorData().toString()));
-//            allSensorData.put(new JSONArray(locationTracker.getLocationData().toString()));
-//            // add other sensors similarly
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return allSensorData;
-//    }
-
-    // Code with second working version, where the expandable buttons have sensor names:
-//    private JSONObject collectSensorData() {
-//        JSONObject allSensorData = new JSONObject();
-//        try {
-//            allSensorData.put("accelerometer", ((AbstractSensorHandler) accelerometerHandler).getSensorData());
-//            allSensorData.put("gyroscope", ((AbstractSensorHandler) gyroscopeHandler).getSensorData());
-//            allSensorData.put("light", ((AbstractSensorHandler) lightSensorHandler).getSensorData());
-//            allSensorData.put("humidity", ((AbstractSensorHandler) humiditySensorHandler).getSensorData());
-//            allSensorData.put("pressure", ((AbstractSensorHandler) pressureSensorHandler).getSensorData());
-//            allSensorData.put("gravity", ((AbstractSensorHandler) gravitySensorHandler).getSensorData());
-//            allSensorData.put("magnetometer", ((AbstractSensorHandler) magnetometerHandler).getSensorData());
-//            allSensorData.put("location", locationTracker.getLocationData());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return allSensorData;
-//    }
-
-
-    // The code with first working version:
-//    private JSONArray collectSensorData() {
-//        JSONArray allSensorData = new JSONArray();
-//        allSensorData.put(((AbstractSensorHandler) accelerometerHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) gyroscopeHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) magnetometerHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) lightSensorHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) humiditySensorHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) pressureSensorHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) gravitySensorHandler).getSensorData());
-//        allSensorData.put(locationTracker.getLocationData());
-//        return allSensorData;
-//    }
-
-    private void startSensors() {
-        accelerometerHandler.start();
-        gyroscopeHandler.start();
-        magnetometerHandler.start();
-        lightSensorHandler.start();
-        humiditySensorHandler.start();
-        pressureSensorHandler.start();
-        gravitySensorHandler.start();
-        locationTracker.start();
-        if (soundLevelHandler != null) { // Check if initialized
-            soundLevelHandler.start();
-        }
-    }
-
-    private void stopSensors() {
-        accelerometerHandler.stop();
-        gyroscopeHandler.stop();
-        magnetometerHandler.stop();
-        lightSensorHandler.stop();
-        humiditySensorHandler.stop();
-        pressureSensorHandler.stop();
-        gravitySensorHandler.stop();
-        locationTracker.stop();
-        if (soundLevelHandler != null) { // Check if initialized
-            soundLevelHandler.stop();
-        }
-    }
-
-
+    /**
+     * Configures and sends a POST request with sensor data to the server.
+     *
+     * @param sensorData JSONArray containing the sensor data to send.
+     */
     private void sendPostRequest(JSONArray sensorData) {
-        String url = "http://139.59.110.28:3838/sensorloggermobileappagent/update";    //https://eo5qowv4nlk2w03.m.pipedream.net   // http://139.59.110.28:3838/    //http://10.0.2.2:3838/sensorloggermobileappagent/update      //https://eou1bwdjb3p7r6h.m.pipedream.net   //http://192.168.1.60:3838/sensorloggermobileappagent/update
+        String url = "http://139.59.110.28:3838/sensorloggermobileappagent/update";
         RequestQueue queue = Volley.newRequestQueue(this);
         String sessionId = UUID.randomUUID().toString();
-        String deviceId = DeviceIdManager.getDeviceId(this); // Assuming DeviceIdManager is accessible here
+        String deviceId = DeviceIdManager.getDeviceId(this);
 
-        // Create a JSONObject to structure the data according to the required format
         JSONObject postData = new JSONObject();
         try {
             postData.put("deviceId", deviceId);
@@ -478,10 +329,8 @@ public class MainActivity extends Activity {
             postData.put("sessionId", sessionId);
         } catch (JSONException e) {
             e.printStackTrace();
-            // Handle the error appropriately
         }
 
-        // Convert the structured JSONObject to String
         final String requestBody = postData.toString();
 
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
@@ -502,193 +351,3 @@ public class MainActivity extends Activity {
         queue.add(postRequest);
     }
 }
-
-//    private int generateMessageId() {
-//        return new Random().nextInt(1000);
-//    }
-//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//package com.example.notsensorlogger2;
-//
-//import android.app.Activity;
-//import android.content.Intent;
-//import android.os.Bundle;
-//import android.hardware.SensorManager;
-//import android.util.Log;
-//import android.view.View;
-//import android.widget.ImageView;
-//
-//import com.android.volley.Request;
-//import com.android.volley.RequestQueue;
-//import com.android.volley.Response;
-//import com.android.volley.VolleyError;
-//import com.android.volley.toolbox.StringRequest;
-//import com.android.volley.toolbox.Volley;
-//import com.example.notsensorlogger2.gpsfunctionality.MainActivity2;
-//
-//import org.json.JSONArray;
-//import org.json.JSONException;
-//import org.json.JSONObject;
-//
-//import java.nio.charset.StandardCharsets;
-//import java.util.Random;
-//import java.util.UUID;
-//
-//public class MainActivity extends Activity {
-//    private SensorManager sensorManager;
-//    private SensorHandler accelerometerHandler;
-//    private SensorHandler gyroscopeHandler;
-//    private SensorHandler magnetometerHandler;
-//    private SensorHandler lightSensorHandler;
-//    private SensorHandler humiditySensorHandler;
-//    private SensorHandler pressureSensorHandler;
-//    private SensorHandler gravitySensorHandler;
-//    private LocationHandler locationTracker; // Make sure this is the updated LocationHandler
-//    private String deviceId;
-//
-//    @Override
-//    public final void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-//        deviceId = DeviceIdManager.getDeviceId(this);
-//        Log.d("DeviceId", "Device ID: " + deviceId);
-//
-//        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-//        accelerometerHandler = new AccelerometerHandler(sensorManager);
-//        gyroscopeHandler = new GyroscopeHandler(sensorManager);
-//        magnetometerHandler = new MagnetometerHandler(sensorManager);
-//        lightSensorHandler = new LightSensorHandler(sensorManager);
-//        humiditySensorHandler = new RelativeHumiditySensorHandler(sensorManager);
-//        pressureSensorHandler = new PressureSensorHandler(sensorManager);
-//        gravitySensorHandler = new GravitySensorHandler(sensorManager);
-//        locationTracker = new LocationHandler(this); // Initialize the LocationHandler
-//
-//        ImageView imageView = (ImageView) findViewById(R.id.locationButton); // Replace with your ImageView ID
-//        imageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-//                startActivity(intent);
-//            }
-//        });
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        accelerometerHandler.start();
-//        gyroscopeHandler.start();
-//        magnetometerHandler.start();
-//        lightSensorHandler.start();
-//        humiditySensorHandler.start();
-//        pressureSensorHandler.start();
-//        gravitySensorHandler.start();
-//        locationTracker.start(); // Start the LocationHandler
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        accelerometerHandler.stop();
-//        gyroscopeHandler.stop();
-//        magnetometerHandler.stop();
-//        lightSensorHandler.stop();
-//        humiditySensorHandler.stop();
-//        pressureSensorHandler.stop();
-//        gravitySensorHandler.stop();
-//        locationTracker.stop(); // Stop the LocationHandler
-//
-//        // Collect sensor data
-//        JSONArray allSensorData = new JSONArray();
-//        allSensorData.put(((AbstractSensorHandler) accelerometerHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) gyroscopeHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) magnetometerHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) lightSensorHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) humiditySensorHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) pressureSensorHandler).getSensorData());
-//        allSensorData.put(((AbstractSensorHandler) gravitySensorHandler).getSensorData());
-//        allSensorData.put(locationTracker.getLocationData());
-//
-//        // Send the sensor data
-//        sendPostRequest(allSensorData);
-//    }
-//
-//    private void sendPostRequest(JSONArray sensorData) {
-//        String url = "https://eo5qowv4nlk2w03.m.pipedream.net"; // http://192.168.1.60:3838/sensorloggermobileappagent/update          //  https://eou1bwdjb3p7r6h.m.pipedream.net  //https://eo1kqlcacw69s9d.m.pipedream.net/
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//
-//        // Generate a session ID and message ID as needed
-//        String sessionId = UUID.randomUUID().toString(); // Example, use an actual session management
-//        int messageId = generateMessageId(); // Implement this method to generate a message ID
-//
-//        try {
-//            // Wrap your sensor data inside a JSONObject with the expected structure
-//            JSONObject payloadWrapper = new JSONObject();
-//            payloadWrapper.put("deviceId", deviceId);
-//            payloadWrapper.put("messageId", messageId);
-//            payloadWrapper.put("payload", sensorData); // Your existing sensor data JSONArray
-//            payloadWrapper.put("sessionId", sessionId);
-//
-//            // Convert the whole payload to a JSON string
-//            final String requestBody = payloadWrapper.toString();
-//
-//            // Create the request with the proper body and headers
-//            StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-//                    new Response.Listener<String>() {
-//                        @Override
-//                        public void onResponse(String response) {
-//                            Log.d("Response", response);
-//                        }
-//                    },
-//                    new Response.ErrorListener() {
-//                        @Override
-//                        public void onErrorResponse(VolleyError error) {
-//                            Log.d("Error.Response", error.toString());
-//                        }
-//                    }
-//            ) {
-//                @Override
-//                public byte[] getBody() {
-//                    return requestBody.getBytes(StandardCharsets.UTF_8);
-//                }
-//
-//                @Override
-//                public String getBodyContentType() {
-//                    return "application/json; charset=utf-8";
-//                }
-//            };
-//
-//            queue.add(postRequest);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private int generateMessageId() {
-//        // Replace this with your own logic to generate a message ID
-//        return new Random().nextInt(1000);
-//    }
-//
-//}

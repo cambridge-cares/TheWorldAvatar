@@ -1,12 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
 
     <style name="Theme.YourAppName" parent="Theme.Material3.Light">
-        <!-- Customize your theme here. -->
+
     </style>
 
     <style name="Base.Theme.NotSensorLogger2" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+
     </style>
 </resources>

@@ -19,7 +19,7 @@
             android:layout_marginTop="8dp"
             android:src="@drawable/ic_sensor_placeholder"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" /> <!-- Replace with your actual sensor icons -->
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/sensor_name"
