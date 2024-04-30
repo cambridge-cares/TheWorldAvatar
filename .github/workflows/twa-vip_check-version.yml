@@ -13,7 +13,8 @@ on:
     branches:
       - main
     paths:
-      - web/twa-vis-platform/**
+      - 'web/twa-vis-platform/**'
+      - '!web/twa-vis-platform/**/README.md'
 
 
 # Job definitions
