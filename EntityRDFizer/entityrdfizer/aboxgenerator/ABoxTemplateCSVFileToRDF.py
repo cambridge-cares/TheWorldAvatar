@@ -94,6 +94,7 @@ def standard_data_types():
 
 DATA_TYPES = standard_data_types()
 
+""" Global variables """
 """Declared an array to maintain the list of already created instances"""
 instances = {}
 instancesShort = {}
@@ -601,7 +602,23 @@ def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None
     #print(tBox.triples)
     #print(tBox.classRel)
 
-    with open(input_path, 'rt', encoding="utf-8") as csvfile:
+    try:
+        _read_as_encoding(input_path, encode="utf-8")
+        #print("Finished UTF-8 encoding")
+    except UnicodeDecodeError:
+        _read_as_encoding(input_path)
+        #print("Finished DEFAULT encoding")
+    except Exception as e:
+        print("Failed to read abox csv file. Exception ", e)
+
+    g.serialize(destination=output_file_path, format="application/rdf+xml")
+    print(f"Conversion complete. Abox created at '{output_file_path}'.")
+    print(f"Total number of warnings in entityrdfizer = {WARNING_COUNT}.")
+    #save_instances( "list_of_instances.csv" )
+
+def _read_as_encoding(input_path, encode=None):
+    input_name = os.path.basename(input_path)
+    with open(input_path, 'rt', encoding=encode) as csvfile:
         rows = csv.reader(csvfile, skipinitialspace=True)
         for line_count, csv_row in enumerate(rows):
             _serialize_csv_row(csv_row, input_name, line_count)
@@ -612,11 +629,7 @@ def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None
         else:
             if line_count > 200000:
                 print("Finished reading .csv file, start generating .owl")
-    g.serialize(destination=output_file_path, format="application/rdf+xml")
-    print(f"Conversion complete. Abox created at '{output_file_path}'.")
-    print(f"Total number of warnings in entityrdfizer = {WARNING_COUNT}.")
-    #save_instances( "list_of_instances.csv" )
-
+    return
 
 def convert_csv_string_into_rdf(csv_string):
     # This is a trick so that I can use csv.reader
