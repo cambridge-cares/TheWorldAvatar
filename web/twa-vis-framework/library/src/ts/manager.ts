@@ -782,8 +782,6 @@ class Manager {
      */
     public selectScenario(scenarioID: string, scenarioName: string) {
         if (this.scenarioHandler != null) {
-            if (scenarioID === this.scenarioHandler.selectedScenario) return;
-
             // Set the selected scenario
             this.scenarioHandler.selectScenario(scenarioID, scenarioName);
 
