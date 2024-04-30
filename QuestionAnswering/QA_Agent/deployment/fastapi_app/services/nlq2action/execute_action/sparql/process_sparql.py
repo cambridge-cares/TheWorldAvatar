@@ -7,7 +7,7 @@ from services.entity_store import EntityStore
 logger = logging.getLogger(__name__)
 
 
-class SparqlPostProcessor:
+class SparqlProcessor:
     def __init__(self, entity_store: EntityStore, ns2uri: Dict[str, str] = dict()):
         self.entity_store = entity_store
         self.ns2uri = ns2uri
@@ -136,6 +136,6 @@ class SparqlPostProcessor:
                 idx = end + 1
         return sparql
 
-    def postprocess(self, sparql: str):
+    def process(self, sparql: str):
         sparql = self.inject_service_endpoint(sparql)
         return self.link_entities(sparql)

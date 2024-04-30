@@ -12,7 +12,7 @@ from core.kg import KgClient
 from utils.collections import FrozenDict
 from utils.rdf import flatten_sparql_response
 from ..model import SparqlAction
-from .postprocess import SparqlPostProcessor
+from .process_sparql import SparqlProcessor
 
 
 logger = logging.getLogger(__name__)
@@ -34,6 +34,8 @@ PREFIX grp: <http://www.opengis.net/citygml/cityobjectgroup/2.0/>
 PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
 PREFIX carpark:	<https://www.theworldavatar.com/kg/ontocarpark/>
 PREFIX landplot: <https://www.theworldavatar.com/kg/landplot/>
+PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
 PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
 PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>
 PREFIX ontoplanreg: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
@@ -45,7 +47,7 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
 
     def __init__(self, ns2kg: Dict[str, KgClient], entity_linker: EntityStore):
         self.ns2kg = ns2kg
-        self.postprocessor = SparqlPostProcessor(
+        self.processor = SparqlProcessor(
             entity_linker, ns2uri={ns: kg.sparql.endpoint for ns, kg in ns2kg.items()}
         )
         self.entity_linker = entity_linker
@@ -55,7 +57,7 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
 
         logger.info("Input query:\n" + action.query)
         timestamp = time.time()
-        query, varnames = self.postprocessor.postprocess(action.query)
+        query, varnames = self.processor.process(action.query)
         latency = time.time() - timestamp
         logger.info("Processed query:\n" + query)
         steps.append(

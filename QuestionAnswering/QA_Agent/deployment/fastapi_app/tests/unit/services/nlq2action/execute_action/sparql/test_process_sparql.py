@@ -2,11 +2,11 @@ from typing import List, Optional, Tuple
 
 
 from services.entity_store import EntityStore
-from services.nlq2action.execute_action.sparql.postprocess import SparqlPostProcessor
+from services.nlq2action.execute_action.sparql.process_sparql import SparqlProcessor
 from tests.exceptions import UnexpectedMethodCallError
 
 
-class TestSparqlPostProcessor:
+class TestSparqlProcessor:
     class MockEntityStore(EntityStore):
         def __init__(
             self,
@@ -48,7 +48,7 @@ class TestSparqlPostProcessor:
                 ),
             ]
         )
-        postprocessor = SparqlPostProcessor(entity_linker)
+        processor = SparqlProcessor(entity_linker)
 
         sparql_in = """SELECT ?LandUseType ?AirUseType ?Plot WHERE {
     VALUES ?LandUseType { <LandUseType:"residential"> }
@@ -65,7 +65,7 @@ class TestSparqlPostProcessor:
         expected_varnames = ["LandUseType", "AirUseType"]
 
         # Act
-        actual_sparql, actual_varnames = postprocessor.link_entities(sparql_in)
+        actual_sparql, actual_varnames = processor.link_entities(sparql_in)
 
         # Assert
         assert actual_sparql == expected_sparql
@@ -78,7 +78,7 @@ class TestSparqlPostProcessor:
             "ontop": "http://example.org/ontop/sparql",
             "bg": "http://example.come/blazegraph/sparql",
         }
-        postprocessor = SparqlPostProcessor(entity_store=entity_store, ns2uri=ns2uri)
+        processor = SparqlProcessor(entity_store=entity_store, ns2uri=ns2uri)
 
         sparql_in = """SELECT ?s ?p ?o WHERE {
     ?s ?p ?o .
@@ -100,7 +100,7 @@ class TestSparqlPostProcessor:
 }"""
 
         # Act
-        actual = postprocessor.inject_service_endpoint(sparql_in)
+        actual = processor.inject_service_endpoint(sparql_in)
 
         # Assert
         assert actual == expected
