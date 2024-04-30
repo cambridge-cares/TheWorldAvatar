@@ -12,7 +12,7 @@ def csv2rdf_wrapper(
         #print( "The TBox path is '" + str(csvTbox) + "'." )
         run_abox_generator(csvFileOrDirPath,outDir,csvTbox)
     elif csvType.lower() == 'tbox':
-        run_tbox_generator(csvFileOrDirPath,outDir,csvTbox)
+        run_tbox_generator(csvFileOrDirPath,outDir)
     else:
         print("Error: Wrong csvType argument. Please choose between the 'abox' or 'tbox' options.")
 
