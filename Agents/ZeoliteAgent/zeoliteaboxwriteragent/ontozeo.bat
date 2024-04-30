@@ -9,12 +9,14 @@ set SRCDIR=python/
 set DATADIR=ontozeolite
 
 rem Blazegraph server and namespace:
-rem local computer:
-set SERVER=
+rem For example, local computer:
+set SERVER=http://localhost:8080/blazegraph/namespace/
 set NAMESPACE=zeo06g
-rem remove server:
+set AUTHFILE=
+rem For example: remove server:
 rem set SERVER=http://178.128.105.213:3838/blazegraph-dev/ui/namespace/
 rem set NAMESPACE=ontozeo
+rem set AUTHFILE=blazedev.auth
 
 if "%~1"=="" (
     rem Default = preparation of data.
@@ -51,8 +53,9 @@ call zeolite.bat csv  %DATADIR%
 rem Zeolite-specific data *.csv to .owl files:
 call zeolite.bat owl %DATADIR%
 
+:START
 rem Upload all data to Blazegraph server:
-call upload_cryst.bat  %SERVER% %NAMESPACE%
+call upload_cryst.bat  %SERVER% %NAMESPACE% %AUTHFILE%
 
 rem Testing data on the server:
 echo Need to run tests of data on server

@@ -62,13 +62,13 @@ rem echo Generate zeolite owl
 mkdir %DATADIR%\zeolite\owl\
 
 csv2rdf %DATADIR%/zeolite/csv/100/all.csv --csvType=abox
-mv %DATADIR%\zeolite\csv\100\all.csv.owl %DATADIR%\zeolite\owl\ontozeolite_kg_01.owl
+move %DATADIR%\zeolite\csv\100\all.csv.owl %DATADIR%\zeolite\owl\ontozeolite_kg_01.owl
 
 csv2rdf %DATADIR%/zeolite/csv/200/all.csv --csvType=abox
-mv %DATADIR%\zeolite\csv\200\all.csv.owl %DATADIR%\zeolite\owl\ontozeolite_kg_02.owl
+move %DATADIR%\zeolite\csv\200\all.csv.owl %DATADIR%\zeolite\owl\ontozeolite_kg_02.owl
 
 csv2rdf %DATADIR%/zeolite/csv/300/all.csv --csvType=abox
-mv %DATADIR%\zeolite\csv\300\all.csv.owl %DATADIR%\zeolite\owl\ontozeolite_kg_03.owl
+move %DATADIR%\zeolite\csv\300\all.csv.owl %DATADIR%\zeolite\owl\ontozeolite_kg_03.owl
 
 goto EXIT
 

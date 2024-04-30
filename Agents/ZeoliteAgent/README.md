@@ -28,7 +28,7 @@ The code uses several external packages. It is recommended to use a virtual envi
 
 Install third-party package `pymatgen`:
 
-`(<venv_name>) pip install pymatgen$`
+`(<venv_name>) $ pip install pymatgen`
 
 More information can be found at their [official web-site](https://pymatgen.org/installation.html).
 
@@ -40,7 +40,7 @@ and NOT from 'pip install'.
 Pip install currently has version 1.3 or 1.4.
 Command line to install:
 
-`(<venv_name>) pip install --no-cache-dir --force-reinstall git+https://github.com/sciunto-org/python-bibtexparser@main`
+`(<venv_name>) $ pip install --no-cache-dir --force-reinstall git+https://github.com/sciunto-org/python-bibtexparser@main`
 
 More information can be found at their [official web-site](https://github.com/sciunto-org/python-bibtexparser).
 Also download a file with [journal abbreviations](https://github.com/jxhe/bib-journal-abbreviation/blob/master/journals.json)
@@ -58,15 +58,17 @@ Install Third-party package `pyuploader`:
 
 More details on the [TWA web-site](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_uploader).
 
-Before instantiation change the SERVER and NAMESPACE
-variables in file `ontozeo.bat`
-to a valid server address and an empty namespace on that server.
-Add a password file for the blazegraph server, if the server requires authentication:
-a file `blazedev.auth` in the root directory must contain one line: `username:password`.
+Before instantiation set the following
+variables in file `ontozeo.bat`:
+- SERVER to a valid server address
+- NAMESPACE a namespace on that server
+- AUTH if the server requires authentication add a password file for the blazegraph server,
+  otherwise leave blank..
+  Such file must contain one line: `username:password`. See example in `blazedev.auth`.
 
 Now the entire KG can be generated and uploaded by a single command:
 
-`ontozeo.bat`
+`(<venv_name>) $ ontozeo.bat`
 
 # Authors #
 Pavlo Rutkevych (pr521@cam.ac.uk), 01 Apr 2024

@@ -51,7 +51,7 @@ goto EXIT
 rem echo Generate biblio owl:
 csv2rdf %DATADIR%/biblio/csv/onto_bib.csv --csvType=abox 
 mkdir %DATADIR%\biblio\owl\
-mv %DATADIR%\biblio\csv\onto_bib.csv.owl %DATADIR%\biblio\owl\.
+move %DATADIR%\biblio\csv\onto_bib.csv.owl %DATADIR%\biblio\owl\.
 
 goto EXIT
 
