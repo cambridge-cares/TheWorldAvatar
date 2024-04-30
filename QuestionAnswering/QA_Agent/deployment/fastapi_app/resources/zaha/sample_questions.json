@@ -12,24 +12,28 @@
                     "what's the difference between Business 1 and Business 2 land use classifications?",
                     "How many land plots are designated for commercial use?",
                     "What is the area of the smallest agriculture lot?",
-                    "what is the minimum gross plot ratio of lots designated for health and medical care facilities",
-                    "average gross floor area allowed for lots for business activities"
+                    "What is the minimum gross plot ratio of lots designated for health and medical care facilities",
+                    "Average GFA allowed for lots classified for business activities",
+                    "How many land lots do not exceed their max permitted GFA?",
+                    "What is the number of plots that exceed max permitted GFA for each land use category"
                 ]
             },
             {
                 "data_domain": "sg_buildings",
                 "label": "Singapore's Buildings",
                 "questions": [
-                    "what's the building height of Jurong Island Desalination Plant",
-                    "How many restaurant buildings are there?",
-                    "What is the most common usage for buildings?"
+                    "In total, how many buildings are in Singapore?",
+                    "What's the building height of Jurong Island Desalination Plant",
+                    "What is the building footprint of Singapore Woodlands data centre",
+                    "How many office buildings are there?",
+                    "What are the 5 most common building usages?"
                 ]
             },
             {
                 "data_domain": "sg_industries",
                 "label": "Singapore's Factories & Data Centres",
                 "questions": [
-                    "what's the specific energy consumption of Springleaf Confectionery?",
+                    "What's the specific energy consumption of Springleaf Confectionery?",
                     "What is the heat emission of Keppel Datahub",
                     "Which industry has the greatest heat emission value?",
                     "What is the average thermal efficiency of food plants?",
