@@ -3,13 +3,13 @@ from pubchemagent.kgoperations.querytemplates import *
 from pubchemagent.kgoperations.getkgdata import *
 import uuid
 import re
+from functools import lru_cache
 from pubchemagent.utils.default_configs import UPDATE_ENDPOINT
 from pubchemagent.utils.url_configs import ONTOSPECIES_URL, ONTOKIN_URL, UNIT_URL
 
 if UPDATE_ENDPOINT is None:
     from pubchemagent.utils.url_configs import UPDATE_ENDPOINT 
 
-# a sample data addition function
 def insert_ontospecies(typeIRI, type, uuid, data):
     prev_key = ''
     insert_str1 = ' '
@@ -21,10 +21,10 @@ def insert_ontospecies(typeIRI, type, uuid, data):
             i = 1
         if data[item].get('reference'):
             prov_IRI = '<' + ONTOKIN_URL + 'Reference>'
-            prov_uuid = find_uuid('Reference' , prov_IRI, data[item].get('reference'))
+            prov_uuid = find_uuid_cached('Reference' , prov_IRI, data[item].get('reference'))
         else:
             prov_IRI = '<' + ONTOKIN_URL + 'Reference>'
-            prov_uuid = find_uuid('Reference' , prov_IRI, '')
+            prov_uuid = find_uuid_cached('Reference' , prov_IRI, '')
         if data[item].get('type')=='identifier':
             insert_str = pubchem_id_insert(typeIRI, type, uuid, i,  prov_uuid, data[item])
         elif data[item].get('type') in {'num_prop', 'thermo_prop'}:
@@ -32,35 +32,35 @@ def insert_ontospecies(typeIRI, type, uuid, data):
                 unit_IRI = '<' + UNIT_URL + '>'
                 unit_string = str(data[item].get('value').get('unit'))
                 unit_string=re.sub("°","deg",unit_string)
-                unit_uuid = find_uuid('Unit' , unit_IRI, unit_string)
+                unit_uuid = find_uuid_cached('Unit' , unit_IRI, unit_string)
                 if data[item].get('type')=='num_prop':
                     insert_str = pubchem_num_prop_insert(typeIRI, type, uuid, i, prov_uuid, unit_uuid, data[item])
                 elif data[item].get('type')=='thermo_prop':
                     ref_unit_string = str(data[item].get('value').get('ref_unit'))
                     ref_unit_string=re.sub("°","deg",ref_unit_string)
-                    ref_unit_uuid = find_uuid('Unit' , unit_IRI, ref_unit_string)
+                    ref_unit_uuid = find_uuid_cached('Unit' , unit_IRI, ref_unit_string)
                     ref_state_value = str(data[item].get('value').get('ref_value'))
-                    ref_state_uuid = find_ref_state_uuid(ref_state_value, ref_unit_uuid)
+                    ref_state_uuid = find_ref_state_uuid_cached(ref_state_value, ref_unit_uuid)
                     insert_str = pubchem_thermo_prop_insert(typeIRI, type, uuid, i, prov_uuid, unit_uuid, ref_state_uuid, data[item])
         elif data[item].get('type') == 'string_prop':
             insert_str = pubchem_string_prop_insert(typeIRI, type, uuid, i, prov_uuid, data[item])
         elif data[item].get('type') == 'classification':
             if data[item].get('value2'):
                 classificationIRI = '<' + ONTOSPECIES_URL + data[item].get('key') + '>'
-                classification_uuid1 = find_uuid(data[item].get('key'), classificationIRI, data[item].get('value1'), data[item].get('description') )
-                classification_uuid2 = find_uuid(data[item].get('key'), classificationIRI, data[item].get('value2'), data[item].get('description') )
+                classification_uuid1 = find_uuid_cached(data[item].get('key'), classificationIRI, data[item].get('value1'), data[item].get('description') )
+                classification_uuid2 = find_uuid_cached(data[item].get('key'), classificationIRI, data[item].get('value2'), data[item].get('description') )
                 insert_str = pubchem_hm_classification_insert(typeIRI, type, uuid, i, prov_uuid, classification_uuid1, classification_uuid2, data[item])
             else:
                 classificationIRI = '<' + ONTOSPECIES_URL + data[item].get('key') + '>'
-                classification_uuid = find_uuid(data[item].get('key'), classificationIRI, data[item].get('value'), data[item].get('description') )
+                classification_uuid = find_uuid_cached(data[item].get('key'), classificationIRI, data[item].get('value'), data[item].get('description') )
                 insert_str = pubchem_classification_insert(typeIRI, type, uuid, i, prov_uuid, classification_uuid, data[item])
         elif data[item].get('type') == 'use':
             useIRI = '<' + ONTOSPECIES_URL + data[item].get('key') + '>'
-            use_uuid = find_uuid(data[item].get('key'), useIRI, data[item].get('value'), data[item].get('description'))
+            use_uuid = find_uuid_cached(data[item].get('key'), useIRI, data[item].get('value'), data[item].get('description'))
             insert_str = pubchem_use_insert(typeIRI, type, uuid, i, prov_uuid, use_uuid, data[item])
         elif data[item].get('type') == 'group':
             groupIRI = '<' + ONTOSPECIES_URL + data[item].get('key') + '>'
-            group_uuid = find_uuid(data[item].get('key'), groupIRI, data[item].get('value'), data[item].get('description'))
+            group_uuid = find_uuid_cached(data[item].get('key'), groupIRI, data[item].get('value'), data[item].get('description'))
             insert_str = pubchem_group_insert(typeIRI, type, uuid, i, prov_uuid, group_uuid, data[item])
         elif data[item].get('type') == 'synonym':
             insert_str = pubchem_synonym_insert(type, uuid, data[item])
@@ -87,10 +87,10 @@ def insert_structure(typeIRI, type, uuid, geometry, bonds):
     geomIRI = '<http://www.theworldavatar.com/kb/ontospecies/Geometry_1_Species_' + uuid + '>'
 
     prov_IRI = '<' + ONTOKIN_URL + 'Reference>'
-    prov_uuid = find_uuid('Reference' , prov_IRI, 'https://pubchem.ncbi.nlm.nih.gov')
+    prov_uuid = find_uuid_cached('Reference' , prov_IRI, 'https://pubchem.ncbi.nlm.nih.gov')
 
     unit_IRI = '<' + UNIT_URL + '>'
-    unit_uuid = find_uuid('Unit' , unit_IRI, 'angstrom')
+    unit_uuid = find_uuid_cached('Unit' , unit_IRI, 'angstrom')
 
     for item in geometry:
         elementIRI = get_element_IRI(geometry[item].get('element'))
@@ -125,35 +125,35 @@ def insert_spectra(typeIRI, type, uuid, data):
         # check for reference
         if data[item].get('reference'):
             prov_IRI = '<' + ONTOKIN_URL + 'Reference>'
-            prov_uuid = find_uuid('Reference' , prov_IRI, data[item].get('reference'))
+            prov_uuid = find_uuid_cached('Reference' , prov_IRI, data[item].get('reference'))
         else:
             prov_IRI = '<' + ONTOKIN_URL + 'Reference>'
-            prov_uuid = find_uuid('Reference' , prov_IRI, '', 'data without reference')
+            prov_uuid = find_uuid_cached('Reference' , prov_IRI, '', 'data without reference')
 
         # check for frequency
         if data[item].get('frequency') != '':
                 unit_IRI = '<' + UNIT_URL + '>'
                 unit_string = str(data[item].get('frequency').get('unit'))
                 unit_string=re.sub("°","deg",unit_string)
-                unit_uuid = find_uuid('Unit' , unit_IRI, unit_string)
+                unit_uuid = find_uuid_cached('Unit' , unit_IRI, unit_string)
 
         # check for ionization mode
         if data[item].get('ionization_mode') != '':
                 im_IRI = '<' + ONTOSPECIES_URL + 'IonizationMode>'
                 im_string = data[item].get('ionization_mode')
-                im_uuid = find_uuid('IonizationMode' , im_IRI, im_string)
+                im_uuid = find_uuid_cached('IonizationMode' , im_IRI, im_string)
 
         # check for instrument type
         if data[item].get('instrument_type') != '':
                 it_IRI = '<' + ONTOSPECIES_URL + 'InstrumentType>'
                 it_string = data[item].get('instrument_type')
-                it_uuid = find_uuid('InstrumentType' , it_IRI, it_string)
+                it_uuid = find_uuid_cached('InstrumentType' , it_IRI, it_string)
         
         # check for instrument solvent
         if data[item].get('solvent') != '':
                 solvent_IRI = '<' + ONTOSPECIES_URL + 'Solvent>'
                 solvent_string = data[item].get('solvent')
-                solvent_uuid = find_uuid('Solvent' , solvent_IRI, solvent_string)
+                solvent_uuid = find_uuid_cached('Solvent' , solvent_IRI, solvent_string)
 
         if data[item].get('type')=='1DNMRSpectra':
             insert_str = pubchem_1DNMR_insert(uuid, i, prov_uuid, unit_uuid, solvent_uuid, it_uuid, data[item])
@@ -183,6 +183,10 @@ def find_uuid(name, typeIRI, string, comment = ''):
             kg_client.insertkg(insertStr=insert_str)
         return uuid
 
+@lru_cache(maxsize=None)
+def find_uuid_cached(name, typeIRI, string, comment=''):
+    return find_uuid(name, typeIRI, string, comment)
+
 def find_ref_state_uuid(ref_value, ref_unit_uuid):
         IRI = get_ref_uuid(ref_value, ref_unit_uuid)
         if IRI:
@@ -195,7 +199,11 @@ def find_ref_state_uuid(ref_value, ref_unit_uuid):
             kg_client = kg_operations(sparqlendpoint)
             kg_client.insertkg(insertStr=insert_str)
         return uuid
- 
+
+@lru_cache(maxsize=None)
+def find_ref_state_uuid_cached(ref_value, ref_unit_uuid):
+    return find_ref_state_uuid(ref_value, ref_unit_uuid)
+
 # create a new UUID
 def create_uuid():
     return str(uuid.uuid4())
