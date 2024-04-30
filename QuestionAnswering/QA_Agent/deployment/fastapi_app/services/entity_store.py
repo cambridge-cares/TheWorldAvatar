@@ -1,4 +1,3 @@
-from collections import defaultdict
 from functools import cache
 from importlib.resources import files
 import json
@@ -7,7 +6,6 @@ from typing import Annotated, Dict, Iterable, List, Literal, Optional, Tuple
 from fastapi import Depends
 import numpy as np
 from pydantic import TypeAdapter
-import rapidfuzz
 from redis import Redis
 from redis.commands.search.field import TextField, VectorField, TagField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
@@ -20,7 +18,6 @@ from core.embed import IEmbedder, get_embedder
 from core.redis import does_index_exist, get_redis_client
 from utils.collections import FrozenDict
 from utils.itertools_recipes import batched
-from utils.str import escape_for_redis
 
 EntityIRI = str
 EntityLabel = str
@@ -231,7 +228,9 @@ class EntityStore:
             )
         ).return_field("$.label", as_field="label")
         res = self.redis_client.ft(self.INDEX_NAME).search(query)
-        return res.docs[0].label if len(res.docs) > 0 else None
+        return (
+            regex.sub(r"\\(.)", r"\1", res.docs[0].label) if len(res.docs) > 0 else None
+        )
 
 
 @cache

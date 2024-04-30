@@ -1,13 +1,19 @@
+from functools import cache
 import logging
-from typing import Dict, List
+from typing import Annotated, Dict, List
 
-from services.entity_store import EntityStore
+from fastapi import Depends
+
+from core.kg import KgClient
+from utils.collections import FrozenDict
+from services.entity_store import EntityStore, get_entity_store
+from .kg import get_ns2kg
 
 
 logger = logging.getLogger(__name__)
 
 
-class SparqlProcessor:
+class SparqlQueryProcessor:
     def __init__(self, entity_store: EntityStore, ns2uri: Dict[str, str] = dict()):
         self.entity_store = entity_store
         self.ns2uri = ns2uri
@@ -24,8 +30,6 @@ class SparqlProcessor:
         return [token]
 
     def link_entities(self, sparql: str):
-        varnames: List[str] = []
-
         idx = 0
         while idx < len(sparql):
             # VALUES ?LandUseType { <LandUseType:\"residential\"> }
@@ -49,7 +53,7 @@ class SparqlProcessor:
                 idx += 1
             if idx >= len(sparql):
                 break
-            varname = sparql[idx_start:idx]
+            
             idx_start = idx
 
             while idx_start < len(sparql) and sparql[idx_start].isspace():
@@ -103,14 +107,13 @@ class SparqlProcessor:
                 values.extend(self._link_token(token))
 
             values = " ".join(values)
-            varnames.append(varname)
 
             sparql = "{before}{{ {values} }}{after}".format(
                 before=sparql[:idx_start], values=values, after=sparql[idx_end + 1 :]
             )
             idx = idx_start + 2 + len(values) + 2
 
-        return sparql, varnames
+        return sparql
 
     def inject_service_endpoint(self, sparql: str):
         idx = 0
@@ -139,3 +142,14 @@ class SparqlProcessor:
     def process(self, sparql: str):
         sparql = self.inject_service_endpoint(sparql)
         return self.link_entities(sparql)
+
+
+@cache
+def get_sparqlQuery_processor(
+    entity_store: Annotated[EntityStore, Depends(get_entity_store)],
+    ns2kg: Annotated[FrozenDict[str, KgClient], Depends(get_ns2kg)],
+):
+    return SparqlQueryProcessor(
+        entity_store=entity_store,
+        ns2uri={ns: kg.sparql.endpoint for ns, kg in ns2kg.items()},
+    )
