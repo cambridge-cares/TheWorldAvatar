@@ -77,7 +77,7 @@ public class ScheduledDispersion extends HttpServlet {
 
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                Instant nextUpdate = Instant.now().plus(1, ChronoUnit.HOURS);
+                Instant nextUpdate = Instant.now().plus(interval, ChronoUnit.MINUTES);
 
                 // timestamp to run dispersion simulations
                 long simTime = Instant.now().getEpochSecond();
