@@ -17,9 +17,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 @WebServlet(urlPatterns = {"/UpdateDerivations"})
 public class UpdateDerivations extends JPSAgent{
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = LogManager.getLogger(UpdateDerivations.class);
 

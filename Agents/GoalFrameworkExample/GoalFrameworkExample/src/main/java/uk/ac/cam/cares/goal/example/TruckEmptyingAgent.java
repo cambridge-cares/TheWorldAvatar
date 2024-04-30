@@ -34,10 +34,8 @@ public class TruckEmptyingAgent extends DerivationAgent  {
     private static final long serialVersionUID = 1L;
     public static final String URL_TRUCKEMPTYINGAGENT = "/TruckEmptyingAgent";
     private static final Logger LOGGER = LogManager.getLogger(TruckEmptyingAgent.class);
-
     TripleStoreClientInterface storeClient;
     SparqlClient sparqlClient;
-
     GoalClient goalClient;
     public TruckEmptyingAgent() {
         LOGGER.info("TruckEmptyingAgent is initialised.");
@@ -57,21 +55,26 @@ public class TruckEmptyingAgent extends DerivationAgent  {
     @Override
     public void processRequestParameters (DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 
+        //declare variable
         TimeSeriesClient<Instant> timeSeriesClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+        String res_msg;
 
+        //retrieve iri
         String range_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.GoalRange)).get(0);
         String realstate_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.TruckInput)).get(0);
         String goal_iri = goalClient.getInputIRIGivenGoalRangeIRI(range_iri);
 
+        //retrieve realstate value
         Integer realStateValue = (timeSeriesClient.getLatestData(realstate_iri)).getValuesAsInteger(realstate_iri).get(0);
+        //retrieve current desired value
+        Integer oldDesiredState_value = sparqlClient.getValue(goalClient.getDesiredStateIRI(goal_iri));
 
+
+        //retrieve min and max value from condition
         Integer maxvalue = sparqlClient.getMaxValue(range_iri);
         Integer minvalue = sparqlClient.getMinValue(range_iri);
 
-        String res_msg;
-
-        Integer oldDesiredState_value = sparqlClient.getValue(goalClient.getDesiredStateIRI(goal_iri));
-
+        //instantiate new desired state
         String desiredstate_iri = SparqlClient.namespace+"_"+ UUID.randomUUID().toString();
         goalClient.addHasDesiredState(goal_iri,desiredstate_iri);
         derivationOutputs.createNewEntity(desiredstate_iri, SparqlClient.getRdfTypeString(SparqlClient.Weight));
@@ -79,6 +82,7 @@ public class TruckEmptyingAgent extends DerivationAgent  {
         String value_iri = SparqlClient.namespace + UUID.randomUUID().toString();
         derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
 
+        //check if realstate within goalrange
         if (realStateValue<maxvalue && realStateValue>minvalue)
         {
             res_msg = "<TRUCK> Truck operating weight is within range, do nothing.";
@@ -94,6 +98,9 @@ public class TruckEmptyingAgent extends DerivationAgent  {
         LOGGER.info("Created a new desired value instance <" + desiredstate_iri + "> for truck, and its value instance <" + value_iri + ">");
     }
 
+    /** HTTP POST Request to call Actuator
+     * @param goal
+     */
     private void callActuator(String goal){
         JSONObject requestParams = new JSONObject();
 

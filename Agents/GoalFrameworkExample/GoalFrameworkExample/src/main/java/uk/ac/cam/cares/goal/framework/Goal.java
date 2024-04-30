@@ -34,6 +34,9 @@ import uk.ac.cam.cares.goal.example.SparqlClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
+/**
+ * Class for goal
+ */
 
 public class Goal {
     private String iri;
@@ -42,7 +45,6 @@ public class Goal {
 
     private String realState; //RealState
 
-    private String rdfType;
 
     private String agentURL;//isAchievedUsing
 

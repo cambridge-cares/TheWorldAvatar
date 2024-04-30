@@ -71,7 +71,7 @@ public class InitialiseInstances extends JPSAgent{
 			LOGGER.info("Created bin input iri <" + input_iri + ">");
 			InstancesDatabase.Input = input_iri;
 
-			// register ontoagent instances in triple store
+			//register ontoagent instances in triple store
 			String weightRdfType = SparqlClient.getRdfTypeString(SparqlClient.Weight);
 			String binInputRdfType = SparqlClient.getRdfTypeString(SparqlClient.BinInput);
 			String truckInputRdfType = SparqlClient.getRdfTypeString(SparqlClient.TruckInput);
@@ -105,7 +105,7 @@ public class InitialiseInstances extends JPSAgent{
 			// record the IRIs of the created instances to link them later
 			String inputTruck_iri = sparqlClient.createInputData(sparqlClient.TruckInput);
 
-			// attach timestamp to inputTruck_iri
+			//attach timestamp to inputTruck_iri
 			devClient.addTimeInstance(inputTruck_iri);
 
 			// the timestamp added using addTimeInstance is 0, this will ensure that the inputTruck_iri is current
@@ -144,11 +144,12 @@ public class InitialiseInstances extends JPSAgent{
 		private static void createInputTimeSeries(String input_iri, TimeSeriesClient<Instant> tsClient) {
 			tsClient.initTimeSeries(Arrays.asList(input_iri), Arrays.asList(Integer.class), null);
 
-			// create a new time series object with random numbers
+			//create a new time series object with random numbers
 			Random rand = new Random();
 			List<Instant> time_column = Arrays.asList(Instant.now());
 			List<List<?>> values = new ArrayList<>();
-			//Initialise with 0
+
+			//initialise timeseries with 0
 			List<Integer> value_column = Arrays.asList(0);
 			values.add(value_column);
 			TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(input_iri), values);

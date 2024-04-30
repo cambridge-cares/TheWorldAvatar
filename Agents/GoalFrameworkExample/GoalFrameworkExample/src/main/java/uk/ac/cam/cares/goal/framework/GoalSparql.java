@@ -34,41 +34,20 @@ import org.json.JSONArray;
 public class GoalSparql {
 
     private StoreClientInterface storeClient;
-    private String goalInstanceBaseURL; // an example of this can be
-    // "https://www.example.com/triplestore/repository/"
-
+    private String goalInstanceBaseURL; // an example of this can be // "https://www.example.com/triplestore/repository/"
     public static String goalnamespace = "https://www.theworldavatar.com/kg/ontogoal/";
-
 
     // placeholder string used by method getAllDerivations()
     private static final String PLACEHOLDER = "http://This_is_a_placeholder_string";
-    // placeholder Iri used by method getDerivation(String rootDerivationIRI)
-    private static final Iri PLACEHOLDER_IRI = iri(PLACEHOLDER);
-
-    // status concepts
-    private static String REQUESTED = "Requested";
-    private static String INPROGRESS = "InProgress";
-    private static String FINISHED = "Finished";
-    private static String ERROR = "Error";
 
     // derivation types
-    public static final String DERIVATION = "Derivation";
     public static final String GOAL = "Goal";
-
     public static final String GOALRANGE = "GoalRange";
 
-
     // prefix/namespace
-    private static Prefix prefixAgent = SparqlBuilder.prefix("agent",
-            iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
+    private static Prefix prefixAgent = SparqlBuilder.prefix("agent", iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
     private static Prefix prefixTime = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
     private static Prefix prefixGoal = SparqlBuilder.prefix("goal",iri("http://www.theworldavatar.com/ontology/Goal.owl#"));
-
-    // classes
-    private static Iri Service = prefixAgent.iri("Service");
-    private static Iri Operation = prefixAgent.iri("Operation");
-    private static Iri MessageContent = prefixAgent.iri("MessageContent");
-    private static Iri MessagePart = prefixAgent.iri("MessagePart");
     private static Iri TimePosition = prefixTime.iri("TimePosition");
     private static Iri InstantClass = prefixTime.iri("Instant");
     private static Iri UnixTime = iri("http://dbpedia.org/resource/Unix_time");
@@ -79,11 +58,6 @@ public class GoalSparql {
     // object properties
     private static Iri hasHttpUrl = prefixAgent.iri("hasHttpUrl");
     private static Iri hasOperation = prefixAgent.iri("hasOperation");
-    private static Iri hasInput = prefixAgent.iri("hasInput");
-    private static Iri hasOutput = prefixAgent.iri("hasOutput");
-    private static Iri hasMandatoryPart = prefixAgent.iri("hasMandatoryPart");
-    private static Iri hasType = prefixAgent.iri("hasType");
-    private static Iri hasName = prefixAgent.iri("hasName");
     private static Iri hasTime = prefixTime.iri("hasTime");
     private static Iri numericPosition = prefixTime.iri("numericPosition");
     private static Iri hasTRS = prefixTime.iri("hasTRS");
@@ -92,8 +66,6 @@ public class GoalSparql {
     private static Iri hasRealState = prefixGoal.iri("hasRealState");
     private static Iri hasDesiredState = prefixGoal.iri("hasDesiredState");
     private static Iri isAchievedUsing = prefixGoal.iri("isAchievedUsing");
-
-
 
 
     /**
@@ -109,23 +81,6 @@ public class GoalSparql {
     }
 
     private void addTimeInstance(Map<String, Long> entitiesTimestamp) {
-		// example complete SPARQL update string for two entities
-		// PREFIX derived:
-		// <https://www.theworldavatar.com/kg/ontoderivation/>
-		// PREFIX time: <http://www.w3.org/2006/time#>
-		// INSERT { ?instance time:hasTime ?timeInstant .
-		// ?timeInstant a time:Instant ;
-		// 	time:inTimePosition ?timeUnix .
-		// ?timeUnix a time:TimePosition ;
-		// 	time:numericPosition ?timestamp ;
-		// 	time:hasTRS <http://dbpedia.org/resource/Unix_time> . }
-		// WHERE { { SELECT ?instance ?timeInstant ?timeUnix ?timestamp
-		// WHERE {  VALUES ( ?instance ?timeInstant ?timeUnix ?timestamp )
-		//	{ (<http://entity1> <http://time_uuid1> <http://time_uuid2> 0)
-		//	(<http://entity2> <http://time_uuid3> <http://time_uuid4> 0) }
-		// FILTER NOT EXISTS { ?instance derived:belongsTo ?anyDerivation . } }
-		// FILTER NOT EXISTS { ?instance time:hasTime/time:inTimePosition/time:numericPosition ?existingTime . } }
-		// } }
 		ModifyQuery modify = Queries.MODIFY();
 		SubSelect sub = GraphPatterns.select();
 		Variable instance = SparqlBuilder.var("instance");
@@ -212,7 +167,6 @@ public class GoalSparql {
         // create a unique IRI for this new derived quantity
         return goalInstanceBaseURL + "_" +"goalRange_"+ UUID.randomUUID().toString();
     }
-
     public void createNewGoal(String goalIRI, String agent_iri, String range_iri, String realstate_iri, String desiredstate_iri){
 
         ModifyQuery modify = Queries.MODIFY();
@@ -237,34 +191,6 @@ public class GoalSparql {
 
         storeClient.executeUpdate(modify.getQueryString());
     }
-
-
-//    /**
-//     * This method retrieves a list of derivations that <isDerivedUsing> a given
-//     * <agentIRI>.
-//     *
-//     * @param kbClient
-//     * @param agentIRI
-//     * @return
-//     */
-//    List<String> getGoals(String agentIRI) {
-//        String queryKey = "goal";
-//        Variable goal = SparqlBuilder.var(queryKey);
-//        GraphPattern queryPattern = goal.has(isAchievedUsing, iri(agentIRI));
-//        SelectQuery query = Queries.SELECT();
-//
-//        query.prefix(prefixGoal, prefixAgent).select(goal).where(queryPattern);
-//        storeClient.setQuery(query.getQueryString());
-//        JSONArray queryResult = storeClient.executeQuery();
-//
-//        List<String> goals = new ArrayList<>();
-//        for (int i = 0; i < queryResult.length(); i++) {
-//            goals.add(queryResult.getJSONObject(i).getString(queryKey));
-//        }
-//
-//        return goals;
-//    }
-
 
     /**
      * This method retrieves all Goals

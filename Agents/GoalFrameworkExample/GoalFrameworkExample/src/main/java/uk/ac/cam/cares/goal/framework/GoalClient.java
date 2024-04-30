@@ -42,15 +42,9 @@ import org.json.JSONObject;
 
 
 public class GoalClient {
-
-    /**
-     * Logger for error output.
-     */
     private static final Logger LOGGER = LogManager.getLogger(GoalClient.class);
-
     public static final String GOALRANGE_KEY = "goalrange";
     public static final String REALSTATE_KEY = "realstate";
-
     StoreClientInterface kbClient;
     GoalSparql sparqlClient;
 
@@ -146,16 +140,6 @@ public class GoalClient {
     }
 
 
-//    /**
-//     * Gets a list of goals that is derived using a given agent IRI.
-//     *
-//     * @param agentIRI
-//     * @return
-//     */
-//    public List<String> getGoals(String agentIRI) {
-//        return this.sparqlClient.getGoals(agentIRI);
-//    }
-
     /**
      * Gets a list of goals
      *
@@ -169,12 +153,9 @@ public class GoalClient {
     public String getInputIRIGivenGoalRangeIRI (String goalrange_iri){
          return sparqlClient.getInputIRIGivenGoalRangeIRI(goalrange_iri);
     }
-
     public String getDesiredStateIRI (String goal_iri){
         return sparqlClient.getDesiredStateIRI(goal_iri);
     }
-
-
     public void addHasDesiredState(String goalrange_iri, String desired_state_iri) {
         sparqlClient.addHasDesiredState(goalrange_iri,desired_state_iri);
     }

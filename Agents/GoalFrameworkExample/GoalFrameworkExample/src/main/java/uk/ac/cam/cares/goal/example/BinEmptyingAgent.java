@@ -53,20 +53,26 @@ public class BinEmptyingAgent extends DerivationAgent  {
     @Override
     public void processRequestParameters (DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 
+        //init
         TimeSeriesClient<Instant> timeSeriesClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+        String res_msg;
+
+        //retrieve iris
         String range_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.GoalRange)).get(0);
         String realstate_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Weight)).get(0);
         String goal_iri = goalClient.getInputIRIGivenGoalRangeIRI(range_iri);
 
+        //retrieve realstate value
         Integer realStateValue = (timeSeriesClient.getLatestData(realstate_iri)).getValuesAsInteger(realstate_iri).get(0);
 
+        //retrieve maxvalue and minvalue from goalrange condition
         Integer maxvalue = sparqlClient.getMaxValue(range_iri);
         Integer minvalue = sparqlClient.getMinValue(range_iri);
 
-        String res_msg;
-
+        //retrieve current desiredstate value
         Integer oldDesiredState_value = sparqlClient.getValue(goalClient.getDesiredStateIRI(goal_iri));
 
+        //instantiate new desiredValue iri
         String desiredstate_iri = SparqlClient.namespace+"_"+ UUID.randomUUID().toString();
         goalClient.addHasDesiredState(goal_iri,desiredstate_iri);
         derivationOutputs.createNewEntity(desiredstate_iri, SparqlClient.getRdfTypeString(SparqlClient.Weight));
@@ -74,6 +80,7 @@ public class BinEmptyingAgent extends DerivationAgent  {
         String value_iri = SparqlClient.namespace + UUID.randomUUID().toString();
         derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
 
+        //check if realstatevalue within goalrange condition
         if (realStateValue<maxvalue && realStateValue>minvalue)
         {
             res_msg = "<BIN> Bin operating weight within range, nothing is done.";
@@ -89,6 +96,10 @@ public class BinEmptyingAgent extends DerivationAgent  {
         LOGGER.info("Created a new desired value instance <" + desiredstate_iri + "> for bin, and its value instance <" + value_iri + ">");
     }
 
+    /**
+     * HTTP POST to call actuator
+     * @param goal
+     */
     private void callActuator(String goal) {
 
         JSONObject requestParams = new JSONObject();

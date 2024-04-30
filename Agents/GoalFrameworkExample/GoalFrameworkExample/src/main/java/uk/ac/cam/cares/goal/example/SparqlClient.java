@@ -25,28 +25,20 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 
 public class SparqlClient {
-
     StoreClientInterface storeClient;
 
     // namespace
     public static String namespace = "http://goalframework_example#";
     public static String om_namespace = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
-
     public static String prefix = "goalframework";
     public static String prefix_om = "om";
     private static Prefix p_namespace = SparqlBuilder.prefix(prefix, iri(namespace));
     private static Prefix p_om_namespace = SparqlBuilder.prefix(prefix_om, iri(om_namespace));
 
     // rdf:type
-
     public static Iri GoalRange = p_namespace.iri("GoalRange");
-
     public static Iri Weight = p_om_namespace.iri("Weight"); // has a time series instance
     public static Iri ScalarValue = p_namespace.iri("ScalarValue");
-    public static Iri DesiredState = p_namespace.iri("DesiredState");
-
-    public static Iri Truck = p_namespace.iri("Truck");
-
     public static Iri BinInput = p_namespace.iri("BinInput");
     public static Iri TruckInput = p_namespace.iri("TruckInput");
 
@@ -76,6 +68,10 @@ public class SparqlClient {
     }
 
 
+    /** Create inputIRI based on input data type
+     * @param inputRdfType
+     * @return
+     */
     public String createInputData(Iri inputRdfType) {
 
         String inputIRI = namespace + UUID.randomUUID().toString();
@@ -92,7 +88,6 @@ public class SparqlClient {
 
     /**
      * This method returns the rdf:type in the string format of the given class.
-     *
      * @param clz
      * @return
      */
@@ -122,9 +117,9 @@ public class SparqlClient {
     }
 
     /**
-     * creates a new GoalRange instance
-     * <iri> a <GoalRange>
-     * <iri> a owl:NamedIndividual
+     * Create range condition
+     * <iri> goal:hasMaximum maximum
+     * <iri> goal:hasMinimum minimum
      * @param
      * @return
      */
@@ -267,7 +262,7 @@ public class SparqlClient {
     }
 
     /**
-     * query <instance> <hasValue> ?x, ?x <numericalValue> ?value
+     * Query <instance> <hasMaximum> ?x
      * @param instance
      * @return
      */
@@ -286,7 +281,7 @@ public class SparqlClient {
     }
 
     /**
-     * query <instance> <hasValue> ?x, ?x <numericalValue> ?value
+     * Query <instance> <hasMinimum> ?x
      * @param instance
      * @return
      */
@@ -306,6 +301,8 @@ public class SparqlClient {
 
 
     /**
+     * Create DesiredValue_IRI
+     * @return
      */
     public String createDesiredValue() {
         String desiredValue_iri = namespace + UUID.randomUUID().toString();

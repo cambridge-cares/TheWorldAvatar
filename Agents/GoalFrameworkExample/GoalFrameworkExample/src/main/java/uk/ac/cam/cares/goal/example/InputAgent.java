@@ -32,28 +32,29 @@ public class InputAgent extends JPSAgent {
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		Config.initProperties();
+		//init
+        Config.initProperties();
         RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
         SparqlClient sparqlClient = new SparqlClient(storeClient);
         DerivationClient devClient = new DerivationClient(storeClient, InitialiseInstances.goalInstanceBaseURL);
-
-        //Declare local input_iri variable
+        TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
         String input_iri;
 
+        //get input_type and input_value
         this.input_type = requestParams.getString(INPUT_KEY);
         this.input_value = requestParams.getInt(INPUT_NUMBER_KEY);
 
-        //Retrieve input IRI from InstanceDatabase
+        //Retrieve input_iri from InstanceDatabase
         if (InstancesDatabase.Input == null || InstancesDatabase.InputTruck ==null) {
             InstancesDatabase.Input = sparqlClient.getInputIRI(sparqlClient.BinInput);
             InstancesDatabase.InputTruck = sparqlClient.getInputIRI(sparqlClient.TruckInput);
         }
-        TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 
-        //Add value based on input type
+        //Declare variable for timeseriesClient
         List<Integer> value_column;
         List<Instant> time_column = Arrays.asList(Instant.now());
 
+        //Add value based on input_type (i.e., either truck or bin)
         if(input_type.equals(TRUCK_INSTANCE_KEY)){
             input_iri = InstancesDatabase.InputTruck;
             value_column = Arrays.asList(input_value);
@@ -62,7 +63,9 @@ public class InputAgent extends JPSAgent {
             value_column = Arrays.asList(input_value);
         }else{
             return new JSONObject().put("status", "Wrong input type given");
-            }
+        }
+
+        //Add into timeseries into input_iri timeseries
         List<List<?>> values = new ArrayList<>();
         values.add(value_column);
         TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(input_iri), values);
