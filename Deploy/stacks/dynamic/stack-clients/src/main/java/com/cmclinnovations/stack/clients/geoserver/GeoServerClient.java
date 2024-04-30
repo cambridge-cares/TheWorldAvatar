@@ -317,17 +317,15 @@ public class GeoServerClient extends ContainerClient {
     private void processDimensions(GeoServerDimensionSettings dimensionSettings, GSResourceEncoder resourceEncoder) {
         Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions = dimensionSettings.getDimensions();
         if (null != dimensions) {
-            dimensions.entrySet()
-                    .forEach(entry -> {
-                        String dimName = entry.getKey();
-                        if (!dimName.startsWith(DIM_PREFIX) && !dimName.equals("time")
-                                && !dimName.equals("elevation")) {
-                            throw new RuntimeException(
-                                    "When using a GeoServer custom dimension (i.e. not `time` or `elevation) the name `"
-                                            + dimName + "` must begin with the prefix `dim_`.");
-                        }
-                        resourceEncoder.setMetadataDimension(dimName, entry.getValue());
-                    });
+            dimensions.forEach((dimName, value) -> {
+                if (!dimName.startsWith(DIM_PREFIX) && !dimName.equals("time")
+                        && !dimName.equals("elevation")) {
+                    throw new RuntimeException(
+                            "When using a GeoServer custom dimension (i.e. not `time` or `elevation) the name `"
+                                    + dimName + "` must begin with the prefix `dim_`.");
+                }
+                resourceEncoder.setMetadataDimension(dimName, value);
+            });
         }
     }
 
