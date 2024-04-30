@@ -8,7 +8,7 @@ from fastapi import Depends
 
 from model.qa import QAStep
 from core.func_call import IFuncCaller, get_func_caller
-from services.support_data import DataSupporter
+from services.support_data import DataSupporter, TableDataItem
 from .agent_connector import AgentConnectorBase
 from .sg_buildings import (
     SGBuildingsAgentConnector,
@@ -87,7 +87,9 @@ class AgentConnectorMediator(DataSupporter):
             method_name=func_name, args=func_args
         )
 
-        return steps + connector_steps, data
+        return steps + connector_steps, [
+            TableDataItem(vars=data.vars, bindings=data.bindings)
+        ]
 
 
 @cache

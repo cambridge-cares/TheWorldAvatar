@@ -94,8 +94,9 @@ UI Components
 ------------------------------
 */
 
-function renderDataTable(vars, bindings, id, containerElem) {
-    let content = `<table id=${id} class='table table-striped table-bordered' style='width: 100%;'><thead><tr>`
+function renderDataTable(vars, bindings, parentElem, id) {
+    let tableId = id + "-table"
+    let content = `<table id=${tableId} class='table table-striped table-bordered' style='width: 100%;'><thead><tr>`
 
     content += "<th>#</th>"
     vars.forEach(varname => {
@@ -121,12 +122,56 @@ function renderDataTable(vars, bindings, id, containerElem) {
     })
 
     content += "</tbody></table>"
-    containerElem.innerHTML = content;
 
-    return new DataTable('#' + id, {
+    let tableContainer = document.createElement("div")
+    tableContainer.id = id + "-table-container"
+    tableContainer.innerHTML = content;
+
+    let toggleBtn = document.createElement("button")
+    toggleBtn.type = "button"
+    toggleBtn.className = "btn btn-info"
+    toggleBtn.style = "margin-bottom: 1rem;"
+    toggleBtn.innerHTML = "Hide IRIs"
+
+    let elem = document.createElement("div")
+    elem.id = id
+    elem.appendChild(toggleBtn)
+    elem.appendChild(tableContainer)
+
+    parentElem.appendChild(elem)
+
+    let table = new DataTable('#' + tableId, {
         retrieve: true,
         scrollX: true,
     });
+
+
+    toggleBtn.addEventListener("click", () => {
+        const rowNum = table.rows().count()
+        if (rowNum == 0) {
+            return
+        }
+
+        let isShowingIRI = toggleBtn.innerHTML === "Hide IRIs"
+
+        const rowData = table.row(0).data()
+        const IRIcolIdx = rowData.reduce((arr, val, idx) => {
+            if (TWA_ABOX_IRI_PREFIXES.some(prefix => val.startsWith(prefix))) {
+                arr.push(idx)
+            }
+            return arr
+        }, [])
+        IRIcolIdx.forEach(colIdx => {
+            const col = table.column(colIdx)
+            col.visible(!isShowingIRI)
+        })
+
+        if (isShowingIRI) {
+            toggleBtn.innerHTML = "Show IRIs"
+        } else {
+            toggleBtn.innerHTML = "Hide IRIs"
+        }
+    })
 }
 
 function renderBootstrapTable(vars, bindings, id, containerElem) {
@@ -159,34 +204,22 @@ function renderBootstrapTable(vars, bindings, id, containerElem) {
     containerElem.innerHTML = content;
 }
 
-function renderTimeseriesGraphs(title_template, vars, bindings, container) {
-    const key2bindings = bindings.reduce((acc, binding) => {
-        (acc[binding["key"]] = acc[binding["key"]] || []).push(binding);
-        return acc;
-    }, {});
+function renderScatterPlot(title, traces, parentElem, id) {
+    let plot_traces = traces.map(trace => {
+        return {
+            type: "scatter",
+            mode: "lines",
+            name: trace["name"],
+            x: trace["x"],
+            y: trace["y"]
+        }
+    })
 
-    for (const [key, group] of Object.entries(key2bindings)) {
-        const traces = group.map(binding => {
-            return {
-                type: "scatter",
-                mode: "lines",
-                name: vars.filter(key =>
-                    ["timeseries", "key"].every(bkey => key != bkey) &&
-                    TWA_ABOX_IRI_PREFIXES
-                        .every(abox_prefix => !binding[key].startsWith(abox_prefix))
-                ).map(key => binding[key]).join(", "),
-                x: binding["timeseries"].map(obs => obs[0]),
-                y: binding["timeseries"].map(obs => obs[1]),
-            }
-        })
+    let elem = document.createElement("div");
+    elem.setAttribute("id", id)
+    parentElem.appendChild(elem);
 
-        let plotContainer = document.createElement("div");
-        plotContainer.id = `plot-${key}`;
-        container.appendChild(plotContainer);
-
-        const title = title_template ? title_template.replace("{key}", key) : key;
-        Plotly.newPlot(plotContainer.id, traces, { title });
-    }
+    Plotly.newPlot(id, plot_traces, { title });
 }
 
 const errorContainer = (function () {
@@ -232,68 +265,29 @@ const qaMetadataContainer = (function () {
 })()
 
 const qaDataContainer = (function () {
-    const tableContainerOuter = document.getElementById("tabular-data-container")
-    const tableContainerInner = document.getElementById("tabular-data")
-    const toggleIriButton = document.getElementById("toggle-iri")
-    const figuresContainer = document.getElementById("figures-container")
-
-    let table = null
-    let isShowingIRI = false
-
-    function _toggleIRIColumns() {
-        if (table === null) {
-            return
-        }
-
-        const rowNum = table.rows().count()
-        if (rowNum == 0) {
-            return
-        }
-
-        isShowingIRI = !isShowingIRI
-        const rowData = table.row(0).data()
-        const IRIcolIdx = rowData.reduce((arr, val, idx) => {
-            if (TWA_ABOX_IRI_PREFIXES.some(prefix => val.startsWith(prefix))) {
-                arr.push(idx)
-            }
-            return arr
-        }, [])
-        IRIcolIdx.forEach(colIdx => {
-            const col = table.column(colIdx)
-            col.visible(isShowingIRI)
-        })
-
-        if (isShowingIRI) {
-            toggleIriButton.innerHTML = "Hide IRIs"
-        } else {
-            toggleIriButton.innerHTML = "Show IRIs"
-        }
-    }
+    const elem = document.getElementById("qa-data-container")
 
     return {
         reset() {
-            tableContainerOuter.style.display = "none"
-            tableContainerInner.innerHTML = ""
-            figuresContainer.display = "none"
-            figuresContainer.innerHTML = ""
+            elem.style.display = "none"
+            elem.innerHTML = ""
         },
 
         render(data) {
-            if (data["vars"].includes("timeseries")) {
-                renderTimeseriesGraphs(data["title_template"], data["vars"], data["bindings"], figuresContainer)
-                figuresContainer.style.display = "block"
-            } else {
-                table = renderDataTable(vars = data["vars"], bindings = data["bindings"], id = "qa-results-table", containerElem = tableContainerInner)
-                tableContainerOuter.style.display = "block"
-            }
+            data.forEach((item, i) => {
+                item_data = item["data"]
+                id = `data-item-${i}`
+                if (item["type"] === "table") {
+                    table = renderDataTable(vars = item_data["vars"], bindings = item_data["bindings"], parentElem = elem, id = id)
+                } else if (item["type"] === "scatter_plot") {
+                    renderScatterPlot(title = item_data["title"], traces = item_data["traces"], parentElem = elem, id = id)
+                } else {
+                    console.log("Unexpected data item: ", item)
+                }
+            })
 
-            isShowingIRI = true
-            _toggleIRIColumns()
-        },
-
-        toggleIRIColumns() {
-            _toggleIRIColumns()
-        },
+            elem.style.display = "block"
+        }
     }
 })()
 
@@ -381,21 +375,13 @@ const chatbotResponseCard = (function () {
 
     // API calls
     async function fetchChatbotResponseReader(question, data) {
-        const vars = data["vars"]
-        const bindings = data["bindings"].map(binding => vars.reduce((obj, k) => {
-            if ((typeof binding[k] !== "string") || TWA_ABOX_IRI_PREFIXES.every(prefix => !binding[k].startsWith(prefix))) {
-                obj[k] = binding[k]
-            }
-            return obj
-        }, {}))
-
         return fetch("./chat", {
             method: "POST",
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ question, data: JSON.stringify(bindings) }),
+            body: JSON.stringify({ question, data: JSON.stringify(data) }),
             signal: abortController.signal
         })
             .then(throwErrorIfNotOk)

@@ -9,6 +9,7 @@ class QAStep(BaseModel):
     results: Any = None
     latency: float
 
+
 class QAData(BaseModel):
     title_template: Optional[str] = None
     vars: List[str] = []

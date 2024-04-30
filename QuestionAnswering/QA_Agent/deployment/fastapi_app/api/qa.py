@@ -3,11 +3,16 @@ import time
 from typing import Annotated, Dict, List
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, model_serializer
 
-from model.qa import QAData, QAStep
+from model.qa import QAStep
 from services.qa import get_dataSupporter_byDomain
-from services.support_data import DataSupporter
+from services.support_data import (
+    DataItem,
+    DataSupporter,
+    ScatterPlotDataItem,
+    TableDataItem,
+)
 
 
 class QARequest(BaseModel):
@@ -20,9 +25,27 @@ class QAResponseMetadata(BaseModel):
     steps: List[QAStep]
 
 
+def serialize_data_item(item: DataItem):
+    if isinstance(item, TableDataItem):
+        t = "table"
+    elif isinstance(item, ScatterPlotDataItem):
+        t = "scatter_plot"
+    else:
+        t = "wkt"
+
+    return {"type": t, "data": item.model_dump()}
+
+
 class QAResponse(BaseModel):
     metadata: QAResponseMetadata
-    data: QAData
+    data: List[DataItem]
+
+    @model_serializer()
+    def serialize_model(self):
+        return {
+            "metadata": self.metadata.model_dump(),
+            "data": [serialize_data_item(item) for item in self.data],
+        }
 
 
 logger = logging.getLogger(__name__)

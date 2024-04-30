@@ -2,14 +2,15 @@ from functools import cache
 import logging
 import os
 import time
-from typing import Annotated, List
+from typing import Annotated, Dict, List
 
 from fastapi import Depends, HTTPException
 import requests
-from model.qa import QAData, QAStep
+from model.qa import QAStep
 from services.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient, get_featureInfoClient
 from services.geocoding import IGeocoder, get_geocoder
+from services.support_data import ScatterPlotDataItem, ScatterPlotTrace, TableDataItem
 from .base import Name2Func
 
 
@@ -58,29 +59,26 @@ class SGDispersionFuncExecutor(Name2Func):
             query_params = {"lat": place.lat, "lon": place.lon}
             res = requests.get(self.pollutant_conc_endpoint, params=query_params)
             res.raise_for_status()
-            res = res.json()
+            res: dict = res.json()
 
             timestamps = res["time"]
-            data = QAData(
-                title_template="{key} in " + place.name,
-                vars=["key", "timeseries"],
-                bindings=[
-                    {
-                        "key": "{pollutant} concentration ({unit})".format(
-                            pollutant=key, unit="µg/m³"
-                        ),
-                        "timeseries": list(zip(timestamps, value)),
-                    }
-                    for key, value in res.items()
-                    if key != "time"
-                ],
-            )
+            data = [
+                ScatterPlotDataItem(
+                    title=f"{key} in {place.name}",
+                    traces=[ScatterPlotTrace(x=timestamps, y=readings)],
+                )
+                for key, readings in res.items()
+                if key != "time"
+            ]
+
         except requests.HTTPError as e:
             if e.response.status_code == 404:
                 raise HTTPException(
                     404,
                     detail="Unable to retrieve pollutant concentrations. Please ensure that the provided location is either in the Jurong Island area or NUS Kent Ridge campus.",
                 )
+            else:
+                raise e
 
         latency = time.time() - timestamp
         steps.append(
@@ -138,7 +136,7 @@ class SGDispersionFuncExecutor(Name2Func):
 
             bindings.append(binding)
 
-        data = QAData(vars=vars, bindings=bindings)
+        data = TableDataItem(vars=vars, bindings=bindings)
 
         latency = time.time() - timestamp
         steps.append(
@@ -149,7 +147,7 @@ class SGDispersionFuncExecutor(Name2Func):
             )
         )
 
-        return steps, data
+        return steps, [data]
 
     def lookup_ship_timeseries(self, surface_form: str, **kwargs):
         """
@@ -172,11 +170,12 @@ class SGDispersionFuncExecutor(Name2Func):
 
         timestamp = time.time()
 
-        vars = ["Ship", "ShipName", "key", "timeseries"]
-        bindings = []
+        key2plot: Dict[str, ScatterPlotDataItem] = dict()
 
         for iri in iris:
-            ship_data = self.feature_info_client.query(iri=iri)["time"][0]
+            retrieved_info = self.feature_info_client.query(iri=iri)
+            meta_data = retrieved_info["meta"]
+            timeseries_data = retrieved_info["time"][0]
             """
             {
                 "data": [string, ...],
@@ -186,25 +185,26 @@ class SGDispersionFuncExecutor(Name2Func):
             }
             """
 
-            ship_metadata = {
-                "Ship": iri,
-                "ShipName": self.entity_store.lookup_label(iri),
-            }
-            for i, key in enumerate(ship_data["data"]):
-                timeseries_data = {
-                    "key": "{key} ({unit})".format(key=key, unit=ship_data["units"][i]),
-                    "timeseries": list(zip(ship_data["time"], ship_data["values"][i])),
-                }
-                bindings.append(
-                    {
-                        **ship_metadata,
-                        **timeseries_data,
-                    }
+            for i, key in enumerate(timeseries_data["data"]):
+                if key not in key2plot:
+                    plot = ScatterPlotDataItem(title=key)
+                else:
+                    plot = key2plot[plot]
+
+                label = self.entity_store.lookup_label(iri)
+                mmsi = (
+                    "(MMSI: {mmsi})".format(mmsi=meta_data["MMSI"])
+                    if "MMSI" in meta_data
+                    else None
                 )
 
-        data = QAData(
-            title_template=f"{{key}} of {surface_form}", vars=vars, bindings=bindings
-        )
+                plot.traces.append(
+                    ScatterPlotTrace(
+                        name=" ".join(x for x in [label, mmsi] if x),
+                        x=timeseries_data["time"],
+                        y=timeseries_data["values"][i],
+                    )
+                )
 
         latency = time.time() - timestamp
         steps.append(
@@ -215,7 +215,7 @@ class SGDispersionFuncExecutor(Name2Func):
             )
         )
 
-        return steps, data
+        return steps, list(key2plot.values())
 
 
 @cache
