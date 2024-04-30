@@ -1,5 +1,6 @@
 package com.example.notsensorlogger2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,13 +64,15 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         SensorItem sensorItem = sensorsList.get(position);
         holder.sensorName.setText(sensorItem.getSensorName());
         holder.sensorIcon.setImageResource(sensorItem.getSensorIconResId());
-        holder.sensorSwitch.setChecked(sensorItem.isToggled());
 
         // Detach the listener before setting checked state to prevent unwanted callbacks
         holder.sensorSwitch.setOnCheckedChangeListener(null);
         holder.sensorSwitch.setChecked(sensorItem.isToggled());
+
         holder.sensorSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Notify any external listener
+            Log.d("SensorToggle", sensorItem.getSensorName() + " toggled: " + isChecked);
+            // Update the toggled state and notify any external listener if it exists
+            sensorItem.setToggled(isChecked);
             if (toggleListener != null) {
                 toggleListener.onSensorToggled(sensorItem, isChecked);
             }
@@ -83,6 +86,7 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
             }
         });
     }
+
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override

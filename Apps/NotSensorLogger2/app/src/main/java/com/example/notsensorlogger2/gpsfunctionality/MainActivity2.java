@@ -91,7 +91,7 @@ public class MainActivity2 extends AppCompatActivity {
         mapView = findViewById(R.id.mapView);
         floatingActionButton = findViewById(R.id.focusLocation);
         Button backButton = findViewById(R.id.backButton);
-        Button nextButton = findViewById(R.id.nextButton); // Reference to the nextButton
+
 
         if (ActivityCompat.checkSelfPermission(MainActivity2.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             activityResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -132,14 +132,14 @@ public class MainActivity2 extends AppCompatActivity {
         });
 
         // Set up the next button's click listener
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Intent to start MainActivity3
-                Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
-                startActivity(intent);
-            }
-        });
+//        nextButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Intent to start MainActivity3
+//                Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
+//                startActivity(intent);
+//            }
+//        });
     }
 
 }

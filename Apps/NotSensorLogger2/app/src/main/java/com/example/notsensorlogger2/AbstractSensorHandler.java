@@ -29,7 +29,7 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     @Override
     public void start() {
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
-        startTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis() * 1000000;
     }
 
     @Override
@@ -55,7 +55,7 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
             values.put("z", event.values[2]);
 
             dataPoint.put("name", this.sensorName);
-            dataPoint.put("time", System.nanoTime());
+            dataPoint.put("time", System.currentTimeMillis() * 1000000);
             dataPoint.put("values", values);
 
             synchronized (this) {

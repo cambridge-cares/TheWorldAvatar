@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
 import org.json.JSONArray;
@@ -29,6 +30,7 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     private float currentPressure = SensorManager.PRESSURE_STANDARD_ATMOSPHERE; // Default sea-level pressure
     private JSONArray locationData;
     private long startTime;
+    private  int mslConstant;
 
     public LocationHandler(Context context, PressureSensorHandler pressureSensorHandler) {
         this.context = context;
@@ -36,19 +38,21 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
         this.pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         this.locationData = new JSONArray();
+        this.mslConstant = 1006;
     }
 
+        @RequiresApi(api = Build.VERSION_CODES.S)
         public void start() {
             Log.d("LocationHandler", "Starting location updates");
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                 return;
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, 200, 0, this);
             if (pressureSensor != null) {
                 sensorManager.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_NORMAL);
             }
-            startTime = System.currentTimeMillis();
+            startTime = System.currentTimeMillis() * 1000000;
             Log.d("LocationHandler", "Location and pressure updates requested");
         }
 
@@ -62,7 +66,7 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_PRESSURE) {
             currentPressure = event.values[0];
-            Log.d("Pressure Reading", "Current pressure: " + currentPressure + " hPa");
+         //   Log.d("Pressure Reading", "Current pressure: " + currentPressure + " hPa");
         }
     }
 
@@ -78,13 +82,12 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
 
     @Override
     public void onLocationChanged(Location location) {
-        double altitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, currentPressure);
+        double altitude = SensorManager.getAltitude(mslConstant, currentPressure);   //SensorManager.PRESSURE_STANDARD_ATMOSPHERE
 
         try {
             JSONObject locationObject = new JSONObject();
             locationObject.put("name", "location");
-            locationObject.put("time", System.nanoTime());
-
+            locationObject.put("time", System.currentTimeMillis() * 1000000);
             JSONObject values = new JSONObject();
             values.put("latitude", location.getLatitude());
             values.put("longitude", location.getLongitude());
@@ -102,6 +105,11 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
             locationData.put(locationObject);
 
             Log.d("Location Update", "Altitude: " + altitude);
+//            Log.d("Location Update", "latitude: " + location.getLatitude());
+//            Log.d("Location Update", "longitude: " + location.getLongitude());
+//            Log.d("Location Update", "speed: " + location.getSpeed());
+//            Log.d("Location Update", "longitude: " + location.getBearing());
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -130,10 +138,6 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     @Override
     public void onProviderDisabled(String provider) {
         // Not used
-    }
-
-    private static float getAltitude(float seaLevelPressure, float pressure) {
-        return SensorManager.getAltitude(seaLevelPressure, pressure);
     }
 }
 

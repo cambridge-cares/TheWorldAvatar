@@ -47,16 +47,17 @@ public class MainActivity extends Activity {
     private SensorHandler pressureSensorHandler;
     private SensorHandler gravitySensorHandler;
     private LocationHandler locationTracker;
-    private SensorHandler soundLevelHandler;
+    private SoundLevelHandler soundLevelHandler;
     private String deviceId;
     private Handler handler = new Handler();
     private Runnable sendDataRunnable;
     private RecyclerView sensorsRecyclerView;
     private SensorAdapter sensorAdapter;
     private List<SensorItem> sensorItems;
-    private static final long SEND_INTERVAL = 7000; // Interval in milliseconds
+    private static final long SEND_INTERVAL = 2000; // Interval in milliseconds
     private boolean isDataCollectionActive = true;
     private static final int PERMISSION_REQUEST_RECORD_AUDIO = 101;
+    private int messageId = 1; // Start messageId from 1
 
 
     // This method will initialize your sensor list and RecyclerView
@@ -107,24 +108,39 @@ public class MainActivity extends Activity {
     }
 
 
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // Permission was granted, start the audio recording if the handler has been initialized
+//                if (soundLevelHandler != null) {
+//                    soundLevelHandler.start();
+//                }
+//            } else {
+//                Log.e("MainActivity", "Permission Denied to record audio.");
+//                // Handle the case where permission is not granted.
+//                // You could disable the SoundLevelHandler or inform the user that they cannot record audio without permission.
+//            }
+//        }
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission was granted, start the audio recording if the handler has been initialized
+                // Permission was granted
                 if (soundLevelHandler != null) {
-                    soundLevelHandler.start();
+                    soundLevelHandler.initAudioRecord(); // Make sure this method is public in SoundLevelHandler
+                    //  soundLevelHandler.start();
                 }
             } else {
                 Log.e("MainActivity", "Permission Denied to record audio.");
-                // Handle the case where permission is not granted.
-                // You could disable the SoundLevelHandler or inform the user that they cannot record audio without permission.
+                // Optionally update the UI or disable related functionality
             }
         }
     }
-
 
 
     public final void onCreate(Bundle savedInstanceState) {
@@ -155,6 +171,9 @@ public class MainActivity extends Activity {
 
 
         Button stopDataButton = findViewById(R.id.start_recording_button);
+
+        Button btnOpenActivity2 = findViewById(R.id.open_activity2_button);
+
         stopDataButton.setText(R.string.start_button_text); // Initialize with "Start" text
         isDataCollectionActive = false; // Ensure collection is inactive at start
 
@@ -168,6 +187,11 @@ public class MainActivity extends Activity {
                 stopDataButton.setText(R.string.start_button_text);
                 isDataCollectionActive = false;
             }
+        });
+
+        btnOpenActivity2.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity2.class);
+            startActivity(intent);
         });
 
 
@@ -242,6 +266,7 @@ public class MainActivity extends Activity {
 
 
     private void startDataCollection() {
+        messageId = 1; // Reset messageId to 1 each time data collection starts
         for (SensorItem item : sensorItems) {
             if (item.isToggled() && item.getHandler() != null) {
                 item.getHandler().start();
@@ -276,10 +301,6 @@ public class MainActivity extends Activity {
 //        stopSensors();
 //        handler.removeCallbacks(sendDataRunnable);
 //    }
-
-
-
-
 
 
 //    private void sendSensorData() {
@@ -443,17 +464,16 @@ public class MainActivity extends Activity {
 
 
     private void sendPostRequest(JSONArray sensorData) {
-        String url = "http://10.0.2.2:3838/sensorloggermobileappagent/update";    //https://eo5qowv4nlk2w03.m.pipedream.net       //10.0.2.2:3838      //https://eou1bwdjb3p7r6h.m.pipedream.net   //http://192.168.1.60:3838/sensorloggermobileappagent/update
+        String url = "http://139.59.110.28:3838/sensorloggermobileappagent/update";    //https://eo5qowv4nlk2w03.m.pipedream.net   // http://139.59.110.28:3838/    //http://10.0.2.2:3838/sensorloggermobileappagent/update      //https://eou1bwdjb3p7r6h.m.pipedream.net   //http://192.168.1.60:3838/sensorloggermobileappagent/update
         RequestQueue queue = Volley.newRequestQueue(this);
         String sessionId = UUID.randomUUID().toString();
-        int messageId = generateMessageId();
         String deviceId = DeviceIdManager.getDeviceId(this); // Assuming DeviceIdManager is accessible here
 
         // Create a JSONObject to structure the data according to the required format
         JSONObject postData = new JSONObject();
         try {
             postData.put("deviceId", deviceId);
-            postData.put("messageId", messageId);
+            postData.put("messageId", messageId++);
             postData.put("payload", sensorData);
             postData.put("sessionId", sessionId);
         } catch (JSONException e) {
@@ -481,11 +501,12 @@ public class MainActivity extends Activity {
 
         queue.add(postRequest);
     }
-
-    private int generateMessageId() {
-        return new Random().nextInt(1000);
-    }
 }
+
+//    private int generateMessageId() {
+//        return new Random().nextInt(1000);
+//    }
+//}
 
 
 
