@@ -244,7 +244,7 @@ p {
     text-align: center;
     height: 40px;
     position: absolute;
-    bottom: 30;
+    bottom: 30px;
     left: 0;
     right: 0;
     z-index: 1
@@ -1579,10 +1579,11 @@ li {
     position: absolute;
     width: 25px;
     height: 25px;
-    top: 15px;
-    right: 15px;
+    top: 0px;
+    right: 0px;
     text-align: center;
-    display: table
+    display: table;
+    z-index: 1;
 }
 
 #scenario-close i {
@@ -1598,7 +1599,8 @@ li {
     height: 75px;
     right: 15px;
     font-family: Inter, sans-serif !important;
-    font-size: 1.1em
+    font-size: 1.1em;
+    z-index: 2;
 }
 
 #scenario-inner {
@@ -1630,6 +1632,11 @@ li {
     font-size: 80%;
     line-height: 110%;
     position: relative
+}
+
+.current-scenario-element {
+    border-color: #d3d3d344;
+    background-color: #ffffffaa;
 }
 
 .scenario-element:hover {

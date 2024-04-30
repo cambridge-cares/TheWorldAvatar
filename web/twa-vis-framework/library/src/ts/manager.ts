@@ -56,6 +56,8 @@ class Manager {
      */
     private scenarioHandler: ScenarioHandler;
 
+    public selectScenarioResolved: boolean = false;
+
     /**
      * Optional callbacks to trigger once a singluar feature has been selected.
      */
@@ -747,7 +749,7 @@ class Manager {
         let scenarioDataset = Manager.SETTINGS.getSetting("scenarioDataset");
 
         if (this.scenarioHandler == null && scenarioURL != null) {
-            this.scenarioHandler = new ScenarioHandler(scenarioURL, scenarioDataset);
+            this.scenarioHandler = new ScenarioHandler(scenarioURL, scenarioDataset, this);
             scenarioButton.style.display = "block";
             return true;
         }
@@ -761,7 +763,16 @@ class Manager {
         if (this.scenarioHandler != null) {
             this.scenarioHandler.showSelector();
         }
+        let scenarioInnerChildren = Array.from(document.getElementById("scenario-inner").children);
+        for (let element of scenarioInnerChildren) {
+            if (element.id == this.scenarioHandler.selectedScenario) {
+                element.classList.add("current-scenario-element"); // style the current 
+            } else {
+                element.classList.remove("current-scenario-element");
+            }
+        }
     }
+
 
     /**
      * Selects and loads data from the input scenario.
@@ -771,8 +782,6 @@ class Manager {
      */
     public selectScenario(scenarioID: string, scenarioName: string) {
         if (this.scenarioHandler != null) {
-            if (scenarioID === this.scenarioHandler.selectedScenario) return;
-
             // Set the selected scenario
             this.scenarioHandler.selectScenario(scenarioID, scenarioName);
 
