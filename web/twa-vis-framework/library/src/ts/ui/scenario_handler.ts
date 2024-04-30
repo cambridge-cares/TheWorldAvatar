@@ -185,7 +185,7 @@ class ScenarioHandler {
 
             // Set contents
             element.innerHTML = `
-                <b> ` + scenario["name"] + `</b><br/><br/>s
+                <b> ` + scenario["name"] + `</b><br/><br/>
                 <p>` + scenario["description"] + `</p><br/>
             `;
 
