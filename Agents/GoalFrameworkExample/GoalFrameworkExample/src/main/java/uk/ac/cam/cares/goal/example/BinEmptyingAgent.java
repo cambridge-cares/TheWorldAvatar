@@ -81,7 +81,7 @@ public class BinEmptyingAgent extends DerivationAgent  {
         derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
 
         //check if realstatevalue within goalrange condition
-        if (realStateValue<maxvalue && realStateValue>minvalue)
+        if (realStateValue<=maxvalue && realStateValue>=minvalue)
         {
             res_msg = "<BIN> Bin operating weight within range, nothing is done.";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, oldDesiredState_value));

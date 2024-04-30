@@ -83,7 +83,7 @@ public class TruckEmptyingAgent extends DerivationAgent  {
         derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
 
         //check if realstate within goalrange
-        if (realStateValue<maxvalue && realStateValue>minvalue)
+        if (realStateValue<=maxvalue && realStateValue>=minvalue)
         {
             res_msg = "<TRUCK> Truck operating weight is within range, do nothing.";
             derivationOutputs.addTriple(sparqlClient.addValueInstance(desiredstate_iri, value_iri, oldDesiredState_value));

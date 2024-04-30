@@ -134,6 +134,5 @@ public class Actuator extends JPSAgent {
         response.put("status", res_msg);
         return response;
     }
-
 }
 
