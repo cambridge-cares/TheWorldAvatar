@@ -7,23 +7,25 @@ class ScenarioHandler {
     /**
      * Base URL of the agent to contact about scenarios.
      */
-    private agentBaseURL;
+    private agentBaseURL : string;
 
     /**
      * Optional dataset identify to send to the scenario agent.
      */
-    private agentDataset;
+    private agentDataset: string;
 
     /**
      * JSON object holding definitions of possible scenarios.
      */
-    private definitions;
+    private definitions: JSON; 
 
     /**
      * ID of currently selected scenario.
      */
-    public selectedScenario;
-    public scenarioName;
+    public selectedScenario: string;
+    public scenarioName: string;
+
+    public selectScenarioResolved: boolean = false;
 
     /**
      * Initialise a new scenario handler.
@@ -126,7 +128,7 @@ class ScenarioHandler {
      * 
      * @param show boolean
      */
-    private changeOther(show) {
+    private changeOther(show: boolean) {
         let controls = document.getElementById("controlsContainer");
         controls.style.visibility = (show) ? "visible" : "hidden";
         
@@ -179,13 +181,27 @@ class ScenarioHandler {
      * @param scenarioID scenario ID
      * @param scenarioName user facing scenario name
      */
-    public selectScenario(scenarioID, scenarioName) {
-        this.selectedScenario = scenarioID;
-        this.scenarioName = scenarioName;
+    public selectScenario(scenarioID: string, scenarioName: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (!scenarioID || !scenarioName) {
+                reject(new Error("Invalid scenarioID or scenarioName"));
+                return;  
+            }
+    
+            this.selectedScenario = scenarioID;
+            this.scenarioName = scenarioName;
 
-        let container = document.getElementById("scenario-container");
-        if(container != null) container.style.display = "none";
-        this.changeOther(true);
+            window.currentTimeIndex = '1';
+    
+            let container = document.getElementById("scenario-container");
+            if (container != null) container.style.display = "none";
+    
+            this.changeOther(true);
+
+            this.selectScenarioResolved = true;
+    
+            resolve();
+        });
     }
 
     /**
@@ -203,14 +219,7 @@ class ScenarioHandler {
             "type": "get"
         }
 
-        let url = this.agentBaseURL;
-        url += (url.endsWith("/")) ? "getDataJson/" : "/getDataJson/";
-        url += this.selectedScenario;
-
-        if(this.agentDataset != null) {
-            url += "?dataset=" + this.agentDataset;
-        }
-
+        let url = this.getDataURL();
         console.log("Querying for config at " + url);
         
         // Query for scenario configuration
@@ -221,5 +230,26 @@ class ScenarioHandler {
         });
     }
 
+
+    private getDataURL() {
+        let url = this.agentBaseURL;
+        url += (url.endsWith("/")) ? "getDataJson/" : "/getDataJson/";
+        url += this.selectedScenario;
+
+        if(this.agentDataset) {
+            url += "?dataset=" + this.agentDataset;
+        }
+        return url;
+    }
+
+    public async fetchScenarioDimensions(): Promise<ScenarioDimensionsData> {
+        try {
+            const response = await fetch(`${this.agentBaseURL}/getScenarioTimes/${this.selectedScenario}`);
+            const data: ScenarioDimensionsData = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching times from CentralStackAgent/getScenarioTimes:', error);
+        }
+    }
 }
 // End of class.

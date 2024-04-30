@@ -2,15 +2,30 @@
 
 # TWA-VF Change Log
 
-## 4.6.0
+## 4.7.1
+
+### Bug Fixes
+
+* Fixed issue where data with no dimensions was looking for a `SliderHandler`
+
+## 4.7.0
 
 ### Features
 
+* Added functionality to scenario handler to fetch time series data from scenario endpoint
+* Added a `slider_handler` class to handle a slider for actions on time series data display queried from scenario
+* Specify actions for slider move in index.html file
+* Refresh and replot data with multiple layers in geoserver using `dimension={dimension}}` for as many dimensions as required separated by '&' in data.json (on slider change for example)
+
+## 4.6.0
+
+### Features
+  
 * Functionality and styling for a navigation bar with keyloak logout integration. Used for CReDo but can be replicated for any KeyCloak server
 
 ### Bug Fixes
 
-* Fixed bug where sidebar tabs disappeared if content was too
+* Fixed bug where sidebar tabs disappeared if content was too long
 
 ## 4.5.2
 

@@ -9,7 +9,7 @@ class MapHandler_Mapbox extends MapHandler {
   constructor(manager: Manager) {
     super(manager);
   }
-
+ 
   /**
    * Initialise and store a new map object.
    */
@@ -77,32 +77,24 @@ class MapHandler_Mapbox extends MapHandler {
       );
     });
 
-    // Filter out duplicates (Mapbox can return these if a feature is split across a tile boundary)
-    features = MapboxUtils.deduplicate(features);
-
-    if (features.length > 1) {
-      // Click on overlapping, individual features or clusters
-      this.clickMultiple(features);
-    } else if (features.length === 1) {
-      // Click on a single, non-overlapping, feature or cluster
-      let feature = features[0];
-
-      if (MapboxUtils.isCluster(feature)) {
-        // Clicked on a clustered feature, handle as if multiple
-        this.clickMultiple(features);
-      } else {
-        // Click on single feature
-        this.manager.showFeature(feature);
-
-        // Update the layer properties based on the new selection
-        if (feature?.properties?.iri) {
-          MapboxUtils.updateStyleFilterInjections(
-            null,
-            feature?.properties?.iri
-          );
+    let leafs = [];
+    MapboxUtils.recurseFeatures(leafs, features).then(
+      () => {
+        // Filter out duplicates (Mapbox can return these if a feature is split across a tile boundary)
+        leafs = MapboxUtils.deduplicate(leafs);
+        if (leafs.length > 1) {
+          this.clickMultiple(leafs);
+        } else if (leafs.length === 1) {
+          let feature = leafs[0];
+          this.manager.showFeature(feature);
+          if (feature?.properties?.iri) {
+            MapboxUtils.updateStyleFilterInjections(
+              null,
+              feature?.properties?.iri
+            );
+          }
         }
-      }
-    }
+      });
   }
 
   /**
@@ -159,7 +151,7 @@ class MapHandler_Mapbox extends MapHandler {
       leafs.forEach((leaf) => {
         let featureName =
           leaf["properties"]["name"] !== null &&
-          leaf["properties"]["name"] !== undefined
+            leaf["properties"]["name"] !== undefined
             ? leaf["properties"]["name"]
             : "Feature #" + leaf["id"];
         let layerID = leaf["layer"]["id"];
@@ -248,34 +240,34 @@ class MapHandler_Mapbox extends MapHandler {
    * Plot the contents of the input data group on the map.
    */
   public plotData(dataStore: DataStore) {
-    // Remove all previous layers then sources
-    let previousSources = new Set();
+      // Remove all previous layers then sources
+      let previousSources = new Set();
 
-    MapHandler.MAP.getStyle().layers.forEach(function (layer) {
-      // Only remove layers we've added
-      if (layer.metadata?.attribution === "CMCL") {
-        previousSources.add(layer.source);
-        MapHandler.MAP.removeLayer(layer.id);
-      }
-    });
-    previousSources.forEach((id) => MapHandler.MAP.removeSource(id));
+      MapHandler.MAP.getStyle().layers.forEach(function (layer) {
+        // Only remove layers we've added
+        if (layer.metadata?.attribution === "CMCL") {
+          previousSources.add(layer.source);
+          MapHandler.MAP.removeLayer(layer.id);
+        }
+      });
+      previousSources.forEach((id) => MapHandler.MAP.removeSource(id));
 
-    // Get all layers from all groups
-    let allLayers = [];
-    dataStore.dataGroups.forEach((rootGroup) => {
-      let groupLayers = rootGroup.flattenDown();
-      allLayers = allLayers.concat(groupLayers);
-    });
+      // Get all layers from all groups
+      let allLayers = [];
+      dataStore.dataGroups.forEach((rootGroup) => {
+        let groupLayers = rootGroup.flattenDown();
+        allLayers = allLayers.concat(groupLayers);
+      });
 
-    // Order them
-    allLayers = allLayers.sort((a, b) => {
-      if (a.order > b.order) return 1;
-      if (a.order < b.order) return -1;
-      return 0;
-    });
+      // Order them
+      allLayers = allLayers.sort((a, b) => {
+        if (a.order > b.order) return 1;
+        if (a.order < b.order) return -1;
+        return 0;
+      });
 
-    // Plot them
-    allLayers.forEach((layer) => this.plotLayer(null, layer));
+      // Plot them
+      allLayers.forEach((layer) => this.plotLayer(null, layer));
   }
 
   /**
@@ -399,7 +391,7 @@ class MapHandler_Mapbox extends MapHandler {
       let promises = [];
       let iconHandler = new IconHandler();
 
-      for (var key of Object.keys(json)) {
+      for (let key of Object.keys(json)) {
         let promise = new Promise<void>(function (resolve, reject) {
           iconHandler.loadIcon(key, json[key], function () {
             resolve();
@@ -430,7 +422,7 @@ class MapHandler_Mapbox extends MapHandler {
     const navigationControl = new mapboxgl.NavigationControl({
       visualizePitch: true
     });
-    
+
     if (mySetting !== false) {
       MapHandler.MAP.addControl(navigationControl, "top-right");
     }

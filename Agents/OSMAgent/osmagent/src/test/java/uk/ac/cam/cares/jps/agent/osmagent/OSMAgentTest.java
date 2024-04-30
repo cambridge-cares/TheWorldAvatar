@@ -51,7 +51,7 @@ public class OSMAgentTest {
                                             verify(geometryMatcherMock.constructed().get(0), times(1)).matchGeometry(anyString(), anyString(), eq(null), eq(null));
                                             verify(usageMatcherMock.constructed().get(0), times(1)).checkAndAddColumns(anyString(), anyString());
                                             verify(usageMatcherMock.constructed().get(0), times(1)).updateOntoBuilt(anyString(), anyString());
-                                            verify(usageMatcherMock.constructed().get(0), times(1)).copyFromOSM(anyString(), anyString(), anyString());
+                                            verify(usageMatcherMock.constructed().get(0), times(1)).copyFromOSM(anyString(), anyString(), anyString(), anyString(), anyString());
 
                                             verify(usageShareCalculatorMock.constructed().get(0), times(1)).updateUsageShare(anyString());
                                         }

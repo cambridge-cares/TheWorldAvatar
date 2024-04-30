@@ -17,7 +17,7 @@ done
 
 # Specify required stack-manager version number
 # NOTE: 1.13.3 is the latest on that uses PostGIS 14
-REQUIRED_VERSION="1.22.0"
+REQUIRED_VERSION="1.24.0"
 sed -i "s/\(ghcr\.io\/cambridge-cares\/stack-manager\${IMAGE_SUFFIX}:\)[0-9]\+\.[0-9]\+\.[0-9]\+/\1${REQUIRED_VERSION}/" docker-compose.yml
 
 # Restart stack with required version
