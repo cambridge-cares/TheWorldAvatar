@@ -1,0 +1,4 @@
+.footer {
+  margin: 0 auto 0.5vh;
+  font-size: var(--font-size-tertiary-text);
+}

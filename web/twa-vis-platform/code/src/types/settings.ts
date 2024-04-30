@@ -1,7 +1,7 @@
 /**
  * Interface of default settings for landing page.
  */
-export interface DefaultSettings {
+export type DefaultSettings = {
   branding: {
     [key: string]: string | number | boolean;
   },
@@ -15,7 +15,7 @@ export interface DefaultSettings {
 }
 
 // Interface of map settings for visualisation page
-export interface MapSettings {
+export type MapSettings = {
   type: string,
   camera: CameraSettings,
   imagery: ImagerySettings,
@@ -24,31 +24,31 @@ export interface MapSettings {
 }
 
 // Icon settings object
-export interface IconSettings {
+export type IconSettings = {
   [key: string]: string
 }
 
 // Imagery settings object
-export interface ImagerySettings {
+export type ImagerySettings = {
   default: string,
   options: ImageryOption[]
 }
 
 // Imagery option object
-export interface ImageryOption {
+export type ImageryOption = {
   name: string,
   url: string,
   time?: string
 }
 
 // Camera settings object
-export interface CameraSettings {
+export type CameraSettings = {
   default: string,
   positions: CameraPosition[]
 }
 
 // Camera position object
-export interface CameraPosition {
+export type CameraPosition = {
   name: string,
   center: [number, number],
   zoom: number,
@@ -57,20 +57,20 @@ export interface CameraPosition {
 }
 
 // Legend settings object
-export interface LegendSettings {
+export type LegendSettings = {
   [groupName: string]: LegendGroup;
 }
 
-export interface LegendGroup {
+export type LegendGroup = {
   [itemName: string]: FillLegend | SymbolLegend;
 }
 
-interface SymbolLegend {
+type SymbolLegend = {
   type: "symbol";
   icon: string;
 }
 
-interface FillLegend {
+type FillLegend = {
   type: "fill";
   fill: string;
 }

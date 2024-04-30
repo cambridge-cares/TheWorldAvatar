@@ -2,7 +2,7 @@
 
 Given that the platform is designed to be generalisable, this directory exists to allow users to customise their web contents according to their needs. It acts as the target for a Docker volume or bind mount, and should be mounted to the `/twa/public` directory within the deployed container. Files within it can then be accessed using the `$HOST/...` URL route.
 
-The uploaded content provided by the deploying developer should match the directory structure below. Please read the respective sections for the specific instructions.
+The uploaded content provided by the deploying developer should match the directory structure below. Please read the respective sections for the specific instructions. If you require sample files of a working example, please have a look over at the [example](../example/) directory.
 
 - [`config/`](#1-configuration): Contains config/settings files.
 - [`images/`](#2-assets): Custom image files.
@@ -73,6 +73,7 @@ Icons on the map are shown by default in the layer tree. Additional legend items
 
 > [!NOTE]  
 > The comments seen below are for explanation purposes only. They are not valid JSON and should be removed.
+
 ```json
 {
   "legend": {
@@ -194,6 +195,7 @@ The `config/data.json` file visualises data according to user requirements. Spec
 The `data.json` requires at least one defined data group. Each data group contains a number of parameters (detailed below), and can house multiple sub-groups to form a custom hierarchy.
 
 - `name` (required): This is the user facing name of the data group.
+- `tree-icon` (optional): An image that will be displayed on the layer tree.
 - `stack` (optional): This is the URL for the stack containing metadata on this group's data. Note that this should be the base URL of the stack (i.e. without "/geoserver"). If missing, dynamic metadata from a remote FeatureInfoAgent cannot be utilised. This parameter can also be set with different values for different subgroups.
 - `sources` (optional): This is an array of objects defining data sources (see below for info on sources).
 - `layers` (optional): This is an array of objects defining data layers (see below for info on layers).
@@ -291,7 +293,7 @@ The following fields are supported, and must be added to the top of the file bef
 
 A sample markdown file for the landing page:
 
-```
+```markdown
 ---
 title: CReDo // Customisable
 slug: landing // This must always be set to landing for the landing page
