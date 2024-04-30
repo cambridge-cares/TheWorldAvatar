@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public class OntologyURIHelper {
 
-    public static final String unitOntology = "unitOntology";
+    public static final String om = "om";
     public static final String rdf = "rdf";
     public static final String rdfs = "rdfs";
     public static final String ontobuiltenv = "ontobuiltenv";
@@ -28,7 +28,7 @@ public class OntologyURIHelper {
     static {
    
 
-            ontologyUriMap.put(unitOntology, "http://www.ontology-of-units-of-measure.org/resource/om-2/");
+            ontologyUriMap.put(om, "http://www.ontology-of-units-of-measure.org/resource/om-2/");
             ontologyUriMap.put(rdf, "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
             ontologyUriMap.put(rdfs, "http://www.w3.org/2000/01/rdf-schema#");    
             ontologyUriMap.put(ontobuiltenv, "https://www.theworldavatar.com/kg/ontobuiltenv/");

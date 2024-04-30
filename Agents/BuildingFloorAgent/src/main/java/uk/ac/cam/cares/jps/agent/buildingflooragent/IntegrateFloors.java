@@ -44,6 +44,7 @@ public class IntegrateFloors {
     private String ontopUrl;
 
     private RemoteRDBStoreClient postgisClient;
+    private List<OSMBuilding> osmBuildings = new ArrayList<>();
     private static final String sparqlFile = "/resources/building_usage.sparql";
     
     public IntegrateFloors (String postgisDb, String postgisUser, String postgisPassword, String osmSchema, String osmPoint, String osmPolygon, String ontopUrl){
@@ -79,7 +80,9 @@ public class IntegrateFloors {
     /**********************************************/ 
     public void matchAddress (String floorsCsv) throws IOException{
         MatchService matchService = new MatchService();
-        //query address infor from osm db
+        //query address infor from osm db   
+        this.osmBuildings = queryOSMBuilding();
+        List<Document> preDoc = new ArrayList<>();
         // List<Document> polyDoc = new ArrayList<>();
         // List<Document> pointDoc = new ArrayList<>();
 
@@ -87,47 +90,58 @@ public class IntegrateFloors {
         // String pointSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM " + this.osmSchema + "." + this.osmPoint + " WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
     
         try (Connection srcConn = postgisClient.getConnection()) {
-            try (Statement stmt = srcConn.createStatement()) {
-                ResultSet polyResults = stmt.executeQuery(polygonSQLQuery);
-                while (polyResults.next()) {
-                    String osmAddress = polyResults.getString("addr_street");
-                    if (osmAddress == null){
-                        osmAddress = "NULL";
-                    }
-                    String num = polyResults.getString("addr_housenumber");
-                    if (num == null) {
-                        num = "0";
-                    }
-                    String buildingiri = polyResults.getString("building_iri");
-                    if (buildingiri != null) {
-                        Document preDocument = new Document.Builder(buildingiri)
-                        .addElement(new Element.Builder<String>().setValue(num).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-                        .addElement(new Element.Builder<String>().setValue(osmAddress).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-                        .createDocument();
-                    polyDoc.add(preDocument);
-                    }                   
-                }
+            //construct preDocument (osm data)
+            for (int i = 0; i < this.osmBuildings.size(); i++){
+                String buildingiri = osmBuildings.get(i).getBuildingIri();
+                String osmStreet = osmBuildings.get(i).getStreet();
+                String osmUnit = osmBuildings.get(i).getUnit();
+                Document preDocument = new Document.Builder(buildingiri)
+                .addElement(new Element.Builder<String>().setValue(osmUnit).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
+                            .addElement(new Element.Builder<String>().setValue(osmStreet).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
+                            .createDocument();
+                preDoc.add(preDocument);
+            }
+            // try (Statement stmt = srcConn.createStatement()) {
+            //     ResultSet polyResults = stmt.executeQuery(polygonSQLQuery);
+            //     while (polyResults.next()) {
+            //         String osmAddress = polyResults.getString("addr_street");
+            //         if (osmAddress == null){
+            //             osmAddress = "NULL";
+            //         }
+            //         String num = polyResults.getString("addr_housenumber");
+            //         if (num == null) {
+            //             num = "0";
+            //         }
+            //         String buildingiri = polyResults.getString("building_iri");
+            //         if (buildingiri != null) {
+            //             Document preDocument = new Document.Builder(buildingiri)
+            //             .addElement(new Element.Builder<String>().setValue(num).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
+            //             .addElement(new Element.Builder<String>().setValue(osmAddress).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
+            //             .createDocument();
+            //         polyDoc.add(preDocument);
+            //         }                   
+            //     }
                                
-                ResultSet pointResults = stmt.executeQuery(pointSQLQuery);
-                while (pointResults.next()) {
-                    String osmAddress = pointResults.getString("addr_street");
-                    if (osmAddress == null){
-                        osmAddress = "NULL";
-                    }
-                    String num = pointResults.getString("addr_housenumber");
-                    if (num == null) {
-                        num = "0";
-                    }
-                    String buildingiri = pointResults.getString("building_iri");
-                    if (buildingiri != null) {
-                        Document preDocument = new Document.Builder(buildingiri)
-                        .addElement(new Element.Builder<String>().setValue(num).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-                        .addElement(new Element.Builder<String>().setValue(osmAddress).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-                        .createDocument();
-                        pointDoc.add(preDocument);
-                    }
+                // ResultSet pointResults = stmt.executeQuery(pointSQLQuery);
+                // while (pointResults.next()) {
+                //     String osmAddress = pointResults.getString("addr_street");
+                //     if (osmAddress == null){
+                //         osmAddress = "NULL";
+                //     }
+                //     String num = pointResults.getString("addr_housenumber");
+                //     if (num == null) {
+                //         num = "0";
+                //     }
+                //     String buildingiri = pointResults.getString("building_iri");
+                //     if (buildingiri != null) {
+                //         Document preDocument = new Document.Builder(buildingiri)
+                //         .addElement(new Element.Builder<String>().setValue(num).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
+                //         .addElement(new Element.Builder<String>().setValue(osmAddress).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
+                //         .createDocument();
+                //         pointDoc.add(preDocument);
+                //     }
                     
-                }
+                // }
                 //get data from csv
                 List<FloorsCsv> hdbFloors = new CsvToBeanBuilder(new FileReader(floorsCsv))
                         .withType(FloorsCsv.class)
@@ -147,19 +161,19 @@ public class IntegrateFloors {
                             .addElement(new Element.Builder<String>().setValue(address).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
                             .setThreshold(0.5).createDocument();
                     
-                    Map<String, List<Match<Document>>> resultPoint = matchService.applyMatchByDocId(matchDoc,pointDoc);
-                    Map<String, List<Match<Document>>> resultPoly = matchService.applyMatchByDocId(matchDoc,polyDoc);
+                    Map<String, List<Match<Document>>> resultPoint = matchService.applyMatchByDocId(matchDoc,preDoc);
+                    // Map<String, List<Match<Document>>> resultPoly = matchService.applyMatchByDocId(matchDoc,polyDoc);
                     
-                    String polyIri = null;
-                    for (Map.Entry<String, List<Match<Document>>> entry : resultPoly.entrySet()) {
-                        for (Match<Document> match : entry.getValue()) {
-                            if(match.getScore().getResult()>polyScore && match.getScore().getResult()>0.5){
-                                System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
-                                polyScore = match.getScore().getResult();
-                                polyIri = match.getMatchedWith().getKey();
-                            }
-                        }
-                    }
+                    // String polyIri = null;
+                    // for (Map.Entry<String, List<Match<Document>>> entry : resultPoly.entrySet()) {
+                    //     for (Match<Document> match : entry.getValue()) {
+                    //         if(match.getScore().getResult()>polyScore && match.getScore().getResult()>0.5){
+                    //             System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
+                    //             polyScore = match.getScore().getResult();
+                    //             polyIri = match.getMatchedWith().getKey();
+                    //         }
+                    //     }
+                    // }
                     String pointIri = null;
                     for (Map.Entry<String, List<Match<Document>>> entry : resultPoint.entrySet()) {
                         for (Match<Document> match : entry.getValue()) {
@@ -175,18 +189,19 @@ public class IntegrateFloors {
                     Integer floors = hdbFloors.get(i).getFloors();
                     String catString = "A";
                     String buildingiri = null;
-                    if(pointScore > polyScore && pointScore != 0) {
+                    if(pointScore != 0) {
                         buildingiri = pointIri;
-                    } else if (polyScore != 0){
-                        buildingiri = polyIri;
                     }
+                    // } else if (polyScore != 0){
+                    //     buildingiri = polyIri;
+                    // }
 
                     if (buildingiri != null) {
                         updateFloors(floors, catString, buildingiri);
                     }
                     
                 }
-            }
+            
         } catch (SQLException e) {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }       
@@ -195,7 +210,7 @@ public class IntegrateFloors {
     public void importFloorDate () {
         String catString = null;
         String floorSQLQuery = "SELECT storeys_above_ground AS floors, storeys_above_ground_cat, id, cg.strval " +
-                                "FROM building, cityobject_genericattrib cg " + 
+                                "FROM citydb.building, citydb.cityobject_genericattrib cg " + 
                                 "WHERE id = cg.cityobject_id AND cg.attrname = 'uuid'";       
         Integer floors;
         try (Connection srcConn = postgisClient.getConnection()) {
@@ -210,7 +225,7 @@ public class IntegrateFloors {
                         catString = "B";
                         if (floors == null) {//estimate
                             catString = "C";
-                            // floors = estimateFloors();
+                            floors = estimateFloors(buildingIri);
                         }
                     }
 
@@ -224,19 +239,14 @@ public class IntegrateFloors {
     }
 
     public Integer queryOSMFloor (String buildingIri) {
-        String osmFloorQuery = "";
+        String osmFloorQuery = "SELECT building_levels FROM osm.polygons " + 
+                                "WHERE building_iri = " + buildingIri;
         Integer floors = null;
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
                 ResultSet floorsResults = stmt.executeQuery(osmFloorQuery);
                 while (floorsResults.next()) {
-                    floors = floorsResults.getInt("");
-
-                    if (floors == null ){
-                        //return null;
-                    }else {
-                        //return floors;
-                    }
+                    floors = floorsResults.getInt("building_levels");
                 }
 
             }
@@ -249,9 +259,9 @@ public class IntegrateFloors {
     public void updateFloors (Integer floors, String catString, String buildingIri) {
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
-                String buildingSQLUpdate = "UPDATE building b SET storeys_above_ground = " + floors + 
+                String buildingSQLUpdate = "UPDATE citydb.building b SET storeys_above_ground = " + floors + 
                                             ", storeys_above_ground_cat = " + catString +
-                                            " FROM cityobject_genericattrib cg\n" + 
+                                            " FROM citydb.cityobject_genericattrib cg\n" + 
                                             "WHERE b.id = cg.cityobject_id AND cg.strval = '" + buildingIri + "';";
                 postgisClient.executeUpdate(buildingSQLUpdate);
 
@@ -263,76 +273,63 @@ public class IntegrateFloors {
 
     }
 
-    // public Integer estimateFloors () {
+    public Integer estimateFloors (String buildingIri) {
         
-    //     try {
-            
+        try {
+            int floor = 0;
+            float height = 0;
+            for (int i = 0; i< this.osmBuildings.size(); i++){
+                if(buildingIri.equals(this.osmBuildings.get(i).getBuildingIri())){
+                    String heightQuery = "SELECT measured_height" +
+                                        "FROM citydb.building, citdb.cityobject_genericattrib cg " + 
+                                        "WHERE id = cg.cityobject_id AND cg.attrname = 'iri' AND cg.urival = " + buildingIri;
+                    try (Connection srcConn = postgisClient.getConnection()) {
+                        try (Statement stmt = srcConn.createStatement()) {
+                            ResultSet heightResults = stmt.executeQuery(heightQuery);
+                            while (heightResults.next()) {
+                                height = heightResults.getFloat("measured_height");
+                            }        
+                        }
+                    }catch (SQLException e) {
+                        throw new JPSRuntimeException("Error connecting to source database: " + e);
+                    }
+                    String usage = this.osmBuildings.get(i).getUsage();
+                    if (usage.equals("Domestic")){
+                        floor = (int)((height - 3.6) / 2.8);
+                    } else {
+                        floor = (int) (height / 3.3) ;
+                    }
+                }
+            }
+            return floor;
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
 
-    //     }catch (Exception e) {
-    //         e.printStackTrace();
-    //         throw new JPSRuntimeException("Error connecting to source database: " + e);
-    //     }
-
-    // }
+    }
 
     public List<OSMBuilding> queryOSMBuilding () {
         String fileContent = "";
         StringBuilder contentBuilder = new StringBuilder();
         
-        try (BufferedReader br = new BufferedReader(new FileReader(sparqlFile))){
+        try {
             RemoteStoreClient storeClient = new RemoteStoreClient(this.ontopUrl);
 
-            // String sCurrentLine;
-            // while ((sCurrentLine = br.readLine()) != null) 
-            // {
-            //     contentBuilder.append(sCurrentLine).append("\n");
-            // }
-
-            WhereBuilder wbUsage = new WhereBuilder()                   
-                    .addWhere("?building", "env:hasPropertyUsage", "?property")
-                    .addWhere("?property", "a", "?usage");
-
-            WhereBuilder wbAddress1 = new WhereBuilder()
-                    .addWhere("?building", "env:hasAddress", "?address")
-                    .addWhere("?address", "rdf:type", "ic:Address")
-                    .addWhere("?address", "env:hasCountry", "?Value")
-                    .addBind("Country", "?Property");
-
-            WhereBuilder wbAddress2 = new WhereBuilder()
-                    .addWhere("?building", "env:hasAddress", "?address")
-                    .addWhere("?address", "rdf:type", "ic:Address")
-                    .addWhere("?address", "env:hasStreet", "?Value")
-                    .addBind("Street", "?Property");
-            
-            WhereBuilder wbAddress3 = new WhereBuilder()
-                    .addWhere("?building", "env:hasAddress", "?address")
-                    .addWhere("?address", "rdf:type", "ic:Address")
-                    .addWhere("?address", "env:hasUnitNumber", "?Value")
-                    .addBind("Unit number", "?Property");
-
-            WhereBuilder wbAddress4 = new WhereBuilder()
-                    .addWhere("?building", "env:hasAddress", "?address")
-                    .addWhere("?address", "rdf:type", "ic:Address")
-                    .addWhere("?address", "env:hasPostalCode", "?Value")
-                    .addBind("Post code", "?Property");
- 
-            WhereBuilder wbAddress5 = new WhereBuilder()
-                    .addWhere("?building", "env:hasAddress", "?address")
-                    .addWhere("?address", "rdf:type", "ic:Address")
-                    .addWhere("?address", "env:hasStreet", "?Value")
-                    .addBind("Steet", "?Property");       
-
             SelectBuilder sb = new SelectBuilder()
-                    .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                    .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.om))
                     .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                     .addPrefix("twa", OntologyURIHelper.getOntologyUri(OntologyURIHelper.twa))
                     .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                     .addPrefix("rdfs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdfs))
                     .addPrefix("ic", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ic))
-                    .addVar("?building")
-                    .addVar("?property")
-                    .addVar("?Value")
-                    .addUnion(wbUsage, wbAddress1, wbAddress2, wbAddress3, wbAddress4, wbAddress5);
+                    .addVar("*")
+                    .addWhere("?building", "env:hasPropertyUsage", "?property")
+                    .addWhere("?property", "a", "?usage")
+                    .addWhere("?building", "env:hasAddress", "?address")
+                    .addOptional("?address", "ic:hasStreet", "?street")
+                    .addOptional("?address", "ic:hasPostalCode", "?postcode")
+                    .addOptional("?address", "ic:hasUnitNumber", "?unit");
 
             String query = sb.build().toString();
             JSONArray queryResultArray = storeClient.executeQuery(query);
@@ -340,8 +337,12 @@ public class IntegrateFloors {
             List<OSMBuilding> osmBuildings = new ArrayList<>();
 
             for (int i = 0; i < queryResultArray.length(); i++) {
-                // OSMBuilding osmBuilding = 
-                // queryResultArray.getJSONObject(i).getString("sCurrentLine")
+                OSMBuilding osmBuilding = null;
+                osmBuilding.setBuildingIri(queryResultArray.getJSONObject(i).getString("building"));
+                osmBuilding.setStreet(queryResultArray.getJSONObject(i).getString("street"));
+                osmBuilding.setUsage(queryResultArray.getJSONObject(i).getString("usage"));
+                osmBuilding.setPostcode(queryResultArray.getJSONObject(i).getInt("postcode"));
+                osmBuilding.seUnit(queryResultArray.getJSONObject(i).getString("unit"));
             }
             return osmBuildings;
         }catch (Exception e) {

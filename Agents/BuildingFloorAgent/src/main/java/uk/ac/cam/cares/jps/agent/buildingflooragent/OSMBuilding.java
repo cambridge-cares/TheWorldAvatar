@@ -2,9 +2,16 @@ package uk.ac.cam.cares.jps.agent.buildingflooragent;
 
 public class OSMBuilding {
     
+    private String buildiingIri;
     private String buildingUsage;
     private int floors;
-    private String address;
+    private String street;
+    private String unit;
+    private Integer postcode;
+
+    public String getBuildingIri() {
+        return this.buildiingIri;
+    }
 
     public String getUsage() {
         return this.buildingUsage;
@@ -14,8 +21,20 @@ public class OSMBuilding {
         return this.floors;
     }
 
-    public String getAddress() {
-        return this.address;
+    public String getStreet() {
+        return this.street;
+    }
+
+    public Integer getPostcode() {
+        return this.postcode;
+    }
+
+    public String getUnit() {
+        return this.unit;
+    }
+
+    public void setBuildingIri(String buildingIri) {
+        this.buildiingIri = buildingIri;
     }
 
     public void setUsage(String buildingUsage) {
@@ -26,7 +45,15 @@ public class OSMBuilding {
         this.floors = floors;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public void setPostcode(Integer postcode) {
+        this.postcode = postcode;
+    }
+
+    public void seUnit(String unit) {
+        this.unit = unit;
     }
 }
