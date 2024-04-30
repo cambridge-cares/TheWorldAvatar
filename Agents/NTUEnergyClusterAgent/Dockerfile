@@ -1,6 +1,6 @@
 # This Dockerfile has been adapted from the VS Code example at https://code.visualstudio.com/docs/containers/quickstart-python
 # Reference published Docker image for Stack-Client resources to use
-FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM ghcr.io/cambridge-cares/stack-client:1.23.5 as stackclients
 
 # Base image is a lightweight version of Python
 FROM python:3.7.11-slim-buster
@@ -34,10 +34,6 @@ ADD NTUEnergyClusterAgent /app/NTUEnergyClusterAgent
 
 # Copy in properties files
 COPY ./resources/ts_client.properties /app/NTUEnergyClusterAgent/kg_utils/resources/ts_client.properties
-
-# Copy in model files
-COPY ./NTUEnergyClusterAgent/models/kmeans_model.pkl /app/NTUEnergyClusterAgent/models/kmeas_model.pkl
-COPY ./NTUEnergyClusterAgent/models/nn_model.h5 /app/NTUEnergyClusterAgent/models/nn_model.h5
 
 # Install StackClients py4jps resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \

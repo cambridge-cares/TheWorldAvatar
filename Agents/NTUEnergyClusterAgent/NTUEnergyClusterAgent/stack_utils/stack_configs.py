@@ -37,7 +37,7 @@ def retrieve_settings():
     ont_conf = containerClient.readEndpointConfig("ontop", ont.getClass())
 
     # Extract PostgreSQL database URL for querying weather data
-    DB_QUERY_URL_STACK = pg_conf_query.getJdbcURL('openmeteo')
+    DB_QUERY_URL_STACK = pg_conf_query.getJdbcURL('ntuenergy')
     # Extract PostgreSQL database username and password
     DB_QUERY_USER_STACK = pg_conf_query.getUsername()
     DB_QUERY_PASSWORD_STACK = pg_conf_query.getPassword()
@@ -49,7 +49,7 @@ def retrieve_settings():
 
     # Extract SPARQL endpoints of KG 
     # (i.e. Query and Update endpoints are equivalent for Blazegraph)
-    QUERY_ENDPOINT_STACK = bg_conf.getUrl('openmeteo')
+    QUERY_ENDPOINT_STACK = bg_conf.getUrl('ntuenergy')
     UPDATE_ENDPOINT_STACK = bg_conf.getUrl('ntuenergy')
 
     # Extract ONTOP endpoint

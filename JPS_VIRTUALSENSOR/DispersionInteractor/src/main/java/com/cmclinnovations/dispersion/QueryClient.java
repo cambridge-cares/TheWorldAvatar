@@ -618,7 +618,15 @@ public class QueryClient {
 
         JSONObject overallResult = new JSONObject();
 
-        TimeSeries<Long> dispRasterTimeSeries = tsClient.getTimeSeries(dispRasterIriList, conn);
+        long latestTime = tsClient.getMaxTime(dispRasterIriList.get(0), conn);
+        long earliestTime = tsClient.getMinTime(dispRasterIriList.get(0), conn);
+
+        if ((latestTime - earliestTime) > 86400) {
+            earliestTime = latestTime - 86400;
+        }
+
+        TimeSeries<Long> dispRasterTimeSeries = tsClient.getTimeSeriesWithinBounds(dispRasterIriList, earliestTime,
+                latestTime, conn);
 
         List<Instant> timeStampList = dispRasterTimeSeries.getTimes().stream().map(Instant::ofEpochSecond)
                 .collect(Collectors.toList());
@@ -906,7 +914,17 @@ public class QueryClient {
             } else {
                 simulationTimes = new ArrayList<>();
             }
-            dispersionSimulation.setTimesteps(simulationTimes);
+            int numLayers;
+            try {
+                numLayers = Integer.parseInt(Config.NUMBER_OF_LAYERS);
+            } catch (NumberFormatException e) {
+                LOGGER.error(e.getMessage());
+                LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+                numLayers = 20;
+            }
+
+            dispersionSimulation.setTimesteps(
+                    simulationTimes.subList(Math.max(simulationTimes.size() - numLayers, 0), simulationTimes.size()));
         });
     }
 

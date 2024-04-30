@@ -3,6 +3,7 @@ PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX tw: <https://www.theworldavatar.com/kg/>
+PREFIX ic: <http://ontology.eil.utoronto.ca/icontact.owl#>
 
 SELECT DISTINCT ?Property ?Value ?Unit
 WHERE {
@@ -26,4 +27,49 @@ WHERE {
             BIND ("Building Name" AS ?Property)
         }
     }
+    UNION
+        {
+            SERVICE [ONTOP] {
+                [IRI] obe:hasAddress ?address .
+                ?address rdf:type ic:Address ;
+                    obe:hasCountry ?Value .
+                BIND ("Country" AS ?Property)
+            }
+        }
+    UNION
+        {
+            SERVICE [ONTOP] {
+                [IRI] obe:hasAddress ?address .
+                ?address rdf:type ic:Address ;
+                    obe:hasStreet ?Value .
+                BIND ("Street" AS ?Property)
+            }
+        }
+    UNION
+        {
+            SERVICE [ONTOP] {
+                [IRI] obe:hasAddress ?address .
+                ?address rdf:type ic:Address ;
+                    ic:hasUnitNumber ?Value .
+                BIND ("Unit number" AS ?Property)
+            }
+        }
+    UNION
+        {
+            SERVICE [ONTOP] {
+                [IRI] obe:hasAddress ?address .
+                ?address rdf:type ic:Address ;
+                    ic:hasPostalCode ?Value .
+                BIND ("Post code" AS ?Property)
+            }
+        }
+    UNION
+        {
+            SERVICE [ONTOP] {
+                [IRI] obe:hasAddress ?address .
+                ?address rdf:type ic:Address ;
+                    ic:hasStreet ?Value .
+                BIND ("Steet" AS ?Property)
+            }
+        }
 }

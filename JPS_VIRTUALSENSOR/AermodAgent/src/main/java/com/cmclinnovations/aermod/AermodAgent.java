@@ -20,7 +20,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -48,9 +47,32 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class AermodAgent extends DerivationAgent {
     private static final Logger LOGGER = LogManager.getLogger(AermodAgent.class);
     private QueryClient queryClient;
+    private Thread thread;
 
+    // only allowing one thread at a time to prevent duplicate request updates
     @Override
     public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
+        try {
+            if (thread != null && thread.isAlive()) {
+                LOGGER.info("Previous thread is still alive, waiting for it to finish");
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            LOGGER.error("Error from previous thread");
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        thread = new Thread(() -> run(derivationInputs));
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void run(DerivationInputs derivationInputs) {
         String weatherStationIri = derivationInputs.getIris(QueryClient.REPORTING_STATION).get(0);
         String nxIri = derivationInputs.getIris(QueryClient.NX).get(0);
         String nyIri = derivationInputs.getIris(QueryClient.NY).get(0);
@@ -59,6 +81,11 @@ public class AermodAgent extends DerivationAgent {
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
 
         long simulationTime = queryClient.getMeasureValueAsLong(simulationTimeIri);
+
+        if (queryClient.timestepExists(simulationTime, derivationInputs.getDerivationIRI())) {
+            LOGGER.info("Duplicate request for the same timestep, ignoring request");
+            return;
+        }
 
         if (simulationTime == 0) {
             LOGGER.info("Simulation time = 0, this is from calling createSyncDerivationForNewInfo the first time");
@@ -82,10 +109,11 @@ public class AermodAgent extends DerivationAgent {
             srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
-        Map<String, Building> allBuildings = null;
+        Map<String, Building> allBuildings = new HashMap<>();
+        if (!EnvConfig.IGNORE_BUILDINGS) {
         LOGGER.info("Querying for buildings within simulation domain");
         allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
-
+        }
         List<StaticPointSource> staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
 
         staticPointSources.removeIf(s -> s.getLocation() == null);
@@ -107,8 +135,12 @@ public class AermodAgent extends DerivationAgent {
         queryClient.setPointSourceLabel(allSources);
 
         // new ontop way
-
-        List<Building> buildings = queryClient.getBuildings(allSources, allBuildings);
+        List<Building> buildings;
+        if (!EnvConfig.IGNORE_BUILDINGS) {
+            buildings = queryClient.getBuildings(allSources, allBuildings);
+        } else {
+            buildings = new ArrayList<>();
+        }
 
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
