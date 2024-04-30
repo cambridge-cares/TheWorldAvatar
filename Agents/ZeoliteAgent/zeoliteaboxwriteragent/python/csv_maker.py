@@ -777,8 +777,11 @@ class CsvMaker:
             xrdData = xrdData[1:]
             for xrd in xrdData:
 
-                #print("Framework:", xrd[2])
-                if zeoname == xrd[2]:
+                #print(">>>>> Framework:", zeoname, xrd[2])
+                if zeoname.replace("-", "_") == xrd[2]:
+                    with open("xrd-spectrum.txt", "a", encoding="utf-8") as fp:
+                        fp.write(xrd[2] + "\n")
+
                     nSpectra += 1
 
                     uuid_xrd, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "XRDSpectrum",
@@ -842,7 +845,7 @@ class CsvMaker:
                                uuid_peak, "", True, "boolean"])
 
                 miller = ocdt.OntoVector(
-                           class_name = self.crystOntoPrefix + "MillerIndices",
+                           class_name = "MillerIndices",
                            item_name  = self.zeoOntoPrefix + "MillerIndices_" + zeoname + "_peak_" + str(il+1),
                            uuidDB = self.uuidDB,
                            unit      = "om:dimensionOne")
@@ -1345,7 +1348,7 @@ class CsvMaker:
                 pass
 
             tmp = self.arrSpectrum(self.zeoOntoPrefix + uuid_cif, self.crystOntoPrefix + "hasXRDSpectrum", z)
-            if tmp is None:
+            if tmp is None or tmp == []:
                 logging.warning(" Missing Spectrum information! for %s", z)
             else:
                 # uuuuuuuuu
@@ -1357,6 +1360,7 @@ class CsvMaker:
             #1/0
             # FIXME
 
+            #continue
             # To add Citation information, or is it loaded in get_csv_arr_from_cif ?
 
             # Description of all the zeolites for this framework:

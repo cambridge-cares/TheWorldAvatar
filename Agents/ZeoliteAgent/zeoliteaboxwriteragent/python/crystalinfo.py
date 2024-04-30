@@ -1425,7 +1425,7 @@ if __name__ == "__main__":
     files = []
     #data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "a_cifs.csv"))
     data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "cif_list.csv"))
-    data = data[1:]  # <= removed the header line
+    #data = data[1:]  # <= removed the header line, but there is no header.
     for line in data[:]:
         if line[5] != "" and line[5].lower() != "none":
             if line[5].lower() not in files:

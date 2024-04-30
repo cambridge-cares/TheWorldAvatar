@@ -57,8 +57,10 @@ def cageToFaces( cage ):
 
 def getDataByCode( dataIn, code ):
   for d in dataIn:
-    if d[0].find( code ) >= 0:
+    if d[0].find( code.replace("-", "").replace("_", "") ) >= 0:
       return d
+    #if d[0].find( code ) >= 0:
+    #  return d
   
   #logging.error( "In tile-signature: unknown code '" + code + "'" )
   print( "In tile-signature: unknown code '" + code + "'" )

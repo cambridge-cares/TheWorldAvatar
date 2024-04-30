@@ -4,6 +4,7 @@ import sys
 import json
 import shutil
 
+import zeolist
 import tools
 
 FILE_IN = os.path.join("ontozeolite", "zeolite", "a_final_species_updated.json")
@@ -86,6 +87,22 @@ def check_cif_file(data):
                 else:
                     print("Missing cif file", cif_path, material["cif_file"])
         
+        pass
+
+    # Add IZA files:
+    cif_list = []
+
+    frameworks = zeolist.getZeoList(["main", "new"])
+    #print("Number of frameworks =", len(frameworks))
+    count = 0
+    for fw in frameworks:
+        #filename = os.path.join(CIF_FOLDER_OUT, fw.replace("-", "") + ".cif")
+        filename = os.path.join(CIF_FOLDER_OUT, fw + ".cif")
+        if os.path.isfile(filename):
+            count += 1
+            cif_list.append(["","","","","", filename])
+        else:
+            print("missing file ", filename)
         pass
 
     return data, cif_list

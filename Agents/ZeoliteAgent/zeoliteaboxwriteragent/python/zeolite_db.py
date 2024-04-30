@@ -1494,7 +1494,9 @@ class ZeoliteDB:
             #print("Number of zeolites:", len(self.zeolites))
             #print(type(self.zeolites))
             #print(mat.data)
-            if mat.data["frame"] == framework:
+            #if mat.data["frame"] == framework:
+            #    output.append(mat)
+            if framework.replace("-", "") in mat.data["frame"]:
                 output.append(mat)
         print("Number of zeo for framework", framework, len(output))
         #1/0
