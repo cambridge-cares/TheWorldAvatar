@@ -274,6 +274,7 @@ def split_name_uuid(value, file_line):
                 if SHOW_WARNING:
                     print(f"Warning: Instance '{value}' uses UUID version",
                           f"other than UUID4 {file_line}.")
+                WARNING_COUNT += 1
         elif value.startswith("http://www.ontology-of-units-of-measure.org") or \
              value.startswith("om:"):
             # Do nothing, these don't need to follow NAME_UUID pattern
