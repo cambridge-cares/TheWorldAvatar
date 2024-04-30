@@ -10,7 +10,9 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
@@ -27,6 +29,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -51,6 +54,8 @@ public class QueryClient {
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX));
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));
+    private static final Prefix P_DERIVATION = SparqlBuilder.prefix("der",
+            iri("https://www.theworldavatar.com/kg/ontoderivation/"));
 
     // classes
     // as Iri classes for sparql updates sent directly from here
@@ -568,5 +573,138 @@ public class QueryClient {
 
             storeClient.executeUpdate(modify.getQueryString());
         }
+    }
+
+    List<String> cleanUpTimeSeries(long daysBefore) {
+        SelectQuery query = Queries.SELECT();
+        Variable shipVar = query.var();
+        Variable measureVar = query.var();
+        Variable timeseriesVar = query.var();
+
+        GraphPattern queryPattern = GraphPatterns.and(
+                shipVar.isA(SHIP).andHas(PropertyPaths.path(HAS_PROPERTY, HAS_VALUE), measureVar),
+                measureVar.has(iri("https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries"), timeseriesVar));
+
+        query.where(queryPattern).prefix(P_OM, P_DISP);
+
+        Map<String, List<String>> shipToMeasuresMap = new HashMap<>();
+        Map<String, String> shipToTsMap = new HashMap<>();
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String ship = queryResult.getJSONObject(i).getString(shipVar.getQueryString().substring(1));
+            String measure = queryResult.getJSONObject(i).getString(measureVar.getQueryString().substring(1));
+            String timeseries = queryResult.getJSONObject(i).getString(timeseriesVar.getQueryString().substring(1));
+
+            shipToMeasuresMap.computeIfAbsent(ship, s -> new ArrayList<>());
+            shipToMeasuresMap.get(ship).add(measure);
+            shipToTsMap.put(ship, timeseries);
+        }
+
+        List<String> shipsToDeleteCompletely = new ArrayList<>();
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            shipToMeasuresMap.entrySet().forEach(entry -> {
+                String ship = entry.getKey();
+                List<String> measures = entry.getValue();
+                Instant latestTime = tsClient.getLatestData(measures.get(0), conn).getTimes().get(0);
+                Instant earliestTimeTokeep = Instant.now().minus(daysBefore, ChronoUnit.DAYS);
+
+                if (latestTime == null || latestTime.isBefore(earliestTimeTokeep)) {
+                    shipsToDeleteCompletely.add(entry.getKey());
+                    tsClient.deleteTimeSeries(shipToTsMap.get(ship), conn);
+                } else {
+                    Instant earliestTime = tsClient.getOldestData(measures.get(0), conn).getTimes().get(0);
+
+                    measures.forEach(
+                            measure -> tsClient.deleteTimeSeriesHistory(measure, earliestTime, earliestTimeTokeep,
+                                    conn));
+                }
+            });
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error in cleanUpTimeSeries");
+        }
+
+        return shipsToDeleteCompletely;
+    }
+
+    void deleteShipDerivation(List<String> shipsToDeleteCompletely) {
+        Prefix prefixTime = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
+        Prefix prefixDerivation = SparqlBuilder.prefix("derivation",
+                iri("https://www.theworldavatar.com/kg/ontoderivation/"));
+
+        Iri isDerivedFrom = prefixDerivation.iri("isDerivedFrom");
+        Iri isDerivedUsing = prefixDerivation.iri("isDerivedUsing");
+        Iri derivationType = prefixDerivation.iri("Derivation");
+        Iri belongsTo = prefixDerivation.iri("belongsTo");
+
+        Iri instantClass = prefixTime.iri("Instant");
+        Iri timePositionClass = prefixTime.iri("TimePosition");
+        Iri hasTRS = prefixTime.iri("hasTRS");
+        Iri numericPosition = prefixTime.iri("numericPosition");
+        Iri inTimePosition = prefixTime.iri("inTimePosition");
+        Iri hasTime = prefixTime.iri("hasTime");
+
+        Variable shipVar = SparqlBuilder.var("ship");
+        Variable derivationVar = SparqlBuilder.var("derivation");
+        Variable output = SparqlBuilder.var("output");
+        Variable outputPredicate = SparqlBuilder.var("outputPredicate");
+        Variable outputObject = SparqlBuilder.var("outputObject");
+        Variable outputSubject = SparqlBuilder.var("outputSubject");
+        Variable outputPredicate2 = SparqlBuilder.var("outputPredicate2");
+        Variable time = SparqlBuilder.var("time");
+        Variable timeUnixIri = SparqlBuilder.var("timeUnixIri");
+        Variable timestamp = SparqlBuilder.var("timestamp");
+        Variable trs = SparqlBuilder.var("trs");
+        Variable agent = SparqlBuilder.var("agent");
+
+        ValuesPattern<Iri> shipValues = new ValuesPattern<>(shipVar,
+                shipsToDeleteCompletely.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+
+        TriplePattern triplePattern1 = derivationVar.has(isDerivedFrom, shipVar).andIsA(derivationType)
+                .andHas(isDerivedUsing, agent);
+
+        // outputs, consider cases where output is subject/object of a triple
+        TriplePattern triplePattern2 = output.has(belongsTo, derivationVar);
+        TriplePattern triplePattern3 = output.has(outputPredicate, outputObject);
+        TriplePattern triplePattern4 = outputSubject.has(outputPredicate2, output);
+
+        // derivation timestamps
+        TriplePattern timestampTp1 = derivationVar.has(hasTime, time);
+        TriplePattern timeTpAll1 = time.isA(instantClass).andHas(inTimePosition, timeUnixIri);
+        TriplePattern timeTpAll2 = timeUnixIri.isA(timePositionClass).andHas(numericPosition, timestamp).andHas(hasTRS,
+                trs);
+
+        GraphPattern graphPattern = GraphPatterns.and(triplePattern1, triplePattern2, triplePattern3.optional(),
+                triplePattern4.optional(), timestampTp1, timeTpAll1, timeTpAll2, shipValues);
+
+        ModifyQuery modify = Queries.MODIFY();
+        modify.delete(triplePattern1, triplePattern2, triplePattern3, triplePattern4, timestampTp1, timeTpAll1,
+                timeTpAll2).where(graphPattern).prefix(prefixTime, prefixDerivation);
+        storeClient.executeUpdate(modify.getQueryString());
+    }
+
+    void deleteShips(List<String> shipsToDelete) {
+        Variable label = SparqlBuilder.var("label");
+        Variable ship = SparqlBuilder.var("ship");
+        Variable property = SparqlBuilder.var("property");
+        Variable propertyType = SparqlBuilder.var("propertyType");
+        Variable measure = SparqlBuilder.var("measure");
+        Variable measureType = SparqlBuilder.var("measureType");
+        Variable value = SparqlBuilder.var("value");
+
+        ValuesPattern<Iri> shipValues = new ValuesPattern<>(ship,
+                shipsToDelete.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        TriplePattern tp1 = ship.isA(SHIP).andHas(iri(RDFS.LABEL), label).andHas(HAS_PROPERTY, property);
+        TriplePattern tp2 = property.isA(propertyType).andHas(HAS_VALUE, measure);
+        TriplePattern tp3 = measure.isA(measureType);
+        TriplePattern tp4 = measure.has(HAS_NUMERICALVALUE, value);
+
+        ModifyQuery modify = Queries.MODIFY();
+        modify.where(tp1, tp2, tp3, tp4.optional(), shipValues).delete(tp1, tp2, tp3, tp4).prefix(P_OM, P_DISP);
+
+        storeClient.executeUpdate(modify.getQueryString());
+        derivationClient.dropTimestampsOf(shipsToDelete);
     }
 }

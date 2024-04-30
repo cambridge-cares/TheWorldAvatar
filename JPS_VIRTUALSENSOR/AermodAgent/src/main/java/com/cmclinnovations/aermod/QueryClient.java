@@ -21,7 +21,6 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -33,10 +32,6 @@ import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 import com.cmclinnovations.aermod.sparqlbuilder.GeoSPARQL;
 import com.cmclinnovations.aermod.sparqlbuilder.ServiceEndpoint;
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
-import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -1176,6 +1171,33 @@ public class QueryClient {
         }
 
         return hasElevationData;
+    }
+
+    boolean timestepExists(long simTime, String derivation) {
+        SelectQuery query = Queries.SELECT();
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+        Variable entity = query.var();
+        Variable dispMatrix = query.var();
+
+        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_DISPERSION_MATRIX, dispMatrix)).prefix(P_DISP);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        // this will give a list of outputs, one for each pollutant/height combo, but
+        // they are in the same time series table
+        if (queryResult.length() > 0) {
+            String dataIri = queryResult.getJSONObject(0).getString(dispMatrix.getQueryString().substring(1));
+            try (Connection conn = rdbStoreClient.getConnection()) {
+                TimeSeries<Long> ts = tsClientLong.getTimeSeriesWithinBounds(List.of(dataIri), simTime, simTime, conn);
+                return !ts.getTimes().isEmpty();
+            } catch (SQLException e) {
+                LOGGER.error("Failure in timestepExists, failed at closing connection");
+                LOGGER.error(e.getMessage());
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     void updateOutputs(String derivation, Map<String, DispersionOutput> zIriToOutputMap, boolean hasShips,
