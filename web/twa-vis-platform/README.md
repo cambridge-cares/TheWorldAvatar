@@ -4,11 +4,13 @@ A central framework for The World Avatar (TWA) Visualisations (the TWA Visualisa
 
 The contents of this repository have been structured into Development and Production. If you are a developer who is adding a new feature, fixing an existing bug, or just interested in finding out more, please read the [Development](#1-development) section. If you are setting up a visualisation for your use cases, please read the [Production](#2-production) section. When releasing the platform, please read the [Releasing](#3-release) section.
 
+A tutorial including a sample directory setup has been included in the [example](./example/) directory. Please have a look if you are looking to setup on this new platform.
+
 ## 1. Development
 
 Information on the source code and its architecture can be found in the [code](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform/code) directory. Briefly, the TWA Visualisation Platform takes the form of a [Next.js](https://nextjs.org/) project written using [TypeScript](https://www.typescriptlang.org/), utilising both client and server-side codes.
 
-The development process can occur locally or in a Docker container. Please do note that it is faster to develop the platform locally, and instructions are available in the [code](./code#2-local-development-workflow) directory.
+The development process can occur locally or in a Docker container. Please do note that it is faster to develop the platform locally, and instructions are available in the [code](./code#3-local-development-workflow) directory.
 
 On the other hand, Docker deployment is simplified and requires minimal setup. In order to start a Docker container, please ensure the following:
 
@@ -39,10 +41,14 @@ For deployment on the [TWA stack](https://github.com/cambridge-cares/TheWorldAva
 4. Populate this directory with your require visualisation configuration files
 5. Start the stack as per usual
 
-If you are creating a custom visualisation service on the stack, please note to update the `BASE_PATH` environment variable for your subpath.
+> Custom Service
+
+At the moment, the `visualisation` service defaults to the [Visualisation Framework](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework). To deploy the TWA ViP, please set up a custom service. A minimal example is available in the [tutorial](./example/), specifically `example/vip.json`.
+
+If you wish to use other subpaths, please note to update the `BASE_PATH` environment variable to match the external path property.
 
 ## 3. Release
 
 Github Actions has been configured to automatically compile, build, and release the platform when the pull request has been merged. However, before merging the pull request, update the `CHANGELOG.md` and `VERSION` accordingly. Look at the [Wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Versioning) for the versioning format.
 
-Once merged, a release email will be sent to the mailing list based on the `CHANGELOG.md`. 
+Once merged, a release email will be sent to the mailing list based on the `CHANGELOG.md`.
