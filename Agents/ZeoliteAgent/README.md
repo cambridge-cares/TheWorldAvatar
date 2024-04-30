@@ -2,6 +2,7 @@
 # Description #
 
 Zeolite ontology abox writer.
+More details can be found in the [preprint](https://como.ceb.cam.ac.uk/preprints/321/).
 
 <!-- For the installation and running instructions see file OntoZeolite_user_manual-2.pdf -->
 
@@ -11,11 +12,14 @@ Zeolite ontology abox writer.
 
 To instantiate a copy of the Ontozeolite knowledge graph, you will need:
 
-- The input data (stored in the directory `ontozeolite`)
+- The input data (stored in the directory `Agents/ZeoliteAgent/zeoliteaboxwriteragent/ontozeolite/`).
+  The git repository contains only one zeolite material information as a proof of concept.
 - Python code (in the directory `python`)
 - Control scripts (`*.bat` files in the root directory)
 - A running copy of Blazegraph database on a server with an empty namespace
 
+Entire set of data for generation of the ABox can be found in
+[TheWorldAvatar repository](https://www.dropbox.com/scl/fo/i750y84mbh1t8u78vyfwt/AJVlAWA9ImXv_pkeAruZ-Rw?rlkey=g5vpqqba7zltcwbgly1qllw23&st=k9k8a6ru&dl=0).
 The data generation requires less than 10 GB of hard drive space.
 
 The code uses several external packages. It is recommended to use a virtual environment to install them:
@@ -44,7 +48,7 @@ Command line to install:
 
 More information can be found at their [official web-site](https://github.com/sciunto-org/python-bibtexparser).
 Also download a file with [journal abbreviations](https://github.com/jxhe/bib-journal-abbreviation/blob/master/journals.json)
-and save it in the `ontozeolite/biblio/bib2csvp/` directory.
+and save it in the `Agents/ZeoliteAgent/zeoliteaboxwriteragent/ontozeolite/biblio/bib2csvp/` directory.
 
 Install Third-party package `entityrdfizer`:
 
