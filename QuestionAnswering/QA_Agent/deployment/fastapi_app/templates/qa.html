@@ -64,14 +64,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-7">
-                <div id="tabular-data-container" style="display: none;">
-                    <button id="toggle-iri" type="button" class="btn btn-info"
-                        onclick="qaDataContainer.toggleIRIColumns();" style="margin-bottom: 1rem;">Show
-                        IRIs</button>
-                    <div id="tabular-data"></div>
-                </div>
-                <div id="figures-container" style="display: none;"></div>
+            <div id="qa-data-container" class="col-md-7">
             </div>
             <div class="col-md-5">
                 <div class="card" id="chatbot-response-card" style="display: none">
@@ -102,15 +95,15 @@
     <button type="submit" class="accordion">{{ qa_domain_grp["label"] }}</button>
     <div class="accordion-panel">
         {% for data_domain_grp in qa_domain_grp["subdomains"] %}
-            <p>{{ data_domain_grp["label"] }}</p>
-            <ul>
-                {% for question in data_domain_grp["questions"] %}
-                <li class="sample-question"
-                    onclick='inputField.populateInputText("{{ question }}"); globalState.set("qa_domain", "{{ qa_domain_grp["qa_domain"] }}"); askQuestion();'>
-                    {{ question }}
-                </li>
-                {% endfor %}
-            </ul>
+        <p>{{ data_domain_grp["label"] }}</p>
+        <ul>
+            {% for question in data_domain_grp["questions"] %}
+            <li class="sample-question"
+                onclick='inputField.populateInputText("{{ question }}"); globalState.set("qa_domain", "{{ qa_domain_grp["qa_domain"] }}"); askQuestion();'>
+                {{ question }}
+            </li>
+            {% endfor %}
+        </ul>
         {% endfor %}
     </div>
     {% endfor %}

@@ -5,8 +5,9 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends
 
-from model.qa import QAData, QAStep
+from model.qa import QAStep
 from core.kg import KgClient
+from services.support_data import TableDataItem
 from utils.collections import FrozenDict
 from utils.rdf import flatten_sparql_response
 from ..model import SparqlAction
@@ -93,7 +94,7 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
         vars, bindings = flatten_sparql_response(res)
         self.response_processor.process(vars=vars, bindings=bindings)
 
-        return steps, QAData(vars=vars, bindings=bindings)
+        return steps, [TableDataItem(vars=vars, bindings=bindings)]
 
 
 @cache
