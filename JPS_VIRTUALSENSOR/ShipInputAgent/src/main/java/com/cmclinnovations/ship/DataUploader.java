@@ -29,7 +29,7 @@ public class DataUploader {
     private static final Logger LOGGER = LogManager.getLogger(DataUploader.class);
     private static final String JSON_EXT = ".json";
 
-    public static void uploadShips(List<Ship> ships, QueryClient queryClient) throws IOException {
+    public static void uploadShips(List<Ship> ships, QueryClient queryClient, String source) throws IOException {
         if (!queryClient.initialised()) {
             PostGISClient postGISClient = PostGISClient.getInstance();
             Path sqlFunctionFile = new ClassPathResource("function.sql").getFile().toPath();
@@ -48,6 +48,10 @@ public class DataUploader {
         // initialise both triples and time series if ship is new
         List<Ship> newlyCreatedShips = queryClient.initialiseShipsIfNotExist(ships);
 
+        // query ship IRI and location measure IRI from the KG and set the IRIs in the
+        // object
+        queryClient.setShipIRIs(ships);
+
         // update value of ship type if they were initialised without a ship type in
         // previous updates
         queryClient.updateShipType(ships.stream().filter(s -> s.getShipType() != 0).collect(Collectors.toList()));
@@ -55,11 +59,29 @@ public class DataUploader {
         // sets course, speed, location measure IRI in ship objects to be used later
         queryClient.setMeasureIri(ships);
 
-        // add a row in RDB time series data, also updates derivation timestamps
-        queryClient.updateTimeSeriesData(ships);
+        switch (source) {
+            case "JSON":
 
-        // new derivations are created on the spot (request sent to agent immediately)
-        queryClient.createNewDerivations(newlyCreatedShips);
+                LOGGER.info("Read ship data from JSON");
+                // add a row in RDB time series data, also updates derivation timestamps
+                queryClient.updateTimeSeriesData(ships);
+
+                // new derivations are created on the spot (request sent to agent immediately)
+                queryClient.createNewDerivations(newlyCreatedShips);
+
+                break;
+
+            case "RDB":
+
+                LOGGER.info("Read ship data from relational database. Not implemented yet.");
+                break;
+
+            default:
+
+                LOGGER.info("Unknown source of ship data.");
+                break;
+        }
+
     }
 
     static List<Ship> uploadDataFromFile(QueryClient queryClient) throws IOException {
@@ -139,7 +161,7 @@ public class DataUploader {
         JSONArray shipData = new JSONArray(tokener);
         List<Ship> ships = parseShip(shipData, timeOffset);
 
-        uploadShips(ships, queryClient);
+        uploadShips(ships, queryClient, "JSON");
 
         return ships;
     }
@@ -176,9 +198,9 @@ public class DataUploader {
         List<Ship> ships = parseShip(shipData, 0);
 
         // initialise both triples and time series if ship is new
-        List<Ship> newlyCreatedShips = queryClient.initialiseShipsIfNotExist(ships);
+        uploadShips(ships, queryClient, "RDB");
 
-        return newlyCreatedShips;
+        return ships;
     }
 
     private DataUploader() {
