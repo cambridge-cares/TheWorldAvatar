@@ -1,9 +1,23 @@
 package uk.ac.cam.cares.jps.data;
 
+/**
+ * Interface for callbacks used by repositories to handle data retrieval results.
+ * ViewModel classes should implement this interface to receive data from repositories.
+ *
+ * @param <T> The type of data returned by the callback.
+ */
 public interface RepositoryCallback<T> {
-    // called when data is ready to be consumed by ViewModel
-    // ViewModel should implement this interface
-
+    /**
+     * Called when data is successfully retrieved and ready to be consumed by ViewModel.
+     *
+     * @param result The data retrieved from the repository.
+     */
     void onSuccess(T result);
+
+    /**
+     * Called when an error occurs during data retrieval.
+     *
+     * @param error The error that occurred during data retrieval.
+     */
     void onFailure(Throwable error);
 }
