@@ -14,7 +14,7 @@ Notes:
 
 ```mermaid
     stateDiagram-v2
-        classDef current font-weight:bold,fill:#146a7d,stroke-width:2px
+        classDef current font-weight:bold,fill:#146a7d,stroke-width:2px, stroke:#a1c4cb
 
         cd: core-data
         cm: core-model

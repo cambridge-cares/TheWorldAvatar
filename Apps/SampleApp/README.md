@@ -51,74 +51,60 @@ Please note that all fragment links are stored as a string resource in `core/uti
 
 ## 2. View Model Updates
 
-In the `ToDoFragment`, the view model is initially empty, resulting in a blank page on the second half. When an user taps on the `Get Todo` button, the view model retrieves data from the API through the Data Layer, and updates their state. If there are values, the `ToDoFragment` view will be populated with the retrieved data.
+In the `ToDoFragment`, the view model is initially empty, resulting in a blank page on the second half. When an user taps on the `Get Todo` button, the view model retrieves data from the API through the Data Layer, and updates their state. If there are values, the `ToDoFragment` view will be populated with the retrieved data. We demonstrate this as TWA apps will typically retrieve data from agents, which are similar to APIs.
 
-The mechanics is as follows:
+We depict an example of the Android app workflow (`Data Source - Repository - State Holders/ViewModel - UI elements`) below:
 
 ```mermaid
     stateDiagram-v2
       direction LR
 
-      state UI {
-       ToDoFragment --> ToDoViewModel
-       ToDoViewModel --> ToDoFragment
+      MobilePhone --> ToDoFragment: (1)
+      ToDoViewModel --> TodoRepository: (3)
+      TodoRepository --> ToDoViewModel: (12)
+      ToDoFragment --> MobilePhone: (14)
+
+      state MobilePhone {
+        [*]
       }
 
-      ToDoViewModel --> TodoRepository
-      TodoRepository --> ToDoViewModel
+      state UI {
+       ToDoFragment --> ToDoViewModel: (2)
+       ToDoViewModel --> ToDoFragment: (13)
+      }
 
       state Data {
-        TodoRepository --> TodoNetworkSource
-        TodoNetworkSource --> Todo
-        Todo --> TodoNetworkSource
-        TodoNetworkSource --> TodoRepository
+        TodoRepository --> TodoNetworkSource: (4)
+        TodoNetworkSource --> Todo: (5)
+        Todo --> TodoNetworkSource: (6)
+        TodoNetworkSource --> TodoRepository: (7)
+
+        TodoRepository --> UserNetworkSource: (8)
+        UserNetworkSource --> User: (9)
+        User --> UserNetworkSource: (10)
+        UserNetworkSource --> TodoRepository: (11)
       }
 ```
 
-## 3. Building the app
+Description of steps:
 
-1. Open the `SampleApp` folder in Android Studio
-2. Click on the `Run 'app'` button or `Shift + F10` 
-3. The app should run in the selected emulator after building
+1. Click 'Get Todo' button
+2. Call `getTodoAndUser()`
+3. Call `getTodoAndUserInfo(String, RepositoryCallback)`; The `RepositoryCallback` instance is defined in `TodoViewModel` and tells `TodoRepository` what to do once it receives the result
+4. Call `getTodo(String, Response.Listener<Todo>, Response.ErrorListener)`
+5. Parse the network response into a `Todo` object
+6. Returns data in a `Todo` object
+7. Notify `TodoRepository` that the data has been returned successfully with `Response.Listener<Todo>`
+8. Passes `Todo` data model to retrieve the associated user data by calling `getUser(String, Response.Listener<User>, Response.ErrorListener)`
+9. Parse the network response into a `User` object
+10. Returns data in a `User` object
+11. Notify `TodoRepository` that the data has been returned successfully with `Response.Listener<User>`
+12. Notify `TodoViewModel` that the data has been returned successfully via `RepositoryCallback<Pair<Todo, User>>`
+13. Updates the data using the observer function via `MutableLiveData` \_todo and \_user, which also updates their `LiveData` counterparts; The observer triggers whenever changes to the object values are detected
+14. Updates the user interface with the retrieved data
 
 ## 3. Building the app
 
 1. Open the `SampleApp` folder in Android Studio
 2. Click on the `Run 'app'` button or `Shift + F10`
 3. The app should run in the selected emulator after building
-
-# Architecture Example: Todo Pipeline
-This section shows an example of the Android app architecture (Data Source - Repository - State Holders/ViewModel - UI elements) with the Todo feature. Todo and its user information are fetched from network, processed in repository and show in TodoFragment.
-
-```mermaid
-  stateDiagram-v2
-    direction LR
-
-    [*] --> TodoFragment: 1. Click 'Get Todo' button
-
-    state UI {
-      TodoFragment --> TodoViewModel: 2. Call getTodoAndUser()
-      TodoViewModel --> TodoFragment: 11. MutableLiveData _todo and _user are updated (and hence LiveData), TodoFragment updates the view
-    }
-
-    TodoViewModel --> TodoRepository: 3. Call getTodoAndUserInfo(String, RepositoryCallback)
-
-    state Data {
-      TodoRepository --> TodoNetworkSource: 4. Call getTodo(String, Response.Listener<Todo>, Response.ErrorListener)
-      TodoNetworkSource --> Todo: 5. Network call returned, build Todo object
-      Todo --> TodoNetworkSource
-      TodoNetworkSource --> TodoRepository: 6. Notify TodoRepository the created Todo object with Response.Listener<Todo>
-
-      TodoRepository --> UserNetworkSource: 7. Receive Todo object, and get the user by calling getUser(String, Response.Listener<User>, Response.ErrorListener)
-      UserNetworkSource --> User: 8. Network call returned, build User object
-      User --> UserNetworkSource
-      UserNetworkSource --> TodoRepository: 9. Notify TodoRepository the created User object with Response.Listener<User>
-    }
-
-    TodoRepository --> TodoViewModel: 10. Notify TodoViewModel the result via RepositoryCallback<Pair<Todo, User>>
-```
-
-Note
-
-3. The RepositoryCallback instance is defined in TodoViewModel. It tells TodoRepository what to do once it receives the result from network sources.
-11. LiveData todo and user are observed in TodoFragment. The observer function will be triggered if changes of the object value are detected.
