@@ -24,7 +24,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 @WebServlet(urlPatterns = { ShipInputAgent.UPDATE_PATH, ShipInputAgent.LIVE_SERVER_PATH,
-        ShipInputAgent.CLEAR_OLD_DATA_PATH }, loadOnStartup = 1)
+        ShipInputAgent.CLEAR_OLD_DATA_PATH, ShipInputAgent.LOAD_RDB_PATH }, loadOnStartup = 1)
 public class ShipInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(ShipInputAgent.class);
     private QueryClient queryClient;
@@ -32,6 +32,7 @@ public class ShipInputAgent extends HttpServlet {
     public static final String UPDATE_PATH = "/update";
     public static final String LIVE_SERVER_PATH = "/live-server";
     public static final String CLEAR_OLD_DATA_PATH = "/clear-old-data";
+    public static final String LOAD_RDB_PATH = "/load-rdb";
     private static final String URI_STRING = "wss://stream.aisstream.io/v0/stream";
 
     @Override
@@ -87,6 +88,20 @@ public class ShipInputAgent extends HttpServlet {
             resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().print(responseJson);
+        } else if (req.getServletPath().contentEquals(LOAD_RDB_PATH)) {
+            // read ship data from postgres
+            LOGGER.info("Received POST request to load ship data from relational database");
+            String table = req.getParameter("table");
+            table = (table != null && !table.isEmpty()) ? table : "ship";
+            List<Ship> ships = DataUploader.loadDataFromRDB(queryClient, table);
+
+            JSONObject responseJson = new JSONObject();
+            responseJson.put("numShip", ships.size());
+
+            resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().print(responseJson);
+
         } else {
             LOGGER.warn("Unsupported path for POST request");
         }

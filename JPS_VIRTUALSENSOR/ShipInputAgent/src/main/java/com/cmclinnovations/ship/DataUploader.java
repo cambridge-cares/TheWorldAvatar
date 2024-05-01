@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -127,9 +128,9 @@ public class DataUploader {
             } else {
                 // increment timeOffset and start a new cycle
                 Instant firstTime = Instant.ofEpochSecond(fileNamesAsInt.get(0));
-                Instant lastTime = Instant.ofEpochSecond(fileNamesAsInt.get(fileNamesAsInt.size()-1));
-                Duration timeRange = Duration.between(firstTime,lastTime);
-                timeOffset += (int) timeRange.toHours()+1;
+                Instant lastTime = Instant.ofEpochSecond(fileNamesAsInt.get(fileNamesAsInt.size() - 1));
+                Duration timeRange = Duration.between(firstTime, lastTime);
+                timeOffset += (int) timeRange.toHours() + 1;
                 updateFile(timeOffsetFile, String.valueOf(timeOffset));
                 updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(0)));
                 dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + JSON_EXT).toFile();
@@ -165,6 +166,23 @@ public class DataUploader {
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
+    }
+
+    static List<Ship> loadDataFromRDB(QueryClient queryClient, String table) {
+        String sqlQuery = String.format("SELECT DISTINCT \"MMSI\" FROM \"%s\"", table);
+        JSONArray result = queryClient.getRemoteRDBStoreClient().executeQuery(sqlQuery);
+        int numship = result.length();
+        int[] mmsiList = IntStream.range(0, result.length()).map(i -> result.getJSONObject(i).getInt("MMSI")).toArray();
+        List<Ship> ships = new ArrayList<>(result.length());
+        // create ship objects from API data
+        for (int i = 0; i < numship; i++) {
+            try {
+                ships.add(new Ship(mmsiList[i]));
+            } catch (JSONException e) {
+                LOGGER.error(e.getMessage());
+            }
+        }
+        return ships;
     }
 
     private DataUploader() {
