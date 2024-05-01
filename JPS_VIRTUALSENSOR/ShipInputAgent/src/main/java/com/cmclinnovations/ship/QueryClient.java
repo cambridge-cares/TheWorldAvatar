@@ -319,42 +319,6 @@ public class QueryClient {
         }
     }
 
-    /**
-     * get ship IRI from kg based on MMSI
-     * 
-     * @param ships
-     */
-    void setShipIRIs(List<Ship> ships) {
-        SelectQuery query = Queries.SELECT();
-
-        Variable ship = query.var();
-        Variable mmsiValue = query.var();
-        Variable property = query.var();
-        Variable measure = query.var();
-
-        ValuesPattern<Integer> vpMmsi = new ValuesPattern<>(mmsiValue,
-                ships.stream().map(Ship::getMmsi).collect(Collectors.toList()), Integer.class);
-
-        GraphPattern gp = GraphPatterns.and(ship.has(HAS_PROPERTY, property),
-                property.isA(MMSI).andHas(HAS_VALUE, measure), measure.has(HAS_NUMERICALVALUE, mmsiValue));
-
-        query.prefix(P_OM, P_DISP).where(gp, vpMmsi).select(ship, mmsiValue).distinct();
-
-        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-
-        // look up map used later to assign ship Iris
-        Map<Integer, Ship> mmsiToShipMap = new HashMap<>();
-        ships.stream().forEach(s -> mmsiToShipMap.put(s.getMmsi(), s));
-
-        for (int i = 0; i < queryResult.length(); i++) {
-            String shipIri = queryResult.getJSONObject(i).getString(ship.getQueryString().substring(1));
-
-            int mmsi = queryResult.getJSONObject(i).getInt(mmsiValue.getQueryString().substring(1));
-            // obtain ship object from map and set IRI
-            mmsiToShipMap.get(mmsi).setIri(shipIri);
-        }
-    }
-
     void setMeasureIri(List<Ship> ships) {
         SelectQuery query = Queries.SELECT();
 

@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -48,10 +47,6 @@ public class DataUploader {
         }
         // initialise both triples and time series if ship is new
         List<Ship> newlyCreatedShips = queryClient.initialiseShipsIfNotExist(ships);
-
-        // query ship IRI and location measure IRI from the KG and set the IRIs in the
-        // object
-        queryClient.setShipIRIs(ships);
 
         // update value of ship type if they were initialised without a ship type in
         // previous updates
@@ -140,20 +135,9 @@ public class DataUploader {
         }
 
         FileInputStream inputStream = new FileInputStream(dataFile);
-
         JSONTokener tokener = new JSONTokener(inputStream);
         JSONArray shipData = new JSONArray(tokener);
-        int numship = shipData.length();
-
-        List<Ship> ships = new ArrayList<>(numship);
-        // create ship objects from API data
-        for (int i = 0; i < numship; i++) {
-            try {
-                ships.add(new Ship(shipData.getJSONObject(i), timeOffset));
-            } catch (JSONException e) {
-                LOGGER.error(e.getMessage());
-            }
-        }
+        List<Ship> ships = parseShip(shipData, timeOffset);
 
         uploadShips(ships, queryClient);
 
@@ -168,20 +152,30 @@ public class DataUploader {
         }
     }
 
-    static List<Ship> loadDataFromRDB(QueryClient queryClient, String table) {
-        String sqlQuery = String.format("SELECT DISTINCT \"MMSI\" FROM \"%s\"", table);
-        JSONArray result = queryClient.getRemoteRDBStoreClient().executeQuery(sqlQuery);
-        int numship = result.length();
-        int[] mmsiList = IntStream.range(0, result.length()).map(i -> result.getJSONObject(i).getInt("MMSI")).toArray();
-        List<Ship> ships = new ArrayList<>(result.length());
+    static List<Ship> parseShip(JSONArray shipData, int timeOffset) {
+        int numship = shipData.length();
+
+        List<Ship> ships = new ArrayList<>(numship);
         // create ship objects from API data
         for (int i = 0; i < numship; i++) {
             try {
-                ships.add(new Ship(mmsiList[i]));
+                ships.add(new Ship(shipData.getJSONObject(i), timeOffset));
             } catch (JSONException e) {
                 LOGGER.error(e.getMessage());
             }
         }
+        return ships;
+    }
+
+    public static List<Ship> loadDataFromRDB(QueryClient queryClient, String table) throws IOException {
+        String sqlQuery = String.format(
+                "SELECT DISTINCT \"MMSI\", \"VesselType\" AS \"SHIPTYPE\", 0 AS \"SPEED\", 0.0 AS \"COURSE\", " +
+                        "0.0 AS \"LAT\", 0.0 AS \"LON\", '2024-01-01T12:00:00' AS \"TIMESTAMP\" FROM \"%s\"",
+                table);
+        JSONArray shipData = queryClient.getRemoteRDBStoreClient().executeQuery(sqlQuery);
+        List<Ship> ships = parseShip(shipData, 0);
+
+        // initialise both triples and time series if ship is new
         List<Ship> newlyCreatedShips = queryClient.initialiseShipsIfNotExist(ships);
 
         return newlyCreatedShips;
