@@ -18,7 +18,7 @@ The agent instantiates the following simulation outputs into the knowledge graph
 
 The CEA agent is available as a Docker image in this [package](https://github.com/orgs/cambridge-cares/packages/container/package/cea-agent). Users need not build the image unless they are developing a newer version. The latest version can be pulled from this [repository](https://github.com/orgs/cambridge-cares/packages/container/package/cea-agent).
 
-Keep reading if you need to build the image for any reason or skip to the [deployment section](#3-deployment-instructions).
+Keep reading if you need to build the image for any reason or skip to the [deployment section](#2-deployment-instructions).
 
 #### Build Step 1
 
