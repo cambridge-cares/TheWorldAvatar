@@ -182,7 +182,9 @@ public class DataUploader {
                 LOGGER.error(e.getMessage());
             }
         }
-        return ships;
+        List<Ship> newlyCreatedShips = queryClient.initialiseShipsIfNotExist(ships);
+
+        return newlyCreatedShips;
     }
 
     private DataUploader() {

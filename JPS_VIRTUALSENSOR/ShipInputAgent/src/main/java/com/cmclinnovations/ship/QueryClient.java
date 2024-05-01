@@ -122,6 +122,20 @@ public class QueryClient {
      * @param ships
      */
     List<Ship> initialiseShipsIfNotExist(List<Ship> ships) {
+
+        List<Integer> initialisedShipMMSI = findIfShipsExist(ships);
+
+        List<Ship> newShipsToInitialise = new ArrayList<>();
+        for (Ship ship : ships) {
+            if (!initialisedShipMMSI.contains(ship.getMmsi())) {
+                newShipsToInitialise.add(ship);
+            }
+        }
+        createShip(newShipsToInitialise);
+        return newShipsToInitialise;
+    }
+
+    List<Integer> findIfShipsExist(List<Ship> ships) {
         SelectQuery query = Queries.SELECT();
 
         Variable mmsi = query.var();
@@ -137,15 +151,7 @@ public class QueryClient {
         for (int i = 0; i < queryResult.length(); i++) {
             initialisedShipMMSI.add(queryResult.getJSONObject(i).getInt(mmsiValue.getQueryString().substring(1)));
         }
-
-        List<Ship> newShipsToInitialise = new ArrayList<>();
-        for (Ship ship : ships) {
-            if (!initialisedShipMMSI.contains(ship.getMmsi())) {
-                newShipsToInitialise.add(ship);
-            }
-        }
-        createShip(newShipsToInitialise);
-        return newShipsToInitialise;
+        return initialisedShipMMSI;
     }
 
     boolean shipExists() {
