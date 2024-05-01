@@ -1,9 +1,6 @@
 # Access Agent
-
-The Access Agent provides a point of access to the knowledge graph for executing SPARQL operations and finding the associated relational database. The Access Agent hides the storage implementation layer, so that the user or calling agent does not need to know the location or software e.g. Blazegraph, RDF4J etc. 
-
 ### Purpose 
-The purpose of this agent is to provide access and/or routing to two kinds of resources - triple stores and relational databases. On one hand, it handles HTTP requests to perform SPARQL query and update operations on RDF resources in the knowledge graph as well as to "get" and "insert" entire graphs. On another hand, it handles HTTP requests to access the relational database url using an identifier. As an extension of The World Avatar's agent framework, this agent's methods can be called **EITHER** using the `AccessAgentCaller`/`RDBAccessAgentCaller` class in the `jps_base_lib` package **OR** by extending the JPSAgent class.
+The purpose of this agent is to provide access and/or routing to two kinds of resources in the knowledge graph - triple stores and relational databases. The Access Agent hides the storage implementation layer, so that the user or calling agent does not need to know the location or software e.g. Blazegraph, RDF4J etc. On one hand, it handles HTTP requests to perform SPARQL query and update operations on RDF resources in the knowledge graph as well as to "get" and "insert" entire graphs. On another hand, it handles HTTP requests to access the relational database url using an identifier. As an extension of The World Avatar's agent framework, this agent's methods can be called **EITHER** using the `AccessAgentCaller`/`RDBAccessAgentCaller` class in the `jps_base_lib` package **OR** by extending the JPSAgent class.
 
 ## 1. Build Instructions
 
@@ -73,7 +70,7 @@ When successful, two containers will be running on `port 48888` (Access Agent) a
 
 ### 2.2 Stack Deployment
 
-When this agent should be deploy on The World Avatar stack, execute the following steps:
+In order to deploy this agent as part of a stack, execute the following steps:
 
 - In the `./access-agent-dev-stack/access-agent.json` file , adjust the image version (if applicable). `REPLACE` the `<STACK NAME>` placeholder in the environment variables with the name of your stack. Doing so will ensure the routing information is uploaded to the `storerouter` and `storerouterrdb` namespaces for the SPARQL and RDB routing information respectively.
 - Copy the `access-agent.json` file into the `inputs/config` folder of the stack manager.
