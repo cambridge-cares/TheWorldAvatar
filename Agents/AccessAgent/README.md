@@ -1,10 +1,9 @@
 # Access Agent
 
-The purpose of the Access Agent is to provide a point of access to the knowledge graph for executing SPARQL operations and connecting to the associated relational database. The Access Agent hides the storage implementation layer, so that the user or calling agent does not need to know the store location or software e.g. Blazegraph, RDF4J etc. It consists of two sub-agents:
+The Access Agent provides a point of access to the knowledge graph for executing SPARQL operations and finding the associated relational database. The Access Agent hides the storage implementation layer, so that the user or calling agent does not need to know the location or software e.g. Blazegraph, RDF4J etc. 
 
-**Knowledge Graph Access Agent**: Handles HTTP requests to perform SPARQL query and update operations on RDF resources in the knowledge graph as well as to "get" and "insert" entire graphs. As an extension of The World Avatar's agent framework, this agent's methods can be called **EITHER** using the `AccessAgentCaller` class in the `jps_base_lib` package **OR** by extending the JPSAgent class.
-
-**RDB Access Agent**: Handles HTTP requests to obtain the url required to create a connection to a relational database. As an extension of The World Avatar's agent framework, this agent's methods can be called **EITHER** using the `RDBAccessAgentCaller` class in the `jps_base_lib` package **OR** by extending the JPSAgent class.
+### Purpose 
+The purpose of this agent is to provide access and/or routing to two kinds of resources - triple stores and relational databases. On one hand, it handles HTTP requests to perform SPARQL query and update operations on RDF resources in the knowledge graph as well as to "get" and "insert" entire graphs. On another hand, it handles HTTP requests to access the relational database url using an identifier. As an extension of The World Avatar's agent framework, this agent's methods can be called **EITHER** using the `AccessAgentCaller`/`RDBAccessAgentCaller` class in the `jps_base_lib` package **OR** by extending the JPSAgent class.
 
 ## 1. Build Instructions
 
@@ -86,9 +85,9 @@ When this agent should be deploy on The World Avatar stack, execute the followin
 
 Before the agent can be called in any environment, the routing information must be uploaded to the `storerouter` and `storerouterrdb` namespaces for the SPARQL and RDB routing information respectively. This can be set using the corresponding `STOREROUTER_ENDPOINT` and `RDB_STOREROUTER_ENDPOINT` environment variables to change the namespace names. See the `./access-agent-dev-stack/docker-compose.yml` or `./access-agent-dev-stack/access-agent.json` for examples. Please note that a `label` must be included in order to ensure that the agent can target the right resource.
 
-> Knowledge Graph Access Agent
+> Triple Store Routing Information
 
-The Access Agent requires routing information for the target resource to be contained in the specified `storerouter` namespace. Routing information for the knowledge graph namespaces can be uploaded manually or programmatically. Regardless of the method, the routing information consists of 5 triples containing the SPARQL query and update endpoints as well as a label identifying the target resource. An example for the **ontokin** namespace is as follows:
+The Access Agent requires routing information for the target resource to be contained in the specified `storerouter` namespace. Routing information for the triple store namespaces can be uploaded manually or programmatically. Regardless of the method, the routing information consists of 5 triples containing the SPARQL query and update endpoints as well as a label identifying the target resource. An example for the **ontokin** namespace is as follows:
 
 ```
 // Note that `<ontokin>` is replaceable with the label you require
@@ -112,7 +111,7 @@ These routing triples can be added manually (e.g. through the Blazegraph user in
 
 Once the file is populated, run the bash script `./access-agent-dev-stack/uploadRouting.sh` using the `bash ./uploadRouting.sh` command in the `./access-agent-dev-stack` directory. Adjust the `accessagentURL` field if running within a stack. Note that if a "label" already exists, the uploader will not overwrite any information. Instead, please manually modify the triples on the namespace.
 
-> RDB Access Agent
+> RDB Routing Information
 
 1.  In the knowledge graph, create a new namespace based on the specified `RDB_STOREROUTER_ENDPOINT` environment variable (default is `ontordbrouter`) to store the routing information. If you wish to use another namespace, please adjust your Docker environment variables accordingly to function in the stack or standalone containers.
 2.  For each PostgreSQL database to be accessed, 4 triples need to be added to the namespace in (1). Example triples for accessing a database `test` is shown below. Note to replace all occurrences of `test` with your required database name to ensure the label for the target resource works.
@@ -131,7 +130,7 @@ Once the file is populated, run the bash script `./access-agent-dev-stack/upload
 
 ### 3.2 Calling the Access Agent
 
-The access agent is typically intended for use by other agents, rather than being called on its own to limit access to the underlying data in the knowledge graph. Accordingly, this document does not describe the available routes. Instead, developers can call the access agent in two ways:
+Developers should call the access agent in two ways:
 
 1. If you are developing a Java agent within the TWA agent framework (by extending the class `uk.ac.cam.cares.jps.base.agent.JPSAgent`), users can directly call methods inherited from `JPSAgent` to access these resources
 2. In the case you are not extending `JPSAgent`, users can import the class `uk.ac.cam.cares.jps.base.query.AccessAgentCaller` or `uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller` to call the methods accessing the resources. The `AccessAgentCaller` contains the `queryStore` and `updateStore` methods, whereas the `RDBAccessAgentCaller` contains the `getRDBUrl` method.
