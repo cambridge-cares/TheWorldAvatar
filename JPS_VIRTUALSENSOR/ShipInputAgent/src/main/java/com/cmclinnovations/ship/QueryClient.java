@@ -14,6 +14,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
+import org.postgis.Point;
 
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
@@ -29,6 +30,8 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.postgis.Point;
 
@@ -429,9 +433,6 @@ public class QueryClient {
                     values.add(Arrays.asList(ship.getLocationList().get(tsSize - 1)));
                     values.add(Arrays.asList(ship.getLatList().get(tsSize - 1)));
                     values.add(Arrays.asList(ship.getLonList().get(tsSize - 1)));
-
-                    TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs, values);
-                    tsClient.addTimeSeriesData(ts, conn);
                 } else {
                     time = Arrays.asList(ship.getTimestamp());
                     values.add(Arrays.asList(ship.getCourse()));
@@ -439,11 +440,58 @@ public class QueryClient {
                     values.add(Arrays.asList(ship.getLocation()));
                     values.add(Arrays.asList(ship.getLat()));
                     values.add(Arrays.asList(ship.getLon()));
-
-                    TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs, values);
-                    tsClient.addTimeSeriesData(ts, conn);
                 }
+                TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs, values);
+                tsClient.addTimeSeriesData(ts, conn);
             });
+        } catch (SQLException e) {
+            LOGGER.error("Error adding time series for ship");
+            LOGGER.error(e.getMessage());
+        }
+
+        derivationClient.updateTimestamps(ships.stream().map(Ship::getIri).collect(Collectors.toList()));
+    }
+
+    void bulkUpdateTimeSeriesData(List<Ship> ships) {
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            for (Ship ship : ships) {
+                List<String> dataIRIs = Arrays.asList(ship.getCourseMeasureIri(), ship.getSpeedMeasureIri(),
+                        ship.getLocationMeasureIri(), ship.getLatMeasureIri(), ship.getLonMeasureIri());
+                List<List<?>> values = new ArrayList<>();
+                // query relational database for data
+                String sqlQuery = String.format(
+                        "SELECT to_char(\"BaseDateTime\" at time zone 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS') AS \"DATE\", " +
+                                "\"LAT\", \"LON\", \"SOG\", \"COG\" FROM \"ship\" WHERE \"MMSI\" = %s",
+                        ship.getMmsi());
+                JSONArray tsData = remoteRDBStoreClient.executeQuery(sqlQuery);
+                List<Instant> time = IntStream
+                        .range(0, tsData.length()).mapToObj(i -> LocalDateTime
+                                .parse(tsData.getJSONObject(i).getString("DATE")).toInstant(ZoneOffset.UTC))
+                        .collect(Collectors.toList());
+                values.add(IntStream.range(0, tsData.length()).mapToObj(i -> tsData.getJSONObject(i).getDouble("COG"))
+                        .collect(Collectors.toList())); // course
+                values.add(IntStream.range(0, tsData.length()).mapToObj(i -> tsData.getJSONObject(i).getDouble("SOG"))
+                        .collect(Collectors.toList())); // speed
+                List<Double> listLat = IntStream.range(0, tsData.length())
+                        .mapToObj(i -> tsData.getJSONObject(i).getDouble("LAT"))
+                        .collect(Collectors.toList());
+                List<Double> listLon = IntStream.range(0, tsData.length())
+                        .mapToObj(i -> tsData.getJSONObject(i).getDouble("LON"))
+                        .collect(Collectors.toList());
+                // construct location
+                List<Point> listLocation = new ArrayList<>();
+                for (int i = 0; i < tsData.length(); i++) {
+                    Point point = new Point(listLon.get(i), listLat.get(i));
+                    point.setSrid(4326);
+                    listLocation.add(point);
+                }
+                values.add(listLocation); // location
+                values.add(listLat); // lat
+                values.add(listLon); // lon
+                // add data to time series
+                TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs, values);
+                tsClient.addTimeSeriesData(ts, conn);
+            }
         } catch (SQLException e) {
             LOGGER.error("Error adding time series for ship");
             LOGGER.error(e.getMessage());

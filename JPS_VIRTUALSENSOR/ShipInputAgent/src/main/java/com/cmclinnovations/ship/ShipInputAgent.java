@@ -91,9 +91,7 @@ public class ShipInputAgent extends HttpServlet {
         } else if (req.getServletPath().contentEquals(LOAD_RDB_PATH)) {
             // read ship data from postgres
             LOGGER.info("Received POST request to load ship data from relational database");
-            String table = req.getParameter("table");
-            table = (table != null && !table.isEmpty()) ? table : "ship";
-            List<Ship> ships = DataUploader.loadDataFromRDB(queryClient, table);
+            List<Ship> ships = DataUploader.loadDataFromRDB(queryClient);
 
             JSONObject responseJson = new JSONObject();
             responseJson.put("numShip", ships.size());

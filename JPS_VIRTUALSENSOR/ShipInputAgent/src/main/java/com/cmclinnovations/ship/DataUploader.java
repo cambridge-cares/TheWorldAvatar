@@ -62,18 +62,16 @@ public class DataUploader {
         switch (source) {
             case "JSON":
 
-                LOGGER.info("Read ship data from JSON");
+                LOGGER.info("Upload ship data from JSON.");
                 // add a row in RDB time series data, also updates derivation timestamps
                 queryClient.updateTimeSeriesData(ships);
-
-                // new derivations are created on the spot (request sent to agent immediately)
-                queryClient.createNewDerivations(newlyCreatedShips);
 
                 break;
 
             case "RDB":
 
-                LOGGER.info("Read ship data from relational database. Not implemented yet.");
+                LOGGER.info("Upload ship data from relational database.");
+                queryClient.bulkUpdateTimeSeriesData(ships);
                 break;
 
             default:
@@ -81,6 +79,9 @@ public class DataUploader {
                 LOGGER.info("Unknown source of ship data.");
                 break;
         }
+
+        // new derivations are created on the spot (request sent to agent immediately)
+        queryClient.createNewDerivations(newlyCreatedShips);
 
     }
 
@@ -189,11 +190,9 @@ public class DataUploader {
         return ships;
     }
 
-    public static List<Ship> loadDataFromRDB(QueryClient queryClient, String table) throws IOException {
-        String sqlQuery = String.format(
-                "SELECT DISTINCT \"MMSI\", \"VesselType\" AS \"SHIPTYPE\", 0 AS \"SPEED\", 0.0 AS \"COURSE\", " +
-                        "0.0 AS \"LAT\", 0.0 AS \"LON\", '2024-01-01T12:00:00' AS \"TIMESTAMP\" FROM \"%s\"",
-                table);
+    public static List<Ship> loadDataFromRDB(QueryClient queryClient) throws IOException {
+        String sqlQuery = "SELECT DISTINCT \"MMSI\", \"VesselType\" AS \"SHIPTYPE\", 0 AS \"SPEED\", 0.0 AS \"COURSE\", " +
+                        "0.0 AS \"LAT\", 0.0 AS \"LON\", '2024-01-01T12:00:00' AS \"TIMESTAMP\" FROM \"ship\"";
         JSONArray shipData = queryClient.getRemoteRDBStoreClient().executeQuery(sqlQuery);
         List<Ship> ships = parseShip(shipData, 0);
 
