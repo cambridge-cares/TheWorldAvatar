@@ -11,6 +11,9 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+import uk.ac.cam.cares.jps.model.Todo;
+import uk.ac.cam.cares.jps.model.User;
+import uk.ac.cam.cares.jps.network.NetworkSource;
 import uk.ac.cam.cares.jps.network.TodoNetworkSource;
 import uk.ac.cam.cares.jps.network.UserNetworkSource;
 
@@ -27,7 +30,7 @@ public class NetworkModule {
      */
     @Provides
     @Singleton
-    public TodoNetworkSource provideTodoNetworkSource(RequestQueue requestQueue, @ApplicationContext Context context) {
+    public NetworkSource<Todo> provideTodoNetworkSource(RequestQueue requestQueue, @ApplicationContext Context context) {
         return new TodoNetworkSource(requestQueue, context);
     }
 
@@ -40,7 +43,7 @@ public class NetworkModule {
      */
     @Provides
     @Singleton
-    public UserNetworkSource provideUserNetworkSource(RequestQueue requestQueue, @ApplicationContext Context context) {
+    public NetworkSource<User> provideUserNetworkSource(RequestQueue requestQueue, @ApplicationContext Context context) {
         return new UserNetworkSource(requestQueue, context);
     }
 }

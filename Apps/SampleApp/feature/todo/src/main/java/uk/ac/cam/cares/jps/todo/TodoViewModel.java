@@ -9,22 +9,23 @@ import androidx.lifecycle.ViewModel;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import uk.ac.cam.cares.jps.data.GenericRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
-import uk.ac.cam.cares.jps.data.TodoRepository;
-import uk.ac.cam.cares.jps.model.*;
+import uk.ac.cam.cares.jps.model.Todo;
+import uk.ac.cam.cares.jps.model.User;
 
 @HiltViewModel
 public class TodoViewModel extends ViewModel {
-    private TodoRepository todoRepository;
+    private final GenericRepository<Pair<Todo, User>> todoRepository;
     // LiveData to hold these states
-    private MutableLiveData<Todo> _todo = new MutableLiveData<>();
-    private MutableLiveData<User> _user = new MutableLiveData<>();
-    private MutableLiveData<Boolean> _hasError = new MutableLiveData<>();
+    private final MutableLiveData<Todo> _todo = new MutableLiveData<>();
+    private final MutableLiveData<User> _user = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> _hasError = new MutableLiveData<>();
 
     // Expose immutable LiveData to observe these states
-    private LiveData<Todo> todo = _todo;
-    private LiveData<User> user = _user;
-    private LiveData<Boolean> hasError = _hasError;
+    private final LiveData<Todo> todo = _todo;
+    private final LiveData<User> user = _user;
+    private final LiveData<Boolean> hasError = _hasError;
 
     /**
      * Constructor for TodoViewModel.
@@ -32,7 +33,7 @@ public class TodoViewModel extends ViewModel {
      * @param todoRepository Repository for managing the data.
      */
     @Inject
-    public TodoViewModel(TodoRepository todoRepository) {
+    public TodoViewModel(GenericRepository<Pair<Todo, User>> todoRepository) {
         this.todoRepository = todoRepository;
     }
 
