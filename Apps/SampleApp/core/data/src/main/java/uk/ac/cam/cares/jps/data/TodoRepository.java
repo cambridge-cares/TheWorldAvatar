@@ -39,8 +39,8 @@ public class TodoRepository {
      * @param repositoryCallback Callback to handle the result of the data retrieval.
      */
     public void getTodoAndUserInfo(String id, RepositoryCallback<Pair<Todo, User>> repositoryCallback) {
-        todoNetworkSource.getTodo(id,
-                todo -> userNetworkSource.getUser(todo.getUserId(), user -> {
+        todoNetworkSource.getData(id,
+                todo -> userNetworkSource.getData(todo.getUserId(), user -> {
                     repositoryCallback.onSuccess(new Pair<>(todo, user));
                 }, repositoryCallback::onFailure),
                 repositoryCallback::onFailure);

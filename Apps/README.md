@@ -60,7 +60,7 @@ Do note that the internal dependency graph are available in each module's `build
 ## 1.5 Test
 At present, we are exploring testing strategies for our apps and expect that this section will continue to be updated over time as we explore and consolidate best practices.
 
-Any testing configuration and dependencies should be added to the common build settings at `<root>/common.gradle`. This will allow the test dependencies to be build across all modules.
+Any testing configuration and dependencies should be added to the common build settings at `<root>/common.gradle`. This will allow the test dependencies to be build across all modules. Please ensure that the `org.json:json` package is included as `testImplementation` to ensure that all related code can run. By default, JSON objects are not accessible during the testing mode.
 
 At the moment, users have to individually run the tests at the module level in Android Studio. We are still looking into setting up a test suite to automate this aspect. 
 To do so, right click on the module directory in Android Studio and select `Run 'All Tests'` to run the tests for that module.
