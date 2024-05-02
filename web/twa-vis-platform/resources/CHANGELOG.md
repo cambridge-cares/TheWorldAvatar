@@ -3,6 +3,12 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.1.1
+
+### Bug Fixes
+
+* Minor config file fixes for development environment
+
 ## 5.1.0
 
 ### Features
@@ -39,4 +45,4 @@
 
 ### Bug Fixes
 
-* _No bug fixes present._
+* _No bug fixes present.
