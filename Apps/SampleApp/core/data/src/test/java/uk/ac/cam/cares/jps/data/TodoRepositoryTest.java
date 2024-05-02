@@ -25,8 +25,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    public void getTodoAndUserInfo_Success() {
-        Todo expectedTodo;
+    public void getInfo_Success() {
         todoRepository.getInfo("7", new RepositoryCallback<>() {
             @Override
             public void onSuccess(Pair<Todo, User> result) {
