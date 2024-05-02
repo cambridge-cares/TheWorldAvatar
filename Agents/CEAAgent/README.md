@@ -120,11 +120,11 @@ For the [FeatureInfoAgent], the `.sparql` and `.json` files for CEA data is avai
 
 Once both the visualisation and FeatureInfoAgent is running on the stack, one should see the following CEA results upon clicking a building:
 
-- solar suitable area _[SCALAR]_
-- annual building energy demands _[SCALAR]_
-- annual photovoltaic potentials _[SCALAR]_
-- building demands _[24H TIME SERIES]_
-- photovoltaic potentials _[24H TIME SERIES]_
+- solar suitable area **[SCALAR]**
+- annual building energy demands **[SCALAR]**
+- annual solar potentials for PV panels, solar collectors, PV-thermal collectors **[SCALAR]**
+- building demands **[24H TIME SERIES]**
+- solar potentials for PV panels, solar collectors, PV-thermal collectors **[24H TIME SERIES]**
 
 ## 3. Agent Routes
 
