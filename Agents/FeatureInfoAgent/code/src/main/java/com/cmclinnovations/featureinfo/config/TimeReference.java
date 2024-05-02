@@ -4,7 +4,12 @@ package com.cmclinnovations.featureinfo.config;
  * Enumerator for allowed TimeReference types.
  */
 public enum TimeReference {
-    
+
+    /**
+     * Time limits are taken specific time.
+     */
+    SPECIFIED("specified"),
+
     /**
      * Time limits are taken from current time.
      */
@@ -37,6 +42,15 @@ public enum TimeReference {
      */
     private TimeReference(String label) {
         this.label = label;
+    }
+
+    public static TimeReference valueOfLabel(String label) {
+        for (TimeReference tR : values()) {
+            if (tR.label.equals(label)) {
+                return tR;
+            }
+        }
+        return null;
     }
 
     /**

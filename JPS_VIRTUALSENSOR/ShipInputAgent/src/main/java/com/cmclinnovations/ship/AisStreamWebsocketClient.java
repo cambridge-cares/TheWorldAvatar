@@ -72,7 +72,9 @@ public class AisStreamWebsocketClient extends WebSocketClient {
     @Override
     public void onMessage(ByteBuffer message) {
         numMessages += 1;
-        LOGGER.info("Number of collated messages: {}", numMessages);
+        if (numMessages % 10 == 0) {
+            LOGGER.info("Number of collated messages: {}", numMessages);
+        }
         String messageString = StandardCharsets.UTF_8.decode(message).toString();
 
         JSONObject messageJson = new JSONObject(messageString);
