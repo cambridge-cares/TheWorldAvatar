@@ -12,8 +12,6 @@ class kg_operations():
         if (not BLAZEGRAPH_USER and not BLAZEGRAPH_PASSWORD) or sparqlEndpint==SPARQL_ENDPOINTS_ONTOSPECIES:
             self.kg_client = PySparqlClient(sparqlEndpint,sparqlEndpint)     
         else:
-            print(BLAZEGRAPH_PASSWORD)
-            print(sparqlEndpint)
             self.kg_client = PySparqlClient(sparqlEndpint,sparqlEndpint,kg_user=BLAZEGRAPH_USER,kg_password=BLAZEGRAPH_PASSWORD) 
     
     def querykg(self, queryStr=None):
