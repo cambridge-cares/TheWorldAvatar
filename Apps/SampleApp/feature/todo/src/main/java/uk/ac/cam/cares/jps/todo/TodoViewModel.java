@@ -40,7 +40,7 @@ public class TodoViewModel extends ViewModel {
      * Fetches the data.
      */
     public void getTodoAndUser() {
-        todoRepository.getTodoAndUserInfo("2", new RepositoryCallback<>() {
+        todoRepository.getInfo("2", new RepositoryCallback<>() {
             @Override
             public void onSuccess(Pair<Todo, User> result) {
                 _todo.postValue(result.first);

@@ -6,8 +6,7 @@ import org.apache.log4j.Logger;
 
 import uk.ac.cam.cares.jps.model.Todo;
 import uk.ac.cam.cares.jps.model.User;
-import uk.ac.cam.cares.jps.network.TodoNetworkSource;
-import uk.ac.cam.cares.jps.network.UserNetworkSource;
+import uk.ac.cam.cares.jps.network.NetworkSource;
 
 /**
  * The TodoRepository class acts as a bridge between the ViewModel and the data sources
@@ -15,10 +14,10 @@ import uk.ac.cam.cares.jps.network.UserNetworkSource;
  * from TodoNetworkSource and UserNetworkSource. If there is no need to combine data, the
  * repository will simply pass the response from the data source to the upper level (ViewModel).
  */
-public class TodoRepository {
+public class TodoRepository implements GenericRepository<Pair<Todo, User>> {
     private static final Logger LOGGER = Logger.getLogger(TodoRepository.class);
-    private final TodoNetworkSource todoNetworkSource;
-    private final UserNetworkSource userNetworkSource;
+    private final NetworkSource<Todo> todoNetworkSource;
+    private final NetworkSource<User> userNetworkSource;
 
     /**
      * Constructor
@@ -26,23 +25,23 @@ public class TodoRepository {
      * @param todoNetworkSource The source for todo-related data, obtained through network calls.
      * @param userNetworkSource The source for user-related data, obtained through network calls.
      */
-    public TodoRepository(TodoNetworkSource todoNetworkSource, UserNetworkSource userNetworkSource) {
+    public TodoRepository(NetworkSource<Todo> todoNetworkSource, NetworkSource<User> userNetworkSource) {
         // The instantiation of the network sources are done by dependency injection
         this.todoNetworkSource = todoNetworkSource;
         this.userNetworkSource = userNetworkSource;
+        LOGGER.debug("The repository has been successfully set up...");
     }
 
     /**
-     * Retrieves both Todo and User information associated with the provided ID.
+     * Retrieves both to do and User information associated with the provided ID.
      *
-     * @param id                 The ID of the Todo.
+     * @param id                 The ID of the to do.
      * @param repositoryCallback Callback to handle the result of the data retrieval.
      */
-    public void getTodoAndUserInfo(String id, RepositoryCallback<Pair<Todo, User>> repositoryCallback) {
+    public void getInfo(String id, RepositoryCallback<Pair<Todo, User>> repositoryCallback) {
+        LOGGER.debug("Retrieving to do and user information for " + id);
         todoNetworkSource.getData(id,
-                todo -> userNetworkSource.getData(todo.getUserId(), user -> {
-                    repositoryCallback.onSuccess(new Pair<>(todo, user));
-                }, repositoryCallback::onFailure),
+                todo -> userNetworkSource.getData(todo.getUserId(), user -> repositoryCallback.onSuccess(new Pair<>(todo, user)), repositoryCallback::onFailure),
                 repositoryCallback::onFailure);
     }
 }

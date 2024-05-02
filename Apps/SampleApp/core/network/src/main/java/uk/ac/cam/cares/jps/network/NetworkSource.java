@@ -5,7 +5,7 @@ import com.android.volley.Response;
 /**
  * An interface for retrieving data from a network source.
  */
-interface NetworkSource<T> {
+public interface NetworkSource<T> {
     /**
      * Retrieves the specified data from the network.
      *
