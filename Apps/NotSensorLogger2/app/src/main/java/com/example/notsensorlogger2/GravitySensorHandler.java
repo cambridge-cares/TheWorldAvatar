@@ -22,15 +22,4 @@ public class GravitySensorHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_GRAVITY);
         this.sensorName = "gravity";
     }
-
-    /**
-     * Handles changes in the gravity sensor values. This method overrides the onSensorChanged method
-     * in the superclass to perform processing specific to gravity sensor data.
-     *
-     * @param event The sensor event containing the new sensor readings.
-     */
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        super.onSensorChanged(event);
-    }
 }

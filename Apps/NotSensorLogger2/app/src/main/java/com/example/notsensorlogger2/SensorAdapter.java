@@ -65,11 +65,7 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         holder.sensorSwitch.setChecked(sensorItem.isToggled());
 
         holder.sensorSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            sensorItem.setToggled(isChecked);
-            if (toggleListener != null) {
-                toggleListener.onSensorToggled(sensorItem, isChecked);
-            }
-            sensorItem.setEnabled(isChecked);
+            toggleListener.onSensorToggled(sensorItem, isChecked);
         });
 
         holder.sensorDetailsButton.setOnClickListener(view -> {

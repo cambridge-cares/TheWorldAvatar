@@ -22,15 +22,4 @@ public class GyroscopeHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_GYROSCOPE);
         this.sensorName = "gyroscope";
     }
-
-    /**
-     * Handles changes in the gyroscope sensor values. This method overrides the onSensorChanged method
-     * in the superclass to perform processing specific to gyroscope data.
-     *
-     * @param event The sensor event containing the new sensor readings.
-     */
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        super.onSensorChanged(event);
-    }
 }

@@ -57,9 +57,6 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     @Override
     public void stop() {
         sensorManager.unregisterListener(this);
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-        Log.d("SensorRecording", "Sensor: " + sensorName + ", Duration: " + duration + "ms");
     }
 
     /**

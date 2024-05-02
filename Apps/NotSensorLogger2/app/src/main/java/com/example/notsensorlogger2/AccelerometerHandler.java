@@ -20,12 +20,4 @@ public class AccelerometerHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_ACCELEROMETER);
         this.sensorName = "accelerometer";
     }
-
-    /**
-     * Handles an accelerometer sensor change event by invoking the superclass method to process the data.
-     *
-     * @param event The sensor event containing the new accelerometer data.
-     */
-    @Override
-    public void onSensorChanged(SensorEvent event) {super.onSensorChanged(event);}
 }

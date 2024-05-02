@@ -9,6 +9,7 @@ import android.hardware.SensorManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
@@ -129,6 +130,7 @@ public class SoundLevelHandler extends AbstractSensorHandler {
             return;
         }
 
+        Log.d("SoundLevelHandler", "Current dBFS: " + dBFS);
         JSONObject dataPoint = new JSONObject();
         try {
             JSONObject values = new JSONObject();

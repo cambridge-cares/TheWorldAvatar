@@ -1,5 +1,6 @@
 package com.example.notsensorlogger2;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +20,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.notsensorlogger2.gpsfunctionality.MainActivity2;
+import com.example.notsensorlogger2.gpsfunctionality.MainActivityMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +43,6 @@ import android.Manifest;
  * Additionally, there's functionality to navigate to a secondary activity that handles specific GPS-based functionalities.
  */
 public class MainActivity extends Activity {
-    private SensorManager sensorManager;
     private SensorHandler accelerometerHandler;
     private SensorHandler gyroscopeHandler;
     private SensorHandler magnetometerHandler;
@@ -60,8 +60,9 @@ public class MainActivity extends Activity {
     private List<SensorItem> sensorItems;
     private static final long SEND_INTERVAL = 2000; // Interval in milliseconds
     private boolean isDataCollectionActive = true;
-    private static final int PERMISSION_REQUEST_RECORD_AUDIO = 101;
     private int messageId = 1;
+    private static final int PERMISSION_REQUEST_RECORD_AUDIO = 101;
+
 
     /**
      * Initializes the list of sensors and their respective handlers and sets up the RecyclerView for sensor control.
@@ -86,21 +87,21 @@ public class MainActivity extends Activity {
         sensorsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Initialize the adapter
-        sensorAdapter = new SensorAdapter(sensorItems, new SensorAdapter.OnSensorToggleListener() {
-            @Override
-            public void onSensorToggled(SensorItem sensor, boolean isChecked) {
-                if (isChecked) {
-                    sensor.getHandler().start();
-                } else {
-                    sensor.getHandler().stop();
-                }
+        sensorAdapter = new SensorAdapter(sensorItems, (sensor, isChecked) -> {
+            // Set toggled and enabled state here
+            sensor.setToggled(isChecked);
+            sensor.setEnabled(isChecked);
+
+            // Start or stop the sensor handler based on isChecked
+            if (isChecked) {
+                sensor.getHandler().start();
+            } else {
+                sensor.getHandler().stop();
             }
-        }, new SensorAdapter.OnSensorDetailsListener() {
-            @Override
-            public void onSensorDetailsRequested(SensorItem sensor) {
-                // Not needed to implement
-            }
+        }, sensor -> {
+            // Placeholder for future implementation if more details are needed
         });
+
         sensorsRecyclerView.setAdapter(sensorAdapter);
     }
 
@@ -126,12 +127,10 @@ public class MainActivity extends Activity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (soundLevelHandler != null) {
-                    soundLevelHandler.initAudioRecord();
-                }
+                soundLevelHandler.initAudioRecord();
+            }
             }
         }
-    }
 
     /**
      * Sets up sensor list and RecyclerView for sensor toggling, initializes sensor handlers, and checks permissions.
@@ -146,7 +145,7 @@ public class MainActivity extends Activity {
         deviceId = DeviceIdManager.getDeviceId(this);
         Log.d("DeviceId", "Device ID: " + deviceId);
 
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometerHandler = new AccelerometerHandler(sensorManager);
         gyroscopeHandler = new GyroscopeHandler(sensorManager);
         magnetometerHandler = new MagnetometerHandler(sensorManager);
@@ -169,17 +168,16 @@ public class MainActivity extends Activity {
             if (!isDataCollectionActive) {
                 startDataCollection();
                 stopDataButton.setText(R.string.stop_button_text);
-                isDataCollectionActive = true;
             } else {
                 stopDataCollection();
                 stopDataButton.setText(R.string.start_button_text);
-                isDataCollectionActive = false;
             }
         });
 
-        Button btnOpenActivity2 = findViewById(R.id.open_activity2_button);
-        btnOpenActivity2.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity2.class);
+
+        Button btnOpenMap = findViewById(R.id.open_map_button);
+        btnOpenMap.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivityMap.class);
             startActivity(intent);
         });
 
@@ -199,6 +197,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         checkAndRequestAudioPermission();
+        // Always attempt to restart data collection if it was active.
         if (isDataCollectionActive) {
             startDataCollection();
         }
@@ -219,28 +218,27 @@ public class MainActivity extends Activity {
      * Starts the data collection from all active sensors and schedules periodic data sending to the server.
      */
     private void startDataCollection() {
-        messageId = 1;
+        messageId = 1;  // Reset messageId for a new collection session.
         for (SensorItem item : sensorItems) {
             if (item.isToggled() && item.getHandler() != null) {
                 item.getHandler().start();
             }
         }
-        if (!isDataCollectionActive) {
-            handler.postDelayed(sendDataRunnable, SEND_INTERVAL);
-            isDataCollectionActive = true;
-        }
+        // Always post the runnable if this method is called.
+        handler.postDelayed(sendDataRunnable, SEND_INTERVAL);
+        isDataCollectionActive = true; // Indicate that data collection is active.
     }
 
     /**
      * Stops the data collection from all sensors and cancels the periodic sending of data to the server.
      */
     private void stopDataCollection() {
-        for (SensorItem item : sensorItems) {
-            if (item.isToggled() && item.getHandler() != null) {
-                item.getHandler().stop();
-            }
-        }
         if (isDataCollectionActive) {
+            for (SensorItem item : sensorItems) {
+                if (item.isToggled() && item.getHandler() != null) {
+                    item.getHandler().stop();
+                }
+            }
             handler.removeCallbacks(sendDataRunnable);
             isDataCollectionActive = false;
         }
@@ -267,9 +265,8 @@ public class MainActivity extends Activity {
         pressureSensorHandler.clearSensorData();
         gravitySensorHandler.clearSensorData();
         locationTracker.clearSensorData();
-        if (soundLevelHandler != null) {
-            soundLevelHandler.clearSensorData();
-        }
+        soundLevelHandler.clearSensorData();
+
     }
 
     /**
@@ -288,9 +285,7 @@ public class MainActivity extends Activity {
             addAllSensorData(allSensorData, gravitySensorHandler.getSensorData());
             addAllSensorData(allSensorData, magnetometerHandler.getSensorData());
             addAllSensorData(allSensorData, locationTracker.getSensorData());
-            if (soundLevelHandler != null) {
-                addAllSensorData(allSensorData, soundLevelHandler.getSensorData());
-            }
+            addAllSensorData(allSensorData, soundLevelHandler.getSensorData());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -316,7 +311,7 @@ public class MainActivity extends Activity {
      * @param sensorData JSONArray containing the sensor data to send.
      */
     private void sendPostRequest(JSONArray sensorData) {
-        String url = "http://139.59.110.28:3838/sensorloggermobileappagent/update";
+        String url = getString(R.string.data_post_url);  // Use actual url and fill it in, in strings.xml
         RequestQueue queue = Volley.newRequestQueue(this);
         String sessionId = UUID.randomUUID().toString();
         String deviceId = DeviceIdManager.getDeviceId(this);

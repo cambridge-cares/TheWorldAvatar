@@ -37,7 +37,7 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
  * to recenter the map on the current location. Users can manually navigate the map,
  * and a floating action button allows them to quickly recenter the map on their current location.
  */
-public class MainActivity2 extends AppCompatActivity {
+public class MainActivityMap extends AppCompatActivity {
 
     private MapView mapView;
     FloatingActionButton floatingActionButton;
@@ -50,7 +50,7 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         public void onActivityResult(Boolean result) {
             if (result) {
-                Toast.makeText(MainActivity2.this, "Permission granted!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivityMap.this, "Permission granted!", Toast.LENGTH_SHORT).show();
             }
         }
     });
@@ -120,12 +120,12 @@ public class MainActivity2 extends AppCompatActivity {
         Button backButton = findViewById(R.id.backButton);
 
 
-        if (ActivityCompat.checkSelfPermission(MainActivity2.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(MainActivityMap.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             activityResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
         floatingActionButton.hide();
-        mapView.getMapboxMap().loadStyleUri("mapbox://styles/yashnalluri/clt6uqpyk00gd01o80tmo62ms", new Style.OnStyleLoaded() {
+        mapView.getMapboxMap().loadStyleUri("mapbox://styles/mapbox/streets-v12", new Style.OnStyleLoaded() {
 
             /**
              * Handles the loaded map style by enabling location components and setting up the location puck and gesture listeners.
@@ -139,7 +139,7 @@ public class MainActivity2 extends AppCompatActivity {
                 LocationComponentPlugin locationComponentPlugin = getLocationComponent(mapView);
                 locationComponentPlugin.setEnabled(true);
                 LocationPuck2D locationPuck2D = new LocationPuck2D();
-                locationPuck2D.setBearingImage(AppCompatResources.getDrawable(MainActivity2.this, R.drawable.baseline_location_on_24));
+                locationPuck2D.setBearingImage(AppCompatResources.getDrawable(MainActivityMap.this, R.drawable.baseline_location_on_24));
                 locationComponentPlugin.setLocationPuck(locationPuck2D);
                 locationComponentPlugin.addOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener);
                 locationComponentPlugin.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);

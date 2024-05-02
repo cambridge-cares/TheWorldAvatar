@@ -30,7 +30,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/open_activity2_button"
+        android:id="@+id/open_map_button"
         android:layout_width="67dp"
         android:layout_height="53dp"
         android:layout_marginEnd="4dp"

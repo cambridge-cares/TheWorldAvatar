@@ -21,15 +21,4 @@ public class MagnetometerHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_MAGNETIC_FIELD);
         this.sensorName = "magnetometer";
     }
-
-    /**
-     * Handles the sensor changed event by capturing magnetometer data and storing it. This method extends
-     * the general sensor changed handling by adding magnetometer-specific data processing.
-     *
-     * @param event The sensor event containing the new magnetometer readings.
-     */
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        super.onSensorChanged(event);
-    }
 }
