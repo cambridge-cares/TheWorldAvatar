@@ -10,6 +10,8 @@ More details can be found in the [preprint](https://como.ceb.cam.ac.uk/preprints
 
 ## Quick start
 
+The procedure presented below has been tested on Windows `cmd` terminal.
+
 To instantiate a copy of the Ontozeolite knowledge graph, you will need:
 
 - The input data (stored in the directory `Agents/ZeoliteAgent/zeoliteaboxwriteragent/ontozeolite/`).
