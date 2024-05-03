@@ -108,3 +108,27 @@ Description of steps:
 1. Open the `SampleApp` folder in Android Studio
 2. Click on the `Run 'app'` button or `Shift + F10`
 3. The app should run in the selected emulator after building
+
+## 4. Dependency Injection
+This project uses [Hilt](https://developer.android.com/training/dependency-injection) for dependency Injection. For basic definition and example of dependency injection, please refer to [this](https://developer.android.com/training/dependency-injection). This section covers a summary of the dependency injection tags used in this project and the files for dependency injection declaration. 
+
+### Dependency Injection Tags
+Android Specific
+- `@HiltAndroidApp`: Trigger Hilt's code generation. It is added in app module's `SampleApplication.java`.
+- `@AndroidEntryPoint`: An annotation adds to the Android class that needs dependency injection. Hilt currently supports `Activity`, `Fragment`, `View`, `Service`, `BroadcastReceiver`. It is added in `MainActivity.java`, `TodoFragment.java`.
+- `@HiltViewModel`: An annotation adds to ViewModel for dependency injection. It is added in `TodoViewModel.java` to inject `TodoRepository` instance from core-data.
+- `@ApplicationContext`: Inject application context. It is used in the core `NetworkModule.java`. 
+
+General
+- `@Inject`: Indicate that a variable is initialized with dependency injection. It can be used with constructor to indicate that all the variables are injected. It can also be used on a specific class member variable for injection. 
+- `@Module`:  Define modules which are resposible for providing instances with `@Provides` and specifying interface default implementation with `@Binds`. It is used in `NetworkModule.java` and `DataModule.java` to indicate what instances to be injected for network sources and repositories.
+- `@InstallIn`: To tell Hilt which Android class each module will be used or installed in. In this project, `SingeltonComponent.class` is used to install the dependecy as singelton.
+- `@Provides`: Specify what instance will be injected for a certain class.  
+- `@Singleton`: Indicate the injected instance is a singleton.
+
+### Example
+This section shows how a TodoViewModel object is created with dependency injection.
+
+1. TodoViewMpdel dependes on TodoRepository. TodoRepository is provided by `DataModule.java` in core-data.
+2. TodoRepository depends on TodoNetworkSource and UserNetworkSouce which are provided by `NetworkModule.java` in core-network.
+3. TodoNetworkSource and UserNetworkSouce depends on Context, which is provided with `@ApplicationContext` and defined in `NetworkModule.java`. 
