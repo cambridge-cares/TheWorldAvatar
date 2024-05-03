@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.twasensorlogger.gpsfunctionality;
+package uk.ac.cam.cares.sensorlogger.gpsfunctionality;
 
 import static com.mapbox.maps.plugin.gestures.GesturesUtils.getGestures;
 import static com.mapbox.maps.plugin.locationcomponent.LocationComponentUtils.getLocationComponent;
@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 
-import uk.ac.cam.cares.jps.twasensorlogger.R;
+import uk.ac.cam.cares.sensorlogger.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.gestures.MoveGestureDetector;
 import com.mapbox.geojson.Point;

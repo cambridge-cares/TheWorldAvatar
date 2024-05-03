@@ -21,6 +21,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TWASensorLogger"
+rootProject.name = "SensorLogger"
 include(":app")
  

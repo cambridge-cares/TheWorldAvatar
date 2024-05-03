@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.twasensorlogger;
+package uk.ac.cam.cares.sensorlogger;
 
 
 import android.hardware.Sensor;

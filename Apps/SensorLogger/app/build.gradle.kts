@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "uk.ac.cam.cares.jps.twasensorlogger"
+    namespace = "uk.ac.cam.cares.sensorlogger"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "uk.ac.cam.cares.jps.twasensorlogger"
+        applicationId = "uk.ac.cam.cares.sensorlogger"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

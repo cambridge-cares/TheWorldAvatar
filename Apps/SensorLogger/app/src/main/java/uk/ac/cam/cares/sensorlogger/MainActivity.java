@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.twasensorlogger;
+package uk.ac.cam.cares.sensorlogger;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,7 +19,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import uk.ac.cam.cares.jps.twasensorlogger.gpsfunctionality.MainActivityMap;
+import uk.ac.cam.cares.sensorlogger.gpsfunctionality.MainActivityMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,5 +1,4 @@
-package uk.ac.cam.cares.jps.twasensorlogger;
-
+package uk.ac.cam.cares.sensorlogger;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +7,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-import uk.ac.cam.cares.jps.twasensorlogger.R;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.util.List;
