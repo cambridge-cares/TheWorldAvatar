@@ -289,11 +289,11 @@ public class Dataset {
         });
 
         ModifyQuery modify = Queries.MODIFY();
-        TriplePattern[] insertTriplesAsArray = insertTriples.toArray(new TriplePattern[insertTriples.size()]);
+        TriplePattern[] insertTriplesAsArray = insertTriples.toArray(new TriplePattern[0]);
         modify.insert(insertTriplesAsArray);
 
         if (!deleteTriples.isEmpty()) {
-            TriplePattern[] deleteTriplesAsArray = deleteTriples.toArray(new TriplePattern[deleteTriples.size()]);
+            TriplePattern[] deleteTriplesAsArray = deleteTriples.toArray(new TriplePattern[0]);
             modify.delete(deleteTriplesAsArray).where(deleteTriplesAsArray);
         }
 
