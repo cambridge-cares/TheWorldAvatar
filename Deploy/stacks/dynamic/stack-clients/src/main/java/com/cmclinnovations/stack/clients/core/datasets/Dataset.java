@@ -219,6 +219,7 @@ public class Dataset {
             insertTriples.add(catalogIri.isA(getRdfType())
                     .andHas(DCTERMS.TITLE, getName())
                     .andHas(DCTERMS.DESCRIPTION, getDescription())
+                    .andHas(DCTERMS.ISSUED, currentTime)
                     .andHas(DCTERMS.MODIFIED, currentTime));
 
             // blazegraph triples
@@ -272,6 +273,7 @@ public class Dataset {
                 Iri dataSetIri = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
                 insertTriples.add(catalogIri.has(DCTERMS.HAS_PART, dataSetIri));
                 insertTriples.add(dataSetIri.isA(DCAT.DATASET)
+                        .andHas(DCTERMS.ISSUED, currentTime)
                         .andHas(DCTERMS.MODIFIED, currentTime)
                         .andHas(DCTERMS.TITLE, dataSubset.getName())
                         .andHas(DCTERMS.DESCRIPTION, dataSubset.getDescription()));
