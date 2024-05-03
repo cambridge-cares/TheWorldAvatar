@@ -1,4 +1,4 @@
-# **TWASensorLogger**
+# **SensorLogger**
 
 ## **1.  Description**
 

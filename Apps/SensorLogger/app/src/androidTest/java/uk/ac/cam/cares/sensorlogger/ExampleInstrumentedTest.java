@@ -1,4 +1,4 @@
-package com.example.notsensorlogger2;
+package uk.ac.cam.cares.sensorlogger;
 
 import android.content.Context;
 
