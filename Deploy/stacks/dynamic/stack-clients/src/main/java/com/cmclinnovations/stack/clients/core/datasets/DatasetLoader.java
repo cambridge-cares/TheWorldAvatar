@@ -89,6 +89,7 @@ public class DatasetLoader {
                 }
                 addToGraph(allDatasets, graph, child);
                 graph.addEdge(child, current);
+                current.addExternalDataset(child);
             });
         }
     }
