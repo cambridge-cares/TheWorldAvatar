@@ -7,12 +7,15 @@ twa:    https://www.theworldavatar.com/kg/
 [MappingDeclaration] @collection [[
 
 mappingId	building_floor
-target		twa:Building/{building_iri} env:hasNumberOfFloors twa:NumberOfFloors/{building_iri} .
+target		twa:Building/{strval} env:hasNumberOfFloors twa:NumberOfFloors/{strval} .
             twa:NumberOfFloors/{building_iri} a env:FloorCat{storeys_above_ground_cat} ;
-            env:hasValue {floors}^^xsd:integer .
+            env:hasValue {storeys_above_ground}^^xsd:integer .
             
 
-source      SELECT cb.storeys_above_ground AS floors, cb.storeys_above_ground_cat, ccg.strval AS building_iri
+source      SELECT 
+            cb.storeys_above_ground, 
+            cb.storeys_above_ground_cat, 
+            ccg.strval
             FROM citydb.building cb, citydb.cityobject_genericattrib ccg
-            WHERE cb.id = ccg.cityobject_id AND ccg.attrname = 'uuid'
+            WHERE cb.id = ccg.cityobject_id AND ccg.attrname = 'uuid' AND strval IS NOT NULL
 ]]

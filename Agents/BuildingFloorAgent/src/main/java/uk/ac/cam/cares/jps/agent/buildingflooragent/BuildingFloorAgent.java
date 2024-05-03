@@ -8,14 +8,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.io.FileReader;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.core.io.ClassPathResource;
 
 @WebServlet(urlPatterns = {"/floors", "/floorswithodba"})
 public class BuildingFloorAgent extends JPSAgent{
@@ -64,9 +67,11 @@ public class BuildingFloorAgent extends JPSAgent{
             //Upload Ontop mapping
             if (requestParams.getString("requestUrl").contains("withodba")){
                 try {
-                    Path obdaFile = Path.of("/resources/buildingfloor.obda");
+                    String odbaFile = "/resources/buildingfloor.odba";
+                    // Path odbaPath = new ClassPathResource("/buildingfloor.obda").getFile().toPath();
+                    Path odbaPath = Paths.get(odbaFile);
                     OntopClient ontopClient = OntopClient.getInstance();
-                    ontopClient.updateOBDA(obdaFile);
+                    ontopClient.updateOBDA(odbaPath);
                 } catch (Exception e) {
                     System.out.println("Could not retrieve buildingfloor .obda file.");
                 }
