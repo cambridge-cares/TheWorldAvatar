@@ -198,7 +198,7 @@ public class IntegrateFloors {
                     // }
 
                     if (buildingiri != null) {
-                        updateFloors(floors, catString, buildingiri);
+                        // updateFloors(floors, catString, buildingiri);
                     }
                     
                 }
@@ -210,9 +210,9 @@ public class IntegrateFloors {
 
     public void importFloorDate () {
         String catString = null;
-        String floorSQLQuery = "SELECT storeys_above_ground AS floors, storeys_above_ground_cat, id, cg.strval " +
+        String floorSQLQuery = "SELECT storeys_above_ground, storeys_above_ground_cat, building.id, cg.strval " +
                                 "FROM citydb.building, citydb.cityobject_genericattrib cg " + 
-                                "WHERE id = cg.cityobject_id AND cg.attrname = 'uuid'";       
+                                "WHERE building.id = cg.cityobject_id AND cg.attrname = 'uuid'";       
         Integer floors;
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
@@ -221,16 +221,18 @@ public class IntegrateFloors {
                     floors = floorsResults.getInt("storeys_above_ground");
                     catString = floorsResults.getString("storeys_above_ground_cat");
                     String buildingIri = floorsResults.getString("strval");
-                    if (floors == null || catString == "C"){// get osm floor
+                    if (floors == 0 || catString == "C" || catString == null){// get osm floor
                         floors = queryOSMFloor(buildingIri);
                         catString = "B";
-                        if (floors == null) {//estimate
+                        if (floors == null || floors == 0) {//estimate
                             catString = "C";
                             floors = estimateFloors(buildingIri);
                         }
                     }
-
-                    updateFloors(floors, catString, buildingIri);
+                    if (floors > 0) {
+                        updateFloors(floors, catString, buildingIri);
+                    }
+                    
                 }
                 
             }
@@ -241,11 +243,11 @@ public class IntegrateFloors {
 
     public Integer queryOSMFloor (String buildingIri) {
         String osmFloorQuery = "SELECT building_levels FROM osm.polygons " + 
-                                "WHERE building_iri = " + buildingIri;
+                                "WHERE building_iri = '" + buildingIri + "'";
         Integer floors = null;
         try (Connection srcConn = postgisClient.getConnection()) {
-            try (Statement stmt = srcConn.createStatement()) {
-                ResultSet floorsResults = stmt.executeQuery(osmFloorQuery);
+            try (Statement stmtOSM = srcConn.createStatement()) {
+                ResultSet floorsResults = stmtOSM.executeQuery(osmFloorQuery);
                 while (floorsResults.next()) {
                     floors = floorsResults.getInt("building_levels");
                 }
@@ -261,8 +263,8 @@ public class IntegrateFloors {
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
                 String buildingSQLUpdate = "UPDATE citydb.building b SET storeys_above_ground = " + floors + 
-                                            ", storeys_above_ground_cat = " + catString +
-                                            " FROM citydb.cityobject_genericattrib cg\n" + 
+                                            ", storeys_above_ground_cat = '" + catString +
+                                            "' FROM citydb.cityobject_genericattrib cg\n" + 
                                             "WHERE b.id = cg.cityobject_id AND cg.strval = '" + buildingIri + "';";
                 postgisClient.executeUpdate(buildingSQLUpdate);
 
@@ -274,34 +276,44 @@ public class IntegrateFloors {
 
     }
 
+    /********************************************************* */
+    /*To estimate calculate height: */
+    /*1. query building usage: Domestic: 1st floor 3.6m, the others 2.8m/floor; Non-Domestic: 3.3m/floor */
+    /*2. no usage information: 3.3m/floor */
+    /*********************************************************** */
     public Integer estimateFloors (String buildingIri) {
         
         try {
             int floor = 0;
             float height = 0;
+
+            String heightQuery = "SELECT measured_height" +
+                                " FROM citydb.building, citydb.cityobject_genericattrib cg " + 
+                                "WHERE building.id = cg.cityobject_id AND cg.attrname = 'uuid' AND cg.strval = '" + buildingIri + "'";
+            try (Connection srcConn = postgisClient.getConnection()) {
+                try (Statement stmt = srcConn.createStatement()) {
+                    ResultSet heightResults = stmt.executeQuery(heightQuery);
+                    while (heightResults.next()) {
+                        height = heightResults.getFloat("measured_height");
+                    }        
+                }
+            }catch (SQLException e) {
+                throw new JPSRuntimeException("Error connecting to source database: " + e);
+            }
+
             for (int i = 0; i< this.osmBuildings.size(); i++){
                 if(buildingIri.equals(this.osmBuildings.get(i).getBuildingIri())){
-                    String heightQuery = "SELECT measured_height" +
-                                        "FROM citydb.building, citdb.cityobject_genericattrib cg " + 
-                                        "WHERE id = cg.cityobject_id AND cg.attrname = 'iri' AND cg.urival = " + buildingIri;
-                    try (Connection srcConn = postgisClient.getConnection()) {
-                        try (Statement stmt = srcConn.createStatement()) {
-                            ResultSet heightResults = stmt.executeQuery(heightQuery);
-                            while (heightResults.next()) {
-                                height = heightResults.getFloat("measured_height");
-                            }        
-                        }
-                    }catch (SQLException e) {
-                        throw new JPSRuntimeException("Error connecting to source database: " + e);
-                    }
-                    String usage = this.osmBuildings.get(i).getUsage();
-                    if (usage.equals("Domestic")){
+                    String[] usage = this.osmBuildings.get(i).getUsage().split("ontobuiltenv/", 2);
+                    if (usage[1].equals("Domestic")){
                         floor = (int)((height - 3.6) / 2.8);
-                    } else {
-                        floor = (int) (height / 3.3) ;
-                    }
+                    } 
                 }
             }
+
+            if (floor == 0 && height > 0) {
+                floor = (int) (height / 3.3) ;
+            }
+
             return floor;
         }catch (Exception e) {
             e.printStackTrace();
@@ -342,7 +354,8 @@ public class IntegrateFloors {
 
             for (int i = 0; i < queryResultArray.length(); i++) {
                 OSMBuilding osmBuilding = new OSMBuilding();
-                osmBuilding.setBuildingIri(queryResultArray.getJSONObject(i).getString("building"));
+                String[] buildingIri = queryResultArray.getJSONObject(i).getString("building").split("Building/");
+                osmBuilding.setBuildingIri(buildingIri[1]);
                 osmBuilding.setStreet(queryResultArray.getJSONObject(i).getString("street"));
                 osmBuilding.setUsage(queryResultArray.getJSONObject(i).getString("usage"));
                 osmBuilding.setPostcode(queryResultArray.getJSONObject(i).getString("postcode"));
