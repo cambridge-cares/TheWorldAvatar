@@ -191,9 +191,13 @@ public class DataUploader {
     }
 
     public static List<Ship> loadDataFromRDB(QueryClient queryClient) throws IOException {
-        String sqlQuery = "SELECT DISTINCT \"MMSI\", \"VesselType\" AS \"SHIPTYPE\", 0 AS \"SPEED\", 0.0 AS \"COURSE\", " +
-                        "0.0 AS \"LAT\", 0.0 AS \"LON\", '2024-01-01T12:00:00' AS \"TIMESTAMP\" FROM \"ship\"";
+        String sqlQuery = "SELECT DISTINCT points.\"MMSI\", points.\"VesselType\" AS \"SHIPTYPE\", 0 AS \"SPEED\", " + //
+                " 0.0 AS \"COURSE\", 0.0 AS \"LAT\", 0.0 AS \"LON\", '2024-01-01T12:00:00' AS \"TIMESTAMP\" " + //
+                "FROM (SELECT \"MMSI\", \"VesselType\", \"geom\" FROM \"ship\") AS points, " + //
+                "(SELECT \"geom\" FROM \"scopes\") AS polygon WHERE " + //
+                "ST_Contains(polygon.geom, points.geom)";
         JSONArray shipData = queryClient.getRemoteRDBStoreClient().executeQuery(sqlQuery);
+        LOGGER.info(String.format("Number of ships within scopes: %d",shipData.length()));
         List<Ship> ships = parseShip(shipData, 0);
 
         // initialise both triples and time series if ship is new
