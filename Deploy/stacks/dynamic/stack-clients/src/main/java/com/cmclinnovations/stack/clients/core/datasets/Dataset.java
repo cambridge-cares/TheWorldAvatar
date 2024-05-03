@@ -271,7 +271,7 @@ public class Dataset {
         getDataSubsets().stream().forEach(dataSubset -> {
             if (!dataSubset.getExists()) {
                 Iri dataSetIri = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
-                insertTriples.add(catalogIri.has(DCTERMS.HAS_PART, dataSetIri));
+                insertTriples.add(catalogIri.has(DCAT.HAS_DATASET, dataSetIri));
                 insertTriples.add(dataSetIri.isA(DCAT.DATASET)
                         .andHas(DCTERMS.ISSUED, currentTime)
                         .andHas(DCTERMS.MODIFIED, currentTime)
@@ -285,7 +285,7 @@ public class Dataset {
         });
 
         getExternalDatasets().stream().forEach(externalDataset -> {
-            insertTriples.add(Rdf.iri(iri).has(DCTERMS.HAS_PART, Rdf.iri(externalDataset.getIri())));
+            insertTriples.add(Rdf.iri(iri).has(DCAT.HAS_CATALOG, Rdf.iri(externalDataset.getIri())));
         });
 
         ModifyQuery modify = Queries.MODIFY();
