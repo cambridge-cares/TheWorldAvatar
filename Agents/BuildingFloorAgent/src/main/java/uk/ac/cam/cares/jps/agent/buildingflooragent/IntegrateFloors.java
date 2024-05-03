@@ -46,7 +46,6 @@ public class IntegrateFloors {
 
     private RemoteRDBStoreClient postgisClient;
     private List<OSMBuilding> osmBuildings = new ArrayList<>();
-    private static final String sparqlFile = "/resources/building_usage.sparql";
     
     public IntegrateFloors (String postgisDb, String postgisUser, String postgisPassword, String osmSchema, String osmPoint, String osmPolygon, String ontopUrl){
         this.dbUrl = postgisDb;
@@ -221,7 +220,7 @@ public class IntegrateFloors {
                     floors = floorsResults.getInt("storeys_above_ground");
                     catString = floorsResults.getString("storeys_above_ground_cat");
                     String buildingIri = floorsResults.getString("strval");
-                    if (floors == 0 || catString == "C" || catString == null){// get osm floor
+                    if (floors == null ||floors == 0 || catString.equals("C") || catString == null){// get osm floor
                         floors = queryOSMFloor(buildingIri);
                         catString = "B";
                         if (floors == null || floors == 0) {//estimate

@@ -32,8 +32,7 @@ public class BuildingFloorAgent extends JPSAgent{
     private String osmPoint;
     private String osmPolygon;
     private String ontopUrl;
-    private static final Path obdaFile = Path.of("/resources/buildingfloor.obda");
-
+    
     public synchronized void init() {
         this.dbName = endpointConfig.getDbName();
         this.dbUrl = endpointConfig.getDbUrl(dbName);
@@ -65,10 +64,11 @@ public class BuildingFloorAgent extends JPSAgent{
             //Upload Ontop mapping
             if (requestParams.getString("requestUrl").contains("withodba")){
                 try {
+                    Path obdaFile = Path.of("/resources/buildingfloor.obda");
                     OntopClient ontopClient = OntopClient.getInstance();
                     ontopClient.updateOBDA(obdaFile);
                 } catch (Exception e) {
-                    System.out.println("Could not retrieve isochrone .obda file.");
+                    System.out.println("Could not retrieve buildingfloor .obda file.");
                 }
             }           
 
