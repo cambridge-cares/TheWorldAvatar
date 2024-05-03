@@ -507,7 +507,7 @@ class CsvMaker:
 
     def arrTiles(self, subject, predicate, zeoname):
         """
-        subject   - Is the full hame of instance of class CrystalInformation,
+        subject   - Is the full name of instance of class CrystalInformation,
                     which contains this TiledStructure class.
         predicate - Is the Object Property linking the Subject and the current TiledStructure.
                     Typically is should be equal to "hasTiledStructure".

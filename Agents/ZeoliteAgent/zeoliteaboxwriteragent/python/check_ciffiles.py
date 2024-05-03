@@ -90,7 +90,7 @@ def check_cif_file(data):
         pass
 
     # Add IZA files:
-    cif_list = []
+    #cif_list = []
 
     frameworks = zeolist.getZeoList(["main", "new"])
     #print("Number of frameworks =", len(frameworks))
