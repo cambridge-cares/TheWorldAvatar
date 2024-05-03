@@ -9,7 +9,6 @@ public class SensorItem {
     private String name;
     private int iconResourceId;
     private boolean isToggled;
-    private boolean isEnabled;
     private SensorHandler handler;
 
     /**
@@ -25,7 +24,6 @@ public class SensorItem {
         this.iconResourceId = iconResourceId;
         this.isToggled = isToggled;
         this.handler = handler;
-        this.isEnabled = false;
     }
 
     /**
@@ -62,15 +60,6 @@ public class SensorItem {
      */
     public void setToggled(boolean toggled) {
         isToggled = toggled;
-    }
-
-    /**
-     * Sets the enabled state of the sensor.
-     *
-     * @param enabled The new enabled state.
-     */
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
     }
 
     /**

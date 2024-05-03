@@ -19,7 +19,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import uk.ac.cam.cares.jps.twasensorlogger.R;
 import uk.ac.cam.cares.jps.twasensorlogger.gpsfunctionality.MainActivityMap;
 
 import org.json.JSONArray;
@@ -82,17 +81,11 @@ public class MainActivity extends Activity {
         sensorItems.add(new SensorItem("Relative Humidity", R.drawable.ic_relative_humidity, false, humiditySensorHandler));
         sensorItems.add(new SensorItem("Sound Pressure", R.drawable.ic_sound_level, false, soundLevelHandler));
 
-        // Initialize RecyclerView
+        // Initialize RecyclerView and Adapter
         sensorsRecyclerView = findViewById(R.id.sensors_recycler_view);
         sensorsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Initialize the adapter
         sensorAdapter = new SensorAdapter(sensorItems, (sensor, isChecked) -> {
-            // Set toggled and enabled state here
             sensor.setToggled(isChecked);
-            sensor.setEnabled(isChecked);
-
-            // Start or stop the sensor handler based on isChecked
             if (isChecked) {
                 sensor.getHandler().start();
             } else {
@@ -101,7 +94,6 @@ public class MainActivity extends Activity {
         }, sensor -> {
             // Placeholder for future implementation if more details are needed
         });
-
         sensorsRecyclerView.setAdapter(sensorAdapter);
     }
 
