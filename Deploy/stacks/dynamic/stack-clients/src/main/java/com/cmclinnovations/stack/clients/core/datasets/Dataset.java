@@ -39,7 +39,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 
 public class Dataset {
+
     protected static final Logger LOGGER = LoggerFactory.getLogger(Dataset.class);
+
+    private static final String NAME_DEPRECATION_NOTICE = "Specification of '{}' name is deprecated, in the future the name of the dataset will be used, i.e. {}";
+
     static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
     static final String DEFAULT_BASE_IRI = "https://www.theworldavatar.com/kg/";
 
@@ -117,16 +121,16 @@ public class Dataset {
 
     public String getDatabase() {
         if (database != null) {
-            LOGGER.warn("Specification of database name is deprecated, name of dataset will be used, i.e. {}",
-                    getName());
+            LOGGER.warn(NAME_DEPRECATION_NOTICE, "database", getName());
+            return database;
         }
         return getName();
     }
 
     public String getNamespace() {
         if (null != namespace && null != namespace.getName()) {
-            LOGGER.warn("Specification of namespace name is deprecated, name of dataset will be used, i.e. {}",
-                    getName());
+            LOGGER.warn(NAME_DEPRECATION_NOTICE, "namespace", getName());
+            return namespace.getName();
         }
         return getName();
     }
@@ -141,8 +145,8 @@ public class Dataset {
 
     public String getWorkspaceName() {
         if (workspaceName != null) {
-            LOGGER.warn("Specification of workspaceName is deprecated, name of dataset will be used, i.e. {}",
-                    getName());
+            LOGGER.warn(NAME_DEPRECATION_NOTICE, "workspaceName", getName());
+            return workspaceName;
         }
         return getName();
     }
