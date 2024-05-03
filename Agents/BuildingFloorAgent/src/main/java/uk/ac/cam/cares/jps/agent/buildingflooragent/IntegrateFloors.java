@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -323,13 +324,16 @@ public class IntegrateFloors {
                     .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                     .addPrefix("rdfs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdfs))
                     .addPrefix("ic", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ic))
-                    .addVar("*")
+                    .addVar("?building").addVar("?usage").addVar("?street").addVar("?postcode").addVar("?unit")
                     .addWhere("?building", "env:hasPropertyUsage", "?property")
                     .addWhere("?property", "a", "?usage")
                     .addWhere("?building", "env:hasAddress", "?address")
-                    .addOptional("?address", "ic:hasStreet", "?street")
-                    .addOptional("?address", "ic:hasPostalCode", "?postcode")
-                    .addOptional("?address", "ic:hasUnitNumber", "?unit");
+                    .addOptional("?address", "ic:hasStreet", "?streetName")
+                    .addOptional("?address", "ic:hasPostalCode", "?postCode")
+                    .addOptional("?address", "ic:hasUnitNumber", "?unitNum")
+                    .addBind("COALESCE(?streetName, 'null')",  "?street")
+                    .addBind("COALESCE(?postCode, 'null')", "?postcode")
+                    .addBind("COALESCE(?unitNum, 'null')", "?unit");
 
             String query = sb.build().toString();
             JSONArray queryResultArray = storeClient.executeQuery(query);
@@ -337,12 +341,13 @@ public class IntegrateFloors {
             List<OSMBuilding> osmBuildings = new ArrayList<>();
 
             for (int i = 0; i < queryResultArray.length(); i++) {
-                OSMBuilding osmBuilding = null;
+                OSMBuilding osmBuilding = new OSMBuilding();
                 osmBuilding.setBuildingIri(queryResultArray.getJSONObject(i).getString("building"));
                 osmBuilding.setStreet(queryResultArray.getJSONObject(i).getString("street"));
                 osmBuilding.setUsage(queryResultArray.getJSONObject(i).getString("usage"));
-                osmBuilding.setPostcode(queryResultArray.getJSONObject(i).getInt("postcode"));
+                osmBuilding.setPostcode(queryResultArray.getJSONObject(i).getString("postcode"));
                 osmBuilding.seUnit(queryResultArray.getJSONObject(i).getString("unit"));
+                osmBuildings.add(osmBuilding);
             }
             return osmBuildings;
         }catch (Exception e) {

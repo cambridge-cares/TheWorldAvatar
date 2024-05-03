@@ -4,10 +4,14 @@ public class OSMBuilding {
     
     private String buildiingIri;
     private String buildingUsage;
-    private int floors;
+    // private int floors;
     private String street;
     private String unit;
-    private Integer postcode;
+    private String postcode;
+
+    public OSMBuilding () {
+
+    }
 
     public String getBuildingIri() {
         return this.buildiingIri;
@@ -17,15 +21,15 @@ public class OSMBuilding {
         return this.buildingUsage;
     }
 
-    public int getFloors() {
-        return this.floors;
-    }
+    // public int getFloors() {
+    //     return this.floors;
+    // }
 
     public String getStreet() {
         return this.street;
     }
 
-    public Integer getPostcode() {
+    public String getPostcode() {
         return this.postcode;
     }
 
@@ -41,15 +45,15 @@ public class OSMBuilding {
         this.buildingUsage = buildingUsage;
     }
 
-    public void setFloors(int floors) {
-        this.floors = floors;
-    }
+    // public void setFloors(int floors) {
+    //     this.floors = floors;
+    // }
 
     public void setStreet(String street) {
         this.street = street;
     }
 
-    public void setPostcode(Integer postcode) {
+    public void setPostcode(String postcode) {
         this.postcode = postcode;
     }
 
