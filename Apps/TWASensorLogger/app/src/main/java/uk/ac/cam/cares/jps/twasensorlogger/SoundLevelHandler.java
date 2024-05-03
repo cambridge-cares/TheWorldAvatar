@@ -130,7 +130,6 @@ public class SoundLevelHandler extends AbstractSensorHandler {
             return;
         }
 
-        Log.d("SoundLevelHandler", "Current dBFS: " + dBFS);
         JSONObject dataPoint = new JSONObject();
         try {
             JSONObject values = new JSONObject();

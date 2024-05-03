@@ -3,7 +3,7 @@
         TWASensorLogger
     </string>
 
-    <string name="mapbox_access_token"></string>
+    <string name="mapbox_access_token"></string> // Add your mapbox secret token
 
     <string name="start_button_text">
         Start Recording
@@ -14,7 +14,7 @@
     </string>
     <string name="record_sensor_data">Record Sensor Data</string>
 
-    <string  name="data_post_url">http://139.59.110.28:3838/sensorloggermobileappagent/update</string>
+    <string  name="data_post_url"></string> // Add the URL for the POST request
 
 
 </resources>
