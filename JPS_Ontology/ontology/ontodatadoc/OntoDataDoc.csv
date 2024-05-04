@@ -1,0 +1,88 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoDataDoc,TBox,http://www.theworldavatar.com/kg/ontodatadoc,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoDataDoc,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoDataDoc,TBox,OntoDataDoc is an ontology developed for representing data documentation.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoDataDoc,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Dataset,Class,,,,,,"The fundamental unit of data, encapsulating a collection of related information for organizing and referencing specific sets of data.",http://www.theworldavatar.com/kg/ontodatadoc/,Dataset
+http://www.w3.org/ns/prov#Agent,Class,,,,,,"Agent can be a person, an organisation, and/or a software",http://www.w3.org/ns/prov,Agent
+http://www.w3.org/ns/dcat#Distribution,Class,,,,,,,http://www.w3.org/ns/dcat,Distribution
+DataCategory,Class,,,,,,A data category categorizes the dataset into broader thematic groups or domains,http://www.theworldavatar.com/kg/ontodatadoc/,Data Category
+http://purl.org/dc/terms/Location,Class,,,,,,,http://purl.org/dc/terms/,Location
+http://purl.org/dc/terms/LinguisticSystem,Class,,,,,,A linguistic system indicates the linguistic context in which the dataset is presented,http://purl.org/dc/terms/,Linguistic System
+Subject,Class,,,,,,A subject captures the main topic or theme or concise description of the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,Subject
+DataSource,Class,,,,,,A data source identifies the origin of the data,http://www.theworldavatar.com/kg/ontodatadoc/,Data Source
+Publication,Class,,,,,,The publication documents the details related to the release or dissemination of the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,Publication
+Publisher,Class,,,,,,The publisher specifies the entity or organisation responsible for making the dataset publicly available,http://www.theworldavatar.com/kg/ontodatadoc/,Publisher
+DataContent,Class,,,,,,"A data content describes the content and relations, characteristic, and fundamental elements within the dataset",http://www.theworldavatar.com/kg/ontodatadoc/,Data Content
+Characteristic,Class,,,,,,The characteristic outlines the distinctive features such as quantitative or qualitative nature of a data content,http://www.theworldavatar.com/kg/ontodatadoc/,Characteristic
+QualitativeCharacteristic,Class,Characteristic,IS-A,,,,"The qualitative concept denotes data that is descriptive, non-numeric attributed, or categorical in nature",http://www.theworldavatar.com/kg/ontodatadoc/,QualitativeCharacteristic
+QuantitativeCharacteristic,Class,Characteristic,IS-A,,,,The quantitative concept signifies data content that is numerical or measurable,http://www.theworldavatar.com/kg/ontodatadoc/,QuantitativeCharacteristic
+http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,Class,,,,,,"A unit specifies a measurement unit associated with quantitative data, ensuring proper interpretation and analysis",http://www.ontology-of-units-of-measure.org/resource/om-2/,Unit
+QualityControl,Class,,,,,,"The systematic process of verifying and validating data to ensure it meets standards of accuracy, completeness, consistency, and reliability.",http://www.theworldavatar.com/kg/ontodatadoc/,Quality Control
+DataRange,Class,,,,,,"A data range defines the allowable values or scope for data points, that is, an acceptable range of variations",http://www.theworldavatar.com/kg/ontodatadoc/,Data Range
+IndependentContent,Class,DataContent,IS-A,,,,An independent content represents data points that stand alone and are not influenced by others,http://www.theworldavatar.com/kg/ontodatadoc/,Independent Content
+DependentContent,Class,DataContent,IS-A,,,,A dependent content signifies data points that rely on or are influenced by others,http://www.theworldavatar.com/kg/ontodatadoc/,Dependent Content
+ControlledContent,Class,DataContent,IS-A,,,,A controlled content indicates data that is subject to specific constraints or regulations,http://www.theworldavatar.com/kg/ontodatadoc/,Controlled Content
+DataValidation,Class,,,,,,The data validation encompasses processes or mechanisms used to ensure the accuracy and integrity of the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,Data Validation
+MissingData,Class,,,,,,The missing data identifies instances where data points are absent or incomplete,http://www.theworldavatar.com/kg/ontodatadoc/,Missing Data
+Versioning,Class,,,,,,A versioning instance tracks different versions or iterations of the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,Versioning
+ConsistencyCheck,Class,,,,,,The consistency check refers to a process or procedure implemented to ensure uniformity and coherence within the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,Consistency Check
+UsabilityTesting,Class,,,,,,The usability testing assesses the dataset's user-friendliness and ease of use,http://www.theworldavatar.com/kg/ontodatadoc/,Usability Testing
+UserReview,Class,,,,,,The user review captures feedback and reviews from users to increase the trust nd reliability,http://www.theworldavatar.com/kg/ontodatadoc/,User Review
+UsageGuideline,Class,,,,,,"The usage guideline instance outlines recommendations, terms and conditions, rights permission, etc. for effectively utilizing the dataset",http://www.theworldavatar.com/kg/ontodatadoc/,Usage Guideline
+http://purl.org/dc/terms/RightsStatement,Class,,,,,,The access rights specify the permissions and restrictions based on user roles and requirements associated with accessing the dataset,http://purl.org/dc/terms/,Access Rights
+http://purl.org/dc/terms/LicenseDocument,Class,,,,,,,http://purl.org/dc/terms/,License Document
+http://www.w3.org/ns/odrl/2/Policy,Class,,,,,,,http://www.w3.org/ns/odrl/2/,Policy
+TermsAndConditions,Class,,,,,,"The terms and conditions outline the legal and contractual terms such as  licensing, usage restrictions, and obligations associated with the dataset's usage",http://www.theworldavatar.com/kg/ontodatadoc/,Terms and Conditions
+hasPublication,Object Property,,,Dataset,Publication,,"A relation between a dataset and its publication, indicating when and where the dataset was officially released or made public",http://www.theworldavatar.com/kg/ontodatadoc/,has Publication
+http://purl.org/dc/terms/creator,Object Property,,,Dataset,http://www.w3.org/ns/prov#Agent,,"A relation between a dataset and its creator, identifying the individual or entity responsible for the initial development or generation of the data",http://purl.org/dc/terms/,has Creator
+http://purl.org/dc/terms/contributor,Object Property,,,Dataset,http://www.w3.org/ns/prov#Agent,,"A relation that establishes a link between a dataset and its contributors, recognizing individuals or entities who have contributed to the dataset beyond its creation",http://purl.org/dc/terms/,has Contributor
+http://purl.org/dc/terms/distribution,Object Property,,,Dataset,DataFormat,,A relation that indicates a format or data structure in which the dataset is presented or stored,http://purl.org/dc/terms/,has Data Format
+hasDataCategory,Object Property,,,Dataset,DataCategory,,Specifies the category or classification to which the dataset belongs,http://www.theworldavatar.com/kg/ontodatadoc/,has Data Category
+http://purl.org/dc/terms/spatial,Object Property,,,Dataset,http://purl.org/dc/terms/Location,,,http://purl.org/dc/terms/,has Coverage
+http://purl.org/dc/terms/language,Object Property,,,Dataset,LinguisticSystem,,Establishes the linguistic context or the language of the dataset,http://purl.org/dc/terms/,has Language
+http://purl.org/dc/terms/subject,Object Property,,,Dataset,Subject,,"Identifies the main topic or theme of the dataset, providing a concise description of the primary focus or purpose of the data",http://purl.org/dc/terms/,has Subject
+extractedFrom,Object Property,,,Dataset,DataSource,,"Specifies the source or origin from which the dataset was extracted, offering insights into the data's provenance",http://www.theworldavatar.com/kg/ontodatadoc/,extracted From
+hasDataValidation,Object Property,,,QualityControl,DataValidation,,A relation between a dataset and its validation processes to ensure the accuracy and reliability of the data,http://www.theworldavatar.com/kg/ontodatadoc/,has Data Validation
+hasMissingData,Object Property,,,QualityControl,MissingData,,Establishes a connection between a dataset and its missing data information to indicate the absence or incompleteness of data,http://www.theworldavatar.com/kg/ontodatadoc/,has Missing Data
+http://purl.org/dc/terms/hasVersion,Object Property,,,QualityControl,Versioning,,"Specifies the version or iteration of the dataset, offering insights into the evolution and changes made over time",http://purl.org/dc/terms/,has Version
+hasConsistencyCheck,Object Property,,,QualityControl,ConsistencyCheck,,A relation between a dataset and its consistency checking processes used to maintain uniformity within the data,http://www.theworldavatar.com/kg/ontodatadoc/,has Consistency Check
+hasUsabilityTesting,Object Property,,,QualityControl,UsabilityTesting,,"A relation between a dataset and usability testing, indicating efforts to assess the dataset's user-friendliness and accessibility",http://www.theworldavatar.com/kg/ontodatadoc/,has Usability Testing
+hasUserReview,Object Property,,,QualityControl,UserReview,,"A relation between a dataset and user reviews, capturing feedback and insights from individuals who have interacted with the data",http://www.theworldavatar.com/kg/ontodatadoc/,has User Review
+hasRelation,Object Property,,,Dataset,Dataset,,Specifies related datasets or data entities,http://www.theworldavatar.com/kg/ontodatadoc/,has Relation
+hasContent,Object Property,,,Dataset,DataContent,,A relation between a dataset and its content or variable,http://www.theworldavatar.com/kg/ontodatadoc/,has Content
+hasElement,Object Property,,,DataContent,Element,,A relation between a data content and its basic building blocks or components,http://www.theworldavatar.com/kg/ontodatadoc/,has Element
+hasCharacteristic,Object Property,,,DataContent,Characteristic,,A relation between a data content and its distinctive qualitative or quantitative characteristic,http://www.theworldavatar.com/kg/ontodatadoc/,has Characteristic
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,QuantitativeCharacteristic,Unit,,A relation between a data content and its measurement units for quantitative data,http://www.ontology-of-units-of-measure.org/resource/om-2/,has Unit
+dependsOn,Object Property,,,DependentContent,DataContent,,Specifies dependency on a data content,http://www.theworldavatar.com/kg/ontodatadoc/,depend on
+http://purl.org/dc/terms/accessRights,Object Property,,,UsageGuideline,http://purl.org/dc/terms/RightsStatement,some,Establishes the access restrictions to indicate permissions and limitations on who can access the data,http://purl.org/dc/terms/,Access Rights
+http://purl.org/dc/terms/rights ,Object Property,,,UsageGuideline,http://purl.org/dc/terms/RightsStatement,,,http://purl.org/dc/terms/,Rights
+http://purl.org/dc/terms/rightHolder,Object Property,,,UsageGuideline,http://www.w3.org/ns/prov#Agent,,,http://purl.org/dc/terms/,Right Holder
+http://purl.org/dc/terms/license ,Object Property,,,UsageGuideline,http://purl.org/dc/terms/LicenseDocument,,,http://purl.org/dc/terms/,License  
+http://www.w3.org/ns/odrl/2/hasPolicy,Object Property,,,UsageGuideline,http://www.w3.org/ns/odrl/2/Policy,,,http://www.w3.org/ns/odrl/2/,has policy
+hasTermsAndConditions,Object Property,,,UsageGuideline,TermsAndConditions,,Establishes a relation to outline the legal and contractual obligations associated with the data,http://www.theworldavatar.com/kg/ontodatadoc/,has Terms and Conditions
+hasQualityControlPass,Object Property,,,Dataset,QualityControl,,A relation between a dataset and its quality check or control pass,http://www.theworldavatar.com/kg/ontodatadoc/,has Quality Check Pass
+hasUsageGuideline,Object Property,,,Dataset,UsageGuideline,,"Establishes a relation between a dataset and its usage guidelines, providing recommendations and best practices for utilizing the data",http://www.theworldavatar.com/kg/ontodatadoc/,has Usage Guideline
+http://www.w3.org/ns/prov#wasGeneratedBy,Object Property,,,Dataset,http://www.w3.org/ns/prov#Activity,,,http://www.w3.org/ns/prov#,was generated by
+http://www.w3.org/ns/prov#wasAssociatedWith,Object Property,,,http://www.w3.org/ns/prov#Activity,http://www.w3.org/ns/prov#Agent,,,http://www.w3.org/ns/prov#,was associated with
+http://purl.org/ontology/bibo/doi,Data Property,,,Publication,string,,A relation that specifies Digital Object Identifier (DOI) of a published entity to make it publicly available,,has Publisher
+http://purl.org/dc/terms/bibliographicCitation,Data Property,,,UsageGuideline,string,,,http://purl.org/dc/terms/,Bibliographic Citation
+hasContact,Data Property,,,UsageGuideline,string,,specifies the contact information of an authority to discuss about the dataset as a usage guideline,http://www.theworldavatar.com/kg/ontodatadoc/,has contact
+http://purl.org/dc/terms/dateCopyrighted,Data Property,,,UsageGuideline,string,,Specifies the date of copyright information at which the dataset to indicate ownership and intellectual property rights,http://purl.org/dc/terms/,has Copyright
+https://schema.org/name,Data Property,,,DataContent,string,,Specifies the identified name of a Data content for popular referencing and identification,https://schema.org/,has Identification
+hasIllustration,Data Property,,,DataContent,string,,Specifies a comprehensive description of a Data content,http://www.theworldavatar.com/kg/ontodatadoc/,has illustration
+providedBy,Data Property,,,Dataset,string,,Specifies a person or organisation that provides the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,provided by
+http://purl.org/dc/terms/title,Data Property,,,Dataset,string,,,http://purl.org/dc/terms/,title
+hasObjective,Data Property,,,Dataset,string,,Specifies objectives or goals associated with the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,has Objective
+http://purl.org/dc/terms/description,Data Property,,,Dataset,string,,Provides a textual description of the dataset,http://purl.org/dc/terms/,has Description
+hasPurpose,Data Property,,,Dataset,string,,Describes the purpose or intended use of the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,has Purpose
+https://schema.org/dateCreated,Data Property,,,Dataset,date time,,Specifies a date when the dataset was originally created,https://schema.org/,has Creation Date
+https://schema.org/dateModified,Data Property,,,Dataset,date time,,,https://schema.org/,Modified Date
+https://schema.org/contentSize,Data Property,,,QualityControl,float,,Specifies the size of the dataset,https://schema.org/,has Sample Size
+hasMaximumValue,Data Property,,,DataRange,float,,Specifies the maximum value,http://www.theworldavatar.com/kg/ontodatadoc/,has Maximum Value
+hasMinimumValue,Data Property,,,DataRange,float,,Specifies the minimum value,http://www.theworldavatar.com/kg/ontodatadoc/,has Minimum Value
+https://schema.org/url,Data Property,,,UsageGuideline,any uri,,Specifies how the dataset should be cited,https://schema.org/,has Citation
+http://www.w3.org/ns/dcat#keyword,Data Property,,,Dataset,string,,Specifies the contact details for individuals or entities responsible for inquiries or further information related to the dataset usage,http://www.w3.org/ns/dcat#,has Contact
+http://purl.org/dc/terms/identifier,Data Property,,,Dataset,string,,,http://purl.org/dc/terms/,Identifier
+http://www.w3.org/ns/prov#startedAtTime,Data Property,,,http://www.w3.org/ns/prov#Activity,date time,,,http://www.w3.org/ns/prov#,started at time
+http://www.w3.org/ns/prov#endedAtTime,Data Property,,,http://www.w3.org/ns/prov#Activity,date time,,,http://www.w3.org/ns/prov#,ended at time
