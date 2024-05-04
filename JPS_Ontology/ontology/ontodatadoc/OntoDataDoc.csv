@@ -30,7 +30,7 @@ ConsistencyCheck,Class,,,,,,The consistency check refers to a process or procedu
 UsabilityTesting,Class,,,,,,The usability testing assesses the dataset's user-friendliness and ease of use,http://www.theworldavatar.com/kg/ontodatadoc/,Usability Testing
 UserReview,Class,,,,,,The user review captures feedback and reviews from users to increase the trust nd reliability,http://www.theworldavatar.com/kg/ontodatadoc/,User Review
 UsageGuideline,Class,,,,,,"The usage guideline instance outlines recommendations, terms and conditions, rights permission, etc. for effectively utilizing the dataset",http://www.theworldavatar.com/kg/ontodatadoc/,Usage Guideline
-http://purl.org/dc/terms/RightsStatement,Class,,,,,,The access rights specify the permissions and restrictions based on user roles and requirements associated with accessing the dataset,http://purl.org/dc/terms/,Access Rights
+http://purl.org/dc/terms/RightsStatement,Class,,,,,,The access rights specify the permissions and restrictions based on user roles and requirements associated with accessing the dataset,http://purl.org/dc/terms/,Rights Statement
 http://purl.org/dc/terms/LicenseDocument,Class,,,,,,,http://purl.org/dc/terms/,License Document
 http://www.w3.org/ns/odrl/2/Policy,Class,,,,,,,http://www.w3.org/ns/odrl/2/,Policy
 TermsAndConditions,Class,,,,,,"The terms and conditions outline the legal and contractual terms such as  licensing, usage restrictions, and obligations associated with the dataset's usage",http://www.theworldavatar.com/kg/ontodatadoc/,Terms and Conditions
@@ -54,35 +54,35 @@ hasContent,Object Property,,,Dataset,DataContent,,A relation between a dataset a
 hasElement,Object Property,,,DataContent,Element,,A relation between a data content and its basic building blocks or components,http://www.theworldavatar.com/kg/ontodatadoc/,has Element
 hasCharacteristic,Object Property,,,DataContent,Characteristic,,A relation between a data content and its distinctive qualitative or quantitative characteristic,http://www.theworldavatar.com/kg/ontodatadoc/,has Characteristic
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,QuantitativeCharacteristic,Unit,,A relation between a data content and its measurement units for quantitative data,http://www.ontology-of-units-of-measure.org/resource/om-2/,has Unit
-dependsOn,Object Property,,,DependentContent,DataContent,,Specifies dependency on a data content,http://www.theworldavatar.com/kg/ontodatadoc/,depend on
-http://purl.org/dc/terms/accessRights,Object Property,,,UsageGuideline,http://purl.org/dc/terms/RightsStatement,some,Establishes the access restrictions to indicate permissions and limitations on who can access the data,http://purl.org/dc/terms/,Access Rights
-http://purl.org/dc/terms/rights ,Object Property,,,UsageGuideline,http://purl.org/dc/terms/RightsStatement,,,http://purl.org/dc/terms/,Rights
-http://purl.org/dc/terms/rightHolder,Object Property,,,UsageGuideline,http://www.w3.org/ns/prov#Agent,,,http://purl.org/dc/terms/,Right Holder
+dependsOn,Object Property,,,DependentContent,DataContent,,Specifies dependency on a data content,http://www.theworldavatar.com/kg/ontodatadoc/,depends On
+http://purl.org/dc/terms/accessRights,Object Property,,,UsageGuideline,http://purl.org/dc/terms/RightsStatement,some,Establishes the access restrictions to indicate permissions and limitations on who can access the data,http://purl.org/dc/terms/,has Access Rights
+http://purl.org/dc/terms/rights ,Object Property,,,UsageGuideline,http://purl.org/dc/terms/RightsStatement,,,http://purl.org/dc/terms/,has Rights
+http://purl.org/dc/terms/rightHolder,Object Property,,,UsageGuideline,http://www.w3.org/ns/prov#Agent,,,http://purl.org/dc/terms/,has Right Holder
 http://purl.org/dc/terms/license ,Object Property,,,UsageGuideline,http://purl.org/dc/terms/LicenseDocument,,,http://purl.org/dc/terms/,License  
-http://www.w3.org/ns/odrl/2/hasPolicy,Object Property,,,UsageGuideline,http://www.w3.org/ns/odrl/2/Policy,,,http://www.w3.org/ns/odrl/2/,has policy
+http://www.w3.org/ns/odrl/2/hasPolicy,Object Property,,,UsageGuideline,http://www.w3.org/ns/odrl/2/Policy,,,http://www.w3.org/ns/odrl/2/,has Policy
 hasTermsAndConditions,Object Property,,,UsageGuideline,TermsAndConditions,,Establishes a relation to outline the legal and contractual obligations associated with the data,http://www.theworldavatar.com/kg/ontodatadoc/,has Terms and Conditions
-hasQualityControlPass,Object Property,,,Dataset,QualityControl,,A relation between a dataset and its quality check or control pass,http://www.theworldavatar.com/kg/ontodatadoc/,has Quality Check Pass
+hasQualityControlPass,Object Property,,,Dataset,QualityControl,,A relation between a dataset and its quality check or control pass,http://www.theworldavatar.com/kg/ontodatadoc/,has Quality Control Pass
 hasUsageGuideline,Object Property,,,Dataset,UsageGuideline,,"Establishes a relation between a dataset and its usage guidelines, providing recommendations and best practices for utilizing the data",http://www.theworldavatar.com/kg/ontodatadoc/,has Usage Guideline
-http://www.w3.org/ns/prov#wasGeneratedBy,Object Property,,,Dataset,http://www.w3.org/ns/prov#Activity,,,http://www.w3.org/ns/prov#,was generated by
-http://www.w3.org/ns/prov#wasAssociatedWith,Object Property,,,http://www.w3.org/ns/prov#Activity,http://www.w3.org/ns/prov#Agent,,,http://www.w3.org/ns/prov#,was associated with
-http://purl.org/ontology/bibo/doi,Data Property,,,Publication,string,,A relation that specifies Digital Object Identifier (DOI) of a published entity to make it publicly available,,has Publisher
-http://purl.org/dc/terms/bibliographicCitation,Data Property,,,UsageGuideline,string,,,http://purl.org/dc/terms/,Bibliographic Citation
-hasContact,Data Property,,,UsageGuideline,string,,specifies the contact information of an authority to discuss about the dataset as a usage guideline,http://www.theworldavatar.com/kg/ontodatadoc/,has contact
+http://www.w3.org/ns/prov#wasGeneratedBy,Object Property,,,Dataset,http://www.w3.org/ns/prov#Activity,,,http://www.w3.org/ns/prov#,was Generated By
+http://www.w3.org/ns/prov#wasAssociatedWith,Object Property,,,http://www.w3.org/ns/prov#Activity,http://www.w3.org/ns/prov#Agent,,,http://www.w3.org/ns/prov#,was Associated With
+http://purl.org/ontology/bibo/doi,Data Property,,,Publication,string,,A relation that specifies Digital Object Identifier (DOI) of a published entity to make it publicly available,,has DOI
+http://purl.org/dc/terms/bibliographicCitation,Data Property,,,UsageGuideline,string,,,http://purl.org/dc/terms/,has Bibliographic Citation
+hasContact,Data Property,,,UsageGuideline,string,,specifies the contact information of an authority to discuss about the dataset as a usage guideline,http://www.theworldavatar.com/kg/ontodatadoc/,has Contact
 http://purl.org/dc/terms/dateCopyrighted,Data Property,,,UsageGuideline,string,,Specifies the date of copyright information at which the dataset to indicate ownership and intellectual property rights,http://purl.org/dc/terms/,has Copyright
-https://schema.org/name,Data Property,,,DataContent,string,,Specifies the identified name of a Data content for popular referencing and identification,https://schema.org/,has Identification
-hasIllustration,Data Property,,,DataContent,string,,Specifies a comprehensive description of a Data content,http://www.theworldavatar.com/kg/ontodatadoc/,has illustration
-providedBy,Data Property,,,Dataset,string,,Specifies a person or organisation that provides the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,provided by
-http://purl.org/dc/terms/title,Data Property,,,Dataset,string,,,http://purl.org/dc/terms/,title
+https://schema.org/name,Data Property,,,DataContent,string,,Specifies the identified name of a Data content for popular referencing and identification,https://schema.org/,has Name
+hasIllustration,Data Property,,,DataContent,string,,Specifies a comprehensive description of a Data content,http://www.theworldavatar.com/kg/ontodatadoc/,has Illustration
+providedBy,Data Property,,,Dataset,string,,Specifies a person or organisation that provides the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,provided By
+http://purl.org/dc/terms/title,Data Property,,,Dataset,string,,,http://purl.org/dc/terms/,has Title
 hasObjective,Data Property,,,Dataset,string,,Specifies objectives or goals associated with the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,has Objective
 http://purl.org/dc/terms/description,Data Property,,,Dataset,string,,Provides a textual description of the dataset,http://purl.org/dc/terms/,has Description
 hasPurpose,Data Property,,,Dataset,string,,Describes the purpose or intended use of the dataset,http://www.theworldavatar.com/kg/ontodatadoc/,has Purpose
-https://schema.org/dateCreated,Data Property,,,Dataset,date time,,Specifies a date when the dataset was originally created,https://schema.org/,has Creation Date
-https://schema.org/dateModified,Data Property,,,Dataset,date time,,,https://schema.org/,Modified Date
-https://schema.org/contentSize,Data Property,,,QualityControl,float,,Specifies the size of the dataset,https://schema.org/,has Sample Size
+https://schema.org/dateCreated,Data Property,,,Dataset,date time,,Specifies a date when the dataset was originally created,https://schema.org/,has Date Created
+https://schema.org/dateModified,Data Property,,,Dataset,date time,,,https://schema.org/,has Date Modified
+https://schema.org/contentSize,Data Property,,,QualityControl,float,,Specifies the size of the dataset,https://schema.org/,has Content Size
 hasMaximumValue,Data Property,,,DataRange,float,,Specifies the maximum value,http://www.theworldavatar.com/kg/ontodatadoc/,has Maximum Value
 hasMinimumValue,Data Property,,,DataRange,float,,Specifies the minimum value,http://www.theworldavatar.com/kg/ontodatadoc/,has Minimum Value
-https://schema.org/url,Data Property,,,UsageGuideline,any uri,,Specifies how the dataset should be cited,https://schema.org/,has Citation
-http://www.w3.org/ns/dcat#keyword,Data Property,,,Dataset,string,,Specifies the contact details for individuals or entities responsible for inquiries or further information related to the dataset usage,http://www.w3.org/ns/dcat#,has Contact
-http://purl.org/dc/terms/identifier,Data Property,,,Dataset,string,,,http://purl.org/dc/terms/,Identifier
-http://www.w3.org/ns/prov#startedAtTime,Data Property,,,http://www.w3.org/ns/prov#Activity,date time,,,http://www.w3.org/ns/prov#,started at time
-http://www.w3.org/ns/prov#endedAtTime,Data Property,,,http://www.w3.org/ns/prov#Activity,date time,,,http://www.w3.org/ns/prov#,ended at time
+https://schema.org/url,Data Property,,,UsageGuideline,any uri,,Specifies how the dataset should be cited,https://schema.org/,has URL
+http://www.w3.org/ns/dcat#keyword,Data Property,,,Dataset,string,,Specifies the contact details for individuals or entities responsible for inquiries or further information related to the dataset usage,http://www.w3.org/ns/dcat#,has Keyword
+http://purl.org/dc/terms/identifier,Data Property,,,Dataset,string,,,http://purl.org/dc/terms/,has Identifier
+http://www.w3.org/ns/prov#startedAtTime,Data Property,,,http://www.w3.org/ns/prov#Activity,date time,,,http://www.w3.org/ns/prov#,started At Time
+http://www.w3.org/ns/prov#endedAtTime,Data Property,,,http://www.w3.org/ns/prov#Activity,date time,,,http://www.w3.org/ns/prov#,ended At Time
