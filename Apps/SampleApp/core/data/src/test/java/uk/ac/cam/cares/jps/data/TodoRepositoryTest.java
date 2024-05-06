@@ -12,6 +12,7 @@ import org.junit.Test;
 import uk.ac.cam.cares.jps.data.testdouble.FakeTodoNetworkSource;
 import uk.ac.cam.cares.jps.data.testdouble.FakeUserNetworkSource;
 import uk.ac.cam.cares.jps.model.Todo;
+import uk.ac.cam.cares.jps.model.TodoWithUser;
 import uk.ac.cam.cares.jps.model.User;
 
 public class TodoRepositoryTest {
@@ -28,15 +29,15 @@ public class TodoRepositoryTest {
     public void getInfo_Success() {
         todoRepository.getInfo("7", new RepositoryCallback<>() {
             @Override
-            public void onSuccess(Pair<Todo, User> result) {
-                assertEquals(TODO_NETWORK_SOURCE.getId(), result.first.getId());
-                assertEquals(TODO_NETWORK_SOURCE.getUserId(), result.first.getUserId());
-                assertEquals(TODO_NETWORK_SOURCE.getTitle(), result.first.getTitle());
-                assertEquals(TODO_NETWORK_SOURCE.getCompleted(), result.first.getCompleted());
-                assertEquals(USER_NETWORK_SOURCE.getId(), result.second.getId());
-                assertEquals(USER_NETWORK_SOURCE.getName(), result.second.getName());
-                assertEquals(USER_NETWORK_SOURCE.getUserName(), result.second.getUsername());
-                assertEquals(USER_NETWORK_SOURCE.getEmail(), result.second.getEmail());
+            public void onSuccess(TodoWithUser result) {
+                assertEquals(TODO_NETWORK_SOURCE.getId(), result.getId());
+                assertEquals(TODO_NETWORK_SOURCE.getUserId(), result.getUserId());
+                assertEquals(TODO_NETWORK_SOURCE.getTitle(), result.getTitle());
+                assertEquals(TODO_NETWORK_SOURCE.getCompleted(), result.getCompleted());
+                assertEquals(USER_NETWORK_SOURCE.getId(), result.getId());
+                assertEquals(USER_NETWORK_SOURCE.getName(), result.getName());
+                assertEquals(USER_NETWORK_SOURCE.getUserName(), result.getUsername());
+                assertEquals(USER_NETWORK_SOURCE.getEmail(), result.getEmail());
             }
 
             @Override
@@ -50,7 +51,7 @@ public class TodoRepositoryTest {
     public void getTodoAndUserInfo_Failure() {
         todoRepository.getInfo("8", new RepositoryCallback<>() {
             @Override
-            public void onSuccess(Pair<Todo, User> result) {
+            public void onSuccess(TodoWithUser result) {
                 // Empty callback as it will be unsuccessful
             }
 

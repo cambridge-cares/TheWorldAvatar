@@ -12,11 +12,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.GenericRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.model.Todo;
+import uk.ac.cam.cares.jps.model.TodoWithUser;
 import uk.ac.cam.cares.jps.model.User;
 
 @HiltViewModel
 public class TodoViewModel extends ViewModel {
-    private final GenericRepository<Pair<Todo, User>> todoRepository;
+    private final GenericRepository<TodoWithUser> todoRepository;
     // LiveData to hold these states
     private final MutableLiveData<Todo> _todo = new MutableLiveData<>();
     private final MutableLiveData<User> _user = new MutableLiveData<>();
@@ -33,7 +34,7 @@ public class TodoViewModel extends ViewModel {
      * @param todoRepository Repository for managing the data.
      */
     @Inject
-    public TodoViewModel(GenericRepository<Pair<Todo, User>> todoRepository) {
+    public TodoViewModel(GenericRepository<TodoWithUser> todoRepository) {
         this.todoRepository = todoRepository;
     }
 
@@ -43,9 +44,9 @@ public class TodoViewModel extends ViewModel {
     public void getTodoAndUser() {
         todoRepository.getInfo("2", new RepositoryCallback<>() {
             @Override
-            public void onSuccess(Pair<Todo, User> result) {
-                _todo.postValue(result.first);
-                _user.postValue(result.second);
+            public void onSuccess(TodoWithUser result) {
+                _todo.postValue(result.getTodo());
+                _user.postValue(result.getUser());
             }
 
             @Override

@@ -1,10 +1,9 @@
 package uk.ac.cam.cares.jps.data;
 
-import android.util.Pair;
-
 import org.apache.log4j.Logger;
 
 import uk.ac.cam.cares.jps.model.Todo;
+import uk.ac.cam.cares.jps.model.TodoWithUser;
 import uk.ac.cam.cares.jps.model.User;
 import uk.ac.cam.cares.jps.network.NetworkSource;
 
@@ -14,7 +13,7 @@ import uk.ac.cam.cares.jps.network.NetworkSource;
  * from TodoNetworkSource and UserNetworkSource. If there is no need to combine data, the
  * repository will simply pass the response from the data source to the upper level (ViewModel).
  */
-public class TodoRepository implements GenericRepository<Pair<Todo, User>> {
+public class TodoRepository implements GenericRepository<TodoWithUser> {
     private static final Logger LOGGER = Logger.getLogger(TodoRepository.class);
     private final NetworkSource<Todo> todoNetworkSource;
     private final NetworkSource<User> userNetworkSource;
@@ -38,10 +37,10 @@ public class TodoRepository implements GenericRepository<Pair<Todo, User>> {
      * @param id                 The ID of the to do.
      * @param repositoryCallback Callback to handle the result of the data retrieval.
      */
-    public void getInfo(String id, RepositoryCallback<Pair<Todo, User>> repositoryCallback) {
+    public void getInfo(String id, RepositoryCallback<TodoWithUser> repositoryCallback) {
         LOGGER.debug("Retrieving to do and user information for " + id);
         todoNetworkSource.getData(id,
-                todo -> userNetworkSource.getData(todo.getUserId(), user -> repositoryCallback.onSuccess(new Pair<>(todo, user)), repositoryCallback::onFailure),
+                todo -> userNetworkSource.getData(todo.getUserId(), user -> repositoryCallback.onSuccess(new TodoWithUser(todo, user)), repositoryCallback::onFailure),
                 repositoryCallback::onFailure);
     }
 }

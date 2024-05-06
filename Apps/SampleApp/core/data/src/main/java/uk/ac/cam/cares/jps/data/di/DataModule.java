@@ -11,6 +11,7 @@ import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.data.GenericRepository;
 import uk.ac.cam.cares.jps.data.TodoRepository;
 import uk.ac.cam.cares.jps.model.Todo;
+import uk.ac.cam.cares.jps.model.TodoWithUser;
 import uk.ac.cam.cares.jps.model.User;
 import uk.ac.cam.cares.jps.network.NetworkSource;
 
@@ -27,7 +28,7 @@ public class DataModule {
      */
     @Provides
     @Singleton
-    public GenericRepository<Pair<Todo, User>> provideTodoRepository(NetworkSource<Todo> todoNetworkSource, NetworkSource<User> userNetworkSource) {
+    public GenericRepository<TodoWithUser> provideTodoRepository(NetworkSource<Todo> todoNetworkSource, NetworkSource<User> userNetworkSource) {
         return new TodoRepository(todoNetworkSource, userNetworkSource);
     }
 }
