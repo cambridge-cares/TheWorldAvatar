@@ -52,9 +52,18 @@ More information can be found at their [official web-site](https://github.com/sc
 Also download a file with [journal abbreviations](https://github.com/jxhe/bib-journal-abbreviation/blob/master/journals.json)
 and save it in the `Agents/ZeoliteAgent/zeoliteaboxwriteragent/ontozeolite/biblio/bib2csvp/` directory.
 
-Install Third-party package `entityrdfizer`:
+Install Third-party package `entityrdfizer`. You need the recent version of the code,
+which can be installed by downloading the source code, and run the installation script:
 
-`(<venv_name>) $ pip install entityrdfizer`
+<!-- `(<venv_name>) $ pip install entityrdfizer` -->
+`
+(<venv_name>) $ git clone --no-checkout https://github.com/cambridge-cares/TheWorldAvatar/
+(<venv_name>) $ cd TheWorldAvatar
+(<venv_name>) $ git sparse-checkout init --cone
+(<venv_name>) $ git sparse-checkout set EntiryRDFizer
+(<venv_name>) $ git checkout
+(<venv_name>) $ cd EntityRDFizer
+(<venv_name>) $ pip install .`
 
 More details on the [TWA web-site](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/EntityRDFizer).
 
