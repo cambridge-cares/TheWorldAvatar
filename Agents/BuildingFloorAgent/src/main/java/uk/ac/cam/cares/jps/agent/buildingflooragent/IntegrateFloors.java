@@ -138,7 +138,7 @@ public class IntegrateFloors {
                     }
 
                     if (buildingiri != null) {
-                        updateFloors(floors, catString, buildingiri);
+                        // updateFloors(floors, catString, buildingiri);
                     }
                     
                 }
@@ -163,8 +163,9 @@ public class IntegrateFloors {
                     String buildingIri = floorsResults.getString("strval");
                     if (floors == null ||floors == 0 || catString.equals("C") || catString == null){// get osm floor
                         floors = queryOSMFloor(buildingIri);
-                        catString = "B";
-                        if (floors == null || floors == 0) {//estimate
+                        if (floors > 0){
+                            catString = "B";
+                        }else {//estimate
                             catString = "C";
                             floors = estimateFloors(buildingIri);
                         }
@@ -244,8 +245,8 @@ public class IntegrateFloors {
             for (int i = 0; i< this.osmBuildings.size(); i++){
                 if(buildingIri.equals(this.osmBuildings.get(i).getBuildingIri())){
                     String[] usage = this.osmBuildings.get(i).getUsage().split("ontobuiltenv/", 2);
-                    if (usage[1].equals("Domestic")){
-                        floor = (int)((height - 3.6) / 2.8);
+                    if (usage[1].equals("Domestic") || usage[1].contains("Residential")){
+                        floor = (int)((height - 3.6) / 2.8 + 1);
                     } 
                 }
             }
