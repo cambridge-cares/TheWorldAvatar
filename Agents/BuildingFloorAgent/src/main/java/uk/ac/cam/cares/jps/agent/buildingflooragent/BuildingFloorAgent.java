@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.core.io.ClassPathResource;
 
 @WebServlet(urlPatterns = {"/floors", "/floorswithodba"})
 public class BuildingFloorAgent extends JPSAgent{
@@ -68,7 +67,6 @@ public class BuildingFloorAgent extends JPSAgent{
             if (requestParams.getString("requestUrl").contains("withodba")){
                 try {
                     String odbaFile = "/resources/buildingfloor.odba";
-                    // Path odbaPath = new ClassPathResource("/buildingfloor.obda").getFile().toPath();
                     Path odbaPath = Paths.get(odbaFile);
                     OntopClient ontopClient = OntopClient.getInstance();
                     ontopClient.updateOBDA(odbaPath);

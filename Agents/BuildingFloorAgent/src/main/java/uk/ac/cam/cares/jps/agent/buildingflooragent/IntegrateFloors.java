@@ -83,11 +83,6 @@ public class IntegrateFloors {
         //query address infor from osm db   
         this.osmBuildings = queryOSMBuilding();
         List<Document> preDoc = new ArrayList<>();
-        // List<Document> polyDoc = new ArrayList<>();
-        // List<Document> pointDoc = new ArrayList<>();
-
-        // String polygonSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM " + this.osmSchema + "." + this.osmPolygon + " WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
-        // String pointSQLQuery = "SELECT ogc_fid, addr_street, addr_housenumber, building_levels, building_iri FROM " + this.osmSchema + "." + this.osmPoint + " WHERE addr_street IS NOT NULL OR addr_housenumber IS NOT NULL";
     
         try (Connection srcConn = postgisClient.getConnection()) {
             //construct preDocument (osm data)
@@ -101,47 +96,7 @@ public class IntegrateFloors {
                             .createDocument();
                 preDoc.add(preDocument);
             }
-            // try (Statement stmt = srcConn.createStatement()) {
-            //     ResultSet polyResults = stmt.executeQuery(polygonSQLQuery);
-            //     while (polyResults.next()) {
-            //         String osmAddress = polyResults.getString("addr_street");
-            //         if (osmAddress == null){
-            //             osmAddress = "NULL";
-            //         }
-            //         String num = polyResults.getString("addr_housenumber");
-            //         if (num == null) {
-            //             num = "0";
-            //         }
-            //         String buildingiri = polyResults.getString("building_iri");
-            //         if (buildingiri != null) {
-            //             Document preDocument = new Document.Builder(buildingiri)
-            //             .addElement(new Element.Builder<String>().setValue(num).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-            //             .addElement(new Element.Builder<String>().setValue(osmAddress).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-            //             .createDocument();
-            //         polyDoc.add(preDocument);
-            //         }                   
-            //     }
-                               
-                // ResultSet pointResults = stmt.executeQuery(pointSQLQuery);
-                // while (pointResults.next()) {
-                //     String osmAddress = pointResults.getString("addr_street");
-                //     if (osmAddress == null){
-                //         osmAddress = "NULL";
-                //     }
-                //     String num = pointResults.getString("addr_housenumber");
-                //     if (num == null) {
-                //         num = "0";
-                //     }
-                //     String buildingiri = pointResults.getString("building_iri");
-                //     if (buildingiri != null) {
-                //         Document preDocument = new Document.Builder(buildingiri)
-                //         .addElement(new Element.Builder<String>().setValue(num).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-                //         .addElement(new Element.Builder<String>().setValue(osmAddress).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-                //         .createDocument();
-                //         pointDoc.add(preDocument);
-                //     }
-                    
-                // }
+
                 //get data from csv
                 List<FloorsCsv> hdbFloors = new CsvToBeanBuilder(new FileReader(floorsCsv))
                         .withType(FloorsCsv.class)
@@ -162,18 +117,7 @@ public class IntegrateFloors {
                             .setThreshold(0.5).createDocument();
                     
                     Map<String, List<Match<Document>>> resultPoint = matchService.applyMatchByDocId(matchDoc,preDoc);
-                    // Map<String, List<Match<Document>>> resultPoly = matchService.applyMatchByDocId(matchDoc,polyDoc);
-                    
-                    // String polyIri = null;
-                    // for (Map.Entry<String, List<Match<Document>>> entry : resultPoly.entrySet()) {
-                    //     for (Match<Document> match : entry.getValue()) {
-                    //         if(match.getScore().getResult()>polyScore && match.getScore().getResult()>0.5){
-                    //             System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
-                    //             polyScore = match.getScore().getResult();
-                    //             polyIri = match.getMatchedWith().getKey();
-                    //         }
-                    //     }
-                    // }
+
                     String pointIri = null;
                     for (Map.Entry<String, List<Match<Document>>> entry : resultPoint.entrySet()) {
                         for (Match<Document> match : entry.getValue()) {
@@ -192,12 +136,9 @@ public class IntegrateFloors {
                     if(pointScore != 0) {
                         buildingiri = pointIri;
                     }
-                    // } else if (polyScore != 0){
-                    //     buildingiri = polyIri;
-                    // }
 
                     if (buildingiri != null) {
-                        // updateFloors(floors, catString, buildingiri);
+                        updateFloors(floors, catString, buildingiri);
                     }
                     
                 }
