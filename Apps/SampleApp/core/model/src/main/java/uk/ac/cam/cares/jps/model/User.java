@@ -29,10 +29,10 @@ package uk.ac.cam.cares.jps.model;
  * }
  */
 public class User {
-    String id;
-    String name;
-    String username;
-    String email;
+    private final String id;
+    private final String name;
+    private final String username;
+    private final String email;
 
     /**
      * Constructor
@@ -55,7 +55,7 @@ public class User {
      * @return ID returned from the API.
      */
     public String getId() {
-        return id;
+        return this.id;
     }
 
     /**
@@ -64,7 +64,7 @@ public class User {
      * @return User's name returned from the API.
      */
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -73,7 +73,7 @@ public class User {
      * @return Username returned from the API.
      */
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     /**
@@ -82,6 +82,6 @@ public class User {
      * @return User's email returned from the API.
      */
     public String getEmail() {
-        return email;
+        return this.email;
     }
 }

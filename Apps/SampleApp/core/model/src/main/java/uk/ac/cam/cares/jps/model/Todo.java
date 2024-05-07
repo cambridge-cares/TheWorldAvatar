@@ -11,10 +11,10 @@ package uk.ac.cam.cares.jps.model;
  * }
  */
 public class Todo {
-    private String userId;
-    private String id;
-    private String title;
-    private Boolean completed;
+    private final String userId;
+    private final String id;
+    private final String title;
+    private final Boolean completed;
 
     /**
      * Constructor
@@ -37,7 +37,7 @@ public class Todo {
      * @return User ID returned from the API.
      */
     public String getUserId() {
-        return userId;
+        return this.userId;
     }
 
     /**
@@ -46,7 +46,7 @@ public class Todo {
      * @return ID returned from the API.
      */
     public String getId() {
-        return id;
+        return this.id;
     }
 
     /**
@@ -55,7 +55,7 @@ public class Todo {
      * @return Title returned from the API.
      */
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     /**
@@ -64,6 +64,6 @@ public class Todo {
      * @return A boolean indicator returned from the API.
      */
     public Boolean getCompleted() {
-        return completed;
+        return this.completed;
     }
 }

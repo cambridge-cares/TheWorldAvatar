@@ -24,7 +24,7 @@ public class TodoWithUser {
      * @return User ID returned from the API.
      */
     public String getUserId() {
-        return todo.getUserId();
+        return this.todo.getUserId();
     }
 
     /**
@@ -33,7 +33,7 @@ public class TodoWithUser {
      * @return ID returned from the API.
      */
     public String getId() {
-        return todo.getId();
+        return this.todo.getId();
     }
 
     /**
@@ -42,7 +42,7 @@ public class TodoWithUser {
      * @return Title returned from the API.
      */
     public String getTitle() {
-        return todo.getTitle();
+        return this.todo.getTitle();
     }
 
     /**
@@ -51,7 +51,7 @@ public class TodoWithUser {
      * @return A boolean indicator returned from the API.
      */
     public Boolean getCompleted() {
-        return todo.getCompleted();
+        return this.todo.getCompleted();
     }
 
     /**
@@ -60,7 +60,7 @@ public class TodoWithUser {
      * @return Name of the user returned from the API.
      */
     public String getName() {
-        return user.getName();
+        return this.user.getName();
     }
 
     /**
@@ -69,7 +69,7 @@ public class TodoWithUser {
      * @return Username returned from the API.
      */
     public String getUsername() {
-        return user.getUsername();
+        return this.user.getUsername();
     }
 
     /**
@@ -78,14 +78,14 @@ public class TodoWithUser {
      * @return email of the user returned from the API.
      */
     public String getEmail() {
-        return user.getEmail();
+        return this.user.getEmail();
     }
 
     public Todo getTodo() {
-        return todo;
+        return this.todo;
     }
 
     public User getUser() {
-        return user;
+        return this.user;
     }
 }
