@@ -4,7 +4,7 @@ from typing import Annotated, List
 
 from fastapi import Depends
 
-from model.qa import QAStep
+from services.support_data import QAStep
 from core.kg import KgClient
 from utils.rdf import flatten_sparql_response
 from services.kg import get_sgCarpark_bgClient

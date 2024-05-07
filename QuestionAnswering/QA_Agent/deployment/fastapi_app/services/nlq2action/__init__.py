@@ -4,7 +4,7 @@ from typing import Annotated, List
 
 from fastapi import Depends
 
-from model.qa import QAStep
+from services.support_data import QAStep
 from services.nlq2action.retrieve import (
     Nlq2ActionRetriever,
     get_sg_nlq2action_retriever,

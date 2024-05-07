@@ -6,7 +6,7 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends, HTTPException
 import requests
-from model.qa import QAStep
+from services.support_data import QAStep
 from services.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient, get_featureInfoClient
 from services.geocoding import IGeocoder, get_geocoder

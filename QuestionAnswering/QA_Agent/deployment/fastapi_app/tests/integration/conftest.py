@@ -5,8 +5,6 @@ from redis import Redis
 from yarl import URL
 
 from core.embed import TritonMPNetEmbedder
-from core.func_call import OpenAIFuncCaller
-from core.parse import SchemaParser
 
 
 @pytest.fixture(scope="module")
@@ -24,12 +22,3 @@ def embedder():
 @pytest.fixture(scope="module")
 def blazegraph_base_url():
     yield URL(os.getenv("TEST_BLAZEGRAPH_BASE_URL", "http://localhost:9999"))
-
-
-@pytest.fixture(scope="module")
-def func_caller():
-    yield OpenAIFuncCaller()
-
-@pytest.fixture(scope="module")
-def schema_parser(func_caller):
-    yield SchemaParser(func_caller)

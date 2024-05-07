@@ -1,9 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel
 
-from model.qa import QAStep
+
+class QAStep(BaseModel):
+    action: str
+    arguments: Any = None
+    results: Any = None
+    latency: float
 
 
 class TableDataItem(BaseModel):

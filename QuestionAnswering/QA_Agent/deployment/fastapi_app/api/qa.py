@@ -5,7 +5,7 @@ from typing import Annotated, Dict, List
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, model_serializer
 
-from model.qa import QAStep
+from services.support_data import QAStep
 from services.qa import get_dataSupporter_byDomain
 from services.support_data import (
     DataItem,
