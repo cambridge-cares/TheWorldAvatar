@@ -140,38 +140,40 @@ function renderDataTable(vars, bindings, parentElem, id) {
 
     parentElem.appendChild(elem)
 
-    let table = new DataTable('#' + tableId, {
-        retrieve: true,
-        scrollX: true,
-    });
-
-
-    toggleBtn.addEventListener("click", () => {
-        const rowNum = table.rows().count()
-        if (rowNum == 0) {
-            return
-        }
-
-        let isShowingIRI = toggleBtn.innerHTML === "Hide IRIs"
-
-        const rowData = table.row(0).data()
-        const IRIcolIdx = rowData.reduce((arr, val, idx) => {
-            if (TWA_ABOX_IRI_PREFIXES.some(prefix => val.startsWith(prefix))) {
-                arr.push(idx)
+    setTimeout(() => {
+        let table = new DataTable('#' + tableId, {
+            retrieve: true,
+            scrollX: true,
+        });
+    
+    
+        toggleBtn.addEventListener("click", () => {
+            const rowNum = table.rows().count()
+            if (rowNum == 0) {
+                return
             }
-            return arr
-        }, [])
-        IRIcolIdx.forEach(colIdx => {
-            const col = table.column(colIdx)
-            col.visible(!isShowingIRI)
+    
+            let isShowingIRI = toggleBtn.innerHTML === "Hide IRIs"
+    
+            const rowData = table.row(0).data()
+            const IRIcolIdx = rowData.reduce((arr, val, idx) => {
+                if (TWA_ABOX_IRI_PREFIXES.some(prefix => val.startsWith(prefix))) {
+                    arr.push(idx)
+                }
+                return arr
+            }, [])
+            IRIcolIdx.forEach(colIdx => {
+                const col = table.column(colIdx)
+                col.visible(!isShowingIRI)
+            })
+    
+            if (isShowingIRI) {
+                toggleBtn.innerHTML = "Show IRIs"
+            } else {
+                toggleBtn.innerHTML = "Hide IRIs"
+            }
         })
-
-        if (isShowingIRI) {
-            toggleBtn.innerHTML = "Show IRIs"
-        } else {
-            toggleBtn.innerHTML = "Hide IRIs"
-        }
-    })
+    }, 0)
 }
 
 function renderBootstrapTable(vars, bindings, id, containerElem) {
@@ -248,19 +250,17 @@ function renderWkt(wkt, parentElem, id) {
     elem.setAttribute("class", "map")
     parentElem.appendChild(elem)
 
-    const map = new ol.Map({
-        layers: [raster, vector],
-        view: new ol.View({
-            center: [centerx, centery],
-            zoom: 8,
-        }),
-    })
-    // 'map' target is set with a timeout to ensure that 'id' element
-    // has been attached to DOM tree
     setTimeout(() => {
-        map.setTarget(id)
+        const map = new ol.Map({
+            layers: [raster, vector],
+            target: id,
+            view: new ol.View({
+                center: [centerx, centery],
+                zoom: 8,
+            }),
+        })
+        map.getView().fit(feature.getGeometry().getExtent(), map.getSize())
     }, 0)
-    map.getView().fit(feature.getGeometry().getExtent(), map.getSize())
 }
 
 const errorContainer = (function () {
