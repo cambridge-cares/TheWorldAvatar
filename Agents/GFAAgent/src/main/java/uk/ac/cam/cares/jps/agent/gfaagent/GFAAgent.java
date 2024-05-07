@@ -30,6 +30,7 @@ public class GFAAgent extends JPSAgent{
     private String osmSchema;
     private String osmPoint;
     private String osmPolygon;
+    private String ontopUrl;
 
     public synchronized void init() {
         this.dbName = endpointConfig.getDbName();
@@ -40,6 +41,7 @@ public class GFAAgent extends JPSAgent{
         this.osmSchema = endpointConfig.getOSMSchema();
         this.osmPoint = endpointConfig.getOSMPoints();
         this.osmPolygon = endpointConfig.getOSMPolygons();
+        this.ontopUrl = endpointConfig.getOntopUrl();
     }
 
     @Override
@@ -53,19 +55,20 @@ public class GFAAgent extends JPSAgent{
         try {
             GFACalculation gfaCalculation = new GFACalculation(dbUrl, dbUser, dbPassword);
             String paremString = requestParams.getString("requestUrl");
+            OntopClient ontopClient = OntopClient.getInstance();
             if(paremString.contains("/calculation")){            
                 //calculate GFA 1. query footpring 2. query height (if no height, estimate 3.2m/floor) 3. calculate 4. store
                 gfaCalculation.calculationGFA();
                 if (paremString.contains("withodba")){
                     Path obdaFile = Path.of("/resources/gfa.obda");
-                    uploadODBA(obdaFile);
+                    ontopClient.uploadODBA(obdaFile);
                 }
             }else if (paremString.contains("/cost")){
-                CostCalculation costCalculation = new CostCalculation(dbUrl, dbUser, dbPassword);
+                CostCalculation costCalculation = new CostCalculation(dbUrl, dbUser, dbPassword, ontopUrl);
                 costCalculation.calculationCost();
                 if (paremString.contains("withodba")){
                     Path obdaFile = Path.of("/resources/cost.obda");
-                    uploadODBA(obdaFile);
+                    ontopClient.uploadODBA(obdaFile);
                 }
             }
 

@@ -4,8 +4,17 @@ public class BuildingInfo {
     
     private String type;
     private int floors;
+    private String buildingIri;
+
+    public BuildingInfo () {
+        
+    }
 
     public String getType() {
+        return this.type;
+    }
+
+    public String getBuildingIri() {
         return this.type;
     }
 
@@ -19,5 +28,9 @@ public class BuildingInfo {
 
     public void setFloors(int floors) {
         this.floors = floors;
+    }
+
+    public void setBuildingIri(String buildingIri) {
+        this.buildingIri = buildingIri;
     }
 }

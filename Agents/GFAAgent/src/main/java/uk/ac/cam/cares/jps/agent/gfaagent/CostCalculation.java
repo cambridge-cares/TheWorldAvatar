@@ -16,31 +16,40 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+import org.apache.jena.query.Query;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
+
 public class CostCalculation {
     private final String dbUrl;
     private final String user;
     private final String password;
 
     private RemoteRDBStoreClient postgisClient;
+    private String ontopUrl;
 
-    private BuildingInfo buildingInfo;
+    // private BuildingInfo buildingInfo;
     private static final String MATCHING_PATH = "/resources/cost_landuse.csv";
 
     
-    private static final String buildingTypeQuery = "SELECT pl.\"LU_DESC\", cb.id, mb.building_iri, cb.storeys_above_ground\n" + //
-                "FROM citydb.building cb, public.landplot pl, citydb.cityobject_genericattrib ccg, public.matched_buildings mb\r\n" + //
-                "WHERE cb.id = ccg.cityobject_id \r\n" + //
-                "AND ccg.attrname = 'uuid' \r\n" + //
-                "AND ccg.strval = mb.building_iri\r\n" + //
-                "AND mb.public_landplot_ogc_fid = pl.ogc_fid";
+    // private static final String buildingTypeQuery = "SELECT pl.\"LU_DESC\", cb.id, mb.building_iri, cb.storeys_above_ground\n" + //
+    //             "FROM citydb.building cb, public.landplot pl, citydb.cityobject_genericattrib ccg, public.matched_buildings mb\r\n" + //
+    //             "WHERE cb.id = ccg.cityobject_id \r\n" + //
+    //             "AND ccg.attrname = 'uuid' \r\n" + //
+    //             "AND ccg.strval = mb.building_iri\r\n" + //
+    //             "AND mb.public_landplot_ogc_fid = pl.ogc_fid";
 
 
-    public CostCalculation (String postgisDb, String postgisUser, String postgisPassword){
+    public CostCalculation (String postgisDb, String postgisUser, String postgisPassword, String ontopUrl){
         this.dbUrl = postgisDb;
         this.user = postgisUser;
         this.password = postgisPassword;
 
         this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
+        this.ontopUrl = ontopUrl;
     }
 
     public void calculationCost () throws IOException {
@@ -50,23 +59,26 @@ public class CostCalculation {
                 .build()
                 .parse();
 
+        List<BuildingInfo> buildings = queryBuildingUsage();
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
-                ResultSet buildingType = stmt.executeQuery(buildingTypeQuery);
-                while (buildingType.next()) {
-                    String typeLand = buildingType.getString("LU_DESC");
+                // ResultSet buildingType = stmt.executeQuery(buildingTypeQuery);
+                for (int i = 0; i < buildings.size(); i++) {
+                    BuildingInfo building = buildings.get(i);
+                    String buildingIri = building.getBuildingIri();
+                    String buildingUsage = building.getType();
+                    int floors = building.getFloors();
                     String typeCost = null;
                     String keyCost = null;
-                    String buildingIri = buildingType.getString("building_iri");
-                    int buildingId = buildingType.getInt("id");
-                    int floors = buildingType.getInt("storeys_above_ground");
-                    for (int i = 0; i < matchingType.size(); i++){
-                        if(typeLand.equals(matchingType.get(i).getLUType()) ){
+                    
+                    for (int j = 0; j < matchingType.size(); j++){
+                        if(buildingUsage.equals(matchingType.get(i).getenvType()) ){
                             typeCost = matchingType.get(i).getType();
                             keyCost = matchingType.get(i).getKey();
                             break;
                         }
-                    } 
+                    }
+
                     if(!typeCost.isEmpty() && !keyCost.isEmpty()){
                         String costQuery ="SELECT cost FROM cost WHERE cost.\"Type\" = '" + typeCost + "' AND floorscat > " + floors + 
                                         " union all select MIN(cost) from cost " +//
@@ -75,7 +87,7 @@ public class CostCalculation {
 
                         String gfaQuery = "SELECT realval AS gfa, cityobject_id\r\n" + //
                                             "FROM citydb.cityobject_genericattrib\r\n" + //
-                                            "WHERE attrname = 'GFA' AND cityobject_id= " + buildingId;
+                                            "WHERE attrname = 'GFA' AND strval = '" + buildingIri + "'";
 
                         String costCal = "with cost_table as (" + costQuery + "), gfa_table as ( " + gfaQuery + ")\n" + //
                                     "INSERT INTO citydb.cityobject_genericattrib (cityobject_id, attrname, realval)\n" +
@@ -87,12 +99,50 @@ public class CostCalculation {
                         Statement stmtupdate = srcConn.createStatement();
                         stmtupdate.executeUpdate(costCal);
                     }
-                    
+
                 }
             }
         }catch (SQLException e) {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
         
+    }
+
+    public List<BuildingInfo> queryBuildingUsage () {
+        String fileContent = "";
+        StringBuilder contentBuilder = new StringBuilder();
+        
+        try {
+            RemoteStoreClient storeClient = new RemoteStoreClient(this.ontopUrl);
+
+            SelectBuilder sb = new SelectBuilder()
+                    .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
+                    .addPrefix("twa", OntologyURIHelper.getOntologyUri(OntologyURIHelper.twa))
+                    .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                    .addPrefix("rdfs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdfs))
+                    .addVar("?building").addVar("?usage")
+                    .addWhere("?building", "env:hasPropertyUsage", "?property")
+                    .addWhere("?property", "a", "?usage")
+                    .addWhere("?building", "env:hasNumberOfFloors", "?NumberOfFloors")
+                    .addWhere("?NumberOfFloors", "env:hasValue", "?floor");
+
+            String query = sb.build().toString();
+            JSONArray queryResultArray = storeClient.executeQuery(query);
+
+            List<BuildingInfo> buildings = new ArrayList<>();
+
+            for (int i = 0; i < queryResultArray.length(); i++) {
+                BuildingInfo building = new BuildingInfo();
+                String[] buildingIri = queryResultArray.getJSONObject(i).getString("building").split("Building/");
+                building.setBuildingIri(buildingIri[1]);
+                building.setType(queryResultArray.getJSONObject(i).getString("usage"));
+                building.setFloors(queryResultArray.getJSONObject(i).getInt("floor"));
+                buildings.add(building);
+            }
+            return buildings;
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
     }
 }

@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.gfaagent;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
+import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 
 public class EndpointConfig {
     private PostGISEndpointConfig postGISEndpointConfig;
@@ -13,12 +14,15 @@ public class EndpointConfig {
     private String osmSchema =  System.getenv("osmSchema");
     private String osmPoints =  System.getenv("osmPoints");
     private String osmPolygons =  System.getenv("osmPolygons");
+    private String ontopUrl;
 
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
         postGISEndpointConfig = containerClient.readEndpointConfig("postgis", PostGISEndpointConfig.class);
         this.dbUser = postGISEndpointConfig.getUsername();
         this.dbPassword = postGISEndpointConfig.getPassword();
+        OntopEndpointConfig ontopEndpointConfig = OntopClient.getInstance().getEndpoint();
+        this.ontopUrl = ontopEndpointConfig.getUrl();
    
     }
 
@@ -53,4 +57,6 @@ public class EndpointConfig {
     public String getOSMPolygons() {
         return this.osmPolygons;
     }
+
+    public String getOntopUrl() {return this.ontopUrl;}
 }
