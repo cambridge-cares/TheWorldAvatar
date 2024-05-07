@@ -1,5 +1,5 @@
 {
-    "n_frameworks": {
+    "frameworks_count": {
         "comment": "Check the number of frameworks on the server.",
         "query": [
             "PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>",
@@ -30,7 +30,7 @@
                 },
                 "comment": "Total number of frameworks"
             },
-                     "s2": {
+            "s2": {
                 "input": {
                     "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
                     "PLACE_HOLDER_2": "?cryst_iri   rdf:type       ocr:CrystalInformation ."
@@ -72,40 +72,112 @@
             }
         }
     },
-    "topological": {
-        "comment": "Check the values in topological props on the server.",
+    "frameworks_all": {
+        "comment": "Check the missing entries in lists on the server.",
         "query": [
             "PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>",
             "PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>",
             "PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>",
             "",
-            "SELECT ?framecode ?sp_diam_a ?sp_diam_b ?sp_diam_c ?sp_diam_inc ?sp_diam_unit",
+            "SELECT ?framecode ",
             "       ?zeo_frame ",
             "WHERE {",
             "  ?zeo_frame        zeo:hasFrameworkCode            ?framecode .",
-            "  ?zeo_frame        zeo:hasFrameworkCode     PLACE_HOLDER_1 .",
+            "  ?zeo_frame        rdf:type              zeo:ZeoliteFramework .",
+            "  PLACE_HOLDER_1 ",
+            "  PLACE_HOLDER_2 ",
+            "  PLACE_HOLDER_3 ",
             "  OPTIONAL {",
-            "    ?zeo_frame        ocr:hasCrystalInformation   ?cryst_info .",
-            "    ?cryst_info   rdf:type  ocr:CrystalInformation .",
             "  }",
-            "  ?zeo_frame        zeo:hasTopologicalProperties      ?topo . ",
             "}"
         ],
         "draft": [
+            "    ?zeo_frame    ocr:hasCrystalInformation   ?cryst_info .",
+            "    ?cryst_info   rdf:type  ocr:CrystalInformation .",
+            "  ?zeo_frame      zeo:hasTopologicalProperties      ?topo . ",
             ""
         ],
         "suites": {
             "s1": {
                 "input": {
-                    "PLACE_HOLDER_1": "'ABW'",
-                    "PLACE_HOLDER_2": ""
+                    "PLACE_HOLDER_1": "",
+                    "PLACE_HOLDER_2": "",
+                    "PLACE_HOLDER_3": ""
                 },
                 "output": {
-                    "d": "256"
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s2": {
+                "input": {
+                    "PLACE_HOLDER_1": "?zeo_frame  ocr:hasCrystalInformation   ?cryst_info .",
+                    "PLACE_HOLDER_2": "?cryst_info  rdf:type ocr:CrystalInformation .",
+                    "PLACE_HOLDER_3": ""
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s3": {
+                "input": {
+                    "PLACE_HOLDER_1": "?zeo_frame  zeo:hasTopologicalProperties      ?topo . ",
+                    "PLACE_HOLDER_2": "?topo   rdf:type zeo:TopologicalProperties . ",
+                    "PLACE_HOLDER_3": ""
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s4": {
+                "input": {
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   ocr:hasTiledStructure  ?tiled_iri . ",
+                    "PLACE_HOLDER_3": "?tiled_iri  rdf:type  ocr:TiledStructure"
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s5": {
+                "input": {
+                    "PLACE_HOLDER_3": "?ucell_iri   rdf:type  ocr:UnitCell",
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   ocr:hasUnitCell            ?ucell_iri . "
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s6": {
+                "input": {
+                    "PLACE_HOLDER_3": "?atomic_iri  rdf:type   ocr:AtomicStructure",
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   ocr:hasAtomicStructure  ?atomic_iri . "
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s7": {
+                "input": {
+                    "PLACE_HOLDER_3": "?transform_iri rdf:type  ocr:CoordinateTransformation .",
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   ocr:hasCoordinateTransformation  ?transform_iri . "
+                },
+                "output": {
+                    "list_element": "framecode"
                 },
                 "comment": ""
             }
         }
+
+
     },
     "unitcell": {
         "comment": "Check the values in unit cell on the server.",

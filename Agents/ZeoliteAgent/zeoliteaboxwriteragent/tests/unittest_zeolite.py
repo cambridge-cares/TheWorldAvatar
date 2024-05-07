@@ -121,29 +121,31 @@ class TestKnowledgeGraph(unittest.TestCase):
                       f"but got '{type(test_case)}'.")
         return test_case
        
-    def test_uploaded_frameworks(self):
-        """ 
-        1) Check the total number of frameworks and their codes.
-        2) Check that frameworks have the top level data structures:
-           - crystal info,
-           - few materials,
-           - transformation,
-           - citation(?)
+    def run_test_query(self, file_path, case_name, suite_case=None, comment=""):
+        """ Default suite_case means run all available suite cases.
         """
-        case_name = "n_frameworks"
-        file_path = os.path.join("tests", "test_cases_1.json")
         test_case = self.load_json(file_path, case_name)
 
         query_template = "\n".join(test_case["query"])
+
         #print(query_template)
 
-        for suite_name, test_suite in test_case["suites"].items():
+        if suite_case is None:
+            local_test_case = test_case["suites"]
+        else:
+            if suite_case in test_case["suites"]:
+                local_test_case = {suite_case: test_case["suites"][suite_case]}
+            else:
+                self.fail(f"Missing suite case '{suite_case}'. {comment}")
+
+        for suite_name, test_suite in local_test_case.items():
             #print(suite_name)
             msg = "in test case '" + case_name + "' in suite '" + suite_name + "':" 
             if "comment" in test_suite:
                 msg += " " + test_suite["comment"]
             else:
-                self.fail(f"Missing 'comment' in '{file_path}' test '{case_name}' suite '{suite_name}'.")
+                self.fail(f"Missing 'comment' in '{file_path}' " +
+                          f"test '{case_name}' suite '{suite_name}'.")
 
             query = query_template
             for key, var in test_suite["input"].items():
@@ -162,7 +164,7 @@ class TestKnowledgeGraph(unittest.TestCase):
             try:
                 results = self.sparql.query().convert()
             except Exception as e:
-                print("Invalid query\n", query)
+                print("Invalid query:\n", query)
                 raise e
 
             # Check if results are not empty
@@ -177,8 +179,188 @@ class TestKnowledgeGraph(unittest.TestCase):
                 else:
                     self.fail(f"Missing value for subject/predicate/object '{key}'")
                 #print(query)
-
         pass
+        # === end of run_test_query()
+
+
+    def run_test_query_list(self, file_path, case_name, suite_case=None,
+                            comment="", onlist=[]):
+        """ Function checks completeness of the query result.
+        The query should return a list, which should contain
+        all items from onlist argument.
+        Return the entire list of missing elements.
+        """
+        test_case = self.load_json(file_path, case_name)
+
+        query_template = "\n".join(test_case["query"])
+
+        #print(query_template)
+
+        if suite_case is None:
+            local_test_case = test_case["suites"]
+        else:
+            if suite_case in test_case["suites"]:
+                local_test_case = {suite_case: test_case["suites"][suite_case]}
+            else:
+                self.fail(f"Missing suite case '{suite_case}'. {comment}")
+
+        for suite_name, test_suite in local_test_case.items():
+            #print(suite_name)
+            msg = "in test case '" + case_name + "' in suite '" + suite_name + "':" 
+            if "comment" in test_suite:
+                msg += " " + test_suite["comment"]
+            else:
+                self.fail(f"Missing 'comment' in '{file_path}' " +
+                          f"test '{case_name}' suite '{suite_name}'.", msg=msg)
+
+            query = query_template
+            for key, var in test_suite["input"].items():
+                #var = test_suite["input"][key]
+                query = query.replace(key, var)
+
+            # Set the query
+            self.sparql.setQuery(query)
+
+            # Set the return format to JSON
+            self.sparql.setReturnFormat(JSON)
+
+            #print(query)
+
+            # Execute the query and parse the results
+            try:
+                results = self.sparql.query().convert()
+            except Exception as e:
+                print("Invalid query:\n", query)
+                raise e
+
+            # Check if results are not empty
+            #self.assertEqual(len(results["results"]["bindings"]), 1, msg=msg)
+            #line = [0]
+            #print("line =", line)
+
+            if "list_element" in test_suite["output"]:
+                list_element = test_suite["output"]["list_element"]
+                query_list = []
+                for line in results["results"]["bindings"]:
+                    query_list.append(line[list_element]["value"])
+                #print(query_list)
+
+                missing = []
+                for item in onlist:
+                    if item not in query_list:
+                        missing.append(item)
+                self.assertEqual(len(missing), 0, msg="Missing in total " +
+                                 str(len(missing)) + " values: "
+                                 + str(missing) + comment + " " + test_case["comment"] +
+                                 " " + test_suite["comment"]
+                                 )
+            else:
+                self.fail(f"Function run_test_query_list() require: " +
+                          f"'{file_path}' '{case_name}' '{suite_case}'")
+
+            """
+            for key, value in test_suite["output"].items():
+                #print("to check", key, value )
+                #self.assertEqual(len(results["results"]["bindings"]), value, msg=msg)
+                if key in line:
+                    self.assertEqual(line[key]["value"], value, msg=msg)
+                else:
+                    self.fail(f"Missing value for subject/predicate/object '{key}'")
+                #print(query)
+            """
+        pass
+
+
+    def test_uploaded_frameworks(self):
+        """ 
+        1) Check the total number of frameworks and their codes.
+        2) Check that frameworks have the top level data structures:
+           - crystal info,
+           - few materials,
+           - transformation,
+           - citation(?)
+        """
+        case_name = "frameworks_count"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query(file_path, case_name)
+        pass
+
+    def test_uploaded_frameworks_total_count(self):
+        case_name = "frameworks_count"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query(file_path, case_name, "s1")
+        pass
+
+    def test_uploaded_frameworks_cif_total_count(self):
+        case_name = "frameworks_count"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query(file_path, case_name, "s2")
+        pass
+
+    def test_uploaded_frameworks_tiled_sructure_total_count(self):
+        case_name = "frameworks_count"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query(file_path, case_name, "s3")
+        pass
+
+    def test_uploaded_frameworks_topological_total_count(self):
+        case_name = "frameworks_count"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query(file_path, case_name, "s5")
+        pass
+
+    def test_uploaded_frameworks_check_all(self):
+        zeo_list = zeolist.getZeoList(["main", "new"])
+        case_name = "frameworks_all"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query_list(file_path, case_name, "s1", onlist=zeo_list)
+        pass
+
+    def test_uploaded_frameworks_cif_check_all(self):
+        zeo_list = zeolist.getZeoList(["main", "new"])
+        case_name = "frameworks_all"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query_list(file_path, case_name, "s2", onlist=zeo_list)
+        pass
+
+    def test_uploaded_frameworks_topology_check_all(self):
+        zeo_list = zeolist.getZeoList(["main", "new"])
+        case_name = "frameworks_all"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query_list(file_path, case_name, "s3", onlist=zeo_list)
+        pass
+
+    def test_uploaded_frameworks_tiledstruct_check_all(self):
+        zeo_list = zeolist.getZeoList(["main", "new"])
+        case_name = "frameworks_all"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query_list(file_path, case_name, "s4", onlist=zeo_list)
+        pass
+
+    def test_uploaded_frameworks_unitcell_check_all(self):
+        zeo_list = zeolist.getZeoList(["main", "new"])
+        case_name = "frameworks_all"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query_list(file_path, case_name, "s5", onlist=zeo_list)
+        pass
+
+
+    def test_uploaded_frameworks_cryst_atomic_iledstruct_check_all(self):
+        zeo_list = zeolist.getZeoList(["main", "new"])
+        case_name = "frameworks_all"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query_list(file_path, case_name, "s6", onlist=zeo_list)
+        pass
+
+
+    def test_uploaded_frameworks_cryst_transformation_check_all(self):
+        zeo_list = zeolist.getZeoList(["main", "new"])
+        case_name = "frameworks_all"
+        file_path = os.path.join("tests", "test_cases_1.json")
+        self.run_test_query_list(file_path, case_name, "s7", onlist=zeo_list)
+        pass
+
+
 
     def test_uploaded_materials(self):
         pass

@@ -26,11 +26,11 @@ The data generation requires less than 10 GB of hard drive space.
 
 The code uses several external packages. It is recommended to use a virtual environment to install them:
 
-`$ python -m venv <venv_name>`
-
-`$ <venv_name>\Scripts\activate.bat`
-
-`(<venv_name>) $`
+```bash
+$ python -m venv <venv_name>
+$ <venv_name>\Scripts\activate.bat
+(<venv_name>) $
+```
 
 Install third-party package `pymatgen`:
 
@@ -53,24 +53,21 @@ Also download a file with [journal abbreviations](https://github.com/jxhe/bib-jo
 and save it in the `Agents/ZeoliteAgent/zeoliteaboxwriteragent/ontozeolite/biblio/bib2csvp/` directory.
 
 Install Third-party package `entityrdfizer`. You need the recent version of the code,
-which can be installed by downloading the source code, and run the installation script:
+which can be installed by downloading the source code, and running the installation script:
 
-<!-- `(<venv_name>) $ pip install entityrdfizer` -->
-`(<venv_name>) $ git clone --no-checkout https://github.com/cambridge-cares/TheWorldAvatar/`
-
-`(<venv_name>) $ cd TheWorldAvatar`
-
-`(<venv_name>) $ git sparse-checkout init --cone`
-
-`(<venv_name>) $ git sparse-checkout set EntiryRDFizer`
-
-`(<venv_name>) $ git checkout`
-
-`(<venv_name>) $ cd EntityRDFizer`
-
-`(<venv_name>) $ pip install .`
+```bash
+(<venv_name>) $ git clone --no-checkout https://github.com/cambridge-cares/TheWorldAvatar/
+(<venv_name>) $ cd TheWorldAvatar
+(<venv_name>) $ git sparse-checkout init --cone
+(<venv_name>) $ git sparse-checkout set EntiryRDFizer
+(<venv_name>) $ git checkout
+(<venv_name>) $ cd EntityRDFizer
+(<venv_name>) $ pip install .
+```
 
 More details on the [TWA web-site](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/EntityRDFizer).
+Note, that the original `(<venv_name>) $ pip install entityrdfizer` command
+will install an earlier version of the package.
 
 Install Third-party package `pyuploader`:
 
