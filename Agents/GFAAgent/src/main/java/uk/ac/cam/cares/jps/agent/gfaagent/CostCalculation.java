@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.jena.vocabulary.AS;
 import org.json.JSONArray;
@@ -15,6 +16,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.arq.querybuilder.SelectBuilder;

@@ -1,5 +1,5 @@
 
-package uk.ac.cam.cares.jps.agent.buildingflooragent;
+package uk.ac.cam.cares.jps.agent.gfaagent;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
