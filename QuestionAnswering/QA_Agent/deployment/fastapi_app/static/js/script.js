@@ -222,6 +222,47 @@ function renderScatterPlot(title, traces, parentElem, id) {
     Plotly.newPlot(id, plot_traces, { title });
 }
 
+
+
+function renderWkt(wkt, parentElem, id) {
+    const raster = new ol.layer.Tile({
+        source: new ol.source.OSM()
+    })
+
+    const format = new ol.format.WKT()
+    const feature = format.readFeature(wkt, {
+        dataProjection: 'EPSG:4326',
+        featureProjection: 'EPSG:3857'
+    })
+
+    const vector = new ol.layer.Vector({
+        source: new ol.source.Vector({ features: [feature] })
+    })
+
+    const [minx, miny, maxx, maxy] = feature.getGeometry().getExtent();
+    const centerx = (minx + maxx) / 2
+    const centery = (miny + maxy) / 2
+
+    let elem = document.createElement("div");
+    elem.setAttribute("id", id)
+    elem.setAttribute("class", "map")
+    parentElem.appendChild(elem)
+
+    const map = new ol.Map({
+        layers: [raster, vector],
+        view: new ol.View({
+            center: [centerx, centery],
+            zoom: 8,
+        }),
+    })
+    // 'map' target is set with a timeout to ensure that 'id' element
+    // has been attached to DOM tree
+    setTimeout(() => {
+        map.setTarget(id)
+    }, 0)
+    map.getView().fit(feature.getGeometry().getExtent(), map.getSize())
+}
+
 const errorContainer = (function () {
     const elem = document.getElementById("error-container")
 
@@ -254,7 +295,7 @@ const qaMetadataContainer = (function () {
     return {
         reset() {
             elem.style.display = "none"
-            tableContainer.innerHTML = ""
+            tableContainer.replaceChildren()
         },
 
         render(metadata) {
@@ -270,17 +311,20 @@ const qaDataContainer = (function () {
     return {
         reset() {
             elem.style.display = "none"
-            elem.innerHTML = ""
+            elem.replaceChildren()
         },
 
         render(data) {
             data.forEach((item, i) => {
+                item_type = item["type"]
                 item_data = item["data"]
                 id = `data-item-${i}`
-                if (item["type"] === "table") {
-                    table = renderDataTable(vars = item_data["vars"], bindings = item_data["bindings"], parentElem = elem, id = id)
-                } else if (item["type"] === "scatter_plot") {
+                if (item_type === "table") {
+                    renderDataTable(vars = item_data["vars"], bindings = item_data["bindings"], parentElem = elem, id = id)
+                } else if (item_type === "scatter_plot") {
                     renderScatterPlot(title = item_data["title"], traces = item_data["traces"], parentElem = elem, id = id)
+                } else if (item_type === "wkt") {
+                    renderWkt(item_data["value"], parentElem = elem, id = id)
                 } else {
                     console.log("Unexpected data item: ", item)
                 }
@@ -354,9 +398,9 @@ const chatbotResponseCard = (function () {
                     }
 
                     if (datum !== null) {
-                        chatbotResponsePara.innerHTML += datum["content"]
-                        if (/\s/.test(chatbotResponsePara.innerHTML.charAt(0))) {
-                            chatbotResponsePara.innerHTML = chatbotResponsePara.innerHTML.trimStart()
+                        chatbotResponsePara.textContent += datum["content"]
+                        if (/\s/.test(chatbotResponsePara.textContent.charAt(0))) {
+                            chatbotResponsePara.textContent = chatbotResponsePara.textContent.trimStart()
                         }
                         globalState.set("chatbotLatency", datum["latency"])
                     }
@@ -391,7 +435,7 @@ const chatbotResponseCard = (function () {
     return {
         reset() {
             elem.style.display = "none"
-            chatbotResponsePara.innerHTML = ""
+            chatbotResponsePara.textContent = ""
             chatbotSpinnerSpan.style.display = "inline-block"
             chatbotStopAnchor.style.display = "inline"
 
