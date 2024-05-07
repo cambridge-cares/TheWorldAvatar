@@ -7,6 +7,7 @@ setup(
     # project.
     author='Feroz Farazi', # Optional
     license='MIT',
+    description='Converts instances from a CSV file into RDF.',
     long_description=open('README.md').read(), # Optional
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests")),
