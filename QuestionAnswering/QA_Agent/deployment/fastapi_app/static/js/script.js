@@ -145,16 +145,15 @@ function renderDataTable(vars, bindings, parentElem, id) {
             retrieve: true,
             scrollX: true,
         });
-    
-    
-        toggleBtn.addEventListener("click", () => {
+
+        function toggleShowHideIRI() {
             const rowNum = table.rows().count()
             if (rowNum == 0) {
                 return
             }
-    
+
             let isShowingIRI = toggleBtn.innerHTML === "Hide IRIs"
-    
+
             const rowData = table.row(0).data()
             const IRIcolIdx = rowData.reduce((arr, val, idx) => {
                 if (TWA_ABOX_IRI_PREFIXES.some(prefix => val.startsWith(prefix))) {
@@ -166,13 +165,17 @@ function renderDataTable(vars, bindings, parentElem, id) {
                 const col = table.column(colIdx)
                 col.visible(!isShowingIRI)
             })
-    
+
             if (isShowingIRI) {
                 toggleBtn.innerHTML = "Show IRIs"
             } else {
                 toggleBtn.innerHTML = "Hide IRIs"
             }
-        })
+        }
+
+        toggleShowHideIRI();
+
+        toggleBtn.addEventListener("click", toggleShowHideIRI)
     }, 0)
 }
 
