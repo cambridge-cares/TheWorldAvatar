@@ -33,11 +33,11 @@ class SparqlQueryProcessor:
         idx = 0
         while idx < len(sparql):
             # VALUES ?LandUseType { <LandUseType:\"residential\"> }
-            idx_start = sparql.find("VALUES", idx)
-            if idx_start < 0:
+            values_start = sparql.find("VALUES", idx)
+            if values_start < 0:
                 break
 
-            idx_start += len("VALUES") + 1
+            idx_start = values_start + len("VALUES") + 1
             while idx_start < len(sparql) and sparql[idx_start].isspace():
                 idx_start += 1
             if idx_start >= len(sparql):
@@ -47,13 +47,13 @@ class SparqlQueryProcessor:
             if sparql[idx_start] != "?":
                 break
 
-            idx_start += 1
             idx = idx_start + 1
-            while idx < len(sparql) and sparql[idx].isalnum():
+            while idx < len(sparql) and (sparql[idx].isalnum() or sparql[idx] == "_"):
                 idx += 1
             if idx >= len(sparql):
                 break
-            
+
+            varnode = sparql[idx_start:idx]
             idx_start = idx
 
             while idx_start < len(sparql) and sparql[idx_start].isspace():
@@ -65,7 +65,7 @@ class SparqlQueryProcessor:
             if sparql[idx_start] != "{":
                 break
 
-            tokens = []
+            tokens: List[str] = []
 
             token_start = idx_start + 1
             while True:
@@ -106,12 +106,28 @@ class SparqlQueryProcessor:
             for token in tokens:
                 values.extend(self._link_token(token))
 
-            values = " ".join(values)
+            # TODO: remove custom replacement of VALUES clause with FILTER
+            # once Karthik fixes the bug that causes ontop to throw error
+            # on VALUES of facility IRIs.
+            if any(token.startswith("<Facility:") for token in tokens):
+                filter_clause = "FILTER ( {varnode} IN ( {values} ) )".format(
+                    varnode=varnode, values=", ".join(values)
+                )
+                sparql = "{before}{filter}{after}".format(
+                    before=sparql[:values_start],
+                    filter=filter_clause,
+                    after=sparql[idx_end + 1 :],
+                )
+                idx = values_start + len(filter_clause) + 1
+            else:
+                values_str = " ".join(values)
 
-            sparql = "{before}{{ {values} }}{after}".format(
-                before=sparql[:idx_start], values=values, after=sparql[idx_end + 1 :]
-            )
-            idx = idx_start + 2 + len(values) + 2
+                sparql = "{before}{{ {values} }}{after}".format(
+                    before=sparql[:idx_start],
+                    values=values_str,
+                    after=sparql[idx_end + 1 :],
+                )
+                idx = idx_start + 2 + len(values_str) + 2
 
         return sparql
 

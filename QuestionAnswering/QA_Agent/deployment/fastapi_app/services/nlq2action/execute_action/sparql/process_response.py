@@ -1,9 +1,10 @@
 from functools import cache
-from typing import Annotated, Dict, List
+from typing import Annotated, Dict, List, Union
 
 from fastapi import Depends
 
 from services.entity_store import EntityStore, get_entity_store
+from services.support_data import DataItem, TableDataItem, WktDataItem
 
 
 class SparqlResponseProcessor:
@@ -11,29 +12,79 @@ class SparqlResponseProcessor:
         "http://www.theworldavatar.com/kg/",
         "https://www.theworldavatar.com/kg/",
     ]
+    WKT_LITERAL_PREFIX = "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> "
 
     def __init__(self, entity_store: EntityStore):
         self.entity_store = entity_store
 
-    def add_labels(self, vars: List[str], bindings: List[Dict[str, str]]):
-        vars_set = set(vars)
+    def add_labels(self, items: List[DataItem]):
+        for item in items:
+            if not isinstance(item, TableDataItem):
+                continue
 
+            vars_set = set(item.vars)
+
+            for binding in item.bindings:
+                new_kvs = dict()
+                for k, v in binding.items():
+                    if any(v.startswith(prefix) for prefix in self.TWA_PREFIXES):
+                        label = self.entity_store.lookup_label(v)
+                        if label:
+                            new_key = k + "Name"
+                            if new_key not in vars_set:
+                                idx = item.vars.index(k)
+                                item.vars.insert(idx + 1, new_key)
+                                vars_set.add(new_key)
+                            new_kvs[new_key] = label
+                binding.update(new_kvs)
+
+    def extract_wkt(self, vars: List[str], bindings: List[Dict[str, Dict[str, str]]]):
+        wkt_vars = [
+            var
+            for var in vars
+            if any(
+                binding.get(var, {}).get("datatype")
+                == "http://www.opengis.net/ont/geosparql#wktLiteral"
+                for binding in bindings
+            )
+        ]
+
+        if not wkt_vars:
+            return [
+                TableDataItem(
+                    vars=vars,
+                    bindings=[
+                        {k: v["value"] for k, v in binding.items()}
+                        for binding in bindings
+                    ],
+                )
+            ]
+
+        not_wkt_vars = [var for var in vars if var not in wkt_vars]
+
+        items: List[Union[TableDataItem, WktDataItem]] = []
         for binding in bindings:
-            new_kvs = dict()
-            for k, v in binding.items():
-                if any(v.startswith(prefix) for prefix in self.TWA_PREFIXES):
-                    label = self.entity_store.lookup_label(v)
-                    if label:
-                        new_key = k + "Name"
-                        if new_key not in vars_set:
-                            idx = vars.index(k)
-                            vars.insert(idx + 1, new_key)
-                            vars_set.add(new_key)
-                        new_kvs[new_key] = label
-            binding.update(new_kvs)
+            items.append(
+                TableDataItem(
+                    vars=not_wkt_vars,
+                    bindings=[
+                        {k: v["value"] for k, v in binding.items() if k in not_wkt_vars}
+                    ],
+                )
+            )
 
-    def process(self, vars: List[str], bindings: List[Dict[str, str]]):
-        self.add_labels(vars=vars, bindings=bindings)
+            for var in wkt_vars:
+                value = binding[var]["value"]
+                if value.startswith(self.WKT_LITERAL_PREFIX):
+                    value = value[len(self.WKT_LITERAL_PREFIX) :]
+                items.append(WktDataItem(value=value))
+
+        return items
+
+    def process(self, vars: List[str], bindings: List[Dict[str, Dict[str, str]]]):
+        items = self.extract_wkt(vars, bindings)
+        self.add_labels(items)
+        return items
 
 
 @cache
