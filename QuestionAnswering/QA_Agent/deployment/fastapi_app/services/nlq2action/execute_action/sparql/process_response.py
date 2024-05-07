@@ -27,15 +27,22 @@ class SparqlResponseProcessor:
             for binding in item.bindings:
                 new_kvs = dict()
                 for k, v in binding.items():
-                    if any(v.startswith(prefix) for prefix in self.TWA_PREFIXES):
-                        label = self.entity_store.lookup_label(v)
-                        if label:
-                            new_key = k + "Name"
-                            if new_key not in vars_set:
-                                idx = item.vars.index(k)
-                                item.vars.insert(idx + 1, new_key)
-                                vars_set.add(new_key)
-                            new_kvs[new_key] = label
+                    if not isinstance(v, str) or not any(
+                        v.startswith(prefix) for prefix in self.TWA_PREFIXES
+                    ):
+                        continue
+
+                    label = self.entity_store.lookup_label(v)
+                    if not label:
+                        continue
+
+                    new_key = k + "Name"
+                    if new_key not in vars_set:
+                        idx = item.vars.index(k)
+                        item.vars.insert(idx + 1, new_key)
+                        vars_set.add(new_key)
+                    new_kvs[new_key] = label
+
                 binding.update(new_kvs)
 
     def extract_wkt(self, vars: List[str], bindings: List[Dict[str, Dict[str, str]]]):
