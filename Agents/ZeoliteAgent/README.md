@@ -59,7 +59,7 @@ which can be installed by downloading the source code, and running the installat
 (<venv_name>) $ git clone --no-checkout https://github.com/cambridge-cares/TheWorldAvatar/
 (<venv_name>) $ cd TheWorldAvatar
 (<venv_name>) $ git sparse-checkout init --cone
-(<venv_name>) $ git sparse-checkout set EntiryRDFizer
+(<venv_name>) $ git sparse-checkout set EntityRDFizer
 (<venv_name>) $ git checkout
 (<venv_name>) $ cd EntityRDFizer
 (<venv_name>) $ pip install .
