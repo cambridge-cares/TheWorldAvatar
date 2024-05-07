@@ -7,9 +7,7 @@ from fastapi import Depends
 
 from model.qa import QAStep
 from core.kg import KgClient
-from services.support_data import TableDataItem
 from utils.collections import FrozenDict
-from utils.rdf import flatten_sparql_response
 from ..model import SparqlAction
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
@@ -91,10 +89,11 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
             )
         )
 
-        vars, bindings = flatten_sparql_response(res)
-        self.response_processor.process(vars=vars, bindings=bindings)
+        items = self.response_processor.process(
+            vars=res["head"]["vars"], bindings=res["results"]["bindings"]
+        )
 
-        return steps, [TableDataItem(vars=vars, bindings=bindings)]
+        return steps, items
 
 
 @cache

@@ -69,6 +69,34 @@ class TestSparqlProcessor:
         # Assert
         assert actual == expected
 
+
+    def test_linkFacilities(self):
+        # Arrange
+        entity_linker = self.MockEntityStore(
+            [
+                (
+                    ("abc", "Facility", 3),
+                    ["http://example.org/Facil_0", "http://example.org/Facil_1"],
+                ),
+            ]
+        )
+        processor = SparqlQueryProcessor(entity_linker)
+
+        sparql_in = """SELECT ?Facility ?Building WHERE {
+    VALUES ?Facility { <Facility:"abc"> }
+    ?Building ontobim:hasFacility ?Facility .
+}"""
+        expected = """SELECT ?Facility ?Building WHERE {
+    FILTER ( ?Facility IN ( <http://example.org/Facil_0>, <http://example.org/Facil_1> ) )
+    ?Building ontobim:hasFacility ?Facility .
+}"""
+
+        # Act
+        actual = processor.link_entities(sparql_in)
+
+        # Assert
+        assert actual == expected
+
     def test_injectServiceEndpoint(self):
         # Arrange
         entity_store = self.MockEntityStore()

@@ -1,15 +1,14 @@
 from abc import ABC, abstractmethod
-import json
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
-from pydantic import BaseModel, model_serializer
+from pydantic import BaseModel
 
-from model.qa import QAData, QAStep
+from model.qa import QAStep
 
 
 class TableDataItem(BaseModel):
     vars: List[str]
-    bindings: List[Dict[str, Any]]
+    bindings: List[Dict[str, str]]
 
 
 class ScatterPlotTrace(BaseModel):
@@ -20,11 +19,11 @@ class ScatterPlotTrace(BaseModel):
 
 class ScatterPlotDataItem(BaseModel):
     title: Optional[str] = None
-    traces: List[ScatterPlotTrace] = []
+    traces: List[ScatterPlotTrace]
 
 
 class WktDataItem(BaseModel):
-    pass
+    value: str
 
 
 DataItem = Union[TableDataItem, ScatterPlotDataItem, WktDataItem]
