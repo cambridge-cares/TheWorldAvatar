@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.todo;
 
-import android.util.Pair;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -36,6 +34,7 @@ public class TodoViewModel extends ViewModel {
     @Inject
     public TodoViewModel(GenericRepository<TodoWithUser> todoRepository) {
         this.todoRepository = todoRepository;
+        this._hasError.postValue(false);
     }
 
     /**
