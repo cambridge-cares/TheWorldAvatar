@@ -44,8 +44,8 @@ public class TodoViewModel extends ViewModel {
         todoRepository.getInfo("2", new RepositoryCallback<>() {
             @Override
             public void onSuccess(TodoWithUser result) {
-                _todo.postValue(result.getTodo());
-                _user.postValue(result.getUser());
+                _todo.postValue(result.todo());
+                _user.postValue(result.user());
             }
 
             @Override
