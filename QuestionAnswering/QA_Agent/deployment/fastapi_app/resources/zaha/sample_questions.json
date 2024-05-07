@@ -57,7 +57,7 @@
                 "data_domain": "sg_carpark",
                 "label": "Singapore's Carparks",
                 "questions": [
-                    "What's the carpark nearest to NUS"
+                    "Find me the carpark nearest to CREATE Tower"
                 ]
             }
         ]

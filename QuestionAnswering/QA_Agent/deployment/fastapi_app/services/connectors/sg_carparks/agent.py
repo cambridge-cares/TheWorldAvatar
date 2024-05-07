@@ -8,7 +8,7 @@ from services.feature_info_client import (
     FeatureInfoClient,
     get_featureInfoClient,
 )
-from .kg import get_sgCarparks_bgClient
+from services.kg import get_sgCarpark_bgClient
 
 
 class SGCarparksAgent:
@@ -53,7 +53,7 @@ LIMIT {limit}""".format(
 
 
 def get_sgCarpark_agent(
-    bg_client: Annotated[KgClient, Depends(get_sgCarparks_bgClient)],
+    bg_client: Annotated[KgClient, Depends(get_sgCarpark_bgClient)],
     feature_info_client: Annotated[FeatureInfoClient, Depends(get_featureInfoClient)],
 ):
     return SGCarparksAgent(bg_client=bg_client, feature_info_client=feature_info_client)

@@ -3,7 +3,11 @@ from typing import Annotated, Tuple
 from fastapi import Depends
 from services.nlq2action.execute_action.model import FuncAction
 from .base import Name2Func
-from .sg_dispersion import SGDispersionFuncExecutor, get_sgDispersion_funcExecutor
+from .sg_dispersion import SGDispersionFuncExecutor, get_sgDispersion_funcExec
+from .sg_carpark import (
+    SGCarParkFuncExecutor,
+    get_sgCarpark_funcExec,
+)
 
 
 class FuncActionExecutor:
@@ -19,8 +23,13 @@ class FuncActionExecutor:
 
 
 def get_funcAction_executor(
-    sg_dispersion_name2func: Annotated[
-        SGDispersionFuncExecutor, Depends(get_sgDispersion_funcExecutor)
-    ]
+    sg_dispersion_func_exec: Annotated[
+        SGDispersionFuncExecutor, Depends(get_sgDispersion_funcExec)
+    ],
+    sg_carpark_func_exec: Annotated[
+        SGCarParkFuncExecutor, Depends(get_sgCarpark_funcExec)
+    ],
 ):
-    return FuncActionExecutor(name2func_instances=(sg_dispersion_name2func,))
+    return FuncActionExecutor(
+        name2func_instances=(sg_dispersion_func_exec, sg_carpark_func_exec)
+    )

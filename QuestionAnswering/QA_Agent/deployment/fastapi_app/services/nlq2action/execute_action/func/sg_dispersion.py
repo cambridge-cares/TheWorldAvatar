@@ -224,7 +224,7 @@ def get_pollutantConc_endpoint():
 
 
 @cache
-def get_sgDispersion_funcExecutor(
+def get_sgDispersion_funcExec(
     pollutant_conc_endpoint: Annotated[str, Depends(get_pollutantConc_endpoint)],
     geocoder: Annotated[IGeocoder, Depends(get_geocoder)],
     entity_store: Annotated[EntityStore, Depends(get_entity_store)],

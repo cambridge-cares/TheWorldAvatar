@@ -29,3 +29,8 @@ def get_sgCompany_bgClient():
 @cache
 def get_sgDispersion_bgClient():
     return KgClient(os.getenv("KG_ENDPOINT_SG_DISPERSION"))
+
+
+@cache
+def get_sgCarpark_bgClient():
+    return KgClient(os.getenv("KG_ENDPOINT_SG_CARPARKS"))

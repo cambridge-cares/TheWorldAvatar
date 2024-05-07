@@ -8,7 +8,7 @@ from model.qa import QAStep
 
 class TableDataItem(BaseModel):
     vars: List[str]
-    bindings: List[Dict[str, str]]
+    bindings: List[Dict[str, Union[str, float]]]
 
 
 class ScatterPlotTrace(BaseModel):
