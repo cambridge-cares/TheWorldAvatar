@@ -4,7 +4,8 @@ from typing import Annotated, Dict, List, Union
 from fastapi import Depends
 
 from services.entity_store import EntityStore, get_entity_store
-from controllers.qa.support_data import DataItem, TableDataItem, WktDataItem
+from services.wkt import CRS84_URI, WKTTextSRS
+from controllers.qa.support_data import DataItem, TableDataItem, WktCrs84DataItem
 
 
 class SparqlResponseProcessor:
@@ -69,19 +70,24 @@ class SparqlResponseProcessor:
 
         not_wkt_vars = [var for var in vars if var not in wkt_vars]
 
-        items: List[Union[TableDataItem, WktDataItem]] = []
+        items: List[Union[TableDataItem, WktCrs84DataItem]] = []
         for binding in bindings:
-            items.append(
-                TableDataItem(
-                    vars=not_wkt_vars,
-                    bindings=[
-                        {k: v["value"] for k, v in binding.items() if k in not_wkt_vars}
-                    ],
-                )
-            )
-            items.extend(
-                WktDataItem.from_literal(binding[var]["value"]) for var in wkt_vars
-            )
+            table_vars = list(not_wkt_vars)
+            table_binding = {
+                k: v["value"] for k, v in binding.items() if k in not_wkt_vars
+            }
+
+            wkt_items: List[WktCrs84DataItem] = []
+            for var in wkt_vars:
+                wkt_text_srs = WKTTextSRS.from_literal(binding[var]["value"])
+                if wkt_text_srs.srs_uri == CRS84_URI:
+                    wkt_items.append(WktCrs84DataItem(wkt_text=wkt_text_srs.wkt_text))
+                else:
+                    table_vars.append(var)
+                    table_binding[var] = binding[var]["value"]
+
+            items.append(TableDataItem(vars=table_vars, bindings=[table_binding]))
+            items.extend(wkt_items)
 
         return items
 
