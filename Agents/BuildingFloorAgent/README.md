@@ -1,8 +1,9 @@
-# GFAAgent
+# Building Floor Agent
 ## 1. Description
-This agent has been developed to support and compute the Gross Floor Area (GFA) of buildings. Presently, the agent performs the following two tasks:
-1) Instantiate the number of storeys within a building from other data sources (OSM, csv) into the citydb schema
-2) Calculate the Gross Floor Area of buildings through multiplying the area of the building footprint with the number of storeys
+This agent has been developed to improve the number of floors for 3D buildings. Presently, there are three categories number of floors:
+1) Cat. A: the accurate data from reliable data source, such as government agency
+2) Cat. B: the data from open data source without accuracy guarantee, such as OpenStreetMap
+3) Cat. C: the data is estimate calculated by the height of buildilng
 
 ### 1.1 Requirements
 The agent requires 3D building models based on the CityGML standard. These models must be uploaded through the [stack-data-uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#citydb-data).
@@ -23,9 +24,9 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 ### 2.2 Data requirements:
 
-When executing the first task to instantiate the number of storeys from other data sources, please ensure the following data and steps are undertaken.
+When executing the task to instantiate the number of floors from other data sources, please ensure the following data and steps are undertaken.
 
-1. Number of storeys from a specified csv file
+1. Number of floors from a specified csv file
 
 An example of the csv file is the HDB properties data from [Data.gov.sg](https://beta.data.gov.sg/collections/150/datasets/d_17f5382f26140b1fdae0ba2ef6239d2f/view). The csv file must contain the `blk_no`, `street`, and `max_floor_lvl` columns for this task to perform successfully. 
 
@@ -33,15 +34,21 @@ The csv file path and database name should be specified as environment variables
 ```
 "Env": [
     "DATABASE=postgres",
-    "floors_csv=/data/HDBfloors/HDBPropertyInformation.csv"
+    "floors_csv=/resources/HDBfloors/HDBPropertyInformation.csv"
 ]
 ```
 2. OpenStreetMap linked to the 3D CityGML Buildings
 
 Please upload the OpenStreetMap following the [OSM Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OSMAgent)'s instructions and link their building IRIs by running the OSM Agent. This agent requires both steps, as it will conduct fuzzy matching between the address in the specified csv file and the address in the OpenStreetMap data. When matched, the GFA agent can instantiate the number of storeys from the csv file into the right building data in the citydb schema with the matching building IRI.
 
-### 2.3 Retrieving GFAAgent's image
-The GFAagent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/gfaagent) using `docker pull ghcr.io/cambridge-cares/gfaagent:<LATEST-VERSION>`
+3. Estimated calculation
+
+According to the general standard of Singapore, there are two cases:
+1) Non-domestic building: the estimated floor height is 3.3m
+2) Domestic building: 1st floor height is 3.6m, the rest floor height is 2.8m
+
+### 2.3 Retrieving BuildingFloorAgent's image
+The GFAagent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/buildingflooragent) using `docker pull ghcr.io/cambridge-cares/buildingflooragent:<LATEST-VERSION>`
 
 ### 2.4 Starting with the stack-manager
 The agent has been implemented to work in the stack. To do so, place gfaagent.json in the [stack-manager config directory]. 
@@ -50,14 +57,14 @@ Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. Th
 
 ### 2.5 Running the Agent
 The agent is reachable at two endpoints:
-1) `/floors`: integrate floors data to citydb
-2) `/calculation`: calculate GFA
+1) `/floors`: integrate number of floor to citydb
+2) `/floorswithodba`: integrate number of floor and upload odba
 
 No request parameters is needed.
 
 To run the agent, run the following cURL command:
 ```
-curl -X POST localhost:3838/gfaagent/floors
-curl -X POST localhost:3838/gfaagent/calculation
+curl -X POST localhost:3838/buildingflooragent/floors
+curl -X POST localhost:3838/buildingflooragent/floorswithodba
 ```
 

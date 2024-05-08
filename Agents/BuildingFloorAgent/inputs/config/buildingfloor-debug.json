@@ -1,55 +1,66 @@
 {
-    "ServiceSpec": {
-        "Name": "buildingflooragent",
-        "TaskTemplate": {
-            "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/buildingflooragent:1.0.0-SNAPSHOT",
-                "Env": [
-                    "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
-                ],
-                "Mounts": [
+  "ServiceSpec": {
+      "Name": "buildingflooragent",
+      "TaskTemplate": {
+          "ContainerSpec": {
+              "Image": "ghcr.io/cambridge-cares/buildingflooragent:1.0.0-SNAPSHOT",
+              "Env": [
+                "STACK_NAME=${STACK_NAME}",
+                "DATABASE=postgres",
+                "osmSchema=osm",
+                "osmPoints=points",
+                "osmPolygons=polygons",
+                "floors_csv=/resources/HDBPropertyInformation.csv",
+                "JPDA_ADDRESS=0.0.0.0:5006",
+                "JPDA_TRANSPORT=dt_socket",
+                "DEBUG=ON"
+              ],
+              "Mounts": [
+                {
+                  "Type": "bind",
+                  "Source": "../../../../../../Agents/BuildingFloorAgent/src/main/resources",
+                  "Target": "/resources"
+                }
+              ],
+              "Configs": [
                   {
-                    "Type": "bind",
-                    "Source": "../../../../../../Agents/BuildingFloorAgent/src/main/resources",
-                    "Target": "/resources"
-                  }
-                ],
-                "Configs": [
-                    {
-                        "ConfigName": "blazegraph"
-                    },
-                    {
-                        "ConfigName": "postgis"
-                    },
-                    {
-                      "ConfigName": "geoserver"
-                    }
-                  ],
-                "Secrets": [
-                  {
-                    "SecretName": "postgis_password"
+                      "ConfigName": "blazegraph"
                   },
                   {
-                    "SecretName": "geoserver_password"
-                  }
-                ]
-            }
-        },
-		"EndpointSpec": {
-			"Ports": [
-				{
-          "Name": "web",
-          "Protocol": "tcp",
-					"TargetPort": "5005",
-					"PublishedPort": "5005"
-				}
-			]
-		}
-    },
-    "endpoints": {
-        "gfaagent": {
-          "url": "http://localhost:8080/buildingflooragent/",
-          "externalPath": "/buildingflooragent/"
-        }
-    }
+                      "ConfigName": "postgis"
+                  },
+                  {
+                    "ConfigName": "geoserver"
+                  },
+                  {
+                    "ConfigName": "ontop"
+                }
+                ],
+              "Secrets": [
+                {
+                  "SecretName": "postgis_password"
+                },
+                {
+                  "SecretName": "geoserver_password"
+                }
+              ]
+          }
+      },
+  "EndpointSpec": {
+    "Ports": [
+      {
+        "Name": "web",
+        "Protocol": "tcp",
+        "TargetPort": "5006",
+        "PublishedPort": "5006"
+      }
+    ]
+  }
+  },
+  "endpoints": {
+      "gfaagent": {
+        "url": "http://localhost:8080/buildingflooragent/",
+        "externalPath": "/buildingflooragent/"
+      }
+  }
 }
