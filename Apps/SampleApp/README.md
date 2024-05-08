@@ -95,7 +95,7 @@ The Navigation component can be set up by including the dependency in the `build
     implementation "androidx.navigation:navigation-ui:$nav_version"
 ```
 
-> Navigation Graph
+#### 2.1.1 Navigation Graph
 
 The navigation graph is employed by the Navigation component to manage app navigation. It is a data structure that contains each destination within your app and the connections between them. Given that the apps implements fragments as views, developers can opt to write the navigation host and graph directly in `XML`. In this tutorial, a navigation graph should be set up as follows:
 
@@ -137,8 +137,8 @@ The navigation graph is employed by the Navigation component to manage app navig
 
 3. Create the navigation subgraphs for each feature modules, and link them to the `app_navigation.xml`. It is crucial to note that the back navigation link is not implemented, as we recommend the use of the navigation stack to record the user's navigation history and return to the last destination with the `navigateUp()` method (See `feature:todo` and `feature:photo`). There are two ways to implement navigation:
 
-4. [Deep links](https://developer.android.com/guide/navigation/design/deep-link) for cross-module navigation as each feature are independent and unable to interact with each other and their references
-5. Actions for navigation within a single module as IDs can be referenced for navigation
+- [Deep links](https://developer.android.com/guide/navigation/design/deep-link) for cross-module navigation as each feature are independent and unable to interact with each other and their references
+- Actions for navigation within a single module as IDs can be referenced for navigation
 
 All navigation subgraph details can be found in the following files:
 
@@ -147,7 +147,7 @@ All navigation subgraph details can be found in the following files:
 - `/feature/photo/src/main/res/navigation/photo_map.xml`: Contains navigation graph for the photo feature module
 - `/core/utils/src/main/res/values/navigation_link.xml`: Storing the Deep Link URI as constants in the core utils module
 
-> Deep Links
+#### 2.1.2 Deep Links
 
 Deep links are a type of link that send users directly to specific in-app locations i.e. cross-module navigation. It is recommended to adopt implicit deep links over explicit deep links so that the navigation stack is available to navigate backwards.
 
@@ -190,7 +190,7 @@ NavDeepLinkRequest request = NavDeepLinkRequest.Builder
 NavHostFragment.findNavController(this).navigate(request);
 ```
 
-> Action
+#### 2.1.3 Action
 
 Actions can be used for navigation within a module. One example is the navigation from the `TodoFragment` to the `TodoSecondFragment` within the `feature/todo` module. The first step is to define the action (`<action>`) with the reference id in the navigation map `todo_map.xml` within the `<fragment>` tag:
 
@@ -224,24 +224,24 @@ NavHostFragment.findNavController(this).navigate(R.id.action_todo_fragment_to_to
 
 For passing data between the various fragments, we recommend to share data using the `Data Source - Repository - State Holders/ViewModel - UI elements` workflow to ensure that modules are cleanly separated and can be reusable for different modules. It is possible to [pass data](https://developer.android.com/guide/navigation/use-graph/pass-data#bundle) with `Bundle` objects if we use action for navigation over deep links, but we do not recommend this approach.
 
-We depict an example of the Android app workflow (`Data Source - Repository - State Holders/ViewModel - UI elements`) below. In the `ToDoFragment`, the view model is initially empty, resulting in a blank page on the second half. When an user taps on the `Get To do` button, the view model retrieves data from the API through the Data Layer, and updates their state. If there are values, the `ToDoFragment` view will be populated with the retrieved data. We demonstrate this as TWA apps will typically retrieve data from agents, which are similar to APIs.
+We depict an example of the Android app workflow (`Data Source - Repository - State Holders/ViewModel - UI elements`) below. In the `TodoFragment`, the view model is initially empty, resulting in a blank page on the second half. When an user taps on the `Get To do` button, the view model retrieves data from the API through the Data Layer, and updates their state. If there are values, the `TodoFragment` view will be populated with the retrieved data. We demonstrate this as TWA apps will typically retrieve data from agents, which are similar to APIs.
 
 ```mermaid
     stateDiagram-v2
       direction LR
 
-      MobilePhone --> ToDoFragment: (1)
-      ToDoViewModel --> TodoRepository: (3)
-      TodoRepository --> ToDoViewModel: (12)
-      ToDoFragment --> MobilePhone: (14)
+      MobilePhone --> TodoFragment: (1)
+      TodoViewModel --> TodoRepository: (3)
+      TodoRepository --> TodoViewModel: (12)
+      TodoFragment --> MobilePhone: (14)
 
       state MobilePhone {
         [*]
       }
 
       state UI {
-       ToDoFragment --> ToDoViewModel: (2)
-       ToDoViewModel --> ToDoFragment: (13)
+       TodoFragment --> TodoViewModel: (2)
+       TodoViewModel --> TodoFragment: (13)
       }
 
       state Data {
@@ -274,7 +274,7 @@ Description of steps:
 13. Updates the data using the observer function via `MutableLiveData` \_todo and \_user, which also updates their `LiveData` counterparts; The observer triggers whenever changes to the object values are detected
 14. Updates the user interface with the retrieved data
 
-> Procedure
+#### 2.2.1 Procedure
 
 1. Create a `NetworkSource` interface and implement network sources that will retrieve data from an API. See the `core/network` module for an example. Note that data models should be created to store these data within the `core/model` module and a `RequestQueue` singleton should be provided in the `core/utils` module using dependency injection, which will be further explained in the [next section](#23-dependency-injection). The `RequestQueue` will queue and execute any requests on a single thread to streamline network requests.
 
@@ -353,7 +353,7 @@ public class TodoFragment extends Fragment {
 
 Dependency Injection (DI) is a design pattern used in software development to manage dependencies between different components or classes in a more flexible and maintainable way. It involves passing the dependencies as a constructor parameter to decouple the component and its dependency components and facilitate testing strategies using test doubles. Read [this](https://developer.android.com/training/dependency-injection) for details and examples. In TWA, [Hilt](https://developer.android.com/training/dependency-injection) is our choice for managing dependency injection.
 
-Hilt employs tags to create the dependencies and their links automatically. There are both Android-specific and general tags available. In this tutorial, dependency injection is utilised to transfer data from the network sources to the view model of the `ToDoFragment`, which interacts with a remote data source.
+Hilt employs tags to create the dependencies and their links automatically. There are both Android-specific and general tags available. In this tutorial, dependency injection is utilised to transfer data from the network sources to the view model of the `TodoFragment`, which interacts with a remote data source.
 
 1. `TodoViewModel` depends on `TodoRepository`, which is provided/injected by `DataModule.java` in core-data module
 2. `TodoRepository` depends on `TodoNetworkSource` and `UserNetworkSouce`, which are provided by `NetworkModule.java` in core-network module
