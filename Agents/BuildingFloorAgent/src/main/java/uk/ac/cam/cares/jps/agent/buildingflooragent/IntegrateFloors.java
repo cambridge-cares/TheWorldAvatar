@@ -271,6 +271,12 @@ public class IntegrateFloors {
         try {
             RemoteStoreClient storeClient = new RemoteStoreClient(this.ontopUrl);
 
+            WhereBuilder wb = new WhereBuilder()
+                    .addPrefix("ic", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ic))
+                    .addWhere("?address", "ic:hasStreet", "?streetName")
+                    .addWhere("?address", "ic:hasPostalCode", "?postCode")
+                    .addWhere("?address", "ic:hasUnitNumber", "?unitNum");
+
             SelectBuilder sb = new SelectBuilder()
                     .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.om))
                     .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
@@ -282,9 +288,7 @@ public class IntegrateFloors {
                     .addWhere("?building", "env:hasPropertyUsage", "?property")
                     .addWhere("?property", "a", "?usage")
                     .addWhere("?building", "env:hasAddress", "?address")
-                    .addOptional("?address", "ic:hasStreet", "?streetName")
-                    .addOptional("?address", "ic:hasPostalCode", "?postCode")
-                    .addOptional("?address", "ic:hasUnitNumber", "?unitNum")
+                    .addOptional(wb)
                     .addBind("COALESCE(?streetName, 'null')",  "?street")
                     .addBind("COALESCE(?postCode, 'null')", "?postcode")
                     .addBind("COALESCE(?unitNum, 'null')", "?unit");
