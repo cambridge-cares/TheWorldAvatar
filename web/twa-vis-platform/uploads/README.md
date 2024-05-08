@@ -14,7 +14,7 @@ The uploaded content provided by the deploying developer should match the direct
 The platform requires the following [JSON](https://en.wikipedia.org/wiki/JSON) configuration files:
 
 - [`ui-settings.json`](#11-ui-settings): UI configuration settings; **[MANDATORY]**.
-- [`data.json`](#121-general-settings): Specifies data sources and layers to be mapped; **[OPTIONAL]**
+- [`data-settings.json`](#121-general-settings): Specifies the urls of datasets for mapping the data sources and layers; **[OPTIONAL]**
 - [`map-settings.json`](#122-map-data-settings): Non-data specific configuration for maps; **[OPTIONAL]**
 
 ### 1.1 UI Settings
@@ -53,7 +53,7 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 
 ### 1.2 Map Settings
 
-If the map module is enabled, developers will need to supply `data.json` and `map-settings.json` files.
+If the map module is enabled, developers will need to supply `data-settings.json` and `map-settings.json` files.
 
 #### 1.2.1 General Settings
 
@@ -188,9 +188,20 @@ Below is an example of the contents for a valid `map-settings.json` file for Map
 
 #### 1.2.2 Map Data Settings
 
-The `config/data.json` file visualises data according to user requirements. Specifically, it is expected to specify the data sources (where and how the data is loaded) and data layers (how that data is visualised) within a hierarchal data group structure.
+The `config/data-settings.json` file specifies the datasets for visualisation according to user requirements. This file can ingest both local and remote datasets. Local datasets must start with a `/` to indicate a relative path from the `uploads` directory. Moreover, the display order of datasets will follow same sequence as specified in this file. A sample with explanation is provided below: 
 
-##### Defining a group
+```json
+{
+  "dataSets": [
+    "/config/data.json", // Full url of local dataset is `<root>/uploads/config/data.json`
+    "https://example.org/data.json" // Remote dataset
+  ]
+}
+```
+
+Datasets must adhere to a specific format defined in the `config/data.json` file. Specifically, it is expected to specify the data sources (where and how the data is loaded) and data layers (how that data is visualised) within a hierarchal data group structure. Note that these datasets do not necessarily need to be named as `data.json` and can be modified as long as they are properly set in the `config/data-settings.json` file. It is also recommended to put them into the `config` directory to minimise any confusion for setting the relative path.
+
+##### Dataset: Defining a group
 
 The `data.json` requires at least one defined data group. Each data group contains a number of parameters (detailed below), and can house multiple sub-groups to form a custom hierarchy.
 
@@ -229,7 +240,7 @@ Definitions of data sources and layers is optional within a data group so that g
 }
 ```
 
-##### Defining a source
+##### Dataset: Defining a source
 
 Each group can contain a number of sources, representing individual data files or endpoints that will be loaded into memory by the chosen mapping library. Sources can also be defined in top-level groups, then utilised by layers further down the hierarchy. For loading local data files, it is recommended to placed them in the `uploads/config/data` directory for a more organised approach. Please create the subdirectory if required.
 
@@ -248,7 +259,7 @@ A sample definition for Mapbox is as follows:
 }
 ```
 
-##### Defining a layer
+##### Dataset: Defining a layer
 
 Each group can also contain a number of layers, defining how the data is visualised on screen. Layers can utilise sources defined in groups higher in the hierarchy; additionally multiple layers can visualise data from the same source.
 
