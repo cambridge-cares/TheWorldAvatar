@@ -1365,6 +1365,18 @@ class CsvMaker:
             #continue
             # To add Citation information, or is it loaded in get_csv_arr_from_cif ?
 
+            # Descibe topological priperties of selected zeolite
+            #uuid_zeolite
+            #arr += zeoData.get_csv_arr_topology(uuid_zeoframe, 
+            #       ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
+            #print("going to check the topological property")
+            #if zeolite.is_reference_material():
+            #print(">>>>>>>>>> reference, so using it")
+            arr += zeoDataBase.get_csv_arr_topology(zeoframe_iri,
+                   ontozeolite.zeoOntoPrefix + "hasTopologicalProperties", z)
+               #ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
+
+
             # Description of all the zeolites for this framework:
             #for cif_line, ext_line in zeoData.getMaterialIDs(z):
             #for cif_line, mat_line in zeoData.getMaterialIDs(z):
@@ -1462,15 +1474,6 @@ class CsvMaker:
 
             #arr += zeoData.get_csv_material(uuid_zeoframe,
             #       ontozeolite.zeoOntoPrefix + "hasZeoliticMaterial", z)
-
-            # Descibe topological priperties of selected zeolite
-            #uuid_zeolite
-            #arr += zeoData.get_csv_arr_topology(uuid_zeoframe, 
-            #       ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
-                if zeolite.is_reference_material():
-                    arr += zeoDataBase.get_csv_arr_topology(zeoframe_iri,
-                           ontozeolite.zeoOntoPrefix + "hasTopologicalProperties", z)
-                   #ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
 
             #tmp = zeoData.getCsvArr(uuid_cif, self.crystOntoPrefix + "has???")
 

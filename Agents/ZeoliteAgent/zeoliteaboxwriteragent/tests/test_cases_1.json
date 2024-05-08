@@ -46,7 +46,7 @@
                     "PLACE_HOLDER_2": "?cryst_iri   ocr:hasTiledStructure  ?tiled_iri ."
                 },
                 "output": {
-                    "fw_count": "194"
+                    "fw_count": "256"
                 },
                 "comment": "Number of frameworks with Tiled Structure. Some are missing."
             },
@@ -66,7 +66,7 @@
                     "PLACE_HOLDER_2": "?topo   rdf:type  zeo:TopologicalProperties ."
                 },
                 "output": {
-                    "fw_count": "245"
+                    "fw_count": "256"
                 },
                 "comment": "Number of frameworks with Topological Properties"
             }
@@ -122,7 +122,7 @@
             },
             "s3": {
                 "input": {
-                    "PLACE_HOLDER_1": "?zeo_frame  zeo:hasTopologicalProperties      ?topo . ",
+                    "PLACE_HOLDER_1": "?zeo_frame  zeo:hasTopologicalProperties   ?topo . ",
                     "PLACE_HOLDER_2": "?topo   rdf:type zeo:TopologicalProperties . ",
                     "PLACE_HOLDER_3": ""
                 },
