@@ -27,9 +27,11 @@ The `config/ui-settings.json` file provides general settings for the platform. T
   - `map`: REQUIRED. Displays map visualisation if enabled
   - `dashboard`: REQUIRED. Displays dashboard if enabled
   - `help`: REQUIRED. Displays help page if enabled
+- `resources`: optional key value pairs if you require additional resources
+  - `dashboard`: dashboard url that will be embedded as an IFrame on the dashboard page
 - `scenario`: optional key value pairs if you require scenario handling
   - `url`: endpoint to retrieve the scenarios and settings
-  - `data`: target dataset that should be acccessible to the user
+  - `data`: target dataset that should be accessible to the user
 
 Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
 
