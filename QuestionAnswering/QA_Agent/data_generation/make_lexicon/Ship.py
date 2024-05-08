@@ -25,7 +25,7 @@ def make_surface_forms(attrs: Dict[str, str]):
     sfs.append(" ".join([word.capitalize() for word in name.split()]))
 
     sfs.append(attrs["mmsi"])
-    sfs.append("MMSI: " + attrs["mmsi"])
+    sfs.append("MMSI " + attrs["mmsi"])
 
     return sfs
 

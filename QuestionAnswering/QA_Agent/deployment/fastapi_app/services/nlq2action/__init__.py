@@ -46,7 +46,7 @@ class Nlq2Action2Data(DataSupporter):
         )
 
         timestamp = time.time()
-        examples.reverse()  # Place examples with higher relevance towards the end
+        # KIV: example permutation
         action = self.translator.translate(nlq=query, examples=examples)
         latency = time.time() - timestamp
         logger.info("Predicted action: " + str(action))
