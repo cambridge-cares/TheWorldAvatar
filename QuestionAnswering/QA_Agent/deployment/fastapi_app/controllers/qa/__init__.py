@@ -4,12 +4,12 @@ from typing import Annotated, List
 
 from fastapi import Depends
 
-from services.support_data import QAStep
-from services.nlq2action.retrieve import (
+from controllers.qa.support_data import QAStep
+from controllers.qa.retrieve import (
     Nlq2ActionRetriever,
     get_sg_nlq2action_retriever,
 )
-from services.support_data import DataSupporter
+from controllers.qa.support_data import DataSupporter
 from .execute_action import ActionExecMediator, get_actionExec_mediator
 from .translate import Nlq2ActionTranslator, get_nlq2action_translator
 
@@ -70,3 +70,11 @@ def get_singapore_nlq2action2data(
     return Nlq2Action2Data(
         retriever=retriever, translator=translator, executor=executor
     )
+
+
+def get_dataSupporter_byDomain(
+    singapore_nlq2action: Annotated[
+        DataSupporter, Depends(get_singapore_nlq2action2data)
+    ],
+):
+    return {"singapore": singapore_nlq2action}

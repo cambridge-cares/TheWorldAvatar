@@ -5,8 +5,8 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends
 
-from services.support_data import QAStep
-from core.kg import KgClient
+from controllers.qa.support_data import QAStep
+from services.kg import KgClient
 from utils.collections import FrozenDict
 from ..model import SparqlAction
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor

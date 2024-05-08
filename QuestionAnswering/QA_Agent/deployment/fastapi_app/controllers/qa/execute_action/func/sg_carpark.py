@@ -4,15 +4,15 @@ from typing import Annotated, List
 
 from fastapi import Depends
 
-from core.kg import KgClient
-from core.geocoding.base import IGeocoder
-from core.geocoding.serial import get_serial_geocoder
+from services.kg import KgClient
+from services.geocoding.base import IGeocoder
+from services.geocoding.serial import get_serial_geocoder
 from utils.rdf import flatten_sparql_response
-from services.support_data import QAStep
-from services.kg import get_sgCarpark_bgClient
+from controllers.qa.support_data import QAStep
+from controllers.kg import get_sgCarpark_bgClient
 from services.feature_info_client import FeatureInfoClientSimple, get_featureInfoClient
-from services.support_data import TableDataItem
-from services.nlq2action.execute_action.func.base import Name2Func
+from controllers.qa.support_data import TableDataItem
+from controllers.qa.execute_action.func.base import Name2Func
 
 logger = logging.getLogger(__name__)
 

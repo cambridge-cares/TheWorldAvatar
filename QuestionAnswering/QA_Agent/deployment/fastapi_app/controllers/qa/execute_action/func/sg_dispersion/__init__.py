@@ -8,19 +8,19 @@ from fastapi import Depends, HTTPException
 import requests
 from pydantic import BaseModel, Field
 
-from core.geocoding.base import IGeocoder
-from core.geocoding.serial import get_serial_geocoder
-from services.nlq2action.execute_action.func.sg_dispersion.ship import (
+from services.geocoding.base import IGeocoder
+from services.geocoding.serial import get_serial_geocoder
+from controllers.qa.execute_action.func.sg_dispersion.ship import (
     get_ship_featureInfoClient,
 )
-from services.support_data import QAStep
+from controllers.qa.support_data import QAStep
 from services.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import (
     FeatureInfoClient,
     FeatureInfoClientSimple,
     get_featureInfoClient,
 )
-from services.support_data import ScatterPlotDataItem, ScatterPlotTrace, TableDataItem
+from controllers.qa.support_data import ScatterPlotDataItem, ScatterPlotTrace, TableDataItem
 from ..base import Name2Func
 
 
@@ -237,7 +237,7 @@ class SGDispersionFuncExecutor(Name2Func):
                 plot.traces.append(
                     ScatterPlotTrace(
                         name=" ".join(x for x in [label, mmsi] if x),
-                        x=timeseries_data["time"],
+                        x=timeseries_data.time,
                         y=values,
                     )
                 )

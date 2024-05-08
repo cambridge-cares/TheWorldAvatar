@@ -1,6 +1,6 @@
 import pytest
 
-from services.nlq2action.retrieve import Nlq2ActionExample, Nlq2ActionRetriever
+from controllers.qa.retrieve import Nlq2ActionExample, Nlq2ActionRetriever
 
 
 @pytest.fixture(scope="class")

@@ -5,9 +5,9 @@ from typing import Annotated, Dict, List
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, model_serializer
 
-from services.support_data import QAStep
-from services.qa import get_dataSupporter_byDomain
-from services.support_data import (
+from controllers.qa.support_data import QAStep
+from controllers.qa import get_dataSupporter_byDomain
+from controllers.qa.support_data import (
     DataItem,
     DataSupporter,
     ScatterPlotDataItem,

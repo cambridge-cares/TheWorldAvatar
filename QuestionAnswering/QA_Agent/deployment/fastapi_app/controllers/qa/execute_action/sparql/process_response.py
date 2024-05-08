@@ -4,7 +4,7 @@ from typing import Annotated, Dict, List, Union
 from fastapi import Depends
 
 from services.entity_store import EntityStore, get_entity_store
-from services.support_data import DataItem, TableDataItem, WktDataItem
+from controllers.qa.support_data import DataItem, TableDataItem, WktDataItem
 
 
 class SparqlResponseProcessor:

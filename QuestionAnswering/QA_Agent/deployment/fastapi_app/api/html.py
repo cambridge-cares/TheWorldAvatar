@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from config import QAEngineName, get_qa_engine_name
-from services.html import (
+from controllers.html import (
     PageMetadata,
     QADomainSampleQuestions,
     get_metadata,

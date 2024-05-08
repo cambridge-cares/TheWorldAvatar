@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from services.chat import ChatbotClient, get_chatbot_client
+from controllers.chat import ChatbotClient, get_chatbot_client
 
 
 class ChatRequest(BaseModel):

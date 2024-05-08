@@ -14,8 +14,8 @@ from pydantic.dataclasses import dataclass
 import regex
 
 from config import QAEngineName, get_qa_engine_name
-from core.embed import IEmbedder, get_embedder
-from core.redis import does_index_exist, get_redis_client
+from services.embed import IEmbedder, get_embedder
+from services.redis import does_index_exist, get_redis_client
 from utils.collections import FrozenDict
 from utils.itertools_recipes import batched
 
@@ -195,6 +195,7 @@ class EntityStore:
         # Workaround: Results are ordered by querying with incrementing permissible
         # Levenshtein distance from 0 to 1 (inclusive).
         fz_dist = 0
+
         while len(iris) < k and fz_dist < 2:
             fuzzy_query = "@surface_forms:{label}".format(
                 label=" ".join(
@@ -214,6 +215,8 @@ class EntityStore:
                 if doc.iri not in iris_set:
                     iris.append(doc.iri)
                     iris_set.add(doc.iri)
+
+            fz_dist += 1
 
         return iris[:k]
 

@@ -4,7 +4,7 @@ import pytest
 from redis import Redis
 from yarl import URL
 
-from core.embed import TritonMPNetEmbedder
+from services.embed import TritonMPNetEmbedder
 
 
 @pytest.fixture(scope="module")

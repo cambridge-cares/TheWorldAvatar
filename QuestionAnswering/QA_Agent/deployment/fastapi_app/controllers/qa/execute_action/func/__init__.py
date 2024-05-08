@@ -1,7 +1,7 @@
 from typing import Annotated, Tuple
 
 from fastapi import Depends
-from services.nlq2action.execute_action.model import FuncAction
+from controllers.qa.execute_action.model import FuncAction
 from .base import Name2Func
 from .sg_dispersion import SGDispersionFuncExecutor, get_sgDispersion_funcExec
 from .sg_carpark import (
