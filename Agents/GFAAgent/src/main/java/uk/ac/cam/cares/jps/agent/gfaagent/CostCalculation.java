@@ -111,7 +111,7 @@ public class CostCalculation {
     }
 
     public List<BuildingInfo> queryBuildingUsage () {
-        String fileContent = "";
+    
         StringBuilder contentBuilder = new StringBuilder();
         
         try {
@@ -122,7 +122,7 @@ public class CostCalculation {
                     .addPrefix("twa", OntologyURIHelper.getOntologyUri(OntologyURIHelper.twa))
                     .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                     .addPrefix("rdfs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdfs))
-                    .addVar("?building").addVar("?usage")
+                    .addVar("?building").addVar("?usage").addVar("?floor")
                     .addWhere("?building", "env:hasPropertyUsage", "?property")
                     .addWhere("?property", "a", "?usage")
                     .addWhere("?building", "env:hasNumberOfFloors", "?NumberOfFloors")
