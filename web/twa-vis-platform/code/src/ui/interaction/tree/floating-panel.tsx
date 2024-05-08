@@ -76,12 +76,13 @@ export default function FloatingPanelContainer(
           }
         }
         setQueriedData(builtInData);
+        dispatch(setQueryTrigger(false));
       }
     } else {
       if (data) {
         setQueriedData(data);
+        dispatch(setQueryTrigger(false));
       }
-      dispatch(setQueryTrigger(false));
     }
   }, [isFetching]);
 

@@ -22,7 +22,6 @@ export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch, d
     // Set up query parameters
     let iri: string = null;
     let stack: string = null;
-    let queryTrigger: boolean = false; // Query will not execute by default
     if (!feature?.properties?.iri) {
       console.warn("IRI is missing. Data fetching will be skipped.");
     } else if (!dataStore.getStackEndpoint(feature.source)) {
@@ -30,12 +29,11 @@ export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch, d
     } else {
       iri = feature.properties.iri;
       stack = dataStore.getStackEndpoint(feature.source);
-      queryTrigger = true;
     }
     dispatch(setIri(iri));
-    dispatch(setProperties(feature.properties));
+    dispatch(setProperties(feature?.properties));
     dispatch(setStack(stack));
-    dispatch(setQueryTrigger(queryTrigger));
+    dispatch(setQueryTrigger(true));
   });
 }
 
