@@ -79,12 +79,9 @@ class SparqlResponseProcessor:
                     ],
                 )
             )
-
-            for var in wkt_vars:
-                value = binding[var]["value"]
-                if value.startswith(self.WKT_LITERAL_PREFIX):
-                    value = value[len(self.WKT_LITERAL_PREFIX) :]
-                items.append(WktDataItem(value=value))
+            items.extend(
+                WktDataItem.from_literal(binding[var]["value"]) for var in wkt_vars
+            )
 
         return items
 

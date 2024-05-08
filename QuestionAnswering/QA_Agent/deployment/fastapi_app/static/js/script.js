@@ -228,13 +228,16 @@ function renderScatterPlot(title, traces, parentElem, id) {
 
 
 
-function renderWkt(wkt, parentElem, id) {
+function renderWkt(wktText, srsUri, parentElem, id) {
     const raster = new ol.layer.Tile({
         source: new ol.source.OSM()
     })
 
     const format = new ol.format.WKT()
-    const feature = format.readFeature(wkt, {
+
+    // TODO: project wktText to CRS84 / ESP:4326
+    // if srsUri !== "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+    const feature = format.readFeature(wktText, {
         dataProjection: 'EPSG:4326',
         featureProjection: 'EPSG:3857'
     })
@@ -326,7 +329,7 @@ const qaDataContainer = (function () {
                 } else if (item_type === "scatter_plot") {
                     renderScatterPlot(title = item_data["title"], traces = item_data["traces"], parentElem = elem, id = id)
                 } else if (item_type === "wkt") {
-                    renderWkt(item_data["value"], parentElem = elem, id = id)
+                    renderWkt(wktText = item_data["wkt_text"], srsUri = item_data["srs_uri"], parentElem = elem, id = id)
                 } else {
                     console.log("Unexpected data item: ", item)
                 }
