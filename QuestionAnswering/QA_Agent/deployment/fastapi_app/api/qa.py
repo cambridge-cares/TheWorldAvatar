@@ -5,13 +5,11 @@ from typing import Annotated, Dict, List
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, model_serializer
 
-from controllers.qa.support_data import QAStep
+from controllers.qa.support_data import QAStep, serialize_data_item
 from controllers.qa import get_dataSupporter_byDomain
 from controllers.qa.support_data import (
     DataItem,
     DataSupporter,
-    ScatterPlotDataItem,
-    TableDataItem,
 )
 
 
@@ -23,17 +21,6 @@ class QARequest(BaseModel):
 class QAResponseMetadata(BaseModel):
     latency: float
     steps: List[QAStep]
-
-
-def serialize_data_item(item: DataItem):
-    if isinstance(item, TableDataItem):
-        t = "table"
-    elif isinstance(item, ScatterPlotDataItem):
-        t = "scatter_plot"
-    else:
-        t = "wkt"
-
-    return {"type": t, "data": item.model_dump()}
 
 
 class QAResponse(BaseModel):

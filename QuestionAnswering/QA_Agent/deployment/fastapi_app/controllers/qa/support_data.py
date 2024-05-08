@@ -27,25 +27,25 @@ class ScatterPlotDataItem(BaseModel):
     traces: List[ScatterPlotTrace] = []
 
 
-class WktDataItem(BaseModel):
+CRS84_URI = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+
+
+class WktCrs84DataItem(BaseModel):
     wkt_text: str
-    srs_uri: str = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
-
-    @classmethod
-    def from_literal(cls, wkt_literal: str):
-        start_srs = wkt_literal.find("<")
-        end_srs = wkt_literal.find(">", start_srs + 1)
-
-        if start_srs >= 0 and end_srs >= 0:
-            return cls(
-                srs_uri=wkt_literal[start_srs + 1 : end_srs],
-                wkt_text=wkt_literal[end_srs + 1 :].strip(),
-            )
-        else:
-            return cls(wkt_text=wkt_literal.strip())
 
 
-DataItem = Union[TableDataItem, ScatterPlotDataItem, WktDataItem]
+DataItem = Union[TableDataItem, ScatterPlotDataItem, WktCrs84DataItem]
+
+
+def serialize_data_item(item: DataItem):
+    if isinstance(item, TableDataItem):
+        t = "table"
+    elif isinstance(item, ScatterPlotDataItem):
+        t = "scatter_plot"
+    else:
+        t = "wkt_crs84"
+
+    return {"type": t, "data": item.model_dump()}
 
 
 class DataSupporter(ABC):
