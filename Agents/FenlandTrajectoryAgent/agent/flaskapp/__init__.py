@@ -17,16 +17,22 @@ def create_app(test_config=None):
     if test_config is not None:
         app.config.update(test_config)
 
-    # Register blueprints for application components
-    app.register_blueprint(gps_instantiation_bp, url_prefix='/gpstasks')
-    app.register_blueprint(gps_bp, url_prefix='/')
+  
 
     # Perform initial setup actions
     with app.app_context():
         # Initialize PostgreSQL database and Blazegraph namespace for RDF data
         # Adjust these function calls based on your actual utility functions and requirements
-        create_postgres_db()
-        create_blazegraph_namespace(endpoint=SPARQL_UPDATE_ENDPOINT)
+        from agent.flaskapp.home.routes import home_bp
+        from agent.flaskapp.gpstasks.routes import gps_instantiation_bp
+
+          # Register blueprints for application components
+        app.register_blueprint(gps_instantiation_bp, url_prefix='/gpstasks')
+        app.register_blueprint(gps_bp, url_prefix='/')
+        
+    create_postgres_db()
+    create_blazegraph_namespace(endpoint=SPARQL_UPDATE_ENDPOINT)
+
 
         # Additional setup actions can be added here, such as uploading ontologies
         # if needed, uncomment and adjust the following line:
