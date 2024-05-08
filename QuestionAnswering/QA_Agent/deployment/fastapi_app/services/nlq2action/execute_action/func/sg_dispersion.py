@@ -6,10 +6,11 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends, HTTPException
 import requests
+
+from core.geocoding import IGeocoder, get_geocoder
 from services.support_data import QAStep
 from services.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient, get_featureInfoClient
-from services.geocoding import IGeocoder, get_geocoder
 from services.support_data import ScatterPlotDataItem, ScatterPlotTrace, TableDataItem
 from .base import Name2Func
 
@@ -59,12 +60,12 @@ class SGDispersionFuncExecutor(Name2Func):
             query_params = {"lat": place.lat, "lon": place.lon}
             res = requests.get(self.pollutant_conc_endpoint, params=query_params)
             res.raise_for_status()
-            res: dict = res.json()
+            res = res.json()
 
             timestamps = res["time"]
             data = [
                 ScatterPlotDataItem(
-                    title=f"{key} in {place.name}",
+                    title="{key} ({unit}) in {location}".format(key=key, unit="µg/m³", lcoation=place.name),
                     traces=[ScatterPlotTrace(x=timestamps, y=readings)],
                 )
                 for key, readings in res.items()
@@ -159,6 +160,7 @@ class SGDispersionFuncExecutor(Name2Func):
         timestamp = time.time()
         iris = self.entity_store.link(surface_form, clsname="Ship", k=1)
         latency = time.time() - timestamp
+        logger.info("Linked IRIs: " + str(iris))
         steps.append(
             QAStep(
                 action="link_entity",
@@ -185,11 +187,18 @@ class SGDispersionFuncExecutor(Name2Func):
             }
             """
 
-            for i, key in enumerate(timeseries_data["data"]):
-                if key not in key2plot:
-                    plot = ScatterPlotDataItem(title=key)
+            for key, values, unit in zip(
+                timeseries_data["data"],
+                timeseries_data["values"],
+                timeseries_data["units"],
+            ):
+                if key in key2plot:
+                    plot = key2plot[key]
                 else:
-                    plot = key2plot[plot]
+                    plot = ScatterPlotDataItem(
+                        title="{key} ({unit})".format(key=key, unit=unit)
+                    )
+                    key2plot[key] = plot
 
                 label = self.entity_store.lookup_label(iri)
                 mmsi = (
@@ -202,7 +211,7 @@ class SGDispersionFuncExecutor(Name2Func):
                     ScatterPlotTrace(
                         name=" ".join(x for x in [label, mmsi] if x),
                         x=timeseries_data["time"],
-                        y=timeseries_data["values"][i],
+                        y=values,
                     )
                 )
 

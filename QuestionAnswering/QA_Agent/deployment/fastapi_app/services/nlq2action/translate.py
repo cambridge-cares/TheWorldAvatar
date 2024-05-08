@@ -1,7 +1,7 @@
 from functools import cache
 import json
 import os
-from typing import List
+from typing import List, Optional
 from openai import OpenAI
 
 from .execute_action.model import ActionBase, FuncAction, SparqlAction
@@ -21,8 +21,8 @@ Your task is to translate the following question to an executable action. Please
 
     def __init__(
         self,
-        openai_base_url: str,
-        openai_api_key: str,
+        openai_base_url: Optional[str],
+        openai_api_key: Optional[str],
         openai_model: str,
     ):
         self.openai_client = OpenAI(base_url=openai_base_url, api_key=openai_api_key)
@@ -45,7 +45,7 @@ Your task is to translate the following question to an executable action. Please
                 {"role": "system", "content": self.SYSTEM_MSG},
                 {"role": "user", "content": prompt},
             ],
-            temperature=0
+            temperature=0,
         )
         action = json.loads(res.choices[0].message.content)
 
@@ -67,5 +67,5 @@ def get_nlq2action_translator():
     return Nlq2ActionTranslator(
         openai_base_url=os.getenv("TRANSLATOR_OPENAI_BASE_URL"),
         openai_api_key=os.getenv("TRANSLATOR_OPENAI_API_KEY"),
-        openai_model=os.getenv("TRANSLATOR_OPENAI_MODEL"),
+        openai_model=os.environ["TRANSLATOR_OPENAI_MODEL"],
     )

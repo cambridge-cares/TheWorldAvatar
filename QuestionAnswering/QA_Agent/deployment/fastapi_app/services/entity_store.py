@@ -139,13 +139,10 @@ class EntityStore:
         res = self.redis_client.ft(self.INDEX_NAME).search(inverse_label_query)
         return [doc.iri for doc in res.docs]
 
-    def _make_filter_query(self, clsname: Optional[str]):
-        if clsname is None:
-            return "*"
-        else:
-            return "@clsname:{{{clsname}}}".format(
-                clsname=regex.escape(clsname, special_only=False, literal_spaces=True)
-            )
+    def _match_clsname_query(self, clsname: str):
+        return "@clsname:{{{clsname}}}".format(
+            clsname=regex.escape(clsname, special_only=False, literal_spaces=True)
+        )
 
     def link_semantic(
         self, surface_form: str, clsname: Optional[str] = None, k: int = 3
@@ -161,7 +158,10 @@ class EntityStore:
             knn_query = (
                 Query(
                     "({filter_query})=>[KNN {k} @vector $query_vector AS vector_score]".format(
-                        filter_query=self._make_filter_query(clsname), k=k
+                        filter_query=(
+                            self._match_clsname_query(clsname) if clsname else "*"
+                        ),
+                        k=k,
                     )
                 )
                 .sort_by("vector_score")
@@ -175,43 +175,46 @@ class EntityStore:
 
         return list(set(iris))[:k]
 
-    def _all_surface_forms(self, clsname: Optional[str]):
-        # TODO: accumulate pages from Redis to ensure all labels are retrieved
-        query = (
-            Query(self._make_filter_query(clsname))
-            .return_field("$.surface_forms", as_field="surface_forms_serialized")
-            .paging(0, 10000)
-        )
-        res = self.redis_client.ft(self.INDEX_NAME).search(query)
-        sfs = [
-            sf for doc in res.docs for sf in json.loads(doc.surface_forms_serialized)
-        ]
-        return list(set(sfs))
-
     def link_fuzzy(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
         """Performs fuzzy search over candidate surface forms.
         If input surface form exactly matches any label, preferentially return the associated IRIs.
         """
         iris = self.link_exact(surface_form)
+        iris_set = set(iris)
 
         k -= len(iris)
         if k >= 0:
-            fuzzy_query = Query(
-                "@surface_forms:{label}".format(
+            clsname_query = self._match_clsname_query(clsname) if clsname else None
+            escaped_words = [
+                regex.escape(word, special_only=False, literal_spaces=True)
+                for word in surface_form.split()
+            ]
+            # Currently Redis does not support sorting results by Levenshtein distance.
+            # Results are ordered by querying with incrementing permissible Levenshtein 
+            # distance from 0 to 1 (inclusive).
+            for fz_dist in range(2):
+                fuzzy_query = "@surface_forms:{label}".format(
                     label=" ".join(
-                        "%{word}%".format(
-                            word=regex.escape(
-                                word, special_only=False, literal_spaces=True
-                            )
+                        "{fz_dist}{word}{fz_dist}".format(
+                            word=word, fz_dist="%" * fz_dist
                         )
-                        for word in surface_form.split()
+                        for word in escaped_words
                     )
                 )
-            ).return_field("$.iri", as_field="iri")
-            res = self.redis_client.ft(self.INDEX_NAME).search(fuzzy_query)
-            iris.extend(doc.iri for doc in res.docs)
+                if clsname_query:
+                    fuzzy_query = "{clsname_query} {fuzzy_query}".format(
+                        clsname_query=clsname_query,
+                        fuzzy_query=fuzzy_query,
+                    )
+                query = Query(fuzzy_query).return_field("$.iri", as_field="iri")
+                res = self.redis_client.ft(self.INDEX_NAME).search(query)
 
-        return list(set(iris))[:k]
+                for doc in res.docs:
+                    if doc.iri not in iris_set:
+                        iris.append(doc.iri)
+                        iris_set.add(doc.iri)
+
+        return iris[:k]
 
     def link(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
         strategy = self.clsname2strategy.get(clsname, "fuzzy") if clsname else "fuzzy"
