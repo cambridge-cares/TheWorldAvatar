@@ -24,7 +24,7 @@ The ontology can be divided into these respective domains:
 ```mermaid
     erDiagram
     "Company" ||--o{ "IndustrialFacility" : isOwnerOf
-    "Company" ||--o{ "ontopowsys_powsysfunction:PowerConsumption" : hasPowerConsumption
+    "Company" ||--o{ "EnergyConsumptionPerUnitRevenue" : hasEnergyConsumptionPerUnitRevenue
     "Company" ||--o{ "Revenue" : "ontocape_economic_performance:hasRevenue"
     "Company" {
         hasSSICCode string
@@ -32,6 +32,7 @@ The ontology can be divided into these respective domains:
         hasBusinessActivity string
         hasYearOfEstablishment gYear
         hasNumberOfEmployees integer
+        hasNumberOfManufacturingFacilities integer
     }
     "infrastructure:Building" ||--o{ "IndustrialFacility" : "ontobim:hasFacility"
     "ontobim:Facility" ||--o{ "IndustrialFacility" : "rdfs:subClassOf"
@@ -79,9 +80,10 @@ The ontology can be divided into these respective domains:
     erDiagram
     "DataCentre" ||--o{ "MaximumITCapacity" : hasMaximumITCapacity
     "DataCentre" ||--o{ "UtilizationRate" : hasUtilizationRate
-    "Factory" ||--o{ "DesignCapacity" : hasDesignCapacity
-    "Factory" ||--o{ "SpecificEnergyConsumption" : hasSpecificEnergyConsumption
-    "Factory" ||--o{ "ThermalEfficiency" : hasThermalEfficiency
+    "Factory" ||--o{ "Product" : hasProduct
+    "Product" ||--o{ "DesignCapacity" : hasDesignCapacity
+    "Product" ||--o{ "SpecificEnergyConsumption" : hasSpecificEnergyConsumption
+    "Product" ||--o{ "ThermalEfficiency" : hasThermalEfficiency
     "Factory" ||--o{ "PlantCO2Emission" : hasPlantCO2Emission
     "Factory" ||--o{ "EnergyConsumptionPerUnitFloorArea" : hasEnergyConsumptionPerUnitFloorArea
     "Factory" }|--|| "PrintingPlant" : "rdfs:subClassOf"
