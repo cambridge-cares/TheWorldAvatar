@@ -34,7 +34,7 @@ public class CostCalculation {
     private String ontopUrl;
 
     // private BuildingInfo buildingInfo;
-    private static final String MATCHING_PATH = "/resources/cost_landuse.csv";
+    private static final String MATCHING_PATH = "/resources/cost_ontobuiltenv.csv";
 
     
     // private static final String buildingTypeQuery = "SELECT pl.\"LU_DESC\", cb.id, mb.building_iri, cb.storeys_above_ground\n" + //
@@ -70,13 +70,13 @@ public class CostCalculation {
                     String buildingIri = building.getBuildingIri();
                     String buildingUsage = building.getType();
                     int floors = building.getFloors();
-                    String typeCost = null;
-                    String keyCost = null;
+                    String typeCost = "";
+                    String keyCost = "";
                     
                     for (int j = 0; j < matchingType.size(); j++){
-                        if(buildingUsage.equals(matchingType.get(i).getenvType()) ){
-                            typeCost = matchingType.get(i).getType();
-                            keyCost = matchingType.get(i).getKey();
+                        if(buildingUsage.equals(matchingType.get(j).getenvType()) ){
+                            typeCost = matchingType.get(j).getType();
+                            keyCost = matchingType.get(j).getKey();
                             break;
                         }
                     }
@@ -117,17 +117,23 @@ public class CostCalculation {
         try {
             RemoteStoreClient storeClient = new RemoteStoreClient(this.ontopUrl);
 
+            WhereBuilder usageWB = new WhereBuilder()
+                        .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                        .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
+                        .addWhere("?building", "env:hasPropertyUsage", "?property")
+                        .addWhere("?property", "a", "?buildingUsage");
+
             SelectBuilder sb = new SelectBuilder()
                     .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                     .addPrefix("twa", OntologyURIHelper.getOntologyUri(OntologyURIHelper.twa))
-                    .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                     .addPrefix("rdfs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdfs))
+                    .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                     .addVar("?building").addVar("?usage").addVar("?floor")
-                    .addWhere("?building", "env:hasPropertyUsage", "?property")
-                    .addWhere("?property", "a", "?usage")
                     .addWhere("?building", "env:hasNumberOfFloors", "?NumberOfFloors")
-                    .addWhere("?NumberOfFloors", "env:hasValue", "?floor");
-
+                    .addWhere("?NumberOfFloors", "env:hasValue", "?floor")
+                    .addOptional (usageWB)
+                    .addBind("COALESCE(?buildingUsage, 'null')",  "?usage");
+                    
             String query = sb.build().toString();
             JSONArray queryResultArray = storeClient.executeQuery(query);
 
@@ -137,7 +143,13 @@ public class CostCalculation {
                 BuildingInfo building = new BuildingInfo();
                 String[] buildingIri = queryResultArray.getJSONObject(i).getString("building").split("Building/");
                 building.setBuildingIri(buildingIri[1]);
-                building.setType(queryResultArray.getJSONObject(i).getString("usage"));
+                String usage = queryResultArray.getJSONObject(i).getString("usage");
+                if (!usage.equals("null")){
+                    String[] buildingType = usage.split("ontobuiltenv/");
+                    building.setType(buildingType[1]);
+                }else {
+                    building.setType(usage);
+                }                                              
                 building.setFloors(queryResultArray.getJSONObject(i).getInt("floor"));
                 buildings.add(building);
             }

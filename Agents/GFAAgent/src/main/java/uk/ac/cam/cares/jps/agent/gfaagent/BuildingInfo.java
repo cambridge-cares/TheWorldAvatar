@@ -15,7 +15,7 @@ public class BuildingInfo {
     }
 
     public String getBuildingIri() {
-        return this.type;
+        return this.buildingIri;
     }
 
     public int getFloors() {
