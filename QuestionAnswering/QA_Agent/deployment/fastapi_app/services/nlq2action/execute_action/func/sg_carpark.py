@@ -4,12 +4,12 @@ from typing import Annotated, List
 
 from fastapi import Depends
 
-from services.support_data import QAStep
 from core.kg import KgClient
+from core.geocoding import IGeocoder, get_geocoder
 from utils.rdf import flatten_sparql_response
+from services.support_data import QAStep
 from services.kg import get_sgCarpark_bgClient
 from services.feature_info_client import FeatureInfoClient, get_featureInfoClient
-from services.geocoding import IGeocoder, get_geocoder
 from services.support_data import TableDataItem
 from services.nlq2action.execute_action.func.base import Name2Func
 

@@ -25,9 +25,11 @@ class NominatimGeocoder(IGeocoder):
     def search(self, location: str):
         query_params = {"q": location, "format": "json"}
         res = requests.get(self.URL, params=query_params)
+        res.raise_for_status()
+
         entries = res.json()
-        # TODO: handle when `entries` is empty
-        entry = entries[0]
+        entry = entries[0]  # TODO: handle when `entries` is empty
+
         return Place(
             lat=entry["lat"],
             lon=entry["lon"],

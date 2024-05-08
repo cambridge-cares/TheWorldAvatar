@@ -1,5 +1,6 @@
 import logging
-from typing import Callable, Literal, Optional
+import os
+from typing import Callable, Optional
 
 from openai import OpenAI, Stream
 from openai.types.chat.chat_completion_chunk import ChatCompletionChunk
@@ -43,12 +44,13 @@ Answer: """
 
     def __init__(
         self,
-        url: Optional[str] = None,
-        model: str = "gpt-3.5-turbo-0125",
+        openai_base_url: Optional[str],
+        openai_api_key: Optional[str],
+        openai_model: str,
         user_input_tokens_limit: int = 16000,
     ):
-        self.openai_client = OpenAI(base_url=url)
-        self.model = model
+        self.openai_client = OpenAI(base_url=openai_base_url, api_key=openai_api_key)
+        self.model = openai_model
         self.tokenizer = tiktoken.get_encoding("cl100k_base")
         self.user_input_tokens_limit = user_input_tokens_limit
 
@@ -92,4 +94,8 @@ Answer: """
 
 
 def get_chatbot_client():
-    return ChatbotClient()
+    return ChatbotClient(
+        openai_base_url=os.getenv("CHAT_OPENAI_BASE_URL"),
+        openai_api_key=os.getenv("CHAT_OPENAI_API_KEY"),
+        openai_model=os.environ["CHAT_OPENAI_MODEL"],
+    )

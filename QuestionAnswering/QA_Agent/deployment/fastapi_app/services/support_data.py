@@ -24,7 +24,7 @@ class ScatterPlotTrace(BaseModel):
 
 class ScatterPlotDataItem(BaseModel):
     title: Optional[str] = None
-    traces: List[ScatterPlotTrace]
+    traces: List[ScatterPlotTrace] = []
 
 
 class WktDataItem(BaseModel):
