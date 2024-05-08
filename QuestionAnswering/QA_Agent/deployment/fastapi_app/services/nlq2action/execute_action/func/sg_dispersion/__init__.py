@@ -8,7 +8,8 @@ from fastapi import Depends, HTTPException
 import requests
 from pydantic import BaseModel, Field
 
-from core.geocoding import IGeocoder, get_geocoder
+from core.geocoding.base import IGeocoder
+from core.geocoding.serial import get_serial_geocoder
 from services.nlq2action.execute_action.func.sg_dispersion.ship import (
     get_ship_featureInfoClient,
 )
@@ -100,7 +101,7 @@ class SGDispersionFuncExecutor(Name2Func):
             data = [
                 ScatterPlotDataItem(
                     title="{key} ({unit}) in {location}".format(
-                        key=key, unit="µg/m³", lcoation=place.name
+                        key=key, unit="µg/m³", location=place.name
                     ),
                     traces=[ScatterPlotTrace(x=timestamps, y=readings)],
                 )
@@ -261,7 +262,7 @@ def get_pollutantConc_endpoint():
 @cache
 def get_sgDispersion_funcExec(
     pollutant_conc_endpoint: Annotated[str, Depends(get_pollutantConc_endpoint)],
-    geocoder: Annotated[IGeocoder, Depends(get_geocoder)],
+    geocoder: Annotated[IGeocoder, Depends(get_serial_geocoder)],
     entity_store: Annotated[EntityStore, Depends(get_entity_store)],
     feature_info_client: Annotated[
         FeatureInfoClientSimple, Depends(get_featureInfoClient)
