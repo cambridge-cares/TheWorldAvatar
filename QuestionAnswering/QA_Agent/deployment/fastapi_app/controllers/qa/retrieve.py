@@ -1,5 +1,6 @@
 from importlib.resources import files
 import json
+import logging
 from typing import Annotated, Iterable
 
 from fastapi import Depends
@@ -21,6 +22,9 @@ class Nlq2ActionExample:
     action: dict
 
 
+logger = logging.getLogger(__name__)
+
+
 class Nlq2ActionRetriever:
     EXAMPLES_KEY_PREFIX = "nlq2actionExamples:"
     EXAMPLES_INDEX_NAME = "idx:nlq2actionExamples_vss"
@@ -32,8 +36,12 @@ class Nlq2ActionRetriever:
         embedder: IEmbedder,
         examples: Iterable[Nlq2ActionExample],
     ):
+
         offset = 0
         vector_dim = None
+
+        logger.info("Inserting examples into Redis...")
+
         for chunk in batched(examples, 10):
             chunk = list(chunk)
             embeddings = (
@@ -55,10 +63,14 @@ class Nlq2ActionRetriever:
 
             offset += len(chunk)
 
+        logger.info("Insertion done")
+
         if vector_dim is None:
             raise ValueError(
                 "Index for natural language question-to-action examples is not found and must be created. Therefore, `examples` must not be None."
             )
+
+        logger.info("Creating index for examples...")
 
         schema = (
             VectorField(
@@ -75,6 +87,8 @@ class Nlq2ActionRetriever:
             fields=schema, definition=definition
         )
 
+        logger.info("Index {index} created".format(index=cls.EXAMPLES_INDEX_NAME))
+
     def __init__(
         self,
         redis_client: Redis,
@@ -82,6 +96,11 @@ class Nlq2ActionRetriever:
         examples: Iterable[Nlq2ActionExample],
     ):
         if not does_index_exist(redis_client, self.EXAMPLES_INDEX_NAME):
+            logger.info(
+                "Index for examples {index} not found".format(
+                    index=self.EXAMPLES_INDEX_NAME
+                )
+            )
             self._insert_examples_and_create_index(
                 redis_client=redis_client, embedder=embedder, examples=examples
             )

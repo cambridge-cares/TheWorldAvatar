@@ -1,6 +1,7 @@
 from functools import cache
 from importlib.resources import files
 import json
+import logging
 from typing import Annotated, Dict, Iterable, List, Literal, Optional, Tuple
 
 from fastapi import Depends
@@ -38,6 +39,9 @@ class LexiconEntry:
     surface_forms: Tuple[str, ...]
 
 
+logger = logging.getLogger(__name__)
+
+
 class EntityStore:
     KEY_PREFIX = "entities:"
     INDEX_NAME = "idx:entities"
@@ -51,7 +55,12 @@ class EntityStore:
     ):
         offset = 0
         vector_dim = None
-        for chunk in batched(entries, 10):
+
+        logger.info("Inserting entities into Redis...")
+
+        for i, chunk in enumerate(batched(entries, 128)):
+            logger.info("Processing chunk " + str(i))
+
             chunk = list(chunk)
             embeddings = (
                 embedder([", ".join(entry.surface_forms) for entry in chunk])
@@ -84,10 +93,14 @@ class EntityStore:
 
             offset += len(chunk)
 
+        logger.info("Insertion done")
+
         if vector_dim is None:
             raise ValueError(
                 f"Index {cls.INDEX_NAME} is not found and must be created. Therefore, `entries` must not be None."
             )
+
+        logger.info("Creating index for entities...")
 
         schema = (
             TagField("$.iri", as_name="iri"),
@@ -106,6 +119,8 @@ class EntityStore:
             fields=schema, definition=definition
         )
 
+        logger.info("Index {index} created".format(index=cls.INDEX_NAME))
+
     def __init__(
         self,
         redis_client: Redis,
@@ -114,6 +129,9 @@ class EntityStore:
         clsname2strategy: Dict[str, ELStrategy] = dict(),
     ):
         if not does_index_exist(redis_client, self.INDEX_NAME):
+            logger.info(
+                "Index for entities {index} not found".format(index=self.INDEX_NAME)
+            )
             self._insert_entries_and_create_index(
                 redis_client=redis_client,
                 embedder=embedder,
