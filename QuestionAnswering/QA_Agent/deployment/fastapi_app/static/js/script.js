@@ -213,7 +213,6 @@ function renderScatterPlot(title, traces, parentElem, id) {
     let plot_traces = traces.map(trace => {
         return {
             type: "scatter",
-            mode: "lines",
             name: trace["name"],
             x: trace["x"],
             y: trace["y"]
