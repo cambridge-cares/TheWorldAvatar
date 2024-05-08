@@ -5,6 +5,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import { JsonObject } from 'types/json';
+
 /**
  * Handles the retrieval and storage of settings from the user provided configuration files.
  * Note that JSON is stored in its serialised form so that it can be passed from Server to Client component. 
@@ -14,7 +16,7 @@ export default class SettingsStore {
 
   // Location of all configuration files
   private static readonly DEFAULT_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/ui-settings.json");
-  private static readonly DATA_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/data.json");
+  private static readonly DATA_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/data-settings.json");
   private static readonly MAP_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/map-settings.json");
   private static readonly CSS_OVERRIDE_FILE: string = path.join(process.cwd(), "public/style-overrides.css");
 
@@ -82,10 +84,31 @@ export default class SettingsStore {
   /**
  * Reads the data settings for populating the map.
  */
-  public static readMapDataSettings(): void {
+  public static async readMapDataSettings(): Promise<void> {
     try {
+      // Retrieve datasets from data settings file
       const dataSettings: string = this.readFile(this.DATA_SETTINGS_FILE);
-      this.MAP_DATA_SETTINGS = dataSettings;
+      const datasets: string[] = JSON.parse(dataSettings).dataSets;
+
+      // Array of promises to fetch data from each dataset
+      const dataPromises: Promise<JsonObject>[] = (datasets.map(async dataset => {
+        let jsonData: JsonObject;
+        // Local datasets will start with /, and must have public appended
+        if (dataset.startsWith("/")) {
+          jsonData = JSON.parse(this.readFile("public" + dataset));
+        } else {
+          // For remote datasets, fetch the json
+          const res = await fetch(dataset);
+          if (res.ok) {
+            jsonData = await res.json();
+          }
+        }
+        return jsonData;
+      }));
+
+      // Wait for all promises to resolve, filter out null values, and stringify the resulting array
+      const data: JsonObject[] = (await Promise.all(dataPromises)).filter(Boolean);
+      this.MAP_DATA_SETTINGS = JSON.stringify(data);
       console.info("Map data settings have been read and cached.");
     } catch (error) {
       console.info("No local data files detected...");

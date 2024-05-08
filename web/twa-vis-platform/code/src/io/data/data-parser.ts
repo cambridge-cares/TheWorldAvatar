@@ -28,7 +28,13 @@ export class DataParser {
      * @param rawJson JSON of data.json file.
      */
     public loadData(rawJson: JsonObject): DataStore {
-        this.recurse(rawJson, null, null, 0);
+        if (Array.isArray(rawJson)) {
+            rawJson.map((dataset) => {
+                this.recurse(dataset, null, null, 0);
+            })
+        } else {
+            this.recurse(rawJson, null, null, 0);
+        }
         console.info("Data definition loading complete.");
         return this.dataStore;
     }

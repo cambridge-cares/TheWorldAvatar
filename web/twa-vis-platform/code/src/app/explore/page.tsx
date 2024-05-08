@@ -37,7 +37,7 @@ export default async function VisualisationPage() {
     }))
   }
   SettingsStore.readMapSettings();
-  SettingsStore.readMapDataSettings();
+  await SettingsStore.readMapDataSettings();
 
   return (
     <MapContainer
