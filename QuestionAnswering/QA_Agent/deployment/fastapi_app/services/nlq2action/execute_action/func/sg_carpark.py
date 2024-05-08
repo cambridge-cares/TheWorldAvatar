@@ -5,7 +5,8 @@ from typing import Annotated, List
 from fastapi import Depends
 
 from core.kg import KgClient
-from core.geocoding import IGeocoder, get_geocoder
+from core.geocoding.base import IGeocoder
+from core.geocoding.serial import get_serial_geocoder
 from utils.rdf import flatten_sparql_response
 from services.support_data import QAStep
 from services.kg import get_sgCarpark_bgClient
@@ -95,8 +96,10 @@ class SGCarParkFuncExecutor(Name2Func):
 
 def get_sgCarpark_funcExec(
     bg_client: Annotated[KgClient, Depends(get_sgCarpark_bgClient)],
-    feature_info_client: Annotated[FeatureInfoClientSimple, Depends(get_featureInfoClient)],
-    geocoder: Annotated[IGeocoder, Depends(get_geocoder)],
+    feature_info_client: Annotated[
+        FeatureInfoClientSimple, Depends(get_featureInfoClient)
+    ],
+    geocoder: Annotated[IGeocoder, Depends(get_serial_geocoder)],
 ):
     return SGCarParkFuncExecutor(
         bg_client=bg_client, feature_info_client=feature_info_client, geocoder=geocoder
