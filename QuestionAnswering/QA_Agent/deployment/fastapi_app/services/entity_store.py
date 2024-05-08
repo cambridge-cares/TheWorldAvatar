@@ -180,39 +180,40 @@ class EntityStore:
         If input surface form exactly matches any label, preferentially return the associated IRIs.
         """
         iris = self.link_exact(surface_form)
+
+        if len(iris) >= k:
+            return iris[:k]
+
+        clsname_query = self._match_clsname_query(clsname) if clsname else None
+        escaped_words = [
+            regex.escape(word, special_only=False, literal_spaces=True)
+            for word in surface_form.split()
+        ]
         iris_set = set(iris)
 
-        k -= len(iris)
-        if k >= 0:
-            clsname_query = self._match_clsname_query(clsname) if clsname else None
-            escaped_words = [
-                regex.escape(word, special_only=False, literal_spaces=True)
-                for word in surface_form.split()
-            ]
-            # Currently Redis does not support sorting results by Levenshtein distance.
-            # Results are ordered by querying with incrementing permissible Levenshtein 
-            # distance from 0 to 1 (inclusive).
-            for fz_dist in range(2):
-                fuzzy_query = "@surface_forms:{label}".format(
-                    label=" ".join(
-                        "{fz_dist}{word}{fz_dist}".format(
-                            word=word, fz_dist="%" * fz_dist
-                        )
-                        for word in escaped_words
-                    )
+        # Currently Redis does not support sorting results by Levenshtein distance.
+        # Workaround: Results are ordered by querying with incrementing permissible
+        # Levenshtein distance from 0 to 1 (inclusive).
+        fz_dist = 0
+        while len(iris) < k and fz_dist < 2:
+            fuzzy_query = "@surface_forms:{label}".format(
+                label=" ".join(
+                    "{fz_dist}{word}{fz_dist}".format(word=word, fz_dist="%" * fz_dist)
+                    for word in escaped_words
                 )
-                if clsname_query:
-                    fuzzy_query = "{clsname_query} {fuzzy_query}".format(
-                        clsname_query=clsname_query,
-                        fuzzy_query=fuzzy_query,
-                    )
-                query = Query(fuzzy_query).return_field("$.iri", as_field="iri")
-                res = self.redis_client.ft(self.INDEX_NAME).search(query)
+            )
+            if clsname_query:
+                fuzzy_query = "{clsname_query} {fuzzy_query}".format(
+                    clsname_query=clsname_query,
+                    fuzzy_query=fuzzy_query,
+                )
+            query = Query(fuzzy_query).return_field("iri")
+            res = self.redis_client.ft(self.INDEX_NAME).search(query)
 
-                for doc in res.docs:
-                    if doc.iri not in iris_set:
-                        iris.append(doc.iri)
-                        iris_set.add(doc.iri)
+            for doc in res.docs:
+                if doc.iri not in iris_set:
+                    iris.append(doc.iri)
+                    iris_set.add(doc.iri)
 
         return iris[:k]
 

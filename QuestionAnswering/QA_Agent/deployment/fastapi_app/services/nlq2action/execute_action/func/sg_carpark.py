@@ -9,7 +9,7 @@ from core.geocoding import IGeocoder, get_geocoder
 from utils.rdf import flatten_sparql_response
 from services.support_data import QAStep
 from services.kg import get_sgCarpark_bgClient
-from services.feature_info_client import FeatureInfoClient, get_featureInfoClient
+from services.feature_info_client import FeatureInfoClientSimple, get_featureInfoClient
 from services.support_data import TableDataItem
 from services.nlq2action.execute_action.func.base import Name2Func
 
@@ -20,7 +20,7 @@ class SGCarParkFuncExecutor(Name2Func):
     def __init__(
         self,
         bg_client: KgClient,
-        feature_info_client: FeatureInfoClient,
+        feature_info_client: FeatureInfoClientSimple,
         geocoder: IGeocoder,
     ):
         self.bg_client = bg_client
@@ -95,7 +95,7 @@ class SGCarParkFuncExecutor(Name2Func):
 
 def get_sgCarpark_funcExec(
     bg_client: Annotated[KgClient, Depends(get_sgCarpark_bgClient)],
-    feature_info_client: Annotated[FeatureInfoClient, Depends(get_featureInfoClient)],
+    feature_info_client: Annotated[FeatureInfoClientSimple, Depends(get_featureInfoClient)],
     geocoder: Annotated[IGeocoder, Depends(get_geocoder)],
 ):
     return SGCarParkFuncExecutor(
