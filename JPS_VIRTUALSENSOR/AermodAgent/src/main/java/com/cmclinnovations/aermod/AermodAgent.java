@@ -111,8 +111,8 @@ public class AermodAgent extends DerivationAgent {
 
         Map<String, Building> allBuildings = new HashMap<>();
         if (!EnvConfig.IGNORE_BUILDINGS) {
-        LOGGER.info("Querying for buildings within simulation domain");
-        allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
+            LOGGER.info("Querying for buildings within simulation domain");
+            allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
         }
         List<StaticPointSource> staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
 
@@ -225,14 +225,24 @@ public class AermodAgent extends DerivationAgent {
                 .forEach(pollutantType -> zIriList.parallelStream().forEach(zIri -> {
                     aermod.createSimulationSubDirectory(pollutantType, zMap.get(zIri));
 
-                    // create emissions input
-                    aermod.createPointsFile(sourcesWithEmissions, srid, pollutantType, zMap.get(zIri));
-                    aermod.runAermod(pollutantType, zMap.get(zIri));
+                    if (sourcesWithEmissions.size() > 0) {
+
+                        // create emissions input
+                        aermod.createPointsFile(sourcesWithEmissions, srid, pollutantType, zMap.get(zIri));
+                        aermod.runAermod(pollutantType, zMap.get(zIri));
+
+                    } else {
+
+                        // create mock averageConcentration.dat
+
+                        aermod.createMockOutput(scope, nx, ny, srid, pollutantType, zMap.get(zIri));
+                    }
 
                     // Upload files used by scripts within Python Service to file server.
                     Path concFile = simulationDirectory.resolve(
                             Paths.get("aermod", Pollutant.getPollutantLabel(pollutantType),
                                     String.valueOf(zMap.get(zIri)), "averageConcentration.dat"));
+
                     String outputFileURL = aermod.uploadToFileServer(concFile);
                     zToOutputMap.get(zIri).addDispMatrix(pollutantType, outputFileURL);
 
