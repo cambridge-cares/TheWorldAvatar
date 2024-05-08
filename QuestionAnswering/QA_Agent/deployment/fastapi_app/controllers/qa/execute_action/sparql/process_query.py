@@ -4,7 +4,7 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends
 
-from core.kg import KgClient
+from services.kg import KgClient
 from utils.collections import FrozenDict
 from services.entity_store import EntityStore, get_entity_store
 from .kg import get_ns2kg
@@ -19,23 +19,35 @@ class SparqlQueryProcessor:
         self.ns2uri = ns2uri
 
     def _link_token(self, token: str):
+        logger.info("Performing linking for token: " + token)
+        
         if token.startswith("<") and token.endswith(">") and ":" in token:
             clsname, surface_form = token[1:-1].split(":", maxsplit=1)
+
             if surface_form.startswith('"') and surface_form.endswith('"'):
                 surface_form = surface_form[1:-1]
                 iris = self.entity_store.link(
                     surface_form=surface_form, clsname=clsname
                 )
+
+                logger.info(
+                    "Linked IRIs for {token}: {iris}".format(token=token, iris=iris)
+                )
+
                 return ["<{iri}>".format(iri=iri) for iri in iris]
+
         return [token]
 
     def link_entities(self, sparql: str):
         idx = 0
+
         while idx < len(sparql):
             # VALUES ?LandUseType { <LandUseType:\"residential\"> }
             values_start = sparql.find("VALUES", idx)
             if values_start < 0:
                 break
+
+            logger.info("Found VALUES keyword")
 
             idx_start = values_start + len("VALUES") + 1
             while idx_start < len(sparql) and sparql[idx_start].isspace():
@@ -54,8 +66,9 @@ class SparqlQueryProcessor:
                 break
 
             varnode = sparql[idx_start:idx]
-            idx_start = idx
+            logger.info("Variable node: " + varnode)
 
+            idx_start = idx
             while idx_start < len(sparql) and sparql[idx_start].isspace():
                 idx_start += 1
             if idx_start >= len(sparql):
@@ -68,7 +81,7 @@ class SparqlQueryProcessor:
             tokens: List[str] = []
 
             token_start = idx_start + 1
-            while True:
+            while token_start < len(sparql):
                 while token_start < len(sparql) and sparql[token_start].isspace():
                     token_start += 1
                 if token_start >= len(sparql):
@@ -85,8 +98,6 @@ class SparqlQueryProcessor:
                         if token_end < 0:
                             continue
                         found = True
-                        tokens.append(sparql[token_start : token_end + 1])
-                        token_start = token_end + 1
                         break
 
                 if not found:
@@ -95,11 +106,18 @@ class SparqlQueryProcessor:
                         token_end += 1
                     if token_end >= len(sparql):
                         break
-                    tokens.append(sparql[token_start : token_end + 1])
-                    token_start = token_end + 1
+
+                token = sparql[token_start : token_end + 1]
+                logger.info("Extracted argument of VALUES clause: " + token)
+                tokens.append(token)
+
+                token_start = token_end + 1
+
+            logger.info("Extracted tokens: " + str(tokens))
 
             if sparql[token_start] != "}":
                 break
+
             idx_end = token_start
 
             values = []
@@ -133,10 +151,13 @@ class SparqlQueryProcessor:
 
     def inject_service_endpoint(self, sparql: str):
         idx = 0
+
         while idx < len(sparql):
             start = sparql.find("SERVICE", idx)
             if start < 0:
                 break
+
+            logger.info("Found SERVICE keyword")
 
             start += len("SERVICE")
             while start < len(sparql) and sparql[start].isspace():
@@ -145,17 +166,28 @@ class SparqlQueryProcessor:
                 break
 
             end = sparql.find(">", start)
+            if end < 0:
+                break
+
             ns = sparql[start + 1 : end]
+
+            logger.info("Found namespace: " + ns)
+
             if ns in self.ns2uri:
+                logger.info("Namespace URI: " + self.ns2uri[ns])
                 sparql = "{before}<{uri}>{after}".format(
                     before=sparql[:start], uri=self.ns2uri[ns], after=sparql[end + 1 :]
                 )
                 idx = start + len(self.ns2uri[ns]) + 1
             else:
+                logger.info("Namespace URI not found")
                 idx = end + 1
+
         return sparql
 
     def process(self, sparql: str):
+        logger.info("Process SPARQL query:\n" + sparql)
+
         sparql = self.inject_service_endpoint(sparql)
         return self.link_entities(sparql)
 

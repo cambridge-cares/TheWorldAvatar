@@ -26,7 +26,7 @@ class ShipFeatureInfoTimeItem(BaseModel):
 
 class ShipFeatureInfo(BaseModel):
     meta: ShipFeatureInfoMeta
-    time: Optional[List[ShipFeatureInfoTimeItem]]
+    time: Optional[List[ShipFeatureInfoTimeItem]] = None
 
 
 def get_ship_featureInfoClient(url: Annotated[str, Depends(get_featureInfoAgentUrl)]):

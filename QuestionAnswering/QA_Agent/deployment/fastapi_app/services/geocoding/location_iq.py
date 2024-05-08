@@ -5,7 +5,7 @@ from typing import List, Optional, Tuple
 from pydantic import BaseModel, Field, TypeAdapter
 import requests
 
-from core.geocoding.base import Place, IGeocoder
+from services.geocoding.base import Place, IGeocoder
 
 
 # https://docs.locationiq.com/reference/search
@@ -20,17 +20,17 @@ class LocationIQGecodingResponse(BaseModel):
     cls: Optional[str] = Field(default=None, alias="class")
     type: Optional[str] = None
     importance: Optional[float] = None
-    address: Optional[dict]
+    address: Optional[dict] = None
     boundingbox: Tuple[str, str, str, str]
-    namedetails: Optional[dict]
-    extratags: Optional[dict]
-    geojson: Optional[dict]
-    geokml: Optional[str]
-    svg: Optional[str]
-    geotext: Optional[str]
-    icon: Optional[str]
-    matchquality: Optional[dict]
-    postaladdress: Optional[str]
+    namedetails: Optional[dict] = None
+    extratags: Optional[dict] = None
+    geojson: Optional[dict] = None
+    geokml: Optional[str] = None
+    svg: Optional[str] = None
+    geotext: Optional[str] = None
+    icon: Optional[str] = None
+    matchquality: Optional[dict] = None
+    postaladdress: Optional[str] = None
 
 
 class LocationIQGeocoder(IGeocoder):

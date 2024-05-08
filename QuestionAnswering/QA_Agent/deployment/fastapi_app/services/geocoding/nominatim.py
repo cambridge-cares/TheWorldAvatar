@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 from pydantic import TypeAdapter
 import requests
 
-from core.geocoding.base import IGeocoder, Place
+from services.geocoding.base import IGeocoder, Place
 
 
 class NominatimGeocoder(IGeocoder):

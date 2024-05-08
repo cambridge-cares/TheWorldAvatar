@@ -11,8 +11,8 @@ from redis.commands.search.query import Query
 from pydantic.dataclasses import dataclass
 
 from utils.itertools_recipes import batched
-from core.embed import IEmbedder, get_embedder
-from core.redis import does_index_exist, get_redis_client
+from services.embed import IEmbedder, get_embedder
+from services.redis import does_index_exist, get_redis_client
 
 
 @dataclass

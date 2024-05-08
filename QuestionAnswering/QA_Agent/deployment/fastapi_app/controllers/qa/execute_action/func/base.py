@@ -1,8 +1,8 @@
 from abc import ABC
 from typing import Callable, Dict, List, Tuple
 
-from services.support_data import QAStep
-from services.support_data import DataItem
+from controllers.qa.support_data import QAStep
+from controllers.qa.support_data import DataItem
 
 
 class Name2Func(ABC):
