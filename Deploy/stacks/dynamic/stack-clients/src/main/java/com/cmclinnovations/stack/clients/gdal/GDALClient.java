@@ -98,8 +98,18 @@ public class GDALClient extends ContainerClient {
             tmpDir.copyFrom(Path.of(dirPath));
             String gdalContainerId = getContainerId(GDAL);
             Multimap<String, String> foundGeoFiles = findGeoFiles(gdalContainerId, tmpDir.toString());
-            for (Collection<String> filesOfType : foundGeoFiles.asMap().values()) {
+            for (var entry : foundGeoFiles.asMap().entrySet()) {
+                Collection<String> filesOfType = entry.getValue();
+
                 for (String filePath : filesOfType) {
+                    switch (entry.getKey()) {
+                        case "XLSX":
+                        case "XLS":
+                            filePath = excelToCSV(filePath);
+                            break;
+                        default:
+                            break;
+                    }
                     uploadVectorToPostGIS(database, layerName, filePath, options, append);
                     // If inserting multiple sources into a single layer then ensure subsequent
                     // files are appended.
@@ -147,6 +157,24 @@ public class GDALClient extends ContainerClient {
                 .withEvaluationTimeout(300)
                 .exec();
         handleErrors(errorStream, execId, logger);
+    }
+
+    private String excelToCSV(String filePath) {
+        String containerId = getContainerId(GDAL);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
+        String outputDirectory = FileUtils.removeExtension(filePath);
+        String execId = createComplexCommand(containerId, "ogr2ogr",
+                "-f", "CSV",
+                outputDirectory, // all sheets get put as individual csv into directory with same name as input file
+                filePath)
+                .withOutputStream(outputStream)
+                .withErrorStream(errorStream)
+                .withEvaluationTimeout(300)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+        return outputDirectory;
     }
 
     public void uploadRasterFilesToPostGIS(String database, String schema, String layerName,
