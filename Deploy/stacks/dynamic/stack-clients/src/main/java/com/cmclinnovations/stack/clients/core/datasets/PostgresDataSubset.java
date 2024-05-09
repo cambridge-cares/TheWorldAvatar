@@ -70,11 +70,11 @@ public abstract class PostgresDataSubset extends DataSubset {
                 .ifPresent(query -> PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(query));
     }
 
-    public String handleFileValues(String sql) {
-        if (null != sql && sql.startsWith("@")) {
-            String sqlFile = sql.substring(1);
+    public String handleFileValues(String query) {
+        if (null != query && query.startsWith("@")) {
+            String sqlFile = query.substring(1);
             try {
-                sql = Files.readString(Path.of(sqlFile));
+                query = Files.readString(Path.of(sqlFile));
             } catch (IOException ex) {
                 throw new RuntimeException(
                         "Failed to read SQL file '" + Path.of(sqlFile).toAbsolutePath().toString()
@@ -83,6 +83,6 @@ public abstract class PostgresDataSubset extends DataSubset {
                         ex);
             }
         }
-        return sql;
+        return query;
     }
 }
