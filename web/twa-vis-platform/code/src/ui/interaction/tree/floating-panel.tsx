@@ -16,13 +16,13 @@ import LegendTree from './legend/legend-tree';
 import InfoTree from './info/info-tree';
 
 // Incoming parameters for component.
-type FloatingPanelContainerProps = {
+interface FloatingPanelContainerProps {
   map: Map;
   dataStore: DataStore;
   icons: IconSettings;
   legend: LegendSettings;
   hideInfo?: boolean;
-};
+}
 
 function genQueryEndpoint(iri: string, stack: string, scenario: string): string {
   if (scenario) {
@@ -35,7 +35,7 @@ function genQueryEndpoint(iri: string, stack: string, scenario: string): string 
  * Floating panel that contains the layer tree and legend components.
  */
 export default function FloatingPanelContainer(
-  props: FloatingPanelContainerProps
+  props: Readonly<FloatingPanelContainerProps>
 ) {
   const [isPanelVisible, setIsPanelVisible] = useState(true);
   const [queriedData, setQueriedData] = useState(null);

@@ -5,12 +5,12 @@ import React from 'react';
 
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 
-type HeaderFieldProps = {
-  readonly name: string;
-  readonly spacing?: string;
-  readonly isCollapsed: boolean;
-  readonly toggleExpansion: () => void;
-};
+interface HeaderFieldProps {
+  name: string;
+  spacing?: string;
+  isCollapsed: boolean;
+  toggleExpansion: () => void;
+}
 
 /**
  * This component renders a dropdown field populated with the options from the data.
@@ -19,7 +19,7 @@ type HeaderFieldProps = {
  * @param {number} selectedIndex The currently selected index.
  * @param {React.Dispatch<React.SetStateAction<number>>} setSelectedIndex The method to update the selected index based on the event.
  */
-export default function HeaderField(props: HeaderFieldProps) {
+export default function HeaderField(props: Readonly<HeaderFieldProps>) {
   const collapsedIcon: string = props.isCollapsed ? "keyboard_arrow_down" : "keyboard_arrow_up";
 
   return (

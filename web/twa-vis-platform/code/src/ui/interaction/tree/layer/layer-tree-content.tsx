@@ -13,20 +13,20 @@ import IconComponent from 'ui/graphic/icon/icon';
 import { formatAppUrl } from 'utils/client-utils';
 
 // type definition for incoming properties
-type LayerTreeHeaderProps = {
+interface LayerTreeHeaderProps {
   map: Map;
   group: MapLayerGroup;
   depth: number;
   parentShowChildren: boolean;
   setMapGroups: React.Dispatch<React.SetStateAction<MapLayerGroup[]>>;
-};
+}
 
-type LayerTreeEntryProps = {
+interface LayerTreeEntryProps {
   map: Map;
   layer: MapLayer;
   depth: number;
   handleLayerVisibility: (layerIds: string, isVisible: boolean) => void;
-};
+}
 
 /**
  * This component renders the header based on the input map layers and their groups.
@@ -36,7 +36,7 @@ type LayerTreeEntryProps = {
  * @param {number} depth The current depth to this tree.
  * @param {boolean} parentShowChildren An indicator based on the parent node that shows children or not.
 */
-export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
+export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
   // Size of left hand indentation
   const spacing: string = props.depth * 0.8 + "rem";
   const group: MapLayerGroup = props.group;
@@ -164,7 +164,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
  * @param {number} depth The depth of the layer in the layer tree.
  * @param {Function} handleLayerVisibility - Function to handle the toggling of layer visibility.
  */
-function LayerTreeEntry(props: LayerTreeEntryProps) {
+function LayerTreeEntry(props: Readonly<LayerTreeEntryProps>) {
   const layer: MapLayer = props.layer;
   const firstLayerId: string = layer.ids.split(" ")[0];
   // Size of left hand indentation

@@ -18,14 +18,14 @@ const collapseKey: string = "collapse";
 const valueKey: string = "value";
 const unitKey: string = "unit";
 
-type InfoTreeProps = {
+interface InfoTreeProps {
   data: JsonObject;
   isFetching: boolean;
   activeTab: {
     index: number;
     setActiveTab: React.Dispatch<React.SetStateAction<number>>;
   }
-};
+}
 
 /**
  * This component is responsible for displaying information about the selected geographic feature 
@@ -35,7 +35,7 @@ type InfoTreeProps = {
  * @param {JsonObject} data The queried data that will be processed for display.
  * @param {boolean} isFetching An indicator if the query is still running.
  */
-export default function InfoTree(props: InfoTreeProps) {
+export default function InfoTree(props: Readonly<InfoTreeProps>) {
   const timeSeries: React.MutableRefObject<TimeSeriesGroup> = useRef(null);
   const options: React.MutableRefObject<DropdownFieldOption[]> = useRef([]);
   const [selectedTimeSeriesOption, setSelectedTimeSeriesOption] = useState(0);

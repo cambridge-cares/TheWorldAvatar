@@ -24,7 +24,7 @@ import {
 } from 'map/map-helper';
 
 // Type definition for Ribbon parameters
-export type RibbonProps = {
+export interface RibbonProps {
   map: Map,
   startingIndex: number,
   mapSettings: MapSettings,
@@ -42,7 +42,7 @@ const ribbonContextItem: ContextItemDefinition = {
 /**
  * Ribbon containing visualisation controls.
  */
-export default function Ribbon(props: RibbonProps) {
+export default function Ribbon(props: Readonly<RibbonProps>) {
   const cameraDefault: string = props.mapSettings.camera.default;
   const [activeIndex, SetActiveIndex] = useState(props.startingIndex);
   const ribbonState: ContextItemDefinition = useSelector(selectItem("Show Controls Ribbon"));

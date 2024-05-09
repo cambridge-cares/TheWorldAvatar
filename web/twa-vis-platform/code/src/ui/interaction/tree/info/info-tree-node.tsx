@@ -10,26 +10,26 @@ import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import HeaderField from 'ui/text/header';
 
 // type definition for incoming properties
-type InfoTreeNodeProps = {
+interface InfoTreeNodeProps {
   attribute: AttributeGroup;
-};
+}
 
-type InfoTreeSubNodeProps = {
+interface InfoTreeSubNodeProps {
   group: AttributeGroup;
   depth: number;
-};
+}
 
-type InfoTreeAttributeNodeProps = {
+interface InfoTreeAttributeNodeProps {
   attributes: Attribute[];
   depth: number;
-};
+}
 
 /**
  * This component renders the Info Tree based on the input data.
  *
  * @param {AttributeGroup} attribute The attribute group to render.
  */
-export default function InfoTreeNode(props: InfoTreeNodeProps) {
+export default function InfoTreeNode(props: Readonly<InfoTreeNodeProps>) {
   // This component is separate from the SubNode as the root node should not be indented and depth should start at 0
   return (
     <>
@@ -56,7 +56,7 @@ export default function InfoTreeNode(props: InfoTreeNodeProps) {
  * @param {AttributeGroup} group The attribute group to render.
  * @param {number} depth The current depth to this group tree.
  */
-function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
+function InfoTreeSubNode(props: Readonly<InfoTreeSubNodeProps>) {
   const group: AttributeGroup = props.group;
   const depth: number = props.depth;
   // Size of left hand indentation
@@ -137,7 +137,7 @@ function InfoTreeSubNode(props: InfoTreeSubNodeProps) {
  * @param {Attribute[]} attributes The list of attributes that should be rendered.
  * @param {number} depth The current depth to this group tree.
  */
-function InfoTreeAttributeNode(props: InfoTreeAttributeNodeProps) {
+function InfoTreeAttributeNode(props: Readonly<InfoTreeAttributeNodeProps>) {
   const elements: React.ReactElement[] = [];
   const spacing: string = props.depth * 0.5 + "rem";
 

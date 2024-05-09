@@ -12,19 +12,19 @@ import { IconSettings } from 'types/settings';
 import LayerTreeHeader from './layer-tree-content';
 
 // type definition for incoming properties
-type LayerTreeProps = {
+interface LayerTreeProps {
   map: Map;
   dataStore: DataStore;
   icons: IconSettings;
   mapGroups: MapLayerGroup[];
   setMapGroups: React.Dispatch<React.SetStateAction<MapLayerGroup[]>>;
-};
+}
 
 /**
  * Dynamically load and reader controls to toggle groups and layers,
  * with optional icons, in a LayerTree component.
  */
-export default function LayerTree(props: LayerTreeProps) {
+export default function LayerTree(props: Readonly<LayerTreeProps>) {
   // Only parse the groups for the first render
   if (props.mapGroups.length === 0) {
     parseIntoTreeStucture(props.dataStore, props.icons, props.setMapGroups);
