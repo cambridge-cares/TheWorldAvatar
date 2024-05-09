@@ -1,4 +1,6 @@
+from functools import cache
 import logging
+import os
 import time
 from typing import Annotated, List
 
@@ -23,10 +25,12 @@ class SGCarParkFuncExecutor(Name2Func):
         bg_client: KgClient,
         feature_info_client: FeatureInfoClientSimple,
         geocoder: IGeocoder,
+        sg_stack_internal_ontop_endpoint: str,
     ):
         self.bg_client = bg_client
         self.feature_info_client = feature_info_client
         self.geocoder = geocoder
+        self.sg_stack_internal_ontop_endpoint = sg_stack_internal_ontop_endpoint
 
     def get_name2func(self):
         return {"find_nearest_carpark": self.find_nearest_carpark}
@@ -56,7 +60,7 @@ PREFIX unit: <http://qudt.org/vocab/unit/>
         
 SELECT * WHERE {{
     ?Carpark a carpark:Carpark; rdfs:label ?Label .
-    SERVICE <http://sg-ontop:8080/sparql> {{
+    SERVICE <{sg_stack_internal_ontop_endpoint}> {{
         SELECT (geof:distance(?Coords, "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POINT({lon} {lat})"^^geo:wktLiteral, <http://www.opengis.net/def/uom/OGC/1.0/metre>) AS ?Distance) ?Carpark ?Coords
         WHERE {{
             ?Carpark geo:hasGeometry/geo:asWKT ?Coords
@@ -65,7 +69,9 @@ SELECT * WHERE {{
 }}
 ORDER BY ASC(?Distance)
 LIMIT 1""".format(
-            lat=place.lat, lon=place.lon
+            sg_stack_internal_ontop_endpoint=self.sg_stack_internal_ontop_endpoint,
+            lat=place.lat,
+            lon=place.lon,
         )
 
         res = self.bg_client.query(query)
@@ -94,6 +100,7 @@ LIMIT 1""".format(
         return steps, data
 
 
+@cache
 def get_sgCarpark_funcExec(
     bg_client: Annotated[KgClient, Depends(get_sgCarpark_bgClient)],
     feature_info_client: Annotated[
@@ -102,5 +109,8 @@ def get_sgCarpark_funcExec(
     geocoder: Annotated[IGeocoder, Depends(get_serial_geocoder)],
 ):
     return SGCarParkFuncExecutor(
-        bg_client=bg_client, feature_info_client=feature_info_client, geocoder=geocoder
+        bg_client=bg_client,
+        feature_info_client=feature_info_client,
+        geocoder=geocoder,
+        sg_stack_internal_ontop_endpoint=os.environ["SG_STACK_INTERNAL_ONTOP_ENDPOINT"],
     )
