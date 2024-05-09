@@ -302,7 +302,7 @@ class OntoZeolite:
         elif cif_line[7] != "":
             return cif_line[7]
         elif cif_line[8] != "" and cif_line[8] != "?" and cif_line[8] != "None":
-            return os.path.join("ccdc", cif_line[8])
+            return os.path.join("cifdir", cif_line[8])
         return ""
         # === end of OntoZeolite.get_cif_file()
 
