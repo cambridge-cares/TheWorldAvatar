@@ -8,12 +8,11 @@ export type DefaultSettings = {
   modules: {
     [key: string]: boolean;
   },
-  resources: {
-    [key: string]: string;
-  },
-  scenario?: {
-    url: string;
-    data: string;
+  resources?: {
+    [key: string]: {
+      url: string;
+      data?: string;
+    }
   }
 }
 

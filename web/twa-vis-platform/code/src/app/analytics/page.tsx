@@ -14,7 +14,7 @@ export default function DashContainer() {
 
   return (
     <div className={styles.dashContainer}>
-      <iframe className={styles.dashboard} src={uiSettings.resources.dashboard} title="Dashboard"></iframe>
+      <iframe className={styles.dashboard} src={uiSettings.resources.dashboard.url} title="Dashboard"></iframe>
     </div>
   )
 }
