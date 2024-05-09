@@ -40,12 +40,13 @@ export function addLayer(map: Map, layer: DataLayer, currentStyle: ImageryOption
     const options: JsonObject = { ...layer.definition };
     options["id"] = layer.id;
     options["source"] = layer.source.id;
+    // If there is a layout option, we must set visibility separately to prevent overriding the other suboptions
     if (options.layout) {
         const layoutOptions: JsonObject = options.layout as JsonObject;
         layoutOptions.visibility = layer.isGroupExpanded && layer.cachedVisibility ? "visible" : "none";
     } else {
         options.layout = {
-            visibility: "visible"
+            visibility: layer.isGroupExpanded && layer.cachedVisibility ? "visible" : "none"
         };
     }
     // Remove properties not expected by Mapbox
