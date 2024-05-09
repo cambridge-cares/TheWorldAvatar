@@ -44,7 +44,7 @@ public final class FileUtils {
     }
 
     public static String replaceExtension(String filename, String newExtension) {
-        return removeExtension(filename) + newExtension;
+        return removeExtension(filename) + "." + newExtension;
     }
 
     public static String getFileNameWithoutExtension(Path path) {

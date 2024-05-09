@@ -56,18 +56,18 @@ then
     echo $PASSWORD > "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/secrets/grafana_password"
 
     # Copy in the stack manager configs
-    cp "./inputs/config/UKBASEWORLD.json" "$MANAGER_CONFIG/"
-    cp "./inputs/config/visualisation.json" "$MANAGER_CONFIG/services/"
-    cp "./inputs/config/grafana.json" "$MANAGER_CONFIG/services/"
+    cp "./inputs/config/manager/UKBASEWORLD.json" "$MANAGER_CONFIG/"
+    cp "./inputs/config/manager/visualisation.json" "$MANAGER_CONFIG/services/"
+    cp "./inputs/config/manager/grafana.json" "$MANAGER_CONFIG/services/"
 
     # Copy the FIA files into the special volume populator folder
     mkdir -p "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries"
     rm -rf "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/*"
-    cp "./inputs/config/fia-config.json" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
-    cp "./inputs/config/dukes_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
-    cp "./inputs/config/woodland_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
-    cp "./inputs/config/substation_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
-    cp "./inputs/config/power_line_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/manager/fia/fia-config.json" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/manager/fia/fia_dukes_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/manager/fia/woodland_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/manager/fia/substation_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/manager/fia/power_line_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
 
     # Copy the visualisation files into the special volume populator folder
     mkdir -p "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/"
@@ -93,44 +93,54 @@ then
 
     # Clear any existing stack uploader configs
     UPLOAD_CONFIG="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/config"
-    rm -rf "$UPLOAD_CONFIG/*.json"
+    rm -rf "${UPLOAD_CONFIG:?}"/*
+
+    # Clear any existing stack uploader data
+    UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
+    rm -rf "${UPLOAD_DATA:?}"/*
 
     # Copy in the stack uploader config(s)
-    cp "./inputs/config/dukes_2023.json" "$UPLOAD_CONFIG/"
-    cp -r ./inputs/config/pylons-and-veg/* "$UPLOAD_CONFIG/"
+    cp -r "./inputs/config/uploader"/* "$UPLOAD_CONFIG/"
 
     # Run the stack manager to start a new stack
     cd "$ROOT/Deploy/stacks/dynamic/stack-manager" || exit
     echo "Running the stack start up script..."
     ./stack.sh start UKBASEWORLD 38383
 
+    # Wait for the stack manager container to exit
+    sleep 5
+    while docker ps --format '{{.Names}}' | grep -qE 'stack-manager'; do
+        sleep 1
+    done
+        sleep 5
+
     # Copy in the data for upload
     UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
     echo "Copying data..." 
     cp -r "$START/inputs/data/." "$UPLOAD_DATA/" 
 
-    # Wait for the stack manager container to exit
-while docker ps --format '{{.Names}}' | grep -qE 'stack-manager'; do
-    sleep 1
-done
-    sleep 5
-
     # Run the uploader to upload data
     cd "$ROOT/Deploy/stacks/dynamic/stack-data-uploader" || exit
-    echo "Running the stack uploader script..."
+    echo "Running the stack uploader script, this may take some time..."
     ./stack.sh start UKBASEWORLD 
+
+    # Wait for the stack uploader container to exit
+    sleep 5
+    while docker ps --format '{{.Names}}' | grep -qE 'stack-data-uploader'; do
+        sleep 1
+    done
+        sleep 5
 
     # Get the name of the grafana container
     GRAFANA=$(docker ps --format '{{.Names}}' | grep 'UKBASEWORLD-grafana' | head -n 1)
 
-
     # Copy in the custom grafana images
     cd "$START" || exit
-    docker cp "./inputs/twa-logo.svg" $GRAFANA:"/usr/share/grafana/public/img/grafana_icon.svg"
-    docker cp "./inputs/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/fav32.png"
-    docker cp "./inputs/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/apple-touch-icon.png"
-    docker cp "./inputs/twa-background-light.svg" $GRAFANA:"/usr/share/grafana/public/img/g8_login_light.svg"
-    docker cp "./inputs/twa-background-dark.svg" $GRAFANA:"/usr/share/grafana/public/img/g8_login_dark.svg"
+    docker cp "./inputs/images/twa-logo.svg" $GRAFANA:"/usr/share/grafana/public/img/grafana_icon.svg"
+    docker cp "./inputs/images/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/fav32.png"
+    docker cp "./inputs/images/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/apple-touch-icon.png"
+    docker cp "./inputs/images/twa-background-light.svg" $GRAFANA:"/usr/share/grafana/public/img/g8_login_light.svg"
+    docker cp "./inputs/images/twa-background-dark.svg" $GRAFANA:"/usr/share/grafana/public/img/g8_login_dark.svg"
 
     # Create a new Grafana organisation via HTTP API
     echo "Using Grafana API to create a new organisation..."
@@ -169,9 +179,11 @@ done
     # Update the default grafana dashboard to be the "Overview" one
     curl -X PUT --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/grafana-org-config.json http://admin:$PASSWORD@localhost:38383/dashboard/api/org/preferences
 
-    echo 
-    echo "Script completed, may need to wait a few minutes for the stack-data-uploader to finish."
-    echo "Visualisation should be available now at http://localhost:38383/visualisation/"
+    printf "\n"
+    echo "----------"
+    echo "Script completed, may need to wait up to 15 minutes for the uploader to finish."
+    echo "Once upload complete, visualisation should be available at http://localhost:38383/visualisation/"
+    echo "----------"
 else
     echo "Please copy in the data sets as described in the README before re-running this script."
     exit 1

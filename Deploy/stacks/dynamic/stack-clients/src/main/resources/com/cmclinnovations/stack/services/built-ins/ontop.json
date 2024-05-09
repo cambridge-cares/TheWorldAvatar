@@ -4,16 +4,12 @@
         "Name": "ontop",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ontop/ontop-endpoint:4.2.1",
+                "Image": "ontop/ontop:5.1.0",
                 "Env": [
-                    "ONTOP_MAPPING_FILE=/ontop.obda",
+                    "ONTOP_MAPPING_FILE=/ontop/ontop.obda",
                     "ONTOP_DB_NAME=postgres",
-                    "ONTOP_DEV_MODE=true"
-                ],
-                "Command": [
-                    "tail",
-                    "-f",
-                    "/dev/null"
+                    "ONTOP_DEV_MODE=true",
+                    "ONTOP_LAZY_INIT=true"
                 ],
                 "Configs": [
                     {
@@ -23,6 +19,14 @@
                 "Secrets": [
                     {
                         "SecretName": "postgis_password"
+                    }
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "jdbc_drivers",
+                        "Target": "/opt/ontop/jdbc",
+                        "ReadOnly": false
                     }
                 ]
             }

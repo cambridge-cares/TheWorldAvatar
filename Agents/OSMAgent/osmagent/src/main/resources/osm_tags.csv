@@ -183,33 +183,33 @@ building,religious,Unspecific building related to religion. Prefer more specific
 building,shrine,"A building that was built as a shrine. Used in conjunction with amenity=place_of_worship, religion=*, denomination=* and landuse=religious for the grounds where it is in current use. Small structures should consider historic=wayside_shrine.",ReligiousFacility
 building,synagogue,"A building that was built as a synagogue. Used in conjunction with amenity=place_of_worship, religion=*, denomination=* and landuse=religious for the grounds where it is in current use.",ReligiousFacility
 building,temple,"A building that was built as a temple. Used in conjunction with amenity=place_of_worship, religion=*, denomination=* and landuse=religious for the grounds where it is in current use.",ReligiousFacility
-amenity,bicycle_rental,Rent a bicycle,RetailFacility
-amenity,boat_rental,Rent a Boat,RetailFacility
-amenity,boat_sharing,Share a Boat,RetailFacility
-amenity,car_rental,Rent a car,RetailFacility
-amenity,car_sharing,Share a car,RetailFacility
-amenity,car_wash,Wash a car,RetailFacility
-amenity,vehicle_inspection,Government vehicle inspection,RetailFacility
-amenity,charging_station,Charging facility for electric vehicles,RetailFacility
+amenity,bicycle_rental,Rent a bicycle,RetailEstablishment
+amenity,boat_rental,Rent a Boat,RetailEstablishment
+amenity,boat_sharing,Share a Boat,RetailEstablishment
+amenity,car_rental,Rent a car,RetailEstablishment
+amenity,car_sharing,Share a car,RetailEstablishment
+amenity,car_wash,Wash a car,RetailEstablishment
+amenity,vehicle_inspection,Government vehicle inspection,RetailEstablishment
+amenity,charging_station,Charging facility for electric vehicles,RetailEstablishment
 amenity,bank,"Bank or credit union: a financial establishment where customers can deposit and withdraw money, take loans, make investments and transfer funds.",Bank
 amenity,bureau_de_change,"Bureau de change, money changer, currency exchange, Wechsel, cambio   a place to change foreign bank notes and travellers cheques.",Bank
 amenity,pharmacy,Pharmacy: a shop where a pharmacist sells medications,Pharmacy
-amenity,casino,"A gambling venue with at least one table game(e.g. roulette, blackjack) that takes bets on sporting and other events at agreed upon odds.",RetailFacility
-amenity,cinema,A place where films are shown (US: movie theater),RetailFacility
-amenity,gambling,"A place for gambling, not being a shop=bookmaker, shop=lottery, amenity=casino, or leisure=adult_gaming_centre.",RetailFacility
-amenity,studio,TV radio or recording studio,RetailFacility
-amenity,internet_cafe,A place whose principal role is providing internet services to the public.,RetailFacility
-amenity,marketplace,A marketplace where goods and services are traded daily or weekly.,RetailFacility
-building,commercial,"A building for non-specific commercial activities, not necessarily an office building. Consider tagging the surrounding area using landuse=commercial if there is such use. Use 'retail' if the building consists primarily of shops.",RetailFacility
-building,kiosk,A small one-room retail building.,RetailFacility
-building,retail,"A building primarily used for selling goods that are sold to the public; use shop=* to identify the sort of goods sold or an appropriate amenity=* (pub, cafe, restaurant, etc.). Consider use landuse=retail for the surrounding area.",RetailFacility
-building,supermarket,A building constructed to house a self-service large-area store.,RetailFacility
-building,bakehouse,A building that was built as a bakehouse (i.e. for baking bread). Often used in conjunction with another node amenity=baking_oven and oven=wood_fired.,RetailFacility
-building,bridge,A building used as a bridge (skyway). To map a gatehouse use building=gatehouse. See also bridge=yes for highway=*. Don't use this tag just for marking bridges (their outlines). For such purposes use man_made=bridge.,RetailFacility
-leisure,adult_gaming_centre,A venue with gambling machines typically with age limit,RetailFacility
-leisure,amusement_arcade,A venue with pay-to-play games.,RetailFacility
-leisure,beach_resort,"A managed beach, including within the boundary any associated facilities. Entry may also require payment of a fee.",RetailFacility
-amenity,driving_school,Driving School which offers motor vehicle driving lessons,RetailFacility
+amenity,casino,"A gambling venue with at least one table game(e.g. roulette, blackjack) that takes bets on sporting and other events at agreed upon odds.",RetailEstablishment
+amenity,cinema,A place where films are shown (US: movie theater),RetailEstablishment
+amenity,gambling,"A place for gambling, not being a shop=bookmaker, shop=lottery, amenity=casino, or leisure=adult_gaming_centre.",RetailEstablishment
+amenity,studio,TV radio or recording studio,RetailEstablishment
+amenity,internet_cafe,A place whose principal role is providing internet services to the public.,RetailEstablishment
+amenity,marketplace,A marketplace where goods and services are traded daily or weekly.,RetailEstablishment
+building,commercial,"A building for non-specific commercial activities, not necessarily an office building. Consider tagging the surrounding area using landuse=commercial if there is such use. Use 'retail' if the building consists primarily of shops.",RetailEstablishment
+building,kiosk,A small one-room retail building.,RetailEstablishment
+building,retail,"A building primarily used for selling goods that are sold to the public; use shop=* to identify the sort of goods sold or an appropriate amenity=* (pub, cafe, restaurant, etc.). Consider use landuse=retail for the surrounding area.",RetailEstablishment
+building,supermarket,A building constructed to house a self-service large-area store.,RetailEstablishment
+building,bakehouse,A building that was built as a bakehouse (i.e. for baking bread). Often used in conjunction with another node amenity=baking_oven and oven=wood_fired.,RetailEstablishment
+building,bridge,A building used as a bridge (skyway). To map a gatehouse use building=gatehouse. See also bridge=yes for highway=*. Don't use this tag just for marking bridges (their outlines). For such purposes use man_made=bridge.,RetailEstablishment
+leisure,adult_gaming_centre,A venue with gambling machines typically with age limit,RetailEstablishment
+leisure,amusement_arcade,A venue with pay-to-play games.,RetailEstablishment
+leisure,beach_resort,"A managed beach, including within the boundary any associated facilities. Entry may also require payment of a fee.",RetailEstablishment
+amenity,driving_school,Driving School which offers motor vehicle driving lessons,RetailEstablishment
 amenity,kindergarten,"For children too young for a regular school (also known as preschool, playschool or nursery school), in some countries including afternoon supervision of primary school children.",School
 amenity,language_school,Language School: an educational institution where one studies a foreign language.,School
 amenity,training,Public place where you can get training.,School
@@ -260,8 +260,8 @@ building,carport,"A carport is a covered structure used to offer limited protect
 building,garage,"A garage is a building suitable for the storage of one or possibly more motor vehicle or similar. See building=garages for larger shared buildings. For an aircraft garage, see building=hangar.",MultiResidential
 building,garages,A building that consists of a number of discrete storage spaces for different owners/tenants. See also building=garage.,MultiResidential
 building,parking,Structure purpose-built for parking cars.,TransportFacility
-amenity,college,Campus or buildings of an institute of Further Education (aka continuing education),UniversityFacility
-amenity,research_institute,An establishment endowed for doing research.,UniversityFacility
-amenity,university,An university campus: an institute of higher education,UniversityFacility
-building,college,A college building. Use amenity=college on the whole college area to represent the college as an institution.,UniversityFacility
-building,university,A university building. Use amenity=university for the university as an institution.,UniversityFacility
+amenity,college,Campus or buildings of an institute of Further Education (aka continuing education),University
+amenity,research_institute,An establishment endowed for doing research.,University
+amenity,university,An university campus: an institute of higher education,University
+building,college,A college building. Use amenity=college on the whole college area to represent the college as an institution.,University
+building,university,A university building. Use amenity=university for the university as an institution.,University

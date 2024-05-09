@@ -1,12 +1,17 @@
 package com.cmclinnovations.stack.services;
 
-import com.cmclinnovations.stack.services.config.ServiceConfig;
-
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+import com.cmclinnovations.stack.services.config.ServiceConfig;
 
 public final class PostGISService extends ContainerService {
 
@@ -36,12 +41,18 @@ public final class PostGISService extends ContainerService {
         endpointConfig = new PostGISEndpointConfig(
                 EndpointNames.POSTGIS, getHostName(), DEFAULT_PORT,
                 getEnvironmentVariable(POSTGRES_USER_KEY), getEnvironmentVariable("POSTGRES_PASSWORD_FILE"));
+
+        addEndpointConfig(endpointConfig);
     }
 
     @Override
     public void doPostStartUpConfiguration() {
-        writeEndpointConfig(endpointConfig);
+        writePGPASSFile();
 
+        copyJDBCDriverToVolume();
+    }
+
+    private void writePGPASSFile() {
         sendFiles(Map.of(
                 PGPASS_FILE.getFileName().toString(),
                 ("localhost:"
@@ -53,6 +64,26 @@ public final class PostGISService extends ContainerService {
                 PGPASS_FILE.getParent().toString());
 
         executeCommand("chmod", "0600", PGPASS_FILE.toString());
+    }
+
+    private void copyJDBCDriverToVolume() {
+
+        // Copy the PostgreSQL driver library from the stack-manager into the scratch
+        // volume so that the Ontop container can copy it
+        Pattern postgresqlDriverPattern = Pattern.compile(".*/postgresql-[0-9.]*\\.jar");
+        try (Stream<Path> postgresqlDrivers = Files.find(Path.of("/app/lib/org/postgresql/postgresql/"), 2, (path,
+                attributes) -> postgresqlDriverPattern.matcher(path.toString()).matches())) {
+            Optional<Path> possiblePostgresqlDriver = postgresqlDrivers.findFirst();
+            if (possiblePostgresqlDriver.isPresent()) {
+                Path postgresqlDriver = possiblePostgresqlDriver.get();
+                Files.copy(postgresqlDriver,
+                        Path.of("/jdbc").resolve(postgresqlDriver.getFileName()),
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }

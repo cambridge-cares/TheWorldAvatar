@@ -1,0 +1,19 @@
+SELECT DISTINCT ?label ?IUPACNameValue 
+WHERE {{
+    ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
+
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameIRI .
+    ?IUPACNameIRI os:value ?IUPACNameValue .
+
+    ?SpeciesIRI os:hasChemicalClass* ?x .
+	?x ?y ?z .
+	?z rdfs:subClassOf* ?ChemicalClassIRI .
+	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label ?ChemicalClassValue .
+
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
+
+    ?SpeciesIRI os:hasUse ?UseIRI .
+    ?UseIRI rdfs:label ?UseValue .
+
+    FILTER( ?UseValue = "{Use}")
+}}

@@ -226,8 +226,11 @@ public class DockerService extends AbstractService
     }
 
     public void doPostStartUpConfiguration(ContainerService service) {
-        service.setDockerClient(dockerClient);
         service.doPostStartUpConfiguration();
+    }
+
+    public void writeEndpointConfigs(ContainerService service){
+        service.writeEndpointConfigs();
     }
 
     public boolean startContainer(ContainerService service) {
@@ -514,7 +517,10 @@ public class DockerService extends AbstractService
 
     protected void pullImage(ContainerService service) {
         String image = service.getImage();
-        if (dockerClient.getInternalClient().listImagesCmd().withImageNameFilter(image).exec().isEmpty()) {
+        if(!image.contains(":")){
+            throw new RuntimeException("Docker image '"+ image +"' must include a version.");
+        }
+        if (dockerClient.getInternalClient().listImagesCmd().withReferenceFilter(image).exec().isEmpty()) {
             // No image with the requested image ID, so try to pull image
             try (PullImageCmd pullImageCmd = dockerClient.getInternalClient().pullImageCmd(image)) {
                 pullImageCmd

@@ -3,7 +3,7 @@
     "Name": "cares-weather-station-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "docker.io/library/caresweatherstation-agent:1.4.0",
+        "Image": "docker.io/library/caresweatherstation-agent:1.5.0",
         "Mounts": [
           {
             "Type": "bind",
@@ -17,6 +17,9 @@
           },
           {
               "ConfigName": "postgis"
+          },
+          {
+              "ConfigName": "geoserver"
           }
       ],
       "Secrets": [
@@ -25,6 +28,9 @@
           },
           {
               "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
           }
       ]
       }

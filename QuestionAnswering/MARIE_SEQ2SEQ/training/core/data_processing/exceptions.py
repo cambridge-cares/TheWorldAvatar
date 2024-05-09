@@ -1,0 +1,2 @@
+class InvalidCompactQueryError(ValueError):
+    pass

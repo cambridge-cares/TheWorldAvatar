@@ -27,6 +27,11 @@
                         "Target": "/geotiffs"
                     },
                     {
+                        "Type": "volume",
+                        "Source": "multidim_geospatial",
+                        "Target": "/multidim_geospatial"
+                    },
+                    {
                         "Type": "tmpfs",
                         "Target": "/dev/shm",
                         "TmpfsOptions": {

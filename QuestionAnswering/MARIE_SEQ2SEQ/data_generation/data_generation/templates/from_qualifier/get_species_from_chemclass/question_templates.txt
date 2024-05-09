@@ -1,0 +1,22 @@
+Give me a list of species that are classified as {ChemClass} 
+Give me a list of species that are {ChemClass}
+Provide a roster of chemical entities falling under {ChemClass}.
+Enumerate the molecules categorized as {ChemClass}.
+List the compounds that belong to the {ChemClass} classification.
+Offer a catalog of chemical species under the {ChemClass} category.
+Present a compilation of {ChemClass} classifiable entities.
+Outline the members of {ChemClass} in terms of chemical species.
+Detail the chemical compounds found within the {ChemClass} grouping.
+Illustrate a record of {ChemClass}-related molecules.
+Disclose a series of chemical entities attributed to {ChemClass}.
+Display a rundown of {ChemClass} affiliated compounds.
+Arrange a summary of {ChemClass} specific chemical species.
+Offer an inventory of {ChemClass} characterized molecules.
+Present a list of chemical species falling within {ChemClass}.
+Provide a collection of compounds linked to the {ChemClass} category.
+Furnish information about {ChemClass} classified molecules.
+Lay out a catalog of chemical entities within the {ChemClass} scope.
+Deliver a compilation of {ChemClass} associated species.
+Share details about the molecules classified as {ChemClass}.
+Enumerate the chemical compounds encompassed by {ChemClass}.
+Outline the roster of chemical species attributed to {ChemClass}.

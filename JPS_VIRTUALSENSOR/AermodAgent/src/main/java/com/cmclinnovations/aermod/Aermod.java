@@ -43,6 +43,7 @@ import org.locationtech.jts.geom.Polygon;
 import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Pollutant;
+import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
@@ -52,6 +53,7 @@ import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
@@ -64,6 +66,15 @@ public class Aermod {
     private Path aermodDirectory;
     private Path rasterDirectory;
     private static final String AERMET_INPUT = "aermet.inp";
+    // this keeps the number of timesteps in the GeoServer layers to the number
+    // specified by NUMBER_OF_LAYERS
+    String sqlCleanupTemplate = """
+            DELETE FROM %s WHERE time NOT IN (
+                SELECT DISTINCT time
+                FROM %s
+                ORDER BY time DESC
+                LIMIT %d)
+                """;
 
     public Aermod(Path simulationDirectory) {
         LOGGER.info("Creating directory for simulation files");
@@ -104,7 +115,7 @@ public class Aermod {
             String inputLine = "\'Build" + i + "\' " + "1 " + build.getElevation();
             sb.append(inputLine).append(System.lineSeparator());
             LinearRing base = build.getFootprint();
-            String originalSrid = "EPSG:" + base.getSRID();
+            String originalSrid = build.getSrid();
             inputLine = base.getNumPoints() + " " + build.getHeight();
             sb.append(inputLine).append(System.lineSeparator());
 
@@ -240,6 +251,85 @@ public class Aermod {
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.STATIC_SOURCE_TABLE, new GeoServerVectorSettings());
+
+        // keep layer at maintainable size
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.STATIC_SOURCE_TABLE, EnvConfig.STATIC_SOURCE_TABLE,
+                numLayers);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
+    }
+
+    void createShipsLayer(List<Ship> pointSources, long simulationTime, String derivationIri) {
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+        JSONArray features = new JSONArray();
+
+        pointSources.forEach(pointSource -> {
+            String originalSrid = "EPSG:" + pointSource.getLocation().getSRID();
+            double[] xyOriginal = { pointSource.getLocation().getX(), pointSource.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:4326", xyOriginal);
+
+            JSONObject geometry = new JSONObject();
+            geometry.put("type", "Point");
+            geometry.put("coordinates", new JSONArray().put(xyTransformed[0]).put(xyTransformed[1]));
+            JSONObject feature = new JSONObject();
+            feature.put("type", "Feature");
+            feature.put("geometry", geometry);
+
+            JSONObject properties = new JSONObject();
+            properties.put("iri", pointSource.getIri());
+            properties.put("time", simulationTime);
+            properties.put("derivation", derivationIri);
+
+            if (pointSource.getLabel() != null) {
+                properties.put("name", pointSource.getLabel());
+            } else {
+                properties.put("name", "Ship");
+            }
+
+            feature.put("properties", properties);
+
+            features.put(feature);
+        });
+
+        featureCollection.put("features", features);
+
+        GDALClient gdalClient = GDALClient.getInstance();
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SHIPS_LAYER_NAME,
+                featureCollection.toString(), new Ogr2OgrOptions(), true);
+        geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                EnvConfig.SHIPS_LAYER_NAME, new GeoServerVectorSettings());
+
+        // keep layer at maintainable size
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.SHIPS_LAYER_NAME, EnvConfig.SHIPS_LAYER_NAME,
+                numLayers);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
 
     public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
@@ -494,8 +584,6 @@ public class Aermod {
     void createPointsFile(List<PointSource> pointSources, int simulationSrid, PollutantType pollutantType, int z) {
         StringBuilder sb = new StringBuilder();
 
-        double maxFlowRate = 0.0;
-
         for (int i = 0; i < pointSources.size(); i++) {
             PointSource ps = pointSources.get(i);
             String stkId = "S" + i;
@@ -507,12 +595,9 @@ public class Aermod {
             double area = Math.PI * Math.pow(ps.getDiameter() / 2, 2); // m2
             double density = ps.getMixtureDensityInKgm3(); // kg/m3
 
-            double massFlowrateInGs = ps.getFlowrateInGramsPerS(pollutantType);
-
-            // TODO: This will not work for PM10 and PM2.5.
-            double velocity = massFlowrateInGs / 1000 / area / density; // m/s
-
-            maxFlowRate = Math.max(maxFlowRate, massFlowrateInGs);
+            // for particles, assumed to be part of the air. Pollutant stream is part of a
+            // much larger air stream
+            double velocity = ps.getMixtureMassFlux() / EnvConfig.TARGET_EMISSION_VOLUME_FRACTION / area / density; // m/s
 
             double baseElevation = 0.0;
             if (ps.getClass() == StaticPointSource.class) {
@@ -524,7 +609,7 @@ public class Aermod {
                     baseElevation));
             sb.append(System.lineSeparator());
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f", stkId,
-                    massFlowrateInGs, ps.getHeight(), ps.getMixtureTemperatureInKelvin(),
+                    ps.getFlowrateInGramsPerS(pollutantType), ps.getHeight(), ps.getMixtureTemperatureInKelvin(),
                     velocity, ps.getDiameter()));
             sb.append(System.lineSeparator());
         }
@@ -698,47 +783,6 @@ public class Aermod {
         }
     }
 
-    JSONObject getBuildingsGeoJSON(List<Building> buildings) {
-        JSONObject featureCollection = new JSONObject();
-        featureCollection.put("type", "FeatureCollection");
-
-        JSONArray features = new JSONArray();
-        buildings.stream().forEach(building -> {
-            JSONObject feature = new JSONObject();
-            feature.put("type", "Feature");
-
-            JSONObject properties = new JSONObject();
-            properties.put("color", "#666666");
-            properties.put("opacity", 0.66);
-            properties.put("base", 0);
-            properties.put("height", building.getHeight());
-            feature.put("properties", properties);
-
-            JSONObject geometry = new JSONObject();
-            geometry.put("type", "Polygon");
-            JSONArray coordinates = new JSONArray();
-
-            JSONArray footprintPolygon = new JSONArray();
-            String srid = building.getSrid();
-            for (Coordinate coordinate : building.getFootprint().getCoordinates()) {
-                JSONArray point = new JSONArray();
-                double[] xyOriginal = { coordinate.getX(), coordinate.getY() };
-                double[] xyTransformed = CRSTransformer.transform(srid, "EPSG:4326", xyOriginal);
-                point.put(xyTransformed[0]).put(xyTransformed[1]);
-                footprintPolygon.put(point);
-            }
-            coordinates.put(footprintPolygon);
-            geometry.put("coordinates", coordinates);
-
-            feature.put("geometry", geometry);
-            features.put(feature);
-        });
-
-        featureCollection.put("features", features);
-
-        return featureCollection;
-    }
-
     void createSimulationSubDirectory(PollutantType pollutantType, int z) {
         aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).resolve(String.valueOf(z)).toFile()
                 .mkdirs();
@@ -775,6 +819,23 @@ public class Aermod {
 
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.DISPERSION_CONTOURS_TABLE, geoServerVectorSettings);
+
+        // clean up table
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.DISPERSION_CONTOURS_TABLE,
+                EnvConfig.DISPERSION_CONTOURS_TABLE, numLayers);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
 
     void createElevationLayer(JSONObject geoJSON, String derivationIri) {

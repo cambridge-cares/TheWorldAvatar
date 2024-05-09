@@ -36,7 +36,17 @@ ENV CARESWeatherStation_CLIENTPROPERTIES="/root/config/client.properties"
 # Set the required environment variable
 ENV CARESWeatherStation_AGENT_MAPPINGS="/root/config/mappings"
 
-COPY --from=builder /root/CARESWeatherStationInputAgent/output/caresweatherstation-agent##1.4.0.war $CATALINA_HOME/webapps/
+#Variables that determines where the geolocation information will be uploaded to
+
+# also name of the table in PostGIS
+ENV LAYERNAME="weatherstations"
+
+# currently ontop reads from the default database
+ENV DATABASE="postgres"
+
+ENV GEOSERVER_WORKSPACE="weatherstations"
+
+COPY --from=builder /root/CARESWeatherStationInputAgent/output/caresweatherstation-agent##1.5.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

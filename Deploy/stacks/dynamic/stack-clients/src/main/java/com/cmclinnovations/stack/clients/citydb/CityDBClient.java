@@ -306,4 +306,12 @@ public class CityDBClient extends ContainerClient {
         applySQLFile(database, "citydb_add_footprint.sql");
     }
 
+    public void unlogTable(String database) {
+        applySQLFile(database, "citydb_unlog_table.sql");
+    }
+
+    public void relogTable(String database) {
+        applySQLFile(database, "citydb_relog_table.sql");
+    }
+
 }

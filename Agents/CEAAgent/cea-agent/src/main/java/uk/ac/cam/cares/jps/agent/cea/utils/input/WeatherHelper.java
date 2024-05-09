@@ -126,11 +126,17 @@ public class WeatherHelper extends JPSAgent {
             // coordinate in (longitude, latitude) format
             Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
 
-            String stationIRI = getWeatherStation(coordinate, 2.0, weatherRoute);
+            Double latitude;
+            Double longitude;
+
+            latitude = coordinate.getY();
+            longitude = coordinate.getX();
+
+            String stationIRI = getWeatherStation(latitude, longitude, 2.0, weatherRoute);
 
             // if no nearby weather station, send request to OpenMeteoAgent to instantiate weather data
             if (stationIRI.isEmpty()) {
-                stationIRI = runOpenMeteoAgent(String.valueOf(coordinate.getX()), String.valueOf(coordinate.getY()), weatherRoute);
+                stationIRI = runOpenMeteoAgent(String.valueOf(latitude), String.valueOf(longitude), weatherRoute);
 
                 // if request fails
                 if (stationIRI.isEmpty()) {return false;}
@@ -139,16 +145,10 @@ public class WeatherHelper extends JPSAgent {
             Map<String, List<String>> weatherMap = getWeatherIRI(stationIRI, weatherRoute);
 
             List<Double> lat_lon = getStationCoordinate(stationIRI, weatherRoute);
-            Double latitude;
-            Double longitude;
 
             if (!lat_lon.isEmpty()) {
                 latitude = lat_lon.get(0);
                 longitude = lat_lon.get(1);
-            }
-            else {
-                latitude = coordinate.getX();
-                longitude = coordinate.getY();
             }
 
             // if the timestamps of the instantiated weather data does not meet CEA requirements,
@@ -228,12 +228,11 @@ public class WeatherHelper extends JPSAgent {
 
     /**
      * Queries for and returns the IRI of weather station located within {radius} kilometers of center
-     * @param center center of the search circle
      * @param radius radius of the search circle
      * @param route endpoint of the weather station query
      * @return IRI of a weather station located within {radius} kilometers of center
      */
-    private String getWeatherStation(Coordinate center, Double radius, String route) {
+    private String getWeatherStation(Double latitude, Double longitude, Double radius, String route) {
         String result = "";
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("geoservice", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geoservice))
@@ -244,7 +243,7 @@ public class WeatherHelper extends JPSAgent {
                 .addWhere("?station", "geoservice:searchDatatype", "geoliteral:lat-lon")
                 .addWhere("?station", "geoservice:predicate", "ontoems:hasObservationLocation")
                 // PLACEHOLDER because the coordinate will be treated as doubles instead of string otherwise
-                .addWhere("?station", "geoservice:spatialCircleCenter", center.getX() + "PLACEHOLDER" + center.getY())
+                .addWhere("?station", "geoservice:spatialCircleCenter", latitude + "PLACEHOLDER" + longitude)
                 .addWhere("?station", "geoservice:spatialCircleRadius", radius);
 
         SelectBuilder sb = new SelectBuilder()

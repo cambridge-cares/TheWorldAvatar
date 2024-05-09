@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobms/">
         <owl:imports rdf:resource="https://saref.etsi.org/saref4bldg/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">02 November 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">05 February 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBMS is an ontology for Building Management Systems.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -67,7 +67,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasAirFlowRate">
-        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/hasFlowRate"/>
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -81,6 +81,28 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the flow rate of air being conveyed or processed by a HVAC or Flow Moving Device (Duct etc) or it can be used to describe the volumetric air flow rate of a convective transport rate.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobms/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has air flow rate</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasFlowRate -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasFlowRate">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+                    <rdf:Description rdf:about="https://saref.etsi.org/core/HVAC"/>
+                    <rdf:Description rdf:about="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the flow rate of a substance being conveyed or processed by a HVAC or Flow Moving Device (Duct etc) or it can be used to describe the volumetric flow rate of a convective transport rate.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobms/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has flow rate</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -195,7 +217,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasWaterFlowRate">
-        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/hasFlowRate"/>
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
