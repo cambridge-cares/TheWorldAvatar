@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +19,7 @@ import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
@@ -110,13 +112,7 @@ public class DatasetLoader {
         try {
             updateInjectableValues(configFile);
 
-            Dataset dataset = objectMapper.readValue(configFile.toFile(), Dataset.class);
-            dataset.getDataSubsets().stream().forEach(dataSubset -> {
-                if (dataSubset.getName() == null) {
-                    throw new RuntimeException("Not all datasets have a name: " + dataSubset.getClass());
-                }
-            });
-            return dataset;
+            return objectMapper.readValue(configFile.toFile(), Dataset.class);
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in dataset config file '" + configFile + "'.", ex);
         }
@@ -149,10 +145,12 @@ public class DatasetLoader {
                         workspaceName));
             }
 
-            if (dataset.getStaticGeoServerData() != null) {
+            Optional<StaticGeoServerData> staticGeoServerDataOptional = dataset.getStaticGeoServerData();
+            if (staticGeoServerDataOptional.isPresent()) {
                 GeoServerClient geoServerClient = GeoServerClient.getInstance();
-                geoServerClient.loadIcons(directory, dataset.getStaticGeoServerData().getIconsDir());
-                geoServerClient.loadOtherFiles(directory, dataset.getStaticGeoServerData().getOtherFiles());
+                StaticGeoServerData staticGeoServerData = staticGeoServerDataOptional.get();
+                geoServerClient.loadIcons(directory, staticGeoServerData.getIconsDir());
+                geoServerClient.loadOtherFiles(directory, staticGeoServerData.getOtherFiles());
             }
 
             dataSubsets.forEach(subset -> subset.load(dataset));

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
 import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
@@ -50,59 +51,48 @@ public class Dataset {
 
     public static final String NAME_KEY = "name";
 
+    @JsonProperty(value = NAME_KEY)
+    @JacksonInject(NAME_KEY)
     private String name;
-    private String description;
+    @JsonProperty
+    private final Optional<String> description = Optional.empty();
 
-    private final Path datasetDirectory;
+    @JsonProperty
+    private final Optional<Path> datasetDirectory = Optional.empty();
 
-    private final String database;
-    private final Namespace namespace;
-    private final String workspaceName;
+    @JsonProperty
+    private final Optional<String> database = Optional.empty();
+    @JsonProperty
+    private final Optional<Namespace> namespace = Optional.empty();
+    @JsonProperty(value = "workspace")
+    private final Optional<String> workspaceName = Optional.empty();
 
-    private final List<String> externalDatasetsString;
-    private List<Dataset> externalDatasets;
-    private final List<DataSubset> dataSubsets;
-    private final List<GeoServerStyle> geoserverStyles;
-    private final List<String> ontopMappings;
-    private final StaticGeoServerData staticGeoServerData;
+    @JsonProperty(value = "externalDatasets")
+    private final Optional<List<String>> externalDatasetsString = Optional.empty();
+    @JsonIgnore
+    private Optional<List<Dataset>> externalDatasets = Optional.empty();
+    @JsonProperty
+    private final Optional<List<DataSubset>> dataSubsets = Optional.empty();
+    @JsonProperty(value = "styles")
+    private final Optional<List<GeoServerStyle>> geoserverStyles = Optional.empty();
+    @JsonProperty(value = "mappings")
+    private final Optional<List<String>> ontopMappings = Optional.empty();
+    @JsonProperty
+    private final Optional<StaticGeoServerData> staticGeoServerData = Optional.empty();
 
-    private final boolean skip;
-    private String rdfType;
+    @JsonProperty(defaultValue = "false")
+    private final boolean skip = false;
+    @JsonProperty
+    private Optional<String> rdfType = Optional.empty();
 
-    private final String baseIRI;
+    @JsonProperty
+    private final Optional<String> baseIRI = Optional.empty();
 
     // for dcat cataloging
+    @JsonIgnore
     private boolean exists; // used to determine whether this dataset exists in the catalog
+    @JsonIgnore
     private String iri; // catalog iri
-
-    @JsonCreator
-    public Dataset(@JsonProperty(value = NAME_KEY) @JacksonInject(NAME_KEY) String name,
-            @JsonProperty(value = "datasetDirectory") Path datasetDirectory,
-            @JsonProperty(value = "database") String database,
-            @JsonProperty(value = "namespace") Namespace namespace,
-            @JsonProperty(value = "workspace") String workspaceName,
-            @JsonProperty(value = "externalDatasets") List<String> externalDatasets,
-            @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
-            @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
-            @JsonProperty(value = "mappings") List<String> ontopMappings,
-            @JsonProperty(value = "skip") boolean skip,
-            @JsonProperty(value = "staticGeoServerData") StaticGeoServerData staticGeoServerData,
-            @JsonProperty(value = "rdfType") String rdfType,
-            @JsonProperty(value = "baseIRI") String baseIRI) {
-        this.name = name;
-        this.datasetDirectory = datasetDirectory;
-        this.database = database;
-        this.namespace = namespace;
-        this.workspaceName = workspaceName;
-        this.externalDatasetsString = externalDatasets;
-        this.dataSubsets = dataSubsets;
-        this.geoserverStyles = geoserverStyles;
-        this.ontopMappings = ontopMappings;
-        this.staticGeoServerData = staticGeoServerData;
-        this.skip = skip;
-        this.rdfType = rdfType;
-        this.baseIRI = (null == baseIRI) ? DEFAULT_BASE_IRI : baseIRI;
-    }
 
     public String getName() {
         return name;
@@ -113,62 +103,62 @@ public class Dataset {
     }
 
     public String getDescription() {
-        return (null != description) ? description : getName();
+        return description.orElse(getName());
     }
 
     public Path getDirectory() {
-        return Path.of("/inputs", "data").resolve((null != datasetDirectory) ? datasetDirectory : Path.of(name));
+        return Path.of("/inputs", "data").resolve(datasetDirectory.orElse(Path.of(name)));
     }
 
     public String getDatabase() {
-        if (database != null) {
+        if (database.isPresent()) {
             LOGGER.warn(NAME_DEPRECATION_NOTICE, "database", getName());
-            return database;
+            return database.get();
         }
         return getName();
     }
 
     public String getNamespace() {
-        if (null != namespace && null != namespace.getName()) {
+        if (namespace.isPresent() && null != namespace.get().getName()) {
             LOGGER.warn(NAME_DEPRECATION_NOTICE, "namespace", getName());
-            return namespace.getName();
+            return namespace.get().getName();
         }
         return getName();
     }
 
     public Properties getNamespaceProperties() {
-        if (null != namespace && null != namespace.getProperties()) {
-            return namespace.getProperties();
+        if (namespace.isPresent() && null != namespace.get().getProperties()) {
+            return namespace.get().getProperties();
         } else {
             return new Properties();
         }
     }
 
     public String getWorkspaceName() {
-        if (workspaceName != null) {
+        if (workspaceName.isPresent()) {
             LOGGER.warn(NAME_DEPRECATION_NOTICE, "workspaceName", getName());
-            return workspaceName;
+            return workspaceName.get();
         }
         return getName();
     }
 
     public List<String> getExternalDatasetsString() {
-        return (null != externalDatasetsString) ? externalDatasetsString : Collections.emptyList();
+        return externalDatasetsString.orElse(Collections.emptyList());
     }
 
     public List<DataSubset> getDataSubsets() {
-        return (null != dataSubsets) ? dataSubsets : Collections.emptyList();
+        return dataSubsets.orElse(Collections.emptyList());
     }
 
     public List<GeoServerStyle> getGeoserverStyles() {
-        return (null != geoserverStyles) ? geoserverStyles : Collections.emptyList();
+        return geoserverStyles.orElse(Collections.emptyList());
     }
 
     public List<String> getOntopMappings() {
-        return (null != ontopMappings) ? ontopMappings : Collections.emptyList();
+        return ontopMappings.orElse(Collections.emptyList());
     }
 
-    public StaticGeoServerData getStaticGeoServerData() {
+    public Optional<StaticGeoServerData> getStaticGeoServerData() {
         return staticGeoServerData;
     }
 
@@ -177,11 +167,11 @@ public class Dataset {
     }
 
     public String baseIRI() {
-        return baseIRI;
+        return baseIRI.orElse(DEFAULT_BASE_IRI);
     }
 
     public Iri getRdfType() {
-        return (null != rdfType) ? Rdf.iri(rdfType) : Rdf.iri(DCAT.CATALOG);
+        return Rdf.iri(rdfType.orElse(DCAT.CATALOG.stringValue()));
     }
 
     public String getIri() {
@@ -189,14 +179,14 @@ public class Dataset {
     }
 
     public void addExternalDataset(Dataset dataset) {
-        if (externalDatasets == null) {
-            externalDatasets = new ArrayList<>();
+        if (externalDatasets.isEmpty()) {
+            externalDatasets = Optional.of(new ArrayList<>());
         }
-        externalDatasets.add(dataset);
+        externalDatasets.get().add(dataset);
     }
 
     public List<Dataset> getExternalDatasets() {
-        return (null != externalDatasets) ? externalDatasets : Collections.emptyList();
+        return externalDatasets.orElse(Collections.emptyList());
     }
 
     public String getQueryStringForCataloging(String newOntopEndpoint) {

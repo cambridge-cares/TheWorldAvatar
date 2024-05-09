@@ -1,7 +1,9 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -18,30 +20,32 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(value = CityDB.class, names = { "CityDB", "citydb" }),
         @Type(value = XtoCityDB.class, names = { "XtoCityDB", "xtocitydb" }) })
 public abstract class DataSubset {
-    private String name;
+    protected final Optional<String> name = Optional.empty();
     @JsonProperty
-    private Path subdirectory;
+    private final Optional<Path> subdirectory = Optional.empty();
 
     @JsonProperty
-    private boolean skip;
+    private final boolean skip = false;
 
     @JsonProperty
-    private String description;
+    private final Optional<String> description = Optional.empty();
 
     // for dcat cataloging purposes
+    @JsonIgnore
     private boolean exists; // used to determine whether this exists in the catalog
+    @JsonIgnore
     private String iri;
 
     public String getName() {
-        return name;
-    }
-    
-    public String getDescription() {
-        return (null != description) ? description : getName();
+        return name.orElseThrow(() -> new RuntimeException("Not all datasets have a name: " + this.getClass())));
     }
 
-    public Path getSubdirectory() {
-        return subdirectory; 
+    public String getDescription() {
+        return description.orElse(getName());
+    }
+
+    public Optional<Path> getSubdirectory() {
+        return subdirectory;
     }
 
     public boolean isSkip() {
@@ -71,6 +75,7 @@ public abstract class DataSubset {
     public void setExists(boolean exists) {
         this.exists = exists;
     }
+
     public boolean getExists() {
         return exists;
     }
@@ -78,6 +83,7 @@ public abstract class DataSubset {
     public void setIri(String iri) {
         this.iri = iri;
     }
+
     public String getIri() {
         return iri;
     }

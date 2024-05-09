@@ -27,10 +27,9 @@ public class TBoxCSV extends DataSubset {
         RemoteStoreClient remoteStoreClient = BlazegraphClient.getInstance()
                 .getRemoteStoreClient(dataset.getNamespace());
 
-        Path subdirectory = this.getSubdirectory();
-        if (null == subdirectory) {
-            throw new RuntimeException("No 'subdirectory' specified - required for TBoxCSV data");
-        }
+        Path subdirectory = this.getSubdirectory()
+                .orElseThrow(() -> new RuntimeException("No 'subdirectory' specified - required for TBoxCSV data"));
+
         Path datasubsetDir = dataset.getDirectory().resolve(subdirectory);
         if (!Files.exists(datasubsetDir)) {
             throw new RuntimeException("Data subset directory '" + datasubsetDir + "' does not exist.");
