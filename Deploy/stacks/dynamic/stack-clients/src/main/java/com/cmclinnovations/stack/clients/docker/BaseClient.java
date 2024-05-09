@@ -5,12 +5,13 @@ import java.io.IOException;
 
 import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 abstract class BaseClient {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonHelper.getMapper();
 
     protected abstract <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig);
 

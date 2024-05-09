@@ -21,6 +21,7 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.cmclinnovations.stack.services.OntopService;
 import com.cmclinnovations.stack.services.ServiceManager;
 import com.cmclinnovations.stack.services.config.Connection;
@@ -30,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DatasetLoader {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = JsonHelper.getMapper();
     private static final Path configPath = Path.of("/inputs/config");
 
     private static final ServiceManager serviceManager = new ServiceManager(false);
