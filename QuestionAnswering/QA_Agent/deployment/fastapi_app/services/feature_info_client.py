@@ -5,6 +5,8 @@ from fastapi import Depends
 from pydantic import BaseModel
 import requests
 
+from services.requests import request_get_obj
+
 
 class FeatureInfoClientSimple:
     def __init__(self, url: str):
@@ -25,9 +27,7 @@ class FeatureInfoClient(Generic[T]):
         self.type = type
 
     def query(self, **kwargs):
-        res = requests.get(self.url, params=kwargs)
-        res.raise_for_status()
-        return self.type.model_validate_json(res.text)
+        return request_get_obj(self.url, params=kwargs, response_type=self.type)
 
 
 @cache
