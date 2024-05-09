@@ -11,8 +11,6 @@ The OntoCompany ontology has been developed to describe the properties of compan
 | [om](https://github.com/HajoRijgersberg/OM)                      | `http://www.ontology-of-units-of-measure.org/resource/om-2/` |
 | [icontact](http://ontology.eil.utoronto.ca/icontact.html)                      | `http://ontology.eil.utoronto.ca/icontact.owl#` |
 | [ontochemplant](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontochemplant)                      | `https://www.theworldavatar.com/kg/ontochemplant/` |
-| [ontopowsys_powsysfunction](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontopowsys/PowSysFunction.owl) | `http://www.theworldavatar.com/kg/ontopowsys/powsysfunction/` | 
-| [ontocape_chemical_process_system](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl) | `http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsrealization/plant/` |
 | [infrastructure](https://innoweb.mondragon.edu/ontologies/oema/infrastructure/1.1/index-en.html) | `http://www.purl.org/oema/infrastructure/` |
 | [ontocape_economic_performance](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl) | `http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsperformance/economicperformance/hasRevenue` | 
 
