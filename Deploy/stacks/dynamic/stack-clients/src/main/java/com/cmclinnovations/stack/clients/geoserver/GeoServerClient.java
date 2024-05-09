@@ -113,7 +113,7 @@ public class GeoServerClient extends ContainerClient {
             logger.info("GeoServer style '{}:{}' already exists.", workspaceName, name);
         } else {
             if (manager.getPublisher().publishStyleInWorkspace(workspaceName,
-                    new File("/inputs/config", style.getFile()), name)) {
+                    Path.of("/inputs/config").resolve(style.getFile()).toFile(), name)) {
                 logger.info("GeoServer style '{}:{}' created.", workspaceName, name);
             } else {
                 throw new RuntimeException("GeoServer style '" + workspaceName + ":" + name
@@ -210,9 +210,7 @@ public class GeoServerClient extends ContainerClient {
 
             processDimensions(geoServerSettings, fte);
 
-            if (manager.getPublisher().publishDBLayer(workspaceName,
-                    storeName,
-                    fte, geoServerSettings)) {
+            if (manager.getPublisher().publishDBLayer(workspaceName, storeName, fte, geoServerSettings)) {
                 logger.info("GeoServer database layer '{}' created.", layerName);
             } else {
                 throw new RuntimeException(
