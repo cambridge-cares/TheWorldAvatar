@@ -1,51 +1,30 @@
 from functools import cache
 import logging
-import os
 import time
-from typing import Annotated, Dict, List, Optional
+from typing import Annotated, Dict, List
 
 from fastapi import Depends, HTTPException
 import requests
-from pydantic import BaseModel, Field
 
+from controllers.qa.execute_action.func.sg_dispersion.pollutant_conc import (
+    PollutantConcClient,
+    get_pollutantConc_client,
+)
 from services.geocoding.base import IGeocoder
 from services.geocoding.serial import get_serial_geocoder
 from controllers.qa.execute_action.func.sg_dispersion.ship import (
+    ShipFeatureInfo,
     get_ship_featureInfoClient,
 )
-from controllers.qa.support_data import QAStep
 from services.entity_store import EntityStore, get_entity_store
-from services.feature_info_client import (
-    FeatureInfoClient,
-    FeatureInfoClientSimple,
-    get_featureInfoClient,
+from services.feature_info_client import FeatureInfoClient
+from controllers.qa.support_data import (
+    ScatterPlotDataItem,
+    ScatterPlotTrace,
+    TableDataItem,
 )
-from controllers.qa.support_data import ScatterPlotDataItem, ScatterPlotTrace, TableDataItem
+from controllers.qa.support_data import QAStep
 from ..base import Name2Func
-
-
-class ShipFeatureInfoMeta(BaseModel):
-    mmsi: str = Field(..., alias="MMSI")
-    maximum_static_draught: str = Field(..., alias="Maximum static draught")
-    dimension: str = Field(..., alias="Dimension")
-    imo_number: str = Field(..., alias="IMO number")
-    ship_type: str = Field(..., alias="Ship type")
-    call_sign: str = Field(..., alias="Call sign")
-
-
-class ShipFeatureInfoTimeItem(BaseModel):
-    id: str
-    data: List[str]
-    timeClass: str
-    time: List[str]
-    valuesClass: List[str]
-    values: List[List[float]]
-    units: List[str]
-
-
-class ShipFeatureInfo(BaseModel):
-    meta: ShipFeatureInfoMeta
-    time: Optional[List[ShipFeatureInfoTimeItem]]
 
 
 logger = logging.getLogger(__name__)
@@ -54,16 +33,14 @@ logger = logging.getLogger(__name__)
 class SGDispersionFuncExecutor(Name2Func):
     def __init__(
         self,
-        pollutant_conc_endpoint: str,
         geocoder: IGeocoder,
         entity_store: EntityStore,
-        feature_info_client: FeatureInfoClientSimple,
-        ship_feature_info_client: FeatureInfoClient[ShipFeatureInfo]
+        pollutant_conc_client: PollutantConcClient,
+        ship_feature_info_client: FeatureInfoClient[ShipFeatureInfo],
     ):
-        self.pollutant_conc_endpoint = pollutant_conc_endpoint
         self.geocoder = geocoder
         self.entity_store = entity_store
-        self.feature_info_client = feature_info_client
+        self.pollutant_conc_client = pollutant_conc_client
         self.ship_feature_info_client = ship_feature_info_client
 
     def get_name2func(self):
@@ -92,23 +69,7 @@ class SGDispersionFuncExecutor(Name2Func):
 
         timestamp = time.time()
         try:
-            query_params = {"lat": place.lat, "lon": place.lon}
-            res = requests.get(self.pollutant_conc_endpoint, params=query_params)
-            res.raise_for_status()
-            res = res.json()
-
-            timestamps = res["time"]
-            data = [
-                ScatterPlotDataItem(
-                    title="{key} ({unit}) in {location}".format(
-                        key=key, unit="µg/m³", location=place.name
-                    ),
-                    traces=[ScatterPlotTrace(x=timestamps, y=readings)],
-                )
-                for key, readings in res.items()
-                if key != "time"
-            ]
-
+            res = self.pollutant_conc_client.get(lat=place.lat, lon=place.lon)
         except requests.HTTPError as e:
             if e.response.status_code == 404:
                 raise HTTPException(
@@ -117,6 +78,17 @@ class SGDispersionFuncExecutor(Name2Func):
                 )
             else:
                 raise e
+
+        data = [
+            ScatterPlotDataItem(
+                title="{key} ({unit}) in {location}".format(
+                    key=key, unit="µg/m³", location=place.name
+                ),
+                traces=[ScatterPlotTrace(x=res.time, y=readings)],
+            )
+            for key, readings in res.model_dump().items()
+            if key != "time"
+        ]
 
         latency = time.time() - timestamp
         steps.append(
@@ -255,26 +227,19 @@ class SGDispersionFuncExecutor(Name2Func):
 
 
 @cache
-def get_pollutantConc_endpoint():
-    return os.getenv("ENDPOINT_POLLUTANT_CONCENTRATIONS")
-
-
-@cache
 def get_sgDispersion_funcExec(
-    pollutant_conc_endpoint: Annotated[str, Depends(get_pollutantConc_endpoint)],
     geocoder: Annotated[IGeocoder, Depends(get_serial_geocoder)],
     entity_store: Annotated[EntityStore, Depends(get_entity_store)],
-    feature_info_client: Annotated[
-        FeatureInfoClientSimple, Depends(get_featureInfoClient)
+    pollutant_conc_client: Annotated[
+        PollutantConcClient, Depends(get_pollutantConc_client)
     ],
     ship_feature_info_client: Annotated[
         FeatureInfoClient[ShipFeatureInfo], Depends(get_ship_featureInfoClient)
     ],
 ):
     return SGDispersionFuncExecutor(
-        pollutant_conc_endpoint=pollutant_conc_endpoint,
         geocoder=geocoder,
         entity_store=entity_store,
-        feature_info_client=feature_info_client,
-        ship_feature_info_client=ship_feature_info_client
+        pollutant_conc_client=pollutant_conc_client,
+        ship_feature_info_client=ship_feature_info_client,
     )
