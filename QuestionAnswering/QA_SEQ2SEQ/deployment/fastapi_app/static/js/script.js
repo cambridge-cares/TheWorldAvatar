@@ -27,7 +27,6 @@ Global states
 
 const globalState = (function () {
     const states = {
-        domain: null,
         isProcessing: false,
         chatbotLatency: null,
         err: null
@@ -66,14 +65,14 @@ async function throwErrorIfNotOk(res) {
     return res
 }
 
-async function fetchTranslation(question) {
+async function fetchTranslation(question, domain) {
     return fetch("./translate", {
         method: "POST",
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ question, domain: globalState.get("domain") })
+        body: JSON.stringify({ question, domain })
     })
         .then(throwErrorIfNotOk)
         .then(res => res.json())
@@ -617,7 +616,7 @@ globalState.registerWatcher("isProcessing", (oldVal, newVal) => {
     }
 })
 
-async function askQuestion() {
+async function askQuestion(domain = null) {
     if (globalState.get("isProcessing")) { // No concurrent questions
         return;
     }
@@ -638,7 +637,7 @@ async function askQuestion() {
     inferenceMetadataCard.reset()
 
     try {
-        const trans_results = await fetchTranslation(question)
+        const trans_results = await fetchTranslation(question, domain)
         sparqlContainer.render(trans_results)
         document.getElementById("result-section").style.display = "block"
 

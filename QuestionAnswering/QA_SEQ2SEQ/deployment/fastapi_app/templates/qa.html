@@ -125,7 +125,7 @@
             <ul>
                 {% for question in question_group["questions"] %}
                 <li class="sample-question"
-                    onclick='inputField.populateInputText("{{ question }}"); globalState.set("domain", "{{ question_group.domain }}"); askQuestion();'>
+                    onclick='inputField.populateInputText("{{ question }}"); askQuestion("{{ question_group.domain }}");'>
                     {{ question }}
                 </li>
                 {% endfor %}
