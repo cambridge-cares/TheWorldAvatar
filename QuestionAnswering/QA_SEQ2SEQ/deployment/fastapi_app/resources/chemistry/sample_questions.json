@@ -6,7 +6,7 @@
         "questions": [
             "What is the charge of benzene?",
             "How many hydrogen bond acceptors does H2O have and what is its boiling point?",
-            "Could you provide the number of defined atom stereocenters for chemical species categorized as trinitrotoluene?",
+            "Could you provide the number of defined atom stereocenters for chemical species categorised as cyclic olefin?",
             "Can you provide information about the chemical classes attributed to InChI=1S/C3H9NO/c1-3(5)2-4/h3,5H,2,4H2,1H3?",
             "What are the applications of 2-amino-4-sulfanyl-butanoic acid",
             "Show the IUPAC name of CH2O2",
@@ -23,9 +23,9 @@
         "questions": [
             "list all mechanisms that involve O, H, and AR",
             "what are the reactions involved in the mechanism outlined by www.osti.gov/servlets/purl/90098-26Ev73/webviewable/",
-            "what are the reactions in which O2 reacts to form OH",
+            "what are reactions in which O2 is a reactant and OH is a product",
             "what are the rate constant parameters of the reactions involving H2",
-            "compare the kinetic models of the reaction H2 + OH = H + H2O across all the mechanisms it appears in",
+            "compare the kinetic model of the reaction \"H2 + OH = H + H2O\" across all the mechanisms it appears in",
             "compare thermodynamic models of O2 across all the mechanisms in which it appears"
         ]
     },
