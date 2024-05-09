@@ -50,21 +50,21 @@ class SGCarParkFuncExecutor(Name2Func):
 
         timestamp = time.time()
         query = """PREFIX carpark:	<https://www.theworldavatar.com/kg/ontocarpark/>
-    PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-    PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
-    PREFIX unit: <http://qudt.org/vocab/unit/>
-            
-    SELECT * WHERE {{
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+        
+SELECT * WHERE {{
     ?Carpark a carpark:Carpark; rdfs:label ?Label .
     SERVICE <http://sg-ontop:8080/sparql> {{
-        SELECT (geof:distance(?Coords, "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POINT({lon} {lat})"^^geo:wktLiteral, <http://www.opengis.net/def/uom/OGC/1.0/metre>) as ?Distance) ?Carpark ?Coords
+        SELECT (geof:distance(?Coords, "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POINT({lon} {lat})"^^geo:wktLiteral, <http://www.opengis.net/def/uom/OGC/1.0/metre>) AS ?Distance) ?Carpark ?Coords
         WHERE {{
-        ?Carpark geo:hasGeometry/geo:asWKT ?Coords
+            ?Carpark geo:hasGeometry/geo:asWKT ?Coords
         }}
     }}
-    }}
-    ORDER BY ASC(?Distance)
-    LIMIT 1""".format(
+}}
+ORDER BY ASC(?Distance)
+LIMIT 1""".format(
             lat=place.lat, lon=place.lon
         )
 
