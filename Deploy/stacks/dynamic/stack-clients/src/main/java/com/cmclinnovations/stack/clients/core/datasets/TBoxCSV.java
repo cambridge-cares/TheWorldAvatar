@@ -38,9 +38,8 @@ public class TBoxCSV extends DataSubset {
         // Create a temporary directory to contain the generated OWL files
         try (TempDir outputDir = new LocalTempDir();
                 // List all of the CSV files in the datasubset's directory
-                Stream<Path> csvFiles = Files.list(datasubsetDir)
-                        .filter(path -> path.getFileName().toString().endsWith(".csv"))) {
-            csvFiles.forEach(csvFile -> {
+                Stream<Path> files = Files.list(datasubsetDir)) {
+            files.filter(path -> path.getFileName().toString().endsWith(".csv")).forEach(csvFile -> {
                 // Calculate path for current OWL file
                 Path owlFile = outputDir.getPath()
                         .resolve(csvFile.getFileName().toString().replace(".csv", ".owl"));
