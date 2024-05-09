@@ -40,7 +40,7 @@ The ontology can be divided into these respective domains:
     "IndustrialFacilityProperty" }|--|| "DataCentreProperty" : "rdfs:subClassOf"
     "IndustrialFacilityProperty" }|--|| "FactoryProperty" : "rdfs:subClassOf"
     "IndustrialFacility" ||--o{ "GeneratedHeat" : hasGeneratedHeat
-    "IndustrialFacility" ||--o{ "FloorArea" : hasFloorArea
+    "IndustrialFacility" ||--o{ "GrossFloorArea" : hasGrossFloorArea
     "IndustrialFacility" ||--o{ "Industry" : belongsToIndustry
 ```
 
