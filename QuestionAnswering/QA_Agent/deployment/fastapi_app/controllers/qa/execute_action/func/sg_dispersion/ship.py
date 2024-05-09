@@ -1,11 +1,11 @@
-from typing import Annotated, List, Optional
+from typing import Annotated
 from fastapi import Depends
 from pydantic import BaseModel, Field
 
-from services.feature_info_client import FeatureInfoClient, get_featureInfoAgentUrl
+from services.feature_info_client import FeatureInfoClient, get_featureInfoAgent_url
 
 
-class ShipFeatureInfoMeta(BaseModel):
+class ShipMeta(BaseModel):
     mmsi: str = Field(..., alias="MMSI")
     maximum_static_draught: str = Field(..., alias="Maximum static draught")
     dimension: str = Field(..., alias="Dimension")
@@ -14,20 +14,5 @@ class ShipFeatureInfoMeta(BaseModel):
     call_sign: str = Field(..., alias="Call sign")
 
 
-class ShipFeatureInfoTimeItem(BaseModel):
-    id: str
-    data: List[str]
-    timeClass: str
-    time: List[str]
-    valuesClass: List[str]
-    values: List[List[float]]
-    units: List[str]
-
-
-class ShipFeatureInfo(BaseModel):
-    meta: ShipFeatureInfoMeta
-    time: Optional[List[ShipFeatureInfoTimeItem]] = None
-
-
-def get_ship_featureInfoClient(url: Annotated[str, Depends(get_featureInfoAgentUrl)]):
-    return FeatureInfoClient(url=url, type=ShipFeatureInfo)
+def get_ship_featureInfo_client(url: Annotated[str, Depends(get_featureInfoAgent_url)]):
+    return FeatureInfoClient(url=url, entity_metadata_cls=ShipMeta)

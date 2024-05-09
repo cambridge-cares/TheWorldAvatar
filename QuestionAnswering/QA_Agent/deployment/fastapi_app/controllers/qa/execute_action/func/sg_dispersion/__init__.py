@@ -6,16 +6,8 @@ from typing import Annotated, Dict, List
 from fastapi import Depends, HTTPException
 import requests
 
-from controllers.qa.execute_action.func.sg_dispersion.pollutant_conc import (
-    PollutantConcClient,
-    get_pollutantConc_client,
-)
 from services.geocoding.base import IGeocoder
 from services.geocoding.serial import get_serial_geocoder
-from controllers.qa.execute_action.func.sg_dispersion.ship import (
-    ShipFeatureInfo,
-    get_ship_featureInfoClient,
-)
 from services.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient
 from controllers.qa.support_data import (
@@ -24,7 +16,15 @@ from controllers.qa.support_data import (
     TableDataItem,
 )
 from controllers.qa.support_data import QAStep
-from ..base import Name2Func
+from controllers.qa.execute_action.func.base import Name2Func
+from .pollutant_conc import (
+    PollutantConcClient,
+    get_pollutantConc_client,
+)
+from .ship import (
+    ShipMeta,
+    get_ship_featureInfo_client,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ class SGDispersionFuncExecutor(Name2Func):
         geocoder: IGeocoder,
         entity_store: EntityStore,
         pollutant_conc_client: PollutantConcClient,
-        ship_feature_info_client: FeatureInfoClient[ShipFeatureInfo],
+        ship_feature_info_client: FeatureInfoClient[ShipMeta],
     ):
         self.geocoder = geocoder
         self.entity_store = entity_store
@@ -234,7 +234,7 @@ def get_sgDispersion_funcExec(
         PollutantConcClient, Depends(get_pollutantConc_client)
     ],
     ship_feature_info_client: Annotated[
-        FeatureInfoClient[ShipFeatureInfo], Depends(get_ship_featureInfoClient)
+        FeatureInfoClient[ShipMeta], Depends(get_ship_featureInfo_client)
     ],
 ):
     return SGDispersionFuncExecutor(
