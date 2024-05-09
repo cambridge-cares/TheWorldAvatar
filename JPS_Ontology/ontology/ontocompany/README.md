@@ -82,6 +82,7 @@ The ontology can be divided into these respective domains:
     "Product" ||--o{ "DesignCapacity" : hasDesignCapacity
     "Product" ||--o{ "SpecificEnergyConsumption" : hasSpecificEnergyConsumption
     "Product" ||--o{ "ThermalEfficiency" : hasThermalEfficiency
+    "Product" ||--o{ "SurfaceArea" : hasSurfaceArea
     "Factory" ||--o{ "PlantCO2Emission" : hasPlantCO2Emission
     "Factory" ||--o{ "EnergyConsumptionPerUnitFloorArea" : hasEnergyConsumptionPerUnitFloorArea
     "Factory" }|--|| "PrintingPlant" : "rdfs:subClassOf"
