@@ -164,7 +164,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompany/hasDesignCapacity">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany/Product"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany/DesignCapacity"/>
-        <rdfs:comment>A relationship between a factory and its design capacity.</rdfs:comment>
+        <rdfs:comment>A relationship between a product and the quantity of this product that can be manufactured by a factory within a specific timeframe.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
         <rdfs:label>Design Capacity</rdfs:label>
     </owl:ObjectProperty>
@@ -307,6 +307,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompany/hasProduct">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany/Factory"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany/Product"/>
+        <rdfs:comment>A relationship between a factory and a product that it manufactures.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
         <rdfs:label>Product</rdfs:label>
     </owl:ObjectProperty>
@@ -319,9 +320,22 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompany/hasSpecificEnergyConsumption">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany/Product"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany/SpecificEnergyConsumption"/>
-        <rdfs:comment>A relationship between a chemical plant and its design capacity.</rdfs:comment>
+        <rdfs:comment>A relationship between a product manufactured by a factory and the energy requirement per unit mass associated with the manufacture of this product.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
         <rdfs:label>Specific Energy Consumption</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocompany/hasSurfaceArea -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompany/hasSurfaceArea">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany/Product"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany/SurfaceArea"/>
+        <rdfs:comment>A relationship between a product manufactured by a factory and its surface area.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
+        <rdfs:label>Surface Area</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -777,7 +791,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany/DesignCapacity">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany/FactoryProperty"/>
-        <rdfs:comment>Design capacity of a factory.</rdfs:comment>
+        <rdfs:comment>The quantity of a product that a factory can produce within a specified time frame when operating at maximum capacity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
         <rdfs:label>Design Capacity</rdfs:label>
     </owl:Class>
@@ -891,7 +905,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany/GrossFloorArea">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany/IndustrialFacilityProperty"/>
-        <rdfs:comment>The total floor area of an industrial facility</rdfs:comment>
+        <rdfs:comment>The gross floor area of an industrial facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
         <rdfs:label>Floor Area</rdfs:label>
     </owl:Class>
@@ -1084,6 +1098,13 @@
                 <owl:onClass rdf:resource="http://www.theworldavatar.com/kg/ontocompany/SpecificEnergyConsumption"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocompany/hasSurfaceArea"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/kg/ontocompany/SurfaceArea"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A physical good manufactured by a factory.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
         <rdfs:label>Product</rdfs:label>
@@ -1132,9 +1153,21 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany/SpecificEnergyConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany/FactoryProperty"/>
-        <rdfs:comment>Specific energy consumption of a factory. It refers to the quantity of energy used per unit mass of product.</rdfs:comment>
+        <rdfs:comment>Specific energy consumption associated with the manufacture of a product. It refers to the quantity of energy used per unit mass of product.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
         <rdfs:label>Specific Energy Consumption</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontocompany/SurfaceArea -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany/SurfaceArea">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany/FactoryProperty"/>
+        <rdfs:comment>Surface area of products produced by a factory.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
+        <rdfs:label>Surface Area</rdfs:label>
     </owl:Class>
     
 

@@ -55,19 +55,21 @@ hasLongitudeEPSG24500,Data Property,,,,float,,A relationship between an entity a
 hasLandLotNumber,"Data Property, Functional Property",,,LandLotDetails,string,,A relationship between a land lot and its associated ID.,http://www.theworldavatar.com/kg/ontocompany/,land lot number
 http://ontology.eil.utoronto.ca/icontact.owl#hasPostalCode,"Data Property, Functional Property",,,http://ontology.eil.utoronto.ca/icontact.owl#Address,string,,A relationship between an address and its associated postal code.,http://ontology.eil.utoronto.ca/icontact.owl,postal code
 Product,Class,,,,,,A physical good manufactured by a factory.,http://www.theworldavatar.com/kg/ontocompany/,Product
-hasProduct,Object Property,,,Factory,Product,,,http://www.theworldavatar.com/kg/ontocompany/,Product
+hasProduct,Object Property,,,Factory,Product,,A relationship between a factory and a product that it manufactures.,http://www.theworldavatar.com/kg/ontocompany/,Product
 DataCentreProperty,Class,IndustrialFacilityProperty,IS-A,,,,A property of a data centre.,http://www.theworldavatar.com/kg/ontocompany/,
 MaximumITCapacity,Class,DataCentreProperty,IS-A,,,,The maximum IT capacity of a data centre.,http://www.theworldavatar.com/kg/ontocompany/,Maximum IT Capacity
 hasMaximumITCapacity,Object Property,,,DataCentre,MaximumITCapacity,,A relation between a data centre and its maximum IT capacity.,http://www.theworldavatar.com/kg/ontocompany/,Maximum IT Capacity
 UtilizationRate,Class,DataCentreProperty,IS-A,,,,The typical utilization rate of a data centre.,http://www.theworldavatar.com/kg/ontocompany/,Utilization Rate
 hasUtilizationRate,Object Property,,,DataCentre,UtilizationRate,,A relation between a data centre and its typical utilization rate.,http://www.theworldavatar.com/kg/ontocompany/,Utilization Rate
-GrossFloorArea,Class,IndustrialFacilityProperty,IS-A,,,,The total floor area of an industrial facility,http://www.theworldavatar.com/kg/ontocompany/,Floor Area
+GrossFloorArea,Class,IndustrialFacilityProperty,IS-A,,,,The gross floor area of an industrial facility,http://www.theworldavatar.com/kg/ontocompany/,Floor Area
 hasGrossFloorArea,Object Property,,,IndustrialFacility,GrossFloorArea,,A relation between an industrial facility and its gross floor area.,http://www.theworldavatar.com/kg/ontocompany/,Floor Area
 FactoryProperty,Class,IndustrialFacilityProperty,IS-A,,,,A property of a factory,http://www.theworldavatar.com/kg/ontocompany/,Factory Property
-DesignCapacity,Class,FactoryProperty,IS-A,,,,Design capacity of a factory.,http://www.theworldavatar.com/kg/ontocompany/,Design Capacity
-hasDesignCapacity,Object Property,,,Product,DesignCapacity,exactly 1,A relationship between a factory and its design capacity.,http://www.theworldavatar.com/kg/ontocompany/,Design Capacity
-SpecificEnergyConsumption,Class,FactoryProperty,IS-A,,,,Specific energy consumption of a factory. It refers to the quantity of energy used per unit mass of product.,http://www.theworldavatar.com/kg/ontocompany/,Specific Energy Consumption
-hasSpecificEnergyConsumption,Object Property,,,Product,SpecificEnergyConsumption,exactly 1,A relationship between a chemical plant and its design capacity.,http://www.theworldavatar.com/kg/ontocompany/,Specific Energy Consumption
+DesignCapacity,Class,FactoryProperty,IS-A,,,,The quantity of a product that a factory can produce within a specified time frame when operating at maximum capacity.,http://www.theworldavatar.com/kg/ontocompany/,Design Capacity
+hasDesignCapacity,Object Property,,,Product,DesignCapacity,exactly 1,A relationship between a product and the quantity of this product that can be manufactured by a factory within a specific timeframe.,http://www.theworldavatar.com/kg/ontocompany/,Design Capacity
+SpecificEnergyConsumption,Class,FactoryProperty,IS-A,,,,Specific energy consumption associated with the manufacture of a product. It refers to the quantity of energy used per unit mass of product.,http://www.theworldavatar.com/kg/ontocompany/,Specific Energy Consumption
+hasSpecificEnergyConsumption,Object Property,,,Product,SpecificEnergyConsumption,exactly 1,A relationship between a product manufactured by a factory and the energy requirement per unit mass associated with the manufacture of this product.,http://www.theworldavatar.com/kg/ontocompany/,Specific Energy Consumption
+SurfaceArea,Class,FactoryProperty,IS-A,,,,Surface area of products produced by a factory.,http://www.theworldavatar.com/kg/ontocompany/,Surface Area
+hasSurfaceArea,Object Property,,,Product,SurfaceArea,exactly 1,A relationship between a product manufactured by a factory and its surface area.,http://www.theworldavatar.com/kg/ontocompany/,Surface Area
 GeneratedHeatPerPrinter,Class,FactoryProperty,IS-A,,,,The average amount of heat emitted by each printer within a printing facility.,http://www.theworldavatar.com/kg/ontocompany/,Generated Heat Per Printer
 hasGeneratedHeatPerPrinter,Object Property,,,PrintingPlant,GeneratedHeatPerPrinter,exactly 1,A relationship between a printing plant and the average amount of heat emitted by each printer within the facility,http://www.theworldavatar.com/kg/ontocompany/,Generated Heat Per Printer
 EnergyConsumptionPerUnitFloorArea,Class,FactoryProperty,IS-A,,,,The amount of energy used per unit floor area of factory space.,http://www.theworldavatar.com/kg/ontocompany/,Energy Consumption Per Unit Floor Area
