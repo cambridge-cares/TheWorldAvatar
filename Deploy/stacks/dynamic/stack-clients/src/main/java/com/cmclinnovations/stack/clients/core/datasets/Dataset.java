@@ -44,7 +44,7 @@ public class Dataset {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(Dataset.class);
 
-    private static final String NAME_DEPRECATION_NOTICE = "Specification of '{}' name is deprecated, in the future the name of the dataset will be used, i.e. {}";
+    private static final String NAME_DEPRECATION_NOTICE = "Specification of '{}' name is deprecated, in the future the name of the dataset will be used, i.e. '{}' instead of '{}'";
 
     static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
     static final String DEFAULT_BASE_IRI = "https://www.theworldavatar.com/kg/";
@@ -112,7 +112,7 @@ public class Dataset {
 
     public String getDatabase() {
         if (database.isPresent()) {
-            LOGGER.warn(NAME_DEPRECATION_NOTICE, "database", getName());
+            LOGGER.warn(NAME_DEPRECATION_NOTICE, "database", getName(), database.get());
             return database.get();
         }
         return getName();
@@ -120,7 +120,7 @@ public class Dataset {
 
     public String getNamespace() {
         if (namespace.isPresent() && null != namespace.get().getName()) {
-            LOGGER.warn(NAME_DEPRECATION_NOTICE, "namespace", getName());
+            LOGGER.warn(NAME_DEPRECATION_NOTICE, "namespace", getName(), namespace.get().getName());
             return namespace.get().getName();
         }
         return getName();
@@ -136,7 +136,7 @@ public class Dataset {
 
     public String getWorkspaceName() {
         if (workspaceName.isPresent()) {
-            LOGGER.warn(NAME_DEPRECATION_NOTICE, "workspaceName", getName());
+            LOGGER.warn(NAME_DEPRECATION_NOTICE, "workspaceName", getName(), workspaceName.get());
             return workspaceName.get();
         }
         return getName();
