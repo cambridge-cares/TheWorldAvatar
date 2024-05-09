@@ -1,40 +1,42 @@
 from functools import cache
 import os
-from typing import Annotated, Generic, Type, TypeVar
-from fastapi import Depends
+from typing import Generic, List, Optional, Type, TypeVar
 from pydantic import BaseModel
-import requests
 
 from services.requests import request_get_obj
 
 
-class FeatureInfoClientSimple:
-    def __init__(self, url: str):
+EntityMetaT = TypeVar("EntityMetaT", bound=BaseModel)
+
+
+class FeatureInfoTimeItem(BaseModel):
+    id: str
+    data: List[str]
+    timeClass: str
+    time: List[str]
+    valuesClass: List[str]
+    values: List[List[float]]
+    units: List[str]
+
+
+class FeatureInfoResponse(BaseModel, Generic[EntityMetaT]):
+    meta: EntityMetaT
+    time: Optional[List[FeatureInfoTimeItem]] = None
+
+
+class FeatureInfoClient(Generic[EntityMetaT]):
+    def __init__(self, url: str, entity_metadata_cls: Type[EntityMetaT]):
         self.url = url
+        self.entity_meta_type = entity_metadata_cls
 
     def query(self, **kwargs):
-        res = requests.get(self.url, params=kwargs)
-        res.raise_for_status()
-        return res.json()
-
-
-T = TypeVar("T", bound=BaseModel)
-
-
-class FeatureInfoClient(Generic[T]):
-    def __init__(self, url: str, type: Type[T]):
-        self.url = url
-        self.type = type
-
-    def query(self, **kwargs):
-        return request_get_obj(self.url, params=kwargs, response_type=self.type)
+        return request_get_obj(
+            self.url,
+            params=kwargs,
+            response_type=FeatureInfoResponse[self.entity_meta_type],
+        )
 
 
 @cache
-def get_featureInfoAgentUrl():
+def get_featureInfoAgent_url():
     return os.getenv("ENDPOINT_FEATURE_INFO_AGENT")
-
-
-@cache
-def get_featureInfoClient(url: Annotated[str, Depends(get_featureInfoAgentUrl)]):
-    return FeatureInfoClientSimple(url)
