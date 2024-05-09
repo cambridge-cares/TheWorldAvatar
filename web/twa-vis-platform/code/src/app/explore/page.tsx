@@ -28,7 +28,7 @@ export default async function VisualisationPage() {
   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
   let scenarios: ScenarioDefinition[];
   // When scenarios are available, retrieve their definitions on the server side
-  if (uiSettings.resources.scenario) {
+  if (uiSettings.resources?.scenario) {
     scenarios = await getScenarios(uiSettings.resources.scenario.url);
     scenarios = scenarios.map((scenario) => ({
       ...scenario,
