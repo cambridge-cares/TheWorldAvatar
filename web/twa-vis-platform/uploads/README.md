@@ -2,7 +2,7 @@
 
 Given that the platform is designed to be generalisable, this directory exists to allow users to customise their web contents according to their needs. It acts as the target for a Docker volume or bind mount, and should be mounted to the `/twa/public` directory within the deployed container. Files within it can then be accessed using the `$HOST/...` URL route.
 
-The uploaded content provided by the deploying developer should match the directory structure below. Please read the respective sections for the specific instructions. If you require sample files of a working example, please have a look over at the [example](../example/) directory.
+The uploaded content provided by the deploying developer should match the directory structure below. Please read the respective sections for the specific instructions. Do note that the sample files in this directory are intended to disseminate information and not functional (i.e. to set up the platform). If you require sample files of a working example, please have a look over at the [example](../example/) directory. 
 
 - [`config/`](#1-configuration): Contains config/settings files.
 - [`images/`](#2-assets): Custom image files.
@@ -11,7 +11,7 @@ The uploaded content provided by the deploying developer should match the direct
 
 ## 1. Configuration
 
-The platform requires the following [JSON](https://en.wikipedia.org/wiki/JSON) configuration files:
+The platform requires the following [JSON](https://en.wikipedia.org/wiki/JSON) configuration files
 
 - [`ui-settings.json`](#11-ui-settings): UI configuration settings; **[MANDATORY]**.
 - [`data-settings.json`](#121-general-settings): Specifies the urls of datasets for mapping the data sources and layers; **[OPTIONAL]**
@@ -19,18 +19,23 @@ The platform requires the following [JSON](https://en.wikipedia.org/wiki/JSON) c
 
 ### 1.1 UI Settings
 
-The `config/ui-settings.json` file provides general settings for the platform. This includes settings for displaying modules, branding requirements, and setting scenarios. A brief explanation is as follows:
+The `config/ui-settings.json` file provides general settings for the platform. This includes settings for displaying modules, branding requirements, and additional resources. A brief explanation is as follows:
 
 - `branding`: key value pairs for various branding icons such as navigation bar and logo
-- `modules`: key value pairs indicating if certain modules should be highlighted
+- `modules`: key value pairs indicating if certain modules should be available
   - `landing`: REQUIRED. Displays landing page if enabled
   - `map`: REQUIRED. Displays map visualisation if enabled
-  - `dashboard`: REQUIRED. Displays dashboard if enabled
   - `help`: REQUIRED. Displays help page if enabled
-- `resources`: optional key value pairs if you require additional resources
-  - `dashboard`: dashboard url that will be embedded as an IFrame on the dashboard page
-- `scenario`: optional key value pairs if you require scenario handling
-  - `url`: endpoint to retrieve the scenarios and settings
+- `resources`: optional configuration for additional resources. They follow the following format
+  - `resourceName`: indicates the type of resource required - dashboard, scenario
+    - `url`: REQUIRED. url of the resource
+    - `data`: optional dataset indicator that is only used with scenario resources to target required dataset for scenarios
+
+Note that resources are optional and their configuration options can differ from each other. Please note the list of available resources and their possible options as follows:
+
+- Dashboard: Activate the `analytics` page with an dashboard embedded as an IFrame based on only the `url` parameter.
+- Scenario: Enables scenario selection in the `explore` page
+  - `url`: url to retrieve the scenarios and settings
   - `data`: target dataset that should be accessible to the user
 
 Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
@@ -47,8 +52,16 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
   "modules": {
     "landing": true, // Should the landing page be enabled
     "help": true, // Should the help page be enabled
-    "map": true, // Should the map page be enabled
-    "dashboard": true // Should the dashboard page be enabled
+    "map": true // Should the map page be enabled
+  },
+  "resources": {
+    "dashboard": {
+      "url": "" // Edit dashboard url here
+    },
+    "scenario": {
+      "url": "", // Edit scenario url here
+      "data": "dataset" // Edit scenario target dataset here
+    }
   }
 }
 ```
@@ -190,7 +203,7 @@ Below is an example of the contents for a valid `map-settings.json` file for Map
 
 #### 1.2.2 Map Data Settings
 
-The `config/data-settings.json` file specifies the datasets for visualisation according to user requirements. This file can ingest both local and remote datasets. Local datasets must start with a `/` to indicate a relative path from the `uploads` directory. Moreover, the display order of datasets will follow same sequence as specified in this file. A sample with explanation is provided below: 
+The `config/data-settings.json` file specifies the datasets for visualisation according to user requirements. This file can ingest both local and remote datasets. Local datasets must start with a `/` to indicate a relative path from the `uploads` directory. Moreover, the display order of datasets will follow same sequence as specified in this file. A sample with explanation is provided below:
 
 ```json
 {
