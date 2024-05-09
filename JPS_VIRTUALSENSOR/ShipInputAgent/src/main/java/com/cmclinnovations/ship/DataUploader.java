@@ -29,7 +29,7 @@ public class DataUploader {
     private static final Logger LOGGER = LogManager.getLogger(DataUploader.class);
     private static final String JSON_EXT = ".json";
 
-    public static void uploadShips(List<Ship> ships, QueryClient queryClient, String source) throws IOException {
+    public static int uploadShips(List<Ship> ships, QueryClient queryClient, String source) throws IOException {
         if (!queryClient.initialised()) {
             PostGISClient postGISClient = PostGISClient.getInstance();
             Path sqlFunctionFile = new ClassPathResource("function.sql").getFile().toPath();
@@ -71,7 +71,14 @@ public class DataUploader {
             case "RDB":
 
                 LOGGER.info("Upload ship data from relational database.");
-                queryClient.bulkUpdateTimeSeriesData(ships);
+                if (EnvConfig.SKIP_UPDATE_RDB) {
+                    // only update time series of new ships
+                    // skip updating existing ships
+                    queryClient.bulkUpdateTimeSeriesData(newlyCreatedShips);
+                } else {
+                    // update all ships
+                    queryClient.bulkUpdateTimeSeriesData(ships);
+                }
                 break;
 
             default:
@@ -82,6 +89,8 @@ public class DataUploader {
 
         // new derivations are created on the spot (request sent to agent immediately)
         queryClient.createNewDerivations(newlyCreatedShips);
+
+        return (newlyCreatedShips.size());
 
     }
 
@@ -190,7 +199,7 @@ public class DataUploader {
         return ships;
     }
 
-    public static List<Ship> loadDataFromRDB(QueryClient queryClient) throws IOException {
+    public static int loadDataFromRDB(QueryClient queryClient) throws IOException {
         String sqlQuery = "SELECT DISTINCT points.\"MMSI\", points.\"VesselType\" AS \"SHIPTYPE\", 0 AS \"SPEED\", " + //
                 " 0.0 AS \"COURSE\", 0.0 AS \"LAT\", 0.0 AS \"LON\", '2024-01-01T12:00:00' AS \"TIMESTAMP\" " + //
                 "FROM (SELECT \"MMSI\", \"VesselType\", \"geom\" FROM \"ship\") AS points, " + //
@@ -201,9 +210,8 @@ public class DataUploader {
         List<Ship> ships = parseShip(shipData, 0);
 
         // initialise both triples and time series if ship is new
-        uploadShips(ships, queryClient, "RDB");
 
-        return ships;
+        return uploadShips(ships, queryClient, "RDB");
     }
 
     private DataUploader() {
