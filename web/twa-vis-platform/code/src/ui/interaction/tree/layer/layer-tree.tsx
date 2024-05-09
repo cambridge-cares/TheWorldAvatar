@@ -89,7 +89,7 @@ function recurseParseTreeStructure(
     icon: dataGroup.treeIcon,
     layers: [],
     subGroups: [],
-    showChildren: true,
+    showChildren: dataGroup.isExpanded,
   };
 
   // Group layers by user facing name

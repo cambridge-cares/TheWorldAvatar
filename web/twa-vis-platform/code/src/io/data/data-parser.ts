@@ -67,9 +67,15 @@ export class DataParser {
         }
 
         // Initialise data group
-        const groupName: string = current["name"] as string;
+        const groupName: string = current["name"] as string;    
+        let isGroupExpanded: boolean = true;
+        if (parentGroup) {
+            isGroupExpanded = parentGroup.isExpanded;
+        } else if (Object.hasOwn(current, "expanded")) {
+            isGroupExpanded = current["expanded"] as boolean;
+        }
         const groupID: string = (parentGroup != null) ? (parentGroup.id + "." + depth) : depth.toString();
-        const dataGroup: DataGroup = new DataGroup(groupName, groupID, currentStack);
+        const dataGroup: DataGroup = new DataGroup(groupName, groupID, currentStack, isGroupExpanded );
 
         // Store parent (if not root)
         if(parentGroup === null || parentGroup === undefined) {
@@ -77,11 +83,6 @@ export class DataParser {
         } else {
             dataGroup.parentGroup = parentGroup;
             parentGroup.subGroups.push(dataGroup);
-        }
-
-        // Store optional expansion state
-        if(current["expanded"] != null) {
-            dataGroup.defaultExpanded = current["expanded"] as boolean;
         }
 
         // Parse sources and layers (if present)
@@ -160,6 +161,7 @@ export class DataParser {
                     layer = new MapboxDataLayer(
                         layerID,
                         element["name"] as string,
+                        dataGroup.isExpanded,
                         sourceObj,
                         element
                     );
@@ -192,12 +194,15 @@ export class DataParser {
      * @param layer 
      */
     private setVisibility(element: JsonObject, layer: DataLayer) {
-        const layoutObj = element["layout"] as JsonObject;
-        if(layoutObj?.["visibility"] != null) {
-            layer.cachedVisibility = (layoutObj["visibility"] == "visible");
-        } else if(element["visibility"] != null) {
-            // Support older format of this property
-            layer.cachedVisibility = (element["visibility"] == "visible");
+        // If the data group is visible, we then verify if the layer should be visible
+        if (layer.isGroupExpanded) {
+            const layoutObj = element["layout"] as JsonObject;
+            if (layoutObj?.["visibility"] != null) {
+                layer.cachedVisibility = (layoutObj["visibility"] == "visible");
+            } else if (element["visibility"] != null) {
+                // Support older format of this property
+                layer.cachedVisibility = (element["visibility"] == "visible");
+            }
         }
     }
 

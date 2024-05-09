@@ -42,7 +42,7 @@ export function addLayer(map: Map, layer: DataLayer, currentStyle: ImageryOption
     options["source"] = layer.source.id;
     if (options.layout) {
         const layoutOptions: JsonObject = options.layout as JsonObject;
-        layoutOptions.visibility = layer.cachedVisibility ? "visible" : "none";
+        layoutOptions.visibility = layer.isGroupExpanded && layer.cachedVisibility ? "visible" : "none";
     } else {
         options.layout = {
             visibility: "visible"

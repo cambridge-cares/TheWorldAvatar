@@ -43,20 +43,24 @@ export abstract class DataLayer {
      */
     public cachedVisibility: boolean = true;
 
+    // Indicates if the parent is visible
+    public isGroupExpanded: boolean;
+
     /**
      * Initialise a new DataLayer instance.
      * 
      * @param id Unique ID of layer.
      * @param name Public facing name of layer.
+     * @param isGroupExpanded Indicates if the layer's group is expanded.
      * @param source Source of the layer's data.
      * @param definition The JSON object that originally defined this layer.
      */
-    constructor(id: string, name: string, source: DataSource, definition: object) {
+    constructor(id: string, name: string, isGroupExpanded: boolean, source: DataSource, definition: object) {
         this.id = id;
         this.name = name;
         this.source = source;
+        this.isGroupExpanded = isGroupExpanded;
         this.definition = definition as JsonObject;
-
         console.info("Created DataLayer instance '" + this.id + "'.");
     }
 

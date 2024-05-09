@@ -22,6 +22,11 @@ export class DataGroup {
     public readonly stackEndpoint: string;
 
     /**
+     * Should this group be expanded in the layer tree?
+     */
+    public readonly isExpanded: boolean; 
+
+    /**
      * Data sources.
      */
     public readonly dataSources: DataSource[] = [];
@@ -42,11 +47,6 @@ export class DataGroup {
     public parentGroup: DataGroup;
 
     /**
-     * Should this group be expanded in the layer tree?
-     */
-    public defaultExpanded: boolean = true; 
-
-    /**
      * Optional icon for display in layer tree.
      */
     public treeIcon: string;
@@ -57,11 +57,13 @@ export class DataGroup {
      * @param name public facing name.
      * @param id unique ID.
      * @param stackEndpoint The stack endpoint storing the data.
+     * @param isExpanded Indicates if the data group should be expanded initially.
      */
-    constructor(name: string, id: string, stackEndpoint: string) {
+    constructor(name: string, id: string, stackEndpoint: string, isExpanded: boolean) {
         this.name = name;
         this.id = id;
         this.stackEndpoint = stackEndpoint;
+        this.isExpanded = isExpanded;
     }
     
     /**

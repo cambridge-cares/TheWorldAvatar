@@ -1,6 +1,7 @@
 {
     "name": "All Data",
     "tree-icon": "/images/duck.svg",
+    "expanded": false,
     "groups": [
         {
             "name": "Cambridge",

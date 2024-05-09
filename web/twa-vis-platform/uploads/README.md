@@ -221,6 +221,7 @@ Datasets must adhere to a specific format defined in the `config/data.json` file
 The `data.json` requires at least one defined data group. Each data group contains a number of parameters (detailed below), and can house multiple sub-groups to form a custom hierarchy.
 
 - `name` (required): This is the user facing name of the data group.
+- `expanded` (optional): A boolean indicating if the starting state of the data group should be expanded. False to collapse the group.
 - `tree-icon` (optional): An image that will be displayed on the layer tree.
 - `stack` (optional): This is the URL for the stack containing metadata on this group's data. Note that this should be the base URL of the stack (i.e. without "/geoserver"). If missing, dynamic metadata from a remote FeatureInfoAgent cannot be utilised. This parameter can also be set with different values for different subgroups.
 - `sources` (optional): This is an array of objects defining data sources (see below for info on sources).
@@ -241,6 +242,7 @@ Definitions of data sources and layers is optional within a data group so that g
     ],
     "groups": [
         "name": "My Example Sub Group",
+        "expanded": false,
         "stack": "https://my-example-website.com/subgroup/stack",
         "sources": [
             ...
