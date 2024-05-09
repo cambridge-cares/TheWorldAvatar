@@ -11,10 +11,11 @@ import { DefaultSettings } from 'types/settings';
  */
 export default function DashContainer() {
   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
-
-  return (
-    <div className={styles.dashContainer}>
-      <iframe className={styles.dashboard} src={uiSettings.resources.dashboard.url} title="Dashboard"></iframe>
-    </div>
-  )
+  if (uiSettings.resources?.dashboard?.url) {
+    return (
+      <div className={styles.dashContainer}>
+        <iframe className={styles.dashboard} src={uiSettings.resources.dashboard.url} title="Dashboard"></iframe>
+      </div>
+    )
+  }
 }
