@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -225,16 +226,12 @@ public class AermodAgent extends DerivationAgent {
                 .forEach(pollutantType -> zIriList.parallelStream().forEach(zIri -> {
                     aermod.createSimulationSubDirectory(pollutantType, zMap.get(zIri));
 
-                    if (sourcesWithEmissions.size() > 0) {
-
+                    if (aermod.validAermodInput(weatherData, sourcesWithEmissions)) {
                         // create emissions input
                         aermod.createPointsFile(sourcesWithEmissions, srid, pollutantType, zMap.get(zIri));
                         aermod.runAermod(pollutantType, zMap.get(zIri));
 
                     } else {
-
-                        // create mock averageConcentration.dat
-
                         aermod.createMockOutput(scope, nx, ny, srid, pollutantType, zMap.get(zIri));
                     }
 

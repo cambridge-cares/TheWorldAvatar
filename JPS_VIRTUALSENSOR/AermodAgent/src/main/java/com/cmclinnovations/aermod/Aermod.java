@@ -578,7 +578,9 @@ public class Aermod {
         createAermetInput(scope);
 
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("raob_soundings15747.FSL")) {
-            Files.copy(is, aermetDirectory.resolve("raob_soundings15747.FSL"));
+            if (!Files.exists(aermetDirectory.resolve("raob_soundings15747.FSL"))) {
+                Files.copy(is, aermetDirectory.resolve("raob_soundings15747.FSL"));
+            }
         } catch (IOException e) {
             String errmsg = "Failed to copy raob_soundings15747.FSL";
             LOGGER.error(e.getMessage());
@@ -930,5 +932,17 @@ public class Aermod {
 
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.ELEVATION_CONTOURS_TABLE, geoServerVectorSettings);
+    }
+
+    boolean validAermodInput(WeatherData weatherData, List<PointSource> sourcesWithEmissions) {
+        if (weatherData.getWindDirectionInTensOfDegrees()==0 && weatherData.getWindSpeedInKnots()==0) {
+            LOGGER.warn("AERMOD cannot simulate calm (no wind) condition.");
+            return false;
+        }
+        if (sourcesWithEmissions.isEmpty()) {
+            LOGGER.warn("No emission source within scope, no AERMOD simulation will be executed.");
+            return false;
+        }
+        return true;
     }
 }
