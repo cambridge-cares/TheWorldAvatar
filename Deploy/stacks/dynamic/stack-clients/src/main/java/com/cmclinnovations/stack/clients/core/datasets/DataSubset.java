@@ -37,7 +37,8 @@ public abstract class DataSubset {
     private String iri;
 
     public String getName() {
-        return name.orElseThrow(() -> new RuntimeException("Not all datasets have a name: " + this.getClass())));
+        return name.orElse(getSubdirectory().map(subdir -> subdir.getFileName().toString())
+                .orElseThrow(() -> new RuntimeException("Not all datasets have a name: " + this.getClass())));
     }
 
     public String getDescription() {
