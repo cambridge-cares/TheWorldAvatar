@@ -89,7 +89,9 @@ public class CostCalculation {
 
                         String gfaQuery = "SELECT realval AS gfa, cityobject_id\r\n" + //
                                             "FROM citydb.cityobject_genericattrib\r\n" + //
-                                            "WHERE attrname = 'GFA' AND strval = '" + buildingIri + "'";
+                                            "WHERE attrname = 'GFA' AND cityobject_id = "+ //
+                                            "(SELECT cityobject_id\r\n" + //
+                                              "FROM citydb.cityobject_genericattrib WHERE strval = '" + buildingIri + "')";
 
                         String costCal = "with cost_table as (" + costQuery + "), gfa_table as ( " + gfaQuery + ")\n" + //
                                     "INSERT INTO citydb.cityobject_genericattrib (cityobject_id, attrname, realval)\n" +
