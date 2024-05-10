@@ -19,40 +19,69 @@ NAMESPACE = 'gps_trajectory'
 
 def retrieve_stack_settings():
     """
-    Reads settings from Stack clients
+    Reads settings from Stack clients with detailed error reporting
     """
     # Import stack gateway module only when needed to avoid import issues/
     # potentially unnecessary installation of py4jps StackClients resource
     from agent.utils.stack_gateway import stackClientsGw
     try:
         # Create module views to relevant Stack clients
-        stackClientsView = stackClientsGw.createModuleView()
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig")
+        try:
+            stackClientsView = stackClientsGw.createModuleView()
+        except Exception as e:
+            logger.error("Failed to create module view: {}".format(str(e)))
+            raise Exception("Failed to create module view: {}".format(str(e)))
+
+        try:
+            stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
+            stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
+            stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig")
+        except Exception as e:
+            logger.error("Failed to import stack client packages: {}".format(str(e)))
+            raise Exception("Failed to import stack client packages: {}".format(str(e)))
 
         # Retrieve endpoint configurations from Stack clients
-        containerClient = stackClientsView.ContainerClient()
-        # Blazegraph
-        bg = stackClientsView.BlazegraphEndpointConfig("","","","","")
-        bg_conf = containerClient.readEndpointConfig("blazegraph", bg.getClass())
-        # PostgreSQL/PostGIS
-        pg = stackClientsView.PostGISEndpointConfig("","","","","")
-        pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
+        try:
+            containerClient = stackClientsView.ContainerClient()
+        except Exception as e:
+            logger.error("Failed to instantiate ContainerClient: {}".format(str(e)))
+            raise Exception("Failed to instantiate ContainerClient: {}".format(str(e)))
 
-        # Extract PostgreSQL database URL
-        DB_URL = pg_conf.getJdbcURL(DATABASE_NAME)
-        # Extract PostgreSQL database username and password
-        DB_USER = pg_conf.getUsername()
-        DB_PASSWORD = pg_conf.getPassword()
+        try:
+            bg = stackClientsView.BlazegraphEndpointConfig("","","","","")
+            bg_conf = containerClient.readEndpointConfig("blazegraph", bg.getClass())
+        except Exception as e:
+            logger.error("Failed to retrieve Blazegraph configuration: {}".format(str(e)))
+            raise Exception("Failed to retrieve Blazegraph configuration: {}".format(str(e)))
 
-        # Extract SPARQL endpoints of KG
-        # (i.e. Query and Update endpoints are equivalent for Blazegraph)
-        SPARQL_QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
-        SPARQL_UPDATE_ENDPOINT = SPARQL_QUERY_ENDPOINT
+        try:
+            pg = stackClientsView.PostGISEndpointConfig("","","","","")
+            pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
+        except Exception as e:
+            logger.error("Failed to retrieve PostGIS configuration: {}".format(str(e)))
+            raise Exception("Failed to retrieve PostGIS configuration: {}".format(str(e)))
+
+        try:
+            # Extract PostgreSQL database URL
+            DB_URL = pg_conf.getJdbcURL(DATABASE_NAME)
+            # Extract PostgreSQL database username and password
+            DB_USER = pg_conf.getUsername()
+            DB_PASSWORD = pg_conf.getPassword()
+        except Exception as e:
+            logger.error("Failed to extract database credentials: {}".format(str(e)))
+            raise Exception("Failed to extract database credentials: {}".format(str(e)))
+
+        try:
+            # Extract SPARQL endpoints of KG
+            SPARQL_QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
+            SPARQL_UPDATE_ENDPOINT = SPARQL_QUERY_ENDPOINT
+        except Exception as e:
+            logger.error("Failed to extract SPARQL endpoints: {}".format(str(e)))
+            raise Exception("Failed to extract SPARQL endpoints: {}".format(str(e)))
 
         return DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
-    except:
-        raise Exception("Stack client parameter extraction error.")
+    except Exception as e:
+        logger.error("General Stack client parameter extraction error: {}".format(str(e)))
+        raise Exception("General Stack client parameter extraction error: {}".format(str(e)))
 
 DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT = retrieve_stack_settings()
