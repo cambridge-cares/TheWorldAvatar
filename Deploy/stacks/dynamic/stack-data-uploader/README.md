@@ -306,6 +306,7 @@ These can be specified within an `"ogr2ogrOptions"` object under the following k
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
 When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-a_srs`][ogr2ogr-a_srs] argument passed to `ogr2ogr`.
+ If an SRID is set with this node, the uploader will not use GDAL to try attempt incoming SRID automatically.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
@@ -506,7 +507,7 @@ A full explanation of the acceptable SRS formats is given [here][raster-common-t
 This sets the value of the [`TARGET_SRS`][gdal-cog-t_srs] creation option passed to `gdal_translate`.
 This is an option specific to the [COG][gdal-cog] raster driver when using `gdal_translate`, although we could use `gdalwarp` to handle this more efficiently in the future.
 
- If gdal does not recognise the EPSG SRID (i.e. `gdalsrsinfo` returns an EPSG:-1), then the projection is assumed to be a custom one and will be appended to the spatial ref system in postGIS and GeoServer. This must still include an authority (although not EPSG) and a new number. The uploader will throw an error if the number exists already in the table.
+ If there is no `sridIn` set in config file and gdal does not recognise the EPSG SRID (i.e. `gdalsrsinfo` returns an EPSG:-1), then the projection is assumed to be a custom one and will be appended to the spatial ref system in postGIS and GeoServer. = This must still include an authority (although not EPSG) and a new number. The uploader will throw an error if the number exists already in the table.
  
  e.g. if the `sridOut` is set to `TWA:101000` and the projection is not recognised, this will be used as the SRID and authority in the newly specified custom projection.
 

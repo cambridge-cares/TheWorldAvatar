@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  sensorloggermobileappagent:
+    image: ghcr.io/cambridge-cares/sensorloggermobileappagent:1.1.0
+    build: .
+    ports:
+      - "10102:8080"
+    volumes:
+      - ./sensorloggermobileappagent/src/main/resources:/resources
