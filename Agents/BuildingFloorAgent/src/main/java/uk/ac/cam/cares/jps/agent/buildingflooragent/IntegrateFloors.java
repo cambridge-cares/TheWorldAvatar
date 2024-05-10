@@ -39,9 +39,6 @@ public class IntegrateFloors {
     private final String dbUrl;
     private final String user;
     private final String password;
-    private String osmSchema;
-    private String osmPoint;
-    private String osmPolygon;
     private String ontopUrl;
 
     private RemoteRDBStoreClient postgisClient;
@@ -52,10 +49,6 @@ public class IntegrateFloors {
         this.user = postgisUser;
         this.password = postgisPassword;
         this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
-
-        this.osmSchema = osmSchema;
-        this.osmPoint = osmPoint;
-        this.osmPolygon = osmPolygon;
 
         this.ontopUrl = ontopUrl;
     }
@@ -138,7 +131,7 @@ public class IntegrateFloors {
                     }
 
                     if (buildingiri != null) {
-                        // updateFloors(floors, catString, buildingiri);
+                        updateFloors(floors, catString, buildingiri);
                     }
                     
                 }
@@ -265,8 +258,6 @@ public class IntegrateFloors {
     }
 
     public List<OSMBuilding> queryOSMBuilding () {
-        String fileContent = "";
-        StringBuilder contentBuilder = new StringBuilder();
         
         try {
             RemoteStoreClient storeClient = new RemoteStoreClient(this.ontopUrl);
