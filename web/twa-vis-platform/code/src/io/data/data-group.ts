@@ -41,6 +41,9 @@ export class DataGroup {
      */
     public readonly subGroups: DataGroup[] = [];
 
+    // Layer groupings
+    public layerGroupings: string[] = [];
+
     /**
      * Parent group
      */

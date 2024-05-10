@@ -36,6 +36,9 @@ export abstract class DataLayer {
      */
     public interactions: string = "all";
 
+    // Field for indicating their groupings
+    public grouping?: string;
+
     /**
      * A cached visibility state that persists across map terrain
      * changes. Should be updated whenever visibility is changed
@@ -55,12 +58,13 @@ export abstract class DataLayer {
      * @param source Source of the layer's data.
      * @param definition The JSON object that originally defined this layer.
      */
-    constructor(id: string, name: string, isGroupExpanded: boolean, source: DataSource, definition: object) {
+    constructor(id: string, name: string, isGroupExpanded: boolean, source: DataSource, definition: object, grouping?: string) {
         this.id = id;
         this.name = name;
         this.source = source;
         this.isGroupExpanded = isGroupExpanded;
         this.definition = definition as JsonObject;
+        this.grouping = grouping;
         console.info("Created DataLayer instance '" + this.id + "'.");
     }
 

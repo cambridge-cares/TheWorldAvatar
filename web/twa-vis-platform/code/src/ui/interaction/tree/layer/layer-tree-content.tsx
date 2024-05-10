@@ -4,12 +4,13 @@ import styles from './layer-tree.module.css';
 import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 
 import SVG from 'react-inlinesvg';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Map } from 'mapbox-gl';
 
 import { MapLayerGroup, MapLayer } from 'types/map-layer';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import IconComponent from 'ui/graphic/icon/icon';
+import SimpleDropdownField from 'ui/interaction/dropdown/simple-dropdown';
 import { formatAppUrl } from 'utils/client-utils';
 
 // type definition for incoming properties
@@ -25,6 +26,7 @@ interface LayerTreeEntryProps {
   map: Map;
   layer: MapLayer;
   depth: number;
+  currentGrouping: string;
   handleLayerVisibility: (layerIds: string, isVisible: boolean) => void;
 }
 
@@ -40,10 +42,19 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
   // Size of left hand indentation
   const spacing: string = props.depth * 0.8 + "rem";
   const group: MapLayerGroup = props.group;
+  const groupings: string[] = props.group.groupings;
   const initialState: boolean = props.parentShowChildren ? group.showChildren : false;
   const [isExpanded, setIsExpanded] = useState<boolean>(initialState);
+  const [currentGroupingView, setCurrentGroupingView] = useState<string>(groupings.length > 0 ? groupings[0] : "");
 
-  // A function to hide or show the current group's content and its associated layers
+  // On first render, toggle grouping visibility based on the initial grouping view
+  useEffect(() => {
+    if (currentGroupingView !== "") {
+      toggleGroupingVisibility(currentGroupingView);
+    }
+  }, []);
+
+  // A function to hide or show the current group's content and its associated layers based on the expansion button
   const toggleExpansion = () => {
     // The data layers should be shown when parents are expanded, and hidden when closed
     if (props.map?.isStyleLoaded()) {
@@ -62,7 +73,11 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
       recurseToggleChildVisibility(subGroup, beforeVisibleState);
     });
     group.layers.forEach((layer) => {
-      toggleMapLayerVisibility(layer.ids, beforeVisibleState);
+      // The beforeVisibleState should only be used if there is no groupings
+      // If there are groupings, the currently selected view will either be closed or open depending on the current isExpanded state
+      // Non-selected views and their layers should never be displayed, and will be default to true
+      const visibleState: boolean = currentGroupingView === "" ? beforeVisibleState : layer.grouping === currentGroupingView ? isExpanded : true;
+      toggleMapLayerVisibility(layer.ids, visibleState);
     });
   }
 
@@ -97,6 +112,32 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
     });
   }
 
+  /** A method that toggles the grouping visibility based on the currently selected view
+   */
+  const toggleGroupingVisibility = (currentView: string) => {
+    // When a user selects a new option, change the visibility so that only the layers of the selected grouping are shown
+    group.layers.forEach((layer) => {
+      // This state should be the inverse of the toggled state
+      // If we want to switch off the layer, it should start as true
+      const visibleState: boolean = layer.grouping !== currentView;
+      toggleMapLayerVisibility(layer.ids, visibleState);
+    });
+    // Reorder the groupings so that the selected grouping is always first and this state is saved
+    const selectedIndex = groupings.indexOf(currentView);
+    if (selectedIndex !== -1) {
+      const currentGrouping: string = groupings.splice(selectedIndex, 1)[0];
+      groupings.unshift(currentGrouping);
+    }
+    // Set current grouping view
+    setCurrentGroupingView(currentView);
+  }
+
+  /** A method that handles any changes required when the user changes the selected option for groupings if available
+   */
+  const handleGroupingChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    toggleGroupingVisibility(event.target.value);
+  };
+
   return (
     <div className={styles.treeEntry} key={group.name}>
       <div className={styles.treeEntryHeader}>
@@ -121,6 +162,13 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
         <div className={styles.textContainer} onClick={toggleExpansion}>
           <span>{group.name}</span>
         </div>
+
+        {groupings.length > 0 && (
+          <SimpleDropdownField
+            options={groupings}
+            handleChange={handleGroupingChange}
+          />)
+        }
       </div>
 
       {/* Conditionally show subgroups when expanded */}
@@ -128,14 +176,17 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
         isExpanded && (
           <div className={styles.treeEntryContent}>
             {group.layers.map((layer) => {
-              return (
-                <LayerTreeEntry
-                  map={props.map}
-                  key={layer.address}
-                  layer={layer}
-                  depth={props.depth + 1}
-                  handleLayerVisibility={toggleMapLayerVisibility}
-                />)
+              if (groupings.length === 0 || layer.grouping === currentGroupingView) {
+                return (
+                  <LayerTreeEntry
+                    map={props.map}
+                    key={layer.address}
+                    layer={layer}
+                    depth={props.depth + 1}
+                    currentGrouping={currentGroupingView}
+                    handleLayerVisibility={toggleMapLayerVisibility}
+                  />)
+              }
             })}
 
             {group.subGroups.map((subGroup) => {
@@ -175,7 +226,7 @@ function LayerTreeEntry(props: Readonly<LayerTreeEntryProps>) {
   const [isVisible, setIsVisible] = useState<boolean>(
     // If the map has loaded (ie users are still on the page but switch components), retrieve the current state
     // Else, follow the data's initial state
-    props.map?.loaded() ? props.map?.getLayoutProperty(firstLayerId, "visibility") === "visible" : layer.isVisible
+    props.map?.loaded() ? props.map?.getLayoutProperty(firstLayerId, "visibility") === "visible" : props.currentGrouping === layer.grouping || layer.isVisible
   );
 
   /** This method toggles the layer visibility when the layer icon is clicked

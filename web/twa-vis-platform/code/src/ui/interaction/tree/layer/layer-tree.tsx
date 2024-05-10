@@ -90,6 +90,7 @@ function recurseParseTreeStructure(
     layers: [],
     subGroups: [],
     showChildren: dataGroup.isExpanded,
+    groupings: dataGroup.layerGroupings,
   };
 
   // Group layers by user facing name
@@ -108,6 +109,7 @@ function recurseParseTreeStructure(
       address: dataGroup.name + "." + key,
       ids: collectIDs(layers),
       icon: getIcon(layers, icons),
+      grouping: layers.find(layer => layer.grouping !== undefined)?.grouping,
       isVisible: layers.find(layer => layer.cachedVisibility !== null)?.cachedVisibility,
     };
     mapLayerGroup.layers.push(mapLayer);

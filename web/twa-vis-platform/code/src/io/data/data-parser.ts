@@ -47,7 +47,7 @@ export class DataParser {
      * @param depth depth in JSON tree.
      */
     private recurse(current: JsonObject, parentGroup: DataGroup, stack: string, depth: number) {
-        if(!current["name"]) {
+        if (!current["name"]) {
             throw new Error("Cannot parse a DataGroup that has no name!")
         }
 
@@ -67,7 +67,7 @@ export class DataParser {
         }
 
         // Initialise data group
-        const groupName: string = current["name"] as string;    
+        const groupName: string = current["name"] as string;
         let isGroupExpanded: boolean = true;
         if (parentGroup) {
             isGroupExpanded = parentGroup.isExpanded;
@@ -75,10 +75,10 @@ export class DataParser {
             isGroupExpanded = current["expanded"] as boolean;
         }
         const groupID: string = (parentGroup != null) ? (parentGroup.id + "." + depth) : depth.toString();
-        const dataGroup: DataGroup = new DataGroup(groupName, groupID, currentStack, isGroupExpanded );
+        const dataGroup: DataGroup = new DataGroup(groupName, groupID, currentStack, isGroupExpanded);
 
         // Store parent (if not root)
-        if(parentGroup === null || parentGroup === undefined) {
+        if (parentGroup === null || parentGroup === undefined) {
             this.dataStore.addGroup(dataGroup);
         } else {
             dataGroup.parentGroup = parentGroup;
@@ -86,23 +86,28 @@ export class DataParser {
         }
 
         // Parse sources and layers (if present)
-        if(current["sources"]) {
+        if (current["sources"]) {
             this.parseDataSources(current["sources"] as JsonArray, dataGroup);
-        }   
-        if(current["layers"]) {
+        }
+        if (current["layers"]) {
+            const currentLayerArray: JsonArray = current["layers"] as JsonArray;
+            if (currentLayerArray.some(layer => Object.hasOwn(layer, "grouping"))) {
+                this.verifyGroupings(currentLayerArray);
+                dataGroup.layerGroupings = this.reorderGroupings(currentLayerArray);
+            }
             this.parseDataLayers(current["layers"] as JsonArray, dataGroup);
         }
 
         // Add tree icon (if set)
-        if(current["tree-icon"]) {
+        if (current["tree-icon"]) {
             dataGroup.treeIcon = current["tree-icon"] as string;
         }
 
         // Recurse into sub groups (if present)
-        if(current["groups"]) {
+        if (current["groups"]) {
             const groupArray = current["groups"] as JsonArray;
 
-            for(let i = 0; i < groupArray.length; i++) {
+            for (let i = 0; i < groupArray.length; i++) {
                 const subNode = groupArray[i];
                 this.recurse(subNode, dataGroup, stack, i);
             }
@@ -117,8 +122,7 @@ export class DataParser {
      * @param dataGroup group to add sources to.,
      */
     private parseDataSources(sourceArray: JsonArray, dataGroup: DataGroup) {
-        for(const element of sourceArray) {
-            
+        for (const element of sourceArray) {
             const sourceID = dataGroup.id + "." + (element["id"] as string);
             const source = new DataSource(
                 sourceID,
@@ -131,23 +135,23 @@ export class DataParser {
         }
     }
 
-     /**
-     * Parses the incoming JSON array into layer objects and adds them
-     * to the input data group.
-     * 
-     * @param layerArray array of JSON layer objects.
-     * @param dataGroup group to add layer to.
-     */
+    /**
+    * Parses the incoming JSON array into layer objects and adds them
+    * to the input data group.
+    * 
+    * @param layerArray array of JSON layer objects.
+    * @param dataGroup group to add layer to.
+    */
     private parseDataLayers(layerArray: JsonArray, dataGroup: DataGroup) {
-        for(const element of layerArray) {
+        for (const element of layerArray) {
             const elementID = element["id"] as string;
 
             // Get matching source, ensure exists
             const originalSourceID = (element["source"] as string);
             const uniqueSourceID = this.recurseUpForSource(dataGroup, originalSourceID);
-            
+
             const sourceObj = dataGroup.getFirstSourceWithID(uniqueSourceID);
-            if(sourceObj == null) {
+            if (sourceObj == null) {
                 console.error("Layer with ID '" + elementID + "' references a source that is not defined, will skip it!");
                 continue;
             }
@@ -156,26 +160,29 @@ export class DataParser {
             let layer: DataLayer;
             const layerID = dataGroup.id + "." + elementID;
 
-            switch(this.mapType.toLowerCase()) {
-                case "mapbox": 
+            switch (this.mapType.toLowerCase()) {
+                case "mapbox":
                     layer = new MapboxDataLayer(
                         layerID,
                         element["name"] as string,
                         dataGroup.isExpanded,
                         sourceObj,
-                        element
+                        element,
+                        element.grouping as string
                     );
-                break;
+                    // When there is a default grouping and this is not the current grouping, the layer should start off invisible
+                    if (layer.grouping && String(layer.grouping) !== dataGroup.layerGroupings[0]) { layer.cachedVisibility = false; }
+                    break;
 
-                case "cesium": 
+                case "cesium":
                     throw new Error("Not yet implemented.");
 
-                default: 
+                default:
                     throw new Error("Unknown map provider type, stopping execution.");
             }
 
             // Add order number (if set)
-            if(element["order"] != null) {
+            if (element["order"] != null) {
                 layer.order = element["order"] as number;
             }
 
@@ -186,6 +193,45 @@ export class DataParser {
             // Store the layer
             dataGroup.dataLayers.push(layer);
         }
+    }
+
+    /** Verify if the groupings are correctly set within the data.json.
+     * 
+     * @param {JsonArray} layerArray input array for verification.
+     */
+    private verifyGroupings(layerArray: JsonArray): void {
+        // First ensure the grouping field is attached to all layers
+        if (!layerArray.every(layer => Object.hasOwn(layer, "grouping"))) {
+            throw new Error("Groupings detected for some layers. Please ensure all layers have a grouping field.");
+        }
+        // Verify if they have the same source and layer type
+        const sourceLayer: string = layerArray[0].source as string;
+        const layerType: string = layerArray[0].type as string;
+        for (const layer of layerArray) {
+            if (layer.source != sourceLayer) {
+                throw new Error("Groupings detected. But the source layer does not match for the layer: " + layer.id.toString);
+            }
+            if (layer.type != layerType) {
+                throw new Error("Groupings detected. But layer type does not match for the layer: " + layer.id.toString);
+            }
+        }
+    }
+
+    /** Reorder the layers so that default grouping always appear first.
+     * 
+     * @param {JsonArray} layerArray input array for reordering.
+     */
+    private reorderGroupings(layerArray: JsonArray): string[] {
+        const uniqueGroupings: string[] = [...new Set(layerArray.map(layer => layer.grouping as string))];
+        // Rearrange if 'Default' grouping exists
+        const defaultIndex = uniqueGroupings.findIndex(grouping => grouping.toLowerCase().trim() === "default");
+        if (defaultIndex !== -1) {
+            // Remove the default string from the array
+            const defaultString: string = uniqueGroupings.splice(defaultIndex, 1)[0];
+            // Add the default string back at the beginning
+            uniqueGroupings.unshift(defaultString);
+        }
+        return uniqueGroupings;
     }
 
     /**
@@ -212,9 +258,9 @@ export class DataParser {
      * @param layer 
      */
     private setInteractions(element: JsonObject, layer: DataLayer) {
-        if(element["interactions"] != null) {
+        if (element["interactions"] != null) {
             layer.interactions = element["interactions"] as string;
-        } else if(element["clickable"] != null) {
+        } else if (element["clickable"] != null) {
             // Support older format of this property
             layer.interactions = (element["clickable"]) ? "all" : "none";
         }
@@ -227,9 +273,9 @@ export class DataParser {
      * @returns 
      */
     private recurseUpForSource(dataGroup: DataGroup, sourceID: string): string {
-        for(const source of dataGroup.dataSources) {
+        for (const source of dataGroup.dataSources) {
             const sourceDef = source.definition;
-            if((sourceDef["id"] as string) === sourceID) return source.id;
+            if ((sourceDef["id"] as string) === sourceID) return source.id;
         }
         return this.recurseUpForSource(dataGroup.parentGroup, sourceID);
     }

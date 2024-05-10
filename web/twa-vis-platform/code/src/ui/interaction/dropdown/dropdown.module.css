@@ -29,3 +29,25 @@
 .selector option:not(:checked) {
   color: var(--border-primary);
 }
+
+.simple-selector {
+  height: 2rem;
+  width: 100%;
+  max-width: 6rem;
+  background-color: var(--background-tertiary);
+  color: var(--background-inverse-primary);
+  border-radius: 0.2rem;
+  font-size: var(--font-size-tertiary-text);
+}
+
+.simple-selector option {
+  font-size: var(--font-size-tertiary-text);
+}
+
+.simple-selector option:checked {
+  color: var(--background-inverse-primary);
+}
+
+.simple-selector option:not(:checked) {
+  color: var(--border-primary);
+}

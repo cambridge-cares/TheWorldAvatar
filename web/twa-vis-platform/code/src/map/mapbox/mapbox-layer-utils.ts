@@ -55,6 +55,7 @@ export function addLayer(map: Map, layer: DataLayer, currentStyle: ImageryOption
     delete options["treeable"];
     delete options["name"];
     delete options["order"];
+    delete options["grouping"];
 
     // Add attributions if missing
     if (!options["metadata"]) {
