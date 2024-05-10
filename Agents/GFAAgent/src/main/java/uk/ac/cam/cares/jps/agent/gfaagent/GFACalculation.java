@@ -41,9 +41,18 @@ public class GFACalculation {
     /**********************************************/ 
 
     public void calculationGFA(){
+        String gfaSQL = "INSERT INTO cityobject_genericattrib (attrname, realval, cityobject_id)\n" +
+        "SELECT DISTINCT ON (attrname, cityobject_id) *\n" +
+            "FROM  (\n" +
+            "SELECT 'GFA', (public.ST_Area(cs.geometry)*cb.storeys_above_ground) AS realval, cb.id\n" +
+            "FROM citydb.building AS cb, citydb.surface_geometry AS cs\n" +
+            "WHERE cb.lod0_footprint_id = cs.parent_id\n" +
+            ") AS cg(attrname, realval, cityobject_id)\n" +
+        "ON CONFLICT (attrname, cityobject_id) DO UPDATE SET realval= cityobject_genericattrib.realval;";
+
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
-                stmt.executeUpdate(gfaSQLInsert);
+                stmt.executeUpdate(gfaSQL);
             }
         }catch (SQLException e) {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
