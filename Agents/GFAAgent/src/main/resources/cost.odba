@@ -7,9 +7,16 @@ twa:    https://www.theworldavatar.com/kg/
 
 [MappingDeclaration] @collection [[
 mappingId	cost
-target		twa:Building/{building_iri} env:hasMarketValue om:AmountOfMoney.
-            om:Measure om:hasNumericalValue {cost}^^xsd:float .
-source      SELECT realval AS cost, strval AS building_iri 
-            FROM cityobject_genericattrib
-            WHERE attrname = 'cost' OR attrname = 'uuid'
+target		twa:Building/{building_iri} env:hasEstimatedConstructionCost om:Cost/{building_iri}.
+            om:Cost/{building_iri} om:hasValue om:Measure/{building_iri}
+            om:Measure/{building_iri} om:hasNumericalValue {cost}^^xsd:float .
+            
+source      WITH iri_table AS (
+                SELECT cityobject_id, strval 
+                FROM cityobject_genericattrib
+                WHERE attrname = 'uuid'
+            )
+            SELECT cg.realval AS cost, iri.strval as building_iri
+            FROM cityobject_genericattrib AS cg, iri_table as iri
+            WHERE cg.attrname = 'cost' AND cg.cityobject_id = iri.cityobject_id;
 ]]
