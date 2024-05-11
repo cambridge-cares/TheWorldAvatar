@@ -94,20 +94,20 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         LOGGER.info("Passing request to CARES Weather Station Input Agent..");
         String route = requestParams.get("requestUrl").toString();
         route = route.substring(route.lastIndexOf("/") + 1);
-        String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
-        String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
-        String apiProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
-        try {
-            loadTSClientConfigs(clientProperties);
-        } catch (IOException e) {
-            throw new JPSRuntimeException(LOADTSCONFIG_ERROR_MSG, e);
-        }
-        String[] args = new String[] {agentProperties,clientProperties,apiProperties};
         switch (route) {
             case "status":
                 jsonMessage = statusRoute();
                 break;
             case "retrieve":
+                String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
+                String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
+                String apiProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
+                try {
+                    loadTSClientConfigs(clientProperties);
+                } catch (IOException e) {
+                    throw new JPSRuntimeException(LOADTSCONFIG_ERROR_MSG, e);
+                }
+                String[] args = new String[] {agentProperties,clientProperties,apiProperties};
                 int delay = requestParams.getInt("delay");
                 int interval = requestParams.getInt("interval");
                 String timeunit = requestParams.getString("timeunit");
