@@ -285,6 +285,7 @@ As with sources, definitions of layers vary depending on the chosen mapping prov
 - `id` (required): This is the internal ID of the layer. It needs to be unique within the current group, but is not required to be globally unique.
 - `name` (required): This is the user facing name of the layer (that will appear in the tree). Multiple layers can use the same name, they'll be combined in a single entry in the tree.
 - `source` (required): This is the ID of the source used to populate the layer.
+- `grouping` (optional): A grouping field for displaying only a subset of layers within this group.
 
 ```json
 {
@@ -293,6 +294,19 @@ As with sources, definitions of layers vary depending on the chosen mapping prov
   "source": "example-mapbox-source"
 }
 ```
+
+> Displaying subset of layers
+
+Users can choose to display a subset of the layers within the same group. For example, given a building dataset for the entire city, the user may wish to create the following three views. This can be set by creating at least one layer for each view and assign a `grouping` field to each. Then, a dropdown will be generated next to the building data group in the visualisation.
+- All buildings - `grouping`: "Default"
+- All buildings color coded by their use - `grouping`: "Building Use"
+- Buildings containing carparks or not - `grouping`: "Carpark"
+
+Instructions:
+1) All related layers must belong to the same data group and be assigned a `grouping` field
+2) These layers must come from the same data source
+3) These layers must be visualised using the same Mapbox type
+4) The dropdown sequence is determined by the order the layers appear in the `data.json`; use the `Default` grouping to ensure that it is the first option
 
 ## 2. Assets
 
