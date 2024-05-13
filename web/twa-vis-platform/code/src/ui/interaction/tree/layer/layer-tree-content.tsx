@@ -4,7 +4,7 @@ import styles from './layer-tree.module.css';
 import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 
 import SVG from 'react-inlinesvg';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Map } from 'mapbox-gl';
 
 import { MapLayerGroup, MapLayer } from 'types/map-layer';
@@ -46,13 +46,6 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
   const initialState: boolean = props.parentShowChildren ? group.showChildren : false;
   const [isExpanded, setIsExpanded] = useState<boolean>(initialState);
   const [currentGroupingView, setCurrentGroupingView] = useState<string>(groupings.length > 0 ? groupings[0] : "");
-
-  // On first render, toggle grouping visibility based on the initial grouping view
-  useEffect(() => {
-    if (currentGroupingView !== "") {
-      toggleGroupingVisibility(currentGroupingView);
-    }
-  }, []);
 
   // A function to hide or show the current group's content and its associated layers based on the expansion button
   const toggleExpansion = () => {
