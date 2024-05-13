@@ -217,6 +217,8 @@ public class Dataset {
                 String kgUrl = BlazegraphClient.getInstance().getEndpoint().getUrl(getNamespace());
                 Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
                 insertTriples.add(blazegraphService.isA(SparqlConstants.BLAZEGRAPH)
+                        .andHas(DCTERMS.TITLE, getNamespace())
+                        .andHas(DCTERMS.IDENTIFIER, blazegraphService)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(kgUrl))
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
             }
@@ -228,6 +230,8 @@ public class Dataset {
                 // append triples
                 postgisService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
                 insertTriples.add(postgisService.isA(SparqlConstants.POSTGIS)
+                        .andHas(DCTERMS.TITLE, getDatabase())
+                        .andHas(DCTERMS.IDENTIFIER, postgisService)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(jdbcUrl))
                         .andHas(SparqlConstants.HAS_DATABASE, getDatabase())
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
@@ -239,6 +243,8 @@ public class Dataset {
 
                 // append triples
                 insertTriples.add(geoserverService.isA(SparqlConstants.GEOSERVER)
+                        .andHas(DCTERMS.TITLE, getWorkspaceName())
+                        .andHas(DCTERMS.IDENTIFIER, geoserverService)
                         .andHas(SparqlConstants.USES_DATABASE, postgisService)
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
             }
@@ -247,6 +253,8 @@ public class Dataset {
                 Iri ontopService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
 
                 insertTriples.add(ontopService.isA(SparqlConstants.ONTOP)
+                        .andHas(DCTERMS.TITLE, getDatabase())
+                        .andHas(DCTERMS.IDENTIFIER, ontopService)
                         .andHas(SparqlConstants.USES_DATABASE, postgisService)
                         .andHas(DCAT.SERVES_DATASET, catalogIri)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(newOntopEndpoint)));
