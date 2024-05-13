@@ -10,7 +10,7 @@ from pathlib import Path
 from configobj import ConfigObj
 from pathlib import Path
 
-from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, DATABASE_NAME, NAMESPACE
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 # Define format of time series time entries: Year-Month-Day T hour:minute:second Z
 FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 

@@ -139,6 +139,8 @@ def retrieve_default_settings():
     logger.info(f"SPARQL_QUERY_ENDPOINT: {SPARQL_QUERY_ENDPOINT}")
     logger.info(f"SPARQL_UPDATE_ENDPOINT: {SPARQL_UPDATE_ENDPOINT}")
 
+# Run when module is imported
+retrieve_default_settings()
 
 
 # def retrieve_default_settings():
