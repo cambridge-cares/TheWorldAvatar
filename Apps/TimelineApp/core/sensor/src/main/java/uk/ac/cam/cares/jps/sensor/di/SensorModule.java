@@ -17,6 +17,7 @@ import uk.ac.cam.cares.jps.sensor.SensorCollectionStateManager;
 import uk.ac.cam.cares.jps.sensor.SensorManager;
 import uk.ac.cam.cares.jps.sensor.SensorNetworkSource;
 import uk.ac.cam.cares.jps.sensor.SensorRepository;
+import uk.ac.cam.cares.jps.sensor.SensorService;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -33,8 +34,11 @@ public class SensorModule {
 
     @Provides
     @Singleton
-    public SensorRepository provideSensorRepository(SensorNetworkSource networkSource, LoginRepository loginRepository) {
-        return new SensorRepository(networkSource, loginRepository);
+    public SensorRepository provideSensorRepository(@ApplicationContext Context applicationContext,
+                                                    SensorNetworkSource networkSource,
+                                                    SensorService sensorService,
+                                                    LoginRepository loginRepository) {
+        return new SensorRepository(applicationContext, networkSource, sensorService, loginRepository);
     }
 
     @Provides
@@ -47,5 +51,17 @@ public class SensorModule {
     @Singleton
     public SensorCollectionStateManager provideSensorCollectionStateManager(@ApplicationContext Context applicationContext) {
         return new SensorCollectionStateManager(applicationContext);
+    }
+
+    @Provides
+    @Singleton
+    public SensorService provideSensorService() {
+        return new SensorService();
+    }
+
+    @Provides
+    @Singleton
+    public Context provideContext(@ApplicationContext Context applicationContext) {
+        return applicationContext;
     }
 }

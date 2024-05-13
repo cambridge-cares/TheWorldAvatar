@@ -25,12 +25,12 @@ public class SensorNetworkSource {
     Context context;
     RequestQueue requestQueue;
     Logger LOGGER = Logger.getLogger(SensorNetworkSource.class);
-    private static final long SEND_INTERVAL = 6000;
-    private SensorCollectionStateManager sensorCollectionStateManager;
-    private SensorManager sensorManager;
+    private static final long SEND_INTERVAL = 10000;
+    private final SensorCollectionStateManager sensorCollectionStateManager;
+    private final SensorManager sensorManager;
 
-    private Runnable sendDataRunnable;
-    private Handler handler = new Handler();
+    private final Runnable sendDataRunnable;
+    private Handler handler;
 
     public SensorNetworkSource(Context applicationContext,
                                RequestQueue requestQueue,
@@ -79,15 +79,19 @@ public class SensorNetworkSource {
     }
 
     public void startDataCollection() {
-        sensorManager.startSensors();
-        handler.post(sendDataRunnable);
+        if (handler != null) {
+            sensorManager.startSensors();
+            handler.post(sendDataRunnable);
+        }
     }
 
     public void stopDataCollection() {
-        sensorManager.stopSensors();
-        handler.removeCallbacks(sendDataRunnable);
+        if (handler != null) {
+            sensorManager.stopSensors();
+            handler.removeCallbacks(sendDataRunnable);
 
-        sensorCollectionStateManager.setRecordingState(false);
+            sensorCollectionStateManager.setRecordingState(false);
+        }
     }
 
     public void clearManagers() {
@@ -143,5 +147,9 @@ public class SensorNetworkSource {
 
     private int generateMessageId() {
         return new Random().nextInt(1000);
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 }

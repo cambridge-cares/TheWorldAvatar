@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.sensor;
 
+import android.content.Context;
+import android.content.Intent;
+
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
@@ -11,12 +14,22 @@ import uk.ac.cam.cares.jps.login.User;
 
 public class SensorRepository {
     SensorNetworkSource sensorNetworkSource;
+    SensorService sensorService;
     LoginRepository loginRepository;
     Logger LOGGER = Logger.getLogger(SensorRepository.class);
+    Intent serviceIntent;
+    Context context;
 
-    public SensorRepository(SensorNetworkSource sensorNetworkSource, LoginRepository loginRepository) {
+    public SensorRepository(Context applicationContext,
+                            SensorNetworkSource sensorNetworkSource,
+                            SensorService sensorService,
+                            LoginRepository loginRepository) {
+        this.context = applicationContext;
         this.sensorNetworkSource = sensorNetworkSource;
+        this.sensorService = sensorService;
         this.loginRepository = loginRepository;
+
+        serviceIntent = new Intent(context, sensorService.getClass());
     }
 
     public void registerAppToUser() {
@@ -37,12 +50,12 @@ public class SensorRepository {
 
     public void startRecording() {
         LOGGER.info("start recording");
-        sensorNetworkSource.startDataCollection();
+        context.startService(serviceIntent);
     }
 
     public void stopRecording() {
         LOGGER.info("stop recording");
-        sensorNetworkSource.stopDataCollection();
+        sensorService.stopService();
     }
 
     public void clearManagers() {
