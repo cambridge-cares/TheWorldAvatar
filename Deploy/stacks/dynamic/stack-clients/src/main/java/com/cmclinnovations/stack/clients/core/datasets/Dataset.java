@@ -233,7 +233,6 @@ public class Dataset {
                         .andHas(DCTERMS.TITLE, getDatabase())
                         .andHas(DCTERMS.IDENTIFIER, postgisService)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(jdbcUrl))
-                        .andHas(SparqlConstants.HAS_DATABASE, getDatabase())
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
             }
 
@@ -245,7 +244,7 @@ public class Dataset {
                 insertTriples.add(geoserverService.isA(SparqlConstants.GEOSERVER)
                         .andHas(DCTERMS.TITLE, getWorkspaceName())
                         .andHas(DCTERMS.IDENTIFIER, geoserverService)
-                        .andHas(SparqlConstants.USES_DATABASE, postgisService)
+                        .andHas(DCTERMS.REFERENCES, postgisService)
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
             }
 
@@ -255,7 +254,7 @@ public class Dataset {
                 insertTriples.add(ontopService.isA(SparqlConstants.ONTOP)
                         .andHas(DCTERMS.TITLE, getDatabase())
                         .andHas(DCTERMS.IDENTIFIER, ontopService)
-                        .andHas(SparqlConstants.USES_DATABASE, postgisService)
+                        .andHas(DCTERMS.REQUIRES, postgisService)
                         .andHas(DCAT.SERVES_DATASET, catalogIri)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(newOntopEndpoint)));
             }
@@ -351,8 +350,6 @@ public class Dataset {
         static final Iri BLAZEGRAPH = Rdf.iri(DEFAULT_NAMESPACE + "Blazegraph");
         static final Iri POSTGIS = Rdf.iri(DEFAULT_NAMESPACE + "PostGIS");
         static final Iri GEOSERVER = Rdf.iri(DEFAULT_NAMESPACE + "GeoServer");
-        static final Iri USES_DATABASE = Rdf.iri(DEFAULT_NAMESPACE + "usesDatabase");
         static final Iri ONTOP = Rdf.iri(DEFAULT_NAMESPACE + "Ontop");
-        static final Iri HAS_DATABASE = Rdf.iri(DEFAULT_NAMESPACE + "hasDatabase");
     }
 }
