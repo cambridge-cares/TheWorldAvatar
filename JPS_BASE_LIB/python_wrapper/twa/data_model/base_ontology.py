@@ -702,13 +702,16 @@ class BaseClass(BaseModel, validate_assignment=True):
         Returns:
             List[BaseClass]: A list of objects that are pulled from the KG
         """
+        if isinstance(iris, str):
+            iris = [iris]
+        iris = set(iris)
+        # if the iris are not provided, then just return empty list
+        if not bool(iris):
+            return []
         # behaviour of recursive_depth: 0 means no recursion, -1 means infinite recursion, n means n-level recursion
         flag_pull = abs(recursive_depth) > 0
         recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
         # TODO what do we do with undefined properties in python class? - write a warning message or we can add them to extra_fields https://docs.pydantic.dev/latest/concepts/models/#extra-fields
-        if isinstance(iris, str):
-            iris = [iris]
-        iris = set(iris)
         # return format: {iri: {predicate: {object}}}
         node_dct = sparql_client.get_outgoing_and_attributes(iris)
         instance_lst = []
