@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   python-service:
-    image: ghcr.io/cambridge-cares/python-service:1.4
+    image: ghcr.io/cambridge-cares/python-service:1.4.1-dev-scheduler-fix-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
