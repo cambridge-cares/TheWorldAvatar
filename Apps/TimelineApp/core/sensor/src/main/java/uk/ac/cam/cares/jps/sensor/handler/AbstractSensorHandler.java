@@ -6,6 +6,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +26,7 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     protected JSONArray sensorData;
     protected long startTime;
     protected String sensorName;
+    Logger LOGGER = Logger.getLogger(getClass());
 
     /**
      * Constructs an AbstractSensorHandler that initializes the sensor and sensor data management.

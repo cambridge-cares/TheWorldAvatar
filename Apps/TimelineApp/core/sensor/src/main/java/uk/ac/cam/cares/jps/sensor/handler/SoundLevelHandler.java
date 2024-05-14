@@ -70,6 +70,11 @@ public class SoundLevelHandler extends AbstractSensorHandler {
             return;
         }
 
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            LOGGER.warn("Record audio permission not granted. SoundLevel handler failed to start. Request for permission should be handled in fragment.");
+            return;
+        }
+
         super.start();
         audioRecord.startRecording();
         isRecording = true;

@@ -17,6 +17,7 @@ import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +38,7 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     private float currentPressure = SensorManager.PRESSURE_STANDARD_ATMOSPHERE;
     private JSONArray locationData;
     private int mslConstant; // Mean sea level pressure constant for altitude calculations
+    private Logger LOGGER = Logger.getLogger(LocationHandler.class);
 
     /**
      * Constructs a LocationHandler with a specified context and initializes location and pressure sensors.
@@ -55,10 +57,9 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     /**
      * Starts location and pressure data updates. Requires fine location permission to function properly.
      */
-//    @RequiresApi(api = Build.VERSION_CODES.S)
     public void start() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            LOGGER.warn("Location permission not granted. Location handler failed to start. Request for permission should be handled in fragment.");
             return;
         }
 
@@ -114,11 +115,9 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
             values.put("speed", location.getSpeed());
             values.put("bearing", location.getBearing());
             values.put("horizontalAccuracy", location.hasAccuracy() ? location.getAccuracy() : null);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                values.put("bearingAccuracy", location.hasBearingAccuracy() ? location.getBearingAccuracyDegrees() : null);
-                values.put("speedAccuracy", location.hasSpeedAccuracy() ? location.getSpeedAccuracyMetersPerSecond() : null);
-                values.put("verticalAccuracy", location.hasVerticalAccuracy() ? location.getVerticalAccuracyMeters() : null);
-            }
+            values.put("bearingAccuracy", location.hasBearingAccuracy() ? location.getBearingAccuracyDegrees() : null);
+            values.put("speedAccuracy", location.hasSpeedAccuracy() ? location.getSpeedAccuracyMetersPerSecond() : null);
+            values.put("verticalAccuracy", location.hasVerticalAccuracy() ? location.getVerticalAccuracyMeters() : null);
 
             locationObject.put("values", values);
             locationData.put(locationObject);
