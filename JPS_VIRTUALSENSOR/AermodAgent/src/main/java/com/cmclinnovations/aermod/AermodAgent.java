@@ -122,19 +122,11 @@ public class AermodAgent extends DerivationAgent {
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
 
         // update ensure ship derivations use the right simulation time
-        if (!ships.isEmpty()) {
-            queryClient.attachSimTimeToShips(ships, simulationTimeIri);
-        }
+        queryClient.attachSimTimeToShips(ships, simulationTimeIri);
 
         List<PointSource> allSources = new ArrayList<>();
         allSources.addAll(staticPointSources);
         allSources.addAll(ships);
-
-        if (allSources.isEmpty()) {
-            LOGGER.warn("There are no emission sources for simulation time = {}", simulationTime);
-            LOGGER.warn("Skipping AERMOD simulation");
-            return;
-        }
 
         queryClient.setPointSourceLabel(allSources);
 
