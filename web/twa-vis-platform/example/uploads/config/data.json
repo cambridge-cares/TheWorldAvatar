@@ -1,11 +1,11 @@
 {
   "name": "Cambridge",
   "tree-icon": "/images/duck.svg",
-  "expanded": false,
   "groups": [
     {
       "name": "Colleges",
       "tree-icon": "/images/tub.svg",
+      "expanded": false,
       "sources": [
         {
           "id": "college-source",
@@ -59,6 +59,7 @@
     },
     {
       "name": "Travelling paths",
+      "expanded": true,
       "sources": [
         {
           "id": "lines-source",

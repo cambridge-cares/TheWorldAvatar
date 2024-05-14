@@ -13,3 +13,5 @@ For stack deployments, ensure the `vip.json` config is added to the `stack-manag
 ### <root>/uploads/config/data.json
 
 An example for displaying subset of layers is seen in the college example, in which users can set different views for the colleges - all college and separated by their founding year.
+
+The `expanded` parameter is deliberately implemented for nested groups with layers to optimise initial user interactions for a smoother experience. If the parameter is implemented at the root level, all layers will be displayed once expanded, which can lead to poor render times for larger groups.

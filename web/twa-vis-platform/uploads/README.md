@@ -218,7 +218,7 @@ Datasets must adhere to a specific format defined in the `config/data.json` file
 
 ##### Dataset: Defining a group
 
-The `data.json` requires at least one defined data group. Each data group contains a number of parameters (detailed below), and can house multiple sub-groups to form a custom hierarchy.
+The `data.json` requires at least one defined data group. Each data group contains a number of parameters (detailed below), and can house multiple sub-groups to form a custom hierarchy. For initial visibility settings, we recommend implementing the `expanded` parameter instead of using any native layer visibility options, such as Mapbox's `"layout": { "visibility": "none" }`, to prevent unexpected behaviors. We recommend to implement this parameter for the nested group with layers, rather than at the root to improve initial user experience.
 
 - `name` (required): This is the user facing name of the data group.
 - `expanded` (optional): A boolean indicating if the starting state of the data group should be expanded. False to collapse the group.
