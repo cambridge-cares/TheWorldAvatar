@@ -33,7 +33,7 @@ The ontology can be divided into these respective domains:
         hasNumberOfManufacturingFacilities integer
     }
     "infrastructure:Building" ||--o{ "IndustrialFacility" : "ontobim:hasFacility"
-    "ontobim:Facility" ||--o{ "IndustrialFacility" : "rdfs:subClassOf"
+    "IndustrialFacility" ||--o{ "ontobim:Facility" : "rdfs:subClassOf"
     "IndustrialFacility" ||--o{ "IndustrialFacilityProperty" : hasIndustrialFacilityProperty
     "IndustrialFacilityProperty" }|--|| "DataCentreProperty" : "rdfs:subClassOf"
     "IndustrialFacilityProperty" }|--|| "FactoryProperty" : "rdfs:subClassOf"
