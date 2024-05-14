@@ -1,19 +1,14 @@
 Key,Value,comments,OntoBuiltEnv,LU_DESC
-Type,,,Non-Domestic,AGRICULTURE
-,,,SportsFacility,BEACH AREA
 Type,Office,,Non-Domestic,BUSINESS 1
-,,,Non-Domestic,BUSINESS 1 - WHITE
-,,,Non-Domestic,BUSINESS 2
-,,,Non-Domestic,BUSINESS 2 - WHITE
-,,,Non-Domestic,BUSINESS PARK
-,,,Non-Domestic,BUSINESS PARK - WHITE
 ,,,ReligiousFacility,CEMETERY
 ,,,CulturalFacility,CIVIC & COMMUNITY INSTITUTION
 Type,Retail,,Non-Domestic,COMMERCIAL
-,,,Non-Domestic,COMMERCIAL & RESIDENTIAL
+Type,Retail,,RetailEstablishment,
 ,,,Non-Domestic,COMMERCIAL / INSTITUTION
 Type,Internationl School,,Education,EDUCATIONAL INSTITUTION
 Type,General Hospital,,Medical,HEALTH & MEDICAL CARE
+Type,General Hospital,,Clinic,
+Type,General Hospital,,Hospital,
 Type,City Hotel,,Hotel,HOTEL
 ,,,TransportFacility,LIGHT RAPID TRANSIT
 ,,,TransportFacility,MASS RAPID TRANSIT
@@ -21,22 +16,16 @@ Type,City Hotel,,Hotel,HOTEL
 ,,,SportsFacility,PARK
 ,,,ReligiousFacility,PLACE OF WORSHIP
 ,,,TransportFacility,PORT / AIRPORT
-,,,Non-Domestic,RESERVE SITE
 Type,Residental,,Domestic,RESIDENTIAL
-Type,Residental,,Domestic,RESIDENTIAL / INSTITUTION
-Type,Residental,,Domestic,RESIDENTIAL WITH COMMERCIAL AT 1ST STOREY
 Type,Residental,,SingleResidential,
 Type,Residental,,MultiResidential,
 ,,,TransportFacility,ROAD
 ,,,Non-Domestic,SPECIAL USE
 Type,Sports clubs,,SportsFacility,SPORTS & RECREATION
 ,,,TransportFacility,TRANSPORT FACILITIES
-,,,Non-Domestic,UTILITY
-,,,Non-Domestic,WATERBODY
-,,,Non-Domestic,WHITE
 Type,Resort,,,
-Type,Industrial,,,
+Type,Industrial,,IndustrialFacility,
 SubCat,Light Duty Factory,,,
-SubCat,Warehouse,,,
+SubCat,Warehouse,,IndustrialFacility,
 Type,Carparks,,,
 Type,Students' residences,,,
