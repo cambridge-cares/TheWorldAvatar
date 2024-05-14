@@ -17,6 +17,7 @@ import uk.ac.cam.cares.jps.sensor.handler.MagnetometerHandler;
 import uk.ac.cam.cares.jps.sensor.handler.PressureSensorHandler;
 import uk.ac.cam.cares.jps.sensor.handler.RelativeHumiditySensorHandler;
 import uk.ac.cam.cares.jps.sensor.handler.SensorHandler;
+import uk.ac.cam.cares.jps.sensor.handler.SoundLevelHandler;
 
 public class SensorManager {
 
@@ -28,6 +29,7 @@ public class SensorManager {
     private SensorHandler pressureSensorHandler;
     private SensorHandler gravitySensorHandler;
     private LocationHandler locationTracker;
+    private SoundLevelHandler soundLevelHandler;
 
     private Logger LOGGER = Logger.getLogger(SensorManager.class);
 
@@ -41,6 +43,7 @@ public class SensorManager {
         pressureSensorHandler = new PressureSensorHandler(sensorManager);
         gravitySensorHandler = new GravitySensorHandler(sensorManager);
         locationTracker = new LocationHandler(applicationContext);
+        soundLevelHandler = new SoundLevelHandler(applicationContext, sensorManager);
     }
 
     protected void startSensors() {
@@ -52,6 +55,7 @@ public class SensorManager {
         pressureSensorHandler.start();
         gravitySensorHandler.start();
         locationTracker.start();
+//        soundLevelHandler.start();
 
         LOGGER.info("sensors started");
     }
@@ -65,6 +69,7 @@ public class SensorManager {
         pressureSensorHandler.stop();
         gravitySensorHandler.stop();
         locationTracker.stop();
+//        soundLevelHandler.stop();
 
         LOGGER.info("sensors stopped");
     }
@@ -80,11 +85,14 @@ public class SensorManager {
             addAllSensorData(allSensorData, pressureSensorHandler.getSensorData());
             addAllSensorData(allSensorData, gravitySensorHandler.getSensorData());
             addAllSensorData(allSensorData, magnetometerHandler.getSensorData());
-            addAllSensorData(allSensorData, locationTracker.getLocationData());
+            addAllSensorData(allSensorData, locationTracker.getSensorData());
+//            addAllSensorData(allSensorData, soundLevelHandler.getSensorData());
             // add other sensors similarly
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        clearAllSensorData();
         return allSensorData;
     }
 
@@ -92,5 +100,21 @@ public class SensorManager {
         for (int i = 0; i < sensorData.length(); i++) {
             allSensorData.put(sensorData.get(i));
         }
+    }
+
+    /**
+     * Clears all sensor data from the memory.
+     */
+    private void clearAllSensorData() {
+        accelerometerHandler.clearSensorData();
+        gyroscopeHandler.clearSensorData();
+        magnetometerHandler.clearSensorData();
+        lightSensorHandler.clearSensorData();
+        humiditySensorHandler.clearSensorData();
+        pressureSensorHandler.clearSensorData();
+        gravitySensorHandler.clearSensorData();
+        locationTracker.clearSensorData();
+//        soundLevelHandler.clearSensorData();
+
     }
 }

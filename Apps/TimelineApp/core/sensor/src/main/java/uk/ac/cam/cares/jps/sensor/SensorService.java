@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.sensor;
 
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -14,13 +13,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Process;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
-import androidx.navigation.NavDeepLinkBuilder;
 
 import org.apache.log4j.Logger;
 
@@ -53,6 +51,35 @@ public class SensorService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         sensorNetworkSource.setHandler(new Handler(thread.getLooper()));
 
+        Notification notification = getNotification();
+        int type = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            type = ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            type |= ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE;
+        }
+        ServiceCompat.startForeground(
+                this,
+                FOREGROUND_ID,
+                notification,
+                type
+        );
+
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            userId = bundle.getString("userId");
+            sensorNetworkSource.startDataCollection(userId);
+        } else {
+            // todo: do better error handle to make it more robust
+            throw new RuntimeException("Failed to start data collection because no user id passed for sensor collection state manager.");
+        }
+
+        return START_STICKY;
+    }
+
+    @NonNull
+    private Notification getNotification() {
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "SensorDataCollectionChannel", NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription("SensorDataCollection channel for foreground service notification");
 
@@ -78,30 +105,7 @@ public class SensorService extends Service {
                         .setOngoing(true)
                         .setContentIntent(pendingIntent)
                         .build();
-        int type = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            type = ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            type |= ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE;
-        }
-        ServiceCompat.startForeground(
-                this,
-                FOREGROUND_ID,
-                notification,
-                type
-        );
-
-        Bundle bundle = intent.getExtras();
-        if (bundle != null) {
-            userId = bundle.getString("userId");
-            sensorNetworkSource.startDataCollection(userId);
-        } else {
-            // todo: do better error handle to make it more robust
-            throw new RuntimeException("Failed to start data collection because no user id passed for sensor collection state manager.");
-        }
-
-        return START_STICKY;
+        return notification;
     }
 
     @Override
