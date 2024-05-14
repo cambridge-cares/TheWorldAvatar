@@ -61,7 +61,13 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
             ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, 200, 0, this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, 200, 0, this);
+        } else {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 200, 0, this);
+        }
+
         if (pressureSensor != null) {
             sensorManager.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
