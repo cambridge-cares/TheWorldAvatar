@@ -296,6 +296,15 @@ public class Dataset {
                         .andHas(DCTERMS.MODIFIED, currentTime)
                         .andHas(DCTERMS.TITLE, dataSubset.getName())
                         .andHas(DCTERMS.DESCRIPTION, dataSubset.getDescription()));
+                if (dataSubset.usesBlazegraph()) {
+                    insertTriples.add(blazegraphServiceVar.has(DCAT.SERVES_DATASET, dataSetIri));
+                }
+                if (dataSubset.usesPostGIS()) {
+                    insertTriples.add(postgisServiceVar.has(DCAT.SERVES_DATASET, dataSetIri));
+                }
+                if (dataSubset.usesGeoServer()) {
+                    insertTriples.add(geoserverServiceVar.has(DCAT.SERVES_DATASET, dataSetIri));
+                }
             } else {
                 Variable dataSubsetTime = query.var();
                 deleteTriples.add(Rdf.iri(dataSubset.getIri()).has(DCTERMS.MODIFIED, dataSubsetTime));
