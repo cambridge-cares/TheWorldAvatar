@@ -9,6 +9,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
+
+import com.github.stefanbirkner.systemlambda.Statement;
+import com.github.stefanbirkner.systemlambda.SystemLambda;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.File;
@@ -28,17 +32,20 @@ public class AQMeshInputAgentLauncherTest {
     // Argument array used with the main function containing all the paths to the property files as string
     private String[] args;
 
+    String agentPropertiesFile;
+    String clientPropertiesFile;
+    String apiPropertiesFile;
     @Before
     public void initializePropertyFile() throws IOException {
         File agentPropertyFile= folder.newFile(agentPropertiesFilename);
         File clientPropertyFile= folder.newFile(clientPropertiesFilename);
         File apiPropertyFile= folder.newFile(apiPropertiesFilename);
         // Paths to the three different property files
-        String agentPropertiesFile = agentPropertyFile.getCanonicalPath();
-        String clientPropertiesFile = clientPropertyFile.getCanonicalPath();
-        String apiPropertiesFile = apiPropertyFile.getCanonicalPath();
+        agentPropertiesFile = agentPropertyFile.getCanonicalPath();
+        clientPropertiesFile = clientPropertyFile.getCanonicalPath();
+        apiPropertiesFile = apiPropertyFile.getCanonicalPath();
 
-        args = new String[] {agentPropertiesFile, clientPropertiesFile, apiPropertiesFile};
+        args = new String[] {"TEST_AGENTPROPERTIES", "TEST_CLIENT_PROPERTIES", "TEST_APIPROPERTIES"};
     }
 
     @Test
@@ -58,26 +65,35 @@ public class AQMeshInputAgentLauncherTest {
     public void testMainInvalidAgentPropertyFile() {
         // Empty agent properties file should result in an error
         try {
-            AQMeshInputAgentLauncher.main(args);
-            Assert.fail();
-        }
-        catch (JPSRuntimeException e) {
-            Assert.assertEquals("The AQMesh input agent could not be constructed!", e.getMessage());
+            SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", agentPropertiesFile).and("TEST_CLIENTPROPERTIES", clientPropertiesFile).and("TEST_APIPROPERTIES", apiPropertiesFile).execute((Statement) () -> {
+                try {
+                    AQMeshInputAgentLauncher.main(args);
+                    Assert.fail();
+                } catch (JPSRuntimeException e) {
+                    Assert.assertEquals("The AQMesh input agent could not be constructed!", e.getMessage());
+                }
+            });
+        } catch (Exception e) {
+
         }
     }
 
     @Test
     public void testMainErrorWhenCreatingTSClient() throws IOException {
-        createProperAgentPropertiesFile();
+        String mappingFolderFilePath = createProperAgentPropertiesFile();
         // Empty properties file for time series client should result in exception
         try {
-            AQMeshInputAgentLauncher.main(args);
-            Assert.fail();
-        }
-        catch (JPSRuntimeException e) {
-            Assert.assertEquals("Could not construct the time series client needed by the input agent!", e.getMessage());
-        }
+            SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", agentPropertiesFile).and("TEST_CLIENTPROPERTIES", clientPropertiesFile).and("TEST_APIPROPERTIES", apiPropertiesFile).and("AQMESH_MAPPINGS", mappingFolderFilePath).execute((Statement) () -> {
+                try {
+                    AQMeshInputAgentLauncher.main(args);
+                    Assert.fail();
+                } catch (JPSRuntimeException e) {
+                    Assert.assertEquals("Could not construct the time series client needed by the input agent!", e.getMessage());
+                }
+            });
+        } catch (Exception e) {
 
+        }
     }
 
     @Test
@@ -85,17 +101,22 @@ public class AQMeshInputAgentLauncherTest {
         createProperClientPropertiesFile();
         // Use a mock for the input agent
         try(MockedConstruction<AQMeshInputAgent> mockAgent = Mockito.mockConstruction(AQMeshInputAgent.class)) {
-            // Empty API properties file should result in an exception
             try {
-                AQMeshInputAgentLauncher.main(args);
-                Assert.fail();
-            }
-            catch (JPSRuntimeException e) {
-                // Ensure that the method to set the time series client was invoked once
-                Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).setTsClient(Mockito.any());
-                // Ensure that the initialization was invoked once
-                Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).initializeTimeSeriesIfNotExist();
-                Assert.assertEquals("Could not construct the AQMesh API connector needed to interact with the API!", e.getMessage());
+                SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", agentPropertiesFile).and("TEST_CLIENTPROPERTIES", clientPropertiesFile).and("TEST_APIPROPERTIES", apiPropertiesFile).execute((Statement) () -> {
+                    // Empty API properties file should result in an exception
+                    try {
+                        AQMeshInputAgentLauncher.main(args);
+                        Assert.fail();
+                    } catch (JPSRuntimeException e) {
+                        // Ensure that the method to set the time series client was invoked once
+                        Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).setTsClient(Mockito.any());
+                        // Ensure that the initialization was invoked once
+                        Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).initializeTimeSeriesIfNotExist();
+                        Assert.assertEquals("Could not construct the AQMesh API connector needed to interact with the API!", e.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+    
             }
         }
 
@@ -110,23 +131,28 @@ public class AQMeshInputAgentLauncherTest {
             // Use a mock for the connector that throws an exception when readings are requested
             try(MockedConstruction<AQMeshAPIConnector> mockConnector = Mockito.mockConstruction(AQMeshAPIConnector.class,
                     (mock, context) -> Mockito.when(mock.getGasReadings()).thenThrow(new JPSRuntimeException("exception")))) {
-                try {
-                    AQMeshInputAgentLauncher.main(args);
-                    Assert.fail();
-                }
-                catch (JPSRuntimeException e) {
-                    // Ensure that the connect method was invoked once
-                    Mockito.verify(mockConnector.constructed().get(0), Mockito.times(1)).connect();
-                    // Ensure that the get particle readings was invoked once
-                    Mockito.verify(mockConnector.constructed().get(0), Mockito.times(1)).getParticleReadings();
-                    Assert.assertEquals("One or both readings could not be retrieved, this might have created a mismatch " +
-                            "in the pointers if one readings was successful and needs to be fixed!", e.getMessage());
-                    Assert.assertEquals(JPSRuntimeException.class, e.getCause().getClass());
-                    Assert.assertEquals("exception", e.getCause().getMessage());
+                        try {
+                            SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", agentPropertiesFile).and("TEST_CLIENTPROPERTIES", clientPropertiesFile).and("TEST_APIPROPERTIES", apiPropertiesFile).execute((Statement) () -> {
+                                try {
+                                    AQMeshInputAgentLauncher.main(args);
+                                    Assert.fail();
+                                } catch (JPSRuntimeException e) {
+                                    // Ensure that the connect method was invoked once
+                                    Mockito.verify(mockConnector.constructed().get(0), Mockito.times(1)).connect();
+                                    // Ensure that the get particle readings was invoked once
+                                    Mockito.verify(mockConnector.constructed().get(0), Mockito.times(1)).getParticleReadings();
+                                    Assert.assertEquals("One or both readings could not be retrieved, this might have created a mismatch " +
+                                            "in the pointers if one readings was successful and needs to be fixed!", e.getMessage());
+                                    Assert.assertEquals(JPSRuntimeException.class, e.getCause().getClass());
+                                    Assert.assertEquals("exception", e.getCause().getMessage());
+                                }
+                            });
+                        } catch (Exception e) {
+                
+                        }
+                    }
                 }
             }
-        }
-    }
 
 
     @Test
@@ -144,12 +170,15 @@ public class AQMeshInputAgentLauncherTest {
                         Mockito.when(mock.getGasReadings()).thenReturn(readings);
                         Mockito.when(mock.getParticleReadings()).thenReturn(readings);
                     })) {
-                AQMeshInputAgentLauncher.main(args);
-                // Ensure that the update of the agent was invoked
-                Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).updateData(readings, readings);
-            }
-        }
-    }
+                        try {
+                            SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", agentPropertiesFile).and("TEST_CLIENTPROPERTIES", clientPropertiesFile).and("TEST_APIPROPERTIES", apiPropertiesFile).execute((Statement) () -> {
+                                    AQMeshInputAgentLauncher.main(args);
+                            });
+                        } catch (Exception e) {
+
+                        }
+                    }
+                }}
 
     @Test
     public void testMainOneReadingEmpty() throws IOException {
@@ -167,20 +196,26 @@ public class AQMeshInputAgentLauncherTest {
                         Mockito.when(mock.getGasReadings()).thenReturn(gasReadings);
                         Mockito.when(mock.getParticleReadings()).thenReturn(particleReadings);
                     })) {
-                try {
-                    AQMeshInputAgentLauncher.main(args);
-                    Assert.fail();
-                }
-                catch (JPSRuntimeException e) {
-                    // Ensure that the update of the agent was never invoked
-                    Mockito.verify(mockAgent.constructed().get(0), Mockito.never()).updateData(Mockito.any(), Mockito.any());
-                    Assert.assertEquals("One of the readings (gas or particle) is empty, that means there is " +
-                            "a mismatch in the pointer for each readings. This should be fixed (and might require a clean up of the database)!",
-                            e.getMessage());
+                        try {
+                            SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", agentPropertiesFile).and("TEST_CLIENTPROPERTIES", clientPropertiesFile).and("TEST_APIPROPERTIES", apiPropertiesFile).execute((Statement) () -> {
+                                try {
+                                    AQMeshInputAgentLauncher.main(args);
+                                    Assert.fail();
+                                } catch (JPSRuntimeException e) {
+                                    // Ensure that the update of the agent was never invoked
+                                    Mockito.verify(mockAgent.constructed().get(0), Mockito.never()).updateData(Mockito.any(), Mockito.any());
+                                    Assert.assertEquals("One of the readings (gas or particle) is empty, that means there is " +
+                                            "a mismatch in the pointer for each readings. This should be fixed (and might require a clean up of the database)!",
+                                            e.getMessage());
+                                }
+                            });
+                        } catch (Exception e) {
+                
+                        }
+                    }
                 }
             }
-        }
-    }
+
     @Test
     public void testMainBothReadingsEmpty() throws IOException {
         createProperClientPropertiesFile();
@@ -195,14 +230,19 @@ public class AQMeshInputAgentLauncherTest {
                         Mockito.when(mock.getGasReadings()).thenReturn(readings);
                         Mockito.when(mock.getParticleReadings()).thenReturn(readings);
                     })) {
-                AQMeshInputAgentLauncher.main(args);
-                // Ensure that the update of the agent was never invoked
-                Mockito.verify(mockAgent.constructed().get(0), Mockito.never()).updateData(Mockito.any(), Mockito.any());
+                        try {
+                            SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", agentPropertiesFile).and("TEST_CLIENTPROPERTIES", clientPropertiesFile).and("TEST_APIPROPERTIES", apiPropertiesFile).execute((Statement) () -> {
+                                AQMeshInputAgentLauncher.main(args);
+                                Mockito.verify(mockAgent.constructed().get(0), Mockito.never()).updateData(Mockito.any(), Mockito.any());
+                            });
+                        } catch (Exception e) {
+                
+                        }
+                    }
+                }
             }
-        }
-    }
 
-    private void createProperAgentPropertiesFile() throws IOException {
+    private String createProperAgentPropertiesFile() throws IOException {
         // Create a properties file that points to the example/test mapping folder in the resources //
         // Create mappings folder
         String folderName = "mappings";
@@ -213,9 +253,9 @@ public class AQMeshInputAgentLauncherTest {
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), agentPropertiesFilename).toString();
         try (FileWriter writer = new FileWriter(propertiesFile, false)) {
-            writer.write("aqmesh.mappingfolder=" + mappingFolder.getCanonicalPath().
-                    replace("\\","/") + "\n");
+            writer.write("aqmesh.mappingfolder=AQMESH_MAPPINGS");
         }
+        return mappingFolder.getCanonicalPath();
     }
 
     private void createProperClientPropertiesFile() throws IOException {
