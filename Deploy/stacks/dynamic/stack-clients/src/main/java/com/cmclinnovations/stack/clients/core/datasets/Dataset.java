@@ -221,6 +221,7 @@ public class Dataset {
                         .andHas(DCTERMS.IDENTIFIER, blazegraphService)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(kgUrl))
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
+                insertTriples.add(catalogIri.has(DCAT.HAS_SERVICE, blazegraphService));
             }
 
             Iri postgisService = null;
@@ -234,6 +235,7 @@ public class Dataset {
                         .andHas(DCTERMS.IDENTIFIER, postgisService)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(jdbcUrl))
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
+                insertTriples.add(catalogIri.has(DCAT.HAS_SERVICE, postgisService));
             }
 
             // implementation not complete until we figure out the external URLs
@@ -246,6 +248,7 @@ public class Dataset {
                         .andHas(DCTERMS.IDENTIFIER, geoserverService)
                         .andHas(DCTERMS.REFERENCES, postgisService)
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
+                insertTriples.add(catalogIri.has(DCAT.HAS_SERVICE, geoserverService));
             }
 
             if (newOntopEndpoint != null) {
@@ -257,6 +260,7 @@ public class Dataset {
                         .andHas(DCTERMS.REQUIRES, postgisService)
                         .andHas(DCAT.SERVES_DATASET, catalogIri)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(newOntopEndpoint)));
+                insertTriples.add(catalogIri.has(DCAT.HAS_SERVICE, ontopService));
             }
         } else {
             catalogIri = Rdf.iri(iri);
