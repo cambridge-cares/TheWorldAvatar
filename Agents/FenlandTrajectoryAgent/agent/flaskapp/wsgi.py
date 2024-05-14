@@ -12,7 +12,7 @@ try:
     from pytz import utc
     from apscheduler.schedulers.background import BackgroundScheduler
     from agent.flaskapp import create_app
-    # Adjust the import path based on your project structure
+    
     from agent.datainstantiation.GPS_data_instantiation import main as instantiate_gps_data
 except:
     raise Exception("Import error in wsgi.py.")

@@ -18,13 +18,13 @@ from py4jps import agentlogging
 from agent.datamodel.iris import *
 from agent.kgutils.kgclient import KGClient
 from agent.errorhandling.exceptions import KGException
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stack_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
 
-def create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT,
+def create_blazegraph_namespace(endpoint=SPARQL_UPDATE_ENDPOINT,
                                 quads=False, geospatial=False):
     """
     Creates Blazegraph namespace with name as specified in SPARQL update endpoint
@@ -85,7 +85,7 @@ def upload_ontology(tbox_url=ontodevice, abox_url=ABOX_URL_ontodevice):
     """
 
     # Create KGclient to upload .owl files
-    kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+    kg_client = KGClient(SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT)
 
     # Verify that TBox has not been initialized
     try:

@@ -1,189 +1,84 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 14 Jul 2022                            #
+# Date: 08 Sep 2022                            #
 ################################################
 
 # The purpose of this module is to retrieve relevant properties and settings 
-# from environment variables and the stack clients (if applicable)
+# (i.e. for the Time Series Client) from environment variables
 
 import os
-from distutils.util import strtobool
+import warnings
 
 from py4jps import agentlogging
 
-from .stack_configs import retrieve_stack_settings
-
-# Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('prod')
+# Initialise logger
+logger = agentlogging.get_logger("prod")
 
 
-def retrieve_default_settings():
+# Initialise global variables to be read from Docker compose file
+global DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
+       NAMESPACE
+
+
+def retrieve_stack_settings():
     """
-    Reads default settings from environment variables as global variables, 
-    i.e. only global within this sub-module
+        Reads settings from environment variables (as global variables).
     """
 
     # Define global scope for global variables
-    global STACK_NAME, NAMESPACE, DATABASE, \
-           DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
-           OVERWRITE_FORECAST, ROUNDING
-    
-    # Initialise variables (to ensure working imports even if not defined in env vars)
-    STACK_NAME = None
-    NAMESPACE = None
-    DATABASE = None     
-    DB_URL = None
-    DB_USER = None
-    DB_PASSWORD = None
-    SPARQL_QUERY_ENDPOINT = None
-    SPARQL_UPDATE_ENDPOINT = None
-
-    # Retrieve Docker Stack name
-    STACK_NAME = os.getenv('STACK_NAME')
-    if STACK_NAME is None:
-        logger.error('"STACK_NAME" is missing in environment variables.')
-        raise ValueError('"STACK_NAME" is missing in environment variables.')
-    
-    # Retrieve boolean flag whether to instantiate output forecast as new instance
-    # or add data to existing instance (i.e., overwriting existing data)
-    # NOTE: Overwriting/replacing previous forecast is DEFAULT behavior and most in
-    #       line with intended derivation framework, meaning that an update actually
-    #       replaces the previous output instead of creating a new one
-    #       Hence, this setting is only here to provide more flexibility in creating 
-    #       new forecasts, but should not be reproduced/copied in other derivation agents
-    OVERWRITE_FORECAST = os.getenv('OVERWRITE_FORECAST')
-    if OVERWRITE_FORECAST is None:
-        OVERWRITE_FORECAST = True
-        logger.warning(f'No "OVERWRITE_FORECAST" value has been provided in environment variables. Using default value: {OVERWRITE_FORECAST}.')
-    else:
-        try:
-           # Cast string from docker-compose to boolean
-           OVERWRITE_FORECAST = bool(strtobool(OVERWRITE_FORECAST))
-        except ValueError:
-            OVERWRITE_FORECAST = True
-            logger.warning(f'Invalid "OVERWRITE_FORECAST" value has been provided in environment variables. Using default value: {OVERWRITE_FORECAST}.')
-
-    # Retrieve default rounding behavior for forecast values
-    # (i.e. number of target decimal places; no rounding if not defined)
-    ROUNDING = os.getenv('ROUNDING')
-    if ROUNDING is None:
-        logger.warning('No "ROUNDING" value has been provided in environment variables. Forecasts will not be rounded.')
-    else:
-        try:
-           # Cast string from docker-compose to int
-           ROUNDING = int(ROUNDING)
-        except ValueError:
-            ROUNDING = None
-            logger.error('Invalid "ROUNDING" value has been provided in environment variables. Forecasts will not be rounded.')
-
-    # Retrieve Blazegraph and PostgreSQL settings depending on deployment mode
-    if not STACK_NAME:
-        # 1) Standalone: retrieve settings from docker compose env vars
-        logger.info('No "STACK_NAME" value has been provided in environment variables. '
-                    'Deploying agent in "standalone" mode.')
-        
-        # Retrieve global variables for default connection settings
-        # Required variables
-        vars_names = ['DB_USER', 'DB_PASSWORD', 'SPARQL_QUERY_ENDPOINT', 'SPARQL_UPDATE_ENDPOINT']
-        for v in vars_names:
-            globals()[v] = os.getenv(v)
-            if not globals()[v]:
-                # In case variable key is missing or empty value provided
-                logger.error(f'No default "{v}" value has been provided in environment variables.')
-                raise ValueError(f'No default "{v}" value has been provided in environment variables.')
-
-        # Optional variables
-        # Default "DB_URL" is optional as value will be queried from KG for time series to be forecasted
-        DB_URL = os.getenv('DB_URL')
-        if DB_URL is None:
-            logger.warning(f'No default "DB_URL" value has been provided in environment variables.')
-
-    else:
-        # 2) Stack deployment: retrieve settings from Stack Clients
-        logger.info(f'Deploying agent to stack "{STACK_NAME}".')
-
-        # Retrieve target Blazegraph namespace to monitor and instantiate data into
-        NAMESPACE = os.getenv('NAMESPACE')
-        if not NAMESPACE:
-            # In case variable key is missing or empty value provided
-            logger.error(f'No "NAMESPACE" value has been provided in environment variables.')
-            raise ValueError(f'No "NAMESPACE" value has been provided in environment variables.')
-
-        # Initialise boolean flag whether database is given
-        database_given = True
-
-        # Retrieve target PostgreSQL database name
-        DATABASE = os.getenv('DATABASE')
-        if not DATABASE:
-            # In case no DATABASE is provided (i.e. missing key or left blank),
-            # set to empty string to avoid exception when calling stack client functions
-            DATABASE = ''
-            database_given = False
-            logger.warning(f'No default "DB_URL" value has been provided in environment variables.')
-        elif DATABASE != 'postgres':
-            logger.warning(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
-        
-        # Retrieve settings from Stack Clients
-        db_url, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT = \
-        retrieve_stack_settings(database=DATABASE, namespace=NAMESPACE)
-        # Assign retrieved settings to global variables
-        if database_given:
-            DB_URL = db_url
+    global DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
+           NAMESPACE
 
 
-    # Log retrieved default settings
-    logger.info('Retrieved default connection parameters:')
-    logger.info(f"DB_URL: {DB_URL}")
-    logger.info(f"DB_USER: {DB_USER}")
-    logger.info(f"DB_PASSWORD: {DB_PASSWORD}")
-    logger.info(f"SPARQL_QUERY_ENDPOINT: {SPARQL_QUERY_ENDPOINT}")
-    logger.info(f"SPARQL_UPDATE_ENDPOINT: {SPARQL_UPDATE_ENDPOINT}")
+    # Retrieve PostgreSQL/PostGIS database name
+    DATABASE = os.getenv('DATABASE')
+    if DATABASE is None:
+        logger.error('"DATABASE" name is missing in environment variables.')
+        raise ValueError('"DATABASE" name is missing in environment variables.')
+    if DATABASE == '':
+        logger.error('No "DATABASE" value has been provided in environment variables.')
+        raise ValueError('No "DATABASE" value has been provided in environment variables.')
+    if DATABASE != 'postgres':
+        logger.warning(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
+        warnings.warn(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
+
+    # Retrieve PostgreSQL/PostGIS table name for geospatial information
+    # PostGIS table and Geoserver layer will have same name
+    LAYERNAME = os.getenv('LAYERNAME')
+    if LAYERNAME is None:
+        logger.error('"LAYERNAME" is missing in environment variables.')
+        raise ValueError('"LAYERNAME" is missing in environment variables.')
+    if LAYERNAME == '':
+        logger.error('No "LAYERNAME" value has been provided in environment variables.')
+        raise ValueError('No "LAYERNAME" value has been provided in environment variables.')
+
+    # Retrieve Geoserver workspace name
+    GEOSERVER_WORKSPACE = os.getenv('GEOSERVER_WORKSPACE')
+    if GEOSERVER_WORKSPACE is None:
+        logger.error('"GEOSERVER_WORKSPACE" name is missing in environment variables.')
+        raise ValueError('"GEOSERVER_WORKSPACE" name is missing in environment variables.')
+    if GEOSERVER_WORKSPACE == '':
+        logger.error('No "GEOSERVER_WORKSPACE" value has been provided in environment variables.')
+        raise ValueError('No "GEOSERVER_WORKSPACE" value has been provided in environment variables.')
+
+    # Retrieve ONTOP mapping file
+    ONTOP_FILE = os.getenv('ONTOP_FILE')
+    if ONTOP_FILE is None:
+        logger.error('"ONTOP_FILE" is missing in environment variables.')
+        raise ValueError('"ONTOP_FILE" is missing in environment variables.')
+    elif not os.path.exists(ONTOP_FILE):
+        logger.error('Invalid "ONTOP_FILE" has been provided in environment variables.')
+        raise ValueError('Invalid "ONTOP_FILE" has been provided in environment variables.')
+
+    # Retrieve target Blazegraph name for data to instantiate
+    NAMESPACE = os.getenv('NAMESPACE')
+    if NAMESPACE is None:
+        logger.error('"NAMESPACE" name is missing in environment variables.')
+        raise ValueError('"NAMESPACE" name is missing in environment variables.')
+    if NAMESPACE == '':
+        logger.error('No "NAMESPACE" value has been provided in environment variables.')
+        raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
+
 
 # Run when module is imported
-retrieve_default_settings()
-
-
-# def retrieve_default_settings():
-#     """
-#     Reads default settings from hardcoded values as global variables, 
-#     i.e. only global within this sub-module
-#     """
-#     global STACK_NAME, NAMESPACE, DATABASE, \
-#            DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
-#            OVERWRITE_FORECAST, ROUNDING
-
-#     # Hardcoded values for testing
-#     STACK_NAME = 'CEW-DT'
-#     NAMESPACE = 'gps_trajectory'
-#     DATABASE = 'postgres'
-#     DB_URL = ""
-#     DB_USER = "postgres"
-#     DB_PASSWORD = "1111"
-#     SPARQL_QUERY_ENDPOINT = "http://174.138.27.240:3840/blazegraph/namespace/gps_trajectory/sparql"
-#     SPARQL_UPDATE_ENDPOINT = SPARQL_QUERY_ENDPOINT
-#     OVERWRITE_FORECAST = True  # Assuming you want to maintain the default behavior for overwriting forecasts
-#     ROUNDING = 2  # Assuming default rounding to 2 decimal places is still appropriate
-
-#     # Logging the hardcoded settings for verification
-#     logger.info('Using hardcoded settings for testing:')
-#     logger.info(f"STACK_NAME: {STACK_NAME}")
-#     logger.info(f"NAMESPACE: {NAMESPACE}")
-#     logger.info(f"DATABASE: {DATABASE}")
-#     logger.info(f"DB_URL: {DB_URL}")
-#     logger.info(f"DB_USER: {DB_USER}")
-#     logger.info(f"DB_PASSWORD: {DB_PASSWORD}")
-#     logger.info(f"SPARQL_QUERY_ENDPOINT: {SPARQL_QUERY_ENDPOINT}")
-#     logger.info(f"SPARQL_UPDATE_ENDPOINT: {SPARQL_UPDATE_ENDPOINT}")
-#     logger.info(f"OVERWRITE_FORECAST: {OVERWRITE_FORECAST}")
-#     logger.info(f"ROUNDING: {ROUNDING}")
-
-#     # Ensure that the `if` block that checks the STACK_NAME and possibly calls retrieve_stack_settings is correctly adjusted
-#     # If you don't need to check for stack settings beyond the hardcoded values, you can remove or comment out this section.
-#     # if STACK_NAME != 'default_stack_name':
-#     #     db_url, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT = \
-#     #         retrieve_stack_settings(database=DATABASE, namespace=NAMESPACE)
-#     #     if DATABASE != '':
-#     #         DB_URL = db_url
-
-# # Run when module is imported
-# retrieve_default_settings()
+retrieve_stack_settings()

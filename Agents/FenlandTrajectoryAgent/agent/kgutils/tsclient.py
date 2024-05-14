@@ -9,7 +9,7 @@ from contextlib import contextmanager
 from py4jps import agentlogging
 
 from agent.utils.baselib_gateway import jpsBaseLibGW
-from agent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 from agent.errorhandling.exceptions import TSException
 from agent.datamodel.data_class import FORMAT, TIMECLASS, DATACLASS
 

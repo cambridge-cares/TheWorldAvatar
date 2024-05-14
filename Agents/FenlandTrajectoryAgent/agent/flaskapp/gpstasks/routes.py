@@ -2,12 +2,12 @@ from flask import Blueprint, request, jsonify
 import os
 import sys
 import glob
-from agent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 import agent.datainstantiation.gps_client as gdi
-from agent.kgutils.utils import utils
 from agent.utils.baselib_gateway import jpsBaseLibGW
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
+from agent.kgutils.utils import *
 
 # Blueprint configuration
 gps_instantiation_bp = Blueprint('gps_instantiation_bp', __name__)

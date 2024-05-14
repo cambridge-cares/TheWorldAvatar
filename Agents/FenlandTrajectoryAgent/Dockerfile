@@ -26,6 +26,7 @@ COPY --from=stackclients /app ./tmp_stack
 # Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./setup.py .
+COPY ./resources/ontop.obda ./resources/ontop.obda
 ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Install Python package and the required libraries

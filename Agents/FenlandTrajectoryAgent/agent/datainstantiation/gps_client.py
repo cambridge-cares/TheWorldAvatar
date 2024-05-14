@@ -7,11 +7,10 @@ import datetime as dt
 import random
 import uuid
 from agent.datainstantiation.jpsSingletons import jpsBaseLibView
-from agent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from datetime import datetime
-
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 
 def setup_clients():
     """Sets up and returns the KGClient and TSClient."""

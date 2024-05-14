@@ -12,7 +12,7 @@ import agent.kgutils.utils as utils
 from agent.datainstantiation.jpsSingletons import jpsBaseLibView
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
-from agent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 
 # ===============================================================================
 # Data Preparation
