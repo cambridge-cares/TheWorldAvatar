@@ -61,7 +61,7 @@ MaximumITCapacity,Class,DataCentreProperty,IS-A,,,,The maximum IT capacity of a 
 hasMaximumITCapacity,Object Property,,,DataCentre,MaximumITCapacity,,A relation between a data centre and its maximum IT capacity.,http://www.theworldavatar.com/kg/ontocompany/,Maximum IT Capacity
 UtilizationRate,Class,DataCentreProperty,IS-A,,,,The typical utilization rate of a data centre.,http://www.theworldavatar.com/kg/ontocompany/,Utilization Rate
 hasUtilizationRate,Object Property,,,DataCentre,UtilizationRate,,A relation between a data centre and its typical utilization rate.,http://www.theworldavatar.com/kg/ontocompany/,Utilization Rate
-GrossFloorArea,Class,IndustrialFacilityProperty,IS-A,,,,The gross floor area of an industrial facility,http://www.theworldavatar.com/kg/ontocompany/,Floor Area
+GrossFloorArea,Class,IndustrialFacilityProperty,IS-A,,,,"The gross floor area of an industrial facility. This area may be significantly different from the gross floor area of the building in which the industrial facility is located, especially if the industrial facility only occupies part of the building.",http://www.theworldavatar.com/kg/ontocompany/,Floor Area
 hasGrossFloorArea,Object Property,,,IndustrialFacility,GrossFloorArea,,A relation between an industrial facility and its gross floor area.,http://www.theworldavatar.com/kg/ontocompany/,Floor Area
 FactoryProperty,Class,IndustrialFacilityProperty,IS-A,,,,A property of a factory,http://www.theworldavatar.com/kg/ontocompany/,Factory Property
 DesignCapacity,Class,FactoryProperty,IS-A,,,,The quantity of a product that a factory can produce within a specified time frame when operating at maximum capacity.,http://www.theworldavatar.com/kg/ontocompany/,Design Capacity

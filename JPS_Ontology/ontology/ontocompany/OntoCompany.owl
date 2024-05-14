@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontocompany="http://www.theworldavatar.com/kg/ontocompany/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontocompany/">
-        <dc:date>09 May 2024</dc:date>
+        <dc:date>14 May 2024</dc:date>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment>An ontology for representing geospatial information and design characteristics of manufacturing facilities and data centres operated by a company.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
@@ -905,7 +905,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompany/GrossFloorArea">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocompany/IndustrialFacilityProperty"/>
-        <rdfs:comment>The gross floor area of an industrial facility</rdfs:comment>
+        <rdfs:comment>The gross floor area of an industrial facility. This area may be significantly different from the gross floor area of the building in which the industrial facility is located, especially if the industrial facility only occupies part of the building.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontocompany/"/>
         <rdfs:label>Floor Area</rdfs:label>
     </owl:Class>
