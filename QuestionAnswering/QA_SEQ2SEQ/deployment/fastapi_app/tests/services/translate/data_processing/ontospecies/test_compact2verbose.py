@@ -209,7 +209,7 @@ class TestOSCompact2VerboseConverter:
                 ),
                 # SELECT ?UseLabel ?SpeciesLabel WHERE {
                 #   ?Species a os:Species ; rdfs:label ?SpeciesLabel .
-                #   ?Species (a|!a)*/(a|!a)/(a|!a)* [ rdf:type os:ChemicalClass ; rdfs:label "alcohol" ] .
+                #   ?Species (<>|!<>)+ [ rdf:type os:ChemicalClass ; rdfs:label "alcohol" ] .
                 #   ?Species os:hasUse/rdfs:label ?UseLabel
                 # }
                 SparqlQuery(
@@ -228,7 +228,7 @@ class TestOSCompact2VerboseConverter:
                             ),
                             TriplePattern.from_triple(
                                 "?Species",
-                                "(a|!a)*/(a|!a)/(a|!a)*",
+                                "(<>|!<>)+",
                                 '[ rdf:type os:ChemicalClass ; rdfs:label "alcohol" ]',
                             ),
                             TriplePattern.from_triple(

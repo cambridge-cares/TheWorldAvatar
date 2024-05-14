@@ -44,7 +44,9 @@ class Translator:
         self.model = seq2seq_client
         self.domain2postprocessor: Dict[str, PostProcessor] = dict(
             ontospecies=OSPostProcessor(feature_extraction_client),
-            ontokin=OKPostProcessor(),
+            ontokin=OKPostProcessor(
+                ontospecies_endpoint=domain2kgconfig["ontospecies"]["endpoint"]
+            ),
             ontocompchem=OCCPostProcessor(),
             ontozeolite=OZPostProcessor(
                 ontospecies_endpoint=domain2kgconfig["ontospecies"]["endpoint"]
