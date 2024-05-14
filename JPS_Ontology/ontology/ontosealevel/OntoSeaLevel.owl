@@ -1,0 +1,465 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontosealevel/"
+     xml:base="https://www.theworldavatar.com/kg/ontosealevel/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontosealevel="https://www.theworldavatar.com/kg/ontosealevel/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontosealevel/">
+        <dc:date>14 May 2024</dc:date>
+        <rdfs:comment>The Ontology for Sea Level is developed to represent information about sea level.</rdfs:comment>
+        <owl:versionInfo>1</owl:versionInfo>
+        <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/gitCommitHash -->
+
+
+    <owl:AnnotationProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#date -->
+
+
+    <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#gYear -->
+
+
+    <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#gYear"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasHeight -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasHeight">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment>A relationship between a sea level measurement and the sea level height.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>has height</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasInputScenario -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasInputScenario">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/ForecastSeaLevelMeasurement"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Scenario"/>
+        <rdfs:comment>A relationship between the forecasted sea level measurement and the input scenario the forecast was based on.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>has input scenario</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasMeasurment -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasMeasurment">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevel"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement"/>
+        <rdfs:comment>A relationship between a sea level and its measurement.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>has measurement</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasMonetaryValu -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasMonetaryValu">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/EconomicDamage"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/AmountOfMoney"/>
+        <rdfs:comment>A relationship between the economic damage due to rising sea level and its total monetary value.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>has monetary value</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/isAffectedBy -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/isAffectedBy">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalDamage"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/EconomicDamage"/>
+        <rdfs:comment>A relationship between the damage due to rising sea level and the places it affects.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>is affected by</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/measuredAt -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/measuredAt">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/LocalMeanSeaLevel"/>
+        <rdfs:range rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+        <rdfs:comment>A relationship between the local mean sea level and the reference point for the local mean sea level measurement.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>measured at</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/measuredIn -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/measuredIn">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#gYear"/>
+        <rdfs:comment>A relationship between a sea level measurement and the time of measurement.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>measured in</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Height -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#Feature -->
+
+
+    <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Feature"/>
+    
+
+
+    <!-- https://raw.githubusercontent.com/beAWARE-project/ontology/master/beAWARE_ontology#Monument -->
+
+
+    <owl:Class rdf:about="https://raw.githubusercontent.com/beAWARE-project/ontology/master/beAWARE_ontology#Monument">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Monument"/>
+    </owl:Class>
+    
+
+
+    <!-- https://schema.org/LandmarksOrHistoricalBuildings -->
+
+
+    <owl:Class rdf:about="https://schema.org/LandmarksOrHistoricalBuildings">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Landmarks or historical building</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://schema.org/Museum -->
+
+
+    <owl:Class rdf:about="https://schema.org/Museum">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Museum</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://schema.org/TouristAttraction -->
+
+
+    <owl:Class rdf:about="https://schema.org/TouristAttraction">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Tourist attraction</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Property -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/ActualSeaLevelMeasurement -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/ActualSeaLevelMeasurement">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement"/>
+        <rdfs:comment>Actual sea level measurement.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Actual sea level measurement</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/AmountOfMoney -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/AmountOfMoney"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/CulturalDamage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/CulturalDamage">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Damage"/>
+        <rdfs:comment>Damage caused to cultural sites due to rising sea level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Cultural damage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/CulturalSite -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite">
+        <rdfs:comment>A place or building of cultural importance.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Cultural site</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/Damage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/Damage">
+        <rdfs:comment>Damage due to rising sea level</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Damage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/EconomicDamage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/EconomicDamage">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Damage"/>
+        <rdfs:comment>Economic damage due to rising sea level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Economic damage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/ForecastSeaLevelMeasurement -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/ForecastSeaLevelMeasurement">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/Forecast"/>
+        <rdfs:comment>Forecasted sea level measurement based on a forecasting model.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Forecast sea level measurement</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/GlobalMeanSeaLevel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/GlobalMeanSeaLevel">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevel"/>
+        <rdfs:comment>Mean surface level of oceans globally.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Global mean sea level</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/HeritageTree -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/HeritageTree">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Tree"/>
+        <rdfs:comment>A tree that is the natural heritage of a specific place.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>HeritageTree</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/LocalMeanSeaLevel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/LocalMeanSeaLevel">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/measuredAt"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Mean surface level of ocean relative to a specific location.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Local mean sea level</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/Monument -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/Monument">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:comment>A structure for the commemoration of a person or event.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Monument</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/Scenario -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/Scenario">
+        <rdfs:comment>Scenario that can act as input to a forecasting level for forecasting sea level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Scenario</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/SeaLevel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SeaLevel">
+        <rdfs:comment>Surface level of oceans.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Sea level</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement">
+        <rdfs:comment>Sea level measurement.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Sea level measurement</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SharedSocioEconomicPathway">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Scenario"/>
+        <rdfs:comment>A climate change scenario of projected socioeconomic changes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Shared Socioeconomic Pathway</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/Tree -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/Tree">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
+        <rdfs:comment>Tree</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Tree</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontotimeseries/Forecast -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/Forecast"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+
