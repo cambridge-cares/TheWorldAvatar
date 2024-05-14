@@ -7,7 +7,6 @@ PREFIX building: <https://www.theworldavatar.com/kg/Building/>
 PREFIX bot: <https://w3id.org/bot#>
 PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
 SELECT ?Property ?Value ?Unit WHERE {
-  SERVICE <http://sgteststack-blazegraph:8080/blazegraph/namespace/aqmesh/sparql> {
     {
       BIND("Air Quality Monitoring System" AS ?Property) 
       [IRI] rdf:type <http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl#AQMesh> ;
@@ -25,5 +24,4 @@ SELECT ?Property ?Value ?Unit WHERE {
       ?measure <http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue> ?Value .
       ?measure <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit>/<http://www.ontology-of-units-of-measure.org/resource/om-2/symbol> ?Unit .
    }
-}
           }
