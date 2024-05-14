@@ -8,7 +8,7 @@ BIND_ADDRESS="0.0.0.0:5000"
 APP_MODULE="agent.flaskapp.wsgi:app"
 
 # Start the Gunicorn server
-gunicorn --bind $BIND_ADDRESS $APP_MODULE --timeout $TIMEOUT --log-level $LOG_LEVEL || {
+gunicorn --bind $BIND_ADDRESS $APP_MODULE --timeout $TIMEOUT --log-level $LOG_LEVEL --preload|| {
     echo "Failed to start Gunicorn server."
     exit 1
 }

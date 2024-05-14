@@ -41,7 +41,7 @@ def transform_datetime(date_str, time_str):
 # Create database and RDF store, instantiate and upload data using kgclient and tsclient
 
 
-if __name__ == '__main__':
+def main():
     try:
         utils.create_postgres_db()
         utils.create_blazegraph_namespace()
@@ -132,3 +132,7 @@ if __name__ == '__main__':
             print(f"Error processing or updating data for {csv_file}: {e}")
 
     print("All GPS trajectory files have been processed.")
+
+
+if __name__ == '__main__':
+    main()

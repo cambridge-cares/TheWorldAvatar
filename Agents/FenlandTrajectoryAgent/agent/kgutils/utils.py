@@ -9,6 +9,9 @@ from pathlib import Path
 
 from configobj import ConfigObj
 from pathlib import Path
+# Initialise logger
+from py4jps import agentlogging
+logger = agentlogging.get_logger("prod")
 
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 # Define format of time series time entries: Year-Month-Day T hour:minute:second Z
@@ -128,19 +131,28 @@ def create_postgres_db():
             conn.close()
 
 
-def create_blazegraph_namespace():
+def create_blazegraph_namespace(endpoint=SPARQL_UPDATE_ENDPOINT,
+                                quads=False, geospatial=False):
     """
-        Creates Blazegraph namespace with name as specified in SPARQL endpoints
+    Creates Blazegraph namespace with name as specified in SPARQL update endpoint
+
+    Arguments:
+        quads - Boolean Flag whether quad/triple namespace shall be created
+        geospatial - Boolean flag whether to enable geospatial capabilities
     """
 
-    # Extract Blazegraph REST API url from SPARQL endpoint
-    url = SPARQL_UPDATE_ENDPOINT[:SPARQL_UPDATE_ENDPOINT.find('namespace') + len('namespace')]
+    # Turns boolean flags for quads and geospatial into strings
+    quads = str(quads).lower()
+    geospatial = str(geospatial).lower()
 
-    # Extract name for new namespace from SPARQL endpoint
-    ns = SPARQL_UPDATE_ENDPOINT[SPARQL_UPDATE_ENDPOINT.find('namespace') + len('namespace') + 1:]
+    # Extracts Blazegraph REST API url from SPARQL endpoint
+    url = endpoint[:endpoint.find('namespace') + len('namespace')]
+
+    # Extracts name for new namespace from SPARQL endpoint
+    ns = endpoint[endpoint.find('namespace') + len('namespace') + 1:]
     ns = ns[:ns.find('/')]
 
-    # Define POST request header and payload
+    # Defines POST request header and payload
     header = {'Content-type': 'text/plain'}
 
     payload = 'com.bigdata.rdf.store.AbstractTripleStore.textIndex=false\r\n' \
@@ -150,19 +162,20 @@ def create_blazegraph_namespace():
               'com.bigdata.rdf.store.AbstractTripleStore.justify=false\r\n' \
               'com.bigdata.namespace.{}.spo.com.bigdata.btree.BTree.branchingFactor=1024\r\n' \
               'com.bigdata.rdf.sail.namespace={}\r\n' \
-              'com.bigdata.rdf.store.AbstractTripleStore.quads=false\r\n' \
+              f'com.bigdata.rdf.store.AbstractTripleStore.quads={quads}\r\n' \
               'com.bigdata.namespace.{}.lex.com.bigdata.btree.BTree.branchingFactor=400\r\n' \
-              'com.bigdata.rdf.store.AbstractTripleStore.geoSpatial=true\r\n' \
+              f'com.bigdata.rdf.store.AbstractTripleStore.geoSpatial={geospatial}\r\n' \
               'com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers=false'.format(ns, ns, ns)
 
-    # Post the request
+    # Posts the request
     response = requests.post(url, payload, headers=header)
 
     if response.status_code == 201:
-        print('New namespace \"{}\" successfully created.\n'.format(ns))
+        logger.info('New namespace \"{}\" successfully created.\n'.format(ns))
     elif response.status_code == 409:
-        print('Namespace \"{}\" already exists\n'.format(ns))
+        logger.info('Namespace \"{}\" already exists\n'.format(ns))
     else:
-        print('Request status code: {}\n'.format(response.status_code))
+        logger.info('Request status code: {}\n'.format(response.status_code))
+
 
 
