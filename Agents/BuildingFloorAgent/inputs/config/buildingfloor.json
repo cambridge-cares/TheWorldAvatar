@@ -4,6 +4,14 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/buildingflooragent:1.0.0-SNAPSHOT",
+                "Env": [
+                    "STACK_NAME=${STACK_NAME}",
+                    "DATABASE=postgres",
+                    "osmSchema=osm",
+                    "osmPoints=points",
+                    "osmPolygons=polygons",
+                    "floors_csv=/resources/HDBPropertyInformation.csv"
+                  ],
                 "Mounts": [
                     {
                         "Type": "bind",
