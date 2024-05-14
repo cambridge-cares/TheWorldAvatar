@@ -197,10 +197,16 @@ public class Dataset {
 
         List<TriplePattern> insertTriples = new ArrayList<>();
         List<TriplePattern> deleteTriples = new ArrayList<>();
+        List<GraphPattern> wherePatterns = new ArrayList<>();
 
         StringLiteral currentTime = Rdf.literalOfType(LocalDateTime.now().toString(), XSD.DATETIME);
 
         SelectQuery query = Queries.SELECT(); // used to generate variable programmatically
+        Variable blazegraphServiceVar = query.var();
+        Variable postgisServiceVar = query.var();
+        Variable geoserverServiceVar = query.var();
+        Variable ontopServiceVar = query.var();
+
         Iri catalogIri;
         if (!exists) {
             iri = SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID();
@@ -222,20 +228,21 @@ public class Dataset {
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(kgUrl))
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
                 insertTriples.add(catalogIri.has(DCAT.HAS_SERVICE, blazegraphService));
+                wherePatterns.add(new ValuesPattern(blazegraphServiceVar, blazegraphService));
             }
 
-            Iri postgisService = null;
             if (getDataSubsets().stream().anyMatch(DataSubset::usesPostGIS)) {
                 String jdbcUrl = PostGISClient.getInstance().getEndpoint().getJdbcURL(getDatabase());
 
                 // append triples
-                postgisService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+                Iri postgisService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
                 insertTriples.add(postgisService.isA(SparqlConstants.POSTGIS)
                         .andHas(DCTERMS.TITLE, getDatabase())
                         .andHas(DCTERMS.IDENTIFIER, postgisService)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(jdbcUrl))
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
                 insertTriples.add(catalogIri.has(DCAT.HAS_SERVICE, postgisService));
+                wherePatterns.add(new ValuesPattern(postgisServiceVar, postgisService));
             }
 
             // implementation not complete until we figure out the external URLs
@@ -246,9 +253,10 @@ public class Dataset {
                 insertTriples.add(geoserverService.isA(SparqlConstants.GEOSERVER)
                         .andHas(DCTERMS.TITLE, getWorkspaceName())
                         .andHas(DCTERMS.IDENTIFIER, geoserverService)
-                        .andHas(DCTERMS.REFERENCES, postgisService)
+                        .andHas(DCTERMS.REFERENCES, postgisServiceVar)
                         .andHas(DCAT.SERVES_DATASET, catalogIri));
                 insertTriples.add(catalogIri.has(DCAT.HAS_SERVICE, geoserverService));
+                wherePatterns.add(new ValuesPattern(geoserverServiceVar, geoserverService));
             }
 
             if (newOntopEndpoint != null) {
@@ -257,16 +265,26 @@ public class Dataset {
                 insertTriples.add(ontopService.isA(SparqlConstants.ONTOP)
                         .andHas(DCTERMS.TITLE, getDatabase())
                         .andHas(DCTERMS.IDENTIFIER, ontopService)
-                        .andHas(DCTERMS.REQUIRES, postgisService)
+                        .andHas(DCTERMS.REQUIRES, postgisServiceVar)
                         .andHas(DCAT.SERVES_DATASET, catalogIri)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(newOntopEndpoint)));
                 insertTriples.add(catalogIri.has(DCAT.HAS_SERVICE, ontopService));
+                wherePatterns.add(new ValuesPattern(ontopServiceVar, ontopService));
             }
+
         } else {
             catalogIri = Rdf.iri(iri);
             Variable catalogTime = query.var();
             deleteTriples.add(catalogIri.has(DCTERMS.MODIFIED, catalogTime));
             insertTriples.add(catalogIri.has(DCTERMS.MODIFIED, currentTime));
+            wherePatterns.add(GraphPatterns.optional(catalogIri.has(DCAT.HAS_SERVICE, blazegraphServiceVar)
+                    .and(blazegraphServiceVar.isA(SparqlConstants.BLAZEGRAPH))));
+            wherePatterns.add(GraphPatterns.optional(catalogIri.has(DCAT.HAS_SERVICE, postgisServiceVar)
+                    .and(postgisServiceVar.isA(SparqlConstants.POSTGIS))));
+            wherePatterns.add(GraphPatterns.optional(catalogIri.has(DCAT.HAS_SERVICE, geoserverServiceVar)
+                    .and(geoserverServiceVar.isA(SparqlConstants.GEOSERVER))));
+            wherePatterns.add(GraphPatterns.optional(catalogIri.has(DCAT.HAS_SERVICE, ontopServiceVar)
+                    .and(ontopServiceVar.isA(SparqlConstants.ONTOP))));
         }
 
         getDataSubsets().stream().forEach(dataSubset -> {
@@ -296,6 +314,11 @@ public class Dataset {
         if (!deleteTriples.isEmpty()) {
             TriplePattern[] deleteTriplesAsArray = deleteTriples.toArray(new TriplePattern[0]);
             modify.delete(deleteTriplesAsArray).where(deleteTriplesAsArray);
+        }
+
+        if (!wherePatterns.isEmpty()) {
+            GraphPattern[] wherePatternsAsArray = wherePatterns.toArray(new GraphPattern[0]);
+            modify.where(wherePatternsAsArray);
         }
 
         return modify.getQueryString();
