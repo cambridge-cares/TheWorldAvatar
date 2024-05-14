@@ -36,9 +36,8 @@ public class SensorModule {
     @Singleton
     public SensorRepository provideSensorRepository(@ApplicationContext Context applicationContext,
                                                     SensorNetworkSource networkSource,
-                                                    SensorService sensorService,
                                                     LoginRepository loginRepository) {
-        return new SensorRepository(applicationContext, networkSource, sensorService, loginRepository);
+        return new SensorRepository(applicationContext, networkSource, loginRepository);
     }
 
     @Provides
@@ -53,15 +52,9 @@ public class SensorModule {
         return new SensorCollectionStateManager(applicationContext);
     }
 
-    @Provides
-    @Singleton
-    public SensorService provideSensorService() {
-        return new SensorService();
-    }
-
-    @Provides
-    @Singleton
-    public Context provideContext(@ApplicationContext Context applicationContext) {
-        return applicationContext;
-    }
+//    @Provides
+//    @Singleton
+//    public SensorService provideSensorService() {
+//        return new SensorService();
+//    }
 }

@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.sensor;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -18,6 +19,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
 
+import org.apache.log4j.Logger;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -29,13 +32,21 @@ public class SensorService extends Service {
 
     private final int FOREGROUND_ID = 100;
     private final String CHANNEL_ID = "Sensors";
+    private final Logger LOGGER = Logger.getLogger(SensorService.class);
+    private HandlerThread thread;
+    private String userId;
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        thread = new HandlerThread("ServiceStartArguments",
+                Process.THREAD_PRIORITY_BACKGROUND);
+        thread.start();
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        HandlerThread thread = new HandlerThread("ServiceStartArguments",
-                Process.THREAD_PRIORITY_BACKGROUND);
-        thread.start();
         sensorNetworkSource.setHandler(new Handler(thread.getLooper()));
 
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "SensorDataCollectionChannel", NotificationManager.IMPORTANCE_DEFAULT);
@@ -69,7 +80,8 @@ public class SensorService extends Service {
 
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
-            sensorNetworkSource.startDataCollection(bundle.getString("userId"));
+            userId = bundle.getString("userId");
+            sensorNetworkSource.startDataCollection(userId);
         } else {
             // todo: do better error handle to make it more robust
             throw new RuntimeException("Failed to start data collection because no user id passed for sensor collection state manager.");
@@ -80,16 +92,22 @@ public class SensorService extends Service {
 
     @Override
     public void onDestroy() {
+        LOGGER.info("Stopping sensor service");
+        try {
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
+            sensorNetworkSource.stopDataCollection(userId);
+
+            thread.quit();
+
+            LOGGER.info("Sensor service is stopped. Sensors stop recording.");
+        } catch (NullPointerException exception) {
+            LOGGER.warn("Foreground service has already stopped.");
+        }
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    public void stopService(String userId) {
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
-        sensorNetworkSource.stopDataCollection(userId);
     }
 }

@@ -14,7 +14,6 @@ import uk.ac.cam.cares.jps.login.User;
 
 public class SensorRepository {
     SensorNetworkSource sensorNetworkSource;
-    SensorService sensorService;
     LoginRepository loginRepository;
     Logger LOGGER = Logger.getLogger(SensorRepository.class);
     Intent serviceIntent;
@@ -22,14 +21,12 @@ public class SensorRepository {
 
     public SensorRepository(Context applicationContext,
                             SensorNetworkSource sensorNetworkSource,
-                            SensorService sensorService,
                             LoginRepository loginRepository) {
         this.context = applicationContext;
         this.sensorNetworkSource = sensorNetworkSource;
-        this.sensorService = sensorService;
         this.loginRepository = loginRepository;
 
-        serviceIntent = new Intent(context, sensorService.getClass());
+        serviceIntent = new Intent(context, SensorService.class);
     }
 
     public void registerAppToUser() {
@@ -67,18 +64,7 @@ public class SensorRepository {
 
     public void stopRecording() {
         LOGGER.info("stop recording");
-        loginRepository.getUserInfo(new RepositoryCallback<>() {
-            @Override
-            public void onSuccess(User result) {
-                sensorService.stopService(result.getId());
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                // todo
-            }
-        });
-
+        context.stopService(serviceIntent);
     }
 
     public void clearManagers(String userId) {
