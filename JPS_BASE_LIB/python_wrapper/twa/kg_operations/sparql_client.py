@@ -206,7 +206,17 @@ class PySparqlClient:
         Args:
             g (Graph): The rdflib.Graph object to be uploaded
         """
-        update = """INSERT DATA {""" + g.serialize(format='nt') + "}"
+        update = f"""INSERT DATA {{ {g.serialize(format='nt')} }}"""
+        self.perform_update(update)
+
+    def delete_graph(self, g: Graph) -> None:
+        """
+        This function deletes the triples in the graph provided.
+
+        Args:
+            g (Graph): The rdflib.Graph object to be deleted
+        """
+        update = f"""DELETE DATA {{ {g.serialize(format='nt')} }}"""
         self.perform_update(update)
 
     def delete_and_insert_graphs(self, g_to_delete: Graph, g_to_insert: Graph) -> None:
@@ -219,7 +229,7 @@ class PySparqlClient:
         """
         update = f"""DELETE {{ {g_to_delete.serialize(format='nt')} }}
                      INSERT {{ {g_to_insert.serialize(format='nt')} }}
-                     WHERE {{ {g_to_delete.serialize(format='nt')} }}"""
+                     WHERE {{}}"""
         self.perform_update(update)
 
     def check_if_triple_exist(self, s: str, p: str, o: Any, data_type: str = None) -> bool:
