@@ -78,7 +78,7 @@ The uploaded content provided by the deploying developer should match the direct
 
 ### 1.6 Reverse Proxy urls
 
-The default Next.js configuration is designed to function seamlessly when the base URL starts directly from the domain with no page paths. However, in cases where page paths are utilised (e.g., http://www.example.org/page/), as seen in stack deployment and reverse proxy scenarios, additional configuration is necessary for Next.js to operate. This includes specifying the `assetPrefix` option in the `next.config.js` file.
+The default Next.js configuration is designed to function seamlessly when the base URL starts directly from the domain with no page paths. However, in cases where page paths are utilised (e.g., `http://www.example.org/page/`), as seen in stack deployment and reverse proxy scenarios, additional configuration is necessary for Next.js to operate. This includes specifying the `assetPrefix` option in the `next.config.js` file.
 
 To accommodate developers deploying applications to various subdomains and environments, this option within the platform is configured to retrieve an environment variable called `BASE_PATH`. If this variable is not set, the `assetPrefix` defaults to an empty string. It is advisable to define the `BASE_PATH` variable primarily when deploying in a stack or for containers utilising subdomains.
 
@@ -88,7 +88,7 @@ It's important to note that this URL configuration impacts both routes and image
 
 This guide outlines a set of standards and best practices to ensure consistency and maintainability in our codebase. While the codebase is still being developed and may not fully comply with the following standards, please follow the conventions stated here.
 
-### 2.1 File extensions:
+### 2.1 File extensions
 
 - The `.tsx` extension should be employed for files containing JSX, inclusive of React components.
 - The `.ts` extension should be employed for pure Typescript files for functions and constants.
@@ -101,11 +101,12 @@ For example, `page.tsx` contains a JSX page render, and `json.ts` contains type 
 
 - Type definitions in the `type` folder should use `type` instead of `interface`.
 
-**React components**
+### React components
+
 - Use functional components instead of class components for React Components.
 - Props for React components should use `interface` for type checking.
 
-```
+```typescript
 // Good
 interface ButtonProps {
   text: string;
