@@ -39,5 +39,8 @@
         android:id="@+id/sensor_setting"
         android:name="uk.ac.cam.cares.jps.user.SensorSettingFragment"
         tools:layout="@layout/fragment_sensor_setting">
+        <deepLink
+            app:uri="@string/sensor_fragment_link">
+        </deepLink>
     </fragment>
 </navigation>

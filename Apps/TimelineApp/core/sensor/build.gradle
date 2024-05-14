@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply from: "${project.rootDir}/common.gradle"
+apply from: "${project.rootDir}/ui.gradle"
 
 android {
     namespace 'uk.ac.cam.cares.jps.sensor'
@@ -13,4 +14,5 @@ dependencies {
 
     implementation project(path: ':core:utils')
     implementation project(path: ':core:login')
+    implementation project(path: ':core:ui')
 }

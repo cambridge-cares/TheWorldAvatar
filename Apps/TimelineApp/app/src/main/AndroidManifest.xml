@@ -23,8 +23,18 @@
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+<!--            <nav-graph android:value="@navigation/user_map" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="uk.ac.cam.cares.jps.app" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:scheme="android-app"
+                    android:host="uk.ac.cam.cares.jps.app"
+                    android:pathPattern="/sensor" />
             </intent-filter>
         </activity>
     </application>
