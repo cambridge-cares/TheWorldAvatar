@@ -201,20 +201,9 @@ export class DataParser {
      * @param {JsonArray} layerArray input array for verification.
      */
     private verifyGroupings(layerArray: JsonArray): void {
-        // First ensure the grouping field is attached to all layers
+        // Ensure the grouping field is attached to all layers
         if (!layerArray.every(layer => Object.hasOwn(layer, "grouping"))) {
             throw new Error("Groupings detected for some layers. Please ensure all layers have a grouping field.");
-        }
-        // Verify if they have the same source and layer type
-        const sourceLayer: string = layerArray[0].source as string;
-        const layerType: string = layerArray[0].type as string;
-        for (const layer of layerArray) {
-            if (layer.source != sourceLayer) {
-                throw new Error("Groupings detected. But the source layer does not match for the layer: " + layer.id.toString);
-            }
-            if (layer.type != layerType) {
-                throw new Error("Groupings detected. But layer type does not match for the layer: " + layer.id.toString);
-            }
         }
     }
 
