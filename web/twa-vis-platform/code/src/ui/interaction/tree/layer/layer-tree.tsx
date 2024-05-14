@@ -151,14 +151,18 @@ function getIcon(layers: DataLayer[], icons: IconSettings): string {
   const lineLayer: DataLayer = layers.find(layer => layer.definition?.type === 'line');
   if (lineLayer) {
     const paint: JsonObject = lineLayer?.definition?.paint as JsonObject;
-    return paint["line-color"] as string;
+    if (typeof paint["line-color"] === "string") {
+      return paint["line-color"];
+    }
   }
   // If no line is available, retrieve the icon image if available
   const layer: DataLayer = layers.find(layer => isJsonObject(layer.definition?.layout) && isString(layer.definition.layout["icon-image"]));
   if (layer) {
     const layout: JsonObject = layer?.definition?.layout as JsonObject;
-    const iconName: string = layout["icon-image"] as string;
-    return icons[iconName];
+    if (typeof layout["icon-image"] === "string") {
+      const iconName: string = layout["icon-image"];
+      return icons[iconName];
+    }
   }
   // Otherwise, defaults to null
   return null
