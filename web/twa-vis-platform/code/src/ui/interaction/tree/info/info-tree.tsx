@@ -41,7 +41,7 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
   const [selectedTimeSeriesOption, setSelectedTimeSeriesOption] = useState(0);
 
   const consumeTimeSeries = (data: JsonObject) => {
-    if (data?.time && Object.keys(data.time).length > 0 ) {
+    if (data?.time && Object.keys(data.time).length > 0) {
       timeSeries.current = parseTimeSeries(data);
       options.current = [];
       timeSeries.current.data.map((timeSeries, index) => {
@@ -62,14 +62,14 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
       <div className={styles.infoHeadSection}>
         <h2>Feature Information</h2>
         {// Display the tabs only if there are both meta and time
-        !props.isFetching && props.data?.meta && props.data?.time && (
-          <InfoTabs
-            data={props.data}
-            activeTab={{
-              index: props.activeTab.index,
-              setActiveTab: props.activeTab.setActiveTab,
-            }}
-          />)}
+          !props.isFetching && props.data?.meta && props.data?.time && (
+            <InfoTabs
+              data={props.data}
+              activeTab={{
+                index: props.activeTab.index,
+                setActiveTab: props.activeTab.setActiveTab,
+              }}
+            />)}
       </div>
       <div className={styles.infoSection}>
         {props.isFetching ? (
@@ -148,9 +148,22 @@ function recurseParseAttributeGroup(data: JsonObject, currentNode: string): Attr
  * @returns {Attribute} The parsed attribute.
  */
 function parseAttribute(property: string, value: string, unit: string = ""): Attribute {
+  let parsedVal: string = value;
+  let parsedUnit: string = unit;
+  // For any RDF literals
+  if (value.startsWith("\"")) {
+    // Extract the value pattern first from the RDF literal
+    const valuePattern: RegExp = /"(\d+(?:\.\d+)?)".*/;
+    let match: RegExpExecArray | null = valuePattern.exec(value);
+    if (match) { parsedVal = match[1]; }
+    // Extract the optional unit pattern from the RDF literal
+    const optionalUnitPattern: RegExp = /\[(.*?)\]/;
+    match = optionalUnitPattern.exec(value);
+    if (match) { parsedUnit = match[1]; }
+  }
   return {
     name: property,
-    value: value,
-    unit: unit,
+    value: parsedVal,
+    unit: parsedUnit,
   };
 }
