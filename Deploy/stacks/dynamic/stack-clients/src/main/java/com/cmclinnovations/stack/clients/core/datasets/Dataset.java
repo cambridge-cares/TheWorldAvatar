@@ -314,7 +314,7 @@ public class Dataset {
         Variable dataSubsetNameVar = query.var();
 
         GraphPattern mainQuery = GraphPatterns.and(
-                catalogVar.has(DCTERMS.HAS_PART, dataSubsetVar).andHas(DCTERMS.TITLE, catalogNameVar),
+                catalogVar.has(DCAT.HAS_DATASET, dataSubsetVar).andHas(DCTERMS.TITLE, catalogNameVar),
                 dataSubsetVar.has(DCTERMS.TITLE, dataSubsetNameVar));
 
         ValuesPattern catalogValuesPattern = new ValuesPattern(catalogNameVar, Rdf.literalOf(getName()));
