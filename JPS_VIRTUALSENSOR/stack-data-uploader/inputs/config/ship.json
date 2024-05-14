@@ -2,7 +2,7 @@
     "database": "postgres",
     "workspace": "dispersion",
     "datasetDirectory": "ship",
-    "skip": false,
+    "skip": true,
     "dataSubsets": [
         {
             "type": "vector",
