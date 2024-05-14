@@ -55,7 +55,7 @@ public class IntegrateFloors {
 
     //check table building has floor Cat. column
     public void addFloorCatColumn () {
-        String buildingSQLAlter = "ALTER TABLE building ADD COLUMN IF NOT EXISTS storeys_above_ground_cat character varying(4000);";
+        String buildingSQLAlter = "ALTER TABLE citydb.building ADD COLUMN IF NOT EXISTS storeys_above_ground_cat character varying(4000);";
         try (Connection srcConn = this.postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
                 stmt.executeUpdate(buildingSQLAlter);
