@@ -152,7 +152,15 @@ function getIcon(layers: DataLayer[], icons: IconSettings): string {
   if (lineLayer) {
     const paint: JsonObject = lineLayer?.definition?.paint as JsonObject;
     if (typeof paint["line-color"] === "string") {
-      return paint["line-color"];
+      return "l" + paint["line-color"];
+    }
+  }
+  // Retrieve the circle symbol layer and return its color if available
+  const circleLayer: DataLayer = layers.find(layer => layer.definition?.type === "circle");
+  if (circleLayer) {
+    const paint: JsonObject = circleLayer?.definition?.paint as JsonObject;
+    if (typeof paint["circle-color"] === "string") {
+      return "c" + paint["circle-color"];
     }
   }
   // If no line is available, retrieve the icon image if available

@@ -230,7 +230,14 @@ function LayerTreeEntry(props: Readonly<LayerTreeEntryProps>) {
     // Get current visibility state of the layer after any toggling
     setIsVisible(props.map?.getLayoutProperty(firstLayerId, "visibility") === "visible");
   };
-
+  let iconDisplay;
+  if (layer.icon?.startsWith("l#")) {
+    iconDisplay = <span className={iconStyles["line-icon"]} style={{ background: layer.icon.substring(1) }}></span>
+  } else if (layer.icon?.startsWith("c#")) {
+    iconDisplay = <span className={iconStyles["circle-icon"]} style={{ background: layer.icon.substring(1) }}></span>
+  } else {
+    iconDisplay = <IconComponent icon={layer.icon} classes={iconStyles["small-icon-image"]} />
+  }
   return (
     <div className={styles.treeEntry} key={layer.name}>
       <div className={styles.treeEntryHeader}>
@@ -239,9 +246,7 @@ function LayerTreeEntry(props: Readonly<LayerTreeEntryProps>) {
 
         {/* Layer's icon, if present. Either creates a line or icon for display */}
         {layer.icon && (
-          layer.icon.startsWith("#") ?
-            <span className={iconStyles["line-icon"]} style={{ background: layer.icon }}></span> :
-            <IconComponent icon={layer.icon} classes={iconStyles["small-icon-image"]} />
+          iconDisplay
         )}
 
         {/* Name of group */}
