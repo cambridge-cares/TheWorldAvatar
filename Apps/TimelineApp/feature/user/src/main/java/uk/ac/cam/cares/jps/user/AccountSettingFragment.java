@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
@@ -19,7 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.ui.UiUtils;
 import uk.ac.cam.cares.jps.user.databinding.FragmentAccountSettingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
-import uk.ac.cam.cares.jps.user.viewmodel.LoginViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
 @AndroidEntryPoint
@@ -36,9 +34,9 @@ public class AccountSettingFragment extends Fragment {
 
         accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         accountViewModel.registerForLogoutResult(this);
-        accountViewModel.logoutSucceeded.observe(getViewLifecycleOwner(), logoutSucceeded -> {
-            if (logoutSucceeded) {
-                sensorViewModel.clearManagers();
+        accountViewModel.logoutStatus.observe(getViewLifecycleOwner(), logoutStatus -> {
+            if (logoutStatus.getFirst()) {
+                sensorViewModel.clearManagers(logoutStatus.getSecond());
 
                 NavDeepLinkRequest request = NavDeepLinkRequest.Builder
                         .fromUri(Uri.parse(requireContext().getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))

@@ -29,6 +29,7 @@ public class SensorCollectionStateManager {
         this.context = context;
     }
 
+    // todo: need to further refine the getSensorCollectionState() the current design makes it very confusing
     public SensorCollectionState getSensorCollectionState(String userId) {
         if (sensorCollectionState.get() != null) {
             return sensorCollectionState.get();
@@ -48,6 +49,7 @@ public class SensorCollectionStateManager {
 
         String deviceId = UUID.randomUUID().toString();
         Boolean recordingState = false;
+        // todo: check this sync block
         sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState));
         SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
         sharedPreferences.edit()
@@ -68,20 +70,30 @@ public class SensorCollectionStateManager {
         return null;
     }
 
-    public void setRecordingState(Boolean isRecording) {
+    public void setRecordingState(Boolean isRecording, String userId) {
         if (sensorCollectionState.get() == null) {
             return;
         }
 
         synchronized (sensorCollectionState.get()) {
             sensorCollectionState.get().setRecordingState(isRecording);
+
+            SharedPreferences sharedPreferences = getSharedPreferences(getHashedPrefsFileName(userId));
+            sharedPreferences.edit()
+                    .putBoolean(RECORDING_STATE_KEY, isRecording)
+                    .apply();
         }
     }
 
-    public void clearState() {
+    public void clearState(String userId) {
         // todo: need to review the order of clear up, and update the shared pref state
         sensorCollectionState.set(null);
         LOGGER.info("sensor collection state is set to null");
+
+        SharedPreferences sharedPreferences = getSharedPreferences(getHashedPrefsFileName(userId));
+        sharedPreferences.edit()
+                .putBoolean(RECORDING_STATE_KEY, false)
+                .apply();
     }
 
     private SharedPreferences getSharedPreferences(String sharedPrefFileName) {

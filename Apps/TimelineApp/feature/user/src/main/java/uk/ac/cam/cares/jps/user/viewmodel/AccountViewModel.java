@@ -4,7 +4,6 @@ import static uk.ac.cam.cares.jps.login.LoginErrorMessage.NO_UER_INFO_RETRIEVED;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SESSION_EXPIRED;
 
 import android.content.Intent;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.fragment.app.Fragment;
@@ -13,12 +12,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import org.apache.log4j.Logger;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import kotlin.Pair;
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.login.RepositoryCallback;
 import uk.ac.cam.cares.jps.login.User;
@@ -31,12 +29,12 @@ public class AccountViewModel extends ViewModel {
     private final MutableLiveData<String> _name = new MutableLiveData<>("");
     private final MutableLiveData<String> _email = new MutableLiveData<>("");
     private final MutableLiveData<Boolean> _shouldShowSessionExpired = new MutableLiveData<>(false);
-    private final MutableLiveData<Boolean> _logoutSucceeded = new MutableLiveData<>();
+    private final MutableLiveData<Pair<Boolean, String>> _logoutStatus = new MutableLiveData<>();
 
     public LiveData<String> name = _name;
     public LiveData<String> email = _email;
     public LiveData<Boolean> shouldShowSessionExpired = _shouldShowSessionExpired;
-    public LiveData<Boolean> logoutSucceeded = _logoutSucceeded;
+    public LiveData<Pair<Boolean, String>> logoutStatus = _logoutStatus;
 
     private ActivityResultLauncher<Intent> logoutLauncher;
 
@@ -63,15 +61,15 @@ public class AccountViewModel extends ViewModel {
     }
 
     public void registerForLogoutResult(Fragment fragment) {
-        logoutLauncher = loginRepository.getLogoutLauncher(fragment, new RepositoryCallback<Boolean>() {
+        logoutLauncher = loginRepository.getLogoutLauncher(fragment, new RepositoryCallback<>() {
             @Override
-            public void onSuccess(Boolean result) {
-                _logoutSucceeded.postValue(true);
+            public void onSuccess(Pair<Boolean, String> result) {
+                _logoutStatus.postValue(result);
             }
 
             @Override
             public void onFailure(Throwable error) {
-                _logoutSucceeded.postValue(false);
+                _logoutStatus.postValue(new Pair<>(false, ""));
             }
         });
     }

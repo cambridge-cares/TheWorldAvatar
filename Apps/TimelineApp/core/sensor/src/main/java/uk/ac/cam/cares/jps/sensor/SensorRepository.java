@@ -50,15 +50,42 @@ public class SensorRepository {
 
     public void startRecording() {
         LOGGER.info("start recording");
-        context.startService(serviceIntent);
+        loginRepository.getUserInfo(new RepositoryCallback<>() {
+            @Override
+            public void onSuccess(User result) {
+                serviceIntent.putExtra("userId", result.getId());
+                context.startService(serviceIntent);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                // todo
+            }
+        });
+
     }
 
     public void stopRecording() {
         LOGGER.info("stop recording");
-        sensorService.stopService();
+        loginRepository.getUserInfo(new RepositoryCallback<>() {
+            @Override
+            public void onSuccess(User result) {
+                sensorService.stopService(result.getId());
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                // todo
+            }
+        });
+
     }
 
-    public void clearManagers() {
-        sensorNetworkSource.clearManagers();
+    public void clearManagers(String userId) {
+        sensorNetworkSource.clearManagers(userId);
+    }
+
+    public boolean getRecordingState() {
+        return sensorNetworkSource.getSensorRecordingState();
     }
 }

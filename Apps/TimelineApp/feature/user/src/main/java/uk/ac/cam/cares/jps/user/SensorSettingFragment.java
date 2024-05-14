@@ -38,11 +38,11 @@ public class SensorSettingFragment extends Fragment {
 
         binding.topAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
 
-        binding.editProfile.setOnClickListener(this::onRecordButtonClicked);
-        if (sensorViewModel.getIsRecording().getValue()) {
-            binding.editProfile.setText(R.string.stop_recording);
+        binding.startRecordTv.setOnClickListener(this::onRecordButtonClicked);
+        if (sensorViewModel.getIsRecording().getValue() != null && sensorViewModel.getIsRecording().getValue()) {
+            binding.startRecordTv.setText(R.string.stop_recording);
         } else {
-            binding.editProfile.setText(R.string.start_recording);
+            binding.startRecordTv.setText(R.string.start_recording);
         }
     }
 

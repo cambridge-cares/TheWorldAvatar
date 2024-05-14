@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -26,23 +27,16 @@ public class SensorService extends Service {
 
     @Inject SensorNetworkSource sensorNetworkSource;
 
-    private Looper looper;
-
     private final int FOREGROUND_ID = 100;
     private final String CHANNEL_ID = "Sensors";
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        HandlerThread thread = new HandlerThread("ServiceStartArguments",
-                Process.THREAD_PRIORITY_BACKGROUND);
-        thread.start();
-        looper = thread.getLooper();
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        sensorNetworkSource.setHandler(new Handler(looper));
+        HandlerThread thread = new HandlerThread("ServiceStartArguments",
+                Process.THREAD_PRIORITY_BACKGROUND);
+        thread.start();
+        sensorNetworkSource.setHandler(new Handler(thread.getLooper()));
 
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "SensorDataCollectionChannel", NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription("SensorDataCollection channel for foreground service notification");
@@ -73,8 +67,13 @@ public class SensorService extends Service {
                 type
         );
 
-        sensorNetworkSource.startDataCollection();
-
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            sensorNetworkSource.startDataCollection(bundle.getString("userId"));
+        } else {
+            // todo: do better error handle to make it more robust
+            throw new RuntimeException("Failed to start data collection because no user id passed for sensor collection state manager.");
+        }
 
         return START_STICKY;
     }
@@ -89,21 +88,8 @@ public class SensorService extends Service {
         return null;
     }
 
-//    private Notification createNotification() {
-//        Intent notificationIntent = new Intent(this, MainActivity.class);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
-//
-//        return new NotificationCompat.Builder(this, "sensor_service_channel")
-//                .setContentTitle("Sensor Service")
-//                .setContentText("Recording sensor data")
-//                .setSmallIcon(android.R.drawable.ic_dialog_info) // Use a default system icon
-//                .setContentIntent(pendingIntent)
-//                .build();
-//    }
-
-
-    public void stopService() {
+    public void stopService(String userId) {
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
-        sensorNetworkSource.stopDataCollection();
+        sensorNetworkSource.stopDataCollection(userId);
     }
 }

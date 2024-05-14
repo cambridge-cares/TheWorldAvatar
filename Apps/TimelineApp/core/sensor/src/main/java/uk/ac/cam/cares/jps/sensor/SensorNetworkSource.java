@@ -78,26 +78,28 @@ public class SensorNetworkSource {
 
     }
 
-    public void startDataCollection() {
+    public void startDataCollection(String userId) {
         if (handler != null) {
             sensorManager.startSensors();
             handler.post(sendDataRunnable);
+
+            sensorCollectionStateManager.setRecordingState(true, userId);
         }
     }
 
-    public void stopDataCollection() {
+    public void stopDataCollection(String userId) {
         if (handler != null) {
             sensorManager.stopSensors();
             handler.removeCallbacks(sendDataRunnable);
 
-            sensorCollectionStateManager.setRecordingState(false);
+            sensorCollectionStateManager.setRecordingState(false, userId);
         }
     }
 
-    public void clearManagers() {
+    public void clearManagers(String userId) {
         // todo: need to fix the recording state
-        sensorCollectionStateManager.clearState();
-        stopDataCollection();
+        sensorCollectionStateManager.clearState(userId);
+        stopDataCollection(userId);
 
         LOGGER.info("finish clearing sensor related managers");
     }
@@ -151,5 +153,9 @@ public class SensorNetworkSource {
 
     public void setHandler(Handler handler) {
         this.handler = handler;
+    }
+
+    public Boolean getSensorRecordingState() {
+        return sensorCollectionStateManager.getSensorCollectionState().getRecordingState();
     }
 }

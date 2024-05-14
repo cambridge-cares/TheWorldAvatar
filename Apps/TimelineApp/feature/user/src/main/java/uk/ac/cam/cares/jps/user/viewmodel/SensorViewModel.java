@@ -16,15 +16,17 @@ import uk.ac.cam.cares.jps.sensor.SensorRepository;
 @HiltViewModel
 public class SensorViewModel extends ViewModel {
     private static final Logger LOGGER = LogManager.getLogger(SensorViewModel.class);
-    private SensorRepository sensorRepository;
+    private final SensorRepository sensorRepository;
 
-    private MutableLiveData<Boolean> _isRecording = new MutableLiveData<>(false);
-    private LiveData<Boolean> isRecording = _isRecording;
+    private final MutableLiveData<Boolean> _isRecording;
+    private final LiveData<Boolean> isRecording;
 
     @Inject
     SensorViewModel(SensorRepository repository) {
         BasicConfigurator.configure();
         this.sensorRepository = repository;
+        _isRecording = new MutableLiveData<>(sensorRepository.getRecordingState());
+        isRecording = _isRecording;
     }
 
     public void startRecording() {
@@ -43,7 +45,7 @@ public class SensorViewModel extends ViewModel {
         this._isRecording.setValue(isRecording);
     }
 
-    public void clearManagers() {
-        sensorRepository.clearManagers();
+    public void clearManagers(String userId) {
+        sensorRepository.clearManagers(userId);
     }
 }

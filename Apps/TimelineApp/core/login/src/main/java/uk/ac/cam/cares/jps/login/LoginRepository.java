@@ -4,7 +4,6 @@ import static android.app.Activity.RESULT_CANCELED;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -22,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
 
+import kotlin.Pair;
 import uk.ac.cam.cares.jps.loginmodule.R;
 
 public class LoginRepository {
@@ -83,7 +83,7 @@ public class LoginRepository {
         return null;
     }
 
-    public ActivityResultLauncher<Intent> getLogoutLauncher(Fragment fragment, RepositoryCallback<Boolean> callback) {
+    public ActivityResultLauncher<Intent> getLogoutLauncher(Fragment fragment, RepositoryCallback<Pair<Boolean, String>> callback) {
         return fragment.registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -91,8 +91,9 @@ public class LoginRepository {
                         callback.onFailure(new Throwable("cancelled"));
                     } else {
                         loginSource.authStateManager.clearSharedPref();
+                        String userId = user.getId();
                         user = null;
-                        callback.onSuccess(true);
+                        callback.onSuccess(new Pair<>(true, userId));
                     }
                 }
         );
