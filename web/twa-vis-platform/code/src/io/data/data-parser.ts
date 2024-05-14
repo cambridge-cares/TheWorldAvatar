@@ -69,10 +69,11 @@ export class DataParser {
         // Initialise data group
         const groupName: string = current["name"] as string;
         let isGroupExpanded: boolean = true;
-        if (parentGroup) {
+        // Keep the check in this order
+        if (Object.hasOwn(current, "expanded")) {
+            isGroupExpanded = parentGroup?.isExpanded ? current["expanded"] as boolean : false;
+        } else if (parentGroup) {
             isGroupExpanded = parentGroup.isExpanded;
-        } else if (Object.hasOwn(current, "expanded")) {
-            isGroupExpanded = current["expanded"] as boolean;
         }
         const groupID: string = (parentGroup != null) ? (parentGroup.id + "." + depth) : depth.toString();
         const dataGroup: DataGroup = new DataGroup(groupName, groupID, currentStack, isGroupExpanded);
