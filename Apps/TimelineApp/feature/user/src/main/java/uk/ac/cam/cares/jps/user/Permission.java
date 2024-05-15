@@ -7,7 +7,7 @@ import androidx.activity.result.ActivityResultLauncher;
 
 public class Permission {
     public enum PermissionType {
-        LOCATION,
+        LOCATION_FINE,
         AUDIO,
         NOTIFICATION
     }
@@ -23,7 +23,7 @@ public class Permission {
         this.launcher = launcher;
 
         switch (type) {
-            case LOCATION -> {
+            case LOCATION_FINE -> {
                 permissionString = Manifest.permission.ACCESS_FINE_LOCATION;
                 explanation = R.string.location_permission_explanation;
             }

@@ -55,7 +55,7 @@ public class SensorManager {
         pressureSensorHandler.start();
         gravitySensorHandler.start();
         locationTracker.start();
-//        soundLevelHandler.start();
+        soundLevelHandler.start();
 
         LOGGER.info("sensors started");
     }
@@ -69,7 +69,7 @@ public class SensorManager {
         pressureSensorHandler.stop();
         gravitySensorHandler.stop();
         locationTracker.stop();
-//        soundLevelHandler.stop();
+        soundLevelHandler.stop();
 
         LOGGER.info("sensors stopped");
     }
@@ -86,7 +86,7 @@ public class SensorManager {
             addAllSensorData(allSensorData, gravitySensorHandler.getSensorData());
             addAllSensorData(allSensorData, magnetometerHandler.getSensorData());
             addAllSensorData(allSensorData, locationTracker.getSensorData());
-//            addAllSensorData(allSensorData, soundLevelHandler.getSensorData());
+            addAllSensorData(allSensorData, soundLevelHandler.getSensorData());
             // add other sensors similarly
         } catch (JSONException e) {
             e.printStackTrace();
@@ -114,7 +114,7 @@ public class SensorManager {
         pressureSensorHandler.clearSensorData();
         gravitySensorHandler.clearSensorData();
         locationTracker.clearSensorData();
-//        soundLevelHandler.clearSensorData();
+        soundLevelHandler.clearSensorData();
 
     }
 }

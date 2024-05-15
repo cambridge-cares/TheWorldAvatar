@@ -36,7 +36,7 @@ public class SensorSettingFragment extends Fragment {
     private FragmentSensorSettingBinding binding;
     private SensorViewModel sensorViewModel;
     private Map<Permission.PermissionType, Permission> permissionsMap = new HashMap<>();
-    private List<Permission.PermissionType> criticalPermissionType = Arrays.asList(Permission.PermissionType.LOCATION, Permission.PermissionType.AUDIO);
+    private List<Permission.PermissionType> criticalPermissionType = Arrays.asList(Permission.PermissionType.LOCATION_FINE, Permission.PermissionType.AUDIO);
 
     @Nullable
     @Override
@@ -90,7 +90,7 @@ public class SensorSettingFragment extends Fragment {
     }
 
     private void initPermissions() {
-        permissionsMap.put(Permission.PermissionType.LOCATION, new Permission(Permission.PermissionType.LOCATION, requestFineLocationPermissionLauncher));
+        permissionsMap.put(Permission.PermissionType.LOCATION_FINE, new Permission(Permission.PermissionType.LOCATION_FINE, requestFineLocationPermissionLauncher));
         permissionsMap.put(Permission.PermissionType.AUDIO, new Permission(Permission.PermissionType.AUDIO, requestAudioPermissionLauncher));
         permissionsMap.put(Permission.PermissionType.NOTIFICATION, new Permission(Permission.PermissionType.NOTIFICATION, requestNotificationPermissionLauncher));
     }
@@ -101,16 +101,27 @@ public class SensorSettingFragment extends Fragment {
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permission.permissionString)) {
             new MaterialAlertDialogBuilder(requireContext())
                     .setMessage(permission.explanation)
-                    .setPositiveButton(uk.ac.cam.cares.jps.ui.R.string.ok, (dialogInterface, i) -> permission.launcher.launch(permission.permissionString))
+                    .setPositiveButton(uk.ac.cam.cares.jps.ui.R.string.ok, (dialogInterface, i) -> {
+                        // some permissions (eg. notification) may be auto granted in lower sdk version
+                        if (permission.permissionString.isEmpty()) {
+                            permission.isGranted = true;
+                            return;
+                        }
+                        permission.launcher.launch(permission.permissionString);
+                    })
                     .create().show();
         } else {
+            if (permission.permissionString.isEmpty()) {
+                permission.isGranted = true;
+                return;
+            }
             permission.launcher.launch(permission.permissionString);
         }
     }
 
     private final ActivityResultLauncher<String> requestFineLocationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
-            permissionsMap.get(Permission.PermissionType.LOCATION).isGranted = true;
+            permissionsMap.get(Permission.PermissionType.LOCATION_FINE).isGranted = true;
         }
     });
 
