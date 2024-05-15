@@ -20,11 +20,20 @@ def promptify_schema(filename: str):
     with open(filename, "r") as f:
         schema = json.load(f)
 
-    return "Entities: {entities}\nRelationships: {relationships}".format(
-        entities=", ".join(schema["entities"]),
-        relationships=", ".join(
+    return """Node types:
+{node_types}
+
+Edge types:
+{edge_types}
+
+Relations:
+{relations}
+""".format(
+        node_types=json.dumps(schema["node_types"], indent=4),
+        edge_types=json.dumps(schema["edge_types"], indent=4),
+        relations="\n".join(
             "({s})-[{p}]->({o})".format(s=row["s"], p=row["p"], o=row["o"])
-            for row in schema["relationships"]
+            for row in schema["relations"]
         ),
     )
 
