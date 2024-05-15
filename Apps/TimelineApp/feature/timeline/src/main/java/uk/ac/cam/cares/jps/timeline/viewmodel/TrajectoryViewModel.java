@@ -9,24 +9,21 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.TrajectoryRepository;
-import uk.ac.cam.cares.jps.sensor.SensorRepository;
 
 @HiltViewModel
 public class TrajectoryViewModel extends ViewModel {
 
-    private TrajectoryRepository trajectoryRepository;
-    private SensorRepository sensorRepository;
-    private MutableLiveData<String> _trajectory = new MutableLiveData<>();
-    private MutableLiveData<String> _trajectoryError = new MutableLiveData<>();
-    private MutableLiveData<Boolean> _isFetchingTrajectory = new MutableLiveData<>();
+    private final TrajectoryRepository trajectoryRepository;
+    private final MutableLiveData<String> _trajectory = new MutableLiveData<>();
+    private final MutableLiveData<String> _trajectoryError = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> _isFetchingTrajectory = new MutableLiveData<>();
     public LiveData<String> trajectory = _trajectory;
     public LiveData<String> trajectoryError = _trajectoryError;
     public LiveData<Boolean> isFetchingTrajecjtory = _isFetchingTrajectory;
 
     @Inject
-    public TrajectoryViewModel(TrajectoryRepository routeRepository, SensorRepository sensorRepository) {
+    public TrajectoryViewModel(TrajectoryRepository routeRepository) {
         this.trajectoryRepository = routeRepository;
-        this.sensorRepository = sensorRepository;
     }
 
     public void getTrajectory() {
@@ -46,9 +43,5 @@ public class TrajectoryViewModel extends ViewModel {
                 _isFetchingTrajectory.postValue(false);
             }
         });
-    }
-
-    public void registerPhoneToUser() {
-        sensorRepository.registerAppToUser();
     }
 }

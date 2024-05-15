@@ -18,6 +18,7 @@ import uk.ac.cam.cares.jps.sensor.SensorManager;
 import uk.ac.cam.cares.jps.sensor.SensorNetworkSource;
 import uk.ac.cam.cares.jps.sensor.SensorRepository;
 import uk.ac.cam.cares.jps.sensor.SensorService;
+import uk.ac.cam.cares.jps.sensor.UserPhoneNetworkSource;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -27,17 +28,17 @@ public class SensorModule {
     @Singleton
     public SensorNetworkSource provideSensorNetworkSource(@ApplicationContext Context applicationContext,
                                                           RequestQueue requestQueue,
-                                                          SensorManager sensorManager,
-                                                          SensorCollectionStateManager sensorCollectionStateManager) {
-        return new SensorNetworkSource(applicationContext, requestQueue, sensorManager, sensorCollectionStateManager);
+                                                          SensorManager sensorManager) {
+        return new SensorNetworkSource(applicationContext, requestQueue, sensorManager);
     }
 
     @Provides
     @Singleton
     public SensorRepository provideSensorRepository(@ApplicationContext Context applicationContext,
-                                                    SensorNetworkSource networkSource,
+                                                    SensorCollectionStateManager sensorCollectionStateManager,
+                                                    UserPhoneNetworkSource userPhoneNetworkSource,
                                                     LoginRepository loginRepository) {
-        return new SensorRepository(applicationContext, networkSource, loginRepository);
+        return new SensorRepository(applicationContext, sensorCollectionStateManager, userPhoneNetworkSource, loginRepository);
     }
 
     @Provides
@@ -52,9 +53,9 @@ public class SensorModule {
         return new SensorCollectionStateManager(applicationContext);
     }
 
-//    @Provides
-//    @Singleton
-//    public SensorService provideSensorService() {
-//        return new SensorService();
-//    }
+    @Provides
+    @Singleton
+    public UserPhoneNetworkSource provideUserPhoneNetworkSource(@ApplicationContext Context applicationContext, RequestQueue requestQueue) {
+        return new UserPhoneNetworkSource(applicationContext, requestQueue);
+    }
 }

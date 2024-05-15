@@ -67,7 +67,6 @@ public class TimelineFragment extends Fragment {
         mapView.getMapboxMap().loadStyleUri(Style.LIGHT);
 
         TrajectoryViewModel trajectoryViewModel = new ViewModelProvider(this).get(TrajectoryViewModel.class);
-        trajectoryViewModel.registerPhoneToUser();
 
         TrajectoryManager trajectoryManager = new TrajectoryManager(this, mapView);
         BottomSheetManager bottomSheetManager = new BottomSheetManager(this, binding.bottomSheetContainer);

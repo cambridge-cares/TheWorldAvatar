@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.login.AccountException;
 
 @AndroidEntryPoint
 public class SensorService extends Service {
@@ -36,7 +37,6 @@ public class SensorService extends Service {
     private final int SENSOR_FRAGMENT_REQUEST_CODE = 100;
     private final Logger LOGGER = Logger.getLogger(SensorService.class);
     private HandlerThread thread;
-    private String userId;
 
     @Override
     public void onCreate() {
@@ -49,7 +49,14 @@ public class SensorService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        sensorNetworkSource.setHandler(new Handler(thread.getLooper()));
+        String deviceId = "";
+        if (intent != null && intent.getExtras() != null) {
+            deviceId = intent.getExtras().getString("deviceId");
+        } else {
+            stopSelf();
+            LOGGER.warn("Self stop because deviceId unknown");
+        }
+        sensorNetworkSource.initForService(new Handler(thread.getLooper()), deviceId);
 
         Notification notification = getNotification();
         int type = 0;
@@ -66,14 +73,7 @@ public class SensorService extends Service {
                 type
         );
 
-        Bundle bundle = intent.getExtras();
-        if (bundle != null) {
-            userId = bundle.getString("userId");
-            sensorNetworkSource.startDataCollection(userId);
-        } else {
-            // todo: do better error handle to make it more robust
-            throw new RuntimeException("Failed to start data collection because no user id passed for sensor collection state manager.");
-        }
+        sensorNetworkSource.startDataCollection();
 
         return START_STICKY;
     }
@@ -111,7 +111,7 @@ public class SensorService extends Service {
     public void onDestroy() {
         LOGGER.info("Stopping sensor service");
         try {
-            sensorNetworkSource.stopDataCollection(userId);
+            sensorNetworkSource.stopDataCollection();
             ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
             thread.quit();
 

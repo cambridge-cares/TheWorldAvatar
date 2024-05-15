@@ -17,6 +17,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
+import uk.ac.cam.cares.jps.login.AccountException;
+
 public class SensorCollectionStateManager {
     private static final String DEVICE_ID_KEY = "device_id";
     private static final String USER_ID_KEY = "user_id";
@@ -29,13 +31,7 @@ public class SensorCollectionStateManager {
         this.context = context;
     }
 
-    // todo: need to further refine the getSensorCollectionState() the current design makes it very confusing
-    public SensorCollectionState getSensorCollectionState(String userId) {
-        if (sensorCollectionState.get() != null) {
-            return sensorCollectionState.get();
-        }
-
-        // todo: shared pref file name can be null. Need to check the null and error handle in this
+    public void initSensorCollectionState(String userId) {
         String sharedPrefFileName = getHashedPrefsFileName(userId);
         File sharedPrefsFile = new File(context.getApplicationInfo().dataDir + "/shared_prefs/" + sharedPrefFileName + ".xml");
         if (sharedPrefsFile.exists()) {
@@ -44,11 +40,11 @@ public class SensorCollectionStateManager {
             Boolean recordingState = sharedPreferences.getBoolean(RECORDING_STATE_KEY, false);
 
             sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState));
-            return sensorCollectionState.get();
+            return;
         }
 
         String deviceId = UUID.randomUUID().toString();
-        Boolean recordingState = false;
+        boolean recordingState = false;
         // todo: check this sync block
         sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState));
         SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
@@ -57,8 +53,6 @@ public class SensorCollectionStateManager {
                 .putString(DEVICE_ID_KEY, deviceId)
                 .putBoolean(RECORDING_STATE_KEY, recordingState)
                 .apply();
-
-        return sensorCollectionState.get();
     }
 
     public SensorCollectionState getSensorCollectionState() {
@@ -66,11 +60,11 @@ public class SensorCollectionStateManager {
             return sensorCollectionState.get();
         }
 
-        LOGGER.error("sensor collection state is null");
+        LOGGER.info("sensor collection state is null");
         return null;
     }
 
-    public void setRecordingState(Boolean isRecording, String userId) {
+    public void setRecordingState(Boolean isRecording) {
         if (sensorCollectionState.get() == null) {
             return;
         }
@@ -78,15 +72,22 @@ public class SensorCollectionStateManager {
         synchronized (sensorCollectionState.get()) {
             sensorCollectionState.get().setRecordingState(isRecording);
 
-            SharedPreferences sharedPreferences = getSharedPreferences(getHashedPrefsFileName(userId));
+            SharedPreferences sharedPreferences = getSharedPreferences(getHashedPrefsFileName(sensorCollectionState.get().getUserId()));
             sharedPreferences.edit()
                     .putBoolean(RECORDING_STATE_KEY, isRecording)
                     .apply();
         }
     }
 
+    public boolean getRecordingState() throws AccountException {
+        if (sensorCollectionState.get() == null) {
+            throw new AccountException("SensorCollectionState is null. Need to reinitialize with userId.");
+        }
+
+        return sensorCollectionState.get().getRecordingState();
+    }
+
     public void clearState(String userId) {
-        // todo: need to review the order of clear up, and update the shared pref state
         sensorCollectionState.set(null);
         LOGGER.info("sensor collection state is set to null");
 
@@ -94,6 +95,22 @@ public class SensorCollectionStateManager {
         sharedPreferences.edit()
                 .putBoolean(RECORDING_STATE_KEY, false)
                 .apply();
+    }
+
+    public String getDeviceId() throws AccountException {
+        if (sensorCollectionState.get() == null) {
+            throw new AccountException("SensorCollectionState is null. Need to reinitialize with userId.");
+        }
+
+        return sensorCollectionState.get().getDeviceId();
+    }
+
+    public String getUserId() throws AccountException {
+        if (sensorCollectionState.get() == null) {
+            throw new AccountException("SensorCollectionState is null. Need to reinitialize with userId.");
+        }
+
+        return sensorCollectionState.get().getUserId();
     }
 
     private SharedPreferences getSharedPreferences(String sharedPrefFileName) {

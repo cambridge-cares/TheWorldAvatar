@@ -6,8 +6,6 @@ import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import org.apache.log4j.Logger;
@@ -26,21 +24,18 @@ public class SensorNetworkSource {
     RequestQueue requestQueue;
     Logger LOGGER = Logger.getLogger(SensorNetworkSource.class);
     private static final long SEND_INTERVAL = 10000;
-    private final SensorCollectionStateManager sensorCollectionStateManager;
     private final SensorManager sensorManager;
 
     private final Runnable sendDataRunnable;
     private Handler handler;
+    private String deviceId;
 
     public SensorNetworkSource(Context applicationContext,
                                RequestQueue requestQueue,
-                               SensorManager sensorManager,
-                               SensorCollectionStateManager sensorCollectionStateManager) {
+                               SensorManager sensorManager) {
         context = applicationContext;
         this.requestQueue = requestQueue;
         this.sensorManager = sensorManager;
-
-        this.sensorCollectionStateManager = sensorCollectionStateManager;
         sendDataRunnable = new Runnable() {
             @Override
             public void run() {
@@ -51,57 +46,18 @@ public class SensorNetworkSource {
         };
     }
 
-    public void registerAppToUser(String userId, Response.ErrorListener errorListener) {
-
-        try {
-            String deviceId = sensorCollectionStateManager.getSensorCollectionState(userId).getDeviceId();
-
-            JSONObject body = new JSONObject();
-            body.put("userId", userId);
-            body.put("phoneId", deviceId);
-
-            String url = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
-                    .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.useragent_registerphone))
-                    .build().toString();
-
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, body, jsonObject -> {
-                LOGGER.info(String.format("Phone id %s is register to user %s", deviceId, userId));
-            }, volleyError -> {
-                // todo: how to handle registration failed case?
-                LOGGER.error(volleyError.getMessage());
-            });
-
-            requestQueue.add(request);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    public void startDataCollection(String userId) {
+    public void startDataCollection() {
         if (handler != null) {
             sensorManager.startSensors();
             handler.post(sendDataRunnable);
-
-            sensorCollectionStateManager.setRecordingState(true, userId);
         }
     }
 
-    public void stopDataCollection(String userId) {
+    public void stopDataCollection() {
         if (handler != null) {
             sensorManager.stopSensors();
             handler.removeCallbacks(sendDataRunnable);
-
-            sensorCollectionStateManager.setRecordingState(false, userId);
         }
-    }
-
-    public void clearManagers(String userId) {
-        // todo: need to fix the recording state
-        sensorCollectionStateManager.clearState(userId);
-        stopDataCollection(userId);
-
-        LOGGER.info("finish clearing sensor related managers");
     }
 
     private void sendPostRequest(JSONArray sensorData) {
@@ -110,8 +66,6 @@ public class SensorNetworkSource {
                 .build().toString();
         String sessionId = UUID.randomUUID().toString();
         int messageId = generateMessageId();
-
-        String deviceId = sensorCollectionStateManager.getSensorCollectionState().getDeviceId();
 
         // Create a JSONObject to structure the data according to the required format
         JSONObject postData = new JSONObject();
@@ -151,11 +105,8 @@ public class SensorNetworkSource {
         return new Random().nextInt(1000);
     }
 
-    public void setHandler(Handler handler) {
+    public void initForService(Handler handler, String deviceId) {
         this.handler = handler;
-    }
-
-    public Boolean getSensorRecordingState() {
-        return sensorCollectionStateManager.getSensorCollectionState().getRecordingState();
+        this.deviceId = deviceId;
     }
 }

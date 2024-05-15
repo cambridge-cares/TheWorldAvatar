@@ -3,39 +3,41 @@ package uk.ac.cam.cares.jps.sensor;
 import android.content.Context;
 import android.content.Intent;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
 import org.apache.log4j.Logger;
 
+import uk.ac.cam.cares.jps.login.AccountException;
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.login.RepositoryCallback;
 import uk.ac.cam.cares.jps.login.User;
 
 public class SensorRepository {
-    SensorNetworkSource sensorNetworkSource;
+    SensorCollectionStateManager sensorCollectionStateManager;
+    UserPhoneNetworkSource userPhoneNetworkSource;
     LoginRepository loginRepository;
     Logger LOGGER = Logger.getLogger(SensorRepository.class);
     Intent serviceIntent;
     Context context;
 
     public SensorRepository(Context applicationContext,
-                            SensorNetworkSource sensorNetworkSource,
+                            SensorCollectionStateManager sensorCollectionStateManager,
+                            UserPhoneNetworkSource userPhoneNetworkSource,
                             LoginRepository loginRepository) {
         this.context = applicationContext;
-        this.sensorNetworkSource = sensorNetworkSource;
+        this.sensorCollectionStateManager = sensorCollectionStateManager;
+        this.userPhoneNetworkSource = userPhoneNetworkSource;
         this.loginRepository = loginRepository;
 
         serviceIntent = new Intent(context, SensorService.class);
     }
 
-    public void registerAppToUser() {
+    private void checkOrInitSensorCollectionStateManagerWithLoginInfo() {
+        if (sensorCollectionStateManager.getSensorCollectionState() != null) {
+            return;
+        }
         loginRepository.getUserInfo(new RepositoryCallback<>() {
             @Override
             public void onSuccess(User result) {
-                sensorNetworkSource.registerAppToUser(result.getId(), volleyError -> {
-                    // todo
-                });
+                sensorCollectionStateManager.initSensorCollectionState(result.getId());
             }
 
             @Override
@@ -43,35 +45,38 @@ public class SensorRepository {
                 // todo
             }
         });
+
     }
 
-    public void startRecording() {
+    public void registerAppToUser() throws AccountException {
+        checkOrInitSensorCollectionStateManagerWithLoginInfo();
+        userPhoneNetworkSource.registerAppToUser(sensorCollectionStateManager.getUserId(), sensorCollectionStateManager.getDeviceId(),
+                volleyError -> {
+                    // todo
+                });
+    }
+
+    public void startRecording() throws AccountException {
         LOGGER.info("start recording");
-        loginRepository.getUserInfo(new RepositoryCallback<>() {
-            @Override
-            public void onSuccess(User result) {
-                serviceIntent.putExtra("userId", result.getId());
-                context.startService(serviceIntent);
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                // todo
-            }
-        });
-
+        checkOrInitSensorCollectionStateManagerWithLoginInfo();
+        serviceIntent.putExtra("deviceId", sensorCollectionStateManager.getDeviceId());
+        context.startService(serviceIntent);
+        sensorCollectionStateManager.setRecordingState(true);
     }
 
     public void stopRecording() {
         LOGGER.info("stop recording");
         context.stopService(serviceIntent);
+        sensorCollectionStateManager.setRecordingState(false);
     }
 
     public void clearManagers(String userId) {
-        sensorNetworkSource.clearManagers(userId);
+        stopRecording();
+        sensorCollectionStateManager.clearState(userId);
     }
 
-    public boolean getRecordingState() {
-        return sensorNetworkSource.getSensorRecordingState();
+    public boolean getRecordingState() throws AccountException {
+        checkOrInitSensorCollectionStateManagerWithLoginInfo();
+        return sensorCollectionStateManager.getRecordingState();
     }
 }

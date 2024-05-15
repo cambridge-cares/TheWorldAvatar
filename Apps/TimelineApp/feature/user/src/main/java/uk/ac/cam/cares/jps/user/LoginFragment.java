@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.databinding.FragmentLoginBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.LoginViewModel;
+import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
 @AndroidEntryPoint
 public class LoginFragment extends Fragment {
@@ -40,6 +41,7 @@ public class LoginFragment extends Fragment {
 
     private FragmentLoginBinding binding;
     private LoginViewModel viewModel;
+    private SensorViewModel sensorViewModel;
 
     private ActivityResultLauncher<Intent> authorizationLauncher;
 
@@ -82,6 +84,9 @@ public class LoginFragment extends Fragment {
         viewModel.getHasLogin().observe(getViewLifecycleOwner(), hasLogin -> {
             hideLoading();
             if (hasLogin) {
+                initSensorViewModel();
+                sensorViewModel.registerPhoneToUser();
+
                 NavDeepLinkRequest request = NavDeepLinkRequest.Builder
                         .fromUri(Uri.parse(getString(uk.ac.cam.cares.jps.utils.R.string.timeline_fragment_link)))
                         .build();
@@ -110,6 +115,18 @@ public class LoginFragment extends Fragment {
 
         viewModel.initAuth();
         return binding.getRoot();
+    }
+
+    private void initSensorViewModel() {
+        // SensorViewModel can only be init after login
+        sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
+
+        sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasAccountError -> {
+            NavDeepLinkRequest request = NavDeepLinkRequest.Builder
+                    .fromUri(Uri.parse(requireContext().getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
+                    .build();
+            NavHostFragment.findNavController(this).navigate(request);
+        });
     }
 
     @Override
