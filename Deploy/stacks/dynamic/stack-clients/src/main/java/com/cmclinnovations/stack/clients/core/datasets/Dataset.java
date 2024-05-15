@@ -46,9 +46,6 @@ public class Dataset {
 
     private static final String NAME_DEPRECATION_NOTICE = "Specification of '{}' name is deprecated, in the future the name of the dataset will be used, i.e. '{}' instead of '{}'";
 
-    static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
-    static final String DEFAULT_BASE_IRI = "https://www.theworldavatar.com/kg/";
-
     public static final String NAME_KEY = "name";
 
     @JsonProperty(value = NAME_KEY)
@@ -167,7 +164,7 @@ public class Dataset {
     }
 
     public String baseIRI() {
-        return baseIRI.orElse(DEFAULT_BASE_IRI);
+        return baseIRI.orElse(SparqlConstants.DEFAULT_BASE_IRI);
     }
 
     public Iri getRdfType() {
@@ -208,7 +205,7 @@ public class Dataset {
 
         Iri catalogIri;
         if (!exists) {
-            iri = SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID();
+            iri = SparqlConstants.DEFAULT_BASE_IRI + UUID.randomUUID();
             catalogIri = Rdf.iri(iri);
 
             insertTriples.add(catalogIri.isA(getRdfType())
@@ -220,7 +217,7 @@ public class Dataset {
             // blazegraph triples
             if (getDataSubsets().stream().anyMatch(DataSubset::usesBlazegraph)) {
                 String kgUrl = BlazegraphClient.getInstance().getEndpoint().getUrl(getNamespace());
-                Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+                Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_BASE_IRI + UUID.randomUUID());
                 insertTriples.add(blazegraphService.isA(SparqlConstants.BLAZEGRAPH)
                         .andHas(DCTERMS.TITLE, getNamespace())
                         .andHas(DCTERMS.IDENTIFIER, blazegraphService)
@@ -234,7 +231,7 @@ public class Dataset {
                 String jdbcUrl = PostGISClient.getInstance().getEndpoint().getJdbcURL(getDatabase());
 
                 // append triples
-                Iri postgisService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+                Iri postgisService = Rdf.iri(SparqlConstants.DEFAULT_BASE_IRI + UUID.randomUUID());
                 insertTriples.add(postgisService.isA(SparqlConstants.POSTGIS)
                         .andHas(DCTERMS.TITLE, getDatabase())
                         .andHas(DCTERMS.IDENTIFIER, postgisService)
@@ -246,7 +243,7 @@ public class Dataset {
 
             // implementation not complete until we figure out the external URLs
             if (getDataSubsets().stream().anyMatch(DataSubset::usesGeoServer)) {
-                Iri geoserverService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+                Iri geoserverService = Rdf.iri(SparqlConstants.DEFAULT_BASE_IRI + UUID.randomUUID());
 
                 // append triples
                 insertTriples.add(geoserverService.isA(SparqlConstants.GEOSERVER)
@@ -259,7 +256,7 @@ public class Dataset {
             }
 
             if (newOntopEndpoint != null) {
-                Iri ontopService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+                Iri ontopService = Rdf.iri(SparqlConstants.DEFAULT_BASE_IRI + UUID.randomUUID());
 
                 insertTriples.add(ontopService.isA(SparqlConstants.ONTOP)
                         .andHas(DCTERMS.TITLE, getDatabase())
@@ -286,7 +283,7 @@ public class Dataset {
 
         getDataSubsets().stream().forEach(dataSubset -> {
             if (!dataSubset.getExists()) {
-                Iri dataSetIri = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+                Iri dataSetIri = Rdf.iri(SparqlConstants.DEFAULT_BASE_IRI + UUID.randomUUID());
                 insertTriples.add(catalogIri.has(DCAT.HAS_DATASET, dataSetIri));
                 insertTriples.add(dataSetIri.isA(DCAT.DATASET)
                         .andHas(DCTERMS.ISSUED, currentTime)
@@ -372,10 +369,10 @@ public class Dataset {
     }
 
     private static class SparqlConstants {
-        static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
-        static final Iri BLAZEGRAPH = Rdf.iri(DEFAULT_NAMESPACE + "Blazegraph");
-        static final Iri POSTGIS = Rdf.iri(DEFAULT_NAMESPACE + "PostGIS");
-        static final Iri GEOSERVER = Rdf.iri(DEFAULT_NAMESPACE + "GeoServer");
-        static final Iri ONTOP = Rdf.iri(DEFAULT_NAMESPACE + "Ontop");
+        static final String DEFAULT_BASE_IRI = "https://theworldavatar.io/kg/";
+        static final Iri BLAZEGRAPH = Rdf.iri(DEFAULT_BASE_IRI + "Blazegraph");
+        static final Iri POSTGIS = Rdf.iri(DEFAULT_BASE_IRI + "PostGIS");
+        static final Iri GEOSERVER = Rdf.iri(DEFAULT_BASE_IRI + "GeoServer");
+        static final Iri ONTOP = Rdf.iri(DEFAULT_BASE_IRI + "Ontop");
     }
 }
