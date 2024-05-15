@@ -3,7 +3,7 @@ package com.cmclinnovations.stack.clients.utils;
 import javax.annotation.Nonnull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class JsonHelper {
 
@@ -12,8 +12,6 @@ public class JsonHelper {
 
     @Nonnull
     public static final ObjectMapper getMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new Jdk8Module());
-        return mapper;
+        return JsonMapper.builder().findAndAddModules().build();
     }
 }
