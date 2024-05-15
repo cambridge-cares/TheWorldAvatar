@@ -84,8 +84,8 @@ public class IntegrateFloors {
                 String osmStreet = osmBuildings.get(i).getStreet();
                 String osmUnit = osmBuildings.get(i).getUnit();
                 Document preDocument = new Document.Builder(buildingiri)
-                .addElement(new Element.Builder<String>().setValue(osmUnit).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
-                            .addElement(new Element.Builder<String>().setValue(osmStreet).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
+                .addElement(new Element.Builder<String>().setValue(osmUnit).setType(ElementType.ADDRESS).setWeight(0.6).createElement())
+                            .addElement(new Element.Builder<String>().setValue(osmStreet).setType(ElementType.ADDRESS).setWeight(0.4).createElement())
                             .createDocument();
                 preDoc.add(preDocument);
             }
@@ -99,7 +99,7 @@ public class IntegrateFloors {
 
                 //fuzzy match
                 for (int i = 0; i < hdbFloors.size(); i++){
-                    double polyScore = 0.0;
+                    
                     double pointScore = 0.0;
                     String blk =  hdbFloors.get(i).getBLK();
                     String address = hdbFloors.get(i).getStreet();
