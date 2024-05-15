@@ -154,18 +154,20 @@ public class IntegrateFloors {
                     floors = floorsResults.getInt("storeys_above_ground");
                     catString = floorsResults.getString("storeys_above_ground_cat");
                     String buildingIri = floorsResults.getString("strval");
-                    if (floors == 0 || catString.equals("C") || catString == null){// get osm floor
-                        floors = queryOSMFloor(buildingIri);
-                        if (floors > 0){
-                            catString = "B";
-                        }else {//estimate
-                            catString = "C";
-                            floors = estimateFloors(buildingIri);
+                    if(!catString.equals(("A")) && floors > 0){
+                        if (floors == 0 || catString.equals("C") || catString == null){// get osm floor
+                            floors = queryOSMFloor(buildingIri);
+                            if (floors > 0){
+                                catString = "B";
+                            }else {//estimate
+                                catString = "C";
+                                floors = estimateFloors(buildingIri);
+                            }
                         }
-                    }
-                    if (floors > 0) {
-                        updateFloors(floors, catString, buildingIri);
-                    }
+                        if (floors > 0 ) {
+                            updateFloors(floors, catString, buildingIri);
+                        }
+                    }                  
                     
                 }
                 
