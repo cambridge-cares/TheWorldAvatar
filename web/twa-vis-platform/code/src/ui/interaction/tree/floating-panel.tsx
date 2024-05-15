@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Map } from 'mapbox-gl';
 
 import { getIndex, setIndex } from 'state/floating-panel-slice';
-import { getQueryTrigger, getIri, getStack, getScenario, setQueryTrigger, getProperties } from 'state/map-feature-slice';
+import { getQueryTrigger, getIri, getStack, getScenario, setQueryTrigger, getProperties, getFeatures, MapFeaturePayload } from 'state/map-feature-slice';
 import { useGetMetadataQuery } from 'utils/server-utils';
 import { DataStore } from 'io/data/data-store';
 import { MapLayerGroup } from 'types/map-layer';
@@ -52,6 +52,7 @@ export default function FloatingPanelContainer(
   const selectedStack = useSelector(getStack);
   const selectedScenario = useSelector(getScenario);
   const trigger = useSelector(getQueryTrigger);
+  const availableFeatures: MapFeaturePayload[] = useSelector(getFeatures);
 
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
@@ -63,10 +64,13 @@ export default function FloatingPanelContainer(
   useEffect(() => {
     if (isFetching) {
       // WIP: Add required functionality while data is still being fetched
-    } else if (error) {
-      console.info("Unable to fetch data. Displaying built-in data...");
-      // Note that IRI will not be displayed
-      if (selectedProperties) {
+    } else {
+      // If there is any data retrieved, set that first
+      if (data && Object.keys(data).length !== 0) {
+        setQueriedData(data);
+        dispatch(setQueryTrigger(false));
+      } else if (selectedProperties) {
+      // Else default to built in data that excludes IRI
         const builtInData = {
           meta: {
             Properties: Object.fromEntries(
@@ -76,12 +80,6 @@ export default function FloatingPanelContainer(
           }
         }
         setQueriedData(builtInData);
-        dispatch(setQueryTrigger(false));
-      }
-    } else {
-      if (data) {
-        setQueriedData(data);
-        dispatch(setQueryTrigger(false));
       }
     }
   }, [isFetching]);
@@ -179,6 +177,7 @@ export default function FloatingPanelContainer(
                 index: activeInfoTab,
                 setActiveTab: setActiveInfoTab,
               }}
+              features={availableFeatures}
             />}
         </div>
       )}

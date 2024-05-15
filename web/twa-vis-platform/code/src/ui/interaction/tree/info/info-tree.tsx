@@ -1,16 +1,19 @@
 import styles from './info-tree.module.css';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { Attribute, AttributeGroup } from 'types/attribute';
 import { TimeSeriesGroup } from 'types/timeseries';
 import { JsonObject } from "types/json";
 import InfoTreeNode from './info-tree-node';
 import InfoTabs from './info-tabs';
+import { MapFeaturePayload } from 'state/map-feature-slice';
 import Chart from 'ui/graphic/chart/chart';
 import Table from 'ui/graphic/table/table';
 import DropdownField, { DropdownFieldOption } from 'ui/interaction/dropdown/dropdown';
-import { parseTimeSeries } from 'utils/client-utils';
+import FeatureSelector from 'ui/interaction//dropdown/feature-selector';
+import { parseTimeSeries, setSelectedFeature } from 'utils/client-utils';
 
 const rootKey: string = "meta";
 const displayOrderKey: string = "display_order";
@@ -24,7 +27,8 @@ interface InfoTreeProps {
   activeTab: {
     index: number;
     setActiveTab: React.Dispatch<React.SetStateAction<number>>;
-  }
+  };
+  features: MapFeaturePayload[];
 }
 
 /**
@@ -36,6 +40,7 @@ interface InfoTreeProps {
  * @param {boolean} isFetching An indicator if the query is still running.
  */
 export default function InfoTree(props: Readonly<InfoTreeProps>) {
+  const dispatch = useDispatch();
   const timeSeries: React.MutableRefObject<TimeSeriesGroup> = useRef(null);
   const options: React.MutableRefObject<DropdownFieldOption[]> = useRef([]);
   const [selectedTimeSeriesOption, setSelectedTimeSeriesOption] = useState(0);
@@ -50,12 +55,45 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
       });
     }
   };
+
   // Transform time series whenever the info tree is rendered and the data changes
   consumeTimeSeries(props.data); // Required whenever the component is rerendered
   useEffect(() => {
     consumeTimeSeries(props.data);
     setSelectedTimeSeriesOption(0);
   }, [props.data]);
+
+  // A function that renders the required contents for this panel
+  const renderPanelContents: () => React.ReactElement = () => {
+    // Render loading spinner if it is still fetching data
+    if (props.isFetching) {
+      return <div className={styles.spinner}></div>;
+    }
+
+    // If there are multiple features clicked, activate feature selector to choose only one
+    if (props.features.length > 1) {
+      return <FeatureSelector features={props.features} />;
+    } else if (props.features.length === 1) {
+      // When only feature is available, set its properties
+      setSelectedFeature(props.features[0], dispatch);
+    }
+    // If active tab is 0, render the Metadata Tree
+    if (props.data?.meta && props.activeTab.index === 0) {
+      return <InfoTreeNode attribute={recurseParseAttributeGroup(props.data, rootKey)} />;
+    }
+
+    if (props.data?.time && props.activeTab.index > 0) {
+      return (
+        <>
+          <DropdownField options={options.current} selectedIndex={selectedTimeSeriesOption} setSelectedIndex={setSelectedTimeSeriesOption} />
+          <Chart data={timeSeries.current} selectedIndex={selectedTimeSeriesOption} />
+          <Table group={timeSeries.current} selectedIndex={selectedTimeSeriesOption} />
+        </>
+      );
+    }
+    // Placeholder text when there are no initial data or selected feature
+    return <p>Click to fetch feature information.</p>;
+  }
 
   return (
     <div className={styles.infoPanelContainer}>
@@ -72,19 +110,7 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
             />)}
       </div>
       <div className={styles.infoSection}>
-        {props.isFetching ? (
-          <div className={styles.spinner}></div>
-        ) : props.data ?
-          // If active tab is 0, render the Metadata Tree
-          props.activeTab.index === 0 ? <InfoTreeNode attribute={recurseParseAttributeGroup(props.data, rootKey)} /> :
-            // If active tab is not 0 ie 1, render the time series panel
-            <>
-              <DropdownField options={options.current} selectedIndex={selectedTimeSeriesOption} setSelectedIndex={setSelectedTimeSeriesOption} />
-              <Chart data={timeSeries.current} selectedIndex={selectedTimeSeriesOption} />
-              <Table group={timeSeries.current} selectedIndex={selectedTimeSeriesOption} />
-            </>
-          : (<p>Click to fetch feature information.</p>)
-        }
+        {renderPanelContents()}
       </div>
     </div>
   );

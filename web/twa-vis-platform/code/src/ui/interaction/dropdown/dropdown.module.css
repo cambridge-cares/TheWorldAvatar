@@ -40,6 +40,7 @@
   font-size: var(--font-size-tertiary-text);
 }
 
+.simple-selector optgroup,
 .simple-selector option {
   font-size: var(--font-size-tertiary-text);
 }

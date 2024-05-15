@@ -146,7 +146,7 @@ function InfoTreeAttributeNode(props: Readonly<InfoTreeAttributeNodeProps>) {
       <p className={styles.treeAttributeEntry} style={{ paddingLeft: spacing }} key={attribute.name + "_" + props.depth}>
         {/* Attribute: Value */}
         <span className={styles.treeAttributeKey}>{attribute.name}:&nbsp;</span>
-        {attribute.value.startsWith("<") ?
+        {typeof attribute.value === "string" && attribute.value.startsWith("<") ?
           (<div dangerouslySetInnerHTML={{ __html: attribute.value }} />) :
           (<span className={styles.treeAttributeValue}>
             {attribute.value}&nbsp;{attribute.unit}
