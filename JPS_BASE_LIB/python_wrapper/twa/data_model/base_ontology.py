@@ -368,6 +368,10 @@ class BaseProperty(BaseModel, validate_assignment=True):
         except TypeError:
             return False
 
+    def reassign_range(self, new_value):
+        """ This function reassigns range of the object/data properties to new values. """
+        setattr(self, 'range', new_value)
+
     def collect_range_diff_to_graph(
         self,
         subject: str,
@@ -532,7 +536,6 @@ class BaseClass(BaseModel, validate_assignment=True):
     rdfs_label: str = Field(default=None)
     rdf_type: str = Field(default=None)
     instance_iri: str = Field(default=None)
-    _timestamp_of_latest_cache: float = PrivateAttr(default_factory=time.time)
     # format of the cache for all properties: {property_name: property_object}
     _latest_cache: Dict[str, Any] = PrivateAttr(default_factory=dict)
     _exist_in_kg: bool = PrivateAttr(default=False)
@@ -733,20 +736,21 @@ class BaseClass(BaseModel, validate_assignment=True):
             ops = target_clz.get_object_properties()
             dps = target_clz.get_data_properties()
             # handle object properties (where the recursion happens)
-            # TODO need to consider what to do when two instances pointing to each other
+            # TODO need to consider what to do when two instances pointing to each other, or if there's circular nodes
+            # here object_properties_dict is a fetch of the remote KG
             object_properties_dict = {
                 op_dct['field']: op_dct['type'](
                     range=set() if op_iri not in props else op_dct['type'].reveal_object_property_range(
                         ).pull_from_kg(props[op_iri], sparql_client, recursive_depth) if flag_pull else props[op_iri]
                 ) for op_iri, op_dct in ops.items()
             }
-            # here we handle data properties
+            # here we handle data properties (data_properties_dict is a fetch of the remote KG)
             data_properties_dict = {
                 dp_dct['field']: dp_dct['type'](
                     range=props[dp_iri] if dp_iri in props else set()
                 ) for dp_iri, dp_dct in dps.items()
             }
-            # handle rdfs:label and rdfs:comment
+            # handle rdfs:label and rdfs:comment (also fetch of the remote KG)
             rdfs_properties_dict = {}
             if RDFS.label.toPython() in props:
                 if len(props[RDFS.label.toPython()]) > 1:
@@ -758,17 +762,25 @@ class BaseClass(BaseModel, validate_assignment=True):
                 rdfs_properties_dict['rdfs_comment'] = list(props[RDFS.comment.toPython()])[0]
             # instantiate the object
             if inst is not None:
-                # consider those objects that are connected in the KG and are connected in python
-                # TODO below query can be combined with those connected in the KG to save amount of queries
                 for op_iri, op_dct in ops.items():
                     if flag_pull:
+                        # below lines pull those object properties that are NOT connected in the remote KG,
+                        # but are connected in the local python memory
+                        # e.g. object `a` has a field `to_b` that points to object `b`
+                        # but triple <a> <to_b> <b> does not exist in the KG
+                        # this code then ensures the cache of object `b` is accurate
+                        # TODO [future] below query can be combined with those connected in the KG to save amount of queries
                         op_dct['type'].reveal_object_property_range().pull_from_kg(
                             set(inst.get_object_property_range_iris(op_dct['field'])) - set(props.get(op_iri, [])),
                             sparql_client, recursive_depth)
-                inst._latest_cache = {k: v.create_cache() for k, v in {**object_properties_dict, **data_properties_dict}.items()}
-                inst._latest_cache.update(rdfs_properties_dict)
-                inst._timestamp_of_latest_cache = time.time()
+                # now collect all featched values
+                fetched = {k: v.create_cache() for k, v in {**object_properties_dict, **data_properties_dict}.items()}
+                fetched.update(rdfs_properties_dict)
+                # compare it with cached values and local values for all object/data/rdfs properties
+                # if the object is already in the lookup, then update the object for those fields that are not modified in the python
+                inst.update_according_to_fetch(fetched, flag_pull)
             else:
+                # if the object is not in the lookup, create a new object
                 inst = target_clz(
                     instance_iri=iri,
                     **rdfs_properties_dict,
@@ -776,7 +788,6 @@ class BaseClass(BaseModel, validate_assignment=True):
                     **data_properties_dict,
                 )
                 inst.create_cache()
-                inst._timestamp_of_latest_cache = time.time()
 
             inst._exist_in_kg = True
             # update cache here
@@ -883,9 +894,71 @@ class BaseClass(BaseModel, validate_assignment=True):
 
     def create_cache(self):
         """ This function creates a cache of the instance of the calling class. """
+        # note here we create deepcopy for all fields so there won't be issue caused by referencing the same memory address
         self._latest_cache = {f: getattr(self, f).create_cache()
-                              if BaseProperty.is_inherited(field_info.annotation) else getattr(self, f)
+                              if BaseProperty.is_inherited(field_info.annotation) else copy.deepcopy(getattr(self, f))
                               for f, field_info in self.model_fields.items()}
+
+    def update_according_to_fetch(self, fetched: dict, flag_connect_object: bool):
+        """
+        This function compares the fetched values with the cached values and local values.
+        It updates the cache and local values depend on the comparison results.
+        NOTE that this function should not be called by users.
+
+        Args:
+            fetched (dict): The dictionary containing the fetched values
+            flag_connect_object (bool): The boolean flag to indicate whether to use python objects
+                in memory or string IRIs when reconnecting the range of object properties
+        """
+        for p_iri, p_dct in self.__class__.get_object_and_data_properties().items():
+            fetched_value = fetched.get(p_dct['field']).range if p_dct['field'] in fetched else set()
+            cached_value = self._latest_cache.get(p_dct['field']).range if p_dct['field'] in self._latest_cache else set()
+            local_value = getattr(self, p_dct['field']).range
+            # below code compare the three values, the expected behaviour elaborated:
+            # if fetched == cached --> no remote changes, update cache, no need to worry about local changes
+            # if fetched != cached --> remote changed, now should check if local has changed:
+            #     if local == cached --> no local changes, can update both cache and local values with fetched value
+            #     if local != cached --> there are local changed, now should check if the local changes are the same as remote (unlikely tho)
+            #         if local != fetched --> raise exception
+            #         if local == fetched --> (which is really unlikely) update cache only
+            # in practice, the above logic can be simplified:
+            if fetched_value != cached_value:
+                if local_value == cached_value:
+                    # no local changes, therefore update both cached (delayed later) and local values to the fetched value
+                    getattr(self, p_dct['field']).reassign_range(copy.deepcopy(fetched_value))
+                else:
+                    # there are both local and remote changes, now compare these two
+                    if local_value != fetched_value:
+                        raise Exception(f"""The remote changes in knowledge graph conflicts with local changes
+                            for {self.instance_iri} {p_iri}:
+                            Objects appear in the remote but not in the local: {fetched_value}
+                            Triples appear in the local but not the remote: {local_value}""")
+            # the cache can be updated regardless as long as there are no exceptions
+            self._latest_cache.get(p_dct['field']).reassign_range(copy.deepcopy(fetched_value))
+
+            # when pulling the same objects again but with different recursive_depth
+            # below ensures python objects in memory / the IRIs are used correctly for range of object properties
+            if ObjectProperty.is_inherited(p_dct['type']):
+                _local_value_set = getattr(self, p_dct['field']).range
+                if flag_connect_object and isinstance(next(iter(_local_value_set)), str):
+                    getattr(self, p_dct['field']).reassign_range(set([KnowledgeGraph.get_object_from_lookup(o) for o in _local_value_set]))
+                if not flag_connect_object and isinstance(next(iter(_local_value_set)), BaseClass):
+                    getattr(self, p_dct['field']).reassign_range(set([o.instance_iri for o in _local_value_set]))
+
+        # compare rdfs_comment and rdfs_label
+        for r in ['rdfs_comment', 'rdfs_label']:
+            fetched_value = fetched.get(r, None)
+            cached_value = self._latest_cache.get(r, None)
+            local_value = getattr(self, r)
+            # apply the same logic as above
+            if fetched_value != cached_value:
+                if local_value == cached_value:
+                    setattr(self, r, copy.deepcopy(fetched_value))
+                else:
+                    if local_value != fetched_value:
+                        raise Exception(f"""The remote changes of {r} in knowledge graph conflicts with local changes.
+                            Remote: {fetched_value}.\nLocal : {local_value}""")
+            self._latest_cache[r] = copy.deepcopy(fetched_value)
 
     def get_object_property_by_iri(self, iri: str) -> ObjectProperty:
         """
