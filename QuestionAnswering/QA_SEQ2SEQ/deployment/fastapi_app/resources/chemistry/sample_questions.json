@@ -26,7 +26,8 @@
             "What are reactions in which O2 is a reactant and OH is a product",
             "What are the rate constant parameters of reactions that consume H2?",
             "Please compare the kinetic models of the reaction H2 + OH = H2O + H across all the mechanisms it appears in",
-            "Compare thermodynamic models of O2 across all the mechanisms in which it appears"
+            "Compare thermodynamic models of O2 across all the mechanisms in which it appears",
+            "Compare thermodynamic models of species classified as organic radical across all the mechanisms in which it appears"
         ]
     },
     {
