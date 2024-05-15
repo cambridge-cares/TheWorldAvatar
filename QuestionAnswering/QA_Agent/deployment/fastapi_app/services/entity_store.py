@@ -149,7 +149,7 @@ class EntityStore:
         inverse_label_query = Query(
             '@label:"{label}"'.format(
                 label=regex.escape(
-                    surface_form, special_only=False, literal_spaces=True
+                    surface_form, special_only=False
                 )
             )
         ).return_field("$.iri", as_field="iri")
@@ -239,7 +239,10 @@ class EntityStore:
         return iris[:k]
 
     def link(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
+        logger.info(f"Performing entity linking for surface form `{surface_form}` of class `{clsname}`.")
+
         strategy = self.clsname2strategy.get(clsname, "fuzzy") if clsname else "fuzzy"
+        logger.info("Linking strategy: " + strategy)
 
         if strategy == "fuzzy":
             return self.link_fuzzy(surface_form, clsname, k)
