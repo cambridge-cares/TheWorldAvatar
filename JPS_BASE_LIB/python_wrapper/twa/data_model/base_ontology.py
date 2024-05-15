@@ -899,6 +899,14 @@ class BaseClass(BaseModel, validate_assignment=True):
                               if BaseProperty.is_inherited(field_info.annotation) else copy.deepcopy(getattr(self, f))
                               for f, field_info in self.model_fields.items()}
 
+    def revert_local_changes(self):
+        """ This function reverts the local changes made to the python object to cached values. """
+        for f, field_info in self.model_fields.items():
+            if BaseProperty.is_inherited(field_info.annotation):
+                setattr(self, f, copy.deepcopy(self._latest_cache.get(f, field_info.annotation(range=set()))))
+            else:
+                setattr(self, f, copy.deepcopy(self._latest_cache.get(f, None)))
+
     def update_according_to_fetch(self, fetched: dict, flag_connect_object: bool):
         """
         This function compares the fetched values with the cached values and local values.
