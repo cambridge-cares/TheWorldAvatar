@@ -1006,6 +1006,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         sparql_client: PySparqlClient,
         recursive_depth: int = 0,
         pull_first: bool = False,
+        maximum_retry: int = 0,
     ) -> Tuple[Graph, Graph]:
         """
         This function pushes the triples of the calling object to the knowledge graph (triplestore).
@@ -1014,10 +1015,15 @@ class BaseClass(BaseModel, validate_assignment=True):
             sparql_client (PySparqlClient): The SPARQL client object to be used to push the triples
             recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
             pull_first (bool): Whether to pull the latest triples from the KG before pushing the triples
+            maximum_retry (int): The number of retries if any exception was raised during SPARQL update
 
         Returns:
             Tuple[Graph, Graph]: A tuple of two rdflib.Graph objects containing the triples to be removed and added
         """
+        # TODO [future] what happens when KG changed during processing in the python side? race conditions...
+        # NOTE when push, the objects in memory are loaded to collect diff and only stops when it's string (i.e. no object cached)
+        # this supports the situation where recursive_depth specified here is greater than the value used to pull the object
+
         # pull the latest triples from the KG if needed
         if pull_first:
             self.__class__.pull_from_kg(self.instance_iri, sparql_client, recursive_depth)
@@ -1025,9 +1031,20 @@ class BaseClass(BaseModel, validate_assignment=True):
         g_to_remove = Graph()
         g_to_add = Graph()
         g_to_remove, g_to_add = self.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
-        # TODO [future] what happens when KG changed during processing in the python side? race conditions...
-        sparql_client.delete_and_insert_graphs(g_to_remove, g_to_add)
-        return g_to_remove, g_to_add
+
+        # retry push if any exception is raised
+        retry_delay = 2
+        for attempt in range(0, maximum_retry +1):
+            try:
+                sparql_client.delete_and_insert_graphs(g_to_remove, g_to_add)
+                # if no exception was thrown, update cache
+                self.create_cache()
+                return g_to_remove, g_to_add
+            except Exception as e:
+                if attempt < maximum_retry:
+                    time.sleep(retry_delay)
+                else:
+                    raise e
 
     def collect_diff_to_graph(self, g_to_remove: Graph, g_to_add: Graph, recursive_depth: int = 0) -> Tuple[Graph, Graph]:
         """
