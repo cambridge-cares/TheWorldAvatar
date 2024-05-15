@@ -97,8 +97,7 @@ public class SensorService extends Service {
 
         Notification notification =
                 new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                        .setContentTitle("Foreground Service")
-                        .setContentText("This is a foreground service notification")
+                        .setContentText(getString(R.string.sensors_are_running_for_data_collection))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setCategory(NotificationCompat.CATEGORY_SERVICE)
                         .setSmallIcon(uk.ac.cam.cares.jps.ui.R.drawable.twa_notification_icon)
