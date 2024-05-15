@@ -11,15 +11,22 @@ from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from datetime import datetime
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 def setup_clients():
     """Sets up and returns the KGClient and TSClient."""
-    Instant = jpsBaseLibView.java.time.Instant
-    instant_class = Instant.now().getClass()
-    double_class = jpsBaseLibView.java.lang.Double.TYPE
-    kg_client = KGClient(utils.SPARQL_QUERY_ENDPOINT, utils.SPARQL_UPDATE_ENDPOINT)
-    ts_client = TSClient(kg_client, timeclass=instant_class, rdb_url=utils.DB_URL, rdb_user=utils.DB_USER, rdb_password=utils.DB_PASSWORD)
-    return kg_client, ts_client, double_class
+    try:
+        Instant = jpsBaseLibView.java.time.Instant
+        instant_class = Instant.now().getClass()
+        double_class = jpsBaseLibView.java.lang.Double.TYPE
+        kg_client = KGClient(utils.SPARQL_QUERY_ENDPOINT, utils.SPARQL_UPDATE_ENDPOINT)
+        ts_client = TSClient(kg_client, timeclass=instant_class, rdb_url=utils.DB_URL, rdb_user=utils.DB_USER, rdb_password=utils.DB_PASSWORD)
+        return kg_client, ts_client, double_class
+    except Exception as e:
+        logging.error(f"Failed to setup clients: {e}")
+        raise
 
 def transform_datetime(date_str, time_str):
     """Transforms separate date and time strings into a single datetime string in ISO 8601 format."""
@@ -28,7 +35,7 @@ def transform_datetime(date_str, time_str):
         datetime_obj = datetime.strptime(combined_str, "%Y/%m/%d %H:%M:%S")
         return datetime_obj.strftime('%Y-%m-%dT%H:%M:%SZ')
     except Exception as e:
-        print(f"Error transforming datetime: {date_str}, {time_str} - {e}")
+        logging.error(f"Error transforming datetime: {date_str}, {time_str} - {e}")
         return None
 
 def process_gps_csv_file(csv_file):
@@ -38,7 +45,7 @@ def process_gps_csv_file(csv_file):
         df.columns = df.columns.str.strip()
         required_columns = ['UTC DATE', 'UTC TIME', 'SPEED', 'DISTANCE', 'HEIGHT']
         if not all(column in df.columns for column in required_columns) or df[required_columns].isnull().any().any():
-            print(f"Skipping {csv_file} due to missing or incomplete required columns.")
+            logging.warning(f"Skipping {csv_file} due to missing or incomplete required columns.")
             return None
         return {
             'object': os.path.basename(csv_file).replace('.csv', ''),
@@ -61,7 +68,7 @@ def process_gps_csv_file(csv_file):
             }
         }
     except Exception as e:
-        print(f"Failed to process file {csv_file}: {e}")
+        logging.error(f"Failed to process file {csv_file}: {e}")
         return None
 
 def instantiate_gps_data(gps_object, kg_client, ts_client, double_class):
@@ -87,11 +94,10 @@ def instantiate_gps_data(gps_object, kg_client, ts_client, double_class):
                          ex:unit "{unit}" . }}'''
             kg_client.performUpdate(query)
         ts_client.init_timeseries(dataIRI=dataIRIs, times=gps_object['times'], values=[gps_object['timeseries'][ts] for ts in gps_object['timeseries']], ts_type=[double_class] * len(dataIRIs), time_format=utils.FORMAT)
-        print(f"Data for {gps_object['object']} successfully instantiated.")
+        logging.info(f"Data for {gps_object['object']} successfully instantiated.")
     except Exception as e:
-        print(f"Error instantiating data for {gps_object['object']}: {e}")
+        logging.error(f"Error instantiating data for {gps_object['object']}: {e}")
 
-# Example usage within the script:
 if __name__ == '__main__':
     try:
         utils.create_postgres_db()
@@ -103,4 +109,4 @@ if __name__ == '__main__':
             if gps_object:
                 instantiate_gps_data(gps_object, kg_client, ts_client, double_class)
     except Exception as e:
-        print(f"Initialization failed: {e}")
+        logging.error(f"Initialization failed: {e}")
