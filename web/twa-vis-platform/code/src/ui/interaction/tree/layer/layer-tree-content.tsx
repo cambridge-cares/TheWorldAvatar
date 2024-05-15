@@ -157,11 +157,13 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
         </div>
 
         {groupings.length > 0 && (
-          <SimpleDropdownField
-            options={groupings}
-            handleChange={handleGroupingChange}
-          />)
-        }
+          <div className={styles["dropdown-container"]}>
+            <SimpleDropdownField
+              options={groupings}
+              handleChange={handleGroupingChange}
+            />
+          </div>
+        )}
       </div>
 
       {/* Conditionally show subgroups when expanded */}
