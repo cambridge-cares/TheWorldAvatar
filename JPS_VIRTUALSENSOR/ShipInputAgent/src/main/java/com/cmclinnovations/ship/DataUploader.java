@@ -29,7 +29,13 @@ public class DataUploader {
     private static final Logger LOGGER = LogManager.getLogger(DataUploader.class);
     private static final String JSON_EXT = ".json";
 
-    public static int uploadShips(List<Ship> ships, QueryClient queryClient, String source) throws IOException {
+    public enum ShipDataSource {
+        JSON,
+        RDB,
+        UNKNOWN;
+    }
+
+    public static int uploadShips(List<Ship> ships, QueryClient queryClient, ShipDataSource source) throws IOException {
         if (!queryClient.initialised()) {
             PostGISClient postGISClient = PostGISClient.getInstance();
             Path sqlFunctionFile = new ClassPathResource("function.sql").getFile().toPath();
@@ -60,7 +66,7 @@ public class DataUploader {
         queryClient.setMeasureIri(ships);
 
         switch (source) {
-            case "JSON":
+            case JSON:
 
                 LOGGER.info("Upload ship data from JSON.");
                 // add a row in RDB time series data, also updates derivation timestamps
@@ -68,7 +74,7 @@ public class DataUploader {
 
                 break;
 
-            case "RDB":
+            case RDB:
 
                 LOGGER.info("Upload ship data from relational database.");
                 if (EnvConfig.SKIP_UPDATE_RDB) {
@@ -81,7 +87,7 @@ public class DataUploader {
                 }
                 break;
 
-            default:
+            case UNKNOWN:
 
                 LOGGER.info("Unknown source of ship data.");
                 break;
@@ -171,7 +177,7 @@ public class DataUploader {
         JSONArray shipData = new JSONArray(tokener);
         List<Ship> ships = parseShip(shipData, timeOffset);
 
-        uploadShips(ships, queryClient, "JSON");
+        uploadShips(ships, queryClient, ShipDataSource.JSON);
 
         return ships;
     }
@@ -206,12 +212,12 @@ public class DataUploader {
                 "(SELECT \"geom\" FROM \"scopes\") AS polygon WHERE " + //
                 "ST_Contains(polygon.geom, points.geom)";
         JSONArray shipData = queryClient.getRemoteRDBStoreClient().executeQuery(sqlQuery);
-        LOGGER.info(String.format("Number of ships within scopes: %d",shipData.length()));
+        LOGGER.info(String.format("Number of ships within scopes: %d", shipData.length()));
         List<Ship> ships = parseShip(shipData, 0);
 
         // initialise both triples and time series if ship is new
 
-        return uploadShips(ships, queryClient, "RDB");
+        return uploadShips(ships, queryClient, ShipDataSource.RDB);
     }
 
     private DataUploader() {

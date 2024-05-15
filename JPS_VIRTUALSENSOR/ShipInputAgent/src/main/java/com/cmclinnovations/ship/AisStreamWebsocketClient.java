@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
+import com.cmclinnovations.ship.DataUploader.ShipDataSource;;
 
 public class AisStreamWebsocketClient extends WebSocketClient {
     private static final Logger LOGGER = LogManager.getLogger(AisStreamWebsocketClient.class);
@@ -137,7 +138,7 @@ public class AisStreamWebsocketClient extends WebSocketClient {
 
             thread = new Thread(() -> {
                 try {
-                    DataUploader.uploadShips(ships, queryClient, "JSON");
+                    DataUploader.uploadShips(ships, queryClient, ShipDataSource.JSON);
                 } catch (IOException e) {
                     LOGGER.warn("Error in uploading ship data");
                     LOGGER.warn(e.getMessage());
