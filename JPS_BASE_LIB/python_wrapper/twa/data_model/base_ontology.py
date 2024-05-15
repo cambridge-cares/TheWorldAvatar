@@ -333,7 +333,7 @@ class BaseProperty(BaseModel, validate_assignment=True):
     def get_predicate_iri(cls) -> str:
         """ Get the predicate IRI of the property. """
         return construct_rdf_type(
-            cls.is_defined_by_ontology.get_namespace_iri(), cls.__name__)
+            cls.is_defined_by_ontology.get_namespace_iri(), cls.__name__[:1].lower() + cls.__name__[1:])
 
     @classmethod
     def add_to_domain(cls, domain: BaseClass):
