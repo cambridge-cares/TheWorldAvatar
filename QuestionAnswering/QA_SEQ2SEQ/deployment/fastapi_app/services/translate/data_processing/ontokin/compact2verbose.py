@@ -133,7 +133,7 @@ class OKSparqlCompact2VerboseConverter:
                             subj="?Mechanism",
                             tails=[
                                 ("a", "okin:ReactionMechanism"),
-                                ("okin:hasProvenance/op:hasDOI", "?DOI"),
+                                ("okin:hasProvenance/(op:hasDOI|op:hasURL)", "?DOI"),
                             ],
                         )
                     )
@@ -612,6 +612,23 @@ class OKSparqlCompact2VerboseConverter:
 
         return select_vars, okin_patterns, []
 
+    def _try_convert_hasProvenanceDOI(self, pattern: GraphPattern):
+        """?Mechanism okin:hasProvenance/op:hasDOI "XXX" ."""
+        if not isinstance(pattern, TriplePattern) or len(pattern.tails) != 1:
+            return None
+
+        pred, obj = pattern.tails[0]
+        if pred != "okin:hasProvenance/op:hasDOI":
+            return None
+
+        okin_patterns = [
+            TriplePattern.from_triple(
+                pattern.subj, "okin:hasProvenance/(op:hasDOI|op:hasURL)", obj
+            )
+        ]
+
+        return [], okin_patterns, []
+
     def _sample_rxn_eqn(self, query: SparqlQuery):
         if "?ReactionEquation" not in query.select_clause.vars:
             return query
@@ -674,6 +691,7 @@ class OKSparqlCompact2VerboseConverter:
                 self._try_convert_species_hasthermomodel_triple,
                 self._try_convert_species_hastransportmodel_triple,
                 self._try_convert_rxn_haskineticmodel_triple,
+                self._try_convert_hasProvenanceDOI,
             ]:
                 optional = func(pattern)
                 if optional is not None:
