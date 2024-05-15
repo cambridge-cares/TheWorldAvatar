@@ -151,7 +151,7 @@ function parseAttribute(property: string, value: string, unit: string = ""): Att
   let parsedVal: string = value;
   let parsedUnit: string = unit;
   // For any RDF literals
-  if (value.startsWith("\"")) {
+  if (typeof value === "string" && value.startsWith("\"")) {
     // Extract the value pattern first from the RDF literal
     const valuePattern: RegExp = /"(\d+(?:\.\d+)?)".*/;
     let match: RegExpExecArray | null = valuePattern.exec(value);
