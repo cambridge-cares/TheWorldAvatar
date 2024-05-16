@@ -43,8 +43,7 @@ public class SensorCollectionStateManager {
             return;
         }
 
-//        String deviceId = UUID.randomUUID().toString();
-        String deviceId = "c2583bd2-456c-4812-9752-658c9dff74b0";
+        String deviceId = UUID.randomUUID().toString();
         boolean recordingState = false;
         // todo: check this sync block
         sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState));
