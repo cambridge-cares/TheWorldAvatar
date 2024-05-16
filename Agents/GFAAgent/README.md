@@ -7,6 +7,7 @@ This agent has been developed to compute the Gross Floor Area (GFA) and construc
 ### 1.1 Requirements
 1) The agent requires 3D building models based on the CityGML standard. These models must be uploaded through the [stack-data-uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#citydb-data).
 2) The agent requires number of floors data. Therefore, the Building Floor Agent should be run firstly.
+3) Construction cost standard unit price: The latest construction cost has been integrated as [cost.csv], which need to upload to postgresql by stack-data-uploader first.
 
 ## 2. GFA Agent
 The agent is designed for execution through a Docker container. Other deployment workflows are beyond the scope of this document. Follow the steps below to build and deploy the agent.

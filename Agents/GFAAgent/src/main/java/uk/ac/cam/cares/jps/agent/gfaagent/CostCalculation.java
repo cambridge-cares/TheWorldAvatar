@@ -33,17 +33,7 @@ public class CostCalculation {
     private RemoteRDBStoreClient postgisClient;
     private String ontopUrl;
 
-    // private BuildingInfo buildingInfo;
     private static final String MATCHING_PATH = "/resources/cost_ontobuiltenv.csv";
-
-    
-    // private static final String buildingTypeQuery = "SELECT pl.\"LU_DESC\", cb.id, mb.building_iri, cb.storeys_above_ground\n" + //
-    //             "FROM citydb.building cb, public.landplot pl, citydb.cityobject_genericattrib ccg, public.matched_buildings mb\r\n" + //
-    //             "WHERE cb.id = ccg.cityobject_id \r\n" + //
-    //             "AND ccg.attrname = 'uuid' \r\n" + //
-    //             "AND ccg.strval = mb.building_iri\r\n" + //
-    //             "AND mb.public_landplot_ogc_fid = pl.ogc_fid";
-
 
     public CostCalculation (String postgisDb, String postgisUser, String postgisPassword, String ontopUrl){
         this.dbUrl = postgisDb;
@@ -64,7 +54,7 @@ public class CostCalculation {
         List<BuildingInfo> buildings = queryBuildingUsage();
         try (Connection srcConn = postgisClient.getConnection()) {
             try (Statement stmt = srcConn.createStatement()) {
-                // ResultSet buildingType = stmt.executeQuery(buildingTypeQuery);
+
                 for (int i = 0; i < buildings.size(); i++) {
                     BuildingInfo building = buildings.get(i);
                     String buildingIri = building.getBuildingIri();
