@@ -23,7 +23,7 @@ public class UserPhoneNetworkSource {
         this.requestQueue = requestQueue;
     }
 
-    public void registerAppToUser(String userId, String deviceId, Response.ErrorListener errorListener) {
+    public void registerAppToUser(String userId, String deviceId, Response.Listener<Boolean> onSuccessListener, Response.ErrorListener errorListener) {
 
         try {
             JSONObject body = new JSONObject();
@@ -36,6 +36,7 @@ public class UserPhoneNetworkSource {
 
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, body, jsonObject -> {
                 LOGGER.info(String.format("Phone id %s is register to user %s", deviceId, userId));
+                onSuccessListener.onResponse(true);
             }, volleyError -> {
                 // todo: how to handle registration failed case?
                 LOGGER.error(volleyError.getMessage());

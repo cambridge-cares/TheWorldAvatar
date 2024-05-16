@@ -30,7 +30,8 @@ public class TrajectoryRepository {
                         volleyError -> {
                             if (volleyError.getMessage() != null &&
                                     volleyError.getMessage().equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user))) {
-                                callback.onFailure(new AccountException("User not register with phone"));
+                                callback.onFailure(new AccountException(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user)));
+                                return;
                             }
 
                             callback.onFailure(new Throwable("Failed to get trajectory"));

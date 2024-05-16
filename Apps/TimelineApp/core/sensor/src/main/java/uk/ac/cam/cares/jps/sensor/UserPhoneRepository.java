@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.sensor;
 
+import com.android.volley.Response;
+
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 public class UserPhoneRepository {
@@ -23,6 +25,7 @@ public class UserPhoneRepository {
                     public void onSuccess(String deviceId) {
                         userPhoneNetworkSource.registerAppToUser(userId,
                                 deviceId,
+                                (Response.Listener<Boolean>) aBoolean -> callback.onSuccess(true),
                                 callback::onFailure);
                     }
 

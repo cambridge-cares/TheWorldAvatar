@@ -25,7 +25,7 @@ public class UserPhoneViewModel extends ViewModel {
         userPhoneRepository.registerAppToUser(new RepositoryCallback<>() {
             @Override
             public void onSuccess(Boolean result) {
-                // do nothing
+                _hasAccountError.setValue(false);
             }
 
             @Override
@@ -33,5 +33,9 @@ public class UserPhoneViewModel extends ViewModel {
                 _hasAccountError.setValue(true);
             }
         });
+    }
+
+    public LiveData<Boolean> getHasAccountError() {
+        return hasAccountError;
     }
 }

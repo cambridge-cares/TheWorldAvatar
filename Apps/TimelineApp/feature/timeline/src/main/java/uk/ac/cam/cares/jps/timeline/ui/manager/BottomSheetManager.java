@@ -4,6 +4,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import android.accounts.AccountsException;
 import android.content.Context;
+import android.net.Uri;
 import android.view.View;
 import android.widget.TextView;
 
@@ -11,8 +12,16 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDeepLinkRequest;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
+import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
@@ -27,16 +36,19 @@ import uk.ac.cam.cares.jps.timelinemap.R;
  * based on the state.
  */
 public class BottomSheetManager {
-    private TrajectoryViewModel trajectoryViewModel;
-    private ConnectionViewModel connectionViewModel;
-    private UserPhoneViewModel userPhoneViewModel;
+    private final TrajectoryViewModel trajectoryViewModel;
+    private final ConnectionViewModel connectionViewModel;
+    private final UserPhoneViewModel userPhoneViewModel;
+
+    private Logger LOGGER = Logger.getLogger(BottomSheetManager.class);
 
     private BottomSheet bottomSheet;
-    private BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
-    private LinearLayoutCompat bottomSheetContainer;
+    private final BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
+    private final LinearLayoutCompat bottomSheetContainer;
 
-    private LifecycleOwner lifecycleOwner;
-    private Context context;
+    private final LifecycleOwner lifecycleOwner;
+    private final Context context;
+    private final NavController navController;
 
     private NormalBottomSheet normalBottomSheet;
     private ErrorBottomSheet errorBottomSheet;
@@ -48,6 +60,7 @@ public class BottomSheetManager {
 
         lifecycleOwner = fragment.getViewLifecycleOwner();
         context = fragment.requireContext();
+        navController = NavHostFragment.findNavController(fragment);
 
         this.bottomSheetContainer = bottomSheetContainer;
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer);
@@ -100,10 +113,29 @@ public class BottomSheetManager {
             userPhoneViewModel.registerPhoneToUser();
         };
 
-        errorBottomSheet = new ErrorBottomSheet(context, retryConnectionAndRetrieveTrajectory);
+        Map<ErrorBottomSheet.ErrorType, View.OnClickListener> errorHandler = new HashMap<>();
+        errorHandler.put(ErrorBottomSheet.ErrorType.CONNECTION_ERROR, retryConnectionAndRetrieveTrajectory);
+        errorHandler.put(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR, registerUserToPhone);
+
+        errorBottomSheet = new ErrorBottomSheet(context, errorHandler);
+
+        userPhoneViewModel.getHasAccountError().observe(lifecycleOwner, hasAccountError -> {
+            if (hasAccountError) {
+                // todo: login again?
+                NavDeepLinkRequest request = NavDeepLinkRequest.Builder
+                        .fromUri(Uri.parse(context.getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
+                        .build();
+                navController.navigate(request);
+            } else {
+                // retry getting trajectory
+                LOGGER.info("Phone register, retrying to get trajectory");
+                connectionViewModel.checkNetworkConnection();
+            }
+        });
 
         trajectoryViewModel.trajectoryError.observe(lifecycleOwner, error -> {
-            if (error instanceof AccountsException) {
+            if (error.getMessage() != null &&
+                    error.getMessage().equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user))) {
                 errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR);
             } else {
                 errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.TRAJECTORY_ERROR);
