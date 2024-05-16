@@ -101,15 +101,29 @@ public class GDALClient extends ContainerClient {
             for (var entry : foundGeoFiles.asMap().entrySet()) {
                 Collection<String> filesOfType = entry.getValue();
 
+                switch (entry.getKey()) {
+                    case "XLSX":
+                    case "XLS":
+                        Collection<String> filesToRemove = new ArrayList<>();
+                        Collection<String> filesToAdd = new ArrayList<>();
+                        for (String filePath : filesOfType) {
+                            String newDirPath = excelToCSV(filePath);
+                            filesToRemove.add(filePath);
+                            try (Stream<Path> files = Files.list(Path.of(newDirPath))) {
+                                filesToAdd.addAll(files.map(Object::toString)
+                                        .collect(Collectors.toList()));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        filesOfType.removeAll(filesToRemove);
+                        filesOfType.addAll(filesToAdd);
+                        break;
+                    default:
+                        break;
+                }
+
                 for (String filePath : filesOfType) {
-                    switch (entry.getKey()) {
-                        case "XLSX":
-                        case "XLS":
-                            filePath = excelToCSV(filePath);
-                            break;
-                        default:
-                            break;
-                    }
                     uploadVectorToPostGIS(database, layerName, filePath, options, append);
                     // If inserting multiple sources into a single layer then ensure subsequent
                     // files are appended.
