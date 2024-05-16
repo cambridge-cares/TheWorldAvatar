@@ -270,9 +270,10 @@ def test_push_to_kg_update(initialise_sparql_client):
     a1, a2, a3, b, c, d = init()
     sparql_client = initialise_sparql_client
     assert sparql_client.get_amount_of_triples() == 0
+    assert not bool(d._latest_cache) # cache should be empty before push
     d.push_to_kg(sparql_client, -1)
+    assert bool(d._latest_cache) # cache should not be empty
     assert sparql_client.get_amount_of_triples() == 18
-    assert not bool(d._latest_cache) # cache should be empty
     d_pulled = D.pull_from_kg(d.instance_iri, sparql_client, -1)[0]
     # the d_pulled should be pointing to the same memory location as d
     # but its _latest_cache should be updated - previously it was empty
@@ -313,6 +314,15 @@ def test_push_to_kg_update(initialise_sparql_client):
     print("g_to_add:")
     print(g_to_add.serialize(format='turtle'))
     d.push_to_kg(sparql_client, -1) # recursive push -1
+    # check that all cache has also been updated
+    assert d._latest_cache['object_property_d_a'].range == set([a1])
+    assert d._latest_cache['object_property_d_b'].range == set([b])
+    assert d._latest_cache['object_property_d_c'].range == set()
+    assert d._latest_cache['data_property_d'].range == set([d_new_str])
+    assert c._latest_cache['object_property_c_b'].range == set()
+    assert c._latest_cache['object_property_c_a'].range == set([a2])
+    assert b._latest_cache['object_property_b_a'].range == set([a3])
+    # check that the triples in the KG are correct
     assert sparql_client.get_amount_of_triples() == 16
     assert not sparql_client.check_if_triple_exist(d.instance_iri, d.object_property_d_c.predicate_iri, c.instance_iri)
     assert sparql_client.check_if_triple_exist(d.instance_iri, d.data_property_d.predicate_iri, d_new_str, XSD.string.toPython())
@@ -349,6 +359,15 @@ def test_push_to_kg_update(initialise_sparql_client):
     print(g_to_add.serialize(format='turtle'))
     # push the changes to the KG
     d.push_to_kg(sparql_client, -1)
+    # check that all cache has also been updated
+    assert d._latest_cache['object_property_d_a'].range == set([a1])
+    assert d._latest_cache['object_property_d_b'].range == set()
+    assert d._latest_cache['object_property_d_c'].range == set([c])
+    assert d._latest_cache['data_property_d'].range == set([new_str])
+    assert c._latest_cache['object_property_c_b'].range == set([b])
+    assert c._latest_cache['object_property_c_a'].range == set([a2, a3])
+    assert b._latest_cache['object_property_b_a'].range == set([a1, a2])
+    # check that the triples in the KG are correct
     assert sparql_client.get_amount_of_triples() == 19
     assert not sparql_client.check_if_triple_exist(d.instance_iri, d.object_property_d_b.predicate_iri, b.instance_iri)
     assert sparql_client.check_if_triple_exist(d.instance_iri, d.object_property_d_c.predicate_iri, c.instance_iri)
@@ -382,6 +401,15 @@ def test_push_to_kg_update(initialise_sparql_client):
     print(g_to_add.serialize(format='turtle'))
     # push the changes to the KG
     d.push_to_kg(sparql_client, -1)
+    # check that all cache has also been updated
+    assert d._latest_cache['object_property_d_a'].range == set([a1])
+    assert d._latest_cache['object_property_d_b'].range == set()
+    assert d._latest_cache['object_property_d_c'].range == set([c])
+    assert d._latest_cache['data_property_d'].range == set([new_str, second_d_new_str])
+    assert c._latest_cache['object_property_c_b'].range == set()
+    assert c._latest_cache['object_property_c_a'].range == set()
+    assert b._latest_cache['object_property_b_a'].range == set()
+    # check that the triples in the KG are correct
     assert sparql_client.get_amount_of_triples() == 15
     assert not sparql_client.check_if_triple_exist(d.instance_iri, d.object_property_d_b.predicate_iri, b.instance_iri)
     assert sparql_client.check_if_triple_exist(d.instance_iri, d.object_property_d_c.predicate_iri, c.instance_iri)

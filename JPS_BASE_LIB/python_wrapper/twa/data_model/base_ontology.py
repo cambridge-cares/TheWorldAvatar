@@ -258,7 +258,6 @@ class BaseOntology(BaseModel):
 
     @classmethod
     def export_to_owl(cls, file_path: str, format: str = 'ttl'):
-        # TODO: offer the option to export ontology to a triplestore directly
         """
         This method is used to export the ontology to an ontology file.
         It operates at the TBox level, i.e. it only exports the classes and properties of the ontology.
