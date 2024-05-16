@@ -126,3 +126,9 @@ CREATE INDEX infra_index ON usage.buildingusage_geoserver_sg (infrastructure_typ
 CREATE INDEX heat_index ON usage.buildingusage_geoserver_sg (heat_emissions);
 CREATE INDEX gfa_index ON usage.buildingusage_geoserver_sg (calc_gfa);
 CREATE INDEX refgfa_index ON usage.buildingusage_geoserver_sg (ref_gfa);
+
+DROP MATERIALIZED VIEW IF EXISTS usage.buildings_with_cea;
+CREATE MATERIALIZED VIEW usage.buildings_with_cea AS (
+SELECT bg.* FROM usage.buildingusage_geoserver_sg AS bg
+JOIN cea.cea AS c ON c.iri = bg.iri);
+CREATE INDEX geometry_cea_index ON usage.buildings_with_cea USING GIST (geom);
