@@ -107,7 +107,7 @@ public class GDALClient extends ContainerClient {
                         Collection<String> filesToRemove = new ArrayList<>();
                         Collection<String> filesToAdd = new ArrayList<>();
                         for (String filePath : filesOfType) {
-                            String newDirPath = excelToCSV(filePath);
+                            String newDirPath = excelToCSV(filePath, layerName);
                             filesToRemove.add(filePath);
                             try (Stream<Path> files = Files.list(Path.of(newDirPath))) {
                                 filesToAdd.addAll(files.map(Object::toString)
@@ -118,6 +118,7 @@ public class GDALClient extends ContainerClient {
                         }
                         filesOfType.removeAll(filesToRemove);
                         filesOfType.addAll(filesToAdd);
+                        layerName = null;
                         break;
                     default:
                         break;
@@ -173,7 +174,7 @@ public class GDALClient extends ContainerClient {
         handleErrors(errorStream, execId, logger);
     }
 
-    private String excelToCSV(String filePath) {
+    private String excelToCSV(String filePath, String layerName) {
         String containerId = getContainerId(GDAL);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
@@ -190,6 +191,19 @@ public class GDALClient extends ContainerClient {
                 .withEvaluationTimeout(300)
                 .exec();
         handleErrors(errorStream, execId, logger);
+
+        try (Stream<Path> files = Files.list(Path.of(outputDirectory))) {
+            files.forEach(f -> {
+                try {
+                    Files.move(f, f.getParent().resolve((layerName != null ? layerName + "_" : "") + f.getFileName()));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
         return outputDirectory;
     }
 
