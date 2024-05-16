@@ -166,8 +166,10 @@ public class GDALClient extends ContainerClient {
 
         String outputDirectory = FileUtils.removeExtension(filePath);
         String execId = createComplexCommand(containerId, "ogr2ogr",
+                "-oo", "HEADERS=FORCE",
                 "-f", "CSV",
-                outputDirectory, // all sheets get put as individual csv into directory with same name as input file
+                outputDirectory, // all sheets get put as individual csv into directory with same name as input
+                                 // file
                 filePath)
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
