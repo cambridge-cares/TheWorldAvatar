@@ -165,11 +165,9 @@ export class DataParser {
                 case "mapbox":
                     layer = new MapboxDataLayer(
                         layerID,
-                        element["name"] as string,
                         dataGroup.isExpanded,
                         sourceObj,
                         element,
-                        element.grouping as string
                     );
                     // When there is a default grouping and this is not the current grouping, the layer should start off invisible
                     if (layer.grouping && String(layer.grouping) !== dataGroup.layerGroupings[0]) { layer.cachedVisibility = false; }
