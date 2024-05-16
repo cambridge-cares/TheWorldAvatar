@@ -16,10 +16,15 @@ class TableDataItem(BaseModel):
     bindings: List[Dict[str, Union[str, float]]]
 
 
+class TypedSeries(BaseModel):
+    data: list
+    type: str
+
+
 class ScatterPlotTrace(BaseModel):
     name: Optional[str] = None
-    x: list
-    y: list
+    x: TypedSeries
+    y: TypedSeries
 
 
 class ScatterPlotDataItem(BaseModel):
