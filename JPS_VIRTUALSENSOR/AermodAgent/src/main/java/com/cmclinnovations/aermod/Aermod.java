@@ -53,6 +53,7 @@ import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
@@ -65,6 +66,15 @@ public class Aermod {
     private Path aermodDirectory;
     private Path rasterDirectory;
     private static final String AERMET_INPUT = "aermet.inp";
+    // this keeps the number of timesteps in the GeoServer layers to the number
+    // specified by NUMBER_OF_LAYERS
+    String sqlCleanupTemplate = """
+            DELETE FROM %s WHERE time NOT IN (
+                SELECT DISTINCT time
+                FROM %s
+                ORDER BY time DESC
+                LIMIT %d)
+                """;
 
     public Aermod(Path simulationDirectory) {
         LOGGER.info("Creating directory for simulation files");
@@ -241,6 +251,23 @@ public class Aermod {
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.STATIC_SOURCE_TABLE, new GeoServerVectorSettings());
+
+        // keep layer at maintainable size
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.STATIC_SOURCE_TABLE, EnvConfig.STATIC_SOURCE_TABLE,
+                numLayers);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
 
     void createShipsLayer(List<Ship> pointSources, long simulationTime, String derivationIri) {
@@ -286,6 +313,23 @@ public class Aermod {
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.SHIPS_LAYER_NAME, new GeoServerVectorSettings());
+
+        // keep layer at maintainable size
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.SHIPS_LAYER_NAME, EnvConfig.SHIPS_LAYER_NAME,
+                numLayers);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
 
     public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
@@ -775,6 +819,23 @@ public class Aermod {
 
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.DISPERSION_CONTOURS_TABLE, geoServerVectorSettings);
+
+        // clean up table
+        PostGISClient postGISClient = PostGISClient.getInstance();
+
+        int numLayers;
+        try {
+            numLayers = Integer.parseInt(EnvConfig.NUMBER_OF_LAYERS);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error parsing NUMBER_OF_LAYERS, setting number to 20");
+            numLayers = 20;
+        }
+
+        String sql = String.format(sqlCleanupTemplate, EnvConfig.DISPERSION_CONTOURS_TABLE,
+                EnvConfig.DISPERSION_CONTOURS_TABLE, numLayers);
+
+        postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sql);
     }
 
     void createElevationLayer(JSONObject geoJSON, String derivationIri) {
