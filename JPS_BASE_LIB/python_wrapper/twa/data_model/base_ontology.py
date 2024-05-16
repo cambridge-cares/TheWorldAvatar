@@ -484,10 +484,13 @@ class BaseProperty(BaseModel, validate_assignment=True):
         cardinality = cls.model_fields['range'].metadata[0]
         return cardinality.min_length, cardinality.max_length
 
-    def create_cache(self) -> BaseProperty:
+    def create_cache(self, recursive_depth: int = 0) -> BaseProperty:
         """
         This is an abstract method that should be implemented by the subclasses.
         It is used to create a cache for the property.
+
+        Args:
+            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
 
         Raises:
             NotImplementedError: This is an abstract method.
@@ -774,8 +777,12 @@ class BaseClass(BaseModel, validate_assignment=True):
                             set(inst.get_object_property_range_iris(op_dct['field'])) - set(props.get(op_iri, [])),
                             sparql_client, recursive_depth)
                 # now collect all featched values
-                fetched = {k: v.create_cache() for k, v in {**object_properties_dict, **data_properties_dict}.items()}
-                fetched.update(rdfs_properties_dict)
+                fetched = {
+                    k: v.__class__(range=set([o.instance_iri if isinstance(o, BaseClass) else o for o in v.range]))
+                    for k, v in object_properties_dict.items()
+                } # object properties
+                fetched.update({k: v.__class__(range=set(copy.deepcopy(v.range))) for k, v in data_properties_dict.items()}) # data properties
+                fetched.update(rdfs_properties_dict) # rdfs properties
                 # compare it with cached values and local values for all object/data/rdfs properties
                 # if the object is already in the lookup, then update the object for those fields that are not modified in the python
                 inst.update_according_to_fetch(fetched, flag_pull)
@@ -892,10 +899,24 @@ class BaseClass(BaseModel, validate_assignment=True):
                 g.add((URIRef(cls_iri), RDFS.subClassOf, restriction))
         return g
 
-    def create_cache(self):
-        """ This function creates a cache of the instance of the calling class. """
+    def create_cache(self, recursive_depth: int = 0):
+        """
+        This function creates a cache of the instance of the calling class.
+
+        Args:
+            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+        """
         # note here we create deepcopy for all fields so there won't be issue caused by referencing the same memory address
-        self._latest_cache = {f: getattr(self, f).create_cache()
+        # firstly, create cache for those properties that were connected in previous cache but might not be presented in the current local values
+        for f, cached in self._latest_cache.items():
+            if BaseProperty.is_inherited(type(cached)):
+                disconnected_object_properties = cached.range - getattr(self, f).range
+                for o in disconnected_object_properties:
+                    obj = KnowledgeGraph.get_object_from_lookup(o)
+                    if obj is not None:
+                        obj.create_cache(recursive_depth)
+        # secondly (and finally), create cache for all currently connected properties
+        self._latest_cache = {f: getattr(self, f).create_cache(recursive_depth)
                               if BaseProperty.is_inherited(field_info.annotation) else copy.deepcopy(getattr(self, f))
                               for f, field_info in self.model_fields.items()}
 
@@ -1038,7 +1059,7 @@ class BaseClass(BaseModel, validate_assignment=True):
             try:
                 sparql_client.delete_and_insert_graphs(g_to_remove, g_to_add)
                 # if no exception was thrown, update cache
-                self.create_cache()
+                self.create_cache(recursive_depth)
                 return g_to_remove, g_to_add
             except Exception as e:
                 if attempt < maximum_retry:
@@ -1258,13 +1279,29 @@ class ObjectProperty(BaseProperty):
         """
         return cls.reveal_object_property_range().get_rdf_type()
 
-    def create_cache(self) -> ObjectProperty:
+    def create_cache(self, recursive_depth: int = 0) -> ObjectProperty:
         """
         This function creates a cache of the object property.
+
+        Args:
+            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
 
         Returns:
             ObjectProperty: The cache of the object property
         """
+        recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
+        for o in self.range:
+            if isinstance(o, BaseClass):
+                # this function will be useful when pushing a brand new (nested) object to knowledge graph
+                # so that the cache of those objects appeared at deeper recursive_depth are also updated
+                o.create_cache(recursive_depth)
+            elif isinstance(o, str):
+                obj = KnowledgeGraph.get_object_from_lookup(o)
+                if obj is not None:
+                    obj.create_cache(recursive_depth)
+            else:
+                raise Exception(f"Unsupported datatype {type(o)} for range of object property {self}")
+        # return the cache that will actually be used for comparison when pulling/pushing
         return self.__class__(range=set([
             o.instance_iri if isinstance(o, BaseClass) else o for o in self.range
         ]))
@@ -1406,9 +1443,12 @@ class DataProperty(BaseProperty):
         """
         return _castPythonToXSD(cls.reveal_data_property_range())
 
-    def create_cache(self) -> DataProperty:
+    def create_cache(self, recursive_depth: int = 0) -> DataProperty:
         """
         This function creates a cache of the data property.
+
+        Args:
+            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
 
         Returns:
             DataProperty: The cache of the data property
