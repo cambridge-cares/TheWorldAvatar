@@ -31,12 +31,12 @@ def entity_store(redis_client, embedder):
             surface_forms=["subtract", "minus"],
         ),
     ]
-    clsname2strategy = {"number": "fuzzy", "operator": "semantic"}
+    clsname2config = {"number": "fuzzy", "operator": "semantic"}
     yield EntityStore(
         redis_client=redis_client,
         embedder=embedder,
         lexicon=lexicon,
-        clsname2strategy=clsname2strategy,
+        clsname2elconfig=clsname2config,
     )
 
 

@@ -1,18 +1,27 @@
 [
     {
         "clsname": "LandUseType",
-        "el_strategy": "semantic"
+        "el_config": {
+            "strategy": "semantic",
+            "k": 5
+        }
     },
     {
         "clsname": "Facility",
-        "el_strategy": "fuzzy"
+        "el_config": {
+            "strategy": "fuzzy"
+        }
     },
     {
         "clsname": "Ship",
-        "el_strategy": "fuzzy"
+        "el_config": {
+            "strategy": "fuzzy"
+        }
     },
     {
         "clsname": "PropertyUsageClass",
-        "el_strategy": "fuzzy"
+        "el_config": {
+            "strategy": "fuzzy"
+        }
     }
 ]
