@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.data;
+package uk.ac.cam.cares.jps.utils;
 
 public interface RepositoryCallback<T> {
     // called when data is ready to be consumed by ViewModel

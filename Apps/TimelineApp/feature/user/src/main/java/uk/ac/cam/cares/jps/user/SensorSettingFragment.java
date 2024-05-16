@@ -64,11 +64,13 @@ public class SensorSettingFragment extends Fragment {
         binding.topAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
 
         binding.startRecordTv.setOnClickListener(this::onRecordButtonClicked);
-        if (sensorViewModel.getIsRecording().getValue() != null && sensorViewModel.getIsRecording().getValue()) {
-            binding.startRecordTv.setText(R.string.stop_recording);
-        } else {
-            binding.startRecordTv.setText(R.string.start_recording);
-        }
+        sensorViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
+            if (isRecording) {
+                binding.startRecordTv.setText(R.string.stop_recording);
+            } else {
+                binding.startRecordTv.setText(R.string.start_recording);
+            }
+        });
     }
 
     private void onRecordButtonClicked(View view) {
@@ -86,15 +88,10 @@ public class SensorSettingFragment extends Fragment {
             return;
         }
 
-        TextView textView = (TextView) view;
-        if (sensorViewModel.getIsRecording().getValue()) {
-            textView.setText(R.string.start_recording);
+        if (sensorViewModel.getIsRecording().getValue() != null && sensorViewModel.getIsRecording().getValue()) {
             sensorViewModel.stopRecording();
-            sensorViewModel.setIsRecording(false);
         } else {
-            textView.setText(R.string.stop_recording);
             sensorViewModel.startRecording();
-            sensorViewModel.setIsRecording(true);
         }
     }
 

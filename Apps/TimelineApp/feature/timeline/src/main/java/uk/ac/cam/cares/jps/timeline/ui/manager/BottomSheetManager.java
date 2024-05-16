@@ -19,6 +19,7 @@ import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;
 import uk.ac.cam.cares.jps.timeline.viewmodel.ConnectionViewModel;
 import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
+import uk.ac.cam.cares.jps.timeline.viewmodel.UserPhoneViewModel;
 import uk.ac.cam.cares.jps.timelinemap.R;
 
 /**
@@ -28,6 +29,7 @@ import uk.ac.cam.cares.jps.timelinemap.R;
 public class BottomSheetManager {
     private TrajectoryViewModel trajectoryViewModel;
     private ConnectionViewModel connectionViewModel;
+    private UserPhoneViewModel userPhoneViewModel;
 
     private BottomSheet bottomSheet;
     private BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
@@ -42,6 +44,7 @@ public class BottomSheetManager {
     public BottomSheetManager(Fragment fragment, LinearLayoutCompat bottomSheetContainer) {
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
         connectionViewModel = new ViewModelProvider(fragment).get(ConnectionViewModel.class);
+        userPhoneViewModel = new ViewModelProvider(fragment).get(UserPhoneViewModel.class);
 
         lifecycleOwner = fragment.getViewLifecycleOwner();
         context = fragment.requireContext();
@@ -93,7 +96,9 @@ public class BottomSheetManager {
         View.OnClickListener retryConnectionAndRetrieveTrajectory = view -> {
             connectionViewModel.checkNetworkConnection();
         };
-        // todo: trigger user phone registration
+        View.OnClickListener registerUserToPhone = view -> {
+            userPhoneViewModel.registerPhoneToUser();
+        };
 
         errorBottomSheet = new ErrorBottomSheet(context, retryConnectionAndRetrieveTrajectory);
 

@@ -11,13 +11,17 @@ import org.apache.log4j.Logger;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import uk.ac.cam.cares.jps.login.AccountException;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
+import uk.ac.cam.cares.jps.sensor.SensorCollectionStateManagerRepository;
 import uk.ac.cam.cares.jps.sensor.SensorRepository;
+import uk.ac.cam.cares.jps.sensor.UserPhoneRepository;
 
 @HiltViewModel
 public class SensorViewModel extends ViewModel {
     private static final Logger LOGGER = LogManager.getLogger(SensorViewModel.class);
     private final SensorRepository sensorRepository;
+    private final SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository;
+    private final UserPhoneRepository userPhoneRepository;
 
     private final MutableLiveData<Boolean> _isRecording = new MutableLiveData<>();
     private final LiveData<Boolean> isRecording = _isRecording;
@@ -25,34 +29,51 @@ public class SensorViewModel extends ViewModel {
     private final LiveData<Boolean> hasAccountError = _hasAccountError;
 
     @Inject
-    SensorViewModel(SensorRepository repository) {
+    SensorViewModel(
+            SensorRepository repository,
+            SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository,
+            UserPhoneRepository userPhoneRepository
+    ) {
         BasicConfigurator.configure();
         this.sensorRepository = repository;
-        try {
-            _isRecording.setValue(sensorRepository.getRecordingState());
-        } catch (AccountException e) {
-            _hasAccountError.setValue(true);
-        }
+        this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
+        this.userPhoneRepository = userPhoneRepository;
+
+        sensorCollectionStateManagerRepository.getRecordingStatus(new RepositoryCallback<>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                _isRecording.setValue(result);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                _hasAccountError.setValue(true);
+            }
+        });
     }
 
     public void startRecording() {
-        try {
-            sensorRepository.startRecording();
-        } catch (AccountException e) {
-            _hasAccountError.setValue(true);
-        }
+        sensorRepository.startRecording(new RepositoryCallback<>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                _isRecording.setValue(result);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                _hasAccountError.setValue(true);
+                _isRecording.setValue(false);
+            }
+        });
     }
 
     public void stopRecording() {
         sensorRepository.stopRecording();
+        _isRecording.setValue(false);
     }
 
     public LiveData<Boolean> getIsRecording() {
         return isRecording;
-    }
-
-    public void setIsRecording(Boolean isRecording) {
-        this._isRecording.setValue(isRecording);
     }
 
     public LiveData<Boolean> getHasAccountError() {
@@ -60,14 +81,20 @@ public class SensorViewModel extends ViewModel {
     }
 
     public void clearManagers(String userId) {
-        sensorRepository.clearManagers(userId);
+        sensorCollectionStateManagerRepository.clearManager(userId);
     }
 
     public void registerPhoneToUser() {
-        try {
-            sensorRepository.registerAppToUser();
-        } catch (uk.ac.cam.cares.jps.login.AccountException e) {
-            _hasAccountError.setValue(true);
-        }
+        userPhoneRepository.registerAppToUser(new RepositoryCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                // do nothing
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                _hasAccountError.setValue(true);
+            }
+        });
     }
 }

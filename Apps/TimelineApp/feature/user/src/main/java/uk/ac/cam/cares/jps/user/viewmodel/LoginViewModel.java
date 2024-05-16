@@ -12,13 +12,12 @@ import androidx.lifecycle.ViewModel;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.login.LoginRepository;
-import uk.ac.cam.cares.jps.login.RepositoryCallback;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.user.R;
 
 @HiltViewModel

@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import javax.inject.Inject;
 
 import kotlin.Pair;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.loginmodule.R;
 
 public class LoginRepository {

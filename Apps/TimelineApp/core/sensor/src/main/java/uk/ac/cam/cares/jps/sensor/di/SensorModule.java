@@ -14,11 +14,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.sensor.SensorCollectionStateManager;
+import uk.ac.cam.cares.jps.sensor.SensorCollectionStateManagerRepository;
 import uk.ac.cam.cares.jps.sensor.SensorManager;
 import uk.ac.cam.cares.jps.sensor.SensorNetworkSource;
 import uk.ac.cam.cares.jps.sensor.SensorRepository;
 import uk.ac.cam.cares.jps.sensor.SensorService;
 import uk.ac.cam.cares.jps.sensor.UserPhoneNetworkSource;
+import uk.ac.cam.cares.jps.sensor.UserPhoneRepository;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -35,10 +37,10 @@ public class SensorModule {
     @Provides
     @Singleton
     public SensorRepository provideSensorRepository(@ApplicationContext Context applicationContext,
-                                                    SensorCollectionStateManager sensorCollectionStateManager,
                                                     UserPhoneNetworkSource userPhoneNetworkSource,
+                                                    SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository,
                                                     LoginRepository loginRepository) {
-        return new SensorRepository(applicationContext, sensorCollectionStateManager, userPhoneNetworkSource, loginRepository);
+        return new SensorRepository(applicationContext, userPhoneNetworkSource, sensorCollectionStateManagerRepository, loginRepository);
     }
 
     @Provides
@@ -57,5 +59,21 @@ public class SensorModule {
     @Singleton
     public UserPhoneNetworkSource provideUserPhoneNetworkSource(@ApplicationContext Context applicationContext, RequestQueue requestQueue) {
         return new UserPhoneNetworkSource(applicationContext, requestQueue);
+    }
+
+    @Provides
+    @Singleton
+    public UserPhoneRepository provideUserPhoneRepository(
+            UserPhoneNetworkSource userPhoneNetworkSource,
+            SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository) {
+        return new UserPhoneRepository(userPhoneNetworkSource, sensorCollectionStateManagerRepository);
+    }
+
+    @Provides
+    @Singleton
+    public SensorCollectionStateManagerRepository provideSensorCollectionStateManagerRepository(
+            SensorCollectionStateManager sensorCollectionStateManager,
+            LoginRepository loginRepository) {
+        return new SensorCollectionStateManagerRepository(sensorCollectionStateManager, loginRepository);
     }
 }

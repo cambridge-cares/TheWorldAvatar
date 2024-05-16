@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.timeline.viewmodel;
 
-import android.accounts.AccountsException;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -9,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import uk.ac.cam.cares.jps.data.RepositoryCallback;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.TrajectoryRepository;
 
 @HiltViewModel

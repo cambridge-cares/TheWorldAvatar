@@ -44,6 +44,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
+
 public class LoginSource {
     private static final Logger LOGGER = LogManager.getLogger(LoginSource.class);
 

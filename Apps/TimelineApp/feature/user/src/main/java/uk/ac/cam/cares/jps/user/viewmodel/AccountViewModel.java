@@ -18,8 +18,8 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import kotlin.Pair;
 import uk.ac.cam.cares.jps.login.LoginRepository;
-import uk.ac.cam.cares.jps.login.RepositoryCallback;
 import uk.ac.cam.cares.jps.login.User;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 @HiltViewModel
 public class AccountViewModel extends ViewModel {
@@ -44,7 +44,7 @@ public class AccountViewModel extends ViewModel {
     }
 
     public void getUserInfo() {
-        loginRepository.getUserInfo(new uk.ac.cam.cares.jps.login.RepositoryCallback<User>() {
+        loginRepository.getUserInfo(new RepositoryCallback<>() {
             @Override
             public void onSuccess(User user) {
                 _email.postValue(user.getEmail());

@@ -6,6 +6,7 @@ import uk.ac.cam.cares.jps.login.AccountException;
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.login.User;
 import uk.ac.cam.cares.jps.network.TrajectoryNetworkSource;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 public class TrajectoryRepository {
     private TrajectoryNetworkSource trajectoryNetworkSource;
@@ -21,7 +22,7 @@ public class TrajectoryRepository {
     }
 
     public void getTrajectory(RepositoryCallback<String> callback) {
-        loginRepository.getUserInfo(new uk.ac.cam.cares.jps.login.RepositoryCallback<>() {
+        loginRepository.getUserInfo(new RepositoryCallback<>() {
             @Override
             public void onSuccess(User result) {
                 trajectoryNetworkSource.getTrajectory(result.getId(),
