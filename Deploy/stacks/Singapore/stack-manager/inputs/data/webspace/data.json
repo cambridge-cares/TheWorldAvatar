@@ -63,7 +63,7 @@
         {
             "id": "cea-layer",
             "name": "Buildings with CEA data",
-            "source": "CarPark-source",
+            "source": "cea",
             "source-layer": "cea",
             "type": "fill-extrusion",
             "minzoom": 8,
