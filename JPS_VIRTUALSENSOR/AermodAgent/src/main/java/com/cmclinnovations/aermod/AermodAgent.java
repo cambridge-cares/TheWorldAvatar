@@ -101,14 +101,11 @@ public class AermodAgent extends DerivationAgent {
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
 
         // compute srid
-        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180) / 6);
-        int srid;
-        if (scope.getCentroid().getCoordinate().getY() < 0) {
-            srid = Integer.valueOf("327" + centreZoneNumber);
-
-        } else {
-            srid = Integer.valueOf("326" + centreZoneNumber);
-        }
+        double longitude = scope.getCentroid().getCoordinate().getX();
+        longitude = (longitude + 180) - Math.floor((longitude + 180) / 360) * 360 - 180; // ensure never exceeding 180
+        double latitude = scope.getCentroid().getCoordinate().getY();
+        int centreZoneNumber = (int) Math.floor((longitude + 180) / 6)+1;
+        int srid = (latitude < 0) ? 32700 + centreZoneNumber : 32600 + centreZoneNumber;
 
         Map<String, Building> allBuildings = new HashMap<>();
         if (!EnvConfig.IGNORE_BUILDINGS) {
