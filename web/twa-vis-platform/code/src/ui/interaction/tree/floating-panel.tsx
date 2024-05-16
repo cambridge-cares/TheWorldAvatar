@@ -58,7 +58,7 @@ export default function FloatingPanelContainer(
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
 
   // Execute API call
-  const { data, error, isFetching } = useGetMetadataQuery(genQueryEndpoint(selectedIri, selectedStack, selectedScenario), { skip: !trigger });
+  const { data, isFetching } = useGetMetadataQuery(genQueryEndpoint(selectedIri, selectedStack, selectedScenario), { skip: !trigger });
 
   // Effect to display additional feature information retrieved from an agent only once it has been loaded
   useEffect(() => {
