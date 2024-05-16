@@ -20,13 +20,11 @@ The line_buffer_query.sql file also uses a buffer but starts by forming a line f
 ## Discussion ##
 All three queries—Distance, Point Buffer, and Line Buffer—assess areas within a 100-meter radius around each data point, effectively yielding the same exposure results. The primary difference lies in their execution times due to their varying computational demands. The Distance Query is the quickest, whereas the Point Buffer Query requires the most resources. Testing against a trajectory dataset of 365 data points and a food retailer dataset comprising 932 entries yielded the following execution times, indicating their performance.
 
-<div align="center">
 |                      | Execution Time (s) |
 |----------------------|--------------------|
 | Distance Query       |          1.5       |
 | Point Buffer Query   |        116.0       |
 | Line Buffer Query    |         68.8       |
-<div align="center">
 
 ## Authors ##
 Feroz Farazi (msff2@cam.ac.uk), May 2024
