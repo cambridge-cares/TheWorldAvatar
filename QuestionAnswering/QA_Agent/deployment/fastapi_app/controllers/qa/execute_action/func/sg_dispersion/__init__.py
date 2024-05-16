@@ -14,6 +14,7 @@ from controllers.qa.support_data import (
     ScatterPlotDataItem,
     ScatterPlotTrace,
     TableDataItem,
+    TypedSeries,
 )
 from controllers.qa.support_data import QAStep
 from controllers.qa.execute_action.func.base import Name2Func
@@ -84,7 +85,12 @@ class SGDispersionFuncExecutor(Name2Func):
                 title="{key} ({unit}) in {location}".format(
                     key=key, unit="µg/m³", location=place.name
                 ),
-                traces=[ScatterPlotTrace(x=res.time, y=readings)],
+                traces=[
+                    ScatterPlotTrace(
+                        x=TypedSeries(data=res.time, type="date"),
+                        y=TypedSeries(data=readings, type="number"),
+                    )
+                ],
             )
             for key, readings in res.model_dump().items()
             if key != "time"
@@ -209,8 +215,8 @@ class SGDispersionFuncExecutor(Name2Func):
                 plot.traces.append(
                     ScatterPlotTrace(
                         name=" ".join(x for x in [label, mmsi] if x),
-                        x=timeseries_data.time,
-                        y=values,
+                        x=TypedSeries(data=timeseries_data.time, type="date"),
+                        y=TypedSeries(data=values, type="number"),
                     )
                 )
 

@@ -209,13 +209,28 @@ function renderBootstrapTable(vars, bindings, id, containerElem) {
     containerElem.innerHTML = content;
 }
 
+function flattenTypedSeries(data, type) {
+    if (type === "date") {
+        return data.map(x => {
+            let date = new Date(x)
+            let YYYY = date.getFullYear()
+            let MM = date.getMonth() + 1
+            let DD = date.getDate()
+            let time = date.toLocaleTimeString()
+            return `${YYYY}-${MM}-${DD} ${time}`
+        })
+    } else {
+        return data
+    }
+}
+
 function renderScatterPlot(title, traces, parentElem, id) {
     let plot_traces = traces.map(trace => {
         return {
             type: "scatter",
             name: trace["name"],
-            x: trace["x"],
-            y: trace["y"]
+            x: flattenTypedSeries(data = trace["x"]["data"], type = trace["x"]["type"]),
+            y: flattenTypedSeries(data = trace["y"]["data"], type = trace["y"]["type"])
         }
     })
 
