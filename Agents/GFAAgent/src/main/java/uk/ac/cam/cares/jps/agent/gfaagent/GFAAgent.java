@@ -22,23 +22,18 @@ public class GFAAgent extends JPSAgent{
        
     private EndpointConfig endpointConfig = new EndpointConfig();
 
-    private String dbName;
+    
     private String dbUrl;
     private String dbUser;
     private String dbPassword;
-    private String osmSchema;
-    private String osmPoint;
-    private String osmPolygon;
     private String ontopUrl;
 
     public synchronized void init() {
-        this.dbName = endpointConfig.getDbName();
+        String dbName;
+        dbName = endpointConfig.getDbName();
         this.dbUrl = endpointConfig.getDbUrl(dbName);
         this.dbUser = endpointConfig.getDbUser();
-        this.dbPassword = endpointConfig.getDbPassword();       
-        this.osmSchema = endpointConfig.getOSMSchema();
-        this.osmPoint = endpointConfig.getOSMPoints();
-        this.osmPolygon = endpointConfig.getOSMPolygons();
+        dbPassword = endpointConfig.getDbPassword();       
         this.ontopUrl = endpointConfig.getOntopUrl();
     }
 
