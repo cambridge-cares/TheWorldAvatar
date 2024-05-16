@@ -1,3 +1,4 @@
+from functools import cache
 from importlib.resources import files
 import json
 import logging
@@ -130,13 +131,15 @@ class Nlq2ActionRetriever:
         pass
 
 
+@cache
 def gen_nlq2action_examples(domain: str):
     for file in files("resources.examples." + domain).iterdir():
-        if file.is_file() and file.name.lower().endswith("_examples.json"):
+        if file.is_file() and file.name.lower().endswith(".json"):
             for example in json.loads(file.read_text()):
                 yield Nlq2ActionExample(nlq=example["input"], action=example["output"])
 
 
+@cache
 def get_sg_nlq2action_retriever(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
