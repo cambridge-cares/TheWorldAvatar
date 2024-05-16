@@ -2,6 +2,12 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 4.7.3
+
+### Bug Fixes
+
+* Fixed instant time series not being displayed as time series on the chart
+
 ## 4.7.2
 
 ### Bug Fixes
