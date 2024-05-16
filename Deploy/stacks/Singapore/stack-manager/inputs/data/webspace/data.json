@@ -2169,7 +2169,7 @@
                 {
                     "id": "all-landplot",
                     "name": "All",
-                    "source": "plot",
+                    "source": "plot-source",
                     "source-layer": "landplot",
                     "type": "fill",
                     "order": 1,
@@ -2258,7 +2258,7 @@
                 {
                     "id": "gfa-exceeded",
                     "name": "GFA exceeded",
-                    "source": "plot",
+                    "source": "plot-source",
                     "source-layer": "landplot",
                     "type": "fill",
                     "order": 1,
