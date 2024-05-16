@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.timeline.viewmodel;
 
+import android.accounts.AccountsException;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -15,10 +17,10 @@ public class TrajectoryViewModel extends ViewModel {
 
     private final TrajectoryRepository trajectoryRepository;
     private final MutableLiveData<String> _trajectory = new MutableLiveData<>();
-    private final MutableLiveData<String> _trajectoryError = new MutableLiveData<>();
+    private final MutableLiveData<Throwable> _trajectoryError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> _isFetchingTrajectory = new MutableLiveData<>();
     public LiveData<String> trajectory = _trajectory;
-    public LiveData<String> trajectoryError = _trajectoryError;
+    public LiveData<Throwable> trajectoryError = _trajectoryError;
     public LiveData<Boolean> isFetchingTrajecjtory = _isFetchingTrajectory;
 
     @Inject
@@ -27,7 +29,6 @@ public class TrajectoryViewModel extends ViewModel {
     }
 
     public void getTrajectory() {
-        // todo: be careful on the concurrency issue because this method is called at multiple places!
         _isFetchingTrajectory.setValue(true);
 
         trajectoryRepository.getTrajectory(new RepositoryCallback<>() {
@@ -39,7 +40,7 @@ public class TrajectoryViewModel extends ViewModel {
 
             @Override
             public void onFailure(Throwable error) {
-                _trajectoryError.postValue(error.getMessage());
+                _trajectoryError.postValue(error);
                 _isFetchingTrajectory.postValue(false);
             }
         });

@@ -1,23 +1,39 @@
 package uk.ac.cam.cares.jps.data;
 
+import android.content.Context;
+
+import uk.ac.cam.cares.jps.login.AccountException;
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.login.User;
 import uk.ac.cam.cares.jps.network.TrajectoryNetworkSource;
 
-public class TrajectoryRepository{
+public class TrajectoryRepository {
     private TrajectoryNetworkSource trajectoryNetworkSource;
     private LoginRepository loginRepository;
+    private Context context;
 
-    public TrajectoryRepository(TrajectoryNetworkSource trajectoryNetworkSource, LoginRepository loginRepository) {
+    public TrajectoryRepository(TrajectoryNetworkSource trajectoryNetworkSource,
+                                LoginRepository loginRepository,
+                                Context context) {
         this.trajectoryNetworkSource = trajectoryNetworkSource;
         this.loginRepository = loginRepository;
+        this.context = context;
     }
 
     public void getTrajectory(RepositoryCallback<String> callback) {
         loginRepository.getUserInfo(new uk.ac.cam.cares.jps.login.RepositoryCallback<>() {
             @Override
             public void onSuccess(User result) {
-                trajectoryNetworkSource.getTrajectory(result.getId(), callback::onSuccess, volleyError -> callback.onFailure(new Throwable("Failed to get trajectory")));
+                trajectoryNetworkSource.getTrajectory(result.getId(),
+                        callback::onSuccess,
+                        volleyError -> {
+                            if (volleyError.getMessage() != null &&
+                                    volleyError.getMessage().equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user))) {
+                                callback.onFailure(new AccountException("User not register with phone"));
+                            }
+
+                            callback.onFailure(new Throwable("Failed to get trajectory"));
+                        });
             }
 
             @Override

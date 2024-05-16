@@ -34,6 +34,10 @@ public class TrajectoryManager {
                 Expected<String, None> removeSourceSuccess = style.removeStyleSource("trajectory");
                 LOGGER.debug("trajectory: layer and source removed result " + (removeSourceSuccess.isError() && removeLayerSuccess.isError() ? removeSourceSuccess.getError() + "\n" + removeLayerSuccess.getError() : "success"));
 
+                if (trajectory.isEmpty()) {
+                    return;
+                }
+
                 JSONObject sourceJson = new JSONObject();
                 try {
                     sourceJson.put("type", "geojson");

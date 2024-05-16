@@ -20,7 +20,8 @@ public class ErrorBottomSheet extends BottomSheet{
 
     public enum ErrorType {
         CONNECTION_ERROR,
-        TRAJECTORY_ERROR
+        TRAJECTORY_ERROR,
+        ACCOUNT_ERROR
     }
 
     // todo: not very ideal to get the viewModel in this way
@@ -45,6 +46,12 @@ public class ErrorBottomSheet extends BottomSheet{
             case TRAJECTORY_ERROR -> {
                 ((ImageView) bottomSheet.findViewById(R.id.error_icon)).setImageResource(R.drawable.baseline_error_outline_24);
                 ((TextView) bottomSheet.findViewById(R.id.error_tv)).setText(R.string.encountered_error);
+                bottomSheet.findViewById(R.id.try_again_button).setOnClickListener(retryConnectionAndRetrieveTrajectory);
+            }
+            case ACCOUNT_ERROR -> {
+                ((ImageView) bottomSheet.findViewById(R.id.error_icon)).setImageResource(R.drawable.baseline_error_outline_24);
+                ((TextView) bottomSheet.findViewById(R.id.error_tv)).setText(R.string.encountered_error);
+                // todo: trigger user phone registration
                 bottomSheet.findViewById(R.id.try_again_button).setOnClickListener(retryConnectionAndRetrieveTrajectory);
             }
         }

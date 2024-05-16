@@ -1,10 +1,13 @@
 package uk.ac.cam.cares.jps.data.di;
 
+import android.content.Context;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.data.TrajectoryRepository;
 import uk.ac.cam.cares.jps.login.LoginRepository;
@@ -16,7 +19,8 @@ public class DataModule {
     @Provides
     @Singleton
     public TrajectoryRepository provideTrajectoryRepository(TrajectoryNetworkSource trajectoryNetworkSource,
-                                                            LoginRepository loginRepository) {
-        return new TrajectoryRepository(trajectoryNetworkSource, loginRepository);
+                                                            LoginRepository loginRepository,
+                                                            @ApplicationContext Context context) {
+        return new TrajectoryRepository(trajectoryNetworkSource, loginRepository, context);
     }
 }

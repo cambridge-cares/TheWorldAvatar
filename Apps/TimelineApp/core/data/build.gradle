@@ -12,4 +12,5 @@ dependencies {
     implementation project(path: ':core:network')
     implementation project(path: ':core:login')
     implementation project(path: ':core:model')
+    implementation project(path: ':core:utils')
 }

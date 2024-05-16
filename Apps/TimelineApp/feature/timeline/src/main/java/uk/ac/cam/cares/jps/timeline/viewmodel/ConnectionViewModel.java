@@ -13,16 +13,15 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
+// todo: need to refactor this class to remove the framework dependent component
 @HiltViewModel
 public class ConnectionViewModel extends ViewModel {
-    private Context context;
     private ConnectivityManager connectivityManager;
     private MutableLiveData<Boolean> _hasConnection = new MutableLiveData<>();
     private LiveData<Boolean> hasConnection = _hasConnection;
 
     @Inject
     public ConnectionViewModel(@ApplicationContext Context context) {
-        this.context = context;
         connectivityManager = context.getSystemService(ConnectivityManager.class);
     }
 
