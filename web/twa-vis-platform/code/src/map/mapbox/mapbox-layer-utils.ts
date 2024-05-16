@@ -2,6 +2,7 @@ import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, 
 
 import { DataLayer } from 'io/data/data-layer';
 import { DataStore } from 'io/data/data-store';
+import { Interactions } from 'io/config/interactions';
 import { JsonObject } from 'types/json';
 import { ImageryOption, ImagerySettings } from 'types/settings';
 import { getCurrentImageryOption } from '../map-helper';
@@ -49,6 +50,13 @@ export function addLayer(map: Map, layer: DataLayer, currentStyle: ImageryOption
             visibility: layer.isGroupExpanded && layer.cachedVisibility ? "visible" : "none"
         };
     }
+
+    if (layer.getInjectableProperty(Interactions.HOVER)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (options.paint as { [key: string]: any })["fill-opacity"] = layer.getInjectableProperty(Interactions.HOVER).style;
+        delete options["hover"];
+    }
+
     // Remove properties not expected by Mapbox
     delete options["interactions"];
     delete options["clickable"];

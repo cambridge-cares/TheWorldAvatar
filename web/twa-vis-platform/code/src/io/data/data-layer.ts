@@ -1,5 +1,7 @@
-import { JsonObject } from 'types/json';
 import { DataSource } from './data-source';
+import { Interactions } from 'io/config/interactions';
+import { InjectableMapProperties, InjectableProperty, MapboxHoverProperty } from 'types/map-properties';
+import { JsonArray, JsonObject } from 'types/json';
 
 /**
  * Represents a single visual layer of data. Will have concrete classes for each 
@@ -36,6 +38,9 @@ export abstract class DataLayer {
      */
     public interactions: string = "all";
 
+    // Stores all the injectable map properties as a mapping for ease of access
+    public injectableProperties?: InjectableMapProperties = {};
+
     // Field for indicating their groupings
     public grouping?: string;
 
@@ -66,7 +71,43 @@ export abstract class DataLayer {
         if (this.definition["grouping"]) {
             this.grouping = this.definition["grouping"] as string;
         }
+        if (this.definition[Interactions.HOVER]) {
+            const hoverJsonArray: JsonArray = this.definition[Interactions.HOVER] as JsonArray;
+            if (hoverJsonArray.length !== 2) {
+                throw new Error(`Invalid hover property detected for layer: ${this.id}. The hover property should have two values.`);
+            }
+            const hoverProperty: MapboxHoverProperty = { style: ["case", ["==", ["get", "iri"], "[HOVERED-IRI]"], Number(hoverJsonArray[0]), Number(hoverJsonArray[1])] };
+            this.updateInjectableProperty(Interactions.HOVER, hoverProperty)
+        }
         console.info("Created DataLayer instance '" + this.id + "'.");
+    }
+
+    /**
+     * Retrieves the injectable property associated with the specific interaction type.
+     * 
+     * @param {string} interactionType The type of interaction ("hover")
+     */
+    public getInjectableProperty(interactionType: string): InjectableProperty {
+        return this.injectableProperties[interactionType];
+    }
+
+    /**
+    * Check if the specific interaction type exists in this layer.
+    * 
+    * @param {string} interactionType The type of interaction ("hover")
+    */
+    public hasInjectableProperty(interactionType: string): boolean {
+        return interactionType in this.injectableProperties;
+    }
+
+    /**
+     * Update an injectable property for a specific interaction type and map type.
+     * 
+     * @param {string} interactionType The type of interaction ("hover")
+     * @param {InjectableProperty} property An injectable property to add
+     */
+    public updateInjectableProperty(interactionType: string, property: InjectableProperty): void {
+        this.injectableProperties[interactionType] = property;
     }
 }
 // End of class.
