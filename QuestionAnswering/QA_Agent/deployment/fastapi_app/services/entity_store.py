@@ -26,9 +26,15 @@ ELStrategy = Literal["fuzzy", "semantic"]
 
 
 @dataclass(frozen=True)
+class ELConfig:
+    strategy: ELStrategy = "fuzzy"
+    k: int = 3
+
+
+@dataclass(frozen=True)
 class ELConfigEntry:
     clsname: str
-    el_strategy: ELStrategy
+    el_config: ELConfig
 
 
 @dataclass(frozen=True)
@@ -45,6 +51,7 @@ logger = logging.getLogger(__name__)
 class EntityStore:
     KEY_PREFIX = "entities:"
     INDEX_NAME = "idx:entities"
+    _CHUNK_SIZE = 128
 
     @classmethod
     def _insert_entries_and_create_index(
@@ -57,8 +64,9 @@ class EntityStore:
         vector_dim = None
 
         logger.info("Inserting entities into Redis...")
+        logger.info("Chunk size: " + str(cls._CHUNK_SIZE))
 
-        for i, chunk in enumerate(batched(entries, 128)):
+        for i, chunk in enumerate(batched(entries, cls._CHUNK_SIZE)):
             logger.info("Processing chunk " + str(i))
 
             chunk = list(chunk)
@@ -126,7 +134,7 @@ class EntityStore:
         redis_client: Redis,
         embedder: IEmbedder,
         lexicon: Iterable[LexiconEntry],
-        clsname2strategy: Dict[str, ELStrategy] = dict(),
+        clsname2elconfig: Dict[str, ELConfig] = dict(),
     ):
         if not does_index_exist(redis_client, self.INDEX_NAME):
             logger.info(
@@ -140,64 +148,80 @@ class EntityStore:
 
         self.redis_client = redis_client
         self.embedder = embedder
-        self.clsname2strategy = clsname2strategy
-
-    def link_exact(self, surface_form: str) -> List[str]:
-        """Performs exact matching over canonical labels.
-        Note: This does not work if either the surface form or stored label contains forward slash.
-        """
-        inverse_label_query = Query(
-            '@label:"{label}"'.format(
-                label=regex.escape(
-                    surface_form, special_only=False
-                )
-            )
-        ).return_field("$.iri", as_field="iri")
-
-        res = self.redis_client.ft(self.INDEX_NAME).search(inverse_label_query)
-        return [doc.iri for doc in res.docs]
+        self.clsname2elconfig = clsname2elconfig
 
     def _match_clsname_query(self, clsname: str):
         return "@clsname:{{{clsname}}}".format(
             clsname=regex.escape(clsname, special_only=False, literal_spaces=True)
         )
 
-    def link_semantic(
-        self, surface_form: str, clsname: Optional[str] = None, k: int = 3
-    ):
+    def link_exact(self, surface_form: str, clsname: Optional[str]) -> List[str]:
+        """Performs exact matching over canonical labels.
+        Note: This does not work if either the surface form or stored label contains forward slash.
+        """
+        match_label = '@label:"{label}"'.format(
+            label=regex.escape(surface_form, special_only=False)
+        )
+        match_clsname = self._match_clsname_query(clsname) if clsname else None
+
+        query_str = (
+            "{clsname} {label}".format(clsname=match_clsname, label=match_label)
+            if match_clsname
+            else match_label
+        )
+        inverse_label_query = Query(query_str).return_field("$.iri", as_field="iri")
+
+        res = self.redis_client.ft(self.INDEX_NAME).search(inverse_label_query)
+        return [doc.iri for doc in res.docs]
+
+    def link_semantic(self, surface_form: str, clsname: Optional[str], k: int):
         """Performs vector similarity search over candidate surface forms.
         If input surface form exactly matches any label, preferentially return the associated IRIs.
         """
-        iris = self.link_exact(surface_form)
+        iris = self.link_exact(surface_form=surface_form, clsname=clsname)
+        logger.info("IRIs that match surface form exactly: " + str(iris))
 
-        k -= len(iris)
-        if k >= 0:
-            encoded_query = self.embedder([surface_form])[0].astype(np.float32)
-            knn_query = (
-                Query(
-                    "({filter_query})=>[KNN {k} @vector $query_vector AS vector_score]".format(
-                        filter_query=(
-                            self._match_clsname_query(clsname) if clsname else "*"
-                        ),
-                        k=k,
-                    )
+        if len(iris) >= k:
+            return iris[:k]
+        
+        encoded_query = self.embedder([surface_form])[0].astype(np.float32)
+        knn_query = (
+            Query(
+                "({filter_query})=>[KNN {k} @vector $query_vector AS vector_score]".format(
+                    filter_query=(
+                        self._match_clsname_query(clsname) if clsname else "*"
+                    ),
+                    k=k,
                 )
-                .sort_by("vector_score")
-                .return_field("$.iri", as_field="iri")
-                .dialect(2)
             )
-            res = self.redis_client.ft(self.INDEX_NAME).search(
-                knn_query, {"query_vector": encoded_query.tobytes()}
-            )
-            iris.extend(doc.iri for doc in res.docs)
+            .sort_by("vector_score")
+            .return_field("$.iri", as_field="iri")
+            .dialect(2)
+        )
+        res = self.redis_client.ft(self.INDEX_NAME).search(
+            knn_query, {"query_vector": encoded_query.tobytes()}
+        )
+
+        new_iris = [doc.iri for doc in res.docs]
+        logger.info(
+            "IRIs that match surface form based on vector similiarity search: "
+            + str(new_iris)
+        )
+
+        iris.extend(new_iris)
 
         return list(set(iris))[:k]
 
-    def link_fuzzy(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
+    def link_fuzzy(self, surface_form: str, clsname: Optional[str], k: int):
         """Performs fuzzy search over candidate surface forms.
         If input surface form exactly matches any label, preferentially return the associated IRIs.
         """
-        iris = self.link_exact(surface_form)
+        logger.info(
+            f"Perform fuzzy linking for `{surface_form}` of class `{clsname}` with k={k}"
+        )
+
+        iris = self.link_exact(surface_form=surface_form, clsname=clsname)
+        logger.info("IRIs that match surface form exactly: " + str(iris))
 
         if len(iris) >= k:
             return iris[:k]
@@ -233,18 +257,26 @@ class EntityStore:
                 if doc.iri not in iris_set:
                     iris.append(doc.iri)
                     iris_set.add(doc.iri)
+                    logger.info("Fuzzily-matched IRI: " + doc.iri)
 
             fz_dist += 1
 
         return iris[:k]
 
-    def link(self, surface_form: str, clsname: Optional[str] = None, k: int = 3):
-        logger.info(f"Performing entity linking for surface form `{surface_form}` of class `{clsname}`.")
+    def link(
+        self, surface_form: str, clsname: Optional[str] = None, k: Optional[int] = None
+    ):
+        logger.info(
+            f"Performing entity linking for surface form `{surface_form}` of class `{clsname}`."
+        )
 
-        strategy = self.clsname2strategy.get(clsname, "fuzzy") if clsname else "fuzzy"
-        logger.info("Linking strategy: " + strategy)
+        config = (
+            self.clsname2elconfig.get(clsname, ELConfig()) if clsname else ELConfig()
+        )
+        logger.info("Linking strategy: " + str(config))
 
-        if strategy == "fuzzy":
+        k = k if k else config.k
+        if config.strategy == "fuzzy":
             return self.link_fuzzy(surface_form, clsname, k)
         else:
             return self.link_semantic(surface_form, clsname, k)
@@ -262,7 +294,7 @@ class EntityStore:
 
 
 @cache
-def get_el_config(qa_engine: Annotated[QAEngineName, Depends(get_qa_engine_name)]):
+def get_el_configs(qa_engine: Annotated[QAEngineName, Depends(get_qa_engine_name)]):
     adapter = TypeAdapter(Tuple[ELConfigEntry, ...])
     return adapter.validate_json(
         files("resources." + qa_engine.value).joinpath("el_config.json").read_text()
@@ -270,7 +302,7 @@ def get_el_config(qa_engine: Annotated[QAEngineName, Depends(get_qa_engine_name)
 
 
 @cache
-def get_lexicon(config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_config)]):
+def get_lexicon(configs: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_configs)]):
     return tuple(
         [
             LexiconEntry(
@@ -279,7 +311,7 @@ def get_lexicon(config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_conf
                 label=obj["label"],
                 surface_forms=tuple(obj["surface_forms"]),
             )
-            for entry in config
+            for entry in configs
             for obj in json.loads(
                 files("resources.lexicon")
                 .joinpath(entry.clsname + "_lexicon.json")
@@ -290,10 +322,10 @@ def get_lexicon(config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_conf
 
 
 @cache
-def get_clsname2strategy(
-    config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_config)]
+def get_clsname2config(
+    config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_configs)]
 ):
-    return FrozenDict({entry.clsname: entry.el_strategy for entry in config})
+    return FrozenDict({entry.clsname: entry.el_config for entry in config})
 
 
 @cache
@@ -301,13 +333,11 @@ def get_entity_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     lexicon: Annotated[Tuple[LexiconEntry, ...], Depends(get_lexicon)],
-    clsname2strategy: Annotated[
-        FrozenDict[str, ELStrategy], Depends(get_clsname2strategy)
-    ],
+    clsname2config: Annotated[FrozenDict[str, ELConfig], Depends(get_clsname2config)],
 ):
     return EntityStore(
         redis_client=redis_client,
         embedder=embedder,
         lexicon=lexicon,
-        clsname2strategy=clsname2strategy,
+        clsname2elconfig=clsname2config,
     )
