@@ -8,7 +8,7 @@
                 "label": "Singapore's Land Lots",
                 "questions": [
                     "What does Special Use mean as a land use category?",
-                    "What is the official land uses classification of plots for hospitals?",
+                    "What land use category would hospitals be classified as?",
                     "what's the difference between Business 1 and Business 2 land use classifications?",
                     "How many land plots are designated for commercial use?",
                     "What is the area of the smallest agriculture lot?",
@@ -27,21 +27,6 @@
                     "Visualise the building footprint of Abbott Manufacturing",
                     "How many office buildings are there?",
                     "What are the 5 most common building usages?"
-                ]
-            },
-            {
-                "data_domain": "sg_industries",
-                "label": "Singapore's Factories & Data Centres",
-                "questions": [
-                    "What's the specific energy consumption of Springleaf Confectionery?",
-                    "What is the heat emission of Keppel Datahub",
-                    "Which industry has the greatest heat emission value?",
-                    "What is the average thermal efficiency of food plants?",
-                    "Which semiconductor plant has the highest production rate?",
-                    "Which companies have the largest heat emissions in each manufacturing industry?",
-                    "How many manufacturing companies are currently operating in Singapore?",
-                    "What are the different types of factories in Singapore?",
-                    "which company has the largest data centre by area?"
                 ]
             },
             {
