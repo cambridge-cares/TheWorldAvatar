@@ -969,10 +969,11 @@ class BaseClass(BaseModel, validate_assignment=True):
             # below ensures python objects in memory / the IRIs are used correctly for range of object properties
             if ObjectProperty.is_inherited(p_dct['type']):
                 _local_value_set = getattr(self, p_dct['field']).range
-                if flag_connect_object and isinstance(next(iter(_local_value_set)), str):
-                    getattr(self, p_dct['field']).reassign_range(set([KnowledgeGraph.get_object_from_lookup(o) for o in _local_value_set]))
-                if not flag_connect_object and isinstance(next(iter(_local_value_set)), BaseClass):
-                    getattr(self, p_dct['field']).reassign_range(set([o.instance_iri for o in _local_value_set]))
+                if bool(_local_value_set):
+                    if flag_connect_object and isinstance(next(iter(_local_value_set)), str):
+                        getattr(self, p_dct['field']).reassign_range(set([KnowledgeGraph.get_object_from_lookup(o) for o in _local_value_set]))
+                    if not flag_connect_object and isinstance(next(iter(_local_value_set)), BaseClass):
+                        getattr(self, p_dct['field']).reassign_range(set([o.instance_iri for o in _local_value_set]))
 
         # compare rdfs_comment and rdfs_label
         for r in ['rdfs_comment', 'rdfs_label']:
