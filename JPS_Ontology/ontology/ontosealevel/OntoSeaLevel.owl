@@ -211,6 +211,15 @@
     
 
 
+    <!-- https://dbpedia.org/ontology/tree -->
+
+
+    <owl:Class rdf:about="https://dbpedia.org/ontology/tree">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Tree"/>
+    </owl:Class>
+    
+
+
     <!-- https://raw.githubusercontent.com/beAWARE-project/ontology/master/beAWARE_ontology#Monument -->
 
 
@@ -351,10 +360,11 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/HeritageTree">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Tree"/>
         <rdfs:comment>A tree that is the natural heritage of a specific place.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
-        <rdfs:label>HeritageTree</rdfs:label>
+        <rdfs:label>Heritage tree</rdfs:label>
     </owl:Class>
     
 
@@ -479,7 +489,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/Tree">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
         <rdfs:comment>Tree</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
         <rdfs:label>Tree</rdfs:label>

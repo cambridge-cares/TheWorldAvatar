@@ -14,8 +14,10 @@ SeaLevelMeasurement,Class,,,,,,Sea level measurement.,https://www.theworldavatar
 ActualSeaLevelMeasurement,Class,SeaLevelMeasurement,IS-A,,,,Actual sea level measurement.,https://www.theworldavatar.com/kg/ontosealevel/,Actual sea level measurement
 ForecastSeaLevelMeasurement,Class,SeaLevelMeasurement,IS-A,,,,Forecasted sea level measurement based on a forecasting model.,https://www.theworldavatar.com/kg/ontosealevel/,Forecast sea level measurement
 ForecastSeaLevelMeasurement,Class,https://www.theworldavatar.com/kg/ontotimeseries/Forecast,IS-A,,,,Forecasted sea level measurement based on a forecasting model.,https://www.theworldavatar.com/kg/ontosealevel/,Forecast sea level measurement
-Tree,Class,CulturalSite,IS-A,,,,Tree,https://www.theworldavatar.com/kg/ontosealevel/,Tree
-HeritageTree,Class,Tree,IS-A,,,,A tree that is the natural heritage of a specific place.,https://www.theworldavatar.com/kg/ontosealevel/,HeritageTree
+Tree,Class,,,,,,Tree,https://www.theworldavatar.com/kg/ontosealevel/,Tree
+Tree,Class,https://dbpedia.org/ontology/tree,EQUIVALENT-TO,,,,Tree,https://www.theworldavatar.com/kg/ontosealevel/,Tree
+HeritageTree,Class,CulturalSite,IS-A,,,,A tree that is the natural heritage of a specific place.,https://www.theworldavatar.com/kg/ontosealevel/,Heritage tree
+HeritageTree,Class,Tree,IS-A,,,,A tree that is the natural heritage of a specific place.,https://www.theworldavatar.com/kg/ontosealevel/,Heritage tree
 Museum,Class,CulturalSite,IS-A,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Museum
 Museum,Class,https://schema.org/Museum,EQUIVALENT-TO,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Museum
 TouristAttraction,Class,CulturalSite,IS-A,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Tourist attraction
