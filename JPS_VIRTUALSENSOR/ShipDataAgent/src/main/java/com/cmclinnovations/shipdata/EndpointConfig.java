@@ -1,4 +1,4 @@
-package com.cmclinnovations.emissions;
+package com.cmclinnovations.shipdata;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;

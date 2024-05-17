@@ -1,10 +1,13 @@
-package com.cmclinnovations.emissions;
+package com.cmclinnovations.shipdata;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,11 +16,29 @@ import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
+import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-@WebServlet(urlPatterns = { "/" })
+@WebServlet(urlPatterns = { "/", ShipDataAgent.UPDATE_EXISTING_DATA })
 public class ShipDataAgent extends DerivationAgent {
     private static final Logger LOGGER = LogManager.getLogger(ShipDataAgent.class);
+    public static final String UPDATE_EXISTING_DATA = "/update-existing-data";
+    QueryClient queryClient;
+
+    /**
+     * this is a fudge for the sg stack
+     */
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (request.getServletPath().contentEquals(UPDATE_EXISTING_DATA)) {
+            LOGGER.info("Updating existing ship instances");
+            List<String> ships = queryClient.getShipsWithoutShipData();
+            ships.parallelStream().forEach(ship -> devClient
+                    .createSyncDerivationForNewInfo(EnvConfig.SHIP_DATA_AGENT_IRI, List.of(ship),
+                            DerivationSparql.ONTODERIVATION_DERIVATION));
+        }
+    }
 
     @Override
     public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
@@ -33,6 +54,7 @@ public class ShipDataAgent extends DerivationAgent {
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(),
                 endpointConfig.getKgurl());
         super.devClient = new DerivationClient(storeClient, QueryClient.PREFIX);
+        queryClient = new QueryClient(storeClient, null);
     }
 
     /**
