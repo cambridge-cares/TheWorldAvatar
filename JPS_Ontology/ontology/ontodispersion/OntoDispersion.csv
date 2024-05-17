@@ -41,6 +41,10 @@ Dimension,Class,ShipStaticProperty,IS-A,,,,Physical dimension of the ship,https:
 IMONumber,Class,ShipStaticProperty,IS-A,,,,,https://www.theworldavatar.com/kg/ontodispersion/,IMO number
 CallSign,Class,ShipStaticProperty,IS-A,,,,,https://www.theworldavatar.com/kg/ontodispersion/,Call sign
 Speed,Class,ShipDynamicProperty,IS-A,,,,,https://www.theworldavatar.com/kg/ontodispersion/,Speed over ground
+EnergyEfficiency,Class,ShipStaticProperty,IS-A,,,,,,Energy efficiency
+SpecificCO2Emission,Class,ShipStaticProperty,IS-A,,,,,,Specific CO2 emission
+SpecificFuelConsumption,Class,ShipStaticProperty,IS-A,,,,,,Specific fuel consumption
+CII,Class,ShipStaticProperty,IS-A,,,,,,CII
 CourseOverGround,Class,ShipDynamicProperty,IS-A,,,,Course in degrees,https://www.theworldavatar.com/kg/ontodispersion/,Course over ground
 Location,Class,ShipDynamicProperty,IS-A,,,,PostGIS point object stored as time series,https://www.theworldavatar.com/kg/ontodispersion/,
 Latitude,Class,ShipDynamicProperty,IS-A,,,,,https://www.theworldavatar.com/kg/ontodispersion/,Latitude
