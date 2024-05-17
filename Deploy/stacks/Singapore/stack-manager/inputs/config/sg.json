@@ -16,7 +16,8 @@
             "carpark-agent",
             "osmagent",
             "gfaagent",
-            "aqmesh-input-agent"
+            "aqmesh-input-agent",
+            "ship-data-agent"
         ],
         "excludes": []
     },
