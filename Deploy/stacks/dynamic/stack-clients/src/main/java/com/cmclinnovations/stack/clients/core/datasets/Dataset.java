@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 
-public class Dataset {
+public class Dataset extends AbstractDataObject {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(Dataset.class);
 
@@ -50,7 +50,7 @@ public class Dataset {
 
     @JsonProperty(value = NAME_KEY)
     @JacksonInject(NAME_KEY)
-    private String name;
+    private final String name = null;
     @JsonProperty
     private final Optional<String> description = Optional.empty();
 
@@ -77,8 +77,6 @@ public class Dataset {
     @JsonProperty
     private final Optional<StaticGeoServerData> staticGeoServerData = Optional.empty();
 
-    @JsonProperty(defaultValue = "false")
-    private final boolean skip = false;
     @JsonProperty
     private Optional<String> rdfType = Optional.empty();
 
@@ -93,14 +91,6 @@ public class Dataset {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description.orElse(getName());
     }
 
     public Path getDirectory() {
@@ -157,10 +147,6 @@ public class Dataset {
 
     public Optional<StaticGeoServerData> getStaticGeoServerData() {
         return staticGeoServerData;
-    }
-
-    public boolean isSkip() {
-        return skip;
     }
 
     public String baseIRI() {

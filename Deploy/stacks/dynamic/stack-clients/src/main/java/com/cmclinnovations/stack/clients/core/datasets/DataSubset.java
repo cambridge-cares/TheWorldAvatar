@@ -19,16 +19,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(value = TBoxCSV.class, names = { "TBoxCSV", "TboxCSV", "tboxcsv" }),
         @Type(value = CityDB.class, names = { "CityDB", "citydb" }),
         @Type(value = XtoCityDB.class, names = { "XtoCityDB", "xtocitydb" }) })
-public abstract class DataSubset {
+public abstract class DataSubset extends AbstractDataObject {
     protected final Optional<String> name = Optional.empty();
     @JsonProperty
     private final Optional<Path> subdirectory = Optional.empty();
-
-    @JsonProperty
-    private final boolean skip = false;
-
-    @JsonProperty
-    private final Optional<String> description = Optional.empty();
 
     // for dcat cataloging purposes
     @JsonIgnore
@@ -41,16 +35,8 @@ public abstract class DataSubset {
                 .orElseThrow(() -> new RuntimeException("Not all datasets have a name: " + this.getClass())));
     }
 
-    public String getDescription() {
-        return description.orElse(getName());
-    }
-
     public Optional<Path> getSubdirectory() {
         return subdirectory;
-    }
-
-    public boolean isSkip() {
-        return skip;
     }
 
     public boolean usesPostGIS() {
@@ -66,7 +52,7 @@ public abstract class DataSubset {
     }
 
     public void load(Dataset dataset) {
-        if (!skip) {
+        if (!isSkip()) {
             loadInternal(dataset);
         }
     }
