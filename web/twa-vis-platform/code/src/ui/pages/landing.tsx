@@ -20,7 +20,7 @@ const markdowner = markdownit({
     linkify: true
 });
 
-type LandingPageProps = {
+interface LandingPageProps {
     hasMap: boolean,
     hasDashboard: boolean,
 }
@@ -32,7 +32,7 @@ type LandingPageProps = {
  * 
  * @returns JSX for landing page.
  */
-export default function LandingPage(props: LandingPageProps) {
+export default function LandingPage(props: Readonly<LandingPageProps>) {
     // CSS class names
     const introClasses = ["markdown-body", styles.introInner].join(" ");
 
