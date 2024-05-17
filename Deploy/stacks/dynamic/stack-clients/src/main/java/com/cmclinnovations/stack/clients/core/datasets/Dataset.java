@@ -349,7 +349,7 @@ public class Dataset {
         // catalog exists
         // used later to generate SPARQL update
         if (!queryResult.isEmpty()) {
-            iri = queryResult.getJSONObject(0).getString(catalogVar.getQueryString().substring(1));
+            iri = queryResult.getJSONObject(0).getString(catalogVar.getVarName());
             exists = true;
 
             // then check each individual dataset
@@ -358,9 +358,9 @@ public class Dataset {
 
             for (int i = 0; i < queryResult.length(); i++) {
                 String queriedDatasubset = queryResult.getJSONObject(i)
-                        .getString(dataSubsetVar.getQueryString().substring(1));
+                        .getString(dataSubsetVar.getVarName());
                 String queriedDatasubsetName = queryResult.getJSONObject(i)
-                        .getString(dataSubsetNameVar.getQueryString().substring(1));
+                        .getString(dataSubsetNameVar.getVarName());
 
                 nameToDataSubsetMap.get(queriedDatasubsetName).setIri(queriedDatasubset);
                 nameToDataSubsetMap.get(queriedDatasubsetName).setExists(true);
