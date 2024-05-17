@@ -86,6 +86,24 @@ def find_subgraph_isomorphisms(graph1, graph2):
                     isomorphisms.append(mapping)
     return isomorphisms
 
+def validate_mapping(atoms_xyz, bonds_xyz, atoms_mol, bonds_mol, mapping):
+    """ Validate the mapping to ensure it respects protonation states """
+    for (mol_atom1, mol_atom2, bond_order) in bonds_mol:
+        if mol_atom1 in mapping and mol_atom2 in mapping:
+            xyz_atom1 = mapping[mol_atom1]
+            xyz_atom2 = mapping[mol_atom2]
+            if atoms_mol[mol_atom1][0] == 'O' and atoms_mol[mol_atom2][0] == 'H':
+                if bond_order == 1:
+                    # Ensure the H atom is correctly mapped to the single-bonded O
+                    for neighbor in bonds_xyz:
+                        if (neighbor[0] == xyz_atom1 and atoms_xyz[neighbor[1]][0] == 'C' and 
+                            atoms_xyz[neighbor[1]][0] == 2):  # Check for double bond
+                            return False
+                        if (neighbor[1] == xyz_atom1 and atoms_xyz[neighbor[0]][0] == 'C' and 
+                            atoms_xyz[neighbor[0]][0] == 2):  # Check for double bond
+                            return False
+    return True
+
 def write_xyz_file(file_path, header, atoms, bonds):
     with open(file_path, 'w') as file:
         file.write(header[0])
@@ -168,14 +186,16 @@ for index, row in df_valid.iterrows():
     
     try:
         subgraph_isomorphisms = find_subgraph_isomorphisms(graph_mol, graph_xyz)
-        if subgraph_isomorphisms:
+        valid_mappings = [iso for iso in subgraph_isomorphisms if validate_mapping(atoms_xyz, bonds_xyz, atoms_mol, bonds_mol, iso)]
+        
+        if valid_mappings:
             results_df.loc[index, 'Valid_Mapping'] = True
-            first_mapping = subgraph_isomorphisms[0]
+            best_mapping = valid_mappings[0]  # You can implement further ranking logic if needed
             mapped_bonds = []
             for (mol_atom1, mol_atom2, bond_order) in bonds_mol:
-                if mol_atom1 in first_mapping and mol_atom2 in first_mapping:
-                    xyz_atom1 = first_mapping[mol_atom1]
-                    xyz_atom2 = first_mapping[mol_atom2]
+                if mol_atom1 in best_mapping and mol_atom2 in best_mapping:
+                    xyz_atom1 = best_mapping[mol_atom1]
+                    xyz_atom2 = best_mapping[mol_atom2]
                     mapped_bonds.append((xyz_atom1, xyz_atom2, bond_order))
                     logging.debug(f"Bond: {xyz_atom1+1} - {xyz_atom2+1} with bond order {bond_order}")
             
