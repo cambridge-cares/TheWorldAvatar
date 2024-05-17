@@ -33,16 +33,19 @@ class SparqlResponseProcessor:
                     ):
                         continue
 
+                    label_key = k + "Label"
+                    if label_key in binding.keys():
+                        continue
+
                     label = self.entity_store.lookup_label(v)
                     if not label:
                         continue
 
-                    new_key = k + "Name"
-                    if new_key not in vars_set:
+                    if label_key not in vars_set:
                         idx = item.vars.index(k)
-                        item.vars.insert(idx + 1, new_key)
-                        vars_set.add(new_key)
-                    new_kvs[new_key] = label
+                        item.vars.insert(idx + 1, label_key)
+                        vars_set.add(label_key)
+                    new_kvs[label_key] = label
 
                 binding.update(new_kvs)
 
