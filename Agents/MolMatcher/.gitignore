@@ -1,0 +1,18 @@
+# Ignore everything in the data directory
+data/*
+
+# Don't ignore this directory
+!data/
+
+# Ignore environment directory
+venv/
+
+# Ignore old code directories or files
+old_codes/
+old_codes/*
+
+# Ignore all CSV, JSON, XYZ, and MOL files
+*.csv
+*.json
+*.xyz
+*.mol
