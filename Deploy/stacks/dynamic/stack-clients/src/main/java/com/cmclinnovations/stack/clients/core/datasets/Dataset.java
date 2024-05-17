@@ -218,7 +218,7 @@ public class Dataset {
             if (getDataSubsets().stream().anyMatch(DataSubset::usesBlazegraph)) {
                 String kgUrl = BlazegraphClient.getInstance().getEndpoint().getUrl(getNamespace());
                 Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_BASE_IRI + UUID.randomUUID());
-                insertTriples.add(blazegraphService.isA(SparqlConstants.BLAZEGRAPH)
+                insertTriples.add(blazegraphService.isA(SparqlConstants.BLAZEGRAPH_SERVICE)
                         .andHas(DCTERMS.TITLE, getNamespace())
                         .andHas(DCTERMS.IDENTIFIER, blazegraphService)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(kgUrl))
@@ -232,7 +232,7 @@ public class Dataset {
 
                 // append triples
                 Iri postgisService = Rdf.iri(SparqlConstants.DEFAULT_BASE_IRI + UUID.randomUUID());
-                insertTriples.add(postgisService.isA(SparqlConstants.POSTGIS)
+                insertTriples.add(postgisService.isA(SparqlConstants.POSTGIS_SERVICE)
                         .andHas(DCTERMS.TITLE, getDatabase())
                         .andHas(DCTERMS.IDENTIFIER, postgisService)
                         .andHas(DCAT.ENDPOINT_URL, Rdf.iri(jdbcUrl))
@@ -246,7 +246,7 @@ public class Dataset {
                 Iri geoserverService = Rdf.iri(SparqlConstants.DEFAULT_BASE_IRI + UUID.randomUUID());
 
                 // append triples
-                insertTriples.add(geoserverService.isA(SparqlConstants.GEOSERVER)
+                insertTriples.add(geoserverService.isA(SparqlConstants.GEOSERVER_SERVICE)
                         .andHas(DCTERMS.TITLE, getWorkspaceName())
                         .andHas(DCTERMS.IDENTIFIER, geoserverService)
                         .andHas(DCTERMS.REFERENCES, postgisServiceVar)
@@ -258,7 +258,7 @@ public class Dataset {
             if (newOntopEndpoint != null) {
                 Iri ontopService = Rdf.iri(SparqlConstants.DEFAULT_BASE_IRI + UUID.randomUUID());
 
-                insertTriples.add(ontopService.isA(SparqlConstants.ONTOP)
+                insertTriples.add(ontopService.isA(SparqlConstants.ONTOP_SERVICE)
                         .andHas(DCTERMS.TITLE, getDatabase())
                         .andHas(DCTERMS.IDENTIFIER, ontopService)
                         .andHas(DCTERMS.REQUIRES, postgisServiceVar)
@@ -272,13 +272,13 @@ public class Dataset {
             catalogIri = Rdf.iri(iri);
             insertTriples.add(catalogIri.has(DCTERMS.MODIFIED, currentTime));
             wherePatterns.add(GraphPatterns.optional(catalogIri.has(DCAT.HAS_SERVICE, blazegraphServiceVar)
-                    .and(blazegraphServiceVar.isA(SparqlConstants.BLAZEGRAPH))));
+                    .and(blazegraphServiceVar.isA(SparqlConstants.BLAZEGRAPH_SERVICE))));
             wherePatterns.add(GraphPatterns.optional(catalogIri.has(DCAT.HAS_SERVICE, postgisServiceVar)
-                    .and(postgisServiceVar.isA(SparqlConstants.POSTGIS))));
+                    .and(postgisServiceVar.isA(SparqlConstants.POSTGIS_SERVICE))));
             wherePatterns.add(GraphPatterns.optional(catalogIri.has(DCAT.HAS_SERVICE, geoserverServiceVar)
-                    .and(geoserverServiceVar.isA(SparqlConstants.GEOSERVER))));
+                    .and(geoserverServiceVar.isA(SparqlConstants.GEOSERVER_SERVICE))));
             wherePatterns.add(GraphPatterns.optional(catalogIri.has(DCAT.HAS_SERVICE, ontopServiceVar)
-                    .and(ontopServiceVar.isA(SparqlConstants.ONTOP))));
+                    .and(ontopServiceVar.isA(SparqlConstants.ONTOP_SERVICE))));
         }
 
         getDataSubsets().stream().forEach(dataSubset -> {
@@ -366,13 +366,5 @@ public class Dataset {
                 nameToDataSubsetMap.get(queriedDatasubsetName).setExists(true);
             }
         }
-    }
-
-    private static class SparqlConstants {
-        static final String DEFAULT_BASE_IRI = "https://theworldavatar.io/kg/";
-        static final Iri BLAZEGRAPH = Rdf.iri(DEFAULT_BASE_IRI + "Blazegraph");
-        static final Iri POSTGIS = Rdf.iri(DEFAULT_BASE_IRI + "PostGIS");
-        static final Iri GEOSERVER = Rdf.iri(DEFAULT_BASE_IRI + "GeoServer");
-        static final Iri ONTOP = Rdf.iri(DEFAULT_BASE_IRI + "Ontop");
     }
 }
