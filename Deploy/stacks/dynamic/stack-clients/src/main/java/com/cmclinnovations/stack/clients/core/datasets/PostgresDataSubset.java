@@ -1,7 +1,5 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -70,19 +68,4 @@ public abstract class PostgresDataSubset extends DataSubset {
                 .ifPresent(query -> PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(query));
     }
 
-    public String handleFileValues(String query) {
-        if (null != query && query.startsWith("@")) {
-            String sqlFile = query.substring(1);
-            try {
-                query = Files.readString(Path.of(sqlFile));
-            } catch (IOException ex) {
-                throw new RuntimeException(
-                        "Failed to read SQL file '" + Path.of(sqlFile).toAbsolutePath().toString()
-                                + "' for data subset '"
-                                + getName() + "'.",
-                        ex);
-            }
-        }
-        return query;
-    }
 }
