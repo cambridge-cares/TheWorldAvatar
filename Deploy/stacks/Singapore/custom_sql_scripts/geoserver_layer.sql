@@ -129,6 +129,6 @@ CREATE INDEX refgfa_index ON usage.buildingusage_geoserver_sg (ref_gfa);
 
 DROP MATERIALIZED VIEW IF EXISTS usage.buildings_with_cea;
 CREATE MATERIALIZED VIEW usage.buildings_with_cea AS (
-SELECT bg.* FROM usage.buildingusage_geoserver_sg AS bg
+SELECT bg.*, 'http://sg-blazegraph:8080/blazegraph/namespace/cea/sparql' as endpoint FROM usage.buildingusage_geoserver_sg AS bg
 JOIN cea.cea AS c ON c.iri = bg.iri);
 CREATE INDEX geometry_cea_index ON usage.buildings_with_cea USING GIST (geom);
