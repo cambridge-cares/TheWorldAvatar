@@ -13,22 +13,25 @@ CulturalSite,Class,,,,,,A place or building of cultural importance.,https://www.
 SeaLevelMeasurement,Class,,,,,,Sea level measurement.,https://www.theworldavatar.com/kg/ontosealevel/,Sea level measurement
 ActualSeaLevelMeasurement,Class,SeaLevelMeasurement,IS-A,,,,Actual sea level measurement.,https://www.theworldavatar.com/kg/ontosealevel/,Actual sea level measurement
 ForecastSeaLevelMeasurement,Class,SeaLevelMeasurement,IS-A,,,,Forecasted sea level measurement based on a forecasting model.,https://www.theworldavatar.com/kg/ontosealevel/,Forecast sea level measurement
-ForecastSeaLevelMeasurement,Class,https://www.theworldavatar.com/kg/ontotimeseries/Forecast,IS-A,,,,Forecasted sea level measurement based on a forecasting model.,https://www.theworldavatar.com/kg/ontosealevel/,
+ForecastSeaLevelMeasurement,Class,https://www.theworldavatar.com/kg/ontotimeseries/Forecast,IS-A,,,,Forecasted sea level measurement based on a forecasting model.,https://www.theworldavatar.com/kg/ontosealevel/,Forecast sea level measurement
 Tree,Class,CulturalSite,IS-A,,,,Tree,https://www.theworldavatar.com/kg/ontosealevel/,Tree
 HeritageTree,Class,Tree,IS-A,,,,A tree that is the natural heritage of a specific place.,https://www.theworldavatar.com/kg/ontosealevel/,HeritageTree
-https://schema.org/Museum,Class,CulturalSite,IS-A,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Museum
-https://schema.org/TouristAttraction,Class,CulturalSite,IS-A,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Tourist attraction
-https://schema.org/LandmarksOrHistoricalBuildings,Class,CulturalSite,IS-A,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Landmarks or historical building
+Museum,Class,CulturalSite,IS-A,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Museum
+Museum,Class,https://schema.org/Museum,EQUIVALENT-TO,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Museum
+TouristAttraction,Class,CulturalSite,IS-A,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Tourist attraction
+TouristAttraction,Class,https://schema.org/TouristAttraction,EQUIVALENT-TO,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Tourist attraction
+HistoricSite,Class,CulturalSite,IS-A,,,,,https://www.theworldavatar.com/kg/ontosealevel/,Historic site
 Monument,Class,CulturalSite,IS-A,,,,A structure for the commemoration of a person or event.,https://www.theworldavatar.com/kg/ontosealevel/,Monument
 Monument,Class,https://raw.githubusercontent.com/beAWARE-project/ontology/master/beAWARE_ontology#Monument,EQUIVALENT-TO,,,,A structure for the commemoration of a person or event.,https://www.theworldavatar.com/kg/ontosealevel/,Monument
 Scenario,Class,,,,,,Scenario that can act as input to a forecasting level for forecasting sea level.,https://www.theworldavatar.com/kg/ontosealevel/,Scenario
 SharedSocioEconomicPathway,Class,Scenario,IS-A,,,,A climate change scenario of projected socioeconomic changes.,https://www.theworldavatar.com/kg/ontosealevel/,Shared Socioeconomic Pathway
 measuredAt,Object Property,,,LocalMeanSeaLevel,http://www.opengis.net/ont/geosparql#Feature,exactly 1,A relationship between the local mean sea level and the reference point for the local mean sea level measurement.,https://www.theworldavatar.com/kg/ontosealevel/,measured at
-measuredIn,Data Property,,,SeaLevelMeasurement,http://www.w3.org/2001/XMLSchema#gYear,,A relationship between a sea level measurement and the time of measurement.,https://www.theworldavatar.com/kg/ontosealevel/,measured in
-measuredIn,Data Property,,,SeaLevelMeasurement,http://www.w3.org/2001/XMLSchema#date,,A relationship between a sea level measurement and the time of measurement.,https://www.theworldavatar.com/kg/ontosealevel/,measured in
-hasHeight,Object Property,,,SeaLevelMeasurement,http://www.ontology-of-units-of-measure.org/resource/om-2/Height,,A relationship between a sea level measurement and the sea level height.,https://www.theworldavatar.com/kg/ontosealevel/,has height
-isAffectedBy,Object Property,,,https://www.theworldavatar.com/kg/ontobuiltenv/Property,EconomicDamage,,A relationship between the damage due to rising sea level and the places it affects.,https://www.theworldavatar.com/kg/ontosealevel/,is affected by
-isAffectedBy,Object Property,,,CulturalSite,CulturalDamage,,A relationship between the damage due to rising sea level and the places it affects.,https://www.theworldavatar.com/kg/ontosealevel/,is affected by
-hasMonetaryValu,Object Property,,,EconomicDamage,AmountOfMoney,,A relationship between the economic damage due to rising sea level and its total monetary value.,https://www.theworldavatar.com/kg/ontosealevel/,has monetary value
+measuredIn,Data Property,,,SeaLevelMeasurement,http://www.w3.org/2001/XMLSchema#gYear UNION http://www.w3.org/2001/XMLSchema#date,,A relationship between a sea level measurement and the time of measurement.,https://www.theworldavatar.com/kg/ontosealevel/,measured in
+hasHeight,Object Property,,,ActualSeaLevelMeasurement,http://www.ontology-of-units-of-measure.org/resource/om-2/Height,,A relationship between a sea level measurement and the sea level height.,https://www.theworldavatar.com/kg/ontosealevel/,has height
+affects,Object Property,,,Damage,CulturalSite UNION https://www.theworldavatar.com/kg/ontobuiltenv/Property, ,A relationship between the damage due to rising sea level and the places it affects.,https://www.theworldavatar.com/kg/ontosealevel/,affects
+affects,Object Property,,,EconomicDamage,https://www.theworldavatar.com/kg/ontobuiltenv/Property,only,A relationship between the damage due to rising sea level and the places it affects.,https://www.theworldavatar.com/kg/ontosealevel/,affects
+affects,Object Property,,,CulturalDamage,CulturalSite,only,A relationship between the damage due to rising sea level and the places it affects.,https://www.theworldavatar.com/kg/ontosealevel/,affects
+hasMonetaryValue,Object Property,,,EconomicDamage,AmountOfMoney,,A relationship between the economic damage due to rising sea level and its total monetary value.,https://www.theworldavatar.com/kg/ontosealevel/,has monetary value
 hasInputScenario,Object Property,,,ForecastSeaLevelMeasurement,Scenario,,A relationship between the forecasted sea level measurement and the input scenario the forecast was based on.,https://www.theworldavatar.com/kg/ontosealevel/,has input scenario
-hasMeasurment,Object Property,,,SeaLevel,SeaLevelMeasurement,,A relationship between a sea level and its measurement.,https://www.theworldavatar.com/kg/ontosealevel/,has measurement
+hasMeasurement,Object Property,,,SeaLevel,ActualSeaLevelMeasurement,,A relationship between a sea level and its measurement.,https://www.theworldavatar.com/kg/ontosealevel/,has measurement
+hasPotentialImpact,Object Property,,,SeaLevelChange,Damage,,A relationship between a sea level change and its potential damage,https://www.theworldavatar.com/kg/ontosealevel/,has potential impact
