@@ -419,55 +419,6 @@ public class Aermod {
         }
     }
 
-    public void createMockOutput(Polygon scope, int nx, int ny, int simulationSrid, PollutantType pollutantType,
-            int z) {
-
-        AermodGrid ag = new AermodGrid(scope, nx, ny, simulationSrid);
-        // Get the current date time
-        LocalDateTime currentTime = LocalDateTime.now();
-
-        // Format the current date
-        String formattedDate = currentTime.format(DateTimeFormatter.ofPattern("dd/MM/yy"));
-
-        // Format the current time
-        String formattedTime = currentTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-
-        StringBuilder sb = new StringBuilder(
-                "* AERMOD (22112 ): Emission dispersion simulation                                           ");
-        sb.append(formattedDate).append(System.lineSeparator());
-        sb.append("* AERMET ( 22112):                                                                          ")
-                .append(formattedTime).append(System.lineSeparator());
-        sb.append("* MODELING OPTIONS USED:   RegDFAULT  CONC  ELEV  FLGPOL  RURAL").append(System.lineSeparator());
-        sb.append("*         POST/PLOT FILE OF PERIOD VALUES FOR SOURCE GROUP: ALL     ")
-                .append(System.lineSeparator());
-        String logReceptor = String.format("*         FOR A TOTAL OF %d RECEPTORS.", nx * ny);
-        sb.append(logReceptor).append(System.lineSeparator());
-        sb.append("*         FORMAT: (2(1X,F13.5),1X,E13.6,3(1X,F8.2),2X,A6,2X,A8,2X,I8.8,2X,A8)")
-                .append(System.lineSeparator());
-        sb.append(
-                "*        X             Y      AVERAGE CONC    ZELEV    ZHILL    ZFLAG    AVE     GRP      NUM HRS   NET ID")
-                .append(System.lineSeparator());
-        sb.append(
-                "* ____________  ____________  ____________   ______   ______   ______  ______  ________  ________  ________")
-                .append(System.lineSeparator());
-
-        for (int i = 0; i < nx; i++) {
-            double x = ag.xlo + i * ag.dx;
-            for (int j = 0; j < ny; j++) {
-                double y = ag.ylo + j * ag.dy;
-                String entry = String.format(
-                        " %13.5f %13.5f 0.000000E+00     0.00     0.00     0.00  PERIOD  ALL       00000024  POL1",
-                        x, y);
-                sb.append(entry).append(System.lineSeparator());
-            }
-        }
-
-        writeToFile(
-                aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).resolve(String.valueOf(z))
-                        .resolve("averageConcentration.dat"),
-                sb.toString());
-    }
-
     String addLeadingZero(String variable, int length) {
         while (variable.length() < length) {
             if (variable.startsWith("-")) {

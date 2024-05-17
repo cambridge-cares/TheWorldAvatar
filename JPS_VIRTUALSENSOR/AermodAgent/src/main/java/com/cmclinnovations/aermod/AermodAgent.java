@@ -228,8 +228,6 @@ public class AermodAgent extends DerivationAgent {
                         aermod.createPointsFile(sourcesWithEmissions, srid, pollutantType, zMap.get(zIri));
                         aermod.runAermod(pollutantType, zMap.get(zIri));
 
-                    } else {
-                        aermod.createMockOutput(scope, nx, ny, srid, pollutantType, zMap.get(zIri));
                     }
 
                     // Upload files used by scripts within Python Service to file server.
