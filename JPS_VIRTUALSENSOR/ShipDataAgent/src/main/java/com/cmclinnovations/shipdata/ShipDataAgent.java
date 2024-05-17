@@ -26,7 +26,7 @@ public class ShipDataAgent extends DerivationAgent {
     QueryClient queryClient;
 
     /**
-     * this is a fudge for the sg stack
+     * this is a fudge for the sg stack, agent instance needs to be present
      */
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
@@ -73,6 +73,7 @@ public class ShipDataAgent extends DerivationAgent {
         derivationOutputs.addTriple(shipIri, QueryClient.HAS_PROPERTY_STRING, efficiencyProperty);
         derivationOutputs.addTriple(efficiencyProperty, QueryClient.HAS_VALUE_STRING, efficiencyMeasure);
         derivationOutputs.addLiteral(efficiencyMeasure, QueryClient.HAS_NUMERICALVALUE_STRING, 0.48);
+        derivationOutputs.addLiteral(efficiencyMeasure, QueryClient.HAS_UNIT, "-");
 
         // fuel consumption, assume heavy fuel oil, LHV = 10.83 kWh/g, efficiency 48%
         String fuelConsumptionProperty = derivationOutputs.createNewEntityWithBaseUrl(QueryClient.PREFIX,
@@ -83,6 +84,7 @@ public class ShipDataAgent extends DerivationAgent {
         derivationOutputs.addTriple(shipIri, QueryClient.HAS_PROPERTY_STRING, fuelConsumptionProperty);
         derivationOutputs.addTriple(fuelConsumptionProperty, QueryClient.HAS_VALUE_STRING, fuelConsumptionMeasure);
         derivationOutputs.addLiteral(fuelConsumptionMeasure, QueryClient.HAS_NUMERICALVALUE_STRING, 192);
+        derivationOutputs.addLiteral(fuelConsumptionMeasure, QueryClient.HAS_UNIT, "g/kWh");
 
         // Specific CO2 emission (constant for each fuel type) heavy fuel oil, 3.114
         String specificCo2Property = derivationOutputs.createNewEntityWithBaseUrl(QueryClient.PREFIX,
@@ -94,6 +96,7 @@ public class ShipDataAgent extends DerivationAgent {
         derivationOutputs.addTriple(specificCo2Property, QueryClient.HAS_VALUE_STRING, specificCo2Measure);
         // 3.114 * 1000 / 10.83 / 0.48
         derivationOutputs.addLiteral(specificCo2Measure, QueryClient.HAS_NUMERICALVALUE_STRING, 600);
+        derivationOutputs.addLiteral(specificCo2Measure, QueryClient.HAS_UNIT, "g/kWh");
 
         // CII
         String ciiProperty = derivationOutputs.createNewEntityWithBaseUrl(QueryClient.PREFIX, QueryClient.CII);
@@ -103,5 +106,6 @@ public class ShipDataAgent extends DerivationAgent {
         derivationOutputs.addTriple(shipIri, QueryClient.HAS_PROPERTY_STRING, ciiProperty);
         derivationOutputs.addTriple(ciiProperty, QueryClient.HAS_PROPERTY_STRING, ciiMeasure);
         derivationOutputs.addLiteral(ciiMeasure, QueryClient.HAS_NUMERICALVALUE_STRING, 15);
+        derivationOutputs.addLiteral(ciiMeasure, QueryClient.HAS_UNIT, "g/t.nm");
     }
 }

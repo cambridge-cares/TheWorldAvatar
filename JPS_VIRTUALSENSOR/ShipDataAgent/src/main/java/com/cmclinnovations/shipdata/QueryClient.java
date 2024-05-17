@@ -62,6 +62,7 @@ public class QueryClient {
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
     static final String HAS_VALUE_STRING = OM_STRING + "hasValue";
     static final String HAS_NUMERICALVALUE_STRING = OM_STRING + "hasNumericalValue";
+    static final String HAS_UNIT = OM_STRING + "hasUnit";
     static final String EMITS = PREFIX + "emits";
     static final String HAS_POLLUTANT_ID = PREFIX + "hasPollutantID";
 
