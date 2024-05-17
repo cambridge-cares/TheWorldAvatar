@@ -22,7 +22,7 @@ export type MapSettings = {
   camera: CameraSettings,
   imagery: ImagerySettings,
   legend?: LegendSettings,
-  icons: IconSettings,
+  icons?: IconSettings,
 }
 
 // Icon settings object
