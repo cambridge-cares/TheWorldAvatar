@@ -118,6 +118,7 @@ public class GDALClient extends ContainerClient {
                         }
                         filesOfType.removeAll(filesToRemove);
                         filesOfType.addAll(filesToAdd);
+                        layerName = null;
                         break;
                     default:
                         break;
