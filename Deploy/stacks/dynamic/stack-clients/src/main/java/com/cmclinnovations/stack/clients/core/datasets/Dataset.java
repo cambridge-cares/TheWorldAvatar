@@ -179,6 +179,7 @@ public class Dataset extends AbstractDataObject {
         setDatasetExistsAndIris();
 
         List<TriplePattern> insertTriples = new ArrayList<>();
+        List<TriplePattern> deleteTriples = new ArrayList<>();
         List<GraphPattern> wherePatterns = new ArrayList<>();
 
         StringLiteral currentTime = Rdf.literalOfType(LocalDateTime.now().toString(), XSD.DATETIME);
@@ -256,6 +257,8 @@ public class Dataset extends AbstractDataObject {
 
         } else {
             catalogIri = Rdf.iri(iri);
+            Variable catalogTime = query.var();
+            deleteTriples.add(catalogIri.has(DCTERMS.MODIFIED, catalogTime));
             insertTriples.add(catalogIri.has(DCTERMS.MODIFIED, currentTime));
             wherePatterns.add(GraphPatterns.optional(catalogIri.has(DCAT.HAS_SERVICE, blazegraphServiceVar)
                     .and(blazegraphServiceVar.isA(SparqlConstants.BLAZEGRAPH_SERVICE))));
@@ -286,6 +289,8 @@ public class Dataset extends AbstractDataObject {
                     insertTriples.add(geoserverServiceVar.has(DCAT.SERVES_DATASET, dataSetIri));
                 }
             } else {
+                Variable dataSubsetTime = query.var();
+                deleteTriples.add(Rdf.iri(dataSubset.getIri()).has(DCTERMS.MODIFIED, dataSubsetTime));
                 insertTriples.add(Rdf.iri(dataSubset.getIri()).has(DCTERMS.MODIFIED, currentTime));
             }
         });
@@ -297,6 +302,11 @@ public class Dataset extends AbstractDataObject {
         ModifyQuery modify = Queries.MODIFY();
         TriplePattern[] insertTriplesAsArray = insertTriples.toArray(new TriplePattern[0]);
         modify.insert(insertTriplesAsArray);
+
+        if (!deleteTriples.isEmpty()) {
+            TriplePattern[] deleteTriplesAsArray = deleteTriples.toArray(new TriplePattern[0]);
+            modify.delete(deleteTriplesAsArray).where(deleteTriplesAsArray);
+        }
 
         if (!wherePatterns.isEmpty()) {
             GraphPattern[] wherePatternsAsArray = wherePatterns.toArray(new GraphPattern[0]);
