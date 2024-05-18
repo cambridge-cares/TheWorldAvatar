@@ -437,6 +437,14 @@ class OKSparqlCompact2VerboseConverter:
                 }
             }
         }
+        OPTIONAL {
+            VALUES ?KineticModelType { okin:PDepArrheniusModel }
+            ?KineticModel okin:hasArrheniusModel ?ArrheniusModel .
+            ?Pressure okin:isPressureConditionOf ?ArrheniusModel ; okin:value ?PressureValue .
+            ?ArrheniusModel okin:hasActivationEnergy [ okin:value ?ActivationEnergyValue ; okin:unit ?ActivationEnergyUnit ] ; 
+                            okin:hasArrheniusFactor [ okin:value ?ArrheniusFactorValue ; okin:unit ?ArrheniusFactorUnit ] ; 
+                            okin:hasTemperatureExponent/okin:value ?TemperatureExponentValue .
+        }
         """
         arrheniusmodel_patterns = [
             ValuesClause(var="?KineticModelType", values=["okin:ArrheniusModel"]),
@@ -596,6 +604,45 @@ class OKSparqlCompact2VerboseConverter:
             "?T3Value",
         ]
 
+        pdeparrheniusmodel_patterns = [
+            ValuesClause(var="?KineticModelType", values=["okin:PDepArrheniusModel"]),
+            TriplePattern.from_triple(
+                "?KineticModel", "okin:hasArrheniusModel", "?ArrheniusModel"
+            ),
+            TriplePattern(
+                subj="?Pressure",
+                tails=[
+                    ("okin:isPressureConditionOf", "?ArrheniusModel"),
+                    ("okin:value", "?PressureValue"),
+                ],
+            ),
+            TriplePattern(
+                subj="?ArrheniusModel",
+                tails=[
+                    (
+                        "okin:hasActivationEnergy",
+                        "[ okin:value ?ActivationEnergyValue ; okin:unit ?ActivationEnergyUnit ]",
+                    ),
+                    (
+                        "okin:hasArrheniusFactor",
+                        "[ okin:value ?ArrheniusFactorValue ; okin:unit ?ArrheniusFactorUnit ]",
+                    ),
+                    (
+                        "okin:hasTemperatureExponent/okin:value",
+                        "?TemperatureExponentValue",
+                    ),
+                ],
+            ),
+        ]
+        pdeparrheniusmodel_vars = [
+            "?PressureValue",
+            "?ActivationEnergyValue",
+            "?ActivationEnergyUnit",
+            "?ArrheniusFactorValue",
+            "?ArrheniusFactorUnit",
+            "?TemperatureExponentValue",
+        ]
+
         okin_patterns: List[GraphPattern] = [
             pattern,
             TriplePattern.from_triple("?KineticModel", "a", "?KineticModelType"),
@@ -603,11 +650,13 @@ class OKSparqlCompact2VerboseConverter:
             OptionalClause(arrheniusmodel_patterns),
             OptionalClause(multiarrheniusmodel_patterns),
             OptionalClause(falloffmodel_patterns),
+            OptionalClause(pdeparrheniusmodel_patterns),
         ]
         select_vars = ["?ModelType"] + list(
             set(arrheniusmodel_vars)
             .union(set(multiarrheniusmodel_vars))
             .union(set(falloffmodel_vars))
+            .union(set(pdeparrheniusmodel_vars))
         )
 
         return select_vars, okin_patterns, []
