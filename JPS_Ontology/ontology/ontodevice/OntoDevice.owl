@@ -10,7 +10,7 @@
      xmlns:ontodevice="https://www.theworldavatar.com/kg/ontodevice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date>18 March 2024</dc:date>
+        <dc:date>19 May 2024</dc:date>
         <rdfs:comment>OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo>1.5</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -69,6 +69,20 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasAirExchangeRate -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasAirExchangeRate">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontodevice/AIrChangePerHour"/>
+        <rdfs:comment>A relationship that describes how many times does a volume of air equal to the volume of a room can an HVAC unit pump out of the room per hour</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobms/"/>
+        <rdfs:label>has air exchange rate</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/hasControlParameter -->
 
 
@@ -117,7 +131,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasDefaultPosition">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Valve"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/DefaultValvePosition"/>
-        <rdfs:comment>A relationship that describes a valve and it's default position (NC, NO etc).</rdfs:comment>
+        <rdfs:comment>A relationship that describes a valve and it&apos;s default position (NC, NO etc).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has default position</rdfs:label>
     </owl:ObjectProperty>
@@ -151,7 +165,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasGeoLocation">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.opengis.net/ont/sf#Point"/>
-        <rdfs:comment>A relationship that describes a device's location.</rdfs:comment>
+        <rdfs:comment>A relationship that describes a device&apos;s location.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has geo location</rdfs:label>
     </owl:ObjectProperty>
@@ -332,7 +346,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasProperty">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OperatingParameter"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OperatingProperty"/>
-        <rdfs:comment>A relationship between a operating parameter and it's property.</rdfs:comment>
+        <rdfs:comment>A relationship between a operating parameter and it&apos;s property.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has property</rdfs:label>
     </owl:ObjectProperty>
@@ -850,6 +864,13 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontodevice/AIrChangePerHour -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontodevice/AIrChangePerHour"/>
+    
+
+
     <!-- http://www.w3.org/ns/ssn/systems/Condition -->
 
 
@@ -884,6 +905,13 @@
     <owl:Class rdf:about="https://saref.etsi.org/core/Device">
         <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
     </owl:Class>
+    
+
+
+    <!-- https://saref.etsi.org/core/HVAC -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/HVAC"/>
     
 
 
@@ -1422,7 +1450,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GPSDevice">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
-        <rdfs:comment>A device used within Earth's planetary atmosphere to determine its precise geographical location.</rdfs:comment>
+        <rdfs:comment>A device used within Earth&apos;s planetary atmosphere to determine its precise geographical location.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>GPS device</rdfs:label>
     </owl:Class>
@@ -1464,7 +1492,7 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontodevice/GravityVector"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>A sensor that detect minute localized changes in the force of Earth's gravity caused by variations in rock or other material's density underground.</rdfs:comment>
+        <rdfs:comment>A sensor that detect minute localized changes in the force of Earth&apos;s gravity caused by variations in rock or other material&apos;s density underground.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Gravity sensor</rdfs:label>
     </owl:Class>
