@@ -499,10 +499,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobms/AIrChangePerHour -->
+    <!-- https://www.theworldavatar.com/kg/ontobms/AirChangePerHour -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/AIrChangePerHour">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/AirChangePerHour">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Frequency"/>
         <rdfs:comment>A variable that describes how many times does a volume of air equal to the volume of a room can an HVAC unit pump out of the room per hour</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobms/"/>
