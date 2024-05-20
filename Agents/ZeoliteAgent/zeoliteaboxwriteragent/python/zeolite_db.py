@@ -846,8 +846,6 @@ class ZeoliteDB:
 
         self.zeolites = []
         for i_line, (line_cif, line_mat) in enumerate(zip(data_cif, data_mat)):
-            #   "source", "frame", "name", "guest", "cif_path", "doi",
-            #   "bib_path", "icsd", "cod_id", "recipe"
 
             zeolite = ZeoliteMaterial(uuidDB=self.uuidDB)
             zeolite.data["source"].append("izamat")
@@ -915,151 +913,6 @@ class ZeoliteDB:
 
         # === end of ZeoliteDB.load_iza_data()
 
-    def _get_material_distribution(self, option):
-        zeo_distr = {}
-
-        if option == "iza" or "iza" in option:
-            #print("====================================")
-            
-            file_mat = "izamat.csv"
-            if not os.path.isfile(file_mat):
-                logging.error(" Missing file '%s' for load_zeolites().", file_mat)
-                return
-            data_mat = tools.readCsv(file_mat)[1:]
-
-            for line_mat in data_mat:
-                code = line_mat[3]
-                #code = code.replace("_", "-")
-                if code in zeo_distr:
-                    zeo_distr[code]["iza"] += 1
-                else:
-                    zeo_distr[code] = {"iza": 1}
-
-        if option == "icsd" or "icsd" in option:
-
-            filename = os.path.join("ontozeolite", "icsddata", "icsddata.json")
-            #data = tools.readCsv(filename)
-            with open(filename, encoding="utf-8") as fp:
-                data = json.load(fp)
-
-            #print("FIXME Loaded icsddata, contains", len(data["all"]), "items :10")
-            #for entry in data["all"][:10]:
-
-            for entry in data["all"]:
-                #print(entry)
-                zeo = ZeoliteMaterial(uuidDB=self.uuidDB)
-                zeo.data["source"].append("jpcrd392010033102.pdf")
-                if "FTC" in entry:
-                    zeo.data["frame"] = entry["FTC"]
-                else:
-                    if "FTP" in entry:
-                        #print("     found framework", entry["FTP"])
-                        zeo.data["frame"] = entry["FTP"]
-                        pass
-                    else:
-                        if "TOPOS" in entry:
-                            zeo.data["frame"] = entry["TOPOS"]
-                            pass
-                        else:
-                            logging.error("Not found framework")
-
-                    continue
-
-                code = zeo.data["frame"]
-                code = code.replace("-", "_")
-                if code in ["RON", "PAR"]:
-                    code = "_" + code
-                if code not in zeo_distr:
-                    zeo_distr[code] = {}
-
-                #print(code)
-                if "icsd" in zeo_distr[code]:
-                    zeo_distr[code]["icsd"] += 1
-                else:
-                    zeo_distr[code]["icsd"] = 1
-
-                # === end of for(entry)
-
-        else:
-            print("Unknown option", option, "in ZeoliteDB._get_material_distribution()")
-
-
-        if option == "osda" or "icsd" in option:
-            osda_list = osda_vs_iza.load_osda_data()
-            osda_list = osda_list[1:]
-
-            #print("FIXME Loaded icsddata, contains", len(data["all"]), "items :10")
-            #for entry in data["all"][:10]:
-
-            for i_line, osda in enumerate(osda_list):
-                #print(entry)
-                #code = line[24].stirp().upper()
-                code = osda.get_framework()
-                code = code.replace("-", "_")
-                #if code in ["RON", "PAR"]:
-                #    code = "_" + code
-                #if code not in zeo_distr:
-                #    zeo_distr[code] = {}
-                if code in ["SYT"]:
-                    code = "-" + code
-                    if code not in zeo_distr:
-                        zeo_distr[code] = {}
-
-                    
-                #print(code)
-                if code not in zeo_distr:
-                    if code in ["*BEA", "*UOE", "*MRE", "*CTH", "*STO", "*SFV", "*_SVY", "*_ITN",
-                                "ASU_12", "ASU_14", "ASU_16", "SU_12", "SU_74", "SU_77", "SU_M", "SU_MB",
-                                "ITQ_21", "ITQ_43", "NUD_1", "Quartz"]:
-                        #continue
-                        if code not in zeo_distr:
-                            print("Unknown framework '", code, "'. At line ", i_line, ".", sep="")
-                            zeo_distr[code] = {}
-                            #continue
-                #else:
-                #print(i_line)
-                if code == "":
-                    print("Not defined framework code on line", i_line)
-                    continue
-                if "osda" in zeo_distr[code]:
-                        zeo_distr[code]["osda"] += 1
-                else:
-                        zeo_distr[code]["osda"] = 1
-
-                # === end of for(entry)
-
-        #print(zeo_distr)
-        dist_list = [["Code", "IZA", "ICSD", "OSDA", "TWA"]]
-        for k, v in zeo_distr.items():
-            #print(k)
-            total = 0
-            if "iza" in v:
-                iza = v["iza"]
-                total += iza
-            else:
-                iza = None
-
-            if "icsd" in v:
-                icsd = v["icsd"]
-                total += icsd
-            else:
-                icsd = None
-
-            if "osda" in v:
-                osda = v["osda"]
-                total += osda
-            else:
-                osda = None
-            dist_list.append([k, iza, icsd, osda, total])
-
-        for i_line, line in enumerate(zeo_distr):
-            #print(i_line, line)
-            pass
-        tools.writeCsv("material_distr.csv", dist_list)
-
-        #return zeo_distr
-        # === end of ZeoliteDB._get_material_distribution()
-
     def _get_cif_file(self, cif_line):
         if cif_line[5] != "":
             return cif_line[5]
@@ -1068,7 +921,7 @@ class ZeoliteDB:
         elif cif_line[7] != "":
             return cif_line[7]
         elif cif_line[8] != "" and cif_line[8] != "?" and cif_line[8] != "None":
-            return os.path.join("ccdc", cif_line[8])
+            return os.path.join("cifdir", cif_line[8])
         return ""
         # === end of OntoZeolite.get_cif_file()
 
@@ -1531,4 +1384,3 @@ if __name__ == "__main__":
 
     zeo_db.save()
 
-    zeo_db._get_material_distribution(["iza", "icsd", "osda"])
