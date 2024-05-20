@@ -532,7 +532,7 @@ class OZCompact2VerboseConverter:
             ?Guest rdfs:label ?GuestLabel
         }
         """
-        vars = ["?Guest"]
+        vars = ["?Guest", "?GuestLabel"]
         triples = [
             TriplePattern.from_triple(subj, "zeo:hasGuestComponent", "?Guest"),
         ]
