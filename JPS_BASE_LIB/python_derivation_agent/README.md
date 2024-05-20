@@ -374,7 +374,6 @@ You may want to commit this example file without credentials to git as a templat
 `docker-compose.yml`
 
 ```yml
-version: '3.8'
 
 services:
   # Your derivation agent
