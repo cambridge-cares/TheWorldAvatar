@@ -76,7 +76,7 @@ The following optional parameters are only applicable if ```oneToMany``` is "tru
 - ```newTable``` (Optional): The name of the table in which the results of the matching should be stored. By default, this table is called 'matched_buildings' and it is created in the 'public' schema.
 - ```filterColumns``` (Optional): A JSONArray of strings specifying the columns of the user-specified table containing the attributes required to exclude unwanted geometries. This parameter
 - ```excludedValues``` (Optional): A JSONArray of JSONArrays. Each nested JSONArray contains a list of strings specifying values of the corresponding attribute specified in ```filterColumns``` which should be excluded from the matching.
-- ```mapping``` (Optional): The name of an Ontop mapping file specifying the triples linking the user-specified geometries to the buildings to which they are matched. This mapping file must be placed in the  'BuildingIdentificationAgent/src/resources' folder.
+- ```mapping``` (Optional): The name of an Ontop mapping file specifying the triples linking the user-specified geometries to the buildings to which they are matched. The path of this mapping file should be specified as the value of the "Source" key in line 10 of "stack-manager-input-config\buildingidentificationagent.json". This ensures that the local file path is mapped to the 'resources' folder of the agent's Docker container through a bind mount. 
 
 
 For both routes, the desired values of various input parameters can be set in the input.json file. Subsequently, the POST request is sent to the agent as follows:
