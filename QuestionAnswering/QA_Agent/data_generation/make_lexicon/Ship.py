@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
 import json
 import os
-from typing import Dict
 
 from SPARQLWrapper import JSON, SPARQLWrapper
 
@@ -14,18 +13,12 @@ def extract_name(iri: str):
     return iri
 
 
-def make_surface_forms(attrs: Dict[str, str]):
-    sfs = [attrs["label"]]
+def make_surface_forms(label: str):
+    sfs = [label]
 
-    if attrs["label"].startswith("Ship: "):
-        name = attrs["label"][len("Ship: ") :]
+    if label.startswith("Ship:"):
+        name = label[len("Ship:") :].strip()
         sfs.append(name)
-    else:
-        name = attrs["label"]
-    sfs.append(" ".join([word.capitalize() for word in name.split()]))
-
-    sfs.append(attrs["mmsi"])
-    sfs.append("MMSI " + attrs["mmsi"])
 
     return sfs
 
@@ -35,7 +28,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--endpoint", required=True, help="SPARQL endpoint to retrieve ship data"
     )
-    parser.add_argument("--data_out", required=True, help="Path to JSON data file")
     parser.add_argument(
         "--lexicon_out", required=True, help="Path to JSON lexicon file"
     )
@@ -47,9 +39,8 @@ if __name__ == "__main__":
     query = """PREFIX disp: <https://www.theworldavatar.com/kg/ontodispersion/>
 PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
-SELECT ?IRI ?MMSI ?name WHERE {
+SELECT ?IRI ?name WHERE {
   ?IRI a disp:Ship ; rdfs:label ?name .
-  ?IRI disp:hasProperty [ a disp:MMSI ; om:hasValue/om:hasNumericalValue ?MMSI ]
 }"""
     sparql_client.setQuery(query)
     res = sparql_client.queryAndConvert()
@@ -61,26 +52,16 @@ SELECT ?IRI ?MMSI ?name WHERE {
     instance_data = [
         {
             "iri": binding["IRI"],
-            "attributes": {
-                "label": binding["name"],
-                "mmsi": binding["MMSI"],
-            },
+            "label": binding["name"],
         }
         for binding in bindings
     ]
 
-    data = {"instances": instance_data}
-
-    os.makedirs(os.path.dirname(args.data_out), exist_ok=True)
-
-    with open(args.data_out, "w") as f:
-        json.dump(data, f, indent=4)
-
     lexicon = [
         {
             "iri": row["iri"],
-            "label": row["attributes"]["label"],
-            "surface_forms": make_surface_forms(row["attributes"]),
+            "label": row["label"],
+            "surface_forms": make_surface_forms(row["label"]),
         }
         for row in instance_data
     ]
