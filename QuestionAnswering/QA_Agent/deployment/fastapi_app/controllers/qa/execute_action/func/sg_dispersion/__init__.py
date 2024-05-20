@@ -1,7 +1,7 @@
 from functools import cache
 import logging
 import time
-from typing import Annotated, Dict, List
+from typing import Annotated, Dict, List, Optional
 
 from fastapi import Depends, HTTPException
 import requests
@@ -23,8 +23,10 @@ from .pollutant_conc import (
     get_pollutantConc_client,
 )
 from .ship import (
+    ShipLinker,
     ShipMeta,
     get_ship_featureInfo_client,
+    get_ship_linker,
 )
 
 
@@ -37,11 +39,13 @@ class SGDispersionFuncExecutor(Name2Func):
         geocoder: IGeocoder,
         entity_store: EntityStore,
         pollutant_conc_client: PollutantConcClient,
+        ship_linker: ShipLinker,
         ship_feature_info_client: FeatureInfoClient[ShipMeta],
     ):
         self.geocoder = geocoder
         self.entity_store = entity_store
         self.pollutant_conc_client = pollutant_conc_client
+        self.ship_linker = ship_linker
         self.ship_feature_info_client = ship_feature_info_client
 
     def get_name2func(self):
@@ -113,25 +117,35 @@ class SGDispersionFuncExecutor(Name2Func):
             text = text[1:-1]
         return text
 
-    def lookup_ship_attributes(self, surface_form: str, **kwargs):
+    def _link_ship(self, text: Optional[str], mmsi: Optional[str]):
+        logger.info(
+            "Perform entity linking for `text`: {text}, `mmsi`: {mmsi}".format(
+                text=text, mmsi=mmsi
+            )
+        )
+        timestamp = time.time()
+        iris = self.ship_linker.link(text=text, mmsi=mmsi)
+        latency = time.time() - timestamp
+        logger.info("Linked IRIs: " + str(iris))
+        step = QAStep(
+            action="link_entity",
+            arguments={"text": text, "mmsi": mmsi},
+            results=iris,
+            latency=latency,
+        )
+
+        return iris, step
+
+    def lookup_ship_attributes(
+        self, text: Optional[str] = None, mmsi: Optional[str] = None, **kwargs
+    ):
         """
         Given ship name or MMSI, returns MMSI, maximum static draught, dimension, IMO number, ship type, call sign
         """
         steps: List[QAStep] = []
 
-        logger.info("Perform entity linking for: " + surface_form)
-        timestamp = time.time()
-        iris = self.entity_store.link(surface_form, clsname="Ship", k=1)
-        latency = time.time() - timestamp
-        logger.info("Linked IRIs: " + str(iris))
-        steps.append(
-            QAStep(
-                action="link_entity",
-                arguments=surface_form,
-                results=iris,
-                latency=latency,
-            )
-        )
+        iris, step = self._link_ship(text=text, mmsi=mmsi)
+        steps.append(step)
 
         timestamp = time.time()
 
@@ -167,25 +181,16 @@ class SGDispersionFuncExecutor(Name2Func):
 
         return steps, [data]
 
-    def lookup_ship_timeseries(self, surface_form: str, **kwargs):
+    def lookup_ship_timeseries(
+        self, text: Optional[str] = None, mmsi: Optional[str] = None, **kwargs
+    ):
         """
         Given ship name or MMSI, returns speed over ground, course over ground, longitude, latitude
         """
         steps: List[QAStep] = []
 
-        logger.info("Perform entity linking for: " + surface_form)
-        timestamp = time.time()
-        iris = self.entity_store.link(surface_form, clsname="Ship", k=1)
-        latency = time.time() - timestamp
-        logger.info("Linked IRIs: " + str(iris))
-        steps.append(
-            QAStep(
-                action="link_entity",
-                arguments=surface_form,
-                results=iris,
-                latency=latency,
-            )
-        )
+        iris, step = self._link_ship(text=text, mmsi=mmsi)
+        steps.append(step)
 
         timestamp = time.time()
 
@@ -239,6 +244,7 @@ def get_sgDispersion_funcExec(
     pollutant_conc_client: Annotated[
         PollutantConcClient, Depends(get_pollutantConc_client)
     ],
+    ship_linker: Annotated[ShipLinker, Depends(get_ship_linker)],
     ship_feature_info_client: Annotated[
         FeatureInfoClient[ShipMeta], Depends(get_ship_featureInfo_client)
     ],
@@ -247,5 +253,6 @@ def get_sgDispersion_funcExec(
         geocoder=geocoder,
         entity_store=entity_store,
         pollutant_conc_client=pollutant_conc_client,
+        ship_linker=ship_linker,
         ship_feature_info_client=ship_feature_info_client,
     )

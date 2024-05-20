@@ -55,7 +55,7 @@ Your task is to translate the following question to an executable action. Please
             elif "func" in action:
                 faction = action["func"]
                 return FuncAction(
-                    name=faction["name"], args=json.loads(faction["args"])
+                    name=faction["name"], args=faction["args"]
                 )
         except:
             pass

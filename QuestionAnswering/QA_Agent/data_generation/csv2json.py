@@ -7,11 +7,22 @@ import pandas as pd
 def csvrow2jsonobj(row: pd.Series):
     output = dict()
     if row["target"] == "sparql":
-        output["sparql"] = dict(
-            namespace=row["sparql_namespace"], query=row["sparql_query"]
+        bindings = (
+            json.loads(row["sparql_bindings"])
+            if not pd.isna(row["sparql_bindings"])
+            else None
         )
+        output["sparql"] = {
+            k: v
+            for k, v in {
+                "namespace": row["sparql_namespace"],
+                "bindings": bindings,
+                "query": row["sparql_query"],
+            }.items()
+            if v
+        }
     elif row["target"] == "func":
-        output["func"] = dict(name=row["func_name"], args=row["func_args"])
+        output["func"] = {"name": row["func_name"], "args": json.loads(row["func_args"])}
     else:
         raise ValueError(f'Unexpected target: {row["target"]}')
     return dict(input=row["question"], output=output)
