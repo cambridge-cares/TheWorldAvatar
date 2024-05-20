@@ -4,8 +4,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from utils.rdf import flatten_sparql_response
-from services.kg import KgClient
-from controllers.kg import get_sgCarpark_bgClient
+from services.kg import KgClient, get_sgCarpark_bgClient
 
 
 class NearestCarparkLocator:

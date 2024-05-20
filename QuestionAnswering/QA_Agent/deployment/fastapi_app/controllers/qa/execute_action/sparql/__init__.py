@@ -5,7 +5,7 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends
 
-from controllers.qa.support_data import QAStep
+from controllers.qa.model import QAStep
 from services.entity_store import EntityStore, get_entity_store
 from services.kg import KgClient
 from utils.collections import FrozenDict
@@ -33,6 +33,14 @@ PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
 PREFIX gml: <http://www.opengis.net/citygml/building/2.0/>
 PREFIX grp: <http://www.opengis.net/citygml/cityobjectgroup/2.0/>
+
+PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+PREFIX op: <http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#>
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX ocape: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>
+PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 
 PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
 PREFIX carpark:	<https://www.theworldavatar.com/kg/ontocarpark/>
@@ -70,7 +78,7 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
                 iri
                 for val in binding.values
                 for iri in self.entity_store.link(
-                    surface_form=val.text, clsname=val.clsname
+                    clsname=val.clsname, text=val.text, identifier=val.identifier
                 )
             ]
             for binding in action.bindings

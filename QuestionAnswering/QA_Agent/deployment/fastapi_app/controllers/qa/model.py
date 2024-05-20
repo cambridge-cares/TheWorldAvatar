@@ -51,9 +51,3 @@ def serialize_data_item(item: DataItem):
         t = "wkt_crs84"
 
     return {"type": t, "data": item.model_dump()}
-
-
-class DataSupporter(ABC):
-    @abstractmethod
-    def query(self, query: str) -> Tuple[List[QAStep], List[DataItem]]:
-        pass

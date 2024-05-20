@@ -2,12 +2,12 @@ from functools import cache
 from importlib.resources import files
 import json
 import logging
-from typing import Annotated, Iterable
+from typing import Annotated, Iterable, Literal
 
 from fastapi import Depends
 import numpy as np
 from redis import Redis
-from redis.commands.search.field import VectorField
+from redis.commands.search.field import VectorField, TagField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 from pydantic.dataclasses import dataclass
@@ -17,8 +17,12 @@ from services.embed import IEmbedder, get_embedder
 from services.redis import does_index_exist, get_redis_client
 
 
+QADomain = Literal["singapore", "chemistry"]
+
+
 @dataclass
 class Nlq2ActionExample:
+    qa_domain: QADomain
     nlq: str
     action: dict
 
@@ -55,6 +59,7 @@ class Nlq2ActionRetriever:
             for i, (example, embedding) in enumerate(zip(chunk, embeddings)):
                 redis_key = cls.EXAMPLES_KEY_PREFIX + str(offset + i)
                 doc = dict(
+                    qa_domain=example.qa_domain,
                     nlq=example.nlq,
                     action=json.dumps(example.action),
                     nlq_embedding=embedding,
@@ -74,6 +79,7 @@ class Nlq2ActionRetriever:
         logger.info("Creating index for examples...")
 
         schema = (
+            TagField("$.qa_domain", as_name="qa_domain"),
             VectorField(
                 "$.nlq_embedding",
                 "FLAT",
@@ -109,11 +115,16 @@ class Nlq2ActionRetriever:
         self.redis_client = redis_client
         self.embedder = embedder
 
-    def retrieve_examples(self, nlq: str, k: int = 5):
+    def retrieve_examples(self, qa_domain: str, nlq: str, k: int = 5):
         encoded_nlq = self.embedder([nlq])[0].astype(np.float32)
         knn_query = (
-            Query("(*)=>[KNN {k} @vector $query_vector AS vector_score]".format(k=k))
+            Query(
+                "(@qa_domain:{{{qa_domain}}})=>[KNN {k} @vector $query_vector AS vector_score]".format(
+                    qa_domain=qa_domain, k=k
+                )
+            )
             .sort_by("vector_score")
+            .return_field("$.qa_domain", as_field="qa_domain")
             .return_field("$.nlq", as_field="nlq")
             .return_field("$.action", as_field="action")
             .dialect(2)
@@ -123,7 +134,9 @@ class Nlq2ActionRetriever:
         )
 
         return [
-            Nlq2ActionExample(nlq=doc.nlq, action=json.loads(doc.action))
+            Nlq2ActionExample(
+                qa_domain=doc.qa_domain, nlq=doc.nlq, action=json.loads(doc.action)
+            )
             for doc in res.docs
         ]
 
@@ -131,21 +144,27 @@ class Nlq2ActionRetriever:
         pass
 
 
-@cache
-def gen_nlq2action_examples(domain: str):
-    for file in files("resources.examples." + domain).iterdir():
-        if file.is_file() and file.name.lower().endswith(".json"):
-            for example in json.loads(file.read_text()):
-                yield Nlq2ActionExample(nlq=example["input"], action=example["output"])
+def gen_nlq2action_examples():
+    for dir in files("resources.examples").iterdir():
+        if dir.is_dir():
+            qa_domain = dir.name
+            for file in dir.iterdir():
+                if file.is_file() and file.name.lower().endswith(".json"):
+                    for example in json.loads(file.read_text()):
+                        yield Nlq2ActionExample(
+                            qa_domain=qa_domain,
+                            nlq=example["input"],
+                            action=example["output"],
+                        )
 
 
 @cache
-def get_sg_nlq2action_retriever(
+def get_nlq2action_retriever(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
 ):
     return Nlq2ActionRetriever(
         redis_client=redis_client,
         embedder=embedder,
-        examples=gen_nlq2action_examples("singapore"),
+        examples=gen_nlq2action_examples(),
     )

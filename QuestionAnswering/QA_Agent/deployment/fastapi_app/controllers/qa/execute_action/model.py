@@ -10,6 +10,7 @@ class ActionBase(BaseModel):
 class SparqlBindingValuesItem(BaseModel):
     clsname: str = Field(..., alias="class")
     text: Optional[str] = None
+    identifier: dict = dict()
 
 
 class SparqlBinding(BaseModel):

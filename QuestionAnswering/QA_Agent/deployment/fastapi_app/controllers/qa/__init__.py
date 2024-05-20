@@ -4,12 +4,11 @@ from typing import Annotated, List
 
 from fastapi import Depends
 
-from controllers.qa.support_data import QAStep
+from controllers.qa.model import QAStep
 from controllers.qa.retrieve import (
     Nlq2ActionRetriever,
-    get_sg_nlq2action_retriever,
+    get_nlq2action_retriever,
 )
-from controllers.qa.support_data import DataSupporter
 from .execute_action import ActionExecMediator, get_actionExec_mediator
 from .translate import Nlq2ActionTranslator, get_nlq2action_translator
 
@@ -17,7 +16,7 @@ from .translate import Nlq2ActionTranslator, get_nlq2action_translator
 logger = logging.getLogger(__name__)
 
 
-class Nlq2Action2Data(DataSupporter):
+class DataSupporter:
     def __init__(
         self,
         retriever: Nlq2ActionRetriever,
@@ -28,14 +27,16 @@ class Nlq2Action2Data(DataSupporter):
         self.translator = translator
         self.executor = executor
 
-    def query(self, query: str):
+    def query(self, qa_domain: str, query: str):
         steps: List[QAStep] = []
 
         logger.info("Retrieve examples for: " + query)
         timestamp = time.time()
-        examples = self.retriever.retrieve_examples(nlq=query, k=10)
+        examples = self.retriever.retrieve_examples(
+            qa_domain=qa_domain, nlq=query, k=10
+        )
         latency = time.time() - timestamp
-        logger.info("Retrieve examples: " + str(examples))
+        logger.info("Retrieved examples: " + str(examples))
         steps.append(
             QAStep(
                 action="retrieve_examples",
@@ -62,19 +63,11 @@ class Nlq2Action2Data(DataSupporter):
         return steps, data
 
 
-def get_singapore_nlq2action2data(
-    retriever: Annotated[Nlq2ActionRetriever, Depends(get_sg_nlq2action_retriever)],
+def get_data_supporter(
+    retriever: Annotated[Nlq2ActionRetriever, Depends(get_nlq2action_retriever)],
     translator: Annotated[Nlq2ActionTranslator, Depends(get_nlq2action_translator)],
     executor: Annotated[ActionExecMediator, Depends(get_actionExec_mediator)],
 ):
-    return Nlq2Action2Data(
+    return DataSupporter(
         retriever=retriever, translator=translator, executor=executor
     )
-
-
-def get_dataSupporter_byDomain(
-    singapore_nlq2action: Annotated[
-        DataSupporter, Depends(get_singapore_nlq2action2data)
-    ],
-):
-    return {"singapore": singapore_nlq2action}
