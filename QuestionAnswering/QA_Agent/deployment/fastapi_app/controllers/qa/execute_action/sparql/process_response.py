@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from services.entity_store import EntityStore, get_entity_store
 from services.wkt import CRS84_URI, WKTTextSRS
-from controllers.qa.support_data import DataItem, TableDataItem, WktCrs84DataItem
+from controllers.qa.model import DataItem, TableDataItem, WktCrs84DataItem
 
 
 class SparqlResponseProcessor:

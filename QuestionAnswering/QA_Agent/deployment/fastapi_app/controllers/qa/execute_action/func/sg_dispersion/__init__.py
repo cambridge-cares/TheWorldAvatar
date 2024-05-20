@@ -10,24 +10,19 @@ from services.geocoding.base import IGeocoder
 from services.geocoding.serial import get_serial_geocoder
 from services.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient
-from controllers.qa.support_data import (
+from controllers.qa.model import (
     ScatterPlotDataItem,
     ScatterPlotTrace,
     TableDataItem,
     TypedSeries,
 )
-from controllers.qa.support_data import QAStep
+from controllers.qa.model import QAStep
 from controllers.qa.execute_action.func.base import Name2Func
 from .pollutant_conc import (
     PollutantConcClient,
     get_pollutantConc_client,
 )
-from .ship import (
-    ShipLinker,
-    ShipMeta,
-    get_ship_featureInfo_client,
-    get_ship_linker,
-)
+from .ship import ShipMeta, get_ship_featureInfo_client
 
 
 logger = logging.getLogger(__name__)
@@ -39,13 +34,11 @@ class SGDispersionFuncExecutor(Name2Func):
         geocoder: IGeocoder,
         entity_store: EntityStore,
         pollutant_conc_client: PollutantConcClient,
-        ship_linker: ShipLinker,
         ship_feature_info_client: FeatureInfoClient[ShipMeta],
     ):
         self.geocoder = geocoder
         self.entity_store = entity_store
         self.pollutant_conc_client = pollutant_conc_client
-        self.ship_linker = ship_linker
         self.ship_feature_info_client = ship_feature_info_client
 
     def get_name2func(self):
@@ -124,7 +117,7 @@ class SGDispersionFuncExecutor(Name2Func):
             )
         )
         timestamp = time.time()
-        iris = self.ship_linker.link(text=text, mmsi=mmsi)
+        iris = self.entity_store.link(clsname="Ship", text=text, mmsi=mmsi)
         latency = time.time() - timestamp
         logger.info("Linked IRIs: " + str(iris))
         step = QAStep(
@@ -244,7 +237,6 @@ def get_sgDispersion_funcExec(
     pollutant_conc_client: Annotated[
         PollutantConcClient, Depends(get_pollutantConc_client)
     ],
-    ship_linker: Annotated[ShipLinker, Depends(get_ship_linker)],
     ship_feature_info_client: Annotated[
         FeatureInfoClient[ShipMeta], Depends(get_ship_featureInfo_client)
     ],
@@ -253,6 +245,5 @@ def get_sgDispersion_funcExec(
         geocoder=geocoder,
         entity_store=entity_store,
         pollutant_conc_client=pollutant_conc_client,
-        ship_linker=ship_linker,
         ship_feature_info_client=ship_feature_info_client,
     )

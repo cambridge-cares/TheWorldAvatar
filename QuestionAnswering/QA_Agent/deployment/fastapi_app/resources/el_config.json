@@ -7,19 +7,7 @@
         }
     },
     {
-        "clsname": "Facility",
-        "el_config": {
-            "strategy": "fuzzy"
-        }
-    },
-    {
         "clsname": "Ship",
-        "el_config": {
-            "strategy": "fuzzy"
-        }
-    },
-    {
-        "clsname": "PropertyUsageClass",
         "el_config": {
             "strategy": "fuzzy"
         }

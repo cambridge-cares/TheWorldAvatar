@@ -1,3 +1,7 @@
+class EntityStoreBase:
+    from functools import cache
+
+
 from functools import cache
 from importlib.resources import files
 import json
@@ -16,6 +20,10 @@ import regex
 
 from config import QAEngineName, get_qa_engine_name
 from services.embed import IEmbedder, get_embedder
+
+from services.entity_store.base import IEntityLinker
+from services.entity_store.ship import ShipLinker, get_ship_linker
+from services.entity_store.species import SpeciesLinker, get_species_linker
 from services.redis import does_index_exist, get_redis_client
 from utils.collections import FrozenDict
 from utils.itertools_recipes import batched
@@ -81,9 +89,6 @@ class EntityStore:
             pipeline = redis_client.pipeline()
             for i, (entry, embedding) in enumerate(zip(chunk, embeddings)):
                 redis_key = cls.KEY_PREFIX + str(offset + i)
-                surface_forms = list(entry.surface_forms)
-                if entry.label not in entry.surface_forms:
-                    surface_forms.append(entry.label)
                 doc = dict(
                     iri=entry.iri,
                     clsname=entry.clsname,
@@ -134,7 +139,8 @@ class EntityStore:
         redis_client: Redis,
         embedder: IEmbedder,
         lexicon: Iterable[LexiconEntry],
-        clsname2elconfig: Dict[str, ELConfig] = dict(),
+        clsname2elconfig: Dict[str, ELConfig],
+        clsname2linker: Dict[str, IEntityLinker],
     ):
         if not does_index_exist(redis_client, self.INDEX_NAME):
             logger.info(
@@ -149,6 +155,7 @@ class EntityStore:
         self.redis_client = redis_client
         self.embedder = embedder
         self.clsname2elconfig = clsname2elconfig
+        self.clsname2linker = clsname2linker
 
     def _match_clsname_query(self, clsname: str):
         return "@clsname:{{{clsname}}}".format(
@@ -183,7 +190,7 @@ class EntityStore:
 
         if len(iris) >= k:
             return iris[:k]
-        
+
         encoded_query = self.embedder([surface_form])[0].astype(np.float32)
         knn_query = (
             Query(
@@ -264,11 +271,20 @@ class EntityStore:
         return iris[:k]
 
     def link(
-        self, surface_form: str, clsname: Optional[str] = None, k: Optional[int] = None
+        self,
+        clsname: str,
+        text: Optional[str],
+        identifier: Dict[str, str],
+        k: Optional[int] = None,
     ):
         logger.info(
-            f"Performing entity linking for surface form `{surface_form}` of class `{clsname}`."
+            f"Performing entity linking for surface form `{text}` and identifier `{identifier}` of class `{clsname}`."
         )
+
+        if clsname in self.clsname2linker:
+            iris = self.clsname2linker[clsname].link(text=text, **identifier)
+            if iris:
+                return iris
 
         config = (
             self.clsname2elconfig.get(clsname, ELConfig()) if clsname else ELConfig()
@@ -277,9 +293,9 @@ class EntityStore:
 
         k = k if k else config.k
         if config.strategy == "fuzzy":
-            return self.link_fuzzy(surface_form, clsname, k)
+            return self.link_fuzzy(text, clsname, k)
         else:
-            return self.link_semantic(surface_form, clsname, k)
+            return self.link_semantic(text, clsname, k)
 
     def lookup_label(self, iri: str) -> Optional[str]:
         query = Query(
@@ -294,10 +310,10 @@ class EntityStore:
 
 
 @cache
-def get_el_configs(qa_engine: Annotated[QAEngineName, Depends(get_qa_engine_name)]):
+def get_el_configs():
     adapter = TypeAdapter(Tuple[ELConfigEntry, ...])
     return adapter.validate_json(
-        files("resources." + qa_engine.value).joinpath("el_config.json").read_text()
+        files("resources").joinpath("el_config.json").read_text()
     )
 
 
@@ -329,15 +345,27 @@ def get_clsname2config(
 
 
 @cache
+def get_clsname2linker(
+    ship_linker: Annotated[ShipLinker, Depends(get_ship_linker)],
+    species_linker: Annotated[SpeciesLinker, Depends(get_species_linker)],
+):
+    return FrozenDict({"Ship": ship_linker, "Species": species_linker})
+
+
+@cache
 def get_entity_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     lexicon: Annotated[Tuple[LexiconEntry, ...], Depends(get_lexicon)],
     clsname2config: Annotated[FrozenDict[str, ELConfig], Depends(get_clsname2config)],
+    clsname2linker: Annotated[
+        FrozenDict[str, IEntityLinker], Depends(get_clsname2linker)
+    ],
 ):
     return EntityStore(
         redis_client=redis_client,
         embedder=embedder,
         lexicon=lexicon,
         clsname2elconfig=clsname2config,
+        clsname2linker=clsname2linker,
     )

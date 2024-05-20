@@ -1,21 +1,19 @@
 import logging
 import time
-from typing import Annotated, Dict, List
+from typing import Annotated, List
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, model_serializer
 
-from controllers.qa.support_data import QAStep, serialize_data_item
-from controllers.qa import get_dataSupporter_byDomain
-from controllers.qa.support_data import (
-    DataItem,
-    DataSupporter,
-)
+from controllers.qa import DataSupporter, get_data_supporter
+from controllers.qa.retrieve import QADomain
+from controllers.qa.model import QAStep, serialize_data_item
+from controllers.qa.model import DataItem
 
 
 class QARequest(BaseModel):
     question: str
-    qa_domain: str  # TODO: validate domain based on qa_engine (marie or zaha)
+    qa_domain: QADomain
 
 
 class QAResponseMetadata(BaseModel):
@@ -43,15 +41,13 @@ router = APIRouter()
 @router.post("/")
 def qa(
     req: QARequest,
-    data_supporter_by_domain: Annotated[
-        Dict[str, DataSupporter], Depends(get_dataSupporter_byDomain)
-    ],
+    data_supporter: Annotated[DataSupporter, Depends(get_data_supporter)],
 ):
     logger.info("Received request to QA endpoint with the following request body")
     logger.info(req)
 
     timestamp = time.time()
-    steps, data = data_supporter_by_domain[req.qa_domain].query(req.question)
+    steps, data = data_supporter.query(qa_domain=req.qa_domain, query=req.question)
     latency = time.time() - timestamp
 
     metadata = QAResponseMetadata(latency=latency, steps=steps)
