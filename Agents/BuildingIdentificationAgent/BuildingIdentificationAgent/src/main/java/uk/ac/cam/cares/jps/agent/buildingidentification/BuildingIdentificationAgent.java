@@ -5,7 +5,6 @@ import javax.ws.rs.BadRequestException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.core.io.ClassPathResource;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -17,11 +16,7 @@ import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
@@ -60,21 +55,11 @@ public class BuildingIdentificationAgent extends JPSAgent {
         if (validateInput(requestParams)) {
 
             // Properties of database containing buildings data.
-            String dbUrl = null;
-            String dbUser = null;
-            String dbPassword = null;
-
-            if (requestParams.has("dbUrl")) {
-                dbUrl = requestParams.getString("dbUrl");
-                dbUser = requestParams.getString("dbUser");
-                dbPassword = requestParams.getString("dbPassword");
-            } else {
-                String dbName = "postgres";
-                EndpointConfig endpointConfig = new EndpointConfig();
-                dbUrl = endpointConfig.getDbUrl(dbName);
-                dbUser = endpointConfig.getDbUser();
-                dbPassword = endpointConfig.getDbPassword();
-            }
+            String dbName = "postgres";
+            EndpointConfig endpointConfig = new EndpointConfig();
+            String dbUrl = endpointConfig.getDbUrl(dbName);
+            String dbUser = endpointConfig.getDbUser();
+            String dbPassword = endpointConfig.getDbPassword();
 
             rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
             int dbSrid = getDbSrid();
