@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontosealevel="https://www.theworldavatar.com/kg/ontosealevel/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontosealevel/">
-        <dc:date>17 May 2024</dc:date>
+        <dc:date>20 May 2024</dc:date>
         <rdfs:comment>The Ontology for Sea Level is developed to represent information about sea level.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -153,6 +153,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/refersTo -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/refersTo">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/ForecastSeaLevelMeasurement"/>
+        <rdfs:comment>A relationship between a sea level change and the forecast sea level measurement that it is referring to.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>refers to</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -165,19 +178,35 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasEndTime -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasEndTime">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:comment>A relationship between a sea level change and its end time of reference.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>has end time</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasStartTime -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasStartTime">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:comment>A relationship between a sea level change and its start time of reference.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>has start time</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontosealevel/measuredIn -->
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/measuredIn">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#gYear"/>
-                    <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
         <rdfs:comment>A relationship between a sea level measurement and the time of measurement.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
         <rdfs:label>measured in</rdfs:label>
@@ -214,9 +243,7 @@
     <!-- https://dbpedia.org/ontology/tree -->
 
 
-    <owl:Class rdf:about="https://dbpedia.org/ontology/tree">
-        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Tree"/>
-    </owl:Class>
+    <owl:Class rdf:about="https://dbpedia.org/ontology/tree"/>
     
 
 
@@ -360,8 +387,8 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/HeritageTree">
+        <rdfs:subClassOf rdf:resource="https://dbpedia.org/ontology/tree"/>
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/Tree"/>
         <rdfs:comment>A tree that is the natural heritage of a specific place.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
         <rdfs:label>Heritage tree</rdfs:label>
@@ -447,7 +474,15 @@
     <!-- https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/refersTo"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/ForecastSeaLevelMeasurement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
     
 
 
@@ -481,17 +516,6 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/CulturalSite"/>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
         <rdfs:label>Tourist attraction</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontosealevel/Tree -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/Tree">
-        <rdfs:comment>Tree</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
-        <rdfs:label>Tree</rdfs:label>
     </owl:Class>
     
 
