@@ -6,9 +6,10 @@ from typing import Annotated, Dict, List
 from fastapi import Depends
 
 from controllers.qa.support_data import QAStep
+from services.entity_store import EntityStore, get_entity_store
 from services.kg import KgClient
 from utils.collections import FrozenDict
-from ..model import SparqlAction
+from controllers.qa.execute_action.model import SparqlAction, SparqlBinding
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
 from .process_response import (
@@ -50,25 +51,45 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
     def __init__(
         self,
         ns2kg: Dict[str, KgClient],
+        entity_store: EntityStore,
         query_processor: SparqlQueryProcessor,
         response_processor: SparqlResponseProcessor,
     ):
         self.ns2kg = ns2kg
+        self.entity_store = entity_store
         self.query_processor = query_processor
         self.response_processor = response_processor
 
     def exec(self, action: SparqlAction):
         steps: List[QAStep] = []
 
+        logger.info("Performing entity linking for bindings: " + str(action.bindings))
+        timestamp = time.time()
+        var2iris = {
+            binding.var: [
+                iri
+                for val in binding.values
+                for iri in self.entity_store.link(
+                    surface_form=val.text, clsname=val.clsname
+                )
+            ]
+            for binding in action.bindings
+        }
+        latency = time.time() - timestamp
+        logger.info("IRIs: " + str(var2iris))
+
         logger.info("Input query:\n" + action.query)
         timestamp = time.time()
-        query = self.query_processor.process(action.query)
+        query = self.query_processor.process(sparql=action.query, bindings=var2iris)
         latency = time.time() - timestamp
         logger.info("Processed query:\n" + query)
         steps.append(
             QAStep(
                 action="postprocess_sparql",
-                arguments=action.query,
+                arguments={
+                    "sparql": action.query,
+                    "bindings": var2iris,
+                },
                 results=query,
                 latency=latency,
             )
@@ -99,6 +120,7 @@ PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
 @cache
 def get_sparqlAction_executor(
     ns2kg: Annotated[FrozenDict[str, KgClient], Depends(get_ns2kg)],
+    entity_store: Annotated[EntityStore, Depends(get_entity_store)],
     query_processor: Annotated[
         SparqlQueryProcessor, Depends(get_sparqlQuery_processor)
     ],
@@ -108,6 +130,7 @@ def get_sparqlAction_executor(
 ):
     return SparqlActionExecutor(
         ns2kg=ns2kg,
+        entity_store=entity_store,
         query_processor=query_processor,
         response_processor=response_processor,
     )
