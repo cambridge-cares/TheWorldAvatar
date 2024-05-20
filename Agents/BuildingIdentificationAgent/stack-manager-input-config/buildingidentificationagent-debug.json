@@ -3,9 +3,16 @@
         "Name": "buildingidentificationagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "buildingidentificationagent:2.0.0-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/buildingidentificationagent:2.0.0",
                 "Env": [
                     "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/BuildingIdentificationAgent/BuildingIdentificationAgent/src/main/resources",
+                        "Target": "/resources"
+                    }
                 ],
                 "Configs": [
                     {
