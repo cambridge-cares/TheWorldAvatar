@@ -97,7 +97,7 @@ To trigger scheduled live simulations, an example is given in [mbs-live.http].
 
 To stop a scheduled task, change the request to DELETE instead of POST.
 
-### With ships (static data) 
+### With ships (static JSON data) 
 This workflow calls the ShipInputAgent to add 1 timestep worth of data before triggering an update for AERMOD.
 1) Make sure ShipInputAgent/data is populated with data.
 2) Initialise a simulation, e.g. [plymouth.http], you should receive a response in the form of 
@@ -105,7 +105,31 @@ This workflow calls the ShipInputAgent to add 1 timestep worth of data before tr
 {"derivation": "http://derivation_1"}
 ```
 record this derivation IRI.
+
 3) To trigger an AERMOD simulation, execute [GenerateDataWithShips.http], be sure to replace the derivation IRI in the request from the response from the previous step.
+
+### With ships (static CSV data)
+This workflow loads ship data from CSV files to Postgres database and be used in AERMOD simulations afterwards.
+1) Populate stack-data-uploader/inputs/data/ship/subdir with data.
+2) Modified stack-data-uploader/inputs/config/ship.json and stack-data-uploader/inputs/config/ship.sql accordingly. Currently they are tailor-made for [US AIS Data (AIS Broadcast Points)](https://marinecadastre.gov/ais/). The processed ship data need to be in a table called ``ship`` with these columns:
+
+- MMSI: Identifier of ship
+- BaseDateTime: Timestamp of data entry
+- LAT: Latitude of ship location
+- LON: Longitude of ship location
+- SOG: Speed over ground of ship
+- COG: Course over ground of ship
+- VesselType: Types of ship
+- geom: Point geometry of (LON,LAT) in EPSG:4326
+
+3) Initialise a simulation, e.g. [plymouth.http], you should receive a response in the form of 
+```
+{"derivation": "http://derivation_1"}
+```
+record this derivation IRI.
+
+4) Call ship input agent to load ship data into time series by calling [load-rdb.http]. Note this will only load ships that are inside the scopes of initialised simulations i.e. no ship data will be loaded if no simulations have been initialised.
+5) Execute [GenerateDataWithoutShips.http] to trigger AERMOD update, be sure to enter derivation IRI in the request.
 
 ### Without ships (only static point source)
 1) Initialise a simulation, e.g. [pirmasens1.http], record derivation IRI in the response.
@@ -126,3 +150,4 @@ Visualisation can be viewed at http://localhost:4242/visualisation (replace loca
 [building-pirmasens.json]: ./stack-data-uploader/inputs/config/building-pirmasens.json
 [elevation.json]: ./stack-data-uploader/inputs/config/elevation.json
 [data.json]: ./stack-manager/inputs/data/visualisation/data.json
+[load-rdb.http]: <./HTTP requests/trigger update/load-rdb.http>
