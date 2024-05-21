@@ -1,6 +1,6 @@
 import pytest
 
-from controllers.qa.retrieve import Nlq2ActionExample, Nlq2ActionRetriever
+from services.example_store import Nlq2ActionExample, ExampleStore
 
 
 @pytest.fixture(scope="class")
@@ -35,13 +35,13 @@ def nlq2action_retriever(redis_client, embedder):
         ),
     ]
 
-    yield Nlq2ActionRetriever(
+    yield ExampleStore(
         redis_client=redis_client, embedder=embedder, examples=iter(examples)
     )
 
 
 class TestNlq2ActionRetriever:
-    def test_retrieveExamples(self, nlq2action_retriever: Nlq2ActionRetriever):
+    def test_retrieveExamples(self, nlq2action_retriever: ExampleStore):
         # Arrange
         nlq = "Identify residential plots with a maximum permitted GFA more than 700 square meters."
 

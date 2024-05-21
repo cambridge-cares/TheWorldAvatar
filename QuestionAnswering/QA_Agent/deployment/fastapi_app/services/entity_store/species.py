@@ -3,7 +3,7 @@ from typing import Annotated, List, Optional
 
 from fastapi import Depends
 from services.entity_store.base import IEntityLinker
-from services.kg import KgClient, get_ontospecies_kgClient
+from services.kg import KgClient, get_ontospecies_bgClient
 
 
 class SpeciesLinker(IEntityLinker):
@@ -55,6 +55,6 @@ SELECT ?Species WHERE {{
 
 @cache
 def get_species_linker(
-    bg_client: Annotated[KgClient, Depends(get_ontospecies_kgClient)]
+    bg_client: Annotated[KgClient, Depends(get_ontospecies_bgClient)]
 ):
     return SpeciesLinker(bg_client=bg_client)

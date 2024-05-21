@@ -5,8 +5,8 @@ from typing import Annotated, List
 from fastapi import Depends
 
 from controllers.qa.model import QAStep
-from controllers.qa.retrieve import (
-    Nlq2ActionRetriever,
+from services.example_store import (
+    ExampleStore,
     get_nlq2action_retriever,
 )
 from .execute_action import ActionExecMediator, get_actionExec_mediator
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class DataSupporter:
     def __init__(
         self,
-        retriever: Nlq2ActionRetriever,
+        retriever: ExampleStore,
         translator: Nlq2ActionTranslator,
         executor: ActionExecMediator,
     ):
@@ -64,7 +64,7 @@ class DataSupporter:
 
 
 def get_data_supporter(
-    retriever: Annotated[Nlq2ActionRetriever, Depends(get_nlq2action_retriever)],
+    retriever: Annotated[ExampleStore, Depends(get_nlq2action_retriever)],
     translator: Annotated[Nlq2ActionTranslator, Depends(get_nlq2action_translator)],
     executor: Annotated[ActionExecMediator, Depends(get_actionExec_mediator)],
 ):

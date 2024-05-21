@@ -6,9 +6,9 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, model_serializer
 
 from controllers.qa import DataSupporter, get_data_supporter
-from controllers.qa.retrieve import QADomain
 from controllers.qa.model import QAStep, serialize_data_item
 from controllers.qa.model import DataItem
+from services.example_store.model import QADomain
 
 
 class QARequest(BaseModel):
