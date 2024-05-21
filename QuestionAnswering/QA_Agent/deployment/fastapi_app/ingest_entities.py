@@ -108,7 +108,10 @@ def insert_entities(
         )
     )
 
-    for chunk in tqdm(batched(entries, ENTITIES_CHUNK_SIZE)):
+    for chunk in tqdm(
+        batched(entries, ENTITIES_CHUNK_SIZE),
+        total=math.ceil(len(entries) / ENTITIES_CHUNK_SIZE),
+    ):
         pipeline = redis_client.pipeline()
         for i, entry in enumerate(chunk):
             redis_key = ENTITIES_KEY_PREFIX + str(offset + i)
