@@ -2,9 +2,12 @@ from typing import Annotated, Tuple
 
 from fastapi import Depends
 from controllers.qa.execute_action.model import FuncAction
-from .base import Name2Func
-from .sg_dispersion import SGDispersionFuncExecutor, get_sgDispersion_funcExec
-from .sg_carpark import SGCarparkFuncExecutor, get_sgCarpark_funcExec
+from services.funcs.base import Name2Func
+from services.funcs.sg_dispersion import (
+    SGDispersionFuncExecutor,
+    get_sgDispersion_funcExec,
+)
+from services.funcs.sg_carpark import SGCarparkFuncExecutor, get_sgCarpark_funcExec
 
 
 class FuncActionExecutor:
