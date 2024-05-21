@@ -20,6 +20,7 @@ import crystaldata
 import ontocrystal_datatypes as ocdt
 
 import xrd_spectrum as xrds
+import xrd_simulation
 
 #logging.basicConfig(level = logging.DEBUG)
 #logging.basicConfig(level = logging.INFO)
@@ -104,7 +105,7 @@ def get_cif_iri(cif_path):
 
 class CifIriData:
     """ Data structure to convert a given file_path to iri,
-    based on the database in file CIF_IRI_FILE.
+    based on the database saved in file CIF_IRI_FILE.
     Main functions:
     get_entry_iri(cif_path) - return iri and uuid for given cif_path, 
                           from existing entry.
@@ -188,7 +189,7 @@ class CifIriData:
 
         return err_count
 
-    def set_entry(self, cif_path, folder_id, err_count=-1):
+    def set_entry(self, cif_path, folder_id, xrd_path, err_count=-1):
         """ Change an existing or add a new line to data base. 
         """
 
@@ -207,11 +208,12 @@ class CifIriData:
 
         if not found:
             uuid = tools.new_uuid()
-            iri = "CrystalInformation_" + uuid
+            cif_iri = "CrystalInformation_" + uuid
 
-            xrd_file = "xrd_file"
-            xrd_iri = "xrd_iri"
-            data = [cif_path, len(self.data), iri, uuid, xrd_file, xrd_iri] 
+            xrd_uuid = tools.new_uuid()
+            #xrd_file = os.path.join("xrd_file"
+            xrd_iri = "XRDSpectrum_" + xrd_uuid
+            data = [cif_path, len(self.data), cif_iri, uuid, xrd_path, xrd_iri] 
             if err_count >= 0:
                 data[5] = err_count
             self.data.append(data)
@@ -1589,7 +1591,6 @@ if __name__ == "__main__":
 
             cryst = CrystalInfo(uuidDB=uuidDB, abox_prefix=zeoOntoPrefix)
             #cif_iri = "CrystalInformation_" + uuid_str
-            CIF_IRI_LIST.append([file, i_file, cif_iri, uuid_str, db_count])
 
             cif_name = str(file)
             tmp = cryst.get_csv_arr_from_cif(file, cif_name,
@@ -1600,12 +1601,26 @@ if __name__ == "__main__":
         if "X" in FLAGS:
             xrd_path = get_xrd_file(file, XRD_FOLDER)
             if not os.path.isfile(xrd_path):
+                file_in = os.path.join("", file)
+                #file_out = os.path.join(FOLDER_OUT, cif[])
+                file_out = xrd_path
+
+                try:
+                    if not os.path.isfile(file_out):
+                        peaks = xrd_simulation.get_powder_xrd(file_in, 5, 70, 5)
+                        xrd_simulation.save_xrd(file_out, peaks)
+                except:
+                    print("Failed to read file:", cif)
+                    with open(LOG_FILE, "a", encoding="utf-8") as flog:
+                        flog.write("Failed to read " + cif + "\n")
+
                 pass
             xrd = xrds.XRDSpectrum(abox_prefix=zeoOntoPrefix)
             tmp = xrd.get_csv_arr(cif_iri, crystOntoPrefix + "hasXRDSpectrum", xrd_path)
             if tmp != []:
                 output += tmp
 
+        CIF_IRI_LIST.append([file, i_file, cif_iri, uuid_str, db_count])
 
         # To limit the file size, because blazegraph cannot accept big files.
         if len(output) > 150000 or i_file == len(files) - 1:
