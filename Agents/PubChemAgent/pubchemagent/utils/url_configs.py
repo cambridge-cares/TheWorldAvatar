@@ -1,7 +1,7 @@
 # ENDPOINT URLs
 SPARQL_ENDPOINTS_ONTOSPECIES = "http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies" # OLD ONTOSPECIES ENDPOINT TO RETRIVE SAME IRI
-QUERY_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_pubchem" # NEW ONTOSPECIES 
-UPDATE_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_pubchem" # NEW ONTOSPECIES 
+QUERY_ENDPOINT = "https://theworldavatar.io/chemistry/blazegraph-dev/namespace/ontospecies" # NEW ONTOSPECIES 
+UPDATE_ENDPOINT = "https://theworldavatar.io/chemistry/blazegraph-dev/namespace/ontospecies" # NEW ONTOSPECIES 
 
 # ONTOLOGY URLs
 ONTOSPECIES_URL = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#" # ONTOSPECIES TBOX 

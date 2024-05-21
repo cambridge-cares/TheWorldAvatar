@@ -3,7 +3,7 @@
         "Name": "opf-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "opf-agent:1.0.0",
+                "Image": "opf-agent:1.1.0",
                 "Env": [
                     "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
                 ]

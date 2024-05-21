@@ -22,7 +22,7 @@ public class DispersionSimulation {
     private Point weatherStationLocation;
     private Map<Integer, String> zMap;
 
-    private List<Instant> timesteps;
+    private List<Long> timesteps;
 
     public DispersionSimulation(String derivationIri) {
         this.derivationIri = derivationIri;
@@ -37,11 +37,11 @@ public class DispersionSimulation {
 
     public void setTimesteps(List<Long> timesteps) {
         if (!timesteps.isEmpty()) {
-            this.timesteps = timesteps.stream().map(Instant::ofEpochSecond).collect(Collectors.toList());
+            this.timesteps = timesteps;
         }
     }
 
-    public List<Instant> getTimesteps() {
+    public List<Long> getTimesteps() {
         return timesteps;
     }
 

@@ -30,7 +30,7 @@
     <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css"
         rel="stylesheet">
     <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-    <link href="./twa-vf/twa-vf.min.css" rel="stylesheet"/>
+    <link href="./twa-vf/twa-vf.min.css" rel="stylesheet" />
 
     <!-- ===== CUSTOMISABLE ===== -->
     <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
@@ -182,14 +182,23 @@
         $("#sidePanelInner").tabs();
         // Create a new manager instance
         var manager = new Manager(MapProvider.MAPBOX);
-        window.manager = manager;
+        var relativePath;
+        if (window.location.href.includes("visualisation")) {
+            relativePath = "..";
+        } else {
+            relativePath = ".";
+        }
 
-        var dispersionHandler = new DispersionHandler("http://localhost:3838", manager);
+        var dispersionHandler = new DispersionHandler(relativePath, manager);
+
+        var dispersionPromise = dispersionHandler.setDispersions(dispersionHandler);
+        // Read credentials
+        var credentialPromise = manager.readCredentials();
+        // Only start the map after data definitions have been read.
+        var dataPromise = manager.loadDefinitions();
 
         // Only start the map after data definitions have been read.
-        manager.readCredentials().then(() => {
-            return dispersionHandler.setDispersions(dispersionHandler);
-        }).then(() => {
+        Promise.all([dispersionPromise, credentialPromise, dataPromise]).then(() => {
             return new Promise(function (resolve) {
                 let settings = {};
                 settings.center = dispersionHandler.dispersions[dispersionHandler.selectedSimulation].centroid;
@@ -222,7 +231,7 @@
                         (ship location/positioning databases, weather conditions, geospatial description of buildings) and software 
                         (multi-dimensional dispersion modelling).</p>
 					
-					<p>Double click anywhere within a simulation to create a virtual sensor, after the sensor is created, a red dot will appear. </p>
+					<p>Double click anywhere within a simulation to create a virtual sensor, refresh is required for the virtual sensor to appear. </p>
 
                         <br/>
 					<div style="display: flex; justify-content: center;">
@@ -247,6 +256,8 @@
 
                 // Load registered images and linked files
                 manager.loadImagesAndLinks().then(() => {
+                    manager.plotData();
+                }).then(() => {
                     return dispersionHandler.buildDropdown(dispersionHandler);
                 }).then(() => dispersionHandler.plotData());
             });
@@ -255,6 +266,8 @@
             MapHandler.MAP.on("dblclick", (e) => {
                 dispersionHandler.createVirtualSensor(e.lngLat.lat, e.lngLat.lng).done().then(() => dispersionHandler.plotData());
             });
+
+            dispersionHandler.updateVirtualSensors();
         }
 
     </script>
