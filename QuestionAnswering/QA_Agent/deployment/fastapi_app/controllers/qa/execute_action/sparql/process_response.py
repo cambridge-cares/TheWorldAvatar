@@ -12,6 +12,7 @@ class SparqlResponseProcessor:
     TWA_PREFIXES = [
         "http://www.theworldavatar.com/kg/",
         "https://www.theworldavatar.com/kg/",
+        "http://www.theworldavatar.com/kb/"
     ]
     WKT_LITERAL_PREFIX = "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> "
 
