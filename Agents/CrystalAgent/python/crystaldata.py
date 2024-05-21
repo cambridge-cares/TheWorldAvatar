@@ -23,7 +23,7 @@ import tools
 #logging.basicConfig(level = logging.WARNING)
 logging.basicConfig(level = logging.ERROR)
 
-crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
 # Parameter to extract individual atom position from known base atom and
 # the symmetry of the unit cell. Atoms located closer than this cut-off
@@ -279,7 +279,7 @@ class AtomInformation:
         else:
             self.abox_prefix = ""
 
-        self.crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+        self.crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
         pass # AtomInformation.__init__()
 
     def setCoordFrac(self, x, y, z):
@@ -501,8 +501,7 @@ class CrystalData:
         #  logging.error(" Invalid entry '" + str(uuidDB) + "', expecting a database.")
 
         #self.cifStandard = None
-        self.cifStandard = self.readStandardFile(os.path.join("ontozeolite", "crystal",
-                                                 "data", "CIF_standard_2.4.5.txt"))
+        self.cifStandard = self.readStandardFile(os.path.join("CIF_standard_2.4.5.txt"))
         #self.cifStandard = self.readStandardFile("CIF_standard_2.4.5.txt")
         self.cifStandard += ["_symmetry_Int_Tables_number"]
 
@@ -552,8 +551,8 @@ class CrystalData:
     def readStandardFile(self, path):
         output = []
         if not os.path.isfile(path):
-            logging.error("CIF standard file does not exist: '%s'.", path)
-            return []
+            logging.warning("CIF standard file does not exist: '%s'.", path)
+            return output
         f = open(path, encoding="utf8")
         for line in f:
             short = cleanString(line)

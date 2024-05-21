@@ -21,7 +21,7 @@ import tools
 logging.basicConfig(level=logging.ERROR)
 
 # Ontology for Crystal,
-crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
 omOntoPrefix = "http://www.ontology-of-units-of-measure.org/resource/om-2/"
 OM2_KEYWORDS = ["angstrom", "cubicAngstrom", "reciprocalAngstrom",

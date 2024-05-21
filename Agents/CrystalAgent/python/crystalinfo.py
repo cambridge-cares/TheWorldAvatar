@@ -13,10 +13,13 @@ import time
 #import uuid
 
 import tools
+import argparse
 
 import crystaldata
 
 import ontocrystal_datatypes as ocdt
+
+import xrd_spectrum as xrds
 
 #logging.basicConfig(level = logging.DEBUG)
 #logging.basicConfig(level = logging.INFO)
@@ -26,18 +29,40 @@ logging.basicConfig(level = logging.WARNING)
 #if len(sys.argv) > 1:
 #    DATA_DIR = sys.argv[1]
 #else:
-if True:
-    DATA_DIR = "ontozeolite"
+#if True:
+#    DATA_DIR = "ontozeolite"
     #print("Missing command line arg in crystalinfo, using '", DATA_DIR, "'.", sep="")
 
-DB_FOLDER = os.path.join(DATA_DIR, "crystal")
+#DB_FOLDER = os.path.join(DATA_DIR, "crystal")
 
-crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
-zeoOntoPrefix = "http://www.theworldavatar.com/kg/ontozeolite/"
+crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
+zeoOntoPrefix = "https://www.theworldavatar.com/kg/ontozeolite/"
 
 
-CIF_IRI_FILE = os.path.join(DATA_DIR, "crystal", "cif_iri_list.csv")  # Format: filename, count/unique_id, iri, uuid
+CIF_IRI_FILE = os.path.join("cif_iri_list.csv")  # Format: filename, count/unique_id, iri, uuid
 CIF_IRI_LIST = None
+
+
+def read_command_line():
+    parser = argparse.ArgumentParser(description="")
+    parser.add_argument("--cif", type=str, default="",
+                        help="File name or a directory containing cif files. " +
+                        "Required argument.")
+    parser.add_argument("--outDir", type=str, default="",
+                        help="Directory to save the csv files. " +
+                        "Default: the same folder as the input cif.")
+    parser.add_argument("--xrdDir", type=str, default="",
+                        help="Directory to save the .xrd files. " +
+                        "Default: 'xrd'.")
+    parser.add_argument("--abox-prefix", type=str, default="",
+                        help="The prefix for the entities in the abox. " +
+                        "Default: no prefix.")
+    parser.add_argument("--flags", type=str, default="CX",
+                        help="The flags to specify what to save to the abox csv file. " +
+                        "Default: CX.")
+
+    return parser.parse_args()
+    # === end of read_command_line()
 
 
 def has_xyz_line(file_path):
@@ -69,9 +94,9 @@ def get_cif_iri(cif_path):
     #import uuid
     #uuid_str = str(uuid.uuid4())
     uuid_str = tools.new_uuid()
-    iri = "CIF_" + cif_path + "_" + uuid_str
+    cif_iri = "CrystalInformation" + "_" + uuid_str
     folder = "folder"
-    CIF_IRI_LIST.append([cif_path, folder, iri, uuid_str])
+    CIF_IRI_LIST.append([cif_path, folder, cif_iri, uuid_str])
     tools.writeCsv(CIF_IRI_FILE, CIF_IRI_LIST)
     return iri, uuid_str
     # === end of get_cif_iri()
@@ -110,7 +135,7 @@ class CifIriData:
                 self.data = self.data[1:]
         else:
             self.data = []
-            print("Not found file '", self.filename, "'.", sep="")
+            logging.warning("Not found file '", self.filename, "', creating new file.", sep="")
             #1/0
 
         return self.data
@@ -119,7 +144,7 @@ class CifIriData:
         """ Save the current data to filename.
         If no filename provided - save to 
         """
-        header = [["CIF file", "id", "iri", "uuid", "Folder", "Errors" ]]
+        header = [["CIF file", "id", "CIF IRI", "XRD file", "XRD IRI" ]]
         output = header + self.data
         
         if filename:
@@ -184,7 +209,9 @@ class CifIriData:
             uuid = tools.new_uuid()
             iri = "CrystalInformation_" + uuid
 
-            data = [cif_path, len(self.data), iri, uuid, folder_id, -1] 
+            xrd_file = "xrd_file"
+            xrd_iri = "xrd_iri"
+            data = [cif_path, len(self.data), iri, uuid, xrd_file, xrd_iri] 
             if err_count >= 0:
                 data[5] = err_count
             self.data.append(data)
@@ -199,8 +226,7 @@ class CifIriData:
         #print("In get_entry_iri", cif_path)
         cif_path = cif_path.replace("/", "\\").lower().strip()
         for line in self.data:
-            if line[0].lower().strip() == cif_path or \
-               line[0].lower().strip() == os.path.join("ontozeolite", "crystal", "data", cif_path):
+            if line[0].lower().strip() == cif_path:
                 iri = line[2].strip()
                 uid = line[3].strip()
                 #print("Found entry ", line)
@@ -506,7 +532,7 @@ class CrystalInfo:
             #self.iri = get_cif_iri(file_path)
             self.iri, self.uuid = CIF_IRI_DATA.get_entry_iri(file_path)
 
-            #print(">>>>>>>>>", file_path, self.iri)
+            print(">>>>>>>>>", file_path, self.iri)
 
             if not self.iri:
                 self.iri, self.uuid = self.uuidDB.addUUID(crystOntoPrefix + "CrystalInformation",
@@ -515,12 +541,14 @@ class CrystalInfo:
                 #print("==============================")
                 #1/0
                 pass
+
         else:
             #print(456)
             self.uuid = new_uuid
-            self.iri = name + "_" + self.uuid
+            self.iri = "CrystalInformation" + "_" + self.uuid
         """
         """
+        print(">>>>>>>>>", self.uuid, self.iri)
 
         #print(">>> In crystalinfo: subj =", subject, "pred =", predicate, zeoOntoPrefix, self.iri)
         if subject != "" and predicate != "":
@@ -532,6 +560,9 @@ class CrystalInfo:
 
         logging.info("Continue initializing CIF", file_path, self.iri)
         #print("Full initialization of CIF", file_path, self.iri)
+
+        output.append([self.iri, "Instance",
+                       crystOntoPrefix + "CrystalInformation", "", "", ""])
 
         if True:
             pass
@@ -1411,11 +1442,22 @@ def list_files_with_extension(directory, extension):
             files.append(file)
     return files
 
+
+def get_xrd_file(cif_file, xrd_dir):
+    dir_name, file_name = os.path.split(cif_file)
+    file, ext = os.path.splitext(file_name)
+
+    xrd_path = os.path.join(xrd_dir, file + ".xrd")
+    return xrd_path
+
+
 if __name__ == "__main__":
     # Algorithm to process the cif files:
     # 1. Get a directory with cif files and the list of files
 
+
     files = []
+    """
     #data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "a_cifs.csv"))
     data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "cif_list.csv"))
     #data = data[1:]  # <= removed the header line, but there is no header.
@@ -1423,11 +1465,53 @@ if __name__ == "__main__":
         if line[5] != "" and line[5].lower() != "none":
             if line[5].lower() not in files:
                 files += line[5].lower().split()
+    """
 
-    files = ["tmpdEZMCR.cif"]
+    args = read_command_line()
+
+    FLAGS = args.flags
+    #print("FLAGS =", FLAGS)
+
+    #if args.aPrefix
+    zeoOntoPrefix = args.abox_prefix
+    #print("ABox prefix:", zeoOntoPrefix)
+
+    if args.cif == "":
+        print("Missing input cif file. Use command line argument --cif=<file>")
+        sys.exit(0)
+    elif os.path.isfile(args.cif):
+        name, ext = os.path.splitext(args.cif)
+        ext = ext.lower()
+        if ext == ".cif":
+            files = [args.cif]
+        elif ext == ".csv" or ext == ".txt":
+            files = []
+            print("Reading from input file:", args.cif)
+            with open(args.cif, encoding="utf-8") as fp:
+                for line in fp:
+                    if os.path.isfile(line):
+                        name, ext = os.path.splitext(line)
+                        if ext.lower() == ".cif":
+                            files.append(line)
+                    else:
+                        print("Not a cif. Skipping it:", line)
+                        
+    elif os.path.isdir(args.cif):
+        print("Reading cif files from directory:", args.cif)
+        all_files = os.listdir(args.cif)
+        files = []
+        for f in all_files:
+            name, ext = os.path.splitext(f)
+            if ext.lower() == ".cif":
+                files.append(f)
+    else:
+        print("Unkown value for command line argument --cif:", args.cif)
+        sys.exit(0)
+
     files = list(set(files))
-    print("Found CIF files:", len(files))
+    #print("Found CIF files:", len(files), ":", files)
 
+    # Check repeating files:
     tmp = list(files)
     tmp.sort()
     for i_line in range(len(tmp)-1):
@@ -1436,6 +1520,7 @@ if __name__ == "__main__":
             print("Repeating file ", line)
             pass
 
+    """
     tmp = list(files)
     files = []
     for file in tmp:
@@ -1445,45 +1530,38 @@ if __name__ == "__main__":
             print("Missing file", new_file)
         files.append(new_file)
         #print(files[-1])
-
-    #1/0
-    # FIXME
-    #print("testing for aaaaaaaaaaaaaaaaaaaaa")
-    #files = files[:200]
-    #files = files[:20]
-    #files = files[246+35+320+30+85+225+55+54+370+230:]
-    #files = ["cifextra\\1169950.cif"]
-    '''
-    files = ["CIF\\AFI.cif",
-             "CIF\\ANO.cif",
-             "CIF\\AVE.cif"   ]
-    files = []
-    with open("list_of_cif_fails-4.txt", encoding="utf-8") as fp:
-        for line in fp:
-            if len(line.strip()) > 0:
-                files.append(line.strip())
-    '''
+    """
 
     # 2. Start processing files one by one:
     #    2a. If size exceeds size 20Mb move to the next folder
     #    2b. Keep a list of CIF uuid
     #    2c. Once too many lines in the output - create a new csv file.
 
-    if not os.path.isdir(DB_FOLDER):
-        os.mkdir(DB_FOLDER)
+    #if not os.path.isdir(DB_FOLDER):
+    #    os.mkdir(DB_FOLDER)
 
-    CSV_FOLDER = os.path.join(DB_FOLDER, "csv")
+    if args.outDir == "":
+        CSV_FOLDER = os.path.join("csv")
+    else:
+        CSV_FOLDER = args.outDir
+
+    if args.outDir == "":
+        XRD_FOLDER = os.path.join("xrd")
+    else:
+        XRD_FOLDER = args.xrdDir
+
+
     if not os.path.isdir(CSV_FOLDER):
         os.mkdir(CSV_FOLDER)
 
-    UUID_FOLDER = os.path.join(DB_FOLDER, "uuid")
+    UUID_FOLDER = os.path.join("uuid")
     if not os.path.isdir(UUID_FOLDER):
         os.mkdir(UUID_FOLDER)
 
     output = []
     output += tools.get_csv_init("base",
                                  t_prefix=crystOntoPrefix + "OntoCrystal.owl",
-                                 a_prefix=crystOntoPrefix)
+                                 a_prefix=zeoOntoPrefix)
 
     CIF_IRI_LIST = []  # TODO possibility to load from file for extension.
     db_count = 0
@@ -1494,28 +1572,38 @@ if __name__ == "__main__":
     uuidDB = tools.UuidDB(filename=uuid_file)
 
     for i_file, file in enumerate(files):
-        print("----------------------------------------------------------")
-        print("PyMatGenStarting cif ", i_file, " of ", len(files),
-              ": '", file, "'.", sep="")
+        #print("----------------------------------------------------------")
+        #print("PyMatGenStarting cif ", i_file, " of ", len(files),
+        #      ": '", file, "'.", sep="")
 
         i_cif = len(CIF_IRI_LIST)
 
         #uuid_str = str(uuid.uuid4())
         #uuid_str = tools.new_uuid()
-        iri, uuid_str = CIF_IRI_DATA.get_entry_iri(file)
-        if iri is None and uuid_str is None:
+        cif_iri, uuid_str = CIF_IRI_DATA.get_entry_iri(file)
+        if cif_iri is None and uuid_str is None:
             CIF_IRI_DATA.set_entry(file, db_count)
-            iri, uuid_str = CIF_IRI_DATA.get_entry_iri(file)
+            cif_iri, uuid_str = CIF_IRI_DATA.get_entry_iri(file)
 
         cryst = CrystalInfo(uuidDB=uuidDB, abox_prefix=zeoOntoPrefix)
-        #iri = "CrystalInformation_" + uuid_str
-        CIF_IRI_LIST.append([file, i_file, iri, uuid_str, db_count])
+        #cif_iri = "CrystalInformation_" + uuid_str
+        CIF_IRI_LIST.append([file, i_file, cif_iri, uuid_str, db_count])
 
-        cif_name = "CIF_" + str(i_file)
+        cif_name = str(file)
         tmp = cryst.get_csv_arr_from_cif(file, cif_name,
                                          subject="", predicate="",
                                          new_uuid=uuid_str)
         output += tmp
+
+        if "X" in FLAGS:
+            xrd_path = get_xrd_file(file, XRD_FOLDER)
+            if not os.path.isfile(xrd_path):
+                pass
+            xrd = xrds.XRDSpectrum(abox_prefix=zeoOntoPrefix)
+            tmp = xrd.get_csv_arr(cif_iri, crystOntoPrefix + "hasXRDSpectrum", xrd_path)
+            if tmp != []:
+                output += tmp
+
 
         # To limit the file size, because blazegraph cannot accept big files.
         if len(output) > 150000 or i_file == len(files) - 1:
@@ -1524,7 +1612,8 @@ if __name__ == "__main__":
             output = []
             output += tools.get_csv_init("base",
                                          t_prefix=crystOntoPrefix + "OntoCrystal.owl",
-                                         a_prefix=crystOntoPrefix)
+                                         a_prefix=zeoOntoPrefix)
+
             db_count += 1
 
             # Update the uuid database:
