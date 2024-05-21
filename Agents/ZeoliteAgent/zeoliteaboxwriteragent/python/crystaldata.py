@@ -31,6 +31,16 @@ crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
 # This is adjustable parameter. Typical values from 0.06 to 2 angstrom.
 ATOM_DUPLICATE_CUTOFF = 0.06  # In angstrom.
 
+CIF_IGNORED_KEYWORDS = ["_journal_name_full", "_journal_page_first",
+                        "_journal_page_last", "_journal_volume",
+                        "_journal_year", "_publ_section_title",
+                        "_journal_paper_doi",
+                        "_chemical_formula_sum", "_chemical_name_systematic",
+                        "_chemical_name_common", "_cell_formula_units_Z",
+                        "_audit_update_record", "_audit_block_doi",
+                        "_audit_creation_method",
+                        "_refine_ls_R_factor_all"]
+
 
 entriesWithUncertainties = [
              "_cell_length_a",    "_cell_length_b",   "_cell_length_c",
@@ -192,9 +202,7 @@ def splitErrorBarLoop(line, headers, file_line):
 def splitStr(value):
     """
     Function splits a string of a form "12.345(6)" into two strings: "12.345" and "0.006".
-    TODO:
     Sometimes the uncertainty is displayed as 12.345,6
-              (see for example ccdcfiles\10.1002_anie.200704222.cif)
     """
 
     pos1 = value.find("(")
@@ -1457,7 +1465,7 @@ class CrystalData:
         return parts
         # === end of _split_cif_to_parts()
 
-    def _parse_cif_line(self, line_list):
+    def _parse_cif_line(self, line_list, cif_path="cif_path"):
 
         line = " ".join(line_list)
         #words = line
@@ -1469,10 +1477,11 @@ class CrystalData:
                         vOut, eOut = splitErrorBar(words[1], line)
                         #if "" != eOut:
                         #    countBrackets += 1
-                        self._setValueAndError("cifName", words[0], vOut, eOut)
+                        self._setValueAndError(cif_path, words[0], vOut, eOut)
+
         elif words[0] in self.cifStandard:
             #print(">>>>> ", words[0])
-            self._setCifStandardValue("cifName", words)
+            self._setCifStandardValue(cif_path, words)
 
         else:
           
@@ -1523,7 +1532,7 @@ class CrystalData:
         parts = self._split_cif_to_parts(cif_path)
 
         for line in parts["lines"]:
-            self._parse_cif_line(line)
+            self._parse_cif_line(line, cif_path=cif_path)
 
         #print(">>>>>>>>>>>>", len(parts["loops"]))
         for loop in parts["loops"]:
@@ -1928,14 +1937,10 @@ class CrystalData:
             #self.symmLatticeSystem = words[1]
             pass
 
-        elif words[0] in ["_journal_name_full", "_journal_page_first",
-                          "_journal_page_last", "_journal_volume",
-                          "_journal_year", "_chemical_formula_sum",
-                          "_chemical_name_systematic", "_cell_formula_units_Z",
-                          "_database_code_depnum_ccdc_archive",
-                          "_audit_update_record", "_database_code_ICSD"]:
-            # Do nothing
+        elif words[0] in CIF_IGNORED_KEYWORDS:
+            # Do nothing. 
             pass
+
         else:
             logging.warning(" Not processed keyword '%s' in '%s'",
                             words[0], cif_name)
@@ -1945,7 +1950,6 @@ class CrystalData:
     def _setValueAndError(self, cifName, entry, value, error):
         """
         Setting the value and error values to the internal parameters.
-
         """
 
         if ("_cell_length_a" == entry or "_cell_length_b" == entry or

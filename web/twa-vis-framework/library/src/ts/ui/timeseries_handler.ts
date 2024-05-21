@@ -276,7 +276,7 @@ class TimeseriesHandler {
         // Determine axis types
         let yAxisType = ("Boolean" === data["valuesClass"]) ? "category" : "linear";
         let xAxisType = "linear";
-        if(data["timeClass"] === "dateTime" || data["timeClass"] === "offsetTime") {        
+        if(data["timeClass"] === "dateTime" || data["timeClass"] === "offsetTime" || data["timeClass"] === "Instant") {        
             xAxisType = "time";
         }
 

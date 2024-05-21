@@ -2,8 +2,9 @@
 import mapboxgl from 'mapbox-gl';
 import { Dispatch } from 'redux';
 
-import { setQueryTrigger, setIri, setProperties, setStack } from 'state/map-feature-slice';
+import { addFeatures, clearFeatures, MapFeaturePayload } from 'state/map-feature-slice';
 import { DataStore } from 'io/data/data-store';
+import { Interactions } from 'io/config/interactions';
 
 /**
  * Function to add event listeners for the specified Mapbox map.
@@ -14,28 +15,19 @@ import { DataStore } from 'io/data/data-store';
  */
 export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch, dataStore: DataStore) {
   addTooltipEventListener(map);
-
+  addHoverEventListener(map, dataStore);
   // For click events
   map.on("click", (e) => {
-    // Accessing the first feature in the array of features under the click point
-    const feature = map.queryRenderedFeatures(e.point)[0];
-    // Set up query parameters
-    let iri: string = null;
-    let stack: string = null;
-    let queryTrigger: boolean = false; // Query will not execute by default
-    if (!feature?.properties?.iri) {
-      console.warn("IRI is missing. Data fetching will be skipped.");
-    } else if (!dataStore.getStackEndpoint(feature.source)) {
-      console.warn("Feature does not have a defined stack. Data fetching will be skipped.");
-    } else {
-      iri = feature.properties.iri;
-      stack = dataStore.getStackEndpoint(feature.source);
-      queryTrigger = true;
-    }
-    dispatch(setIri(iri));
-    dispatch(setProperties(feature.properties));
-    dispatch(setStack(stack));
-    dispatch(setQueryTrigger(queryTrigger));
+    // Reset features upon clicked
+    dispatch(clearFeatures());
+    // Store all features within the clicked radius with some additional metadata
+    const features: MapFeaturePayload[] = map.queryRenderedFeatures(e.point).map((feature) => ({
+      ...feature.properties,
+      name: feature.properties.name ?? (feature.id !== undefined ? "Feature #" + feature.id : "Feature"),
+      stack: dataStore.getStackEndpoint(feature.source), // Store the associated stack if available
+      layer: dataStore.getLayerWithID(feature.layer.id).name, // Store the layer's public-facing name
+    }))
+    dispatch(addFeatures(features));
   });
 }
 
@@ -71,4 +63,34 @@ function addTooltipEventListener(map: mapboxgl.Map) {
   map.on("mouseout", function () {
     toolTip.remove();
   });
+}
+
+/**
+ * Function to add event listeners for layers with hovering enabled.
+ * 
+ * @param {mapboxgl.Map} map - The Mapbox map object to attach the event listener to.
+ * @param {DataStore} dataStore - The data store storing the map layer information.
+
+ */
+function addHoverEventListener(map: mapboxgl.Map, dataStore: DataStore) {
+  dataStore.getLayerList().map(layer => {
+    if (layer.hasInjectableProperty(Interactions.HOVER)) {
+      const hoverProperty = layer.getInjectableProperty(Interactions.HOVER).style;
+      // Updates the conditional paint property with the IRI of the currently hovering feature
+      map.on("mousemove", layer.id, function (e) {
+        const feature = map.queryRenderedFeatures(e.point)[0];
+        const prevIri: string = hoverProperty[1][2];
+        if (feature.properties?.iri != prevIri) {
+          hoverProperty[1][2] = feature.properties?.iri;
+        }
+        map.setPaintProperty(layer.id, "fill-opacity", hoverProperty);
+      });
+
+      // When hovering outside the layer, reset the property to ensure highlight is removed
+      map.on("mouseleave", layer.id, function () {
+        hoverProperty[1][2] = "[HOVERED-IRI]";
+        map.setPaintProperty(layer.id, "fill-opacity", hoverProperty);
+      });
+    }
+  })
 }
