@@ -99,7 +99,7 @@ def get_cif_iri(cif_path):
     folder = "folder"
     CIF_IRI_LIST.append([cif_path, folder, cif_iri, uuid_str])
     tools.writeCsv(CIF_IRI_FILE, CIF_IRI_LIST)
-    return iri, uuid_str
+    return cif_iri, uuid_str
     # === end of get_cif_iri()
 
 
