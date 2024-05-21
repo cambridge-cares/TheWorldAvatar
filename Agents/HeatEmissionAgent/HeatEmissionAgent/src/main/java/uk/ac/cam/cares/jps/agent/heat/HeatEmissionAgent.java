@@ -121,7 +121,7 @@ public class HeatEmissionAgent extends JPSAgent {
 						" alter table \"%s\" add column %s double precision; " +
 						" update table \"%s\" set %s = case when specific_energy_consumption > 0.0 then " +
 						"production_volume*specific_energy_consumption*(1.0 - thermal_efficiency) " +
-						"when specific_energy_consumption < 0.0 then -1.0*production_volume*specific_energy_consumption end ; ",
+						"when specific_energy_consumption < 0.0 then -1.0*production_volume*specific_energy_consumption*(1.0 - thermal_efficiency) end ; ",
 						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
 				stmt.executeUpdate(sqlString);
 			}
