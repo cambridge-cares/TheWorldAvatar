@@ -3,13 +3,12 @@
 import styles from './ribbon-component.module.css';
 
 import React from 'react';
-import SVG from 'react-inlinesvg';
-import { Icon, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOption, setOption } from 'state/ribbon-component-slice';
-import { formatAppUrl } from 'utils/client-utils';
+import IconComponent from 'ui/graphic/icon/icon';
 
-type Props = {
+interface RibbonComponentToggleProps {
     icon: string,
     text: string,
     tooltip: string,
@@ -17,7 +16,7 @@ type Props = {
     action: (state: boolean) => void
 }
 
-export default function RibbonComponentToggle(props: Props) {
+export default function RibbonComponentToggle(props: Readonly<RibbonComponentToggleProps>) {
     const toggled = useSelector(getOption(props.text));
     const dispatch = useDispatch();
 
@@ -37,21 +36,6 @@ export default function RibbonComponentToggle(props: Props) {
         props.action(selected);
     }
 
-    let iconElement;
-    if(props.icon.endsWith(".svg")) {
-        // Image file
-        iconElement = (
-            <SVG src={formatAppUrl(props.icon)}/>
-        );
-    } else {
-        // Name of Google material icon
-        iconElement = (
-            <Icon className="material-symbols-outlined">
-                {props.icon}
-            </Icon>
-        );
-    }
-
     return (
         <div className={styles.ribbonComponent} onClick={clickAction}>
             <Tooltip
@@ -63,7 +47,7 @@ export default function RibbonComponentToggle(props: Props) {
                 <>
                     <div className={classNames.join(" ")}>
                         <div className={styles.ribbonComponentIcon}>
-                            {iconElement}
+                            <IconComponent icon={props.icon} />
                         </div>
                         <div className={styles.ribbonComponentText}>
                             {props.text}

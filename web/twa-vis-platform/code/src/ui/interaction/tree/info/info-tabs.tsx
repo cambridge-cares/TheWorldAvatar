@@ -5,22 +5,22 @@ import React from 'react';
 import { JsonObject } from "types/json";
 import { MaterialIconButtonWithIndex } from 'ui/graphic/icon/icon-button';
 
-type InfoTabsProps = {
+interface InfoTabsProps {
   data: JsonObject;
   activeTab: {
     index: number;
     setActiveTab: React.Dispatch<React.SetStateAction<number>>;
   }
-};
+}
 
-type InfoTabProps = {
+interface InfoTabProps {
   iconName: string;
   activeTab: {
     index: number; // the index assigned to this tab
     state: number; // the current state of index
     setActiveTab: React.Dispatch<React.SetStateAction<number>>;
   };
-};
+}
 
 /**
  * This component renders individual tabs depending on their availability.
@@ -29,7 +29,7 @@ type InfoTabProps = {
  * @param {number} activeTab.index The React state storing the current active index.
  * @param {React.Dispatch<React.SetStateAction<number>>} activeTab.setActiveTab A React function to set the current active index.
  */
-export default function InfoTabs(props: InfoTabsProps) {
+export default function InfoTabs(props: Readonly<InfoTabsProps>) {
   return (
     <div className={styles["tab-container"]}>
       {props.data?.meta && (
@@ -64,7 +64,7 @@ export default function InfoTabs(props: InfoTabsProps) {
  * @param {number} activeTab.state The React state storing the current active index.
  * @param {React.Dispatch<React.SetStateAction<number>>} activeTab.setActiveTab A React function to set the current active index.
  */
-function InfoTab(props: InfoTabProps) {
+function InfoTab(props: Readonly<InfoTabProps>) {
   return (
     <MaterialIconButtonWithIndex
       index={props.activeTab.index}

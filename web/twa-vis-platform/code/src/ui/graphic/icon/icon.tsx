@@ -33,9 +33,10 @@ export default function IconComponent(props: IconComponentProps) {
       <SVG className={props.classes} src={formatAppUrl(props.icon)} />
     );
   } else {
+    const iconClassNames = ["material-symbols-outlined"].concat(props.classes).join(" ");
     // Name of Google material icon
     return (
-      <Icon className={props.classes}>
+      <Icon className={iconClassNames}>
         {props.icon}
       </Icon>
     );

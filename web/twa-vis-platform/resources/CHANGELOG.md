@@ -3,6 +3,23 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.2.0
+
+### Features
+
+* Embedding of dashboard using the "dashboard" parameter in settings.json
+* Multiple data.json can be ingested using the new data-setting.json
+* Improve dark mode design for some features
+* Addition of "grouping" parameter within data.json to allow alternate views of the same source layer
+* Addition of "hover" parameter within data.json to create hovering effect for the specified layer if enabled
+* Added feature selector to manage multiple closely-positioned features
+
+### Bug Fixes
+
+* Fix missing metadata display
+* Fix error when layers use expressions to retrieve their icon image or line colors
+* Fix the parsing of RDF literals returned by Feature Info Agent
+
 ## 5.1.1
 
 ### Bug Fixes

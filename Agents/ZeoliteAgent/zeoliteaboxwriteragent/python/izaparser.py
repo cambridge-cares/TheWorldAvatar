@@ -1,3 +1,8 @@
+"""
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
 
 import os
 import re
@@ -2466,10 +2471,14 @@ def save_volume(frames):
 
 if __name__ == "__main__":
 
+    fileOut = os.path.join("ontozeolite", "izadata", "iza-data.json")
+    fileOut = os.path.join("iza-data-2.json")
+
     all_frames = []
 
     # zList = zeolist.getZeoList("main")
     zList = zeolist.getZeoList(["main", "new"])
+    #zList = ['ETR', 'EUO', 'HEU', 'MFS', 'MOZ', 'PHI', 'PTY', 'SGT', 'SVV', 'TSC', 'JSY']
 
     # zList = zList[:1]
     # zList = zList[150:]
@@ -2525,6 +2534,5 @@ if __name__ == "__main__":
 
     save_volume(all_frames)
 
-    fileOut = os.path.join("ontozeolite", "izadata", "iza-data.json")
     with open(fileOut, "w", encoding="utf-8") as fp:
         json.dump(all_frames, fp, indent=4)

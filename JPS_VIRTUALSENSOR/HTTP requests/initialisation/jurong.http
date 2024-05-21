@@ -1,4 +1,4 @@
-POST http://localhost:3838/dispersion-interactor/InitialiseSimulation
+POST http://localhost:4242/dispersion-interactor/InitialiseSimulation
 ?ewkt=SRID=24500;POLYGON((7700 22500, 17700 22500, 17700 30400, 7700 30400, 7700 22500))
 &nx=100
 &ny=100

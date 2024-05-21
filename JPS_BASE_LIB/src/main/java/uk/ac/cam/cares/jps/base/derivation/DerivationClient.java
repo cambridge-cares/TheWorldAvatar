@@ -491,7 +491,7 @@ public class DerivationClient {
 	 * This method updates the list of given and their upstream pure synchronous
 	 * derivations.
 	 * 
-	 * @param derivationIRI
+	 * @param derivationIRIs
 	 */
 	public void updatePureSyncDerivations(List<String> derivationIRIs) {
 		// the graph object makes sure that there is no circular dependency
@@ -504,6 +504,29 @@ public class DerivationClient {
 						.get();
 				updatePureSyncDerivation(derivation, graph);
 			}
+		} catch (Exception e) {
+			LOGGER.fatal(e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
+	}
+
+	/**
+	 * This method updates the list of given and their upstream pure synchronous
+	 * derivations in parallel.
+	 * 
+	 * @param derivationIRIs
+	 */
+	public void updatePureSyncDerivationsInParallel(List<String> derivationIRIs) {
+		// the graph object makes sure that there is no circular dependency
+		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<String, DefaultEdge>(
+				DefaultEdge.class);
+		List<Derivation> derivations = this.sparqlClient.getAllDerivationsInKG();
+		try {
+			List<Derivation> filteredDerivations = derivationIRIs.stream()
+				.map(derivationIRI -> derivations.stream()
+                .filter(d -> d.getIri().equals(derivationIRI))
+                .findFirst().get()).collect(Collectors.toList());
+			filteredDerivations.parallelStream().forEach(derivation -> updatePureSyncDerivation(derivation, graph));
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);

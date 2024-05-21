@@ -41,11 +41,6 @@ if "%1"=="" (
 set URL=%BASE%%NS%/sparql
 echo Uploading to %URL% %AUTH%
 
-rem echo Start upload: %DATE% %TIME% >> upload.log
-rem echo Uploading to %URL% >> upload.log
-rem echo Filename  %OWL_DIR%"\ontozeolite_kg_01.owl"
-
-rem goto EXIT
 rem set PREFIX=start
 set PREFIX=
 
@@ -53,7 +48,7 @@ set OWL_DIR=ontozeolite\zeolite\owl
 for /L %%i in (1,1,3) do (
   %PREFIX% pyuploader ts_upload %OWL_DIR%"\ontozeolite_kg_0"%%i".owl" --url=%URL% %AUTH%
 )
-goto EXIT
+rem goto EXIT
 
 set OWL_DIR=ontozeolite\biblio\owl
 %PREFIX% pyuploader ts_upload %OWL_DIR%"\onto_bib.csv.owl" --url=%URL% %AUTH%
