@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontosealevel="https://www.theworldavatar.com/kg/ontosealevel/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontosealevel/">
-        <dc:date>20 May 2024</dc:date>
+        <dc:date>21 May 2024</dc:date>
         <rdfs:comment>The Ontology for Sea Level is developed to represent information about sea level.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -158,7 +158,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/refersTo">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/ForecastSeaLevelMeasurement"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement"/>
         <rdfs:comment>A relationship between a sea level change and the forecast sea level measurement that it is referring to.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
         <rdfs:label>refers to</rdfs:label>
@@ -183,6 +183,16 @@
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasEndTime">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#gYear"/>
+                    <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
+                    <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#dateTime"/>
+                    <rdf:Description rdf:about="http://www.w3.org/2006/time#Instant"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
         <rdfs:comment>A relationship between a sea level change and its end time of reference.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
         <rdfs:label>has end time</rdfs:label>
@@ -195,21 +205,19 @@
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasStartTime">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#gYear"/>
+                    <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
+                    <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#dateTime"/>
+                    <rdf:Description rdf:about="http://www.w3.org/2006/time#Instant"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
         <rdfs:comment>A relationship between a sea level change and its start time of reference.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
         <rdfs:label>has start time</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontosealevel/measuredIn -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/measuredIn">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement"/>
-        <rdfs:comment>A relationship between a sea level measurement and the time of measurement.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
-        <rdfs:label>measured in</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -479,7 +487,7 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/refersTo"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/ForecastSeaLevelMeasurement"/>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
