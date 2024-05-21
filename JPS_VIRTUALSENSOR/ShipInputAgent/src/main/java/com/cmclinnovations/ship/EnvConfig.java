@@ -20,6 +20,7 @@ public class EnvConfig {
     public static final String API_KEY = System.getenv("API_KEY");
     public static final JSONArray BOUNDING_BOXES = new JSONArray(System.getenv("BOUNDING_BOXES"));
     public static final String UPLOAD_INTERVAL_MINUTES = System.getenv("UPLOAD_INTERVAL_MINUTES");
+    public static final boolean SKIP_UPDATE_RDB = Boolean.parseBoolean(System.getenv("SKIP_UPDATE_RDB"));
 
     private EnvConfig() {
         throw new IllegalStateException();
