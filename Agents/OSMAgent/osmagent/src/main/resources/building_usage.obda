@@ -21,9 +21,9 @@ source      SELECT DISTINCT u.name,
 mappingId	Address
 target		twa:Building/{building_iri} :hasAddress twa:{address_iri} .
             twa:{address_iri} a ic:Address ;
-                :hasCountry {country}^^xsd:string ;
-                :hasCity {city}^^xsd:string ;
-                ic:hasUnitNumber {house_number}^^xsd:string ;
+                ic:hasCountry {country}^^xsd:string ;
+                ic:hasCity {city}^^xsd:string ;
+                ic:hasStreetNumber {house_number}^^xsd:string ;
                 ic:hasPostalCode {postcode}^^xsd:string ;
                 ic:hasStreet {street}^^xsd:string .
 source      SELECT DISTINCT u.building_iri,
