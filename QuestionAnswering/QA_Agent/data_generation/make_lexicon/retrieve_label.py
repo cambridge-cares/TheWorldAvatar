@@ -5,7 +5,6 @@ import os
 from SPARQLWrapper import JSON, SPARQLWrapper
 
 
-
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--endpoint", help="SPARQL endpoint to retrieve label data")
@@ -31,7 +30,12 @@ if __name__ == "__main__":
     res = sparql_client.queryAndConvert()
 
     data = [
-        {"iri": row["s"]["value"], "label": row["label"]["value"]} for row in res["results"]["bindings"]
+        {
+            "iri": row["s"]["value"],
+            "label": row["label"]["value"],
+            "surface_forms": [row["label"]["value"]],
+        }
+        for row in res["results"]["bindings"]
     ]
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)

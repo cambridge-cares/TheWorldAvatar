@@ -1,5 +1,19 @@
 [
     {
+        "clsname": "ChemicalClass",
+        "el_config": {
+            "strategy": "semantic",
+            "k": 1
+        }
+    },
+    {
+        "clsname": "Use",
+        "el_config": {
+            "strategy": "semantic",
+            "k": 2
+        }
+    },
+    {
         "clsname": "LandUseType",
         "el_config": {
             "strategy": "semantic",

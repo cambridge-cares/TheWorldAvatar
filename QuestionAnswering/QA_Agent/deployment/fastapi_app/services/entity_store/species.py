@@ -49,7 +49,7 @@ SELECT ?Species WHERE {{
 
         return [
             row["Species"]["value"]
-            for row in self.bg_client(query)["results"]["bindings"]
+            for row in self.bg_client.query(query)["results"]["bindings"]
         ]
 
 

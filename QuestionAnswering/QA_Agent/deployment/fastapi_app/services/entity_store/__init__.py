@@ -59,7 +59,7 @@ logger = logging.getLogger(__name__)
 class EntityStore:
     KEY_PREFIX = "entities:"
     INDEX_NAME = "idx:entities"
-    _CHUNK_SIZE = 128
+    _CHUNK_SIZE = 1024
 
     @classmethod
     def _insert_entries_and_create_index(
