@@ -50,7 +50,7 @@ class OpenAIEmbedder(IEmbedder):
         )
 
 
-class TritonMPNetEmbedder(IEmbedder):
+class TritonEmbedder(IEmbedder):
     def __init__(
         self,
         url: str = "localhost:8001",
@@ -91,6 +91,6 @@ def get_embedder(
     if settings.server == "openai":
         cls = OpenAIEmbedder
     else:
-        cls = TritonMPNetEmbedder
+        cls = TritonEmbedder
 
     return cls(**{k: v for k, v in settings.model_dump().items() if v is not None})

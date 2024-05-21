@@ -1,56 +1,22 @@
-class EntityStoreBase:
-    from functools import cache
-
-
 from functools import cache
 from importlib.resources import files
-import json
 import logging
-from typing import Annotated, Dict, Iterable, List, Literal, Optional, Tuple
+from typing import Annotated, Dict, List, Optional, Tuple
 
 from fastapi import Depends
 import numpy as np
 from pydantic import TypeAdapter
 from redis import Redis
-from redis.commands.search.field import TextField, VectorField, TagField
-from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
-from pydantic.dataclasses import dataclass
 import regex
 
-from config import QAEngineName, get_qa_engine_name
-from services.embed import IEmbedder, get_embedder
-
-from services.entity_store.base import IEntityLinker
-from services.entity_store.ship import ShipLinker, get_ship_linker
-from services.entity_store.species import SpeciesLinker, get_species_linker
-from services.redis import does_index_exist, get_redis_client
 from utils.collections import FrozenDict
-from utils.itertools_recipes import batched
-
-EntityIRI = str
-EntityLabel = str
-ELStrategy = Literal["fuzzy", "semantic"]
-
-
-@dataclass(frozen=True)
-class ELConfig:
-    strategy: ELStrategy = "fuzzy"
-    k: int = 3
-
-
-@dataclass(frozen=True)
-class ELConfigEntry:
-    clsname: str
-    el_config: ELConfig
-
-
-@dataclass(frozen=True)
-class LexiconEntry:
-    iri: str
-    clsname: str
-    label: str
-    surface_forms: Tuple[str, ...]
+from services.embed import IEmbedder, get_embedder
+from services.redis import get_redis_client
+from .base import IEntityLinker
+from .ship import ShipLinker, get_ship_linker
+from .species import SpeciesLinker, get_species_linker
+from .model import ELConfig, ELConfigEntry
 
 
 logger = logging.getLogger(__name__)
@@ -61,97 +27,13 @@ class EntityStore:
     INDEX_NAME = "idx:entities"
     _CHUNK_SIZE = 1024
 
-    @classmethod
-    def _insert_entries_and_create_index(
-        cls,
-        redis_client: Redis,
-        embedder: IEmbedder,
-        entries: Iterable[LexiconEntry],
-    ):
-        offset = 0
-        vector_dim = None
-
-        logger.info("Inserting entities into Redis...")
-        logger.info("Chunk size: " + str(cls._CHUNK_SIZE))
-
-        for i, chunk in enumerate(batched(entries, cls._CHUNK_SIZE)):
-            logger.info("Processing chunk " + str(i))
-
-            chunk = list(chunk)
-            embeddings = (
-                embedder([", ".join(entry.surface_forms) for entry in chunk])
-                .astype(np.float32)
-                .tolist()
-            )
-            if vector_dim is None:
-                vector_dim = len(embeddings[0])
-
-            pipeline = redis_client.pipeline()
-            for i, (entry, embedding) in enumerate(zip(chunk, embeddings)):
-                redis_key = cls.KEY_PREFIX + str(offset + i)
-                doc = dict(
-                    iri=entry.iri,
-                    clsname=entry.clsname,
-                    label=regex.escape(
-                        entry.label, special_only=False, literal_spaces=True
-                    ),
-                    surface_forms=[
-                        regex.escape(sf, special_only=False, literal_spaces=True)
-                        for sf in entry.surface_forms
-                    ],
-                    surface_forms_embedding=embedding,
-                )
-                pipeline.json().set(redis_key, "$", doc)
-            pipeline.execute()
-
-            offset += len(chunk)
-
-        logger.info("Insertion done")
-
-        if vector_dim is None:
-            raise ValueError(
-                f"Index {cls.INDEX_NAME} is not found and must be created. Therefore, `entries` must not be None."
-            )
-
-        logger.info("Creating index for entities...")
-
-        schema = (
-            TagField("$.iri", as_name="iri"),
-            TagField("$.clsname", as_name="clsname"),
-            TextField("$.label", as_name="label"),
-            TextField("$.surface_forms.*", as_name="surface_forms"),
-            VectorField(
-                "$.surface_forms_embedding",
-                "FLAT",
-                {"TYPE": "FLOAT32", "DIM": vector_dim, "DISTANCE_METRIC": "IP"},
-                as_name="vector",
-            ),
-        )
-        definition = IndexDefinition(prefix=[cls.KEY_PREFIX], index_type=IndexType.JSON)
-        redis_client.ft(cls.INDEX_NAME).create_index(
-            fields=schema, definition=definition
-        )
-
-        logger.info("Index {index} created".format(index=cls.INDEX_NAME))
-
     def __init__(
         self,
         redis_client: Redis,
         embedder: IEmbedder,
-        lexicon: Iterable[LexiconEntry],
         clsname2elconfig: Dict[str, ELConfig],
         clsname2linker: Dict[str, IEntityLinker],
     ):
-        if not does_index_exist(redis_client, self.INDEX_NAME):
-            logger.info(
-                "Index for entities {index} not found".format(index=self.INDEX_NAME)
-            )
-            self._insert_entries_and_create_index(
-                redis_client=redis_client,
-                embedder=embedder,
-                entries=lexicon,
-            )
-
         self.redis_client = redis_client
         self.embedder = embedder
         self.clsname2elconfig = clsname2elconfig
@@ -318,26 +200,6 @@ def get_el_configs():
 
 
 @cache
-def get_lexicon(configs: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_configs)]):
-    return tuple(
-        [
-            LexiconEntry(
-                iri=obj["iri"],
-                clsname=entry.clsname,
-                label=obj["label"],
-                surface_forms=tuple(obj["surface_forms"]),
-            )
-            for entry in configs
-            for obj in json.loads(
-                files("resources.lexicon")
-                .joinpath(entry.clsname + "_lexicon.json")
-                .read_text()
-            )
-        ]
-    )
-
-
-@cache
 def get_clsname2config(
     config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_configs)]
 ):
@@ -356,7 +218,6 @@ def get_clsname2linker(
 def get_entity_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
-    lexicon: Annotated[Tuple[LexiconEntry, ...], Depends(get_lexicon)],
     clsname2config: Annotated[FrozenDict[str, ELConfig], Depends(get_clsname2config)],
     clsname2linker: Annotated[
         FrozenDict[str, IEntityLinker], Depends(get_clsname2linker)
@@ -365,7 +226,6 @@ def get_entity_store(
     return EntityStore(
         redis_client=redis_client,
         embedder=embedder,
-        lexicon=lexicon,
         clsname2elconfig=clsname2config,
         clsname2linker=clsname2linker,
     )

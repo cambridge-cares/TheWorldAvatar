@@ -5,7 +5,7 @@ from typing import List, Optional
 from openai import OpenAI
 
 from .execute_action.model import ActionBase, FuncAction, SparqlAction
-from .retrieve import Nlq2ActionExample
+from services.example_store import Nlq2ActionExample
 
 
 class Nlq2ActionTranslator:

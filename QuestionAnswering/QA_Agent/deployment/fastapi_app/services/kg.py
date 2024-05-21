@@ -29,13 +29,16 @@ class KgClient:
 
 
 @cache
-def get_ontospecies_kgClient():
+def get_ontospecies_bgClient():
     return KgClient(os.getenv("KG_ENDPOINT_ONTOSPECIES", "localhost"))
 
+@cache
+def get_ontokin_bgClient():
+    return KgClient(os.getenv("KG_ENDPOINT_ONTOKIN", "localhost"))
 
 @cache
 def get_sg_ontopClient():
-    return KgClient(os.getenv("KG_ENDPOINT_SG_ONTOP"))
+    return KgClient(os.getenv("KG_ENDPOINT_SG_ONTOP", "localhost"))
 
 
 @cache
