@@ -32,7 +32,6 @@ public class DataUploader {
     public enum ShipDataSource {
         JSON,
         RDB,
-        UNKNOWN;
     }
 
     public static int uploadShips(List<Ship> ships, QueryClient queryClient, ShipDataSource source) throws IOException {
