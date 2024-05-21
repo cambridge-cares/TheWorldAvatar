@@ -1,5 +1,12 @@
 [
     {
+        "clsname": "Element",
+        "el_config": {
+            "strategy": "fuzzy",
+            "k": 1
+        }
+    },
+    {
         "clsname": "ChemicalClass",
         "el_config": {
             "strategy": "semantic",
