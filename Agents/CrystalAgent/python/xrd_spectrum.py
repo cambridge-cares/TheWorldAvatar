@@ -51,7 +51,8 @@ class XRDSpectrum:
                                                 self.abox_prefix + "XRDSpectrum")
         output.append([xrd_iri, "Instance", self.crystOntoPrefix + "XRDSpectrum", "", "", ""])
 
-        output.append([subject, "Instance", xrd_iri, predicate, "", ""])
+        if subject != "":
+            output.append([subject, "Instance", xrd_iri, predicate, "", ""])
 
         #print(zeoname, "=====>", xrd[5])
         #print(">>> In arrSpectrum, uuid_xrd =", uuid_xrd)

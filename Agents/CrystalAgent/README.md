@@ -39,6 +39,30 @@ Options:
 
 ## Installation
 
+### Virtual environment
+It is recommended to use a virtual environment to install packages:
+
+```bash
+$ python -m venv <venv_name>
+$ <venv_name>\Scripts\activate.bat
+(<venv_name>) $
+```
+
+### Install package `pymatgen`
+
+`(<venv_name>) $ pip install pymatgen`
+
+More information can be found at the [official web-site](https://pymatgen.org/installation.html).
+
+### Install package `entityrdfizer` (optional)
+If you need to convert later the ABox csv into OWL, you can install the converter:
+
+`(<venv_name>) $ pip install entityrdfizer`
+
+More details on the [TWA web-site](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/EntityRDFizer).
+Note, that the original `(<venv_name>) $ pip install entityrdfizer` command
+will install an earlier version of the package.
+
 # Authors #
 Pavlo Rutkevych (pr521@cam.ac.uk), 01 Apr 2024
 

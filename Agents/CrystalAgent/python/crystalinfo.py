@@ -1469,7 +1469,7 @@ if __name__ == "__main__":
 
     args = read_command_line()
 
-    FLAGS = args.flags
+    FLAGS = args.flags.upper()
     #print("FLAGS =", FLAGS)
 
     #if args.aPrefix
@@ -1550,7 +1550,6 @@ if __name__ == "__main__":
     else:
         XRD_FOLDER = args.xrdDir
 
-
     if not os.path.isdir(CSV_FOLDER):
         os.mkdir(CSV_FOLDER)
 
@@ -1578,22 +1577,25 @@ if __name__ == "__main__":
 
         i_cif = len(CIF_IRI_LIST)
 
-        #uuid_str = str(uuid.uuid4())
-        #uuid_str = tools.new_uuid()
-        cif_iri, uuid_str = CIF_IRI_DATA.get_entry_iri(file)
-        if cif_iri is None and uuid_str is None:
-            CIF_IRI_DATA.set_entry(file, db_count)
+        cif_iri = ""
+        uuid_str = ""
+        if "C" in FLAGS:
             cif_iri, uuid_str = CIF_IRI_DATA.get_entry_iri(file)
+            #uuid_str = str(uuid.uuid4())
+            #uuid_str = tools.new_uuid()
+            if cif_iri is None and uuid_str is None:
+                CIF_IRI_DATA.set_entry(file, db_count)
+                cif_iri, uuid_str = CIF_IRI_DATA.get_entry_iri(file)
 
-        cryst = CrystalInfo(uuidDB=uuidDB, abox_prefix=zeoOntoPrefix)
-        #cif_iri = "CrystalInformation_" + uuid_str
-        CIF_IRI_LIST.append([file, i_file, cif_iri, uuid_str, db_count])
+            cryst = CrystalInfo(uuidDB=uuidDB, abox_prefix=zeoOntoPrefix)
+            #cif_iri = "CrystalInformation_" + uuid_str
+            CIF_IRI_LIST.append([file, i_file, cif_iri, uuid_str, db_count])
 
-        cif_name = str(file)
-        tmp = cryst.get_csv_arr_from_cif(file, cif_name,
+            cif_name = str(file)
+            tmp = cryst.get_csv_arr_from_cif(file, cif_name,
                                          subject="", predicate="",
                                          new_uuid=uuid_str)
-        output += tmp
+            output += tmp
 
         if "X" in FLAGS:
             xrd_path = get_xrd_file(file, XRD_FOLDER)
