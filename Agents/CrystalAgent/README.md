@@ -59,9 +59,18 @@ If you need to convert later the ABox csv into OWL, you can install the converte
 
 `(<venv_name>) $ pip install entityrdfizer`
 
-More details on the [TWA web-site](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/EntityRDFizer).
-Note, that the original `(<venv_name>) $ pip install entityrdfizer` command
-will install an earlier version of the package.
+More details at the [TWA web-site](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/EntityRDFizer).
+
+On some systems a message `ModuleNotFoundError: No module named 'pkg_resources'` may appear.
+Try to install additional package `pip install setuptools`.
+
+### Install package `Dans_Diffraction`.
+This package is required for the simulated XRD spectra.
+
+`(<venv_name>) $ pip install Dans-Diffraction`
+
+Check more details at the [official web-site](https://pypi.org/project/Dans-Diffraction/).
+
 
 # Authors #
 Pavlo Rutkevych (pr521@cam.ac.uk), 01 Apr 2024
