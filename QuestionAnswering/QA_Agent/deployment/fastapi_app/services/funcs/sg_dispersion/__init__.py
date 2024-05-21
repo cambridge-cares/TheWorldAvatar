@@ -17,7 +17,7 @@ from controllers.qa.model import (
     TypedSeries,
 )
 from controllers.qa.model import QAStep
-from controllers.qa.execute_action.func.base import Name2Func
+from services.funcs.base import Name2Func
 from .pollutant_conc import (
     PollutantConcClient,
     get_pollutantConc_client,
