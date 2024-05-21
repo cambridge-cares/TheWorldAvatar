@@ -189,7 +189,6 @@
                     <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#gYear"/>
                     <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
                     <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#dateTime"/>
-                    <rdf:Description rdf:about="http://www.w3.org/2006/time#Instant"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -211,7 +210,6 @@
                     <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#gYear"/>
                     <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
                     <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#dateTime"/>
-                    <rdf:Description rdf:about="http://www.w3.org/2006/time#Instant"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
