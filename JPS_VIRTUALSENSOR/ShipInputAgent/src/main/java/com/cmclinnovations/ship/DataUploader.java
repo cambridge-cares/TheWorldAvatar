@@ -87,7 +87,7 @@ public class DataUploader {
                 }
                 break;
 
-            case UNKNOWN:
+            default:
 
                 LOGGER.info("Unknown source of ship data.");
                 break;
