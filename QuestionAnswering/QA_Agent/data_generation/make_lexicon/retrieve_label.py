@@ -13,6 +13,12 @@ if __name__ == "__main__":
         required=True,
         help="IRI of base class of classes to retrieve labels for",
     )
+    parser.add_argument(
+        "--populate_surface_forms",
+        action="store_true",
+        default=False,
+        help="Whether to populate surface_forms field with the label",
+    )
     parser.add_argument("--out", required=True, help="Path to output JSON file")
     args = parser.parse_args()
 
@@ -29,14 +35,17 @@ if __name__ == "__main__":
     sparql_client.setQuery(query)
     res = sparql_client.queryAndConvert()
 
-    data = [
-        {
-            "iri": row["s"]["value"],
-            "label": row["label"]["value"],
-            "surface_forms": [row["label"]["value"]],
-        }
-        for row in res["results"]["bindings"]
-    ]
+    def make_datum(row: dict):
+        if args.populate_surface_forms:
+            return {
+                "iri": row["s"]["value"],
+                "label": row["label"]["value"],
+                "surface_forms": [row["label"]["value"]],
+            }
+        else:
+            return {"iri": row["s"]["value"], "label": row["label"]["value"]}
+
+    data = [make_datum(row) for row in res["results"]["bindings"]]
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
 

@@ -6,7 +6,7 @@ class LexiconEntry(BaseModel):
     iri: str
     clsname: str
     label: str
-    surface_forms: List[str]
+    surface_forms: List[str] = []
 
 
 class LexiconEntryProcessed(LexiconEntry):

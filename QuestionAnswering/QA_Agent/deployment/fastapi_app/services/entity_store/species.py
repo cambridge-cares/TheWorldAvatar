@@ -6,7 +6,7 @@ from services.entity_store.base import IEntityLinker
 from services.kg import KgClient, get_ontospecies_bgClient
 
 
-class SpeciesLinker(IEntityLinker):
+class SpeciesStore(IEntityLinker):
     IDKEY2PREDKEY = {"inchi": "InChI", "smiles": "SMILES", "iupac_name": "IUPACName"}
 
     def __init__(self, bg_client: KgClient):
@@ -52,9 +52,26 @@ SELECT ?Species WHERE {{
             for row in self.bg_client.query(query)["results"]["bindings"]
         ]
 
+    def lookup_iupac_name(self, iri: str) -> Optional[str]:
+        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
+SELECT DISTINCT ?IUPACName
+WHERE {{
+	<{IRI}> os:hasIUPACName/os:value ?IUPACName .
+}}
+LIMIT 1""".format(
+            IRI=iri
+        )
+        res = self.bg_client.query(query)
+        bindings = res["results"]["bindings"]
+        if bindings:
+            return bindings[0]["IUPACName"]["value"]
+        else:
+            return None
+
 
 @cache
-def get_species_linker(
+def get_species_store(
     bg_client: Annotated[KgClient, Depends(get_ontospecies_bgClient)]
 ):
-    return SpeciesLinker(bg_client=bg_client)
+    return SpeciesStore(bg_client=bg_client)

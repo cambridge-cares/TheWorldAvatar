@@ -61,22 +61,20 @@ class SparqlQueryProcessor:
         ]
 
         if values_clauses:
-            select_idx = sparql.find("SELECT")
-            open_brace_idx = sparql.find("{")
+            qn_mark_idx = sparql.find("?")  # assumed to be the first variable in SPARQL's projection
+            open_brace_idx = sparql.find("{")  # assumed to be the start of WHERE patterns
 
             vars = set(
-                sparql[select_idx + len("SELECT") : open_brace_idx].strip().split()
+                sparql[qn_mark_idx + len("SELECT") : open_brace_idx].strip().split()
             )
             new_vars = [var for var in bindings.keys() if var not in vars]
 
-            return (
-                "{before}SELECT{new_vars}{between}{{  {values_clauses}{after}".format(
-                    before=sparql[:select_idx],
-                    new_vars=" " + " ".join(new_vars),
-                    between=sparql[select_idx + len("SELECT") : open_brace_idx],
-                    values_clauses="\n  ".join(values_clauses),
-                    after=sparql[open_brace_idx + 1 :],
-                )
+            return "{before}{new_vars}{between}{{  {values_clauses}{after}".format(
+                before=sparql[:qn_mark_idx],
+                new_vars=" " + " ".join(new_vars),
+                between=sparql[qn_mark_idx:open_brace_idx],
+                values_clauses="\n  ".join(values_clauses),
+                after=sparql[open_brace_idx + 1 :],
             )
         else:
             return sparql

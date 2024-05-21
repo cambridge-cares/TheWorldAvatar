@@ -15,7 +15,7 @@ from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
 from .base import IEntityLinker
 from .ship import ShipLinker, get_ship_linker
-from .species import SpeciesLinker, get_species_linker
+from .species import SpeciesStore, get_species_store
 from .model import ELConfig, ELConfigEntry
 
 
@@ -190,6 +190,15 @@ class EntityStore:
             regex.sub(r"\\(.)", r"\1", res.docs[0].label) if len(res.docs) > 0 else None
         )
 
+    def lookup_clsname(self, iri: str) -> Optional[str]:
+        query = Query(
+            "@iri:{{{iri}}}".format(
+                iri=regex.escape(iri, special_only=False, literal_spaces=True)
+            )
+        ).return_field("$.clsname", as_field="clsname")
+        res = self.redis_client.ft(self.INDEX_NAME).search(query)
+        return res.docs[0].clsname if len(res.docs) > 0 else None
+
 
 @cache
 def get_el_configs():
@@ -209,7 +218,7 @@ def get_clsname2config(
 @cache
 def get_clsname2linker(
     ship_linker: Annotated[ShipLinker, Depends(get_ship_linker)],
-    species_linker: Annotated[SpeciesLinker, Depends(get_species_linker)],
+    species_linker: Annotated[SpeciesStore, Depends(get_species_store)],
 ):
     return FrozenDict({"Ship": ship_linker, "Species": species_linker})
 
