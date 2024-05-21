@@ -10,12 +10,20 @@ from redis import Redis
 from redis.commands.search.query import Query
 import regex
 
+from services.entity_store.zeolitic_material import (
+    ZeoliticMaterialLinker,
+    get_zeoliticMaterial_linker,
+)
 from utils.collections import FrozenDict
 from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
 from .base import IEntityLinker
 from .ship import ShipLinker, get_ship_linker
 from .species import SpeciesStore, get_species_store
+from .zeolite_framework import (
+    ZeoliteFrameworkLinker,
+    get_zeoliteFramework_linker,
+)
 from .model import ELConfig, ELConfigEntry
 
 
@@ -174,10 +182,18 @@ class EntityStore:
         logger.info("Linking strategy: " + str(config))
 
         k = k if k else config.k
-        if config.strategy == "fuzzy":
-            return self.link_fuzzy(text, clsname, k)
-        else:
-            return self.link_semantic(text, clsname, k)
+        link_func = (
+            self.link_fuzzy if config.strategy == "fuzzy" else self.link_semantic
+        )
+        texts = [text] + list(identifier.values())
+
+        iris = []
+        for text in texts:
+            if len(iris) >= k:
+                break
+            iris.extend(link_func(text, clsname, k))
+
+        return iris[:k]
 
     def lookup_label(self, iri: str) -> Optional[str]:
         query = Query(
@@ -219,8 +235,21 @@ def get_clsname2config(
 def get_clsname2linker(
     ship_linker: Annotated[ShipLinker, Depends(get_ship_linker)],
     species_linker: Annotated[SpeciesStore, Depends(get_species_store)],
+    zeolite_framework_linker: Annotated[
+        ZeoliteFrameworkLinker, Depends(get_zeoliteFramework_linker)
+    ],
+    zeolitic_material_linker: Annotated[
+        ZeoliticMaterialLinker, Depends(get_zeoliticMaterial_linker)
+    ],
 ):
-    return FrozenDict({"Ship": ship_linker, "Species": species_linker})
+    return FrozenDict(
+        {
+            "Ship": ship_linker,
+            "Species": species_linker,
+            "ZeoliteFramework": zeolite_framework_linker,
+            "ZeoliticMaterial": zeolitic_material_linker,
+        }
+    )
 
 
 @cache

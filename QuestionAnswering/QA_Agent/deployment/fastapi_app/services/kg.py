@@ -30,34 +30,44 @@ class KgClient:
 
 @cache
 def get_ontospecies_bgClient():
-    return KgClient(os.getenv("KG_ENDPOINT_ONTOSPECIES", "localhost"))
+    return KgClient(os.environ["KG_ENDPOINT_ONTOSPECIES"])
+
 
 @cache
 def get_ontokin_bgClient():
-    return KgClient(os.getenv("KG_ENDPOINT_ONTOKIN", "localhost"))
+    return KgClient(os.environ["KG_ENDPOINT_ONTOKIN"])
+
+
+@cache
+def get_ontocompchem_bgClient():
+    return KgClient(os.environ["KG_ENDPOINT_ONTOCOMPCHEM"])
+
+
+@cache
+def get_ontozeolite_bgClient():
+    return KgClient(os.environ["KG_ENDPOINT_ONTOZEOLITE"])
+
 
 @cache
 def get_sg_ontopClient():
-    return KgClient(os.getenv("KG_ENDPOINT_SG_ONTOP", "localhost"))
+    return KgClient(os.environ["KG_ENDPOINT_SG_ONTOP"])
 
 
 @cache
 def get_sgPlot_bgClient():
-    return KgClient(os.getenv("KG_ENDPOINT_SG_PLOT", "localhost"))
+    return KgClient(os.environ["KG_ENDPOINT_SG_PLOT"])
 
 
 @cache
 def get_sgCompany_bgClient():
-    return KgClient(
-        os.getenv("KG_ENDPOINT_SG_COMPANY", "localhost"),
-    )
+    return KgClient(os.environ["KG_ENDPOINT_SG_COMPANY"])
 
 
 @cache
 def get_sgDispersion_bgClient():
-    return KgClient(os.getenv("KG_ENDPOINT_SG_DISPERSION"))
+    return KgClient(os.environ["KG_ENDPOINT_SG_DISPERSION"])
 
 
 @cache
 def get_sgCarpark_bgClient():
-    return KgClient(os.getenv("KG_ENDPOINT_SG_CARPARKS"))
+    return KgClient(os.environ["KG_ENDPOINT_SG_CARPARKS"])
