@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  example:
+    image: ntu-p2p-energy-agent:1.0.0
+    build: .
+    container_name: ntu-p2p-energy-agent
+    ports:
+      - 1031:5000

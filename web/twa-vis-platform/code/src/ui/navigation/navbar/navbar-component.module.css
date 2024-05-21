@@ -1,0 +1,33 @@
+.navbarButton {
+    width: 50px;
+    height: 50px;
+    padding: 0px 4px;
+
+    border-style: solid;
+    border-width: 0px 0px 0px 1px;
+    border-color: var(--border-primary);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+    z-index: 1;
+}
+.navbarButton:hover {
+    background-color: var(--background-secondary);
+}
+
+.navbarButton .image {
+    width: 50px;
+    font-size: var(--large-icon-size);
+    color: var(--border-tertiary);
+}
+.navbarButton .image:hover {
+    color: var(--border-secondary);
+}
+
+.active {
+    color: var(--text-color-links) !important;
+}

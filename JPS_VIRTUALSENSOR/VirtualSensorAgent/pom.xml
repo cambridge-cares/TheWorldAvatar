@@ -133,7 +133,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.14.3</version>
+            <version>1.22.0</version>
         </dependency>
 	</dependencies>	
 </project>
