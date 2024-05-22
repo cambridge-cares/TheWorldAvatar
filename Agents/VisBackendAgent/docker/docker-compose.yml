@@ -3,7 +3,7 @@ version: "3.9"
 services:
   agent:
     container_name: vis-backend-agent
-    image: vis-backend-agent:0.0.1-SNAPSHOT
+    image: ghcr.io/cambridge-cares/vis-backend-agent:0.0.1-SNAPSHOT
     build:
       context: ..
       target: agent
