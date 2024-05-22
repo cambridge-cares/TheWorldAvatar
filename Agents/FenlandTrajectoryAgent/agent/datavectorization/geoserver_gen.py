@@ -5,15 +5,17 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-GEOSERVER_URL = os.getenv('GEOSERVER_URL', 'http://geoserver:8080/geoserver')
-GEOSERVER_USER = 'admin'
-GEOSERVER_PASSWORD = os.getenv('GEOSERVER_PASSWORD')
-POSTGIS_HOST = os.getenv('POSTGIS_HOST', 'postgis')
-POSTGIS_PORT = '5432'
-POSTGIS_DB = os.getenv('DATABASE', 'postgres')
-POSTGIS_USER = 'postgres'
-POSTGIS_PASSWORD = os.getenv('POSTGIS_PASSWORD')
-WORKSPACE = os.getenv('GEOSERVER_WORKSPACE', 'gps_trajectory')
+from env_for_vectorization import (
+    GEOSERVER_URL,
+    GEOSERVER_USER,
+    GEOSERVER_PASSWORD,
+    POSTGIS_HOST,
+    POSTGIS_PORT,
+    POSTGIS_DB,
+    POSTGIS_USER,
+    POSTGIS_PASSWORD,
+    WORKSPACE
+)
 
 def execute_sql(connection, sql):
     with connection.cursor() as cursor:
