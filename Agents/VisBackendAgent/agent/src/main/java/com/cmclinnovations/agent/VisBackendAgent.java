@@ -17,6 +17,12 @@ public class VisBackendAgent {
 		this.uiControlService = uiControlService;
 	}
 
+	@GetMapping("/status")
+	public String getStatus() {
+		LOGGER.info("Detected request to get agent status...");
+		return "Agent is ready to receive requests.";
+	}
+
 	@GetMapping("/ui")
 	public String getUIControls(@RequestParam(value = "target", defaultValue = "id1") String target) {
 		try {
