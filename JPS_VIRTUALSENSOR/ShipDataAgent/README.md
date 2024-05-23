@@ -1,4 +1,4 @@
-# Emissions Agent
+# Ship data agent
 This agent extends the DerivationAgent class and is meant to be called by the derivation framework. The derivation should be a synchronous one.
 
 ## Input
