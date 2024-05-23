@@ -10,8 +10,6 @@ import math
 import logging
 import time
 
-#import uuid
-
 import tools
 import argparse
 
@@ -37,7 +35,7 @@ logging.basicConfig(level = logging.WARNING)
 #DB_FOLDER = os.path.join(DATA_DIR, "crystal")
 
 crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
-zeoOntoPrefix = "https://www.theworldavatar.com/kg/ontozeolite/"
+#zeoOntoPrefix = "https://www.theworldavatar.com/kg/ontozeolite/"
 
 
 CIF_IRI_FILE = os.path.join("cif_iri_list.csv")  # Format: filename, count/unique_id, iri, uuid
@@ -46,6 +44,7 @@ CIF_IRI_LIST = None
 
 def read_command_line():
     parser = argparse.ArgumentParser(description="")
+
     parser.add_argument("--cif", type=str, default="",
                         help="File name or a directory containing cif files. " +
                         "Required argument.")
@@ -58,7 +57,7 @@ def read_command_line():
     parser.add_argument("--abox-prefix", type=str, default="",
                         help="The prefix for the entities in the abox. " +
                         "Default: no prefix.")
-    parser.add_argument("--flags", type=str, default="CX",
+    parser.add_argument("--flags", type=str, default="CURVTAX",
                         help="The flags to specify what to save to the abox csv file. " +
                         "Default: CX.")
 
@@ -124,7 +123,7 @@ class CifIriData:
 
         self._load()
 
-        pass
+        # === end of CifIriData.__init__()
 
     def _load(self):
         """
@@ -140,6 +139,7 @@ class CifIriData:
             #1/0
 
         return self.data
+        # === end of CifIriData._load()
 
     def save(self, filename=None):
         """ Save the current data to filename.
@@ -188,6 +188,8 @@ class CifIriData:
         ###### Self test 3: does the file exist?
 
         return err_count
+        # === end of 
+        # === end of CifIriData.self_test()
 
     def set_entry(self, cif_path, folder_id, xrd_path, err_count=-1):
         """ Change an existing or add a new line to data base. 
@@ -219,6 +221,7 @@ class CifIriData:
             self.data.append(data)
 
         pass
+        # === end of CifIriData.set_entry()
 
     def get_entry_iri(self, cif_path):
         """
@@ -235,6 +238,7 @@ class CifIriData:
                 break
 
         return iri, uid
+        # === end of CifIriData.get_entry_iri()
 
     def del_entry(self, cif_path):
         """
@@ -244,77 +248,17 @@ class CifIriData:
             line = self.data[i_line]
             if line[0] == cif_path:
                 del self.data[i_line]
+        # === end of CifIriData.del_entry()
  
+   # === end of class CifIriData
+
+
 #CIF_IRI_DATA = CifIriData(CIF_IRI_FILE)
 CIF_IRI_DATA = CifIriData()
 
 BLACK_LIST = []
 """
-              'pdffiles\\10.1107_S0108768192009005-supp.cif',
-
-              'LI-CIF\\Li-ATN.cif',
-              'LI-CIF\\Li-AWO.cif',
-              'LI-CIF\\Li-CON.cif',
-              'LI-CIF\\Li-EUO.cif',
-              'LI-CIF\\Li-GIU.cif',
-              'LI-CIF\\Li-ITG.cif',
-              'LI-CIF\\Li-MRT.cif',
-              'LI-CIF\\Li-OBW.cif',
-              'LI-CIF\\Li-RSN.cif',
-              'LI-CIF\\Li-SFE.cif',
-              'LI-CIF\\Li-STW.cif',
-              'LI-CIF\\Li-UWY.cif',
-
-]
-"""
-"""
-              'LI-CIF\\Li-BIK.cif',
-              'LI-CIF\\Li-BOG.cif',
-              'LI-CIF\\Li-BPH.cif',
-              'LI-CIF\\Li-DON.cif',
-              'LI-CIF\\Li--EWT.cif',
-              'LI-CIF\\Li-FAR.cif',
-              'LI-CIF\\Li-FRA.cif',
-              'LI-CIF\\Li--HOS.cif',
-              'LI-CIF\\Li--ITV.cif',
-              'LI-CIF\\Li-JRY.cif',
-              'LI-CIF\\Li-JSR.cif',
-              'LI-CIF\\Li--LIT.cif',
-              'LI-CIF\\Li-LTA.cif',
-              'LI-CIF\\Li-MAR.cif',
-              'LI-CIF\\Li-MSO.cif',
-              'LI-CIF\\Li-MWF.cif',
-              'LI-CIF\\Li-OSO.cif',
-              'LI-CIF\\Li-PON.cif',
-              'LI-CIF\\Li-PTF.cif',
-              'LI-CIF\\Li-RWY.cif',
-              'LI-CIF\\Li-SFW.cif',
-              'LI-CIF\\Li-SOF.cif',
-              'LI-CIF\\Li--SSO.cif',
-              'LI-CIF\\Li--SVR.cif',
-              'LI-CIF\\Li--SYT.cif',
-              'LI-CIF\\Li-TUN.cif',
-              'LI-CIF\\Li-UOV.cif',
-              'LI-CIF\\Li-VNI.cif',
-              'LI-CIF\\Li-VSV.cif',
-              'LI-CIF\\Li-YUG.cif',
-              'LI-CIF\\Li-ZON.cif',
-              'LI-CIF\\Li-JZT.cif',
-              'LI-CIF\\Li-EOS.cif',
-              'LI-CIF\\Li--ION.cif',
-#              'LI-CIF\\Li-RFE.cif'
-
-              #'LI-CIF\\Li--CHI.cif',
-              #'LI-CIF\\Li--CLO.cif',
-              #'LI-CIF\\Li--IFT.cif',
-              #'LI-CIF\\Li--IFU.cif',
-              #'LI-CIF\\Li--IRT.cif',
-              #'LI-CIF\\Li--IRY.cif',
-              #'LI-CIF\\Li--PAR.cif',
-              #'LI-CIF\\Li--RON.cif',
-              #'LI-CIF\\Li--WEN.cif',
-
-
+             ['pdffiles\\10.1107_S0108768192009005-supp.cif',
 ]
 """
 
@@ -357,20 +301,20 @@ class CrystalInfo:
         else:
             self.abox_prefix = ""
 
-        # === end of CrystalInfo.()
+        # === end of CrystalInfo.__init__()
 
     def get_uuid(self):
         if self.iri is None:
             logging.error(" In crystalinfo.CrystalInfo uuid_cif = None.")
             return "None"
         return self.iri
-        # === end of CrystalInfo.()
+        # === end of CrystalInfo.get_uuid()
 
     def in_black_list(self, file_path):
         if file_path in BLACK_LIST:
             return True
         return False
-        # === end of CrystalInfo.()
+        # === end of CrystalInfo.in_black_list()
 
     def load_cif_file_py_mat_gen(self, file_path, options=None):
         """ Load a CIF file and store the data in internal variables.
@@ -501,10 +445,10 @@ class CrystalInfo:
         return err_count
         # === end of CrystalInfo.load_cif_file()
 
-
     def get_csv_arr_from_cif(self, file_path,
                              name="CrystalInformation", new_uuid=None,
-                             subject="", predicate="hasCrystalInformation"):
+                             subject="", predicate="hasCrystalInformation",
+                             flags="CURTA"):
         """ A function to create a csv array for abox writer.
         Supports two main options:
         1) Create a new array based on the cif file (file_path),
@@ -519,22 +463,24 @@ class CrystalInfo:
                    If not specified, then a new UUID value will be created.
         name     - Optional name of the instance. It will be generated as 
                    name + "_" + new_uuid.
-
+        flags    - Choice of ontology parts to be saved.
+                   "C" - CrystalInformation iri. Basic iri, usually required.
+                   "U" - UnitCell (only basic data: a,b,c,alpha,beta,gamma,volume),
+                   "R" - Reciprocal properties of the UnitCell (requires "U"),
+                   "V" - UnitCell Vectors (requires "U"),
+                   "T" - Transformation matrix and vector,
+                   "A" - AtomicStructure: list of all atoms.
         """
-        #print("Cryst Info abox =", self.abox_prefix)
-
         output = []
 
         logging.info("Starting crystalinfo.csv_arr_material(), new_iri", new_uuid)
-        #print("Starting crystalinfo.csv_arr_material(), new_iri", new_uuid)
 
         if new_uuid is None:
-            #print(123)
             # Check for existing uuids in the database of cif_files:
             #self.iri = get_cif_iri(file_path)
             self.iri, self.uuid = CIF_IRI_DATA.get_entry_iri(file_path)
 
-            print(">>>>>>>>>", file_path, self.iri)
+            print(">>>>>>>", file_path, self.iri)
 
             if not self.iri:
                 self.iri, self.uuid = self.uuidDB.addUUID(crystOntoPrefix + "CrystalInformation",
@@ -550,13 +496,14 @@ class CrystalInfo:
             self.iri = "CrystalInformation" + "_" + self.uuid
         """
         """
-        print(">>>>>>>>>", self.uuid, self.iri)
+        #print(">>>>>>>>>", self.uuid, self.iri)
 
         #print(">>> In crystalinfo: subj =", subject, "pred =", predicate, zeoOntoPrefix, self.iri)
         if subject != "" and predicate != "":
-            output.append([zeoOntoPrefix + self.iri, "Instance",
+            output.append([args.abox_prefix + self.iri, "Instance",
                            crystOntoPrefix + "CrystalInformation", "", "", ""])
-            output.append([subject, "Instance", zeoOntoPrefix + self.iri, predicate, "", ""])
+            output.append([subject, "Instance", args.abox_prefix + self.iri,
+                           predicate, "", ""])
             #print(">>> In crystalinfo: Added a single line for CIF iri")
             return output
 
@@ -622,30 +569,33 @@ class CrystalInfo:
             #arr += self.arrInitZeolite(uuid_zeolite)
 
             #print("self.iri =", self.iri, type(self.iri))
-            tmp = self.arrUnitCell(self.iri,
-                                   crystOntoPrefix + "hasUnitCell", name,
-                                   new_uuid=new_uuid)
-            if tmp is None:
-                logging.warning(" Missing Unit Cell information!")
-            else:
-                output += tmp
+            if "U" in flags or "R" in flags:
+                tmp = self.arrUnitCell(self.iri,
+                                       crystOntoPrefix + "hasUnitCell",
+                                       name, new_uuid=new_uuid)
+                if tmp is None:
+                    logging.warning(" Missing Unit Cell information" +
+                                    " in cif file '%s'.", file_path)
+                else:
+                    output += tmp
 
-            #FIXME
-            tmp = self.arrTransform(self.iri, crystOntoPrefix +
-                                    "hasCoordinateTransformation", name,
-                                    new_uuid=new_uuid)
-            if tmp is None:
-                logging.warning(" Missing Transformation information!")
-            else:
-                output += tmp
+            if "T" in flags:
+                tmp = self.arrTransform(self.iri, crystOntoPrefix +
+                                        "hasCoordinateTransformation",
+                                        name, new_uuid=new_uuid)
+                if tmp is None:
+                    logging.warning(" Missing Transformation information!")
+                else:
+                    output += tmp
 
-            tmp = self.arrAtomSite(self.iri, crystOntoPrefix +
-                                   "hasAtomicStructure", name,
-                                   new_uuid=new_uuid)
-            if tmp is None:
-                logging.warning(" Missing Atom Site information!")
-            else:
-                output += tmp
+            if "A" in flags:
+                tmp = self.arrAtomSite(self.iri, crystOntoPrefix +
+                                       "hasAtomicStructure", name,
+                                       new_uuid=new_uuid)
+                if tmp is None:
+                    logging.warning(" Missing Atom Site information!")
+                else:
+                    output += tmp
 
             """
             print("starting arrTile for", name)
@@ -705,6 +655,100 @@ class CrystalInfo:
         pass # CsvMaker.loadUnitCellPyMat()
     """
 
+    def get_csv_arr_unit_cell_vector_set(self, subject, predicate, new_uuid):
+        output = []
+
+        uuid_cif_uc = subject
+
+        # Vector to keep three Unit Cell vectors (a,b,c):
+        if new_uuid:
+            uuid_uc_vec_abc = self.abox_prefix + "UnitCellVectorSet" + \
+                              "_" + new_uuid
+                              # "_" + zeoname +
+        else:
+            uuid_uc_vec_abc, _ = self.uuidDB.addUUID(crystOntoPrefix + "UnitCellVectorSet",
+                                                     "UnitCellVectorSet_" + zeoname)
+
+        output.append([uuid_uc_vec_abc, "Instance",
+                       crystOntoPrefix + "UnitCellVectorSet", "", "", ""])
+
+        output.append([uuid_cif_uc, "Instance", uuid_uc_vec_abc,
+                       predicate, "", ""])
+
+        if self.cifOutput.unitCellVectorA:
+            output += self.cifOutput.unitCellVectorA.get_csv_arr(uuid_uc_vec_abc,
+                                     crystOntoPrefix + "hasUnitCellVector", new_uuid)
+        else:
+            logging.warning(" Missing unit cell vector A for %s", uuid_cif_uc)
+
+        if self.cifOutput.unitCellVectorB:
+            output += self.cifOutput.unitCellVectorB.get_csv_arr(uuid_uc_vec_abc,
+                                     crystOntoPrefix + "hasUnitCellVector", new_uuid)
+        else:
+            logging.warning(" Missing unit cell vector A for %s", uuid_cif_uc)
+
+        if self.cifOutput.unitCellVectorC:
+            output += self.cifOutput.unitCellVectorC.get_csv_arr(uuid_uc_vec_abc,
+                                     crystOntoPrefix + "hasUnitCellVector", new_uuid)
+        else:
+            logging.warning(" Missing unit cell vector A for %s", uuid_cif_uc)
+
+
+        return output
+        # === end of get_csv_arr_unit_cell_vector_set(self, subject, predicate):
+
+    def get_csv_arr_reciprocal_unit_cell(self, subject, new_uuid):
+        output = []
+        uuid_cif_uc = subject
+
+        if self.cifOutput.unitCellRecipLengths is not None:
+            output += self.cifOutput.unitCellRecipLengths.get_csv_arr(uuid_cif_uc,
+                      crystOntoPrefix + "hasReciprocalUnitCellLengths", new_uuid=new_uuid)
+        else:
+            logging.warning(" Missing unit cell reciprocal lengths for %s", uuid_cif_uc)
+
+        if self.cifOutput.unitCellRecipAngles is not None:
+            output += self.cifOutput.unitCellRecipAngles.get_csv_arr(uuid_cif_uc,
+                      crystOntoPrefix + "hasReciprocalUnitCellAngles", new_uuid=new_uuid)
+        else:
+            logging.warning(" Missing unit cell reciprocal angles for %s", uuid_cif_uc)
+
+        # Vector to keep three Reciprocal Unit Cell vectors (a,b,c):
+        if new_uuid:
+            uuid_uc_r_vec_abc = self.abox_prefix + "ReciprocalUnitCellVectorSet" + \
+                                "_" + new_uuid
+        else:
+            uuid_uc_r_vec_abc, _ = self.uuidDB.addUUID(crystOntoPrefix + "UnitCellVectorSet",
+                                                       "ReciprocalUnitCellVectorSet_" + zeoname)
+
+        output.append([uuid_uc_r_vec_abc, "Instance", crystOntoPrefix + "UnitCellVectorSet", "", "", ""])
+
+        output.append([uuid_cif_uc, "Instance", uuid_uc_r_vec_abc,
+                       crystOntoPrefix + "hasReciprocalUnitCellVectorSet", "", ""])
+        if self.cifOutput.unitCellRecipVectorA:
+            output += self.cifOutput.unitCellRecipVectorA.get_csv_arr(uuid_uc_r_vec_abc,
+                      crystOntoPrefix + "hasUnitCellVector", new_uuid)
+        else:
+            print("No unitCellRecipVectorA 12345")
+
+        if self.cifOutput.unitCellRecipVectorB:
+            output += self.cifOutput.unitCellRecipVectorB.get_csv_arr(uuid_uc_r_vec_abc,
+                      crystOntoPrefix + "hasUnitCellVector", new_uuid)
+        if self.cifOutput.unitCellRecipVectorC:
+            output += self.cifOutput.unitCellRecipVectorC.get_csv_arr(uuid_uc_r_vec_abc,
+                      crystOntoPrefix + "hasUnitCellVector", new_uuid)
+
+        if self.cifOutput.symmLatticeSystem is not None:
+            output.append([crystOntoPrefix + "hasLatticeSystem",
+                           "Data Property", uuid_cif_uc, "",
+                           self.cifOutput.symmLatticeSystem, "string"])
+        else:
+            logging.warning(" Missing hasLatticeSystem value")
+
+        return output
+        # === end of get_csv_arr_reciprocal_unit_cell(self, uuid_cif_uc,
+
+
     def arrUnitCell(self, subject, predicate, zeoname, new_uuid=None):
         """
         subject   - Is the full hame of instance of class CrystalInformation,
@@ -730,6 +774,7 @@ class CrystalInfo:
                 #uuid_cif_uc += zeoname + "_"
                 pass
             uuid_cif_uc += new_uuid
+
         else:
             uuid_cif_uc, _ = self.uuidDB.addUUID(crystOntoPrefix + "UnitCell",
                                                  "UnitCell_" + zeoname)
@@ -750,87 +795,11 @@ class CrystalInfo:
         else:
             logging.warning(" Missing unit cell angles for %s", uuid_cif_uc)
 
-        if self.cifOutput.unitCellRecipLengths is not None:
-            output += self.cifOutput.unitCellRecipLengths.get_csv_arr(uuid_cif_uc,
-                      crystOntoPrefix + "hasReciprocalUnitCellLengths", new_uuid=new_uuid)
-        else:
-            logging.warning(" Missing unit cell reciprocal lengths for %s", uuid_cif_uc)
-
-        if self.cifOutput.unitCellRecipAngles is not None:
-            output += self.cifOutput.unitCellRecipAngles.get_csv_arr(uuid_cif_uc,
-                      crystOntoPrefix + "hasReciprocalUnitCellAngles", new_uuid=new_uuid)
-        else:
-            logging.warning(" Missing unit cell reciprocal angles for %s", uuid_cif_uc)
-
-        #output += self.cifOutput.unitCellVolume.get_csv_arr(uuid_cif_uc,
-        #          self.crystOntoPrefix + "hasUnitCellVolume")
-
         if self.cifOutput.unitCellVolume is not None:
             output += self.cifOutput.unitCellVolume.get_csv_arr(uuid_cif_uc,
                       crystOntoPrefix + "hasUnitCellVolume", new_uuid=new_uuid)
         else:
             logging.warning(" Missing volume for %s", uuid_cif_uc)
-            pass
-
-        #################################################
-        # Vector to keep three Unit Cell vectors (a,b,c):
-        if new_uuid:
-            uuid_uc_vec_abc = self.abox_prefix + "UnitCellVectorSet" + \
-                              "_" + new_uuid
-                              # "_" + zeoname +
-        else:
-            uuid_uc_vec_abc, _ = self.uuidDB.addUUID(crystOntoPrefix + "UnitCellVectorSet",
-                                                     "UnitCellVectorSet_" + zeoname)
-        output.append([uuid_uc_vec_abc, "Instance", crystOntoPrefix + "UnitCellVectorSet", "", "", ""])
-
-        output.append([uuid_cif_uc, "Instance", uuid_uc_vec_abc,
-                       crystOntoPrefix + "hasUnitCellVectorSet", "", ""])
-
-        if self.cifOutput.unitCellVectorA:
-            output += self.cifOutput.unitCellVectorA.get_csv_arr(uuid_uc_vec_abc,
-                                     crystOntoPrefix + "hasUnitCellVector", new_uuid)
-        else:
-            print("No unitCellVectorA 12345")
-        if self.cifOutput.unitCellVectorB:
-            output += self.cifOutput.unitCellVectorB.get_csv_arr(uuid_uc_vec_abc,
-                                     crystOntoPrefix + "hasUnitCellVector", new_uuid)
-        if self.cifOutput.unitCellVectorC:
-            output += self.cifOutput.unitCellVectorC.get_csv_arr(uuid_uc_vec_abc,
-                                     crystOntoPrefix + "hasUnitCellVector", new_uuid)
-
-        # Vector to keep three Reciprocal Unit Cell vectors (a,b,c):
-
-        if new_uuid:
-            uuid_uc_r_vec_abc = self.abox_prefix + "ReciprocalUnitCellVectorSet" + \
-                                "_" + new_uuid
-                                #"_" + zeoname + 
-        else:
-            uuid_uc_r_vec_abc, _ = self.uuidDB.addUUID(crystOntoPrefix + "UnitCellVectorSet",
-                                                       "ReciprocalUnitCellVectorSet_" + zeoname)
-
-        output.append([uuid_uc_r_vec_abc, "Instance", crystOntoPrefix + "UnitCellVectorSet", "", "", ""])
-
-        output.append([uuid_cif_uc, "Instance", uuid_uc_r_vec_abc,
-                       crystOntoPrefix + "hasReciprocalUnitCellVectorSet", "", ""])
-        if self.cifOutput.unitCellRecipVectorA:
-            output += self.cifOutput.unitCellRecipVectorA.get_csv_arr(uuid_uc_r_vec_abc,
-                      crystOntoPrefix + "hasUnitCellVector", new_uuid)
-        else:
-            print("No unitCellRecipVectorA 12345")
-        if self.cifOutput.unitCellRecipVectorB:
-            output += self.cifOutput.unitCellRecipVectorB.get_csv_arr(uuid_uc_r_vec_abc,
-                      crystOntoPrefix + "hasUnitCellVector", new_uuid)
-        if self.cifOutput.unitCellRecipVectorC:
-            output += self.cifOutput.unitCellRecipVectorC.get_csv_arr(uuid_uc_r_vec_abc,
-                      crystOntoPrefix + "hasUnitCellVector", new_uuid)
-
-        if self.cifOutput.symmLatticeSystem is not None:
-            output.append([crystOntoPrefix + "hasLatticeSystem",
-                           "Data Property", uuid_cif_uc, "",
-                           self.cifOutput.symmLatticeSystem, "string"])
-        else:
-            logging.warning(" Missing hasLatticeSystem value")
-
 
         if self.cifOutput.symmSpaceGroupHM is not None:
             output.append([crystOntoPrefix + "hasSpaceGroupHM",
@@ -839,10 +808,7 @@ class CrystalInfo:
         else:
             logging.warning(" Missing hasSpaceGroupHM value")
 
-
         if self.cifOutput.symmITNumber is not None:
-            #output += self.cifOutput.symmITNumber.getArr(uuid_uc_r_vec_abc,
-            #          self.crystOntoPrefix + "hasSymmetryNumber")
 
             output.append([crystOntoPrefix + "hasSymmetryNumber",
                            "Data Property", uuid_cif_uc, "",
@@ -860,102 +826,20 @@ class CrystalInfo:
         else:
             logging.warning(" Missing hasSymmetryNumber value")
 
+        #################################################
+        output += self.get_csv_arr_unit_cell_vector_set(uuid_cif_uc,
+                       crystOntoPrefix + "hasUnitCellVectorSet", new_uuid=new_uuid)
+
+        #################################################
+        output += self.get_csv_arr_reciprocal_unit_cell(uuid_cif_uc,
+                                                        new_uuid=new_uuid)
+
         # The symmetry information of the unit cell.
         # TODO to add get_crystal_system(), get_space_group_number(),
         #      https://pymatgen.org/pymatgen.symmetry.html
 
         return output
-        pass # CsvMaker.arrUnitCell()
-
-    '''
-    def arrUnitCellOld(self, subject, predicate, zeoname):
-
-        """
-        subject   - Is the full hame of instance of class CrystalInformation,
-                    which contains this UnitCell class.
-        predicate - Is the Object Property linking the Subject and the current UnitCell.
-                    Typically is should be equal to "hasUnitCell".
-        """
-
-        path = os.path.join("CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
-        if not os.path.isfile(path):
-            logging.error("File not found '%s'.", path)
-            return
-
-        structure = Structure.from_file(path)
-
-        output = []
-        #print("'" + subject + "'", "'" + predicate + "'")
-        if subject.find("CrystalInformation") < 0:
-            logging.warning(" Subject in arrUnitCell() is '%s'," +
-                            " expecting the name to contain 'CrystalInfromation'.", subject)
-
-        if predicate.find("hasUnitCell") < 0:
-            logging.warning(" Predicate in arrUnitCell() is '%s'," +
-                            " but expecting 'hasUnitCell'.", predicate)
-
-        uuid_cif_uc = tools.getUUID(self.uuidDB.uuidDB,
-                                    "UnitCell", "UnitCell_" + zeoname)
-        output.append([uuid_cif_uc, "Instance", "UnitCell", "", "", ""])
-
-        output.append([subject, "Instance", uuid_cif_uc,
-                       predicate, "", ""])
-
-        # Unit Cell volume, single value, not vector:
-        uuid_uc_volume = tools.getUUID(self.uuidDB.uuidDB,
-                       "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure",
-                       "UnitCellVolume_" + zeoname)
-
-        output.append([uuid_uc_volume, "Instance",
-                       "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure",
-                       "", "", ""])
-
-        output.append([uuid_cif_uc, "Instance", uuid_uc_volume,
-                       self.crystOntoPrefix + "hasUnitCellVolume", "", ""])
-
-        output.append(["http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue",
-                       "Data Property", uuid_uc_volume, "",
-                       round(structure.lattice.volume, 4) , "decimal"])
-                       # FIXME
-
-        output.append([uuid_uc_volume, "Instance",
-                       "http://www.ontology-of-units-of-measure.org/resource/om-2/cubicAngstrom",
-                       "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                        "", ""])
-
-    ###########################################
-
-    # The symmetry information of the unit cell.
-    # TODO to add get_crystal_system(), get_space_group_number(),
-    #      https://pymatgen.org/pymatgen.symmetry.html
-
-
-        sga = pymatgen.symmetry.analyzer.SpacegroupAnalyzer(structure)
-
-        #print("Zeo Name = ", zeoname)
-        if isinstance(sga._space_group_data, dict):
-            if "number" in sga._space_group_data.keys():
-                """
-              print("SG number:", sga._space_group_data["number"],
-                    sga.get_space_group_number(), sga.get_crystal_system())
-              print("   ", #sga._get_symmetry(),
-                          sga.get_hall(),
-                          sga.get_lattice_type(), #sga.get_symmetry_dataset()
-                          #sga.int_symbol()
-                          #sga._abc_impl
-      )
-                """
-                #if isinstance(sga.get_crystal_system(), str) :
-                output.append([self.crystOntoPrefix + "hasLatticeSystem",
-                               "Data Property", uuid_cif_uc, "",
-                               sga.get_crystal_system() , "string"])
-                output.append([self.crystOntoPrefix + "hasSymmetryNumber",
-                               "Data Property", uuid_cif_uc, "",
-                               sga.get_space_group_number() , "integer"])
-
-        return output
-        pass # CsvMaker.arrUnitCellOld()
-    '''
+        # === end of CsvMaker.arrUnitCell()
 
     def arrTransform(self, subject, predicate, zeoname, new_uuid=None):
         if subject.find("CrystalInformation") < 0 and subject.find("CIF") < 0:
@@ -1451,6 +1335,7 @@ def get_xrd_file(cif_file, xrd_dir):
 
     xrd_path = os.path.join(xrd_dir, file + ".xrd")
     return xrd_path
+    # === end of get_xrd_file()
 
 
 if __name__ == "__main__":
@@ -1475,7 +1360,7 @@ if __name__ == "__main__":
     #print("FLAGS =", FLAGS)
 
     #if args.aPrefix
-    zeoOntoPrefix = args.abox_prefix
+    #zeoOntoPrefix = args.abox_prefix
     #print("ABox prefix:", zeoOntoPrefix)
 
     if args.cif == "":
@@ -1562,7 +1447,7 @@ if __name__ == "__main__":
     output = []
     output += tools.get_csv_init("base",
                                  t_prefix=crystOntoPrefix + "OntoCrystal.owl",
-                                 a_prefix=zeoOntoPrefix)
+                                 a_prefix=args.abox_prefix)
 
     CIF_IRI_LIST = []  # TODO possibility to load from file for extension.
     db_count = 0
@@ -1581,7 +1466,8 @@ if __name__ == "__main__":
 
         cif_iri = ""
         uuid_str = ""
-        if "C" in FLAGS:
+        if "C" in FLAGS or "U" in FLAGS or "R" in FLAGS or \
+           "T" in FLAGS or "A" in FLAGS:
             cif_iri, uuid_str = CIF_IRI_DATA.get_entry_iri(file)
             #uuid_str = str(uuid.uuid4())
             #uuid_str = tools.new_uuid()
@@ -1589,13 +1475,13 @@ if __name__ == "__main__":
                 CIF_IRI_DATA.set_entry(file, db_count)
                 cif_iri, uuid_str = CIF_IRI_DATA.get_entry_iri(file)
 
-            cryst = CrystalInfo(uuidDB=uuidDB, abox_prefix=zeoOntoPrefix)
+            cryst = CrystalInfo(uuidDB=uuidDB, abox_prefix=args.abox_prefix)
             #cif_iri = "CrystalInformation_" + uuid_str
 
             cif_name = str(file)
             tmp = cryst.get_csv_arr_from_cif(file, cif_name,
                                          subject="", predicate="",
-                                         new_uuid=uuid_str)
+                                         new_uuid=uuid_str, flags=FLAGS)
             output += tmp
 
         if "X" in FLAGS:
@@ -1615,7 +1501,7 @@ if __name__ == "__main__":
                         flog.write("Failed to read " + cif + "\n")
 
                 pass
-            xrd = xrds.XRDSpectrum(abox_prefix=zeoOntoPrefix)
+            xrd = xrds.XRDSpectrum(abox_prefix=args.abox_prefix)
             tmp = xrd.get_csv_arr(cif_iri, crystOntoPrefix + "hasXRDSpectrum", xrd_path)
             if tmp != []:
                 output += tmp
@@ -1629,7 +1515,7 @@ if __name__ == "__main__":
             output = []
             output += tools.get_csv_init("base",
                                          t_prefix=crystOntoPrefix + "OntoCrystal.owl",
-                                         a_prefix=zeoOntoPrefix)
+                                         a_prefix=args.abox_prefix)
 
             db_count += 1
 

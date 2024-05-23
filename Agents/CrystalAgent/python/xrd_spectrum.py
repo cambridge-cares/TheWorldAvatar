@@ -27,6 +27,7 @@ class XRDSpectrum:
     def __init__(self, abox_prefix):
         self.crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
         self.abox_prefix = "https://www.theworldavatar.com/kg/ontozeolite/"
+        self.abox_prefix = abox_prefix
 
         self.uuidDB = tools.UuidDB()
         pass
