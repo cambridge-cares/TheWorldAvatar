@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontodispersion="https://www.theworldavatar.com/kg/ontodispersion/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodispersion/">
-        <dc:date>17 May 2024</dc:date>
+        <dc:date>23 May 2024</dc:date>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
@@ -268,7 +268,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/CII">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
-        <rdfs:label>CII</rdfs:label>
+        <rdfs:label>CII [g CO&amp;#8322;/t.nm]</rdfs:label>
     </owl:Class>
     
 
@@ -327,7 +327,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
         <rdfs:comment>Physical dimension of the ship</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
-        <rdfs:label>Dimension</rdfs:label>
+        <rdfs:label>Dimension [m]</rdfs:label>
     </owl:Class>
     
 
@@ -389,7 +389,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
         <rdfs:comment>Maximum static draught of the ship</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
-        <rdfs:label>Maximum static draught</rdfs:label>
+        <rdfs:label>Maximum static draught [m]</rdfs:label>
     </owl:Class>
     
 
@@ -420,7 +420,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/EnergyEfficiency">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
-        <rdfs:label>Energy efficiency</rdfs:label>
+        <rdfs:label>Energy efficiency [-]</rdfs:label>
     </owl:Class>
     
 
@@ -684,7 +684,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/SpecificCO2Emission">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
-        <rdfs:label>Specific CO2 emission</rdfs:label>
+        <rdfs:label>Specific CO2 emission [g CO&amp;#8322;/kWh]</rdfs:label>
     </owl:Class>
     
 
@@ -694,7 +694,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/SpecificFuelConsumption">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
-        <rdfs:label>Specific fuel consumption</rdfs:label>
+        <rdfs:label>Specific fuel consumption [g fuel/kWh]</rdfs:label>
     </owl:Class>
     
 
