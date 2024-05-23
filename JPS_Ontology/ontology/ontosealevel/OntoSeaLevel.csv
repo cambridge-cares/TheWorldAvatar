@@ -6,6 +6,7 @@ OntoSeaLevel,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 SeaLevel,Class,,,,,,Surface level of oceans.,https://www.theworldavatar.com/kg/ontosealevel/,Sea level
 GlobalMeanSeaLevel,Class,SeaLevel,IS-A,,,,Mean surface level of oceans globally.,https://www.theworldavatar.com/kg/ontosealevel/,Global mean sea level
 LocalMeanSeaLevel,Class,SeaLevel,IS-A,,,,Mean surface level of ocean relative to a specific location.,https://www.theworldavatar.com/kg/ontosealevel/,Local mean sea level
+SeaLevelChange,Class,,,,,,A change in the sea level,https://www.theworldavatar.com/kg/ontosealevel/,Sea level change
 Damage,Class,,,,,,Damage due to rising sea level,https://www.theworldavatar.com/kg/ontosealevel/,Damage
 EconomicDamage,Class,Damage,IS-A,,,,Economic damage due to rising sea level.,https://www.theworldavatar.com/kg/ontosealevel/,Economic damage
 CulturalDamage,Class,Damage,IS-A,,,,Damage caused to cultural sites due to rising sea level.,https://www.theworldavatar.com/kg/ontosealevel/,Cultural damage
