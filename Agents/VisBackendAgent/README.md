@@ -39,10 +39,36 @@ docker compose -f "./docker/docker-compose.test.yml" up -d --build
 
 **PRODUCTION ENVIRONMENT**
 
-- Build this agent's image by issuing `docker compose -f './docker/docker-compose.yml' build` within this folder. Do not start the container.
-- Copy the `vis-backend-agent.json` file from the `docker` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mount as required.
-  Please review the [different routes](#2-agent-route) to understand the purpose of these bind mounts. See [sample bind mounts](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#bind-mounts) for the configuration syntax.
-- Start the stack manager as usual following [these instructions](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+1. Build this agent's image by issuing `docker compose -f './docker/docker-compose.yml' build` within this folder. Do not start the container.
+2. Copy the `vis-backend-agent.json` file from the `docker` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mount as required.
+
+- Please review the [different routes](#2-agent-route) to understand the purpose of these bind mounts. See [sample bind mounts](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#bind-mounts) for the configuration syntax.
+
+3. Start the stack manager as usual following [these instructions](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+
+**DEBUGGING ENVIRONMENT**
+Follow the same steps as the **PRODUCTION ENVIRONMENT**, but use the `vis-backend-agent-debug.json` file instead in step 2.
+
+If you are developing in VSCode, please add the following `launch.json` to the `.vscode` directory. Once the agent is running with the debug configuration, the developer can attach the debugger on the debug panel in VSCode.
+
+```json
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug attach",
+      "request": "attach",
+      "port": 5007,
+      "hostName": "localhost",
+      "projectName": "vis-backend-agent"
+    }
+  ]
+}
+```
 
 ### 2. Agent Route
 
