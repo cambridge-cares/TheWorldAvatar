@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import List, Literal, Optional
 from pydantic import BaseModel, ConfigDict
 
 
@@ -10,7 +10,7 @@ class LexiconEntry(BaseModel):
 
 
 class LexiconEntryProcessed(LexiconEntry):
-    surface_forms_embedding: List[float]
+    surface_forms_embedding: Optional[List[float]] = None
 
 
 ELStrategy = Literal["fuzzy", "semantic"]

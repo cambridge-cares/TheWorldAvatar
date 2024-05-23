@@ -217,17 +217,11 @@ class EntityStore:
 
 
 @cache
-def get_el_configs():
+def get_clsname2config():
     adapter = TypeAdapter(Tuple[ELConfigEntry, ...])
-    return adapter.validate_json(
+    config = adapter.validate_json(
         files("resources").joinpath("el_config.json").read_text()
     )
-
-
-@cache
-def get_clsname2config(
-    config: Annotated[Tuple[ELConfigEntry, ...], Depends(get_el_configs)]
-):
     return FrozenDict({entry.clsname: entry.el_config for entry in config})
 
 
