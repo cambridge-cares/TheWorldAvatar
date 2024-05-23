@@ -52,7 +52,6 @@ import com.cmclinnovations.stack.clients.gdal.GDALTranslateOptions;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.MultidimSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
@@ -752,7 +751,7 @@ public class Aermod {
         GDALTranslateOptions gdalTranslateOptions = new GDALTranslateOptions();
         gdalTranslateOptions.setSridIn("EPSG:" + simSrid);
         gdalClient.uploadRasterFilesToPostGIS(EnvConfig.DATABASE, "public", EnvConfig.DISPERSION_RASTER_TABLE,
-                rasterDirectory.toString(), gdalTranslateOptions, new MultidimSettings(), append);
+                rasterDirectory.toString(), gdalTranslateOptions, append);
     }
 
     /**
