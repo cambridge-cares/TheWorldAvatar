@@ -1,6 +1,7 @@
 package com.cmclinnovations.agent;
 
 import java.io.File;
+import java.io.FileWriter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,23 @@ public class TestUtils {
       File file = new File(filePath);
       createParentDirectoryIfUnavailable(file);
       mapper.writerWithDefaultPrettyPrinter().writeValue(file, node);
+      return file;
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+
+  /**
+   * A utility function to generate a sparql query file for testing.
+   * 
+   * @param filePath the target file path.
+   * @param query    a sparql query.
+   */
+  public static File genSparqlFile(String filePath, String query) {
+    File file = new File(filePath);
+    createParentDirectoryIfUnavailable(file);
+    try (FileWriter writer = new FileWriter(filePath)) {
+      writer.write(query);
       return file;
     } catch (Exception e) {
       throw new RuntimeException(e.getMessage());
