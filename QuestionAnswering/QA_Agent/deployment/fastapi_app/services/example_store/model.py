@@ -1,12 +1,11 @@
-from typing import List, Literal
+from typing import List
 from pydantic import BaseModel
 
-
-QADomain = Literal["singapore", "chemistry"]
+EXAMPLES_KEY_PREFIX = "nlq2actionExamples:"
+EXAMPLES_INDEX_NAME = "idx:nlq2actionExamples_vss"
 
 
 class Nlq2ActionExample(BaseModel):
-    qa_domain: QADomain
     nlq: str
     action: dict
 

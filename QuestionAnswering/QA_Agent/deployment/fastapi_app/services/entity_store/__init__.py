@@ -24,17 +24,13 @@ from .zeolite_framework import (
     ZeoliteFrameworkLinker,
     get_zeoliteFramework_linker,
 )
-from .model import ELConfig, ELConfigEntry
+from .model import ENTITIES_INDEX_NAME, ELConfig, ELConfigEntry
 
 
 logger = logging.getLogger(__name__)
 
 
 class EntityStore:
-    KEY_PREFIX = "entities:"
-    INDEX_NAME = "idx:entities"
-    _CHUNK_SIZE = 1024
-
     def __init__(
         self,
         redis_client: Redis,
@@ -68,7 +64,7 @@ class EntityStore:
         )
         inverse_label_query = Query(query_str).return_field("$.iri", as_field="iri")
 
-        res = self.redis_client.ft(self.INDEX_NAME).search(inverse_label_query)
+        res = self.redis_client.ft(ENTITIES_INDEX_NAME).search(inverse_label_query)
         return [doc.iri for doc in res.docs]
 
     def link_semantic(self, surface_form: str, clsname: Optional[str], k: int):
@@ -148,7 +144,7 @@ class EntityStore:
                     fuzzy_query=fuzzy_query,
                 )
             query = Query(fuzzy_query).return_field("iri")
-            res = self.redis_client.ft(self.INDEX_NAME).search(query)
+            res = self.redis_client.ft(ENTITIES_INDEX_NAME).search(query)
 
             for doc in res.docs:
                 if doc.iri not in iris_set:
@@ -201,7 +197,7 @@ class EntityStore:
                 iri=regex.escape(iri, special_only=False, literal_spaces=True)
             )
         ).return_field("$.label", as_field="label")
-        res = self.redis_client.ft(self.INDEX_NAME).search(query)
+        res = self.redis_client.ft(ENTITIES_INDEX_NAME).search(query)
         return (
             regex.sub(r"\\(.)", r"\1", res.docs[0].label) if len(res.docs) > 0 else None
         )
@@ -212,7 +208,7 @@ class EntityStore:
                 iri=regex.escape(iri, special_only=False, literal_spaces=True)
             )
         ).return_field("$.clsname", as_field="clsname")
-        res = self.redis_client.ft(self.INDEX_NAME).search(query)
+        res = self.redis_client.ft(ENTITIES_INDEX_NAME).search(query)
         return res.docs[0].clsname if len(res.docs) > 0 else None
 
 

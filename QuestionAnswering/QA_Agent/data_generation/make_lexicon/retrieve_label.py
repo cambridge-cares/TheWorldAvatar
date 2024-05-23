@@ -4,6 +4,13 @@ import os
 
 from SPARQLWrapper import JSON, SPARQLWrapper
 
+def extract_name(iri: str):
+    if "#" in iri:
+        iri = iri.rsplit("#", maxsplit=1)[-1]
+    if "/" in iri:
+        iri = iri.rsplit("/", maxsplit=1)[-1]
+    return iri
+
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -16,7 +23,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--populate_surface_forms",
         action="store_true",
-        default=False,
         help="Whether to populate surface_forms field with the label",
     )
     parser.add_argument("--out", required=True, help="Path to output JSON file")
@@ -39,6 +45,7 @@ if __name__ == "__main__":
         if args.populate_surface_forms:
             return {
                 "iri": row["s"]["value"],
+                "clsname": extract_name(args.base_class),
                 "label": row["label"]["value"],
                 "surface_forms": [row["label"]["value"]],
             }

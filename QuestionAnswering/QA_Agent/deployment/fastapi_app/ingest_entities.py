@@ -1,153 +1,65 @@
-import importlib.resources
-from importlib.abc import Traversable
-import json
-import math
 import os
 from typing import List
 
 import numpy as np
-from pydantic import TypeAdapter
 from redis import Redis
 from redis.commands.search.field import TextField, VectorField, TagField
-from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 import regex
-from tqdm import tqdm
 
+from services.ingest import DataIngester
 from services.entity_store import get_clsname2config
-from utils.itertools_recipes import batched
 from services.embed import IEmbedder, TritonEmbedder
 from services.redis import does_index_exist
-from services.entity_store.model import LexiconEntry, LexiconEntryProcessed
+from services.entity_store.model import (
+    ENTITIES_INDEX_NAME,
+    ENTITIES_KEY_PREFIX,
+    LexiconEntry,
+    LexiconEntryProcessed,
+)
 
 
-ENTITIES_KEY_PREFIX = "entities:"
-ENTITIES_INDEX_NAME = "idx:entities"
-ENTITIES_CHUNK_SIZE = 1024
-
-
-def discover_lexicon_groups():
-    print("Discovering lexicon groups...")
-    folders = [
-        dir
-        for dir in importlib.resources.files("data.lexicon").iterdir()
-        if dir.is_dir() and dir.name != "__pycache__"
-    ]
-    print("{num} lexicon groups discovered.\n".format(num=len(folders)))
-
-    return folders
-
-
-def load_processed_lexicon(
-    adapter: TypeAdapter[List[LexiconEntryProcessed]], folder: Traversable
-):
-    text = folder.joinpath("processed.json").read_text()
-    entries = adapter.validate_json(text)
-
-    print("Found cache of processed lexicon for {name}.\n".format(name=folder.name))
-    return entries
-
-
-def save_processed_lexicon(
-    adapter: TypeAdapter[List[LexiconEntryProcessed]],
-    folder: Traversable,
-    entries: List[LexiconEntryProcessed],
-):
-    path = folder.joinpath("processed.json")
-
-    with open(str(path), "wb") as f:
-        f.write(adapter.dump_json(entries))
-
-
-def load_unprocessed_lexicon(folder: Traversable):
-    print("Loading unprocessed lexicon into memory...".format(clsname=folder.name))
-
-    entries = json.loads(folder.joinpath("lexicon.json").read_text())
-    for entry in entries:
-        entry["clsname"] = folder.name
-
-    entries = [LexiconEntry.model_validate(entry) for entry in entries]
-
-    print("{num} lexicon entries loaded into memory.\n".format(num=len(entries)))
-    return entries
+ENTITIES_DIRNAME = "lexicon"
+ENTITIES_PROCESS_BATCHSIZE = 512
+ENTITIES_INSERT_BATCHSIZE = 1024
 
 
 def process_lexicon(
-    embedder: IEmbedder, entries: List[LexiconEntry], make_embedding: bool
+    embedder: IEmbedder, make_embedding: bool, data: List[LexiconEntry]
 ):
-    print(
-        "Processing {clsname} lexicon with chunk size {chunk_size}...".format(
-            clsname=entries[0].clsname, chunk_size=ENTITIES_CHUNK_SIZE
+    embeddings = (
+        (
+            embedder([", ".join(entry.surface_forms) for entry in data])
+            .astype(np.float32)
+            .tolist()
         )
+        if make_embedding
+        else [None for _ in data]
     )
-
-    processed_entries: List[LexiconEntryProcessed] = []
-    for chunk in tqdm(
-        batched(entries, ENTITIES_CHUNK_SIZE),
-        total=math.ceil(len(entries) / ENTITIES_CHUNK_SIZE),
-    ):
-        chunk = list(chunk)
-        embeddings = (
-            (
-                embedder([", ".join(entry.surface_forms) for entry in chunk])
-                .astype(np.float32)
-                .tolist()
-            )
-            if make_embedding
-            else [None for _ in chunk]
-        )
-        processed_entries.extend(
-            LexiconEntryProcessed(
-                **entry.model_dump(), surface_forms_embedding=embedding
-            )
-            for entry, embedding in zip(chunk, embeddings)
-        )
-
-    print("Processing complete.\n")
-    return processed_entries
+    return [
+        LexiconEntryProcessed(**entry.model_dump(), surface_forms_embedding=embedding)
+        for entry, embedding in zip(data, embeddings)
+    ]
 
 
-def insert_entities(
-    offset: int, redis_client: Redis, entries: List[LexiconEntryProcessed]
-):
-    print(
-        "Inserting {clsname} into Redis with chunk size {chunk_size}...".format(
-            clsname=entries[0].clsname, chunk_size=ENTITIES_CHUNK_SIZE
-        )
-    )
-
-    for chunk in tqdm(
-        batched(entries, ENTITIES_CHUNK_SIZE),
-        total=math.ceil(len(entries) / ENTITIES_CHUNK_SIZE),
-    ):
-        pipeline = redis_client.pipeline()
-        for i, entry in enumerate(chunk):
-            redis_key = ENTITIES_KEY_PREFIX + str(offset + i)
-            doc = {
-                "iri": entry.iri,
-                "clsname": entry.clsname,
-                "label": regex.escape(
-                    entry.label, special_only=False, literal_spaces=True
-                ),
-                "surface_forms": [
-                    regex.escape(sf, special_only=False, literal_spaces=True)
-                    for sf in entry.surface_forms
-                ],
-                "surface_forms_embedding": entry.surface_forms_embedding,
-            }
-            doc = {k: v for k, v in doc.items() if v}
-            pipeline.json().set(redis_key, "$", doc)
-        pipeline.execute()
-
-        offset += len(chunk)
-
-    print("Insertion done.\n")
-    return offset
+def lexicon_preinsert_transform(data: List[LexiconEntryProcessed]):
+    docs = [
+        {
+            "iri": entry.iri,
+            "clsname": entry.clsname,
+            "label": regex.escape(entry.label, special_only=False, literal_spaces=True),
+            "surface_forms": [
+                regex.escape(sf, special_only=False, literal_spaces=True)
+                for sf in entry.surface_forms
+            ],
+            "surface_forms_embedding": entry.surface_forms_embedding,
+        }
+        for entry in data
+    ]
+    return [{k: v for k, v in doc.items() if v} for doc in docs]
 
 
-def index_entities(redis_client: Redis, vector_dim: int):
-    print("Indexing entities...")
-
-    schema = (
+def make_entity_search_schema(vector_dim: int):
+    return (
         TagField("$.iri", as_name="iri"),
         TagField("$.clsname", as_name="clsname"),
         TextField("$.label", as_name="label"),
@@ -155,58 +67,14 @@ def index_entities(redis_client: Redis, vector_dim: int):
         VectorField(
             "$.surface_forms_embedding",
             "FLAT",
-            {"TYPE": "FLOAT32", "DIM": vector_dim, "DISTANCE_METRIC": "IP"},
+            {
+                "TYPE": "FLOAT32",
+                "DIM": vector_dim,
+                "DISTANCE_METRIC": "IP",
+            },
             as_name="vector",
         ),
     )
-    definition = IndexDefinition(
-        prefix=[ENTITIES_KEY_PREFIX], index_type=IndexType.JSON
-    )
-    redis_client.ft(ENTITIES_INDEX_NAME).create_index(
-        fields=schema, definition=definition
-    )
-
-    print("Index {index} created\n".format(index=ENTITIES_INDEX_NAME))
-
-
-def ingest_entities(redis_client: Redis):
-    embedder = TritonEmbedder(url=os.environ["TEXT_EMBEDDING_URL"])
-
-    folders = discover_lexicon_groups()
-
-    clsname2config = get_clsname2config()
-    adapter = TypeAdapter(List[LexiconEntryProcessed])
-    vector_dim = None
-    offset = 0
-    for folder in folders:
-        try:
-            entries = load_processed_lexicon(adapter=adapter, folder=folder)
-        except:
-            print(
-                "No cache of processed lexicon for {clsname} found.".format(
-                    clsname=folder.name
-                )
-            )
-            entries = load_unprocessed_lexicon(folder)
-            el_config = clsname2config.get(folder.name)
-            make_embedding = (
-                True if el_config and el_config.strategy == "semantic" else False
-            )
-            entries = process_lexicon(
-                embedder=embedder, entries=entries, make_embedding=make_embedding
-            )
-            save_processed_lexicon(adapter=adapter, folder=folder, entries=entries)
-
-        if vector_dim is None:
-            vector_dim = len(entries[0].surface_forms_embedding)
-
-        offset = insert_entities(
-            offset=offset, redis_client=redis_client, entries=entries
-        )
-
-    assert vector_dim is not None
-
-    index_entities(redis_client=redis_client, vector_dim=vector_dim)
 
 
 if __name__ == "__main__":
@@ -225,5 +93,38 @@ if __name__ == "__main__":
                 index_name=ENTITIES_INDEX_NAME
             )
         )
-        ingest_entities(redis_client)
+
+        embedder = TritonEmbedder(url=os.environ["TEXT_EMBEDDING_URL"])
+
+        clsname2config = get_clsname2config()
+
+        def process_func(data: List[LexiconEntry]):
+            el_config = clsname2config.get(data[0].clsname)
+            make_embedding = (
+                True if el_config and el_config.strategy == "semantic" else False
+            )
+            return process_lexicon(
+                embedder=embedder,
+                make_embedding=make_embedding,
+                data=data,
+            )
+
+        vector_dim = len(embedder(["warmup"])[0])
+        print("Vector dimension: ", vector_dim)
+        schema = make_entity_search_schema(vector_dim=vector_dim)
+
+        ingester = DataIngester(
+            dirname=ENTITIES_DIRNAME,
+            unprocessed_type=LexiconEntry,
+            processed_type=LexiconEntryProcessed,
+            process_func=process_func,
+            process_batchsize=ENTITIES_PROCESS_BATCHSIZE,
+            redis_client=redis_client,
+            redis_key_prefix=ENTITIES_KEY_PREFIX,
+            redis_preinsert_transform=lexicon_preinsert_transform,
+            redis_insert_batchsize=ENTITIES_INSERT_BATCHSIZE,
+            redis_index_name=ENTITIES_INDEX_NAME,
+            redis_ft_schema=schema,
+        )
+        ingester.ingest()
         print("Ingestion complete.")

@@ -27,14 +27,12 @@ class DataSupporter:
         self.translator = translator
         self.executor = executor
 
-    def query(self, qa_domain: str, query: str):
+    def query(self, query: str):
         steps: List[QAStep] = []
 
         logger.info("Retrieve examples for: " + query)
         timestamp = time.time()
-        examples = self.retriever.retrieve_examples(
-            qa_domain=qa_domain, nlq=query, k=10
-        )
+        examples = self.retriever.retrieve_examples(nlq=query, k=10)
         latency = time.time() - timestamp
         logger.info("Retrieved examples: " + str(examples))
         steps.append(
@@ -68,6 +66,4 @@ def get_data_supporter(
     translator: Annotated[Nlq2ActionTranslator, Depends(get_nlq2action_translator)],
     executor: Annotated[ActionExecMediator, Depends(get_actionExec_mediator)],
 ):
-    return DataSupporter(
-        retriever=retriever, translator=translator, executor=executor
-    )
+    return DataSupporter(retriever=retriever, translator=translator, executor=executor)

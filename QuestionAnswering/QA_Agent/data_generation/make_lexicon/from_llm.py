@@ -97,6 +97,7 @@ if __name__ == "__main__":
                 for item in items:
                     item = {
                         "iri": item["iri"],
+                        "clsname": item["clsname"],
                         "label": iri2label[item["iri"]],
                         "surface_forms": item["surface_forms"],
                     }
