@@ -12,7 +12,7 @@
 			"visualisation",
 			"feature-info-agent",
 			"ship-input-agent",
-			"ship-data-agent-debug"
+			"ship-data-agent"
 		]
 	},
 	"volumes": {
