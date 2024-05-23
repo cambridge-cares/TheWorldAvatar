@@ -1,0 +1,23 @@
+{
+  "ServiceSpec": {
+    "Name": "vis-backend-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ghcr.io/cambridge-cares/vis-backend-agent:0.0.1-SNAPSHOT",
+        "Mounts": [
+          {
+            "Type": "volume",
+            "Source": "vis-resources",
+            "Target": "/usr/local/tomcat/resources"
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/vis-backend-agent/",
+      "externalPath": "/vis-backend-agent/"
+    }
+  }
+}
