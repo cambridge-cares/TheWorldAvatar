@@ -8,9 +8,11 @@ export type DefaultSettings = {
   modules: {
     [key: string]: boolean;
   },
-  scenario?: {
-    url: string;
-    data: string;
+  resources?: {
+    [key: string]: {
+      url: string;
+      data?: string;
+    }
   }
 }
 
@@ -20,7 +22,7 @@ export type MapSettings = {
   camera: CameraSettings,
   imagery: ImagerySettings,
   legend?: LegendSettings,
-  icons: IconSettings,
+  icons?: IconSettings,
 }
 
 // Icon settings object

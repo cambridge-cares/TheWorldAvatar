@@ -7,19 +7,19 @@ import IconComponent from 'ui/graphic/icon/icon';
 import DecagonIconComponent from 'ui/graphic/icon/decagon';
 
 // Incoming parameters for component.
-type LegendTreeProps = {
-  readonly settings: LegendSettings;
-};
+interface LegendTreeProps {
+  settings: LegendSettings;
+}
 
-type LegendTreeNodeProps = {
-  readonly group: LegendGroup;
-  readonly groupName: string;
-};
+interface LegendTreeNodeProps {
+  group: LegendGroup;
+  groupName: string;
+}
 
 /**
  * Displays a legend component based on the user's input for legend settings.
  */
-export default function LegendTree(props: LegendTreeProps) {
+export default function LegendTree(props: Readonly<LegendTreeProps>) {
   return (
     <div className={styles.legendContainer}>
       <h2>Legend</h2>
@@ -30,7 +30,7 @@ export default function LegendTree(props: LegendTreeProps) {
   );
 }
 
-function LegendTreeNode(props: LegendTreeNodeProps) {
+function LegendTreeNode(props: Readonly<LegendTreeNodeProps>) {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
   const toggleExpansion = () => {
     setIsCollapsed(!isCollapsed);

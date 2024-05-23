@@ -3,7 +3,7 @@
 		"Name": "dispersion-interactor",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.6",
+				"Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.7",
 				"Env": [
 					"DATABASE=postgres",
 					"SCOPE_TABLE_NAME=scopes",
@@ -21,7 +21,8 @@
 					"VIRTUAL_SENSOR_AGENT_URL=http://${STACK_NAME}-virtual-sensor-agent:8080/VirtualSensorAgent/",
 					"ELEVATION_CONTOURS_TABLE=elevation_contours",
 					"WEATHER_LAYER_NAME=weather",
-					"NUMBER_OF_LAYERS=20"
+					"NUMBER_OF_LAYERS=20",
+					"VIS_TIME_LIMIT=86400"
 				],
 				"Configs": [
 					{

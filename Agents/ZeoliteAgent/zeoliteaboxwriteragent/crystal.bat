@@ -59,7 +59,7 @@ setlocal enabledelayedexpansion
 for /L %%i in %RANGE% do (
   if exist %DATADIR%\crystal\csv\cif_twa_%%i.csv (
     csv2rdf %DATADIR%\crystal\csv\cif_twa_%%i.csv --csvType=abox
-    sleep 1
+    rem sleep 1
     move %DATADIR%\crystal\csv\cif_twa_%%i.csv.owl  %DATADIR%\crystal\owl\cif_twa_%%i.csv.owl > nul
   )
 )

@@ -6,6 +6,9 @@ from pubchemagent.kgoperations.querytemplates import *
 from pubchemagent.utils.default_configs import UPDATE_ENDPOINT
 from pubchemagent.utils.url_configs import ONTOSPECIES_URL
 
+if UPDATE_ENDPOINT is None:
+    from pubchemagent.utils.url_configs import UPDATE_ENDPOINT 
+
 def get_chebi_tree(chebiID):
     ch = ChEBI()
     res = ch.getCompleteEntity(chebiID)
@@ -32,7 +35,7 @@ def get_chebi_tree(chebiID):
                     parent_uuid, parent_flag = find_uuid('ChemicalClass', typeIRI, parent, 'ChEBI classification')
                     tp = 'ChemicalClass'
                 print(child + ' (' + tc + ') is a (' + tp + ') ' + parent)
-                insert_triple(tc, child_uuid, tp, parent_uuid, 'rdf:type')
+                insert_triple(tc, child_uuid, tp, parent_uuid, 'rdfs:subClassOf')
                 if parent_flag == 'new':
                     get_chebi_tree(chebiID)
             if item['type'] == 'has part' and 'atom' not in item['chebiName']:
@@ -74,6 +77,7 @@ def insert_child_parent(type_child, child_uuid, type_parent, parent_uuid, relati
     insert_str="""
     PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
     INSERT DATA
     {

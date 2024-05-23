@@ -8,11 +8,11 @@ export type DropdownFieldOption = {
   label: string;
 };
 
-type DropdownFieldProps = {
+interface DropdownFieldProps {
   options: DropdownFieldOption[];
   selectedIndex: number;
   setSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
-};
+}
 
 /**
  * This component renders a dropdown field populated with the options from the data.
@@ -21,7 +21,7 @@ type DropdownFieldProps = {
  * @param {number} selectedIndex The currently selected index.
  * @param {React.Dispatch<React.SetStateAction<number>>} setSelectedIndex The method to update the selected index based on the event.
  */
-export default function DropdownField(props: DropdownFieldProps) {
+export default function DropdownField(props: Readonly<DropdownFieldProps>) {
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     props.setSelectedIndex(parseInt(event.target.value));
   };

@@ -2,6 +2,7 @@ import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, 
 
 import { DataLayer } from 'io/data/data-layer';
 import { DataStore } from 'io/data/data-store';
+import { Interactions } from 'io/config/interactions';
 import { JsonObject } from 'types/json';
 import { ImageryOption, ImagerySettings } from 'types/settings';
 import { getCurrentImageryOption } from '../map-helper';
@@ -40,20 +41,29 @@ export function addLayer(map: Map, layer: DataLayer, currentStyle: ImageryOption
     const options: JsonObject = { ...layer.definition };
     options["id"] = layer.id;
     options["source"] = layer.source.id;
+    // If there is a layout option, we must set visibility separately to prevent overriding the other suboptions
     if (options.layout) {
         const layoutOptions: JsonObject = options.layout as JsonObject;
-        layoutOptions.visibility = layer.cachedVisibility ? "visible" : "none";
+        layoutOptions.visibility = layer.isGroupExpanded && layer.cachedVisibility ? "visible" : "none";
     } else {
         options.layout = {
-            visibility: "visible"
+            visibility: layer.isGroupExpanded && layer.cachedVisibility ? "visible" : "none"
         };
     }
+
+    if (layer.getInjectableProperty(Interactions.HOVER)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (options.paint as { [key: string]: any })["fill-opacity"] = layer.getInjectableProperty(Interactions.HOVER).style;
+        delete options["hover"];
+    }
+
     // Remove properties not expected by Mapbox
     delete options["interactions"];
     delete options["clickable"];
     delete options["treeable"];
     delete options["name"];
     delete options["order"];
+    delete options["grouping"];
 
     // Add attributions if missing
     if (!options["metadata"]) {

@@ -5,6 +5,7 @@ export type MapLayerGroup = {
   icon?: string;
   layers?: MapLayer[];
   showChildren?: boolean; // track open/closed state
+  groupings: string[]; // unique array of groupings
 };
 
 export type MapLayer = {
@@ -12,5 +13,6 @@ export type MapLayer = {
   address: string;
   ids: string;
   icon?: string;
+  grouping?: string; // Map layer grouping if available
   isVisible: boolean; // track visibility
 };

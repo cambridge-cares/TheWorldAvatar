@@ -34,6 +34,13 @@ class IzaTopology:
                 self.iza_data_base = json.load(f)
         else:
             print("Missing file", self.iza_file_path, "in izatopology.py")
+
+        if False:
+            print("Verification of topoloty database loaded:", self.iza_file_path, len(self.iza_data_base))
+            for it, topo in enumerate(self.iza_data_base):
+                for top in self.iza_data_base[it+1:]:
+                    if topo["Framework"] == top["Framework"]:
+                        print("Repeating framework", top["Framework"])
         # === end of IzaTopology.load()
 
     def getIzaByCode(self, code):
