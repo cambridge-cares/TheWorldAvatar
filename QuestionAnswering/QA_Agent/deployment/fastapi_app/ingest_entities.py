@@ -13,6 +13,7 @@ from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 import regex
 from tqdm import tqdm
 
+from services.entity_store import get_clsname2config
 from utils.itertools_recipes import batched
 from services.embed import IEmbedder, TritonEmbedder
 from services.redis import does_index_exist
@@ -70,7 +71,9 @@ def load_unprocessed_lexicon(folder: Traversable):
     return entries
 
 
-def process_lexicon(embedder: IEmbedder, entries: List[LexiconEntry]):
+def process_lexicon(
+    embedder: IEmbedder, entries: List[LexiconEntry], make_embedding: bool
+):
     print(
         "Processing {clsname} lexicon with chunk size {chunk_size}...".format(
             clsname=entries[0].clsname, chunk_size=ENTITIES_CHUNK_SIZE
@@ -84,9 +87,13 @@ def process_lexicon(embedder: IEmbedder, entries: List[LexiconEntry]):
     ):
         chunk = list(chunk)
         embeddings = (
-            embedder([", ".join(entry.surface_forms) for entry in chunk])
-            .astype(np.float32)
-            .tolist()
+            (
+                embedder([", ".join(entry.surface_forms) for entry in chunk])
+                .astype(np.float32)
+                .tolist()
+            )
+            if make_embedding
+            else [None for _ in chunk]
         )
         processed_entries.extend(
             LexiconEntryProcessed(
@@ -115,18 +122,19 @@ def insert_entities(
         pipeline = redis_client.pipeline()
         for i, entry in enumerate(chunk):
             redis_key = ENTITIES_KEY_PREFIX + str(offset + i)
-            doc = dict(
-                iri=entry.iri,
-                clsname=entry.clsname,
-                label=regex.escape(
+            doc = {
+                "iri": entry.iri,
+                "clsname": entry.clsname,
+                "label": regex.escape(
                     entry.label, special_only=False, literal_spaces=True
                 ),
-                surface_forms=[
+                "surface_forms": [
                     regex.escape(sf, special_only=False, literal_spaces=True)
                     for sf in entry.surface_forms
                 ],
-                surface_forms_embedding=entry.surface_forms_embedding,
-            )
+                "surface_forms_embedding": entry.surface_forms_embedding,
+            }
+            doc = {k: v for k, v in doc.items() if v}
             pipeline.json().set(redis_key, "$", doc)
         pipeline.execute()
 
@@ -166,6 +174,7 @@ def ingest_entities(redis_client: Redis):
 
     folders = discover_lexicon_groups()
 
+    clsname2config = get_clsname2config()
     adapter = TypeAdapter(List[LexiconEntryProcessed])
     vector_dim = None
     offset = 0
@@ -179,7 +188,13 @@ def ingest_entities(redis_client: Redis):
                 )
             )
             entries = load_unprocessed_lexicon(folder)
-            entries = process_lexicon(embedder=embedder, entries=entries)
+            el_config = clsname2config.get(folder.name)
+            make_embedding = (
+                True if el_config and el_config.strategy == "semantic" else False
+            )
+            entries = process_lexicon(
+                embedder=embedder, entries=entries, make_embedding=make_embedding
+            )
             save_processed_lexicon(adapter=adapter, folder=folder, entries=entries)
 
         if vector_dim is None:

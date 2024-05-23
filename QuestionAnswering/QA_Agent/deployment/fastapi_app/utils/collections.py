@@ -1,14 +1,14 @@
 from typing import Dict, TypeVar
 
-K = TypeVar("K")
-V = TypeVar("V")
+_KT = TypeVar("_KT")
+_VT = TypeVar("_VT")
 
 
-class FrozenDict(Dict[K, V]):
-    def __init__(self, args):
-        super().__init__(args)
+class FrozenDict(Dict[_KT, _VT]):
+    def __init__(self, map: Dict[_KT, _VT]):
+        super().__init__(map)
 
-    def __setitem__(self, key: K, value: V) -> None:
+    def __setitem__(self, key: _KT, value: _VT) -> None:
         raise ValueError("Cannot perform SET on a frozen dict.")
 
     def __hash__(self):
