@@ -30,7 +30,7 @@ if __name__ == "__main__":
         "--endpoint", required=True, help="SPARQL endpoint to retrieve ship data"
     )
     parser.add_argument(
-        "--lexicon_out", required=True, help="Path to JSON lexicon file"
+        "--out", required=True, help="Path to output JSON file"
     )
     args = parser.parse_args()
 
@@ -64,13 +64,14 @@ SELECT ?Element ?ElementName ?ElementSymbol ?Label WHERE {
     lexicon = [
         {
             "iri": iri,
+            "clsname": "Element",
             "label": label,
             "surface_forms": list(set(iri2sfs[iri])),
         }
         for iri, label in iri2label.items()
     ]
 
-    os.makedirs(os.path.dirname(args.lexicon_out), exist_ok=True)
+    os.makedirs(os.path.dirname(args.out), exist_ok=True)
 
-    with open(args.lexicon_out, "w") as f:
+    with open(args.out, "w") as f:
         json.dump(lexicon, f, indent=4)

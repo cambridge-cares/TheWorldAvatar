@@ -8,12 +8,10 @@ from pydantic import BaseModel, model_serializer
 from controllers.qa import DataSupporter, get_data_supporter
 from controllers.qa.model import QAStep, serialize_data_item
 from controllers.qa.model import DataItem
-from services.example_store.model import QADomain
 
 
 class QARequest(BaseModel):
     question: str
-    qa_domain: QADomain
 
 
 class QAResponseMetadata(BaseModel):
@@ -47,7 +45,7 @@ def qa(
     logger.info(req)
 
     timestamp = time.time()
-    steps, data = data_supporter.query(qa_domain=req.qa_domain, query=req.question)
+    steps, data = data_supporter.query(query=req.question)
     latency = time.time() - timestamp
 
     metadata = QAResponseMetadata(latency=latency, steps=steps)

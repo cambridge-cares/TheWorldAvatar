@@ -60,6 +60,7 @@ SELECT ?IRI ?name WHERE {
     lexicon = [
         {
             "iri": row["iri"],
+            "clsname": "Ship",
             "label": row["label"],
             "surface_forms": make_surface_forms(row["label"]),
         }
