@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  fenland_trajectory_agent:
-    image: ghcr.io/cambridge-cares/fenland_trajectory_agent:1.0.0-SNAPSHOT
+  fenland-trajectory-agent:
+    image: ghcr.io/cambridge-cares/fenland-trajectory-agent:1.0.0-SNAPSHOT
     environment:
       - STACK_NAME=${STACK_NAME}
       # Target Blazegraph namespace

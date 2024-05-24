@@ -4,7 +4,6 @@
 ## The World Avatar related packages ##
 #######################################
 py4jps==1.0.38
-twa==0.0.1
 
 ##########################
 ## Third-party packages ##

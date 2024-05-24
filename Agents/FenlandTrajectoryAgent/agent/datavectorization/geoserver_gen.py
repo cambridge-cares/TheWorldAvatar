@@ -5,7 +5,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-from env_for_vectorization import (
+from agent.datavectorization.env_for_vectorization import (
     GEOSERVER_URL,
     GEOSERVER_USER,
     GEOSERVER_PASSWORD,

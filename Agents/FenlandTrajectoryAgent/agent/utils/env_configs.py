@@ -1,6 +1,6 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 08 Sep 2022                            #
+# Authors: Jiying Chen (jc2341@cam.ac.uk)      #    
+# Date: 24 May 2024                            #
 ################################################
 
 # The purpose of this module is to retrieve relevant properties and settings 

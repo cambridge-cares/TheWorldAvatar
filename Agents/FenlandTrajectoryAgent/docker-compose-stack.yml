@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  fenland_trajectory_agent:
+  fenland-trajectory-agent:
     deploy:
       mode: replicated
       replicas: 1
