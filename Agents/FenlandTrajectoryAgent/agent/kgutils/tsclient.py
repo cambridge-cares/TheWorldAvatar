@@ -11,7 +11,7 @@ from py4jps import agentlogging
 from agent.utils.baselib_gateway import jpsBaseLibGW
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 from agent.errorhandling.exceptions import TSException
-from agent.datamodel.data_class import FORMAT, TIMECLASS, DATACLASS
+from agent.datamodel.time_series_classes import FORMAT, TIMECLASS, DATATYPE
 
 
 # Initialise logger instance (ensure consistent logger level`)
