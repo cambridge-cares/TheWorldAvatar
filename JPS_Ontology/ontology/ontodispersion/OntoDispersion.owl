@@ -10,7 +10,7 @@
      xmlns:ontodispersion="https://www.theworldavatar.com/kg/ontodispersion/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodispersion/">
         <dc:date>23 May 2024</dc:date>
-        <owl:versionInfo>1.1</owl:versionInfo>
+        <owl:versionInfo>2.0</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     

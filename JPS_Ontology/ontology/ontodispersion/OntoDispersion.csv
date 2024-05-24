@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoDispersion,TBox,https://www.theworldavatar.com/kg/ontodispersion/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoDispersion,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoDispersion,TBox,2.0,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoDispersion,TBox,,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoDispersion,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 AermapOutput,Class,,,,,,URL to download the AERMAP output file stored as time series,https://www.theworldavatar.com/kg/ontodispersion/,
