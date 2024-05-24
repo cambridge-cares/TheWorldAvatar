@@ -6,7 +6,9 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.ServletException;
@@ -22,12 +24,17 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.postgis.Polygon;
 import org.springframework.core.io.ClassPathResource;
 
+import com.cmclinnovations.stack.clients.gdal.GDALClient;
+import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -43,6 +50,11 @@ public class InitialiseSimulation extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(InitialiseSimulation.class);
     private QueryClient queryClient;
     private DispersionPostGISClient dispersionPostGISClient;
+
+    // hack, used by StartScheduledDispersion
+    public InitialiseSimulation() throws ServletException {
+        init();
+    }
 
     @Override
     public void init() throws ServletException {
@@ -66,6 +78,16 @@ public class InitialiseSimulation extends HttpServlet {
         String scopeLabel = req.getParameter("label");
         String[] zArray = req.getParameterValues("z");
         String simulationTimeIri = req.getParameter("simulationTimeIri"); // optional
+
+        String derivation = createSimulation(ewkt, nx, ny, citiesNamespace, scopeLabel, zArray, simulationTimeIri);
+        resp.getWriter().print(new JSONObject().put("derivation", derivation));
+        resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
+        resp.setCharacterEncoding("UTF-8");
+    }
+
+    String createSimulation(String ewkt, int nx, int ny, String citiesNamespace, String scopeLabel,
+            String[] zArray, String simulationTimeIri) {
+        String derivation = null;
 
         List<Integer> zList = new ArrayList<>();
         if (zArray == null) {
@@ -113,22 +135,20 @@ public class InitialiseSimulation extends HttpServlet {
 
                 // returns null if there are no matches
                 scopeIri = dispersionPostGISClient.getScopeIri(polygon4326, conn);
-                String derivation = null;
 
                 if (scopeIri == null) {
                     scopeIri = dispersionPostGISClient.addScope(polygon4326, conn);
 
-                    String weatherStation = createVirtualWeatherStation(polygon4326);
+                    Map<String, List<Double>> weatherStation = createVirtualWeatherStation(polygon4326);
+                    String stationIri = new ArrayList<>(weatherStation.keySet()).get(0);
 
-                    derivation = queryClient.initialiseScopeDerivation(scopeIri, scopeLabel, weatherStation, nx,
+                    derivation = queryClient.initialiseScopeDerivation(scopeIri, scopeLabel, stationIri, nx,
                             ny, citiesNamespace, zList, simulationTimeIri);
+
+                    createWeatherStationLayer(weatherStation, derivation);
                 } else {
                     derivation = queryClient.getDerivationWithScope(scopeIri);
                 }
-
-                resp.getWriter().print(new JSONObject().put("derivation", derivation));
-                resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
-                resp.setCharacterEncoding("UTF-8");
 
             } catch (SQLException e) {
                 LOGGER.error("SQL state {}", e.getSQLState());
@@ -142,6 +162,7 @@ public class InitialiseSimulation extends HttpServlet {
             }
         }
 
+        return derivation;
     }
 
     /**
@@ -150,7 +171,7 @@ public class InitialiseSimulation extends HttpServlet {
      * @param polygon
      * @return
      */
-    String createVirtualWeatherStation(Polygon polygon) {
+    Map<String, List<Double>> createVirtualWeatherStation(Polygon polygon) {
         // generating the random point
         double lowerX;
         double upperX;
@@ -197,7 +218,49 @@ public class InitialiseSimulation extends HttpServlet {
             LOGGER.error(e.getMessage());
         }
 
-        return station;
+        Map<String, List<Double>> weatherStation = new HashMap<>();
+        List<Double> xy = new ArrayList<>();
+        xy.add(lon);
+        xy.add(lat);
+        weatherStation.put(station, xy);
+
+        return weatherStation;
+    }
+
+    void createWeatherStationLayer(Map<String, List<Double>> weatherStation, String derivationIri) {
+        String stationIri = new ArrayList<>(weatherStation.keySet()).get(0);
+        List<Double> xy = weatherStation.get(stationIri);
+        // create/update layer
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+        JSONArray features = new JSONArray();
+
+        JSONObject geometry = new JSONObject();
+        geometry.put("type", "Point");
+        geometry.put("coordinates", new JSONArray().put(xy.get(0)).put(xy.get(1)));
+        JSONObject feature = new JSONObject();
+        feature.put("type", "Feature");
+        feature.put("geometry", geometry);
+
+        JSONObject properties = new JSONObject();
+        properties.put("iri", stationIri);
+        properties.put("derivation", derivationIri);
+        properties.put("name", "Virtual weather station");
+
+        feature.put("properties", properties);
+
+        features.put(feature);
+
+        featureCollection.put("features", features);
+
+        GDALClient gdalClient = GDALClient.getInstance();
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+
+        gdalClient.uploadVectorStringToPostGIS(Config.DATABASE, Config.WEATHER_LAYER_NAME,
+                featureCollection.toString(), new Ogr2OgrOptions(), true);
+        geoServerClient.createWorkspace(Config.GEOSERVER_WORKSPACE);
+        geoServerClient.createPostGISLayer(Config.GEOSERVER_WORKSPACE, Config.DATABASE,
+                Config.WEATHER_LAYER_NAME, new GeoServerVectorSettings());
     }
 
 }

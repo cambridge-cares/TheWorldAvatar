@@ -4,64 +4,40 @@ import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.agent.osmagent.geometry.object.GeoObject;
-import uk.ac.cam.cares.jps.agent.osmagent.geometry.object.OSMObject;
 
-import org.locationtech.jts.io.ParseException;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class GeometryMatcherTest {
     @Test
-    public void testMatchGeometry() throws ParseException {
-        Map<Integer, OSMObject> testOSMObjectMap = new HashMap<>();
-        Map<String, GeoObject> testGeoObjectmap = new HashMap<>();
+    public void testMatchGeometry() throws SQLException {
+        Connection connMock = mock(Connection.class);
 
-        OSMObject testOSMObject = new OSMObject();
-        GeoObject testGeoObject = new GeoObject();
-        String testPoint = "POINT (0 0)";
-        String testIri = "testIri";
+        Statement statementMock = mock(Statement.class);
 
-        testOSMObject.setOgcfid(0);
-        testOSMObject.setGeometry(testPoint);
-        testOSMObject.setSrid(0);
+        JSONArray sridJSON = new JSONArray().put(new JSONObject().put("srid", 4326));
+        JSONArray idJSON = new JSONArray().put(new JSONObject().put("min", 0).put("max", 100));
 
-        testGeoObject.setUrival(testIri);
-        testGeoObject.setGeometry(testPoint);
-        testGeoObject.setSrid(0);
-
-        testOSMObjectMap.put(0, testOSMObject);
-        testGeoObjectmap.put(testPoint, testGeoObject);
-
-        JSONArray testArray = new JSONArray().put(new JSONObject().put("building_iri", testPoint).put("geostring", "POINT"));
-
-        try (MockedStatic<OSMObject> osmObjectMock = mockStatic(OSMObject.class)) {
-            osmObjectMock.when(() -> OSMObject.getOSMObjects(anyString(), anyString(), anyString(), anyString(), anyString()))
-                    .thenReturn(testOSMObjectMap);
-            try (MockedStatic<GeoObject> geoObjectMock = mockStatic(GeoObject.class)) {
-                geoObjectMock.when(() -> GeoObject.getGeoObjects(anyString(), anyString(), anyString()))
-                        .thenReturn(testGeoObjectmap);
-                try (MockedConstruction<RemoteRDBStoreClient> remoteRDBStoreClientMock = mockConstruction(RemoteRDBStoreClient.class,
+        doReturn(statementMock).when(connMock).createStatement();
+        try (MockedConstruction<RemoteRDBStoreClient> rdbStoreClientMock = mockConstruction(RemoteRDBStoreClient.class,
                 (mock, context) -> {
-                    doReturn(testArray).when(mock).executeQuery(anyString());
+                        doReturn(connMock).when(mock).getConnection();
+                        when(mock.executeQuery(anyString())).thenReturn(sridJSON)
+                            .thenReturn(sridJSON).thenReturn(idJSON).thenReturn(idJSON);
                 })) {
-                    GeometryMatcher geometryMatcher = new GeometryMatcher("", "" ,"");
-                    geometryMatcher.matchGeometry("points");
-                    osmObjectMock.verify(
-                            times(1), () -> OSMObject.getOSMObjects(anyString(), anyString(), anyString(), anyString(), anyString())
-                    );
-                    geoObjectMock.verify(
-                            times(1), () -> GeoObject.getGeoObjects(anyString(), anyString(), anyString())
-                    );
-                    verify(remoteRDBStoreClientMock.constructed().get(0), times(2)).executeQuery(anyString());
-                    verify(remoteRDBStoreClientMock.constructed().get(0), times(1)).executeUpdate(anyString());
-                }
-            }
+           new GeometryMatcher("","","").matchGeometry("", "", null, null);
+
+           verify(rdbStoreClientMock.constructed().get(0), times(4)).executeQuery(anyString());
+           verify(rdbStoreClientMock.constructed().get(0), times(4)).getConnection();
+
+           verify(connMock, times(4)).createStatement();
+           verify(statementMock, times(205)).execute(anyString());
         }
     }
 }
