@@ -1,2 +1,14 @@
-# define agent logging dependency here as there are issues including it in install_requires in setup.py
-git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
+# # define agent logging dependency here as there are issues including it in install_requires in setup.py
+# git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
+#######################################
+## The World Avatar related packages ##
+#######################################
+twa==0.0.1
+py4jps==1.0.38
+
+##########################
+## Third-party packages ##
+##########################
+Flask==2.1.0
+pandas==1.5.3
+requests==2.28.1
