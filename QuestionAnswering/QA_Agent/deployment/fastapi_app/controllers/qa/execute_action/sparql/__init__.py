@@ -5,6 +5,7 @@ from typing import Annotated, Dict, List
 
 from fastapi import Depends
 
+from constants.prefixes import PREFIX_NAME2URI
 from controllers.qa.model import QAStep
 from services.entity_store import EntityStore, get_entity_store
 from services.kg import KgClient
@@ -22,39 +23,13 @@ logger = logging.getLogger(__name__)
 
 
 class SparqlActionExecutor:
-    PREFIXES = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-
-PREFIX unit: <http://qudt.org/vocab/unit/>
-PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
-PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
-PREFIX gml: <http://www.opengis.net/citygml/building/2.0/>
-PREFIX grp: <http://www.opengis.net/citygml/cityobjectgroup/2.0/>
-
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-PREFIX op: <http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#>
-PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
-PREFIX ocape: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>
-PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
-PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
-
-PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
-PREFIX carpark:	<https://www.theworldavatar.com/kg/ontocarpark/>
-PREFIX landplot: <https://www.theworldavatar.com/kg/landplot/>
-PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
-PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
-PREFIX ontocompany: <http://www.theworldavatar.com/kg/ontocompany/>
-PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>
-PREFIX ontoplanreg: <https://www.theworldavatar.com/kg/ontoplanningregulation/>
-PREFIX ontoplot: <https://www.theworldavatar.com/kg/ontoplot/>
-PREFIX ontozoning: <https://www.theworldavatar.com/kg/ontozoning/>
-PREFIX ub: <https://www.theworldavatar.com/kg/ontoubemmp/>
-
-"""
+    PREFIXES = (
+        "\n".join(
+            "PREFIX {name}: <{uri}>".format(name=name, uri=uri)
+            for name, uri in PREFIX_NAME2URI.items()
+        )
+        + "\n"
+    )
 
     def __init__(
         self,

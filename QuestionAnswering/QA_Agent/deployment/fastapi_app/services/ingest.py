@@ -1,6 +1,7 @@
 import importlib.resources
 import json
 import math
+import os
 from typing import Callable, List, Tuple, Type, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
@@ -63,6 +64,11 @@ class DataIngester:
 
     def save_processed_data(self, filename: str, data: List[PT]):
         path = self.data_dir.joinpath(".cache").joinpath(filename)
+        path = str(path)
+
+        dirpath = os.path.dirname(path)
+        if dirpath:
+            os.makedirs(dirpath, exist_ok=True)
 
         with open(str(path), "wb") as f:
             f.write(self.adapter_list_pt.dump_json(data))

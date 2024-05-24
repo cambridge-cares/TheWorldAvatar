@@ -7,8 +7,9 @@ from fastapi import Depends
 from controllers.qa.model import QAStep
 from services.example_store import (
     ExampleStore,
-    get_nlq2action_retriever,
+    get_example_store,
 )
+from services.schema_store import SchemaStore, get_schema_store
 from .execute_action import ActionExecMediator, get_actionExec_mediator
 from .translate import Nlq2ActionTranslator, get_nlq2action_translator
 
@@ -19,20 +20,37 @@ logger = logging.getLogger(__name__)
 class DataSupporter:
     def __init__(
         self,
-        retriever: ExampleStore,
+        example_store: ExampleStore,
+        schema_store: SchemaStore,
         translator: Nlq2ActionTranslator,
         executor: ActionExecMediator,
     ):
-        self.retriever = retriever
+        self.example_store = example_store
+        self.schema_store = schema_store
         self.translator = translator
         self.executor = executor
 
     def query(self, query: str):
         steps: List[QAStep] = []
+        logger.info("Input query: " + query)
 
-        logger.info("Retrieve examples for: " + query)
+        logger.info("Retrieving schema items...")
         timestamp = time.time()
-        examples = self.retriever.retrieve_examples(nlq=query, k=10)
+        schema_items = self.schema_store.retrieve_relations(nlq=query, k=10)
+        latency = time.time() - timestamp
+        logger.info("Retrieved schema items: " + str(schema_items))
+        steps.append(
+            QAStep(
+                action="retrieve_schema",
+                arguments=dict(nlq=query, k=10),
+                results=schema_items[:3] + ["..."],
+                latency=latency,
+            )
+        )
+
+        logger.info("Retrieving examples...")
+        timestamp = time.time()
+        examples = self.example_store.retrieve_examples(nlq=query, k=10)
         latency = time.time() - timestamp
         logger.info("Retrieved examples: " + str(examples))
         steps.append(
@@ -46,7 +64,9 @@ class DataSupporter:
 
         timestamp = time.time()
         # KIV: example permutation
-        action = self.translator.translate(nlq=query, examples=examples)
+        action = self.translator.translate(
+            nlq=query, schema_items=schema_items, examples=examples
+        )
         latency = time.time() - timestamp
         logger.info("Predicted action: " + str(action))
         steps.append(
@@ -62,8 +82,14 @@ class DataSupporter:
 
 
 def get_data_supporter(
-    retriever: Annotated[ExampleStore, Depends(get_nlq2action_retriever)],
+    schema_store: Annotated[SchemaStore, Depends(get_schema_store)],
+    example_store: Annotated[ExampleStore, Depends(get_example_store)],
     translator: Annotated[Nlq2ActionTranslator, Depends(get_nlq2action_translator)],
     executor: Annotated[ActionExecMediator, Depends(get_actionExec_mediator)],
 ):
-    return DataSupporter(retriever=retriever, translator=translator, executor=executor)
+    return DataSupporter(
+        schema_store=schema_store,
+        example_store=example_store,
+        translator=translator,
+        executor=executor,
+    )
