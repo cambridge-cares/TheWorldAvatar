@@ -23,4 +23,4 @@ Instant = jpsBaseLibView.java.time.Instant
 TIMECLASS = Instant.now().getClass()
 
 # Create data class for all time series data (i.e. all data as double)
-DATACLASS = jpsBaseLibView.java.lang.Double.TYPE
+DATATYPE = jpsBaseLibView.java.lang.Double.TYPE
