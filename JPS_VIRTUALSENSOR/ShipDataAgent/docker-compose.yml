@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   ship-data-agent:
-    image: ghcr.io/cambridge-cares/ship-data-agent:1.0-dev-ship-data-SNAPSHOT
+    image: ghcr.io/cambridge-cares/ship-data-agent:1.0
     deploy:
       mode: replicated
       replicas: 1

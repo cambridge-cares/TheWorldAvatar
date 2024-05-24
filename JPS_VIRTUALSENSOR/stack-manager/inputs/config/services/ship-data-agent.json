@@ -3,7 +3,7 @@
         "Name": "ship-data-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/ship-data-agent:1.0-dev-ship-data-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/ship-data-agent:1.0",
 				"Env": [
 					"DATABASE=postgres",
 					"SHIP_DATA_AGENT_IRI=https://www.theworldavatar.com/kg/dispersion/ShipDataAgent"
