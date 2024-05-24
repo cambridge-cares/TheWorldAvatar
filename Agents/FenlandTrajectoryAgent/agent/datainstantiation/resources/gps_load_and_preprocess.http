@@ -1,0 +1,9 @@
+
+
+# POST http://174.138.27.240:5000/gpstasks/fenlandtrajectoryagent/load_and_preprocess
+POST http://localhost:5000/gpstasks/fenlandtrajectoryagent/load_and_preprocess
+Content-Type: application/json
+
+{
+  "file_path": "/app/agent/raw_data/gps_target_folder"
+}
