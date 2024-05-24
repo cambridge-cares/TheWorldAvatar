@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation';
 
 import LandingPage from 'ui/pages/landing';
 import OptionalPages from 'io/config/optional-pages';
+import { PathNames } from 'io/config/routes';
 import SettingsStore from 'io/config/settings';
 import { DefaultSettings } from 'types/settings';
 
@@ -43,6 +44,6 @@ export default function App() {
       hasDashboard={uiSettings.modules.dashboard}
     />);
   } else {
-    redirect(`visualisation`);
+    redirect(PathNames.MAP);
   }
 }
