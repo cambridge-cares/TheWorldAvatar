@@ -24,7 +24,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/CARESWeatherStationInputAgent/output/cares-weather-station-agent##1.5.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/CARESWeatherStationInputAgent/output/cares-weather-station-agent##1.6.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

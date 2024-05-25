@@ -3,7 +3,7 @@
     "Name": "cares-weather-station-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "docker.io/library/caresweatherstation-agent:1.5.0",
+        "Image": "ghcr.io/cambridge-cares/cares-weather-station-agent:1.6.0",
         "Env": [
 					"CARESWeatherStation_AGENTPROPERTIES=/usr/local/tomcat/config/agent.properties",
           "CARESWeatherStation_APIPROPERTIES=/usr/local/tomcat/config/api.properties",
@@ -47,7 +47,7 @@
   },
   "endpoints": {
     "ui": {
-      "url": "http://localhost:8080/caresweatherstation-agent/",
+      "url": "http://localhost:8080/cares-weather-station-agent/",
       "externalPath": "/cares-weather-station-agent/"
     }
   }
