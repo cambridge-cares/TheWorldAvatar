@@ -10,7 +10,7 @@
      xmlns:ontobms="https://www.theworldavatar.com/kg/ontobms/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobms/">
         <owl:imports rdf:resource="https://saref.etsi.org/saref4bldg/"/>
-        <dc:date>19 May 2024</dc:date>
+        <dc:date>26 May 2024</dc:date>
         <rdfs:comment>OntoBMS is an ontology for Building Management Systems.</rdfs:comment>
         <owl:versionInfo>1.5</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -85,6 +85,20 @@
         <rdfs:comment>A relationship that describes a HVAC device removing air from a flow moving device or a flow treatment device.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobms/"/>
         <rdfs:label>extracts air from</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasAirExchangeRate -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasAirExchangeRate">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobms/AirChangePerHour"/>
+        <rdfs:comment>A relationship that describes how many times the air within a defined space (usually a room or building) is replaced with fresh air in one hour.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobms/"/>
+        <rdfs:label>has air exchange rate</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -499,12 +513,19 @@
     
 
 
+    <!-- https://w3id.org/bot#Zone -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobms/AirChangePerHour -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/AirChangePerHour">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Frequency"/>
-        <rdfs:comment>A variable that describes how many times does a volume of air equal to the volume of a room can an HVAC unit pump out of the room per hour</rdfs:comment>
+        <rdfs:comment>A measure of how many times the air within a defined space (usually a room or building) is replaced with fresh air in one hour. </rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobms/"/>
         <rdfs:label>Air change per hour</rdfs:label>
     </owl:Class>
@@ -804,7 +825,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/VSDControl">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Frequency"/>
-        <rdfs:comment>A frequency based measurement used to control an AC motor&apos;s speed and torque.</rdfs:comment>
+        <rdfs:comment>A frequency based measurement used to control an AC motor's speed and torque.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobms/"/>
         <rdfs:label>VSD control</rdfs:label>
     </owl:Class>

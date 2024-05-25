@@ -10,7 +10,7 @@
      xmlns:ontodevice="https://www.theworldavatar.com/kg/ontodevice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date>24 May 2024</dc:date>
+        <dc:date>26 May 2024</dc:date>
         <rdfs:comment>OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo>1.5</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -879,13 +879,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontodevice/AIrChangePerHour -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontodevice/AIrChangePerHour"/>
-    
-
-
     <!-- http://www.w3.org/ns/ssn/systems/Condition -->
 
 
@@ -920,13 +913,6 @@
     <owl:Class rdf:about="https://saref.etsi.org/core/Device">
         <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
     </owl:Class>
-    
-
-
-    <!-- https://saref.etsi.org/core/HVAC -->
-
-
-    <owl:Class rdf:about="https://saref.etsi.org/core/HVAC"/>
     
 
 
