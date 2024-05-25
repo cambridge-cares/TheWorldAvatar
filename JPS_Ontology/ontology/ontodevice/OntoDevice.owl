@@ -10,7 +10,7 @@
      xmlns:ontodevice="https://www.theworldavatar.com/kg/ontodevice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date>25 May 2024</dc:date>
+        <dc:date>24 May 2024</dc:date>
         <rdfs:comment>OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo>1.5</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -79,20 +79,6 @@
         <rdfs:comment>A relationship describing the acidity of a solution.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has acidity</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontodevice/hasAirExchangeRate -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasAirExchangeRate">
-        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/HVAC"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontodevice/AIrChangePerHour"/>
-        <rdfs:comment>A relationship that describes how many times does a volume of air equal to the volume of a room can an HVAC unit pump out of the room per hour</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobms/"/>
-        <rdfs:label>has air exchange rate</rdfs:label>
     </owl:ObjectProperty>
     
 
