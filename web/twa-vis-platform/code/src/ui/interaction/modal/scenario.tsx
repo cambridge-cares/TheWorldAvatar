@@ -12,7 +12,7 @@ import { setScenario } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
 import IconComponent from 'ui/graphic/icon/icon';
 
-type ScenarioModalProperties = {
+interface ScenarioModalProperties {
   scenarios: ScenarioDefinition[],
   show: boolean,
   setShowState: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,7 +23,7 @@ type ScenarioModalProperties = {
  * 
  * @returns JSX for landing page.
  */
-export default function ScenarioModal(props: ScenarioModalProperties) {
+export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) {
   const [view, setView] = React.useState(null);
   const dispatch = useDispatch();
   const handleChange = (event: React.MouseEvent<HTMLElement>, nextView: string) => {

@@ -1414,14 +1414,6 @@ if __name__ == "__main__":
     # Algorithm to process the cif files:
     # 1. Get a directory with cif files and the list of files
 
-    #files = []
-    #tmp = list_files_with_extension( os.path.join("LI-CIF"), ".cif")
-    #for f in tmp[:]:
-    #    files.append(os.path.join("LI-CIF", f))
-
-    #files += list_files_with_extension( os.path.join("CIF"), ".cif")
-    #files += list_files_with_extension( os.path.join("ccdcfiles"), ".cif")
-
     files = []
     #data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "a_cifs.csv"))
     data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "cif_list.csv"))

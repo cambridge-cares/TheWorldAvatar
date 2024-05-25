@@ -10,23 +10,25 @@ import { Map } from 'mapbox-gl';
 import { MapLayerGroup, MapLayer } from 'types/map-layer';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import IconComponent from 'ui/graphic/icon/icon';
+import SimpleDropdownField from 'ui/interaction/dropdown/simple-dropdown';
 import { formatAppUrl } from 'utils/client-utils';
 
 // type definition for incoming properties
-type LayerTreeHeaderProps = {
+interface LayerTreeHeaderProps {
   map: Map;
   group: MapLayerGroup;
   depth: number;
   parentShowChildren: boolean;
   setMapGroups: React.Dispatch<React.SetStateAction<MapLayerGroup[]>>;
-};
+}
 
-type LayerTreeEntryProps = {
+interface LayerTreeEntryProps {
   map: Map;
   layer: MapLayer;
   depth: number;
+  currentGrouping: string;
   handleLayerVisibility: (layerIds: string, isVisible: boolean) => void;
-};
+}
 
 /**
  * This component renders the header based on the input map layers and their groups.
@@ -36,14 +38,16 @@ type LayerTreeEntryProps = {
  * @param {number} depth The current depth to this tree.
  * @param {boolean} parentShowChildren An indicator based on the parent node that shows children or not.
 */
-export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
+export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
   // Size of left hand indentation
   const spacing: string = props.depth * 0.8 + "rem";
   const group: MapLayerGroup = props.group;
+  const groupings: string[] = props.group.groupings;
   const initialState: boolean = props.parentShowChildren ? group.showChildren : false;
   const [isExpanded, setIsExpanded] = useState<boolean>(initialState);
+  const [currentGroupingView, setCurrentGroupingView] = useState<string>(groupings.length > 0 ? groupings[0] : "");
 
-  // A function to hide or show the current group's content and its associated layers
+  // A function to hide or show the current group's content and its associated layers based on the expansion button
   const toggleExpansion = () => {
     // The data layers should be shown when parents are expanded, and hidden when closed
     if (props.map?.isStyleLoaded()) {
@@ -62,7 +66,11 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
       recurseToggleChildVisibility(subGroup, beforeVisibleState);
     });
     group.layers.forEach((layer) => {
-      toggleMapLayerVisibility(layer.ids, beforeVisibleState);
+      // The beforeVisibleState should only be used if there is no groupings
+      // If there are groupings, the currently selected view will either be closed or open depending on the current isExpanded state
+      // Non-selected views and their layers should never be displayed, and will be default to true
+      const visibleState: boolean = currentGroupingView === "" ? beforeVisibleState : layer.grouping === currentGroupingView ? isExpanded : true;
+      toggleMapLayerVisibility(layer.ids, visibleState);
     });
   }
 
@@ -97,6 +105,32 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
     });
   }
 
+  /** A method that toggles the grouping visibility based on the currently selected view
+   */
+  const toggleGroupingVisibility = (currentView: string) => {
+    // When a user selects a new option, change the visibility so that only the layers of the selected grouping are shown
+    group.layers.forEach((layer) => {
+      // This state should be the inverse of the toggled state
+      // If we want to switch off the layer, it should start as true
+      const visibleState: boolean = layer.grouping !== currentView;
+      toggleMapLayerVisibility(layer.ids, visibleState);
+    });
+    // Reorder the groupings so that the selected grouping is always first and this state is saved
+    const selectedIndex = groupings.indexOf(currentView);
+    if (selectedIndex !== -1) {
+      const currentGrouping: string = groupings.splice(selectedIndex, 1)[0];
+      groupings.unshift(currentGrouping);
+    }
+    // Set current grouping view
+    setCurrentGroupingView(currentView);
+  }
+
+  /** A method that handles any changes required when the user changes the selected option for groupings if available
+   */
+  const handleGroupingChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    toggleGroupingVisibility(event.target.value);
+  };
+
   return (
     <div className={styles.treeEntry} key={group.name}>
       <div className={styles.treeEntryHeader}>
@@ -121,6 +155,15 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
         <div className={styles.textContainer} onClick={toggleExpansion}>
           <span>{group.name}</span>
         </div>
+
+        {groupings.length > 0 && (
+          <div className={styles["dropdown-container"]}>
+            <SimpleDropdownField
+              options={groupings}
+              handleChange={handleGroupingChange}
+            />
+          </div>
+        )}
       </div>
 
       {/* Conditionally show subgroups when expanded */}
@@ -128,14 +171,17 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
         isExpanded && (
           <div className={styles.treeEntryContent}>
             {group.layers.map((layer) => {
-              return (
-                <LayerTreeEntry
-                  map={props.map}
-                  key={layer.address}
-                  layer={layer}
-                  depth={props.depth + 1}
-                  handleLayerVisibility={toggleMapLayerVisibility}
-                />)
+              if (groupings.length === 0 || layer.grouping === currentGroupingView) {
+                return (
+                  <LayerTreeEntry
+                    map={props.map}
+                    key={layer.address}
+                    layer={layer}
+                    depth={props.depth + 1}
+                    currentGrouping={currentGroupingView}
+                    handleLayerVisibility={toggleMapLayerVisibility}
+                  />)
+              }
             })}
 
             {group.subGroups.map((subGroup) => {
@@ -164,7 +210,7 @@ export default function LayerTreeHeader(props: LayerTreeHeaderProps) {
  * @param {number} depth The depth of the layer in the layer tree.
  * @param {Function} handleLayerVisibility - Function to handle the toggling of layer visibility.
  */
-function LayerTreeEntry(props: LayerTreeEntryProps) {
+function LayerTreeEntry(props: Readonly<LayerTreeEntryProps>) {
   const layer: MapLayer = props.layer;
   const firstLayerId: string = layer.ids.split(" ")[0];
   // Size of left hand indentation
@@ -175,7 +221,7 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
   const [isVisible, setIsVisible] = useState<boolean>(
     // If the map has loaded (ie users are still on the page but switch components), retrieve the current state
     // Else, follow the data's initial state
-    props.map?.loaded() ? props.map?.getLayoutProperty(firstLayerId, "visibility") === "visible" : layer.isVisible
+    props.map?.loaded() ? props.map?.getLayoutProperty(firstLayerId, "visibility") === "visible" : props.currentGrouping === layer.grouping || layer.isVisible
   );
 
   /** This method toggles the layer visibility when the layer icon is clicked
@@ -186,7 +232,14 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
     // Get current visibility state of the layer after any toggling
     setIsVisible(props.map?.getLayoutProperty(firstLayerId, "visibility") === "visible");
   };
-
+  let iconDisplay;
+  if (layer.icon?.startsWith("l#")) {
+    iconDisplay = <span className={iconStyles["line-icon"]} style={{ background: layer.icon.substring(1) }}></span>
+  } else if (layer.icon?.startsWith("c#")) {
+    iconDisplay = <span className={iconStyles["circle-icon"]} style={{ background: layer.icon.substring(1) }}></span>
+  } else {
+    iconDisplay = <IconComponent icon={layer.icon} classes={iconStyles["small-icon-image"]} />
+  }
   return (
     <div className={styles.treeEntry} key={layer.name}>
       <div className={styles.treeEntryHeader}>
@@ -195,9 +248,7 @@ function LayerTreeEntry(props: LayerTreeEntryProps) {
 
         {/* Layer's icon, if present. Either creates a line or icon for display */}
         {layer.icon && (
-          layer.icon.startsWith("#") ?
-            <span className={iconStyles["line-icon"]} style={{ background: layer.icon }}></span> :
-            <IconComponent icon={layer.icon} classes={iconStyles["small-icon-image"]} />
+          iconDisplay
         )}
 
         {/* Name of group */}

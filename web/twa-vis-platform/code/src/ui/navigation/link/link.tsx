@@ -3,10 +3,10 @@ import Link from 'next/link';
 
 import { formatAppUrl } from 'utils/client-utils';
 
-type AppLinkProps = {
-  readonly url: string;
-  readonly className?: string;
-  readonly children: React.ReactNode;
+interface AppLinkProps {
+  url: string;
+  className?: string;
+  children: React.ReactNode;
   onClick?: () => void;
 }
 
@@ -18,7 +18,7 @@ type AppLinkProps = {
  * @param {React.ReactNode} children - The content of the link (usually text or other React components).
  * @returns A link element with the prefixed URL.
  */
-export default function AppLink(props: AppLinkProps) {
+export default function AppLink(props: Readonly<AppLinkProps>) {
   const url: string = formatAppUrl(props.url);
   return (
     <Link href={url} className={props.className} onClick={props.onClick}>

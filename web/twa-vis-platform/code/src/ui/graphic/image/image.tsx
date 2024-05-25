@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatAppUrl } from 'utils/client-utils';
 
-type AppImageProps = {
+interface AppImageProps {
   readonly url: string;
   readonly height?: number;
   readonly width?: number;

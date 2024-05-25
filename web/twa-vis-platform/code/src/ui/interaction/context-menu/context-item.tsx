@@ -6,7 +6,7 @@ import React from 'react';
 import Icon from '@mui/material/Icon';
 import { Tooltip } from '@mui/material';
 
-export type ContextItemDefinition = {
+export interface ContextItemDefinition {
     name: string,
     description?: string,
     toggled?: boolean,
@@ -16,7 +16,7 @@ export type ContextItemDefinition = {
 /**
  * 
  */
-export default function ContextItem(props: ContextItemDefinition) {
+export default function ContextItem(props: Readonly<ContextItemDefinition>) {
     
     // CSS class
     const iconClass = ["material-symbols-outlined", styles.icon].join(" ");
