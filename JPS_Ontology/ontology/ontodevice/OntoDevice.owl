@@ -10,7 +10,7 @@
      xmlns:ontodevice="https://www.theworldavatar.com/kg/ontodevice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date>19 May 2024</dc:date>
+        <dc:date>25 May 2024</dc:date>
         <rdfs:comment>OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo>1.5</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -65,6 +65,20 @@
         <rdfs:comment>A relationship that describes a person or organization possessing a device.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has a</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasAcidity -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasAcidity">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontochemplant#Fluid"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acidity"/>
+        <rdfs:comment>A relationship describing the acidity of a solution.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>has acidity</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -131,7 +145,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasDefaultPosition">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Valve"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/DefaultValvePosition"/>
-        <rdfs:comment>A relationship that describes a valve and it&apos;s default position (NC, NO etc).</rdfs:comment>
+        <rdfs:comment>A relationship that describes a valve and it's default position (NC, NO etc).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has default position</rdfs:label>
     </owl:ObjectProperty>
@@ -165,7 +179,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasGeoLocation">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.opengis.net/ont/sf#Point"/>
-        <rdfs:comment>A relationship that describes a device&apos;s location.</rdfs:comment>
+        <rdfs:comment>A relationship that describes a device's location.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has geo location</rdfs:label>
     </owl:ObjectProperty>
@@ -346,7 +360,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasProperty">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OperatingParameter"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OperatingProperty"/>
-        <rdfs:comment>A relationship between a operating parameter and it&apos;s property.</rdfs:comment>
+        <rdfs:comment>A relationship between a operating parameter and it's property.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has property</rdfs:label>
     </owl:ObjectProperty>
@@ -360,6 +374,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontochemplant#Fluid"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#UnitOperation"/>
@@ -690,6 +705,13 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Acidity -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Acidity"/>
+    
+
+
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney -->
 
 
@@ -805,6 +827,13 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/PlantItem"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontochemplant#Fluid -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontochemplant#Fluid"/>
     
 
 
@@ -1450,7 +1479,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GPSDevice">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
-        <rdfs:comment>A device used within Earth&apos;s planetary atmosphere to determine its precise geographical location.</rdfs:comment>
+        <rdfs:comment>A device used within Earth's planetary atmosphere to determine its precise geographical location.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>GPS device</rdfs:label>
     </owl:Class>
@@ -1492,7 +1521,7 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontodevice/GravityVector"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>A sensor that detect minute localized changes in the force of Earth&apos;s gravity caused by variations in rock or other material&apos;s density underground.</rdfs:comment>
+        <rdfs:comment>A sensor that detect minute localized changes in the force of Earth's gravity caused by variations in rock or other material's density underground.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Gravity sensor</rdfs:label>
     </owl:Class>
@@ -2533,6 +2562,18 @@
         <rdfs:comment>A workstation is a special computer designed for technical or scientific applications.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Workstation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/pHLevelSensor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/pHLevelSensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment>A device used to measure the acidity or alkalinity of a solution.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>pH level sensor</rdfs:label>
     </owl:Class>
     
 
