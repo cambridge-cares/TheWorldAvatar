@@ -76,15 +76,13 @@ Your task is to translate the following question to an executable action. Please
 
         action = json.loads(res.choices[0].message.content)
 
-        try:
-            if "sparql" in action:
-                return SparqlAction(**action["sparql"])
-            elif "func" in action:
-                faction = action["func"]
-                return FuncAction(name=faction["name"], args=faction["args"])
-        except:
-            pass
-        raise Exception("Invalid action: " + str(action))
+        if "sparql" in action:
+            return SparqlAction(**action["sparql"])
+        elif "func" in action:
+            faction = action["func"]
+            return FuncAction(name=faction["name"], args=faction["args"])
+        else:
+            raise Exception("Invalid action: " + str(action))
 
 
 @cache

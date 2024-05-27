@@ -6,6 +6,8 @@ from controllers.qa.model import TableDataItem
 from services.kg import KgClient
 
 
+# TODO: use batching to minimise the number of calls to SPARQL endpoint
+# i.e. def __call__(self, iris: List[str], kg_client: KgClient)
 class NodeDataGetter(Protocol):
     def __call__(self, iri: str, kg_client: KgClient) -> dict: ...
 
@@ -40,8 +42,6 @@ WHERE {{
 
             for key, val in binding.items():
                 if not isinstance(val, str):
-                    print("AAAAAAAAAAA")
-                    print(val)
                     continue
 
                 types = self.get_types(iri=val)

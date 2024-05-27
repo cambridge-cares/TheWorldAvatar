@@ -5,7 +5,6 @@ from fastapi import Depends
 from constants.prefixes import URI_OCC
 from services.kg import KgClient, get_ontocompchem_bgClient
 from services.processs_response.expand_response import SparqlResponseExpander
-from services.processs_response.utils import iri_slot_template_to_func
 from utils.rdf import flatten_sparql_response
 
 
