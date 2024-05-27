@@ -20,7 +20,7 @@ class SparqlBinding(BaseModel):
 
 class SparqlAction(ActionBase):
     namespace: str
-    bindings: List[SparqlBinding]
+    bindings: List[SparqlBinding] = []
     query: str
 
 

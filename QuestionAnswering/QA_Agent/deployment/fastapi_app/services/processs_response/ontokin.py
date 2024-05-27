@@ -1,16 +1,39 @@
-from functools import cache
+from functools import cache, lru_cache
 from typing import Annotated, Optional
 
 from fastapi import Depends
 
 from constants.prefixes import URI_OKIN
 from services.kg import KgClient, get_ontokin_bgClient
-from services.processs_response.utils import iri_slot_template_to_func
 from utils.rdf import flatten_sparql_response
 from .expand_response import SparqlResponseExpander
 
 
 # TODO: Refactor using an RDF-ORM library
+
+@lru_cache()
+def get_rxn_data(iri: str, kg_client: KgClient):
+    query = """PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+
+SELECT *
+WHERE {{
+    VALUES ?Reaction {{ <{IRI}> }}
+    ?Reaction okin:hasEquation ?Equation .
+}}
+LIMIT 1""".format(
+        IRI=iri
+    )
+
+    res = kg_client.query(query)
+    _, bindings = flatten_sparql_response(res)
+
+    if not bindings:
+        return {}
+
+    binding = bindings[0]
+    return {"Equation": binding["Equation"]}
+
+
 def get_thermo_model_data(iri: str, kg_client: KgClient):
     query = """PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
@@ -19,8 +42,10 @@ WHERE {{
     VALUES ?ThermoModel {{ <{IRI}> }}
     ?ThermoModel
         okin:hasTmin [ okin:value ?TminValue ; okin:unit ?TminUnit ] ;
-        okin:hasTmax [ okin:value ?TmaxValue ; okin:unit ?TmaxUnit ] ;
-}}""".format(IRI=iri)
+        okin:hasTmax [ okin:value ?TmaxValue ; okin:unit ?TmaxUnit ] .
+}}""".format(
+        IRI=iri
+    )
 
     res = kg_client.query(query)
     _, bindings = flatten_sparql_response(res)
@@ -314,6 +339,7 @@ def get_kinetic_model_data_pdep_arrhenius(iri: str, kg_client: KgClient):
 
 
 ONTOKIN_TYPE2GETTER = {
+    URI_OKIN + "GasPhaseReaction": get_rxn_data,
     URI_OKIN + "ThermoModel": get_thermo_model_data,
     URI_OKIN + "TransportModel": get_transport_model_data,
     URI_OKIN + "ArrheniusModel": get_kinetic_model_data_arrhenius,

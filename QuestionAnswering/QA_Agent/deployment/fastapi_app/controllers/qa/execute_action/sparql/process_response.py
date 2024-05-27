@@ -97,42 +97,12 @@ class SparqlResponseProcessor:
 
             binding.update(new_kvs)
 
-    def add_iupac_names(self, item: TableDataItem):
-        vars_set = set(item.vars)
-
-        for binding in item.bindings:
-            new_kvs = dict()
-            for k, v in binding.items():
-                if (
-                    not isinstance(v, str)
-                    or not any(v.startswith(prefix) for prefix in TWA_ABOX_PREFIXES)
-                    or self.entity_store.lookup_clsname(v) != "Species"
-                ):
-                    continue
-
-                iupac_key = k + "IUPACName"
-                if iupac_key in binding.keys():
-                    continue
-
-                name = self.species_store.lookup_iupac_name(v)
-                if not name:
-                    continue
-
-                if iupac_key not in vars_set:
-                    idx = item.vars.index(k)
-                    item.vars.insert(idx + 1, iupac_key)
-                    vars_set.add(iupac_key)
-                new_kvs[iupac_key] = name
-
-            binding.update(new_kvs)
-
     def process(self, vars: List[str], bindings: List[Dict[str, Dict[str, str]]]):
         items = self.extract_wkt(vars, bindings)
 
         for item in items:
             if isinstance(item, TableDataItem):
                 self.add_labels(item)
-                self.add_iupac_names(item)
                 for expander in self.response_expanders:
                     expander.expand(item)
 
