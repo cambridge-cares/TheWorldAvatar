@@ -2,7 +2,7 @@
 
 The ABox generation agent uses a Crystal Information File (CIF) to produce
 an ABox according to the OntoCrystal ontology.
-The csv file can further produce the OWL file using
+The csv file can further used to generate the OWL file using
 [EntityRdfizer](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/EntityRDFizer).
 
 The output includes: the csv file(s) containing the abox, and a csv file
@@ -28,12 +28,24 @@ Options:
                           Default value: ""
 --flags=<FLAG>            A string containing letters used as flags. Allowed letters:
                           "C" - top level is an instance of the CrystalInformation class.
-                                Usually this flag is added, but in case of pure XRD database
-                                Default value: "CX"
+                                Usually this flag is added, but may be omitted in case of pure XRD database (see flag "X" below).
+                          "U" - to add the basic Unit Cell paraters: a,b,c,alpha,beta,gamma,volume,symmetry.
+                                Requires the "C" flag.
+                          "V" - to add unit cell vectors.
+                                These can be computed from the Unit Cell parameters.
+                                Requires the "C" flag.
+                          "R" - to add data related Reciprocal unit cell: parameters,unit cell vectors.
+                                These can be computed from the Unit Cell parameters.
+                                Requires the "C" flag.
+                          "T" - to add coordinate Transformation matrix from Fractional to Cartesian and vice versa.
+                                These can be computed from the Unit Cell parameters.
+                                Requires the "C" flag.
+                          "A" - to add coordinates of atom sites in the unit cell.
+                                Requires the "C" flag.
                           "X" - to add simulated XRD spectrum.
                                 If "C" flag is not set, then the csv contains only the XRD data.
-                                The top level entity belongs to XRDSpectrum class
-                          Default value: "CX".
+                                The top level entity belongs to XRDSpectrum class.
+                          Default value: "CUVRTAX".
 
 ```
 
@@ -74,8 +86,3 @@ Check more details at the [official web-site](https://pypi.org/project/Dans-Diff
 
 # Authors #
 Pavlo Rutkevych (pr521@cam.ac.uk), 01 Apr 2024
-
-
-
-
-
