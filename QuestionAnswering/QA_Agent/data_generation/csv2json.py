@@ -33,7 +33,7 @@ def csvrow2jsonobj(row: pd.Series):
         }
     else:
         raise ValueError(f'Unexpected target: {row["target"]}')
-    return dict(input=row["question"], output=output)
+    return {"nlq": row["question"], "action": output}
 
 
 if __name__ == "__main__":
