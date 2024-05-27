@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Dict, Protocol
 
 from constants.prefixes import TWA_ABOX_PREFIXES
@@ -14,6 +15,7 @@ class SparqlResponseExpander:
         self.kg_client = kg_client
         self.type2getter = type2getter
 
+    @lru_cache()
     def get_types(self, iri: str):
         if not any(iri.startswith(prefix) for prefix in TWA_ABOX_PREFIXES):
             return []
