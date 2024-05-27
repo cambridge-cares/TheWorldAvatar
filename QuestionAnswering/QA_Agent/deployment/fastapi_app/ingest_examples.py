@@ -27,7 +27,9 @@ def process_examples(embedder: IEmbedder, examples: List[Nlq2ActionExample]):
         embedder([example.nlq for example in examples]).astype(np.float32).tolist()
     )
     processed_examples = [
-        Nlq2ActionExampleProcessed(**example.model_dump(), nlq_embedding=embedding)
+        Nlq2ActionExampleProcessed(
+            nlq=example.nlq, action=example.action, nlq_embedding=embedding
+        )
         for example, embedding in zip(examples, embeddings)
     ]
     return processed_examples
@@ -37,7 +39,7 @@ def transform_examples_preinsert(examples: List[Nlq2ActionExampleProcessed]):
     return [
         {
             "nlq": example.nlq,
-            "action": json.dumps(example.action),
+            "action": example.action.model_dump_json(by_alias=True),
             "nlq_embedding": example.nlq_embedding,
         }
         for example in examples

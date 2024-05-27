@@ -17,17 +17,32 @@ def csvrow2jsonobj(row: pd.Series):
             print(row["sparql_bindings"])
             raise e
 
-        output["sparql"] = {
-            k: v
-            for k, v in {
-                "namespace": row["sparql_namespace"],
-                "bindings": bindings,
-                "query": row["sparql_query"],
-            }.items()
-            if v
+        try:
+            nodes_for_expansion = (
+                json.loads(row["sparql_nodes_for_expansion"])
+                if not pd.isna(row["sparql_nodes_for_expansion"])
+                else None
+            )
+        except Exception as e:
+            print(row["sparql_nodes_for_expansion"])
+            raise e
+
+        output = {
+            "action_type": "sparql",
+            **{
+                k: v
+                for k, v in {
+                    "namespace": row["sparql_namespace"],
+                    "bindings": bindings,
+                    "query": row["sparql_query"],
+                    "nodes_for_expansion": nodes_for_expansion,
+                }.items()
+                if v
+            },
         }
     elif row["target"] == "func":
-        output["func"] = {
+        output = {
+            "action_type": "func",
             "name": row["func_name"],
             "args": json.loads(row["func_args"]),
         }

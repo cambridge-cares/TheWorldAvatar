@@ -4,11 +4,12 @@ import logging
 import os
 from typing import List, Optional
 from openai import OpenAI
+from pydantic import TypeAdapter
 
+from services.example_store.model import DataRetrievalAction
 from services.schema_store.model import RDFRelation
 from utils.rdf import try_make_prefixed_iri
 
-from .execute_action.model import ActionBase, FuncAction, SparqlAction
 from services.example_store import Nlq2ActionExample
 
 
@@ -37,17 +38,19 @@ Your task is to translate the following question to an executable action. Please
     ):
         self.openai_client = OpenAI(base_url=openai_base_url, api_key=openai_api_key)
         self.model = openai_model
+        self.action_adapter = TypeAdapter(DataRetrievalAction)
 
     def translate(
         self,
         nlq: str,
         schema_items: List[RDFRelation],
         examples: List[Nlq2ActionExample],
-    ) -> ActionBase:
+    ) -> DataRetrievalAction:
         prompt = self.PROMPT_TEMPLATE.format(
             examples="\n".join(
                 '"{input}" => {output}'.format(
-                    input=example.nlq, output=json.dumps(example.action)
+                    input=example.nlq,
+                    output=example.action.model_dump_json(by_alias=True),
                 )
                 for example in examples
             ),
@@ -74,15 +77,7 @@ Your task is to translate the following question to an executable action. Please
         )
         logger.info("LLM's response: " + str(res))
 
-        action = json.loads(res.choices[0].message.content)
-
-        if "sparql" in action:
-            return SparqlAction(**action["sparql"])
-        elif "func" in action:
-            faction = action["func"]
-            return FuncAction(name=faction["name"], args=faction["args"])
-        else:
-            raise Exception("Invalid action: " + str(action))
+        return self.action_adapter.validate_json(res.choices[0].message.content)
 
 
 @cache
