@@ -10,7 +10,7 @@ from controllers.qa.model import QAStep
 from services.entity_store import EntityStore, get_entity_store
 from services.kg import KgClient
 from utils.collections import FrozenDict
-from controllers.qa.execute_action.model import SparqlAction, SparqlBinding
+from controllers.qa.execute_action.model import SparqlAction
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
 from .process_response import (

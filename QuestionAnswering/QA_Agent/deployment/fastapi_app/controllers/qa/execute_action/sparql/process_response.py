@@ -1,12 +1,14 @@
 from functools import cache
-from typing import Annotated, Dict, List, Union
+from typing import Annotated, Dict, List, Tuple, Union
 
 from fastapi import Depends
 
 from services.entity_store import EntityStore, get_entity_store
 from services.entity_store.species import SpeciesStore, get_species_store
+from services.processs_response import get_response_expanders
+from services.processs_response.exapnd_response import SparqlResponseExpander
 from services.wkt import CRS84_URI, WKTTextSRS
-from controllers.qa.model import DataItem, TableDataItem, WktCrs84DataItem
+from controllers.qa.model import TableDataItem, WktCrs84DataItem
 
 
 class SparqlResponseProcessor:
@@ -17,9 +19,15 @@ class SparqlResponseProcessor:
     ]
     WKT_LITERAL_PREFIX = "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> "
 
-    def __init__(self, entity_store: EntityStore, species_store: SpeciesStore):
+    def __init__(
+        self,
+        entity_store: EntityStore,
+        species_store: SpeciesStore,
+        response_expanders: Tuple[SparqlResponseExpander, ...],
+    ):
         self.entity_store = entity_store
         self.species_store = species_store
+        self.response_expanders = response_expanders
 
     def extract_wkt(self, vars: List[str], bindings: List[Dict[str, Dict[str, str]]]):
         wkt_vars = [
@@ -126,9 +134,11 @@ class SparqlResponseProcessor:
         items = self.extract_wkt(vars, bindings)
 
         for item in items:
-            if isinstance(item, DataItem):
+            if isinstance(item, TableDataItem):
                 self.add_labels(item)
                 self.add_iupac_names(item)
+                for expander in self.response_expanders:
+                    expander.expand(item)
 
         return items
 
@@ -137,7 +147,12 @@ class SparqlResponseProcessor:
 def get_sparqlRes_processor(
     entity_store: Annotated[EntityStore, Depends(get_entity_store)],
     species_store: Annotated[SpeciesStore, Depends(get_species_store)],
+    response_expanders: Annotated[
+        Tuple[SparqlResponseExpander, ...], Depends(get_response_expanders)
+    ],
 ):
     return SparqlResponseProcessor(
-        entity_store=entity_store, species_store=species_store
+        entity_store=entity_store,
+        species_store=species_store,
+        response_expanders=response_expanders,
     )
