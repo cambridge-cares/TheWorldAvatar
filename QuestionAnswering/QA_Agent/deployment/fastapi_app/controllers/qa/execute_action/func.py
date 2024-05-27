@@ -1,7 +1,7 @@
 from typing import Annotated, Tuple
 
 from fastapi import Depends
-from controllers.qa.execute_action.model import FuncAction
+from services.example_store.model import FuncAction
 from services.funcs.base import Name2Func
 from services.funcs.sg_dispersion import (
     SGDispersionFuncExecutor,

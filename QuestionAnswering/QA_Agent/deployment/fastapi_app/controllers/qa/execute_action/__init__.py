@@ -3,7 +3,8 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from .model import ActionBase, FuncAction, SparqlAction
+from services.example_store.model import DataRetrievalAction, FuncAction, SparqlAction
+
 from .func import FuncActionExecutor, get_funcAction_executor
 from .sparql import SparqlActionExecutor, get_sparqlAction_executor
 
@@ -15,7 +16,7 @@ class ActionExecMediator:
         self.sparql_executor = sparql_executor
         self.func_executor = func_executor
 
-    def exec(self, action: ActionBase):
+    def exec(self, action: DataRetrievalAction):
         if isinstance(action, SparqlAction):
             return self.sparql_executor.exec(action)
         elif isinstance(action, FuncAction):

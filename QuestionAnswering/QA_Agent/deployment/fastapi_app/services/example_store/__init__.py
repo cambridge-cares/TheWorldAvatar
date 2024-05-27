@@ -5,11 +5,16 @@ from typing import Annotated
 
 from fastapi import Depends
 import numpy as np
+from pydantic import TypeAdapter
 from redis import Redis
 from redis.commands.search.query import Query
 
 from services.embed import IEmbedder, get_embedder
-from services.example_store.model import EXAMPLES_INDEX_NAME, Nlq2ActionExample
+from services.example_store.model import (
+    EXAMPLES_INDEX_NAME,
+    DataRetrievalAction,
+    Nlq2ActionExample,
+)
 from services.redis import get_redis_client
 
 
@@ -24,6 +29,7 @@ class ExampleStore:
     ):
         self.redis_client = redis_client
         self.embedder = embedder
+        self.action_adapter = TypeAdapter(DataRetrievalAction)
 
     def retrieve_examples(self, nlq: str, k: int = 5):
         encoded_nlq = self.embedder([nlq])[0].astype(np.float32)
@@ -39,7 +45,9 @@ class ExampleStore:
         )
 
         return [
-            Nlq2ActionExample(nlq=doc.nlq, action=json.loads(doc.action))
+            Nlq2ActionExample(
+                nlq=doc.nlq, action=self.action_adapter.validate_json(doc.action)
+            )
             for doc in res.docs
         ]
 

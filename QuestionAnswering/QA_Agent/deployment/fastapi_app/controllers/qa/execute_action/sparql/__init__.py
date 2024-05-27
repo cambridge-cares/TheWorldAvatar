@@ -8,9 +8,9 @@ from fastapi import Depends
 from constants.prefixes import PREFIX_NAME2URI
 from controllers.qa.model import QAStep
 from services.entity_store import EntityStore, get_entity_store
+from services.example_store.model import SparqlAction
 from services.kg import KgClient
 from utils.collections import FrozenDict
-from controllers.qa.execute_action.model import SparqlAction
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
 from .process_response import (
@@ -53,7 +53,7 @@ class SparqlActionExecutor:
                 iri
                 for val in binding.values
                 for iri in self.entity_store.link(
-                    clsname=val.clsname, text=val.text, identifier=val.identifier
+                    clsname=binding.clsname, text=val.text, identifier=val.identifier
                 )
             ]
             for binding in action.bindings
