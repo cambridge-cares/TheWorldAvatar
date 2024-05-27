@@ -457,7 +457,6 @@ def getUUID(uuidDB, class_name, instanceName, new_uuid = ""):
                                     k2, class_name, k1, k2 )
                     break  # <= Find only the first error (to speed up)
 
-
     # Find and return or assign new UUID for the class_name.instanceName
     #if class_name in list(uuidDB.keys()):
     #  if instanceName in list(uuidDB[class_name]):

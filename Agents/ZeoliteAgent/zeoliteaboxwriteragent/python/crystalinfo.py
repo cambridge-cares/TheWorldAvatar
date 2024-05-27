@@ -28,7 +28,7 @@ logging.basicConfig(level = logging.WARNING)
 #else:
 if True:
     DATA_DIR = "ontozeolite"
-    print("Missing command line arg in crystalinfo, using '", DATA_DIR, "'.", sep="")
+    #print("Missing command line arg in crystalinfo, using '", DATA_DIR, "'.", sep="")
 
 DB_FOLDER = os.path.join(DATA_DIR, "crystal")
 
@@ -66,9 +66,10 @@ def get_cif_iri(cif_path):
         #if cif[1].lower() == tofind:  ??
         #    return cif[2].strip()
 
-    import uuid
-    uuid_str = str(uuid.uuid4())
-    iri = "CIF_data_" + cif_path + "_" + uuid_str
+    #import uuid
+    #uuid_str = str(uuid.uuid4())
+    uuid_str = tools.new_uuid()
+    iri = "CIF_" + cif_path + "_" + uuid_str
     folder = "folder"
     CIF_IRI_LIST.append([cif_path, folder, iri, uuid_str])
     tools.writeCsv(CIF_IRI_FILE, CIF_IRI_LIST)
@@ -1423,6 +1424,7 @@ if __name__ == "__main__":
             if line[5].lower() not in files:
                 files += line[5].lower().split()
 
+    files = ["tmpdEZMCR.cif"]
     files = list(set(files))
     print("Found CIF files:", len(files))
 

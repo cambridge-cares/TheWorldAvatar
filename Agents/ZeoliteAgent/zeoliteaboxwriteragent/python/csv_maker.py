@@ -194,6 +194,7 @@ def get_csv_init(base_name, tbox_prefix, abox_prefix):
     return output
     # === end of get_csv_init()
 
+
 class CsvMaker:
     """
   An adjustable constructor of a .csv file for the ABox of a crystal or zeolite.
@@ -618,7 +619,7 @@ class CsvMaker:
 
         #print("faces =", faceN)
         for ic, cage in enumerate(cages):
-            uuid_tile, _     = self.uuidDB.addUUID(self.crystOntoPrefix + "Tile", 
+            uuid_tile, _     = self.uuidDB.addUUID(self.crystOntoPrefix + "Tile",
                                                    self.zeoOntoPrefix + "Tile_" + zeoname + "_cage" + str(ic+1))
             uuid_tile_num, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "TileNumber",
                                                    self.zeoOntoPrefix + "TileNumber_" + zeoname + "_cage" + str(ic+1))
@@ -794,8 +795,8 @@ class CsvMaker:
                     #print(">>> In arrSpectrum, uuid_xrd =", uuid_xrd)
                     filename = os.path.join("ontozeolite", "zeolite", "data", xrd[5])
                     output += self.loadXRDPeaks(uuid_xrd,
-                                    self.crystOntoPrefix + "hasCharacteristicPeak",
-                                    zeoname + str(nSpectra), filename)
+                                   self.crystOntoPrefix + "hasCharacteristicPeak",
+                                   zeoname + str(nSpectra), filename)
 
                     if xrd[6] != "" and xrd[6] is not None:
                         print("TODO Add DOI ")
@@ -833,8 +834,10 @@ class CsvMaker:
                 #print(il, "=>", line.strip(), "=>", words)
 
                 uuid_peak, _ = self.uuidDB.addUUID(self.crystOntoPrefix + "CharacteristicPeak",
-                            self.zeoOntoPrefix + "CharacteristicPeak_" + zeoname + "_peak_" + str(il+1))
-                output.append([uuid_peak, "Instance", self.crystOntoPrefix + "CharacteristicPeak", "", "", ""])
+                               self.zeoOntoPrefix + "CharacteristicPeak_" + zeoname + "_peak_" + str(il+1))
+                output.append([uuid_peak, "Instance",
+                               self.crystOntoPrefix + "CharacteristicPeak",
+                               "", "", ""])
 
                 output.append([subject, "Instance", uuid_peak, predicate, "", ""])
 
@@ -845,10 +848,10 @@ class CsvMaker:
                                uuid_peak, "", True, "boolean"])
 
                 miller = ocdt.OntoVector(
-                           class_name = "MillerIndices",
-                           item_name  = self.zeoOntoPrefix + "MillerIndices_" + zeoname + "_peak_" + str(il+1),
-                           uuidDB = self.uuidDB,
-                           unit      = "om:dimensionOne")
+                         class_name = "MillerIndices",
+                         item_name  = self.zeoOntoPrefix + "MillerIndices_" + zeoname + "_peak_" + str(il+1),
+                         uuidDB = self.uuidDB,
+                         unit = "om:dimensionOne")
 
                 miller.addComponent(label = "h", value = str(words[0]))
                 miller.addComponent(label = "k", value = str(words[1]))
@@ -1330,7 +1333,7 @@ class CsvMaker:
             path = os.path.join("ontozeolite", "crystal", "data", "cifdir", z + ".cif")
 
             #print(">>> zeoframe =", uuid_zeoframe, type(uuid_zeoframe))
-            arr += framework_cif.get_csv_arr_from_cif(path, z, new_uuid=None, 
+            arr += framework_cif.get_csv_arr_from_cif(path, z, new_uuid=None,
                                                       subject=zeoframe_iri,
                                                       predicate=self.crystOntoPrefix + "hasCrystalInformation")
             if not os.path.isfile(path):
@@ -1367,7 +1370,7 @@ class CsvMaker:
 
             # Descibe topological priperties of selected zeolite
             #uuid_zeolite
-            #arr += zeoData.get_csv_arr_topology(uuid_zeoframe, 
+            #arr += zeoData.get_csv_arr_topology(uuid_zeoframe,
             #       ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
             #print("going to check the topological property")
             #if zeolite.is_reference_material():
@@ -1419,7 +1422,7 @@ class CsvMaker:
                     else:
                         logging.error("'cif_path' must be a string or list of str: %s",
                                       str(zeolite.data["cif_file"]))
- 
+
                 if "cif_file" in zeolite.data:
                     tmp = zeolite.data["cif_file"]
                     if isinstance(tmp, str):

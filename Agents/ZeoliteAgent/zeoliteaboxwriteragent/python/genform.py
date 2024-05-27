@@ -269,9 +269,9 @@ class GenFormula:
         fr = self.fullFormula.find("|")
         to = self.fullFormula[fr + 1:].find("|") + fr + 1
         if fr < 0:
-            print("For '", self.fullFormula, "' no '|'", sep="")
-        if to < 0:
-            print("For '", self.fullFormula, "' no '|'", sep="")
+            print("For '", self.fullFormula, "' no opening '|'", sep="")
+        elif to < 0:
+            print("For '", self.fullFormula, "' no closing '|'", sep="")
         if fr > 0 and to > 0 and fr >= to:
             print("For '", self.fullFormula, "' something is wrong ",
                   "in brackets (guest)", sep="")

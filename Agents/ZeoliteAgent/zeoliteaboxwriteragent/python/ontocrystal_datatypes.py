@@ -381,7 +381,6 @@ class OntoVector:
         else:
             self.item_name = item_name
 
-
         if class_name is None:
             logging.warning(" In OntoVector the class name is not specified" +
                             " for '%s'. Using default 'Vector'.",
