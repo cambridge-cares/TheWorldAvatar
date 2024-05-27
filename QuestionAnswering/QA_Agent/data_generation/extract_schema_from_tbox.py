@@ -36,8 +36,8 @@ if __name__ == "__main__":
         query = f"""SELECT DISTINCT ?p ?o  WHERE {{ 
     VALUES ?s {{ {stype.n3()} }}
     {{
-        ?s rdfs:subClassOf* ?s_ .
-        ?p rdfs:domain ?s_ . 
+        ?s rdfs:subClassOf* ?superclass .
+        ?p rdfs:domain ?superclass . 
         {{
             SELECT ?o WHERE {{
                 {{
