@@ -3,20 +3,16 @@ from typing import Annotated, Dict, List, Tuple, Union
 
 from fastapi import Depends
 
+from constants.prefixes import TWA_ABOX_PREFIXES
 from services.entity_store import EntityStore, get_entity_store
 from services.entity_store.species import SpeciesStore, get_species_store
 from services.processs_response import get_response_expanders
-from services.processs_response.exapnd_response import SparqlResponseExpander
+from services.processs_response.expand_response import SparqlResponseExpander
 from services.wkt import CRS84_URI, WKTTextSRS
 from controllers.qa.model import TableDataItem, WktCrs84DataItem
 
 
 class SparqlResponseProcessor:
-    TWA_PREFIXES = [
-        "http://www.theworldavatar.com/kg/",
-        "https://www.theworldavatar.com/kg/",
-        "http://www.theworldavatar.com/kb/",
-    ]
     WKT_LITERAL_PREFIX = "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> "
 
     def __init__(
@@ -81,7 +77,7 @@ class SparqlResponseProcessor:
             new_kvs = dict()
             for k, v in binding.items():
                 if not isinstance(v, str) or not any(
-                    v.startswith(prefix) for prefix in self.TWA_PREFIXES
+                    v.startswith(prefix) for prefix in TWA_ABOX_PREFIXES
                 ):
                     continue
 
@@ -109,7 +105,7 @@ class SparqlResponseProcessor:
             for k, v in binding.items():
                 if (
                     not isinstance(v, str)
-                    or not any(v.startswith(prefix) for prefix in self.TWA_PREFIXES)
+                    or not any(v.startswith(prefix) for prefix in TWA_ABOX_PREFIXES)
                     or self.entity_store.lookup_clsname(v) != "Species"
                 ):
                     continue
