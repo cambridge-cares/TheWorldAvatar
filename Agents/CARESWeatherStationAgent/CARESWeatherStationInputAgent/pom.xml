@@ -120,7 +120,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.22.0</version>
+            <version>1.28.0</version>
         </dependency>
 
         <!-- For sending HTTP request to the API -->
