@@ -13,7 +13,7 @@ class QAStep(BaseModel):
 
 class TableDataItem(BaseModel):
     vars: List[str]
-    bindings: List[Dict[str, Union[str, float]]]
+    bindings: List[Dict[str, Union[str, float, dict]]]
 
 
 class TypedSeries(BaseModel):
