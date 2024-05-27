@@ -23,7 +23,7 @@ import tools
 #logging.basicConfig(level = logging.WARNING)
 logging.basicConfig(level = logging.ERROR)
 
-crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
 # Parameter to extract individual atom position from known base atom and
 # the symmetry of the unit cell. Atoms located closer than this cut-off
@@ -139,10 +139,11 @@ def splitErrorBar(value, file_line):
             if len(tmp) > 1:
                 e_out = tmp[1]
         #logging.info(" Brackets are not detected. " + file_line)
-        pass
+
     elif (pos1 >= 0) and (pos2 >= 0) and (pos1 < pos2):
         #print("pos1 = ", pos1, " pos2 = ", pos2)
         v_out, e_out = splitStr(value)
+
     else:
         logging.error(" Something is wrong with brackets: '%s' %s",
                       value, file_line)
@@ -262,7 +263,7 @@ class AtomInformation:
     __slots__ = ["uuidDB", "cifName", "cif_label",
                  "frac", "cart", "frac_err", "cart_err",
                  "element", "occupancy",
-                 "crystOntoPrefix", "abox_prefix"]
+                 "abox_prefix"]
     def __init__(self, uuidDB, compound, abox_prefix=None):
         self.uuidDB    = uuidDB
         self.cifName   = compound
@@ -279,8 +280,7 @@ class AtomInformation:
         else:
             self.abox_prefix = ""
 
-        self.crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
-        pass # AtomInformation.__init__()
+        # === end of AtomInformation.__init__()
 
     def setCoordFrac(self, x, y, z):
         xe, ye, ze = None, None, None
@@ -300,11 +300,11 @@ class AtomInformation:
         if xe and ye and ze:
             self.frac_err = [xe, ye, ze]
 
-        pass # AtomInformation.setCoordFrac()
+        # === end of AtomInformation.setCoordFrac()
 
     def setCoordCart(self, x, y, z):
         self.cart = [x, y, z]
-        pass # AtomInformation.setCoordFrac()
+        # === end of AtomInformation.setCoordFrac()
 
     def setProp(self, element = None, occupancy = None, label = None):
         if element is not None:
@@ -322,7 +322,7 @@ class AtomInformation:
                 logging.warning(" Atom label is not a string: '%s'.", str(label))
             self.cif_label = str(label)
 
-        pass # AtomInformation.setProp()
+        # === end of AtomInformation.setProp()
 
     def getArrAtom(self, subject, predicate, label=None, new_uuid=None):
         #print("================")
@@ -372,7 +372,7 @@ class AtomInformation:
 
         ### Setting the available data:
         if self.cif_label is not None:
-            output.append([self.crystOntoPrefix + "hasAtomSiteLabel",
+            output.append([crystOntoPrefix + "hasAtomSiteLabel",
                            "Data Property", uuid_atom, "",
                            self.cif_label, "xsd:string"])
             #print("cif_label =", self.cif_label)
@@ -380,16 +380,16 @@ class AtomInformation:
             #print("cif_label =", self.cif_label)
 
         if self.occupancy is not None:
-            output.append([self.crystOntoPrefix + "hasOccupancy",
+            output.append([crystOntoPrefix + "hasOccupancy",
                            "Data Property", uuid_atom, "",
                            self.occupancy, "xsd:decimal"])
 
         if self.element is not None:
             # TODO add species
             #output.append("")
-            #output.append([self.crystOntoPrefix + "has", "Data Property",
+            #output.append([crystOntoPrefix + "has", "Data Property",
             #                 uuid_atom, "", self.occupancy, "xsd:decimal"])
-            #output.append([self.crystOntoPrefix + "hasAtomSiteLabel",
+            #output.append([crystOntoPrefix + "hasAtomSiteLabel",
             #               "Data Property", uuid_atom,
             #               "", self.element, "xsd:string"])
             pass
@@ -415,7 +415,7 @@ class AtomInformation:
             #atomPos.addComponent(label = "y", value = str(round(float(self.frac[1]), 10))) #, error = error)
             #atomPos.addComponent(label = "z", value = str(round(float(self.frac[2]), 10))) #, error = error)
             output += atomPos.get_csv_arr(uuid_atom,
-                                          self.crystOntoPrefix + "hasFractionalPosition",
+                                          crystOntoPrefix + "hasFractionalPosition",
                                           new_uuid=new_uuid)
 
         if self.cart is not None:
@@ -440,7 +440,7 @@ class AtomInformation:
             #atomPos.addComponent(label = "y", value = str(round(float(self.cart[1]), 10))) #, error = error)
             #atomPos.addComponent(label = "z", value = str(round(float(self.cart[2]), 10))) #, error = error)
             output += atomPos.get_csv_arr(uuid_atom,
-                                          self.crystOntoPrefix + "hasCartesianPosition",
+                                          crystOntoPrefix + "hasCartesianPosition",
                                           new_uuid=new_uuid)
 
         return output
@@ -476,10 +476,11 @@ class CrystalData:
                  # other properties:
                  "symmLatticeSystem", "symmITNumber", #"", "",
                  "symmSpaceGroupHM",
-                 "cifStandard", "loopHeaders",
+                 "cifStandard", "cifStandardCount", "loopHeaders",
                  "tbox_prefix", "abox_prefix"
           ]
-    def __init__(self, algType, uuidDB, abox_prefix=None):
+          
+    def __init__(self, algType, uuidDB, abox_prefix=None, cif_standard=None):
         # Must be one of 'PyMatGen' or 'ValAndErr', depending how it was created:
         if   "PyMatGen"  == algType:
             self.algorithm  = algType
@@ -497,14 +498,23 @@ class CrystalData:
         else:
             logging.error(" Invalid entry '" + str(uuidDB) + "', expecting a database.")
             self.uuidDB = None
-        #if isinstance(uuidDB, dict):
-        #  logging.error(" Invalid entry '" + str(uuidDB) + "', expecting a database.")
 
-        #self.cifStandard = None
-        self.cifStandard = self.readStandardFile(os.path.join("ontozeolite", "crystal",
-                                                 "data", "CIF_standard_2.4.5.txt"))
-        #self.cifStandard = self.readStandardFile("CIF_standard_2.4.5.txt")
-        self.cifStandard += ["_symmetry_Int_Tables_number"]
+        if cif_standard is None:
+            #self.cifStandard = None
+            self.cifStandard = self.readStandardFile(os.path.join("CIF_standard_2.4.5.txt"))
+            #self.cifStandard = self.readStandardFile("CIF_standard_2.4.5.txt")
+            self.cifStandard += ["_symmetry_Int_Tables_number"]
+        else:
+            if isinstance(cif_standard, list):
+                self.cifStandard = cif_standard
+            elif isinstance(cif_standard, str):
+                logging.warning(" Got CIF_standard as string:", cif_standard,
+                                ", loading it. Expect a list of keywords")
+                self.cifStandard = self.readStandardFile(os.path.join("CIF_standard_2.4.5.txt"))
+            else:
+                logging.error(" Invalid CIF_standard: '%s'" ", expect" +
+                              " a list of keywords", str(cif_standard))
+        self.cifStandardCount = 0  # To count the warnings (to hide repeated warnings)
 
         if abox_prefix:
             self.abox_prefix = abox_prefix
@@ -514,7 +524,7 @@ class CrystalData:
         self.cifName = None
         self.cifPath = None
 
-        self.struct               = None # entity of PyMatGen Structure() class.
+        self.struct  = None # entity of PyMatGen Structure() class.
 
         self.unitCellLengths      = None
         self.unitCellAngles       = None
@@ -547,13 +557,15 @@ class CrystalData:
         self.symmITNumber      = None
         self.symmSpaceGroupHM = None
 
-        pass # CrystalData.__init__()
+        # === end of CrystalData.__init__()
 
     def readStandardFile(self, path):
         output = []
         if not os.path.isfile(path):
-            logging.error("CIF standard file does not exist: '%s'.", path)
-            return []
+            logging.warning(" CIF standard file does not exist: '%s', " +
+                            "no check of keywords for correctness.", path)
+            return output
+
         f = open(path, encoding="utf8")
         for line in f:
             short = cleanString(line)
@@ -567,8 +579,7 @@ class CrystalData:
 
         f.close()
         return output
-
-        pass # CrystalData.readStandardFile()
+        # === end of CrystalData.readStandardFile()
 
     def loadData(self, cifPath, cifName):
         """
@@ -622,7 +633,7 @@ class CrystalData:
             logging.error(" Unknown algorithm '%s'. Expecting 'PyMatGen'" +
                           " or 'ValAndErr'.", str(self.algorithm))
 
-        pass # CrystalData.loadData()
+        # === end of CrystalData.loadData()
 
     def loadPyMatGen(self, cif_path, cif_name):
         if not os.path.isfile(cif_path):
@@ -645,7 +656,7 @@ class CrystalData:
 
         #logging.error(" Not implemented def loadPyMatGen (self, path): ")
 
-        pass # CrystalData.loadPyMatGen()
+        # === end of CrystalData.loadPyMatGen()
 
     def evalPyMatGenUnitCell(self):
         """
@@ -900,24 +911,24 @@ class CrystalData:
                 """
                 """
             #if isinstance(sga.get_crystal_system(), str) :
-            output.append([self.crystOntoPrefix + "hasLatticeSystem",
+            output.append([crystOntoPrefix + "hasLatticeSystem",
                                "Data Property", uuid_cif_uc, "",
                                sga.get_crystal_system() , "string"])
-            output.append([self.crystOntoPrefix + "hasSymmetryNumber",
+            output.append([crystOntoPrefix + "hasSymmetryNumber",
                                "Data Property", uuid_cif_uc, "",
                                sga.get_space_group_number() , "xsd:integer"])
 
         if self.cifOutput.symmLatticeSystem != None:
           output += self.cifOutput.symmLatticeSystem.getArr(uuid_uc_r_vec_abc,
-                    self.crystOntoPrefix + "hasLatticeSystem")
+                    crystOntoPrefix + "hasLatticeSystem")
 
         if self.cifOutput.symmITNumber != None:
           output += self.cifOutput.symmITNumber.getArr(uuid_uc_r_vec_abc,
-                    self.crystOntoPrefix + "hasSymmetryNumber")
+                    crystOntoPrefix + "hasSymmetryNumber")
 
                 """
 
-            pass # CrystalData.evalPyMatGenUnitCell()
+        # === end of CrystalData.evalPyMatGenUnitCell()
 
     def evalPyMatGen(self):
         #logging.error(" Not implemented eeetttwww2  def evalPyMatGen (self, path): ")
@@ -929,7 +940,7 @@ class CrystalData:
         self.evalPyMatGenUnitCell()
         self.evalPyMatGenAtom()
 
-        pass # CrystalData.evalPyMatGen()
+        # === end of CrystalData.evalPyMatGen()
 
     def evalPyMatGenAtom(self):
         """
@@ -963,13 +974,9 @@ class CrystalData:
 
             self.listAtomAll.append(atom)
 
-        #print(self.struct.sites, type(self.struct.sites))
-
-        pass # CrystalData.evalPyMatGenAtom()
+        # === end of CrystalData.evalPyMatGenAtom()
 
     def evalValAndErr(self):
-        # logging.error(" Not implemented eeetttwww3  def evalValAndErr(): ")
-
         if "ValAndErr" != self.algorithm:
             logging.error(" Invalid algorithm '%s', expectec 'ValAndErr'",
                           self.algorithm)
@@ -1007,7 +1014,6 @@ class CrystalData:
         # Compute the real atom positions
         # Compute pair-wise distances and remove (replace by None) those too close
         # Remove the None
-
 
         if self.listAtomSymm == [] or self.listAtomSymm is None:
             #for atom in self.listAtomRaw:
@@ -1060,24 +1066,17 @@ class CrystalData:
         # Compute the real coordinates:
         for atom in self.listAtomAll:
             if atom.cart is None:
-                #print("No cartesian coordinates for atom")
                 atom.cart = self._frac_to_cart(atom.frac)
-        #print("Atoms:", len(self.listAtomRaw), "=>", len(self.listAtomAll))
-        #1/0
 
         # === end of CrystalData.evalValAndErrAtom()
 
     def _frac_to_cart(self, r):
-        #self.matF2C = self.matrixFracToCart.get_list()
-        #print("convert", r)
         r = [float(x) for x in r]
         matF2C = numpy.array(self.matrixFracToCart.comp_list)
         vecF2C = numpy.array(self.vectorFracToCart.comp_list)
         np_r = numpy.array(r)
-        #print( r, "=>", np_r, self.matrixFracToCart.comp_list, self.vectorFracToCart.comp_list)
         np_out = numpy.dot(matF2C, np_r) # + vecF2C
 
-        #print( r, "=>", np_out)
         return np_out.tolist()
         # === end of CrystalData._frac_to_cart()
 
@@ -1094,17 +1093,14 @@ class CrystalData:
         sin_ga = math.sin(math.radians(float(self.unitCellAngles.comp_dict["gamma"]["value"])))
 
         vec_a = [len_a, 0., 0.]
-        # b*cos(gamma), b*sin(gamma) 
         vec_b = [len_b * cos_ga, len_b * sin_ga, 0.]
-        # c*cos(beta), c*( cos(alpha)-cos(beta)*cos(gamma) ) / sin(gamma),
-        # c/cos(gamma) * sqrt[ sin(g)^2 - cos(b)^2 - cos(a)^2 + 2*cos(a)*cos(b)*cos(g)s(a)*cos(b)*cos(g) ]
         vec_c = [len_c * cos_be, len_c * (cos_al - cos_be * cos_ga) / sin_ga,
                  len_c / sin_ga * math.sqrt(sin_ga**2 - cos_al**2 - cos_be**2 +
                                             2 * cos_al * cos_be * cos_ga) ]
 
         self.unitCellVectorA = ocdt.OntoVector(uuidDB = self.uuidDB,
                                                class_name = "UnitCellLatticeVector",
-                                               item_name  = "UnitCellVectorA",  # + self.cifName,
+                                               item_name  = "UnitCellVectorA",
                                                unit  = "om:angstrom",
                                                vector_label = "a",
                                                abox_prefix=self.abox_prefix)
@@ -1112,7 +1108,7 @@ class CrystalData:
 
         self.unitCellVectorB = ocdt.OntoVector(uuidDB = self.uuidDB,
                                                class_name = "UnitCellLatticeVector",
-                                               item_name  = "UnitCellVectorB",  # + self.cifName,
+                                               item_name  = "UnitCellVectorB",
                                                unit  = "om:angstrom",
                                                vector_label = "b",
                                                abox_prefix=self.abox_prefix)
@@ -1120,7 +1116,7 @@ class CrystalData:
 
         self.unitCellVectorC = ocdt.OntoVector(uuidDB = self.uuidDB,
                                                class_name = "UnitCellLatticeVector",
-                                               item_name  = "UnitCellVectorC",  # + self.cifName,
+                                               item_name  = "UnitCellVectorC",
                                                unit  = "om:angstrom",
                                                vector_label = "c",
                                                abox_prefix=self.abox_prefix)
@@ -1253,11 +1249,6 @@ class CrystalData:
         self.matrixFracToCart.addComponentList(val_list=[tmp_a,
                                                          tmp_b,
                                                          tmp_c])
-        '''
-            [np_a[0], np_a[1], np_a[2]],
-            [np_b[0], np_b[1], np_b[2]],
-            [np_c[0], np_c[1], np_c[2]]])
-        '''
 
         np_ra = numpy.cross(np_b, np_c) / vol
         np_rb = numpy.cross(np_c, np_a) / vol
@@ -1292,68 +1283,24 @@ class CrystalData:
 
         self.vectorCartToFrac.addComponentList(val_list=[0.,0.,0.])
 
-        """
-        self.unitCellLengths.addComponent(label = "a",
-             value = str(round(self.struct.lattice.a, 12)), error = "")
-
-        self.unitCellLengths.addComponent(label = "b",
-             value = str(round(self.struct.lattice.b, 12)), error = "")
-
-        self.unitCellLengths.addComponent(label = "c",
-             value = str(round(self.struct.lattice.c, 12)), error = "")
-
-
-        # Vectors to keep three Unit Cell vectors (a,b,c):
-        self.unitCellVectorA = OntoVector(uuidDB = self.uuidDB,
-                                       className = "UnitCellLatticeVector",
-                                       itemName  = "UnitCellVectorA_" + self.cifName,
-                                       unit  = "om:angstrom",
-             #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-                                       vector_label = "a")
-
-        self.unitCellVectorA.addComponent(label = "x",
-             value = str(round(self.struct.lattice.matrix[0][0], 12)), error = "")
-
-        self.unitCellVectorA.addComponent(label = "y",
-             value = str(round(self.struct.lattice.matrix[0][1], 12)), error = "")
-
-        self.unitCellVectorA.addComponent(label = "z",
-             value = str(round(self.struct.lattice.matrix[0][2], 12)), error = "")
-
-        """
-
-
-        pass # CrystalData.evalValAndErrUnitCell()
+        # === end of CrystalData.evalValAndErrUnitCell()
 
     def loadValAndErr(self, cif_path, cif_name):
         if not os.path.isfile(cif_path):
             logging.error(" Failed to load CIF data, no input file '%s'.", cif_path)
             return
 
-        #self.
-        #logging.error(" Not implemented def loadValAndErr (self, path): ")
-
         #All loading is done in one go:
-        #nBracket = self.readWithUncertainties(cif_path, cif_name, save=True)
-        #print("Found brackets:",  nBracket, "in '" + cif_path + "'.")
-
         self.read_cif_data(cif_path)
 
-        #self._loadValAndErrUnitCell()
-        #self._loadValAndErrAtom()
-        #self._loadValAndErr
-
-        #print("aaaaaaaaaaa", self.unitCellLengths.comp_dict)
-        #1/0
-
-        pass # CrystalData.loadValAndErr()
+        # === end of CrystalData.loadValAndErr()
 
     def _loadValAndErrUnitCell(self, ):
 
-        pass # CrystalData._loadValAndErrUnitCell()
+        pass # === end of CrystalData._loadValAndErrUnitCell()
 
     def read3(self):
-        pass
+        pass # === end of CrystalData.
 
     def _split_cif_to_parts(self, fileIn):
         if not os.path.isfile(fileIn):
@@ -1375,7 +1322,6 @@ class CrystalData:
             line = lines[il]
             il += 1
             file_line = "In file '" + fileIn + "' line " + str(il+1)
-            #print(file_line)
 
             #short = remove_comment().strip()
             short = line.strip()
@@ -1418,7 +1364,6 @@ class CrystalData:
                     line = lines[il]
                     file_line = "In file '" + fileIn + "' line " + str(il+1)
                     il += 1
-                    #print(file_line)
                     #short = remove_comment().strip()
                     short = line.strip()
                     if short.startswith("#"):
@@ -1463,30 +1408,33 @@ class CrystalData:
                 parts["lines"].append(buffer)
 
         return parts
-        # === end of _split_cif_to_parts()
+        # === end of CrystalData._split_cif_to_parts()
 
     def _parse_cif_line(self, line_list, cif_path="cif_path"):
 
         line = " ".join(line_list)
-        #words = line
 
         words = tools.strSplit(line)
         if words[0] in entriesWithUncertainties:
-                        #print("aaaaaaaaaaa", words)
                         logging.info(" Found one of the entries: %s", words[0])
                         vOut, eOut = splitErrorBar(words[1], line)
                         #if "" != eOut:
                         #    countBrackets += 1
                         self._setValueAndError(cif_path, words[0], vOut, eOut)
 
+        elif len(self.cifStandard) <= 1:
+            if self.cifStandardCount < 1:
+                logging.warning(" No CIF_Standard loaded," +
+                                " keyword cannot check: '%s'." +
+                                " I will hide similar warnings.", words[0])
+            self.cifStandardCount += 1
+
         elif words[0] in self.cifStandard:
-            #print(">>>>> ", words[0])
             self._setCifStandardValue(cif_path, words)
 
         else:
-          
             pass
-        # === end of _parse_cif_line()
+        # === end of CrystalData._parse_cif_line()
 
     def _parse_cif_loop(self, loop_list):
         if not loop_list[0].startswith("loop_"):
@@ -1497,131 +1445,34 @@ class CrystalData:
             if line.startswith("_"):
                 loop_headers.append(line)
             else:
-                #    break
-                #print(loop_headers)
-                #print("Adding line", line)
-
-                # Known loops:
+                ### Some known loops.
                 # loop of atomic coordinates:
                 keywords = {"_atom_site_type_symbol", "_atom_site_fract_x",
                             "_atom_site_fract_y", "_atom_site_fract_z"}
                 if len(keywords.intersection(set(loop_headers))) > 0:
                     lineNew, nbrac = splitErrorBarLoop(line, loop_headers, "file_line")
-                    #print("lineNew =", line, lineNew)
-                #countBrackets += nbrac
-                    #print("after splitErrorBarLoop():", lineNew, nbrac)
                     self._setAtomRaw(loop_headers, line, "file_line")
-                    #print("  ***", self.listAtomRaw[-1].frac)
 
+                # loop of symmetry strings:
                 keywords = {#"_symmetry_equiv_pos_site_id",
                             "_symmetry_equiv_pos_as_xyz",
                             "_space_group_symop_operation_xyz"}
                 if len(keywords.intersection(set(loop_headers))) > 0:
-                    #print(loop_headers, "vs", keywords.intersection(set(loop_headers)) )
                     self._setAtomSymm(loop_headers, line, "file_line")
 
-        #        if len(fileOut) > 0:
-        #            fOut.write(lineNew)
-
-        pass
-        # === end of _parse_cif_loop()
+        # === end of CrystalData._parse_cif_loop()
  
     def read_cif_data(self, cif_path):
 
-        #print("cif_path =", cif_path)
         parts = self._split_cif_to_parts(cif_path)
 
         for line in parts["lines"]:
             self._parse_cif_line(line, cif_path=cif_path)
 
-        #print(">>>>>>>>>>>>", len(parts["loops"]))
         for loop in parts["loops"]:
-            #print("loop =", loop)
             self._parse_cif_loop(loop)
 
-        #print("  ---", self.listAtomRaw[-1].element)
-        #print("  ---", self.listAtomRaw[-1].cif_label)
-        #print("  ---", self.listAtomRaw[-1].frac)
-        #print("  ---", self.listAtomRaw[-1].cart)
-        #return self.listAtomRaw[-1].frac
-        # === end of read_cif_data()
-
-    def read2(self):
-        if not os.path.isfile(fileIn):
-            logging.error(" Input file '%s' does not exist in cleanCif().", fileIn)
-            return -1
-
-        first_line = None
-        in_loop = False
-        in_loop_header = False
-        countBrackets = 0
-        buffer = []
-        full_buffer = []
-
-        for il, line in enumerate(fIn):
-            file_line = "In file '" + fileIn + "' line " + str(il+1)
-            #print(file_line)
-
-            if il >= 20:
-                logging.debug(" Break after 75 lines for testing. %s",
-                              file_line)
-                #break
-                pass
-
-            short = remove_comment().strip()
-            if len(short) == 0:
-                continue  # Skip empty line?
-
-            if first_line is None:
-                if short.startswith("_"):
-                    first_line = "Missing"
-                    #buffer += short
-                elif len(short) > 0:
-                    first_line = short
-                    continue
-                else:
-                    # I.e. it is empty.
-                    # Do nothing, this is the header of the file.
-                    pass
-
-            if short.startswith("loop_"):
-                in_loop = True
-                in_loop_header = True
-                full_buffer = buffer
-                buffer = []
-
-            elif short.startswith("_"):
-                if in_loop_header:
-                    # found a keyword for the loop
-                    loop_header.append(short)
-                elif in_loop:
-                    # found a keyword:
-                    buffer += splitline()
-                    if len(buffer) >= len(loop_header):
-                        pass
-                    elif len(buffer) == len(loop_header):
-                        pass
-                    else:
-                        # Incomplete line, do nothing
-                        pass
-
-                else:
-                    # found a
-                    buffer += splitline()
-
-                buffer = []
-                buffer += splitline()
-
-
-
-            pos1 = line.find("#")
-            if 0 == pos1:
-                logging.info(" Found a comment in string '%s' %s.",
-                             line.strip(), file_line)
-                #short = line[:pos] + "\n"
-                if len(fileOut) > 0:
-                    fOut.write(line)
-                continue
+        # === end of CrystalData.read_cif_data()
 
  
     def readWithUncertainties(self, fileIn, cifName, lineFr=None, lineTo=None,
@@ -1647,7 +1498,7 @@ class CrystalData:
       Return:
       In all 3 cases function returns the number of detected uncertainties.
       In case of error the function returns negative value.
-    """
+        """
 
         if not os.path.isfile(fileIn):
             logging.error(" Input file '%s' does not exist in cleanCif().", fileIn)
@@ -1665,10 +1516,9 @@ class CrystalData:
 
         for il, line in enumerate(fIn):
             file_line = "In file '" + fileIn + "' line " + str(il+1)
-            #print(file_line)
 
             if il >= 20:
-                logging.debug(" Break after 75 lines for testing. %s",
+                logging.debug(" Break after 20 lines for testing. %s",
                               file_line)
                 #break
                 pass
@@ -1678,7 +1528,6 @@ class CrystalData:
             if   0 == pos1:
                 logging.info(" Found a comment in string '%s' %s.",
                              line.strip(), file_line)
-                #short = line[:pos] + "\n"
                 if len(fileOut) > 0:
                     fOut.write(line)
                 continue
@@ -1686,7 +1535,6 @@ class CrystalData:
             elif 0 == pos2:
                 logging.info(" Found a comment in string '%s' %s.",
                              line.strip(), file_line)
-                #short = line[:pos] + "\n"
                 if len(fileOut) > 0:
                     fOut.write(line)
                 continue
@@ -1694,43 +1542,36 @@ class CrystalData:
             elif pos1 > 0 or pos2 > 0:
                 logging.warning(" Comment starts not from beginning of" +
                                 " the line: '%s' %s.", line.strip(), file_line
-                                #+ " This is not supported by readWithUncertainties()."
                                 )
                 if len(fileOut) > 0:
                     fOut.write(line)
                 continue
 
-            #words = line.strip().split()
             words = tools.strSplit(line)
             print("on", il, "line:", line.strip(), "words:", words)
 
             if len(words) == 0:
-                #logging.info(" Empty string " + file_line)
                 if len(fileOut) > 0:
                     fOut.write(line)
                 inLoop = False
                 continue
 
             elif "loop_" == words[0].strip():
-                #logging.info(" Found a 'loop_' option")
                 inLoop = True
                 inLoopHead = True
                 inLoopBody = False
                 self.loopHeaders = []
                 if len(fileOut) > 0:
-                    #fOut.write("added 'loop_': " + line)
                     fOut.write(line)
                 continue
 
             elif inLoop:
-                #logging.info(" In inLoop option")
-                #print("Inside the loop")
+                logging.info(" In inLoop option")
 
                 if inLoopHead:
                     print("Inside the loop head")
                     if "_" == words[0][0]:
                         self.loopHeaders.append(words[0].strip())
-                        #print(self.loopHeaders)
                         if len(fileOut) > 0:
                             fOut.write(line)
                     else:
@@ -1743,51 +1584,40 @@ class CrystalData:
                         logging.info(" inLoop is set to False, need to process the line as usual")
                         if len(fileOut) > 0:
                             fOut.write(line)
-                        #self.loopHeaders = []
 
                     else:
                         lineNew, nbrac = splitErrorBarLoop(line, self.loopHeaders, file_line)
                         countBrackets += nbrac
 
-                        #print("after splitErrorBarLoop():", lineNew, nbrac)
                         self._setAtomRaw(self.loopHeaders, lineNew, file_line)
                         if len(fileOut) > 0:
                             fOut.write(lineNew)
                         continue
 
-                #print("headers =", self.loopHeaders)
-
             elif len(words) > 2:
-                #logging.info(" Length of string = " + str(len(words)) + " " + file_line)
                 if len(fileOut) > 0:
                     fOut.write(line)
                 pass
 
             elif "_" == words[0][0]:
                 print("Checking property", words[0], "is it in list of known?")
-                      #words[0] in entriesWithUncertainties)
                 if inLoop is False:
                     if len(words) == 1:
-                        #logging.info(" Only 1 entry in '" + line.strip() + "' " + file_line + ". I skip this case.")
                         if len(fileOut) > 0:
                             fOut.write(line)
                         continue
 
                     elif len(words) > 2:
-                        #logging.info(" More than 2 entries in '" + line.strip() + "' " + file_line + ". I skip this case.")
                         if len(fileOut) > 0:
                             fOut.write(line)
                         continue
 
                     elif words[0] in entriesWithUncertainties:
-                        #print("aaaaaaaaaaa", words)
                         logging.info(" Found one of the entries: %s", words[0])
                         vOut, eOut = splitErrorBar(words[1], file_line)
                         if "" != eOut:
                             countBrackets += 1
                         self._setValueAndError(cifName, words[0], vOut, eOut)
-
-                        #pos = line.find(words[1])
 
                         newLine = line.replace(words[1], vOut)
                         if len(fileOut) > 0:
@@ -1814,27 +1644,20 @@ class CrystalData:
                 #logging.warning(" Length of string = " + str(len(words)) + " " + file_line)
                 if len(fileOut) > 0:
                     fOut.write(line)
-                pass
 
             else:
-                #logging.warning(" default else option.")
                 if len(fileOut) > 0:
                     fOut.write(line)
-                pass
 
         fIn.close()
         if len(fileOut) > 0:
             fOut.close()
 
-        #print("Number of brackets =", countBrackets)
         return countBrackets
         # === end of CrystalData.readWithUncertainties()
 
     def _setAtomSymm(self, loop_headers, line_loop, file_line):
 
-        #print("line_loop =", line_loop)
-        #words = line_loop.strip().split()
-        #words = tools.strSplit(line)
         words = tools.strSplit(line_loop)
         if len(loop_headers) != len(words):
             logging.error(" Wrong size of loop: header = %d, line = %d:" +
@@ -1850,27 +1673,22 @@ class CrystalData:
 
     def _setAtomRaw(self, loop_headers, line_loop, file_line):
 
-        #print("line_loop =", line_loop)
         words = line_loop.strip().split()
-        #words = tools.split(
         if len(loop_headers) != len(words):
             logging.error(" Wrong size of loop: header = %d, line = %d:" +
                           " '%s', '%s'", len(loop_headers), len(words),
                           loop_headers, line_loop.strip())
 
-        #print(words)
         atom = AtomInformation(self.uuidDB, compound="AtomSite", abox_prefix=self.abox_prefix)
         got_frac_x, got_frac_y, got_frac_z = False, False, False
         got_label, got_symb, got_occup = False, False, False
         for i in range(len(loop_headers)):
 
-            #print("words =", words[i])
             if loop_headers[i] == "_atom_site_label":
                 if words[i] != "?" and words[i] != ".":
                     got_label = True
                     atom.setProp(label=words[i])
             if loop_headers[i] == "_atom_site_type_symbol":
-                #print("words[i] =", words[i])
                 if words[i] != "?" and words[i] != ".":
                     got_symb = True
                     atom.setProp(element=words[i])
@@ -1895,21 +1713,14 @@ class CrystalData:
             if got_frac_x and got_frac_y and got_frac_z:
                 atom.setCoordFrac(frac_x, frac_y, frac_z)
                 got_frac_x, got_frac_y, got_frac_z = False, False, False
-                #print("============================ Assigned coord fract")
-                #print("    ", atom.frac, frac_x, frac_y)
-
-        #print("   > ", atom.frac)
 
         if got_label or got_symb or got_occup or \
            got_frac_x and got_frac_y and got_frac_z:
             self.listAtomRaw.append(atom)
-        #print("   n", len(self.listAtomRaw))
 
         # === end of CrystalData._setAtomRaw()
 
     def _setCifStandardValue(self, cif_name, words):
-        #print(">>>>> ", words[0])
-
         if "_symmetry_cell_setting" == words[0] or \
            "_space_group_crystal_system" == words[0]:
             self.symmLatticeSystem = words[1]
@@ -1917,23 +1728,21 @@ class CrystalData:
         elif "_symmetry_Int_Tables_number" == words[0] or \
              "_space_group_IT_number" == words[0] or \
              "_space_group.IT_number" == words[0]:
-            #print("found IT number", words)
             if len(words) > 1:
                 if words[1] == "?" or words[1] == ".":
                     print("_space_group_IT_number", words[1])
                 else:
-                    #print("Setting symmITNumber")
                     self.symmITNumber = int(words[1])
 
         elif "_symmetry_space_group_name_H-M" == words[0] or \
              "_space_group_name_H-M_alt" == words[0]:
-            # TODO not implemented H-M space group
             self.symmSpaceGroupHM = " ".join(words[1:])
             pass
 
         elif "_symmetry_space_group_name_Hall" == words[0] or \
              "_space_group_name_Hall" == words[0]:
-            # TODO not implemented Hall space group
+            # not implemented Hall space group.
+            # It is different from ITNumber, I did not find the correspondance.
             #self.symmLatticeSystem = words[1]
             pass
 
@@ -1990,7 +1799,6 @@ class CrystalData:
 
         elif "_cell_angle_gamma" == entry:
             self.unitCellAngles.addComponent(label = "gamma", value = value, error = error)
-            # print(self.unitCellLengths.comp_dict)
 
         elif "_cell_volume" == entry:
             self.unitCellVolume = ocdt.OntoMeasureWithUncertainty(
@@ -2022,27 +1830,13 @@ class CrystalData:
         elif "_atom_site_type_symbol" == entry:
             pass
 
-        #elif "" == entry:
         else:
             logging.error("Unknown entry to store data with error: '%s'.",
                           entry)
 
-        #print(" >>>> entry ", entry, self.algorithm)
-        #print(self.unitCellLengths)
+        # === end of CrystalData._setValueAndError()
 
-        pass # CrystalData._setValueAndError()
-
-
-        """
-    if None != self.listAtomRaw:
-      logging.warning(" Overwriting 'listAtomRaw' " + where + ".")
-    if None != self.listAtomAll:
-      logging.warning(" Overwriting 'listAtomAll' " + where + ".")
-    if [] != self.listAtomSymm:
-      logging.warning(" Overwriting 'listAtomSymm' " + where + ".")
-        """
-
-    pass # class CrystalData
+    # === end of class CrystalData
 
 if __name__ == "__main__":
     pass

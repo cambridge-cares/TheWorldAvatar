@@ -27,8 +27,11 @@ class XRDSpectrum:
     def __init__(self, abox_prefix):
         self.crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
         self.abox_prefix = "https://www.theworldavatar.com/kg/ontozeolite/"
+        self.abox_prefix = abox_prefix
 
         self.uuidDB = tools.UuidDB()
+        self.iri = None
+        self.uuid = None
         pass
         # XRDSpectrum.__init__()
 
@@ -47,18 +50,20 @@ class XRDSpectrum:
                           xrd_peak_path)
             return output
 
-        xrd_iri, xrd_uuid = self.uuidDB.addUUID(self.crystOntoPrefix + "XRDSpectrum",
-                                                self.abox_prefix + "XRDSpectrum")
-        output.append([xrd_iri, "Instance", self.crystOntoPrefix + "XRDSpectrum", "", "", ""])
+        #xrd_iri, xrd_uuid = self.uuidDB.addUUID(self.crystOntoPrefix + "XRDSpectrum",
+        self.iri, self.uuid = self.uuidDB.addUUID(self.crystOntoPrefix + "XRDSpectrum",
+                                                  self.abox_prefix + "XRDSpectrum")
+        output.append([self.iri, "Instance", self.crystOntoPrefix + "XRDSpectrum", "", "", ""])
 
-        output.append([subject, "Instance", xrd_iri, predicate, "", ""])
+        if subject != "":
+            output.append([subject, "Instance", self.iri, predicate, "", ""])
 
         #print(zeoname, "=====>", xrd[5])
         #print(">>> In arrSpectrum, uuid_xrd =", uuid_xrd)
         #filename = os.path.join("ontozeolite", "zeolite", "data", xrd[5])
-        output += self.loadXRDPeaks(xrd_iri,
+        output += self.loadXRDPeaks(self.iri,
                                     self.crystOntoPrefix + "hasCharacteristicPeak",
-                                    xrd_peak_path, uuid=xrd_uuid)
+                                    xrd_peak_path, uuid=self.uuid)
 
         return output
         # === end of XRDSpectrum.get_csv_arr()
