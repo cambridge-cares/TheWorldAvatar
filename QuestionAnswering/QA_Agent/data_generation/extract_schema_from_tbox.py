@@ -14,12 +14,7 @@ if __name__ == "__main__":
         help="Path to txt file containing \n separated list of head node types to retrieve properties for",
         default=None,
     )
-    parser.add_argument(
-        "--path2prefixes",
-        help="Path to json file containing namespace prefix mappings",
-        default=None,
-    )
-    parser.add_argument("--out", help="Path to output file", required=True)
+    parser.add_argument("--out", help="Path to output directory", required=True)
     args = parser.parse_args()
 
     g = rdflib.Graph()
@@ -37,19 +32,12 @@ if __name__ == "__main__":
             if isinstance(x, URIRef)
         ]
 
-    if args.path2prefixes:
-        with open(args.path2prefixes, "r") as f:
-            prefixes = json.load(f)
-        name2iri = {row["name"]: row["uri"] for row in prefixes}
-    else:
-        prefixes = []
-        name2iri = dict()
-
     def get_relations_from_head(stype: URIRef):
         query = f"""SELECT DISTINCT ?p ?o  WHERE {{ 
     VALUES ?s {{ {stype.n3()} }}
     {{
-        ?p rdfs:domain ?s . 
+        ?s rdfs:subClassOf* ?s_ .
+        ?p rdfs:domain ?s_ . 
         {{
             SELECT ?o WHERE {{
                 {{
@@ -61,41 +49,11 @@ if __name__ == "__main__":
                 }}
             }}
         }}
-    }} UNION {{
-        {{
-            SELECT ?p ?o WHERE {{
-                ?s rdfs:subClassOf ?Restriction .
-                ?Restriction a owl:Restriction ; owl:onProperty ?p .
-                {{
-                    ?Restriction owl:allValuesFrom [ rdf:type owl:Class ; owl:unionOf ?Collection ] .
-                    ?Collection rdf:rest*/rdf:first ?o .
-                }} UNION {{
-                    ?Restriction owl:allValuesFrom ?o .
-                }}
-            }}
-        }}
-    }} UNION {{
-        VALUES ?p {{ rdfs:subClassOf }}
-        ?s ?p ?o .
     }}
 }}"""
         for p, o in g.query(query):
             if isinstance(o, URIRef):
                 yield (stype, p, o)
-
-    relations = [
-        triple for stype in head_types for triple in get_relations_from_head(stype)
-    ]
-    edge_types = [p for p in set(p for _, p, _ in relations)]
-
-    def flatten(x: URIRef):
-        x = str(x)
-        if name2iri:
-            for name, iri in name2iri.items():
-                if x.startswith(iri):
-                    x = "{a}:{b}".format(a=name, b=x[len(iri) :])
-                    break
-        return x
 
     def get_type_description(type: URIRef):
         query = f"""SELECT ?comment ?label WHERE {{
@@ -108,21 +66,33 @@ if __name__ == "__main__":
     }}
 }}"""
         for comment, label in g.query(query):
-            return {"iri": flatten(type), "comment": comment, "label": label}
-        return {"iri": flatten(type), "comment": None, "label": None}
+            data = {"iri": type, "comment": comment, "label": label}
+            return {k: v for k, v in data.items() if v}
+        return {"iri": type}
 
-    schema = {
-        "prefixes": prefixes,
-        "node_types": [get_type_description(n) for n in head_types],
-        "edge_types": [get_type_description(e) for e in edge_types],
-        "relations": [
-            dict(s=flatten(s), p=flatten(p), o=flatten(o)) for s, p, o in relations
-        ],
-    }
+    print("Extracting descriptions of node types...", end=" ", flush=True)
+    node_types = [get_type_description(n) for n in head_types]
+    print("Done", flush=True)
 
-    dirname = os.path.dirname(args.out)
-    if dirname:
-        os.makedirs(dirname, exist_ok=True)
+    print("Extracting descriptions of relations...", end=" ", flush=True)
+    relations = [
+        triple for stype in head_types for triple in get_relations_from_head(stype)
+    ]
+    print("Done", flush=True)
 
-    with open(args.out, "w") as f:
-        json.dump(schema, f, indent=4)
+    print("Extracting descriptions of edge types...", end=" ", flush=True)
+    edge_types = [p for p in set(p for _, p, _ in relations)]
+    edge_types = [get_type_description(e) for e in edge_types]
+    print("Done", flush=True)
+
+    os.makedirs(args.out, exist_ok=True)
+
+    annotations = [
+        {"iri": row["iri"], "annotation": {k: v for k, v in row.items() if k != "iri"}}
+        for row in node_types + edge_types
+    ]
+    with open(os.path.join(args.out, "annotations.json"), "w") as f:
+        json.dump(annotations, f, indent=4)
+
+    with open(os.path.join(args.out, "relations.json"), "w") as f:
+        json.dump([{"s": s, "p": p, "o": o} for s, p, o in relations], f, indent=4)
