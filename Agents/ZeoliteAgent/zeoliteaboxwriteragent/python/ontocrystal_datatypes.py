@@ -21,7 +21,7 @@ import tools
 # logging.basicConfig(level=logging.WARNING)
 logging.basicConfig(level=logging.ERROR)
 
-# Ontology for Crystal,
+# Ontology for Crystal, where all classes are defined:
 crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
 omOntoPrefix = "http://www.ontology-of-units-of-measure.org/resource/om-2/"

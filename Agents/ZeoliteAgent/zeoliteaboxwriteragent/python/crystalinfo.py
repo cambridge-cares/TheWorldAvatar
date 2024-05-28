@@ -107,13 +107,13 @@ def get_cif_iri(cif_path):
 
 
 class CifIriData:
-    """ 
+    """
     A safe way to create iri for cif and generate if necessary.
 
     Data structure to convert a given file_path to iri,
     based on the database saved in file CIF_IRI_FILE.
     Main functions:
-    get_entry_iri(cif_path) - return iri and uuid for given cif_path, 
+    get_entry_iri(cif_path) - return iri and uuid for given cif_path,
                               from existing entry.
                               Return None,None,None if it does not exist.
                               or create a new if it does not exist
@@ -149,7 +149,7 @@ class CifIriData:
 
     def save(self, filename=None):
         """ Save the current data to filename.
-        If no filename provided - save to 
+        If no filename provided - save to
         """
         header = [["CIF file", "CIF IRI", "CIF UUID", "XRD file", "XRD IRI"]]
         output = header + self.data
@@ -163,7 +163,7 @@ class CifIriData:
         # === end of CifIriData.save()
 
     def self_test(self):
-        """ 
+        """
         1. Check that all slashes are \\, not /
         2. Remove empty cif line
         TODO
@@ -177,7 +177,7 @@ class CifIriData:
                 err_count += 1
                 self.data[i_line][0] = line[0].replace("/", "\\")
 
-        # Self test 2: completeness of the database 
+        # Self test 2: completeness of the database
         for i_line, line in enumerate(self.data):
             if len(line) < 5:
                 print("CifIriData has too few entries:", line)
@@ -199,7 +199,7 @@ class CifIriData:
         # === end of CifIriData.self_test()
 
     def set_entry(self, cif_path, cif_iri, cif_uuid, xrd_path, xrd_iri):
-        """ Change an existing or add a new line to data base. 
+        """ Change an existing or add a new line to data base.
         """
 
         cif_path = cif_path.replace("/", "\\").lower().strip()
@@ -221,11 +221,11 @@ class CifIriData:
             xrd_uuid = tools.new_uuid()
             #xrd_file = os.path.join("xrd_file"
             xrd_iri = "XRDSpectrum_" + xrd_uuid
-            data = [cif_path, cif_iri, cif_uuid, xrd_path, xrd_iri] 
+            data = [cif_path, cif_iri, cif_uuid, xrd_path, xrd_iri]
             #if err_count >= 0:
             #    data[5] = err_count
             self.data.append(data)
-            print("In CifIriData saving xrd_path", xrd_path)
+            #print("In CifIriData saving xrd_path", xrd_path)
 
         pass
         # === end of CifIriData.set_entry()
@@ -260,7 +260,7 @@ class CifIriData:
             if line[0] == cif_path:
                 del self.data[i_line]
         # === end of CifIriData.del_entry()
- 
+
    # === end of class CifIriData
 
 
@@ -314,6 +314,8 @@ class CrystalInfo:
 
         self.unitcell_iri = ""
         self.cifStandard = None
+        self.cif_path = ""
+        #self.
         # === end of CrystalInfo.__init__()
 
     def get_uuid(self):
@@ -350,10 +352,12 @@ class CrystalInfo:
         if os.path.isfile(file_path.replace("--", "-")):
             path = file_path.replace("--", "-")
         else:
-            logging.error(" CIF file does not exist: '%s'.", file_path)
+            logging.error(" CIF file not found: '%s'.", file_path)
             return 1
 
         path = self.cleanCif(path)[0]
+
+        self.cif_path = path
 
         name = "UNDEF"
 
@@ -413,14 +417,14 @@ class CrystalInfo:
         if os.path.isfile(file_path.replace("--", "-")):
             path = file_path.replace("--", "-")
         else:
-            logging.error(" CIF file does not exist: '%s'.", file_path)
+            logging.error(" CIF file not found: '%s'.", file_path)
             return 1
 
         #path = self.cleanCif(path)[0]
+        self.cif_path = path
 
         # print("path =", path)
-        name = "TODO-remove-name in crystalinfo"
-        name = ""
+        name = "UNDEF"
 
         # First load data to (struct in cifPyMatGen and unitCellLengths in cifValAndErr)
         #self.loadPyMatGen( path, name)
@@ -459,20 +463,20 @@ class CrystalInfo:
     def get_csv_arr_from_cif(self, file_path,
                              name="CrystalInformation", new_uuid=None,
                              subject="", predicate="hasCrystalInformation",
-                             flags="CURTA"):
+                             flags="CURVTA"):
         """ A function to create a csv array for abox writer.
         Supports two main options:
         1) Create a new array based on the cif file (file_path),
            store the iri of this structure.
            Activated by input subject="", predicate="".
-        2) provide a subject-preficate-iri for given file_path, if 
+        2) provide a subject-preficate-iri for given file_path, if
            such structure exists in the database.
 
         Here subject is the element of class crystal_uuid
         new_uuid - optional str parameter to specify the UUID of this instance
                    and it's sub-structures (unit cell, vectors, atoms, etc)
                    If not specified, then a new UUID value will be created.
-        name     - Optional name of the instance. It will be generated as 
+        name     - Optional name of the instance. It will be generated as
                    name + "_" + new_uuid.
         flags    - Choice of ontology parts to be saved.
                    "C" - CrystalInformation iri. Basic iri, usually required.
@@ -522,9 +526,9 @@ class CrystalInfo:
         try:
             err_count = self.load_cif_file_py_mat_gen(file_path)
             pass
-        except :    
+        except :
             #logging.error("=================================================")
-            logging.warning(" Failed to read data by PyMatGen '%s', use ValAndErr", file_path)
+            logging.warning(" Failed to read data by PyMatGen '%s', start reading by ValAndErr.", file_path)
             #logging.error("=================================================")
 
             err_count = self.load_cif_file_val_and_err(file_path)
@@ -683,7 +687,7 @@ class CrystalInfo:
             logging.warning(" Missing unit cell vector A for %s", uuid_cif_uc)
 
         return output
-        # === end of get_csv_arr_unit_cell_vector_set(self, subject, predicate):
+        # === end of CrystalInfo.get_csv_arr_unit_cell_vector_set(self, subject, predicate):
 
     def get_csv_arr_reciprocal_unit_cell(self, subject, new_uuid):
         """
@@ -749,7 +753,7 @@ class CrystalInfo:
             logging.warning(" Missing unit cell reciprocal vector C for %s", uuid_cif_uc)
 
         return output
-        # === end of get_csv_arr_reciprocal_unit_cell(self, uuid_cif_uc,
+        # === end of CrystalInfo.get_csv_arr_reciprocal_unit_cell(self, uuid_cif_uc,
 
     def arrUnitCell(self, subject, predicate, zeoname, new_uuid=None):
         """
@@ -789,13 +793,13 @@ class CrystalInfo:
             output += self.cifOutput.unitCellLengths.get_csv_arr(uuid_cif_uc,
                       crystOntoPrefix + "hasUnitCellLengths", new_uuid=new_uuid)
         else:
-            logging.warning(" Missing unit cell lengths for %s", uuid_cif_uc)
+            logging.warning(" Missing unit cell lengths for %s", self.cif_path)
 
         if self.cifOutput.unitCellAngles is not None:
             output += self.cifOutput.unitCellAngles.get_csv_arr(uuid_cif_uc,
                       crystOntoPrefix + "hasUnitCellAngles", new_uuid=new_uuid)
         else:
-            logging.warning(" Missing unit cell angles for %s", uuid_cif_uc)
+            logging.warning(" Missing unit cell angles for %s", self.cif_path)
 
         if self.cifOutput.unitCellVolume is not None:
             output += self.cifOutput.unitCellVolume.get_csv_arr(uuid_cif_uc,
@@ -808,7 +812,7 @@ class CrystalInfo:
                            "Data Property", uuid_cif_uc, "",
                            self.cifOutput.symmSpaceGroupHM, "string"])
         else:
-            logging.warning(" Missing hasSpaceGroupHM value in '%s'", uuid_cif_uc)
+            logging.warning(" Missing hasSpaceGroupHM value in '%s'", self.cif_path)
 
         if self.cifOutput.symmITNumber is not None:
 
@@ -825,20 +829,20 @@ class CrystalInfo:
                            sym_code, "string"])
 
         else:
-            logging.warning(" Missing hasSymmetryNumber value in '%s'", uuid_cif_uc)
+            logging.warning(" Missing hasSymmetryNumber value in '%s'", self.cif_path)
 
         if self.cifOutput.symmLatticeSystem is not None:
             output.append([crystOntoPrefix + "hasLatticeSystem",
                            "Data Property", uuid_cif_uc, "",
                            self.cifOutput.symmLatticeSystem, "string"])
         else:
-            logging.warning(" Missing hasLatticeSystem value in '%s'", uuid_cif_uc)
+            logging.warning(" Missing hasLatticeSystem value in '%s'", self.cif_path)
 
         # The symmetry information of the unit cell.
         # TODO to add get_crystal_system(), get_space_group_number(),
         #      https://pymatgen.org/pymatgen.symmetry.html
         self.unitcell_iri = uuid_cif_uc
- 
+
         return output
         # === end of CrystalInfo.arrUnitCell()
 
@@ -860,7 +864,7 @@ class CrystalInfo:
             uuid_cif_core_trans, _ = self.uuidDB.addUUID(
                                           crystOntoPrefix + "CoordinateTransformation",
                                           "CoordinateCIFCoreTransform_" + zeoname)
-    
+
         output.append([uuid_cif_core_trans, "Instance",
                        crystOntoPrefix + "CoordinateTransformation", "", "", ""])
         output.append([subject, "Instance", uuid_cif_core_trans,
@@ -1062,7 +1066,7 @@ class CrystalInfo:
         files_out = []
 
         if not os.path.isfile(file_in):
-            logging.error(" In cleanCif(): input file '%s' does not exist.", file_in)
+            logging.error(" In cleanCif(): input file '%s' not found.", file_in)
             return files_out
 
 
@@ -1130,17 +1134,23 @@ def list_files_with_extension(directory, extension):
 
 def get_xrd_file(cif_file, xrd_dir):
     dir_name, file_name = os.path.split(cif_file)
-    file, ext = os.path.splitext(file_name)
+    filebase, ext = os.path.splitext(file_name)
 
-    xrd_path = os.path.join(xrd_dir, file + ".xrd")
+    xrd_path = os.path.join(xrd_dir, dir_name, filebase + ".xrd")
     return xrd_path
     # === end of get_xrd_file()
 
 
 if __name__ == "__main__":
+
+    LOG_FILE = "xrd.log"
+    with open(LOG_FILE, "w", encoding="utf-8") as fp:
+        # Do nothing. I.e. save an empty LOG_FILE file.
+        # Overwriting any previous log file.
+        pass
+
     # Algorithm to process the cif files:
     # 1. Get a directory with cif files and the list of files
-
     files = []
     """
     #data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "a_cifs.csv"))
@@ -1170,21 +1180,30 @@ if __name__ == "__main__":
             with open(args.cif, encoding="utf-8") as fp:
                 for line in fp:
                     value = line.strip()
+
+                    if value.lower().endswith(".cif"):
+                        files.append(value)
+                    """
                     if os.path.isfile(value):
                         name, ext = os.path.splitext(value)
                         if ext.lower() == ".cif":
                             files.append(value)
                     else:
                         print("Not a cif. Skipping it:", value)
-                        
+                    """
+
     elif os.path.isdir(args.cif):
         print("Reading cif files from directory:", args.cif)
         all_files = os.listdir(args.cif)
         files = []
         for f in all_files:
+            if value.lower().endswith(".cif"):
+                files.append(value)
+            """
             name, ext = os.path.splitext(f)
             if ext.lower() == ".cif":
                 files.append(f)
+            """
     else:
         print("Unkown value for command line argument --cif:", args.cif)
         sys.exit(0)
@@ -1258,7 +1277,7 @@ if __name__ == "__main__":
         #i_cif = len(CIF_IRI_LIST)
 
         cif_iri = ""
-        uuid_str = ""
+        cif_uuid = ""
         if "C" in FLAGS or "U" in FLAGS or "R" in FLAGS or \
            "V" in FLAGS or "T" in FLAGS or "A" in FLAGS:
             cif_iri, cif_uuid, _, __ = CIF_IRI_DATA.get_entry_iri(file)
@@ -1288,18 +1307,17 @@ if __name__ == "__main__":
                     if not os.path.isfile(file_out):
                         peaks = xrd_simulation.get_powder_xrd(file_in, 5, 70, 5)
                         xrd_simulation.save_xrd(file_out, peaks)
-                except:
-                    print("Failed to read file:", cif)
+                except Exception as e:
+                    print("Failed to read file:", file_in, "in try clause")
+                    print("Exception details:", str(e))
                     with open(LOG_FILE, "a", encoding="utf-8") as flog:
-                        flog.write("Failed to read " + cif + "\n")
-
-                pass
+                        flog.write("Failed to read " + file_in + "\n")
 
             xrd = xrds.XRDSpectrum(abox_prefix=args.abox_prefix)
             tmp = xrd.get_csv_arr(cif_iri, crystOntoPrefix + "hasXRDSpectrum", xrd_path)
             if tmp != []:
                 output += tmp
-            print("Computed new xrd_path =", xrd_path)
+            #print("Computed new xrd_path =", xrd_path)
             CIF_IRI_DATA.set_entry(file, cif_iri, cif_uuid, xrd_path, xrd.iri)
 
         #CIF_IRI_LIST.append([file, i_file, cif_iri, cif_uuid, db_count])
@@ -1321,10 +1339,12 @@ if __name__ == "__main__":
             if i_file < len(files) - 1:
                 uuidDB = tools.UuidDB(filename=uuid_file)
 
-            # Regularly saving the iri:
-            #tools.writeCsv(CIF_IRI_FILE, CIF_IRI_LIST)
+            # Regularly saving the iri to prevent complete loss of data:
+            tools.writeCsv(CIF_IRI_FILE, CIF_IRI_LIST)
 
-        #cryst.get_uuid()
+            #print("=============  Early exit CrystalInfo.py =============")
+            #break
+
     CIF_IRI_DATA.save()
 
     pass

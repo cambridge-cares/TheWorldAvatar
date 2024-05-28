@@ -562,7 +562,7 @@ class CrystalData:
     def readStandardFile(self, path):
         output = []
         if not os.path.isfile(path):
-            logging.warning(" CIF standard file does not exist: '%s', " +
+            logging.warning(" CIF standard file not found: '%s', " +
                             "no check of keywords for correctness.", path)
             return output
 
@@ -1304,7 +1304,7 @@ class CrystalData:
 
     def _split_cif_to_parts(self, fileIn):
         if not os.path.isfile(fileIn):
-            logging.error(" Input file '%s' does not exist in cleanCif().", fileIn)
+            logging.error(" Input file '%s' not found in cleanCif().", fileIn)
             return None
 
         with open(fileIn, encoding="utf-8") as fIn:
@@ -1501,7 +1501,7 @@ class CrystalData:
         """
 
         if not os.path.isfile(fileIn):
-            logging.error(" Input file '%s' does not exist in cleanCif().", fileIn)
+            logging.error(" Input file '%s' not found in cleanCif().", fileIn)
             return -1
 
         fIn = open(fileIn)

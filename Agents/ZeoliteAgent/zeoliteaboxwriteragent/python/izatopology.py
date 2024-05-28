@@ -11,7 +11,7 @@ import logging
 import tools
 import ontocrystal_datatypes as ocdt
 
-zeoOntoPrefix = "http://www.theworldavatar.com/kg/ontozeolite/"
+zeoOntoPrefix = "https://www.theworldavatar.com/kg/ontozeolite/"
 
 class IzaTopology:
 

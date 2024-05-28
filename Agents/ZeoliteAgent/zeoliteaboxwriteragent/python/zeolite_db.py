@@ -30,8 +30,8 @@ import osda_vs_iza
 # logging.basicConfig(level=logging.WARNING)
 logging.basicConfig(level=logging.INFO)
 
-zeoOntoPrefix = "http://www.theworldavatar.com/kg/ontozeolite/"
-crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+zeoOntoPrefix = "https://www.theworldavatar.com/kg/ontozeolite/"
+crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 ontoSpeciesPrefix = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
 biboOntoPrefix = "http://purl.org/ontology/bibo/"
 
@@ -360,9 +360,9 @@ class ZeoliteMaterial:
                 bibUuidDB = tools.UuidDB(filename=os.path.join("ontozeolite", "final", "uuid", "biblio.csv"))
 
                 #bib = bib2csv.OntoBibo(tmp, uuidDB = self.uuidDB,
-                bib = bib2csv.OntoBibo(tmp, uuidDB = bibUuidDB,
-                                       tbox_prefix = zeoOntoPrefix,
-                                       abox_prefix = zeoOntoPrefix)
+                bib = bib2csv.OntoBibo(tmp, uuidDB=bibUuidDB,
+                                       tbox_prefix=zeoOntoPrefix,
+                                       abox_prefix=zeoOntoPrefix)
                 bib.readBib(tmp)
                 csv_data, _ = bib.getCsvArr(uuid_zeo, crystOntoPrefix + "hasCitation")
                 output += csv_data
@@ -397,11 +397,11 @@ class ZeoliteMaterial:
 
         #output.append(
         """
-        output.append([self.zeoOntoPrefix + "isMineral",
+        output.append([zeoOntoPrefix + "isMineral",
                        "Data Property",
                        material_iri, "", False, "boolean"])
 
-        output.append([self.zeoOntoPrefix + "isSynthetic",
+        output.append([zeoOntoPrefix + "isSynthetic",
                        "Data Property",
                        material_iri, "", False, "boolean"])
         """
@@ -482,7 +482,6 @@ class ZeoliteMaterial:
 
                     output.append([material_iri, "Instance", el_iri,
                                    zeoOntoPrefix + "hasFrameworkComponent", "", ""])
-                                   #ontoSpeciesPrefix + "hasFrameworkComponent", "", ""])
 
                     uuid_tmp = str(uuid.uuid4())
                     el_ind = crystOntoPrefix + "ElementIndex_" + uuid_tmp

@@ -107,7 +107,7 @@ if True:
     print("Missing command line argument in csv_maker.py, using", DATA_DIR)
 
 # Ontology for Crystal,
-#crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+#crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
 def is_http(value):
     if not isinstance(value, str):
@@ -247,8 +247,8 @@ class CsvMaker:
         self.zeoList = []
 
         self.ontoBase        = "OntoZeolite"
-        self.zeoOntoPrefix   = "http://www.theworldavatar.com/kg/ontozeolite/"
-        self.crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+        self.zeoOntoPrefix   = "https://www.theworldavatar.com/kg/ontozeolite/"
+        self.crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
         self.cifStandard = []
         #self.cifStandard = CrystalInformation("PyMatGen", None).readStandardFile("CIF_standard_2.4.5.txt")
@@ -485,8 +485,8 @@ class CsvMaker:
         #baseName = self.ontoBase # + "-" + zeoname
 
         if "zeolite" == ontology:
-            tbox = "http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl"
-            abox = "http://www.theworldavatar.com/kg/ontozeolite"
+            tbox = "https://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl"
+            abox = "https://www.theworldavatar.com/kg/ontozeolite"
         else:
             logging.error(" Unknown ontology name '%s' in arrInit().", ontology)
 
