@@ -1,7 +1,6 @@
 package com.cmclinnovations.stack.clients.geoserver;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,6 +15,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
@@ -33,7 +33,7 @@ import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncode
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 
-public class GeoServerClient extends ContainerClient {
+public class GeoServerClient extends ContainerClient implements ClientWithEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(GeoServerClient.class);
     private final GeoServerRESTManager manager;
@@ -61,7 +61,7 @@ public class GeoServerClient extends ContainerClient {
 
     public GeoServerClient(URL restURL, String username, String password) {
         if (null == restURL || null == username || null == password) {
-            RESTEndpointConfig geoserverEndpointConfig = readEndpointConfig("geoserver", RESTEndpointConfig.class);
+            RESTEndpointConfig geoserverEndpointConfig = getEndpoint();
             if (null == restURL) {
                 restURL = geoserverEndpointConfig.getUrl();
             }
@@ -76,6 +76,11 @@ public class GeoServerClient extends ContainerClient {
         manager = new GeoServerRESTManager(restURL, username, password);
 
         postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
+    }
+
+    @Override
+    public RESTEndpointConfig getEndpoint() {
+        return readEndpointConfig(EndpointNames.GEOSERVER, RESTEndpointConfig.class);
     }
 
     public void createWorkspace(String workspaceName) {
@@ -135,7 +140,7 @@ public class GeoServerClient extends ContainerClient {
         Path fileName = filePath.getFileName();
         Path absTargetDir = STATIC_DATA_DIRECTORY.resolve(file.getTarget());
 
-        String containerId = getContainerId("geoserver");
+        String containerId = getContainerId(EndpointNames.GEOSERVER);
 
         if (!Files.exists(filePath)) {
             throw new RuntimeException(
@@ -153,7 +158,7 @@ public class GeoServerClient extends ContainerClient {
                     "Static GeoServer data '" + baseDirectory.resolve(iconDir)
                             + "' does not exist and could not be loaded.");
         } else if (Files.isDirectory(baseDirectory.resolve(iconDir))) {
-            sendFolder(getContainerId("geoserver"), baseDirectory.resolve(iconDir).toString(),
+            sendFolder(getContainerId(EndpointNames.GEOSERVER), baseDirectory.resolve(iconDir).toString(),
                     ICONS_DIRECTORY.toString());
         } else {
             throw new RuntimeException("Geoserver icon directory " + iconDir + "does not exist or is not a directory.");
@@ -228,7 +233,7 @@ public class GeoServerClient extends ContainerClient {
             String geoserverRasterIndexDatabaseName = database + GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX;
             PostGISClient.getInstance().createDatabase(geoserverRasterIndexDatabaseName);
 
-            String containerId = getContainerId("geoserver");
+            String containerId = getContainerId(EndpointNames.GEOSERVER);
 
             Properties datastoreProperties = new Properties();
             datastoreProperties.putIfAbsent("SPI", "org.geotools.data.postgis.PostgisNGDataStoreFactory");
