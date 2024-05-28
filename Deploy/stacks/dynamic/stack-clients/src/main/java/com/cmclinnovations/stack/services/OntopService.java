@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
@@ -48,8 +47,7 @@ public final class OntopService extends ContainerService {
 
         configDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
 
-        endpointConfig = new OntopEndpointConfig(
-                containerName, getHostName(), DEFAULT_PORT, "", null);
+        endpointConfig = new OntopEndpointConfig(containerName, getHostName(), DEFAULT_PORT);
 
         addEndpointConfig(endpointConfig);
     }
@@ -103,15 +101,6 @@ public final class OntopService extends ContainerService {
         dockerClient.createComplexCommand(dockerClient.getContainerId(containerName),
                 "chown", "ontop:ontop", configDir)
                 .withUser("root");
-    }
-
-    /**
-     * used after spinning up a new ontop container
-     * 
-     * @return
-     */
-    public OntopEndpointConfig getOntopEndpointConfig() {
-        return this.endpointConfig;
     }
 
     @Override
