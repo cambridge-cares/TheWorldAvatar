@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
+import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
 import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
@@ -127,6 +128,10 @@ public class Dataset extends AbstractDataObject {
         return getName();
     }
 
+    public String getOntopName() {
+        return getOntopMappings().isEmpty() ? null : EndpointNames.ONTOP + "-" + name;
+    }
+
     public List<String> getExternalDatasetNames() {
         return externalDatasetNames.orElse(Collections.emptyList());
     }
@@ -143,8 +148,8 @@ public class Dataset extends AbstractDataObject {
         return ontopMappings.orElse(Collections.emptyList());
     }
 
-    public Optional<StaticGeoServerData> getStaticGeoServerData() {
-        return staticGeoServerData;
+    public StaticGeoServerData getStaticGeoServerData() {
+        return staticGeoServerData.get();
     }
 
     public String baseIRI() {
@@ -166,6 +171,25 @@ public class Dataset extends AbstractDataObject {
     public List<Dataset> getExternalDatasets() {
         return externalDatasets;
     }
+
+    boolean usesBlazegraph() {
+        return getDataSubsets().stream().anyMatch(DataSubset::usesBlazegraph);
+    }
+
+    boolean usesPostGIS() {
+        return getDataSubsets().stream().anyMatch(DataSubset::usesPostGIS);
+    }
+
+    boolean usesGeoServer() {
+        return !getGeoserverStyles().isEmpty() || getDataSubsets().stream().anyMatch(DataSubset::usesGeoServer);
+    }
+
+    boolean hasStaticGeoServerData() {
+        return staticGeoServerData.isPresent();
+    }
+
+    boolean usesOntop() {
+        return !getOntopMappings().isEmpty();
 
     public String getQueryStringForCataloging(String newOntopEndpoint) {
         // makes a sparql query and determine which dataset is already initialised

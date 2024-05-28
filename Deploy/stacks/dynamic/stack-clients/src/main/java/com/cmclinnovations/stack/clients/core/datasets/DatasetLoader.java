@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -124,42 +123,37 @@ public class DatasetLoader {
         if (!dataset.isSkip()) {
             List<DataSubset> dataSubsets = dataset.getDataSubsets();
             // Ensure PostGIS database exists, if specified
-            if (dataSubsets.stream().anyMatch(DataSubset::usesPostGIS)) {
+            if (dataset.usesPostGIS()) {
                 PostGISClient.getInstance().createDatabase(dataset.getDatabase());
             }
 
             // Ensure Blazegraph namespace exists, if specified
-            if (dataSubsets.stream().anyMatch(DataSubset::usesBlazegraph)) {
+            if (dataset.usesBlazegraph()) {
                 BlazegraphClient.getInstance().createNamespace(dataset.getNamespace(),
                         dataset.getNamespaceProperties());
             }
 
-            if (!dataset.getGeoserverStyles().isEmpty()
-                    || dataSubsets.stream().anyMatch(DataSubset::usesGeoServer)) {
+            if (dataset.usesGeoServer()) {
                 GeoServerClient geoServerClient = GeoServerClient.getInstance();
                 String workspaceName = dataset.getWorkspaceName();
                 // Ensure GeoServer workspace exists
                 geoServerClient.createWorkspace(workspaceName);
                 // Upload styles to GeoServer
-                dataset.getGeoserverStyles().forEach(style -> geoServerClient.loadStyle(style,
-                        workspaceName));
+                dataset.getGeoserverStyles().forEach(style -> geoServerClient.loadStyle(style, workspaceName));
             }
 
-            Optional<StaticGeoServerData> staticGeoServerDataOptional = dataset.getStaticGeoServerData();
-            if (staticGeoServerDataOptional.isPresent()) {
+            if (dataset.hasStaticGeoServerData()) {
                 GeoServerClient geoServerClient = GeoServerClient.getInstance();
-                StaticGeoServerData staticGeoServerData = staticGeoServerDataOptional.get();
+                StaticGeoServerData staticGeoServerData = dataset.getStaticGeoServerData();
                 geoServerClient.loadIcons(directory, staticGeoServerData.getIconsDir());
                 geoServerClient.loadOtherFiles(directory, staticGeoServerData.getOtherFiles());
             }
 
             dataSubsets.forEach(subset -> subset.load(dataset));
 
-            List<String> ontopMappings = dataset.getOntopMappings();
-
             String newOntopEndpoint = null;
-            if (!ontopMappings.isEmpty()) {
-                String newOntopServiceName = EndpointNames.ONTOP + "-" + dataset.getName();
+            if (dataset.usesOntop()) {
+                String newOntopServiceName = dataset.getOntopName();
 
                 ServiceConfig newOntopServiceConfig = serviceManager.duplicateServiceConfig(EndpointNames.ONTOP,
                         newOntopServiceName);
@@ -175,14 +169,14 @@ public class DatasetLoader {
                 OntopService ontopService = serviceManager.initialiseService(StackClient.getStackName(),
                         newOntopServiceName);
                 newOntopEndpoint = ontopService.getOntopEndpointConfig().getUrl();
+                List<String> ontopMappings = dataset.getOntopMappings();
 
                 OntopClient ontopClient = OntopClient.getInstance(newOntopServiceName);
                 ontopMappings.forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
 
                 if (PostGISClient.DEFAULT_DATABASE_NAME.equals(dataset.getDatabase())) {
                     OntopClient defaultOntopClient = OntopClient.getInstance();
-                    dataset.getOntopMappings()
-                            .forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
+                    ontopMappings.forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
                 }
             }
 
