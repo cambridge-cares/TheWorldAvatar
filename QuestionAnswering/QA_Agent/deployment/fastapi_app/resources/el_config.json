@@ -1,34 +1,34 @@
 [
     {
-        "clsname": "Element",
+        "cls": "Element",
         "el_config": {
             "strategy": "fuzzy",
             "k": 1
         }
     },
     {
-        "clsname": "ChemicalClass",
+        "cls": "ChemicalClass",
         "el_config": {
             "strategy": "semantic",
             "k": 1
         }
     },
     {
-        "clsname": "Use",
+        "cls": "Use",
         "el_config": {
             "strategy": "semantic",
             "k": 2
         }
     },
     {
-        "clsname": "LandUseType",
+        "cls": "LandUseType",
         "el_config": {
             "strategy": "semantic",
             "k": 5
         }
     },
     {
-        "clsname": "Ship",
+        "cls": "Ship",
         "el_config": {
             "strategy": "fuzzy"
         }

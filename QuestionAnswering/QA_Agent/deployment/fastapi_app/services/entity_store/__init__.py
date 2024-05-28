@@ -35,31 +35,31 @@ class EntityStore:
         self,
         redis_client: Redis,
         embedder: IEmbedder,
-        clsname2elconfig: Dict[str, ELConfig],
-        clsname2linker: Dict[str, IEntityLinker],
+        cls2elconfig: Dict[str, ELConfig],
+        cls2linker: Dict[str, IEntityLinker],
     ):
         self.redis_client = redis_client
         self.embedder = embedder
-        self.clsname2elconfig = clsname2elconfig
-        self.clsname2linker = clsname2linker
+        self.cls2elconfig = cls2elconfig
+        self.cls2linker = cls2linker
 
-    def _match_clsname_query(self, clsname: str):
-        return "@clsname:{{{clsname}}}".format(
-            clsname=regex.escape(clsname, special_only=False, literal_spaces=True)
+    def _match_cls_query(self, cls: str):
+        return "@cls:{{{cls}}}".format(
+            cls=regex.escape(cls, special_only=False, literal_spaces=True)
         )
 
-    def link_exact(self, surface_form: str, clsname: Optional[str]) -> List[str]:
+    def link_exact(self, surface_form: str, cls: Optional[str]) -> List[str]:
         """Performs exact matching over canonical labels.
         Note: This does not work if either the surface form or stored label contains forward slash.
         """
         match_label = '@label:"{label}"'.format(
             label=regex.escape(surface_form, special_only=False)
         )
-        match_clsname = self._match_clsname_query(clsname) if clsname else None
+        match_cls = self._match_cls_query(cls) if cls else None
 
         query_str = (
-            "{clsname} {label}".format(clsname=match_clsname, label=match_label)
-            if match_clsname
+            "{cls} {label}".format(cls=match_cls, label=match_label)
+            if match_cls
             else match_label
         )
         inverse_label_query = Query(query_str).return_field("$.iri", as_field="iri")
@@ -67,11 +67,11 @@ class EntityStore:
         res = self.redis_client.ft(ENTITIES_INDEX_NAME).search(inverse_label_query)
         return [doc.iri for doc in res.docs]
 
-    def link_semantic(self, surface_form: str, clsname: Optional[str], k: int):
+    def link_semantic(self, surface_form: str, cls: Optional[str], k: int):
         """Performs vector similarity search over candidate surface forms.
         If input surface form exactly matches any label, preferentially return the associated IRIs.
         """
-        iris = self.link_exact(surface_form=surface_form, clsname=clsname)
+        iris = self.link_exact(surface_form=surface_form, cls=cls)
         logger.info("IRIs that match surface form exactly: " + str(iris))
 
         if len(iris) >= k:
@@ -81,9 +81,7 @@ class EntityStore:
         knn_query = (
             Query(
                 "({filter_query})=>[KNN {k} @vector $query_vector AS vector_score]".format(
-                    filter_query=(
-                        self._match_clsname_query(clsname) if clsname else "*"
-                    ),
+                    filter_query=(self._match_cls_query(cls) if cls else "*"),
                     k=k,
                 )
             )
@@ -105,21 +103,21 @@ class EntityStore:
 
         return list(set(iris))[:k]
 
-    def link_fuzzy(self, surface_form: str, clsname: Optional[str], k: int):
+    def link_fuzzy(self, surface_form: str, cls: Optional[str], k: int):
         """Performs fuzzy search over candidate surface forms.
         If input surface form exactly matches any label, preferentially return the associated IRIs.
         """
         logger.info(
-            f"Perform fuzzy linking for `{surface_form}` of class `{clsname}` with k={k}"
+            f"Perform fuzzy linking for `{surface_form}` of class `{cls}` with k={k}"
         )
 
-        iris = self.link_exact(surface_form=surface_form, clsname=clsname)
+        iris = self.link_exact(surface_form=surface_form, cls=cls)
         logger.info("IRIs that match surface form exactly: " + str(iris))
 
         if len(iris) >= k:
             return iris[:k]
 
-        clsname_query = self._match_clsname_query(clsname) if clsname else None
+        cls_query = self._match_cls_query(cls) if cls else None
         escaped_words = [
             regex.escape(word, special_only=False, literal_spaces=True)
             for word in surface_form.split()
@@ -138,9 +136,9 @@ class EntityStore:
                     for word in escaped_words
                 )
             )
-            if clsname_query:
-                fuzzy_query = "{clsname_query} {fuzzy_query}".format(
-                    clsname_query=clsname_query,
+            if cls_query:
+                fuzzy_query = "{cls_query} {fuzzy_query}".format(
+                    cls_query=cls_query,
                     fuzzy_query=fuzzy_query,
                 )
             query = Query(fuzzy_query).return_field("iri")
@@ -158,23 +156,21 @@ class EntityStore:
 
     def link(
         self,
-        clsname: str,
+        cls: str,
         text: Optional[str],
-        identifier: Dict[str, str],
+        identifier: Dict[str, str] = dict(),
         k: Optional[int] = None,
     ):
         logger.info(
-            f"Performing entity linking for surface form `{text}` and identifier `{identifier}` of class `{clsname}`."
+            f"Performing entity linking for surface form `{text}` and identifier `{identifier}` of class `{cls}`."
         )
 
-        if clsname in self.clsname2linker:
-            iris = self.clsname2linker[clsname].link(text=text, **identifier)
+        if cls in self.cls2linker:
+            iris = self.cls2linker[cls].link(text=text, **identifier)
             if iris:
                 return iris
 
-        config = (
-            self.clsname2elconfig.get(clsname, ELConfig()) if clsname else ELConfig()
-        )
+        config = self.cls2elconfig.get(cls, ELConfig()) if cls else ELConfig()
         logger.info("Linking strategy: " + str(config))
 
         k = k if k else config.k
@@ -187,7 +183,7 @@ class EntityStore:
         for text in texts:
             if len(iris) >= k:
                 break
-            iris.extend(link_func(text, clsname, k))
+            iris.extend(link_func(text, cls, k))
 
         return iris[:k]
 
@@ -202,27 +198,27 @@ class EntityStore:
             regex.sub(r"\\(.)", r"\1", res.docs[0].label) if len(res.docs) > 0 else None
         )
 
-    def lookup_clsname(self, iri: str) -> Optional[str]:
+    def lookup_cls(self, iri: str) -> Optional[str]:
         query = Query(
             "@iri:{{{iri}}}".format(
                 iri=regex.escape(iri, special_only=False, literal_spaces=True)
             )
-        ).return_field("$.clsname", as_field="clsname")
+        ).return_field("$.cls", as_field="cls")
         res = self.redis_client.ft(ENTITIES_INDEX_NAME).search(query)
-        return res.docs[0].clsname if len(res.docs) > 0 else None
+        return res.docs[0].cls if len(res.docs) > 0 else None
 
 
 @cache
-def get_clsname2config():
+def get_cls2config():
     adapter = TypeAdapter(Tuple[ELConfigEntry, ...])
     config = adapter.validate_json(
         files("resources").joinpath("el_config.json").read_text()
     )
-    return FrozenDict({entry.clsname: entry.el_config for entry in config})
+    return FrozenDict({entry.cls: entry.el_config for entry in config})
 
 
 @cache
-def get_clsname2linker(
+def get_cls2linker(
     ship_linker: Annotated[ShipLinker, Depends(get_ship_linker)],
     species_linker: Annotated[SpeciesStore, Depends(get_species_store)],
     zeolite_framework_linker: Annotated[
@@ -246,14 +242,12 @@ def get_clsname2linker(
 def get_entity_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
-    clsname2config: Annotated[FrozenDict[str, ELConfig], Depends(get_clsname2config)],
-    clsname2linker: Annotated[
-        FrozenDict[str, IEntityLinker], Depends(get_clsname2linker)
-    ],
+    cls2config: Annotated[FrozenDict[str, ELConfig], Depends(get_cls2config)],
+    cls2linker: Annotated[FrozenDict[str, IEntityLinker], Depends(get_cls2linker)],
 ):
     return EntityStore(
         redis_client=redis_client,
         embedder=embedder,
-        clsname2elconfig=clsname2config,
-        clsname2linker=clsname2linker,
+        cls2elconfig=cls2config,
+        cls2linker=cls2linker,
     )

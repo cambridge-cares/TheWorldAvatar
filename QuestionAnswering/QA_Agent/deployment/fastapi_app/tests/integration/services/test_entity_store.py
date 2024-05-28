@@ -36,7 +36,7 @@ def entity_store(redis_client, embedder):
         redis_client=redis_client,
         embedder=embedder,
         lexicon=lexicon,
-        clsname2elconfig=clsname2config,
+        cls2elconfig=clsname2config,
     )
 
 
@@ -60,7 +60,7 @@ class TestEntityStore:
 
         # Act
         actual = entity_store.link_semantic(
-            surface_form=surface_form, clsname=clsname, k=1
+            surface_form=surface_form, cls=clsname, k=1
         )
 
         # Assert
