@@ -63,7 +63,7 @@ public class Dataset extends AbstractDataObject {
     private final Optional<String> workspaceName = Optional.empty();
 
     @JsonProperty(value = "externalDatasets")
-    private final Optional<List<String>> externalDatasetsString = Optional.empty();
+    private final Optional<List<String>> externalDatasetNames;
     @JsonIgnore
     private final List<Dataset> externalDatasets = new ArrayList<>();
     @JsonProperty
@@ -127,8 +127,8 @@ public class Dataset extends AbstractDataObject {
         return getName();
     }
 
-    public List<String> getExternalDatasetsString() {
-        return externalDatasetsString.orElse(Collections.emptyList());
+    public List<String> getExternalDatasetNames() {
+        return externalDatasetNames.orElse(Collections.emptyList());
     }
 
     public List<DataSubset> getDataSubsets() {

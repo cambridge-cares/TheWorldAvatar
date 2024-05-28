@@ -83,7 +83,7 @@ public class DatasetLoader {
     private static void addToGraph(Map<String, Dataset> allDatasets, DirectedAcyclicGraph<Dataset, DefaultEdge> graph,
             Dataset current) {
         if (graph.addVertex(current)) {
-            current.getExternalDatasetsString().forEach(datasetName -> {
+            current.getExternalDatasetNames().forEach(datasetName -> {
                 Dataset child = allDatasets.get(datasetName);
                 if (null == child) {
                     throw new RuntimeException("Failed to find external dataset '"
