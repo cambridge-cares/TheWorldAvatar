@@ -12,8 +12,13 @@ services:
   fastapi:
     build:
       context: fastapi_app
+    container_name: fastapi_app
     env_file:
       - fastapi-variables.env
+    volumes:
+      - type: bind
+        source: fastapi_app/data
+        target: /code/data
     ports:
       - 5000:8000
     depends_on:
