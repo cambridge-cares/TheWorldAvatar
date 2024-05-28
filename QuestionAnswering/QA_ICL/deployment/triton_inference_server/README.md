@@ -2,16 +2,22 @@
 
 This directory contains resources to serve ML models with Triton Inference Server. The following models are included:
 
-- `mpnet`: text embedding
+- `mpnet`: text embedding model
 
-### Running
+## Installation
 
-Place onnx checkpoints into respective directories, then execute the following.
+### Prerequisites
 
-```
-docker build -t triton:0.1.0 .
-docker run -d -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=256m --name inference_server_m triton:0.1.0
-```
+- ONNX weights for `mpnet-base` model
+
+### Steps
+
+1. Place `.onnx` file for `mpnet-base` model weights in `model_repository/mpnet/1`.
+2. Build the image for the triton server and run it.
+   ```
+   docker build -t triton:0.1.0 .
+   docker run -d -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=256m --name inference_server_mpnet triton:0.1.0
+   ```
 
 ## Development
 
