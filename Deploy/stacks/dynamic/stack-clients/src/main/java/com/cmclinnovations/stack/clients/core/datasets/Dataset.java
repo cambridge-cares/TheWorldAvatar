@@ -51,8 +51,6 @@ public class Dataset extends AbstractDataObject {
     @JsonProperty(value = NAME_KEY)
     @JacksonInject(NAME_KEY)
     private final String name = null;
-    @JsonProperty
-    private final Optional<String> description = Optional.empty();
 
     @JsonProperty
     private final Optional<Path> datasetDirectory = Optional.empty();
