@@ -64,12 +64,6 @@ public class Dataset extends AbstractDataObject {
     @JsonProperty
     private final Optional<String> baseIRI;
 
-    // for dcat cataloging
-    @JsonIgnore
-    private boolean exists; // used to determine whether this dataset exists in the catalog
-    @JsonIgnore
-    private String iri; // catalog iri
-
     @JsonCreator
     Dataset() {
         this.name = null;
@@ -185,10 +179,6 @@ public class Dataset extends AbstractDataObject {
 
     public Iri getRdfType() {
         return Rdf.iri(rdfType.orElse(DCAT.CATALOG.stringValue()));
-    }
-
-    public String getIri() {
-        return iri;
     }
 
     public void addExternalDataset(Dataset dataset) {

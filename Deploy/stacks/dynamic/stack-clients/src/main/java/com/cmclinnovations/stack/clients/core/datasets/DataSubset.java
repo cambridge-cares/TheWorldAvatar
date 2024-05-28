@@ -3,7 +3,6 @@ package com.cmclinnovations.stack.clients.core.datasets;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -23,12 +22,6 @@ public abstract class DataSubset extends AbstractDataObject {
     protected final Optional<String> name = Optional.empty();
     @JsonProperty
     private final Optional<Path> subdirectory = Optional.empty();
-
-    // for dcat cataloging purposes
-    @JsonIgnore
-    private boolean exists; // used to determine whether this exists in the catalog
-    @JsonIgnore
-    private String iri;
 
     public String getName() {
         return name.orElse(getSubdirectory().map(subdir -> subdir.getFileName().toString())
@@ -59,19 +52,4 @@ public abstract class DataSubset extends AbstractDataObject {
 
     abstract void loadInternal(Dataset dataset);
 
-    public void setExists(boolean exists) {
-        this.exists = exists;
-    }
-
-    public boolean getExists() {
-        return exists;
-    }
-
-    public void setIri(String iri) {
-        this.iri = iri;
-    }
-
-    public String getIri() {
-        return iri;
-    }
 }
