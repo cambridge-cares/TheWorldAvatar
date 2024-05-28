@@ -151,7 +151,6 @@ public class DatasetLoader {
 
             dataSubsets.forEach(subset -> subset.load(dataset));
 
-            String newOntopEndpoint = null;
             if (dataset.usesOntop()) {
                 String newOntopServiceName = dataset.getOntopName();
 
@@ -166,9 +165,8 @@ public class DatasetLoader {
                                 URI.create(connection.getExternalPath().toString()
                                         .replace(EndpointNames.ONTOP, newOntopServiceName))));
 
-                OntopService ontopService = serviceManager.initialiseService(StackClient.getStackName(),
-                        newOntopServiceName);
-                newOntopEndpoint = ontopService.getOntopEndpointConfig().getUrl();
+                serviceManager.initialiseService(StackClient.getStackName(), newOntopServiceName);
+
                 List<String> ontopMappings = dataset.getOntopMappings();
 
                 OntopClient ontopClient = OntopClient.getInstance(newOntopServiceName);
@@ -182,7 +180,7 @@ public class DatasetLoader {
 
             // record added datasets in the default kb namespace
             BlazegraphClient.getInstance().getRemoteStoreClient("kb")
-                    .executeUpdate(dataset.getQueryStringForCataloging(newOntopEndpoint));
+                    .executeUpdate(new DCATUpdateQuery().getQueryStringForCataloging(dataset));
         }
     }
 
