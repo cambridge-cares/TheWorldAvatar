@@ -65,7 +65,7 @@ public class Dataset extends AbstractDataObject {
     @JsonProperty(value = "externalDatasets")
     private final Optional<List<String>> externalDatasetsString = Optional.empty();
     @JsonIgnore
-    private Optional<List<Dataset>> externalDatasets = Optional.empty();
+    private final List<Dataset> externalDatasets = new ArrayList<>();
     @JsonProperty
     private final Optional<List<DataSubset>> dataSubsets = Optional.empty();
     @JsonProperty(value = "styles")
@@ -160,14 +160,11 @@ public class Dataset extends AbstractDataObject {
     }
 
     public void addExternalDataset(Dataset dataset) {
-        if (externalDatasets.isEmpty()) {
-            externalDatasets = Optional.of(new ArrayList<>());
-        }
-        externalDatasets.get().add(dataset);
+        externalDatasets.add(dataset);
     }
 
     public List<Dataset> getExternalDatasets() {
-        return externalDatasets.orElse(Collections.emptyList());
+        return externalDatasets;
     }
 
     public String getQueryStringForCataloging(String newOntopEndpoint) {
