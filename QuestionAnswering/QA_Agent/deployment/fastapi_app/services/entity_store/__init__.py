@@ -89,7 +89,7 @@ class EntityStore:
             .return_field("$.iri", as_field="iri")
             .dialect(2)
         )
-        res = self.redis_client.ft(self.INDEX_NAME).search(
+        res = self.redis_client.ft(ENTITIES_INDEX_NAME).search(
             knn_query, {"query_vector": encoded_query.tobytes()}
         )
 
