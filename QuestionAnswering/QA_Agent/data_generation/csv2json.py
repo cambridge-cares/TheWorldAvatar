@@ -18,13 +18,13 @@ def csvrow2jsonobj(row: pd.Series):
             raise e
 
         try:
-            nodes_for_expansion = (
-                json.loads(row["sparql_nodes_for_expansion"])
-                if not pd.isna(row["sparql_nodes_for_expansion"])
+            nodes_to_augment = (
+                json.loads(row["sparql_nodes_to_augment"])
+                if not pd.isna(row["sparql_nodes_to_augment"])
                 else None
             )
         except Exception as e:
-            print(row["sparql_nodes_for_expansion"])
+            print(row["sparql_nodes_to_augment"])
             raise e
 
         output = {
@@ -35,7 +35,7 @@ def csvrow2jsonobj(row: pd.Series):
                     "namespace": row["sparql_namespace"],
                     "bindings": bindings,
                     "query": row["sparql_query"],
-                    "nodes_for_expansion": nodes_for_expansion,
+                    "nodes_to_augment": nodes_to_augment,
                 }.items()
                 if v
             },

@@ -3,11 +3,11 @@ import time
 from typing import Annotated, List
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, model_serializer
+from pydantic import BaseModel
 
 from controllers.qa import DataSupporter, get_data_supporter
-from controllers.qa.model import QAStep, serialize_data_item
-from controllers.qa.model import DataItem
+from controllers.qa.model import QAStep
+from services.model import DataItem
 
 
 class QARequest(BaseModel):
@@ -22,13 +22,6 @@ class QAResponseMetadata(BaseModel):
 class QAResponse(BaseModel):
     metadata: QAResponseMetadata
     data: List[DataItem]
-
-    @model_serializer()
-    def serialize_model(self):
-        return {
-            "metadata": self.metadata.model_dump(),
-            "data": [serialize_data_item(item) for item in self.data],
-        }
 
 
 logger = logging.getLogger(__name__)

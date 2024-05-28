@@ -11,23 +11,21 @@ class SparqlBindingValuesItem(BaseModel):
     identifier: dict = dict()
 
 
-class SparqlBinding(BaseModel):
-    var: str
-    clsname: str = Field(..., alias="class")
-    values: List[SparqlBindingValuesItem]
-
-
 class TypedVarNode(BaseModel):
     var: str
-    clsname: str = Field(..., alias="class")
+    cls: str
+
+
+class TypedVarNodeWithValues(TypedVarNode):
+    values: List[SparqlBindingValuesItem]
 
 
 class SparqlAction(BaseModel):
     action_type: Literal["sparql"]
     namespace: str
-    bindings: List[SparqlBinding] = []
+    bindings: List[TypedVarNodeWithValues] = []
     query: str
-    nodes_for_expansion: List[TypedVarNode] = []
+    nodes_to_augment: List[TypedVarNode] = []
 
 
 class FuncAction(BaseModel):

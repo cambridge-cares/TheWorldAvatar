@@ -10,14 +10,15 @@ from services.geocoding.base import IGeocoder
 from services.geocoding.serial import get_serial_geocoder
 from services.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient
-from controllers.qa.model import (
+
+from controllers.qa.model import QAStep
+from services.funcs.base import Name2Func
+from services.model import (
     ScatterPlotDataItem,
     ScatterPlotTrace,
     TableDataItem,
     TypedSeries,
 )
-from controllers.qa.model import QAStep
-from services.funcs.base import Name2Func
 from .pollutant_conc import (
     PollutantConcClient,
     get_pollutantConc_client,

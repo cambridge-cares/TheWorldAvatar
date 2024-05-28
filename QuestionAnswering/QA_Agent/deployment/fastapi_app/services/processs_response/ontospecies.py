@@ -1,54 +1,56 @@
-from functools import cache, lru_cache
-from typing import Annotated
+from functools import cache
+from typing import Annotated, Sequence
 
 from fastapi import Depends
-from constants.prefixes import URI_OS
 from services.kg import KgClient, get_ontospecies_bgClient
-from services.processs_response.expand_response import SparqlResponseExpander
+from services.processs_response.augment_node import NodeDataRetriever
 from utils.rdf import flatten_sparql_response
 
 
-@lru_cache()
-def get_species_unique_identifiers(iri: str, kg_client: KgClient):
+def get_species_unique_identifiers(kg_client: KgClient, iris: Sequence[str]):
     query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
     
-SELECT * WHERE {{
-    VALUES ?Species {{ <{IRI}> }}
-    OPTIONAL {{
+SELECT *
+WHERE {{
+    {{
+        VALUES ?Species {{ {values} }}
         ?Species rdfs:label ?Label .
     }}
     OPTIONAL {{
-        ?Species os:hasIUPACName/os:value ?IUPACName .
-    }}
-    OPTIONAL {{
+        SELECT ?Species (SAMPLE(?IUPACName) AS ?IUPACName)
+        WHERE {{
+            VALUES ?Species {{ {values} }}
+            ?Species os:hasIUPACName/os:value ?IUPACName .
+        }}
+        GROUP BY ?Species
+    }} 
+    {{
+        VALUES ?Species {{ {values} }}
         ?Species os:hasInChI/os:value ?InChI .
     }}
-}}
-LIMIT 1""".format(
-        IRI=iri
+}}""".format(
+        values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
     res = kg_client.query(query)
     _, bindings = flatten_sparql_response(res)
 
-    if not bindings:
-        return {}
-
-    binding = bindings[0]
-    data = {
-        "Label": binding["Label"],
-        "IUPACName": binding["IUPACName"],
-        "InChI": binding["InChI"],
+    iri2data = {
+        binding["Species"]: {k: binding.get(k) for k in ["Label", "IUPACName", "InChI"]}
+        for binding in bindings
+    }
+    iri2data = {
+        iri: {k: v for k, v in data.items() if v} for iri, data in iri2data.items()
     }
 
-    return {k: v for k, v in data.items() if v}
+    return [iri2data.get(iri, {}) for iri in iris]
 
 
 @cache
-def get_ontospecies_responseExpander(
+def get_ontospecies_nodeDataRetriever(
     bg_client: Annotated[KgClient, Depends(get_ontospecies_bgClient)]
 ):
-    return SparqlResponseExpander(
+    return NodeDataRetriever(
         kg_client=bg_client,
-        type2getter={URI_OS + "Species": get_species_unique_identifiers},
+        type2getter={"Species": get_species_unique_identifiers},
     )

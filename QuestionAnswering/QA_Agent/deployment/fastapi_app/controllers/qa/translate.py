@@ -50,7 +50,7 @@ Your task is to translate the following question to an executable action. Please
             examples="\n".join(
                 '"{input}" => {output}'.format(
                     input=example.nlq,
-                    output=example.action.model_dump_json(by_alias=True),
+                    output=example.action.model_dump_json(),
                 )
                 for example in examples
             ),
