@@ -10,7 +10,9 @@ from controllers.qa.model import QAStep
 from services.entity_store import EntityStore, get_entity_store
 from services.example_store.model import SparqlAction
 from services.kg import KgClient
+from services.model import TableDataItem
 from utils.collections import FrozenDict
+from utils.rdf import flatten_sparql_response
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
 from .process_response import (
@@ -53,7 +55,7 @@ class SparqlActionExecutor:
                 iri
                 for val in binding.values
                 for iri in self.entity_store.link(
-                    clsname=binding.clsname, text=val.text, identifier=val.identifier
+                    clsname=binding.cls, text=val.text, identifier=val.identifier
                 )
             ]
             for binding in action.bindings
@@ -93,11 +95,14 @@ class SparqlActionExecutor:
             )
         )
 
-        items = self.response_processor.process(
-            vars=res["head"]["vars"], bindings=res["results"]["bindings"]
+        vars, bindings = flatten_sparql_response(res)
+        table = TableDataItem(vars=vars, bindings=bindings)
+
+        self.response_processor.process(
+            nodes_to_augment=action.bindings + action.nodes_to_augment, table=table
         )
 
-        return steps, items
+        return steps, [table]
 
 
 @cache

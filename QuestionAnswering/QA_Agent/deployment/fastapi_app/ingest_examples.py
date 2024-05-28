@@ -39,7 +39,7 @@ def transform_examples_preinsert(examples: List[Nlq2ActionExampleProcessed]):
     return [
         {
             "nlq": example.nlq,
-            "action": example.action.model_dump_json(by_alias=True),
+            "action": example.action.model_dump_json(),
             "nlq_embedding": example.nlq_embedding,
         }
         for example in examples

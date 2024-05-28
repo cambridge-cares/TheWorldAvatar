@@ -54,7 +54,7 @@ class SparqlQueryProcessor:
 
     def inject_bindings(self, sparql: str, bindings: Dict[str, List[str]]):
         values_clauses = [
-            "VALUES {var} {{ {iris} }}".format(
+            "VALUES ?{var} {{ {iris} }}".format(
                 var=var, iris=" ".join("<{iri}>".format(iri=iri) for iri in iris)
             )
             for var, iris in bindings.items()
@@ -68,12 +68,13 @@ class SparqlQueryProcessor:
                 "{"
             )  # assumed to be the start of WHERE patterns
 
-            vars = set(sparql[qn_mark_idx:open_brace_idx].strip().split())
-            new_vars = [var for var in bindings.keys() if var not in vars]
+            cur_vars = set(sparql[qn_mark_idx:open_brace_idx].strip().split())
+            new_vars = ["?" + var for var in bindings.keys()]
+            new_vars = [var for var in new_vars if var not in cur_vars]
 
             return "{before}{new_vars}{between}{{  {values_clauses}{after}".format(
                 before=sparql[:qn_mark_idx],
-                new_vars=" " + " ".join(new_vars),
+                new_vars=" ".join(new_vars) + " ",
                 between=sparql[qn_mark_idx:open_brace_idx],
                 values_clauses="\n  ".join(values_clauses),
                 after=sparql[open_brace_idx + 1 :],

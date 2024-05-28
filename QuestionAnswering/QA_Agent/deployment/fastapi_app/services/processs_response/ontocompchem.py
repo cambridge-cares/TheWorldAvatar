@@ -1,20 +1,20 @@
+from collections import defaultdict
 from functools import cache
-from typing import Annotated
+from typing import Annotated, DefaultDict, Dict, List, Sequence
 
 from fastapi import Depends
-from constants.prefixes import URI_OCC
 from services.kg import KgClient, get_ontocompchem_bgClient
-from services.processs_response.expand_response import SparqlResponseExpander
+from services.processs_response.augment_node import NodeDataRetriever
 from utils.rdf import flatten_sparql_response
 
 
-def get_optimized_geometry_data(iri: str, kg_client: KgClient):
+def get_optimized_geometry_data(kg_client: KgClient, iris: Sequence[str]):
     query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>
 
 SELECT *
 WHERE {{
-    VALUES ?OptimizedGeometry {{ <{IRI}> }}
+    VALUES ?OptimizedGeometry {{ {values} }}
     ?OptimizedGeometry ^os:fromGeometry ?X, ?Y, ?Z .
     ?Atom 
         os:hasXCoordinate ?X ;
@@ -24,14 +24,15 @@ WHERE {{
     ?Y os:value ?YValue ; os:unit ?YUnit .
     ?Z os:value ?ZValue ; os:unit ?ZUnit .
 }}""".format(
-        IRI=iri
+        values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
     res = kg_client.query(query)
     _, bindings = flatten_sparql_response(res)
 
-    data = {
-        "Atoms": [
+    iri2data: DefaultDict[str, List[dict]] = defaultdict(list)
+    for binding in bindings:
+        iri2data[binding["OptimizedGeometry"]].append(
             {
                 key
                 + "Coordinate": {
@@ -40,63 +41,63 @@ WHERE {{
                 }
                 for key in ["X", "Y", "Z"]
             }
-            for binding in bindings
-        ]
-    }
+        )
 
-    return {k: v for k, v in data.items() if v}
+    return [{"Atoms": iri2data[iri]} for iri in iris]
 
 
-def get_rotational_constants_data(iri: str, kg_client: KgClient):
+def get_rotational_constants_data(kg_client: KgClient, iris: Sequence[str]):
     query = """PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>
 
 SELECT *
 WHERE {{
-    VALUES ?RotationalConstants {{ <{IRI}> }}
+    VALUES ?RotationalConstants {{ {values} }}
     ?RotationalConstants
         occ:value ?Value ;
         occ:unit ?Unit .
 }}""".format(
-        IRI=iri
+        values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
     res = kg_client.query(query)
     _, bindings = flatten_sparql_response(res)
 
-    data = {
-        "values": [binding["Value"] for binding in bindings],
-        "unit": bindings[0]["Unit"] if bindings else None,
-    }
+    iri2values: DefaultDict[str, list] = defaultdict(list)
+    iri2unit: Dict[str, str] = dict()
+    for binding in bindings:
+        iri2values[binding["RotationalConstants"]].append(binding["Value"])
+        iri2unit[binding["RotationalConstants"]] = binding["Unit"]
 
-    return {k: v for k, v in data.items() if v}
+    return [{"values": iri2values[iri], "unit": iri2unit.get(iri)} for iri in iris]
 
 
-def get_molcomp_value_unit(iri: str, kg_client: KgClient):
+def get_molcomp_value_unit(kg_client: KgClient, iris: Sequence[str]):
     query = """PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>
 
 SELECT *
 WHERE {{
-    VALUES ?MolComp {{ <{IRI}> }}
+    VALUES ?MolComp {{ {values} }}
     ?MolComp occ:value ?Value ; occ:unit ?Unit .
 }}""".format(
-        IRI=iri
+        values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
     res = kg_client.query(query)
     _, bindings = flatten_sparql_response(res)
 
-    if not bindings:
-        return {}
+    iri2data = {
+        binding["MolComp"]: {"value": binding["Value"], "unit": binding["Unit"]}
+        for binding in bindings
+    }
 
-    binding = bindings[0]
-    return {"value": binding["Value"], "unit": binding["Unit"]}
+    return [iri2data.get(iri, {}) for iri in iris]
 
 
 ONTOCOMPCHEM_TYPE2GETTER = {
-    URI_OCC + "OptimizedGeometry": get_optimized_geometry_data,
-    URI_OCC + "RotationalConstants": get_rotational_constants_data,
+    "OptimizedGeometry": get_optimized_geometry_data,
+    "RotationalConstants": get_rotational_constants_data,
     **{
-        URI_OCC + key: get_molcomp_value_unit
+        key: get_molcomp_value_unit
         for key in [
             "SCFEnergy",
             "TotalGibbsFreeEnergy",
@@ -116,9 +117,7 @@ ONTOCOMPCHEM_TYPE2GETTER = {
 
 
 @cache
-def get_ontocompchem_responseExpander(
+def get_ontocompchem_nodeDataRetriever(
     bg_client: Annotated[KgClient, Depends(get_ontocompchem_bgClient)]
 ):
-    return SparqlResponseExpander(
-        kg_client=bg_client, type2getter=ONTOCOMPCHEM_TYPE2GETTER
-    )
+    return NodeDataRetriever(kg_client=bg_client, type2getter=ONTOCOMPCHEM_TYPE2GETTER)

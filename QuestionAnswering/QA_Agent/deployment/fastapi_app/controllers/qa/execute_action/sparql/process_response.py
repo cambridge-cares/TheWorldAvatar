@@ -1,74 +1,21 @@
 from functools import cache
-from typing import Annotated, Dict, List, Tuple, Union
+from typing import Annotated, List
 
 from fastapi import Depends
 
 from constants.prefixes import TWA_ABOX_PREFIXES
 from services.entity_store import EntityStore, get_entity_store
-from services.entity_store.species import SpeciesStore, get_species_store
-from services.processs_response import get_response_expanders
-from services.processs_response.expand_response import SparqlResponseExpander
-from services.wkt import CRS84_URI, WKTTextSRS
-from controllers.qa.model import TableDataItem, WktCrs84DataItem
+from services.example_store.model import TypedVarNode
+from services.model import TableDataItem
+from services.processs_response.augment_table import TableAugmenter, get_table_augmenter
 
 
 class SparqlResponseProcessor:
     WKT_LITERAL_PREFIX = "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> "
 
-    def __init__(
-        self,
-        entity_store: EntityStore,
-        species_store: SpeciesStore,
-        response_expanders: Tuple[SparqlResponseExpander, ...],
-    ):
+    def __init__(self, entity_store: EntityStore, table_augmenter: TableAugmenter):
         self.entity_store = entity_store
-        self.species_store = species_store
-        self.response_expanders = response_expanders
-
-    def extract_wkt(self, vars: List[str], bindings: List[Dict[str, Dict[str, str]]]):
-        wkt_vars = [
-            var
-            for var in vars
-            if any(
-                binding.get(var, {}).get("datatype")
-                == "http://www.opengis.net/ont/geosparql#wktLiteral"
-                for binding in bindings
-            )
-        ]
-
-        if not wkt_vars:
-            return [
-                TableDataItem(
-                    vars=vars,
-                    bindings=[
-                        {k: v["value"] for k, v in binding.items()}
-                        for binding in bindings
-                    ],
-                )
-            ]
-
-        not_wkt_vars = [var for var in vars if var not in wkt_vars]
-
-        items: List[Union[TableDataItem, WktCrs84DataItem]] = []
-        for binding in bindings:
-            table_vars = list(not_wkt_vars)
-            table_binding = {
-                k: v["value"] for k, v in binding.items() if k in not_wkt_vars
-            }
-
-            wkt_items: List[WktCrs84DataItem] = []
-            for var in wkt_vars:
-                wkt_text_srs = WKTTextSRS.from_literal(binding[var]["value"])
-                if wkt_text_srs.srs_uri == CRS84_URI:
-                    wkt_items.append(WktCrs84DataItem(wkt_text=wkt_text_srs.wkt_text))
-                else:
-                    table_vars.append(var)
-                    table_binding[var] = binding[var]["value"]
-
-            items.append(TableDataItem(vars=table_vars, bindings=[table_binding]))
-            items.extend(wkt_items)
-
-        return items
+        self.table_augmenter = table_augmenter
 
     def add_labels(self, item: TableDataItem):
         vars_set = set(item.vars)
@@ -97,28 +44,16 @@ class SparqlResponseProcessor:
 
             binding.update(new_kvs)
 
-    def process(self, vars: List[str], bindings: List[Dict[str, Dict[str, str]]]):
-        items = self.extract_wkt(vars, bindings)
-
-        for item in items:
-            if isinstance(item, TableDataItem):
-                self.add_labels(item)
-                for expander in self.response_expanders:
-                    expander.expand(item)
-
-        return items
+    def process(self, nodes_to_augment: List[TypedVarNode], table: TableDataItem):
+        self.table_augmenter.augment(nodes_to_augment=nodes_to_augment, item=table)
+        self.add_labels(table)
 
 
 @cache
 def get_sparqlRes_processor(
     entity_store: Annotated[EntityStore, Depends(get_entity_store)],
-    species_store: Annotated[SpeciesStore, Depends(get_species_store)],
-    response_expanders: Annotated[
-        Tuple[SparqlResponseExpander, ...], Depends(get_response_expanders)
-    ],
+    table_augmenter: Annotated[TableAugmenter, Depends(get_table_augmenter)],
 ):
     return SparqlResponseProcessor(
-        entity_store=entity_store,
-        species_store=species_store,
-        response_expanders=response_expanders,
+        entity_store=entity_store, table_augmenter=table_augmenter
     )
