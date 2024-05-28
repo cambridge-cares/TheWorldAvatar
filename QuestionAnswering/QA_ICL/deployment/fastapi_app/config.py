@@ -26,16 +26,16 @@ class FunctionCallingSettings(BaseSettings):
     model: Optional[str] = None
 
 
-class QAEngineName(Enum):
+class FrontendName(Enum):
     MARIE = "marie"
     ZAHA = "zaha"
 
 
 @cache
-def get_qa_engine_name():
-    engine = QAEngineName(os.getenv("QA_ENGINE"))
-    logger.info("QA_ENGINE: " + engine.value)
-    return engine
+def get_frontend_name():
+    name = FrontendName(os.getenv("FRONTEND_NAME", "zaha"))
+    logger.info("FRONTEND_NAME: " + name.value)
+    return name
 
 
 @cache
