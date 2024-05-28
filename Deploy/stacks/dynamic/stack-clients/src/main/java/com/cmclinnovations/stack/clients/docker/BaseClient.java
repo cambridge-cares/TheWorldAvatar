@@ -1,6 +1,5 @@
 package com.cmclinnovations.stack.clients.docker;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.cmclinnovations.stack.clients.core.EndpointConfig;
@@ -12,16 +11,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 abstract class BaseClient {
 
     private final ObjectMapper objectMapper = JsonHelper.getMapper();
+    private final Path configsDir;
+
+    protected BaseClient() {
+        if (StackClient.isInTest()) {
+            configsDir = Path.of("testing", "configs");
+            try {
+                Files.createDirectories(configsDir);
+            } catch (IOException ex) {
+                throw new RuntimeException("Failed to create directories for test Docker/Podman config files.", ex);
+            }
+        } else {
+            configsDir = Path.of("/");
+        }
+    }
 
     protected abstract <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig);
 
     protected <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig,
             DockerClient injectedDockerClient) {
         String endpointName = endpointConfig.getName();
-        if (!StackClient.isInStack()) {
+        Path configFilePath = configsDir.resolve(endpointName);
+        if (!Files.exists(configFilePath)) {
             // Hack for when container is not in the swarm
             try {
-                objectMapper.writeValue(new File("/" + endpointName), endpointConfig);
+                objectMapper.writeValue(configFilePath.toFile(), endpointConfig);
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to write to Docker config file with name '" + endpointName + "'.",
                         ex);
@@ -50,9 +64,10 @@ abstract class BaseClient {
     protected final <E extends EndpointConfig> E readEndpointConfig(String endpointName,
             Class<E> endpointConfigClass,
             DockerClient injectedDockerClient) {
-        if (injectedDockerClient.configExists(endpointName)) {
+        Path configFilePath = configsDir.resolve(endpointName);
+        if (Files.exists(configFilePath)) {
             try {
-                return objectMapper.readValue(new File("/" + endpointName), endpointConfigClass);
+                return objectMapper.readValue(configFilePath.toFile(), endpointConfigClass);
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to read Docker config file with name '" + endpointName + "'.", ex);
             }
