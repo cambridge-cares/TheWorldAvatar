@@ -242,18 +242,18 @@ class OntoZeolite:
 
         output = []
 
-        uuid_zeoframe, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliteFramework",
+        zeoframe_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliteFramework",
                                                self.abox_prefix + "ZeoFramework_" + frameworkCode)
 
-        output.append([uuid_zeoframe, "Instance", zeoOntoPrefix + "ZeoliteFramework",
+        output.append([zeoframe_iri, "Instance", zeoOntoPrefix + "ZeoliteFramework",
                        "", "", ""])
 
         output.append([zeoOntoPrefix + "hasFrameworkCode",
-                       "Data Property", uuid_zeoframe, "",
+                       "Data Property", zeoframe_iri, "",
                        frameworkCode.strip(' "'), "string"])
 
         lines = self.getMaterialIDs(frameworkCode)
-        # print(">>> lines = '", lines, "'.", sep="")
+
         if len(lines) > 0:
             if "_" == lines[0][1][0]:
                 value = True
@@ -261,35 +261,26 @@ class OntoZeolite:
                 value = False
 
             output.append([zeoOntoPrefix + "isInterrupted", "Data Property",
-                           uuid_zeoframe, "", value, "boolean"])
+                           zeoframe_iri, "", value, "boolean"])
 
             output.append([zeoOntoPrefix + "isIntergrowth", "Data Property",
-                           uuid_zeoframe, "", False, "boolean"])
+                           zeoframe_iri, "", False, "boolean"])
 
         return output
         # === end of OntoZeolite.getCsvArrFramework()
 
     def get_framework_UUID(self, frameworkCode):
+        zeoframe_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliteFramework",
+                                              self.abox_prefix + "ZeoFramework_" + frameworkCode)
 
-        # logging.error(" Not implemented OntoZeolite.getFrameworkUUID()")
-        # uuid_zeoframe = self.uuidDB.getUUID("ZeoliteFramework",
-        #                                     "Zeolite_" + frameworkCode)
-        uuid_zeoframe, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliteFramework",
-                                               self.abox_prefix + "ZeoFramework_" + frameworkCode)
-
-        return uuid_zeoframe
+        return zeoframe_iri
         # === end of OntoZeolite.get_framework_UUID()
 
     def get_material_UUID(self, cif_line, mat_line):
-        # logging.error(" Not implemented OntoZeolite.getMaterialUUID()")
-        # uuid_zeo = self.uuidDB.getUUID("ZeoliticMaterial",
-        #                               "Zeolite_" + cif_line[0])
-        #uuid_zeo, _ = self.uuidDB.addUUID("ZeoliticMaterial",
-        #                                  "Zeolite_" + cif_line[0])
-        uuid_zeo, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliticMaterial",
-                                          self.abox_prefix + "Zeolite_" + mat_line[17])
+        zeo_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliticMaterial",
+                                         self.abox_prefix + "Zeolite_" + mat_line[17])
 
-        return uuid_zeo
+        return zeo_iri
         # === end of OntoZeolite.get_material_UUID()
 
     def get_cif_file(self, cif_line):
@@ -304,7 +295,7 @@ class OntoZeolite:
         return ""
         # === end of OntoZeolite.get_cif_file()
 
-    def _get_csv_arr_refmat(self, cifLine, uuid_zeo):
+    def _get_csv_arr_refmat(self, cifLine, zeo_iri):
         """
         Storage of additional information usually available only for
         the reference materials.
@@ -332,33 +323,33 @@ class OntoZeolite:
         #print("processing framework refmat:", framework)
         if "Channels" in refmat:
             for ich, channel in enumerate(refmat["Channels"]):
-                uuid_chan, _ = self.uuidDB.addUUID("Channel",
+                chan_iri, _ = self.uuidDB.addUUID("Channel",
                                "Channel_" + framework + "_" + str(ich))
 
-                output.append([uuid_chan, "Instance", "Channel",
+                output.append([chan_iri, "Instance", "Channel",
                                "", "", ""])
 
-                output.append([uuid_zeo, "Instance", uuid_chan,
+                output.append([zeo_iri, "Instance", chan_iri,
                                zeoOntoPrefix + "hasChannel", "", ""])
 
                 output.append([zeoOntoPrefix + "hasDirection",
-                               "Data Property", uuid_chan, "",
+                               "Data Property", chan_iri, "",
                                channel["dir"].strip(), "string"])
 
                 output.append([zeoOntoPrefix + "hasDirection",
-                               "Data Property", uuid_chan, "",
+                               "Data Property", chan_iri, "",
                                channel["dir"].strip(), "string"])
 
                 output.append([zeoOntoPrefix + "hasSizeMin",
-                               "Data Property", uuid_chan, "",
+                               "Data Property", chan_iri, "",
                                channel["sizeMin"], "decimal"])
 
                 output.append([zeoOntoPrefix + "hasSizeMax",
-                               "Data Property", uuid_chan, "",
+                               "Data Property", chan_iri, "",
                                channel["sizeMax"], "decimal"])
 
                 output.append([zeoOntoPrefix + "hasTAtomsInRing",
-                               "Data Property", uuid_chan, "",
+                               "Data Property", chan_iri, "",
                                channel["tring"], "integer"])
 
 
@@ -381,7 +372,7 @@ class OntoZeolite:
                                         " FrameworkDensity %s", framework)
 
                     fr_dens.setValue(value=density["value"], unit=unit)
-                    output += fr_dens.get_csv_arr(uuid_zeo,
+                    output += fr_dens.get_csv_arr(zeo_iri,
                               zeoOntoPrefix + "hasFrameworkDensity")
                 else:
                     logging.error(" missing value or unit in FW density" +
@@ -390,7 +381,7 @@ class OntoZeolite:
         if "Refs" in refmat:
             if "doi" in refmat["Refs"]:
                 output.append([zeoOntoPrefix + "hasDoi",
-                               "Data Property", uuid_zeo, "",
+                               "Data Property", zeo_iri, "",
                                refmat["Refs"]["doi"], "string"])
             else:
                 logging.warning(" Missing doi in ref material %s", framework)
@@ -520,29 +511,28 @@ class OntoZeolite:
         cifLine - a single line from the csv file "cifs.csv".
         matLine -  a sngle line from the csv file "izamat.csv".
         """
-        # logging.error(" Not implemented OntoZeolite.get_csv_arr_material():" +
-        #              " '%s', framework: '%s'.", cifLine[0], cifLine[1])
+
         output = []
 
-        uuid_zeo, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliticMaterial",
+        zeo_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliticMaterial",
                                           #"Zeolite_" + cifLine[0])
                                           self.abox_prefix + "Zeolite_" + matLine[17])
 
-        output.append([uuid_zeo, "Instance", zeoOntoPrefix + "ZeoliticMaterial", "", "", ""])
-        output.append([subject, "Instance", uuid_zeo, predicate, "", ""])
+        output.append([zeo_iri, "Instance", zeoOntoPrefix + "ZeoliticMaterial", "", "", ""])
+        output.append([subject, "Instance", zeo_iri, predicate, "", ""])
                        #"hasZeoliticMaterial", "", ""])
 
         output.append([ontoSpeciesPrefix + "name",
                         #zeoOntoPrefix + "hasFrameworkCode",
-                        "Data Property", uuid_zeo, "",
+                        "Data Property", zeo_iri, "",
                         matLine[1], "string"])
 
         output.append([zeoOntoPrefix + "isHypothetic",
-                       "Data Property", uuid_zeo, "", False, "boolean"])
+                       "Data Property", zeo_iri, "", False, "boolean"])
 
         if matLine[6] != "":
                 output.append([zeoOntoPrefix + "hasChemicalFormula",
-                           "Data Property", uuid_zeo, "",
+                           "Data Property", zeo_iri, "",
                            matLine[6], "string"])
 
         # Implementation of output.append([hasGuestMol]):
@@ -550,7 +540,7 @@ class OntoZeolite:
         if guest:
             output.append([guest["name_uuid"], "Instance",
                            ontoSpeciesPrefix + "CompoundIRI", "", "", ""]) # This is external..
-            output.append([uuid_zeo, "Instance", guest["name_uuid"],
+            output.append([zeo_iri, "Instance", guest["name_uuid"],
                            zeoOntoPrefix + "hasGuestCompound", "", ""])
 
             if "name" in guest:
@@ -566,8 +556,6 @@ class OntoZeolite:
         elements = self._get_elements_iri(matLine)
 
         for el, el_iri in elements:
-            #print(el_iri)
-            #output.append([el_iri, "Instance", "http:", "", "", ""])
             """ Moved to ontocrystal_ontospecies:
             output.append([el_iri, "Instance",
                            #ontoSpeciesPrefix + "Element",
@@ -591,43 +579,36 @@ class OntoZeolite:
                            el, "string"])
             """
 
-            uuid_atom, _ = self.uuidDB.addUUID("osElement",
+            atom_iri, _ = self.uuidDB.addUUID("osElement",
                                                "osElement_" + el)
 
-            output.append([uuid_atom, "Instance", 
+            output.append([atom_iri, "Instance", 
                            zeoOntoPrefix + "ChemicalComponent", "", "", ""])
 
-            output.append([uuid_atom, "Instance", el_iri,
+            output.append([atom_iri, "Instance", el_iri,
                            ontoSpeciesPrefix + "isInstanceOf", "", ""])
 
-            output.append([uuid_zeo, "Instance", uuid_atom,
+            output.append([zeo_iri, "Instance", atom_iri,
                            zeoOntoPrefix + "hasChemicalComponent", "", ""])
-
-
-        # Implementation of output.append([hasFormula])
-
-        # Implementation of output.append([hasElements])
-        # Implementation of output.append([hasBibRef])
 
         if cifLine[3].upper() == "TRUE":
             value = True
         else:
             value = False
         output.append([zeoOntoPrefix + "isReferenceZeolite",
-                       "Data Property", uuid_zeo, "", value, "boolean"])
+                       "Data Property", zeo_iri, "", value, "boolean"])
 
         if value:
-            output += self._get_csv_arr_refmat(cifLine, uuid_zeo)
+            output += self._get_csv_arr_refmat(cifLine, zeo_iri)
         
-        #output.append(
         """
         output.append([zeoOntoPrefix + "isMineral",
                        "Data Property",
-                       uuid_zeo, "", False, "boolean"])
+                       zeo_iri, "", False, "boolean"])
 
         output.append([zeoOntoPrefix + "isSynthetic",
                        "Data Property",
-                       uuid_zeo, "", False, "boolean"])
+                       zeo_iri, "", False, "boolean"])
         """
 
         return output
@@ -667,10 +648,10 @@ class OntoZeolite:
                           " in OntoZeolite.get_csv_arr_recipe().", filePath)
             return output
 
-        uuid_recipe, _ = self.uuidDB.addUUID("Recipe", "Recipe_" + cifLine[0])
+        recipe_iri, _ = self.uuidDB.addUUID("Recipe", "Recipe_" + cifLine[0])
 
-        output.append([uuid_recipe, "Instance", "Recipe", "", "", ""])
-        output.append([subject, "Instance", uuid_recipe, "hasRecipe", "", ""])
+        output.append([recipe_iri, "Instance", "Recipe", "", "", ""])
+        output.append([subject, "Instance", recipe_iri, "hasRecipe", "", ""])
 
         # got_batch_comp = False
         # key_batch_comp = "Batch Composition"
@@ -699,29 +680,29 @@ class OntoZeolite:
         for key in sections:
             if "Batch Preparation" == key:
                 output += self._get_csv_arr_batch_prep(sections[key],
-                                                       uuid_recipe)
+                                                       recipe_iri)
             elif "Product Recovery" == key:
                 output += self._get_csv_arr_prod_recov(sections[key],
-                                                       uuid_recipe)
+                                                       recipe_iri)
             elif "Source Material" == key:
                 output += self._get_csv_arr_source_mat(sections[key],
-                                                       uuid_recipe)
+                                                       recipe_iri)
             elif "Batch Composition" == key:
                 output += self._get_csv_arr_batch_comp(sections[key],
-                                                       uuid_recipe)
+                                                       recipe_iri)
             elif "Crystallization" == key:
                 output += self._get_csv_arr_crystally(sections[key],
-                                                      uuid_recipe)
+                                                      recipe_iri)
             elif "Product Characterization" == key:
                 output += self._get_csv_arr_prod_char(sections[key],
-                                                      uuid_recipe)
+                                                      recipe_iri)
 
             elif "Reference" == key:
                 output += self._get_csv_arr_refs(sections[key],
-                                                 uuid_recipe, filePath)
+                                                 recipe_iri, filePath)
             elif "Note" == key:
-                print(">>>>>>>>>>>>>>>>>>>>>>>", key, cifLine)
-                output += self._get_csv_arr_note(sections[key], uuid_recipe)
+                print("Warning: found a note for recipe:", key, cifLine)
+                output += self._get_csv_arr_note(sections[key], recipe_iri)
 
             else:
                 print("    not processed recipe '" + key + "'.")
@@ -742,9 +723,8 @@ class OntoZeolite:
                 txtBatchComp = line[len(keyBatchComp) :].strip()
 
                 output.append([zeoOntoPrefix + "hasBatchComposition", \
-                                 "Data Property", uuid_recipe, "", \
+                                 "Data Property", recipe_iri, "", \
                                  txtBatchComp, "string"])
-
 
             if short.startswith(keySourceMat.lower()):
                 gotSourceMat = True
@@ -752,7 +732,7 @@ class OntoZeolite:
                 il += dline
                 for mat in sourceMat:
                     output.append([zeoOntoPrefix + "hasSourceMaterial", \
-                                 "Data Property", uuid_recipe, "", \
+                                 "Data Property", recipe_iri, "", \
                                  mat, "string"])
 
 
@@ -979,19 +959,19 @@ class OntoZeolite:
 
         #print("topo_data ", topo_data["Framework"])
 
-        uuid_zeotopo, _ = self.uuidDB.addUUID("ZeoliteTopology",
+        zeotopo_iri, _ = self.uuidDB.addUUID("ZeoliteTopology",
                                               "ZeoTopology_" + code)
 
-        output.append([uuid_zeotopo, "Instance", "ZeoliteTopology",
+        output.append([zeotopo_iri, "Instance", "ZeoliteTopology",
                        "", "", ""])
 
-        output.append([subject, "Instance", uuid_zeotopo, predicate, "", ""])
+        output.append([subject, "Instance", zeotopo_iri, predicate, "", ""])
 
         if "RDLS" in topo_data["CellParameters"]:
             # Distance Least Squares
             dls = topo_data["CellParameters"]["RDLS"]
             output.append([zeoOntoPrefix + "hasRDLS",
-                       "Data Property", uuid_zeotopo, "",
+                       "Data Property", zeotopo_iri, "",
                        float(dls), "decimal"])
         else:
             logging.error(" Missing RDLS in the IZA-DATA file")
@@ -999,17 +979,17 @@ class OntoZeolite:
 
         if "TAtoms" in topo_data:
             for ia, atom in enumerate(topo_data["TAtoms"]):
-                uuid_tatom, _ = self.uuidDB.addUUID(zeoOntoPrefix + "TAtom",
+                tatom_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "TAtom",
                                 self.abox_prefix + "TAtom_" + code + "_" + str(ia))
 
-                output.append([uuid_tatom, "Instance", zeoOntoPrefix + "TAtom", "", "", ""])
-                output.append([uuid_zeotopo, "Instance", uuid_tatom,
+                output.append([tatom_iri, "Instance", zeoOntoPrefix + "TAtom", "", "", ""])
+                output.append([zeotopo_iri, "Instance", tatom_iri,
                                zeoOntoPrefix + "hasTAtom", "", ""])
 
                 if "TAtomName" in atom:
                     if "Name" in atom["TAtomName"]:
                         output.append([zeoOntoPrefix + "hasTAtomName",
-                                       "Data Property", uuid_tatom, "",
+                                       "Data Property", tatom_iri, "",
                                        atom["TAtomName"]["Name"], "string"])
                     else:
                         logging.error(" Broken IZA data, missing" +
@@ -1017,7 +997,7 @@ class OntoZeolite:
 
                     if "Id" in atom["TAtomName"]:
                         output.append([zeoOntoPrefix + "hasTAtomIndex",
-                                       "Data Property", uuid_tatom, "",
+                                       "Data Property", tatom_iri, "",
                                        atom["TAtomName"]["Id"], "integer"])
                     else:
                         logging.error(" Broken IZA data, missing" +
@@ -1038,7 +1018,7 @@ class OntoZeolite:
 
                     vec2.addComponentList(valList=atom["CoordinateSequence"])
 
-                    output += vec2.get_csv_arr(uuid_tatom,
+                    output += vec2.get_csv_arr(tatom_iri,
                                                zeoOntoPrefix + "hasCoordinateSequence")
 
                 else:
@@ -1047,29 +1027,29 @@ class OntoZeolite:
 
                 if "VertexSymbol" in atom:
                     for iv, vs in enumerate(atom["VertexSymbol"]):
-                        uuid_vert_symb, _ = self.uuidDB.addUUID(
+                        vert_symb_iri, _ = self.uuidDB.addUUID(
                             zeoOntoPrefix + "VertexSymbol",
                             self.abox_prefix + "Vert_Symb_" + code + "_" + str(ia) + "_" + str(iv))
 
-                        output.append([uuid_vert_symb, "Instance",
+                        output.append([vert_symb_iri, "Instance",
                                        zeoOntoPrefix + "VertexSymbol", "", "", ""])
 
-                        output.append([uuid_tatom, "Instance", uuid_vert_symb,
+                        output.append([tatom_iri, "Instance", vert_symb_iri,
                                        zeoOntoPrefix + "hasVertexSymbol",
                                        "", ""])
 
                         output.append([zeoOntoPrefix + "hasSymbolPosition",
-                                       "Data Property", uuid_vert_symb, "",
+                                       "Data Property", vert_symb_iri, "",
                                        iv + 1, "integer"])
 
                         if "ring" in vs:
                             output.append([zeoOntoPrefix + "hasRingSize",
-                                           "Data Property", uuid_vert_symb, "",
+                                           "Data Property", vert_symb_iri, "",
                                            vs["ring"], "integer"])
 
                         if "count" in vs:
                             output.append([zeoOntoPrefix + "hasRingCount",
-                                           "Data Property", uuid_vert_symb, "",
+                                           "Data Property", vert_symb_iri, "",
                                            vs["count"], "integer"])
 
                 else:
@@ -1086,7 +1066,7 @@ class OntoZeolite:
                 logging.error(" Unknown unit '%s' in SphereDiameter for" +
                               " zeolite '%s'", sphere["unit"], code)
 
-            sphere_uuid = ocdt.OntoVector(class_name="SphereDiameter",
+            sphere_vec = ocdt.OntoVector(class_name="SphereDiameter",
                                           item_name="sphere_diam_" + code,
                                           tbox_prefix=zeoOntoPrefix,
                                           abox_prefix=self.abox_prefix,
@@ -1094,28 +1074,28 @@ class OntoZeolite:
                                           uuidDB=self.uuidDB)
 
             if "included" in sphere:
-                sphere_uuid.addComponent(label="included",
+                sphere_vec.addComponent(label="included",
                                          value=sphere["included"])  # , unit=unit)
             else:
                 logging.error(" Missing 'included' SphereDiameter for '%s'.",
                               code)
             if "a" in sphere:
-                sphere_uuid.addComponent(label="a",
+                sphere_vec.addComponent(label="a",
                                          value=sphere["a"])
             else:
                 logging.error(" Missing 'a' SphereDiameter for '%s'.", code)
             if "b" in sphere:
-                sphere_uuid.addComponent(label="b",
+                sphere_vec.addComponent(label="b",
                                          value=sphere["b"])
             else:
                 logging.error(" Missing 'b' SphereDiameter for '%s'.", code)
             if "c" in sphere:
-                sphere_uuid.addComponent(label="c",
+                sphere_vec.addComponent(label="c",
                                          value=sphere["c"])
             else:
                 logging.error(" Missing 'c' SphereDiameter for '%s'.", code)
 
-            output += sphere_uuid.get_csv_arr(uuid_zeotopo,
+            output += sphere_vec.get_csv_arr(zeotopo_iri,
                       zeoOntoPrefix + "hasSphereDiameter")
 
         else:
@@ -1152,7 +1132,7 @@ class OntoZeolite:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasAccessibleVolumePerCell")
                 # logging.error(" >>>Writing data about AccessVolume %s", code)
 
@@ -1182,7 +1162,7 @@ class OntoZeolite:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasAccessibleVolume")
                 # logging.error(" >>>Writing data about AccessVolume %s", code)
 
@@ -1222,7 +1202,7 @@ class OntoZeolite:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasOccupiableVolumePerCell")
                 # logging.error(" >>>Writing data about AccessVolume %s", code)
 
@@ -1252,7 +1232,7 @@ class OntoZeolite:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasOccupiableVolume")
                 # logging.error(" >>>Writing data about AccessVolume %s", code)
 
@@ -1292,7 +1272,7 @@ class OntoZeolite:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasAccessibleAreaPerCell")
                 # logging.error(" >>Writing data about AccessVolume %s", code)
 
@@ -1333,7 +1313,7 @@ class OntoZeolite:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasAccessibleAreaPerGram")
                 # logging.error(" >>Writing data about AccessArea %s", code)
 
@@ -1374,7 +1354,7 @@ class OntoZeolite:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasOccupiableAreaPerCell")
                 # logging.error(" >Writing data about AccessAreaCell %s", code)
 
@@ -1414,7 +1394,7 @@ class OntoZeolite:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasOccupiableAreaPerGram")
                 # logging.error(" >>Writing data about AccessArea %s", code)
 
@@ -1457,7 +1437,7 @@ class OntoZeolite:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasSpecificOccupiableArea")
                 # logging.error(" >>>Writing about SpecifAccessArea %s", code)
 
@@ -1500,7 +1480,7 @@ class OntoZeolite:
 
             if valid_data:
                 vol.setValue(value=value, unit=unit)
-                output += vol.get_csv_arr(uuid_zeotopo,
+                output += vol.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasSpecificAccessibleArea")
                 # logging.error(" >>Writing about SpecifAccessVol %s", code)
 
@@ -1542,7 +1522,7 @@ class OntoZeolite:
                 # FIXME: delete from topology (this is backwards compatibility)
                 output += dens.get_csv_arr(subject,
                           zeoOntoPrefix + "hasDensity")
-                #output += dens.get_csv_arr(uuid_zeotopo,
+                #output += dens.get_csv_arr(zeotopo_iri,
                 #          zeoOntoPrefix + "hasDensity")
 
         elif "SpecificOccupiableArea" in topo_data and \
@@ -1574,7 +1554,7 @@ class OntoZeolite:
                 output += dens.get_csv_arr(subject,
                           zeoOntoPrefix + "hasDensity")
 
-                output += dens.get_csv_arr(uuid_zeotopo,
+                output += dens.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasDensity")
         else:
             logging.error(" Broken IZA data, missing" +
@@ -1593,25 +1573,20 @@ class OntoZeolite:
                     nCBU += len(topo_data["CompositeBU"][key])
 
                 if nCBU > 0:
-                    uuid_cbu, _ = self.uuidDB.addUUID("CompositeBU",
+                    cbu_iri, _ = self.uuidDB.addUUID("CompositeBU",
                                                       "CompositeBU_" + code)
-                    output.append([uuid_cbu, "Instance", "CompositeBU",
+                    output.append([cbu_iri, "Instance", "CompositeBU",
                                    "", "", ""])
-                    output.append([uuid_zeotopo, "Instance", uuid_cbu,
+                    output.append([zeotopo_iri, "Instance", cbu_iri,
                                    zeoOntoPrefix + "hasCompositeBU",
                                    "", ""])
 
                 if "cages" in topo_data["CompositeBU"]:
                     cages = topo_data["CompositeBU"]["cages"]
-                    #if isinstance(cages, list) and len(cages) > 0:
-                    #    uuid_cages, _ = self.uuidDB.addUUID("CompositeBU",
-                    #                      "CompositeBU_" + code)
-                    #    output.append([uuid_cages, "Instance", "CompositeBU", "", "", ""])
-                    #    output.append([uuid_cbu, "Instance", uuid_cages, "hasCages", "", ""])
 
                     for cage in cages:
                         output.append([zeoOntoPrefix + "hasCage",
-                                       "Data Property", uuid_cbu, "",
+                                       "Data Property", cbu_iri, "",
                                        cage, "string"])
 
                 if "t-cages" in topo_data["CompositeBU"]:
@@ -1619,7 +1594,7 @@ class OntoZeolite:
 
                     for cage in cages:
                         output.append([zeoOntoPrefix + "hasTCage",
-                                       "Data Property", uuid_cbu, "",
+                                       "Data Property", cbu_iri, "",
                                        cage, "string"])
 
                 if "chain" in topo_data["CompositeBU"]:
@@ -1627,7 +1602,7 @@ class OntoZeolite:
 
                     for cage in cages:
                         output.append([zeoOntoPrefix + "hasChain",
-                                       "Data Property", uuid_cbu, "",
+                                       "Data Property", cbu_iri, "",
                                        cage, "string"])
 
             else:
@@ -1651,7 +1626,7 @@ class OntoZeolite:
                     #print(">>>> sbu", sbu)
 
                     output.append([zeoOntoPrefix + "hasSecondaryBU",
-                                   "Data Property", uuid_zeotopo, "",
+                                   "Data Property", zeotopo_iri, "",
                                    sbu, "string"])
 
             else:
@@ -1675,7 +1650,7 @@ class OntoZeolite:
 
                 abcs = topo_data["ABCSequence"][0]
                 output.append([zeoOntoPrefix + "hasABCSequence",
-                               "Data Property", uuid_zeotopo, "",
+                               "Data Property", zeotopo_iri, "",
                                abcs, "string"])
 
 #                rsize = ocdt.OntoVector(class_name="RingSizes",
@@ -1686,7 +1661,7 @@ class OntoZeolite:
 #
 #                rsize.addComponentList(valList=topo_data["RingSizes"])
 
-#                output += rsize.get_csv_arr(uuid_zeotopo,
+#                output += rsize.get_csv_arr(zeotopo_iri,
 #                          zeoOntoPrefix + "hasRingSizes")
 
             else:
@@ -1714,7 +1689,7 @@ class OntoZeolite:
 
                 rsize.addComponentList(valList=topo_data["RingSizes"])
 
-                output += rsize.get_csv_arr(uuid_zeotopo,
+                output += rsize.get_csv_arr(zeotopo_iri,
                           zeoOntoPrefix + "hasRingSizes")
 
             else:
@@ -1745,7 +1720,7 @@ class OntoZeolite:
                                         " FrameworkDensity %s", code)
 
                     fr_dens.setValue(value=density["value"], unit=unit)
-                    output += fr_dens.get_csv_arr(uuid_zeotopo,
+                    output += fr_dens.get_csv_arr(zeotopo_iri,
                               zeoOntoPrefix + "hasFrameworkDensity")
                 else:
                     logging.error(" xxxxxxxxxxxxx ontozeolite.py %s", code)
@@ -1756,17 +1731,17 @@ class OntoZeolite:
 
         if "TopologicalDensity" in topo_data:
             if isinstance(topo_data["TopologicalDensity"], dict):
-                uuid_tden, _ = self.uuidDB.addUUID(zeoOntoPrefix + "TopologicalDensity",
+                tden_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "TopologicalDensity",
                                                    "TopoDens_" + code)
-                output.append([uuid_tden, "Instance", zeoOntoPrefix + "TopologicalDensity",
+                output.append([tden_iri, "Instance", zeoOntoPrefix + "TopologicalDensity",
                                "", "", ""])
-                output.append([uuid_zeotopo, "Instance", uuid_tden,
+                output.append([zeotopo_iri, "Instance", tden_iri,
                                zeoOntoPrefix + "hasTopologicalDensity",
                                "", ""])
 
             if "valueTD" in topo_data["TopologicalDensity"]:
                 output.append([zeoOntoPrefix + "hasValueTD",
-                               "Data Property", uuid_tden, "",
+                               "Data Property", tden_iri, "",
                                topo_data["TopologicalDensity"]["valueTD"],
                                "decimal"])
             else:
@@ -1776,7 +1751,7 @@ class OntoZeolite:
 
             if "valueTD10" in topo_data["TopologicalDensity"]:
                 output.append([zeoOntoPrefix + "hasValueTD10",
-                               "Data Property", uuid_tden, "",
+                               "Data Property", tden_iri, "",
                                topo_data["TopologicalDensity"]["valueTD10"],
                                "decimal"])
             else:

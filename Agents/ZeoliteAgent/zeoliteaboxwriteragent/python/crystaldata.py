@@ -356,24 +356,24 @@ class AtomInformation:
 
         if new_uuid:
             # "Atom_" + 
-            uuid_atom = \
+            atom_iri = \
                         self.abox_prefix + self.cifName + "_" + atomLabel + "_" + new_uuid
         else:
-            uuid_atom, _ = self.uuidDB.addUUID(crystOntoPrefix + "AtomSite",
+            atom_iri, _ = self.uuidDB.addUUID(crystOntoPrefix + "AtomSite",
                                                "Atom_" + self.cifName + "_" + atomLabel)
-        #uuid_atom = tools.getUUID(self.uuidDB, "AtomSite", "Atom_" + self.cifName + atomLabel)
+        #atom_iri = tools.getUUID(self.uuidDB, "AtomSite", "Atom_" + self.cifName + atomLabel)
 
-        #print("==== crystdata, atom:", uuid_atom)
-        output.append([uuid_atom, "Instance", crystOntoPrefix + "AtomSite",
+        #print("==== crystdata, atom:", atom_iri)
+        output.append([atom_iri, "Instance", crystOntoPrefix + "AtomSite",
                        "", "", ""])
 
         # Define relation between the class instances:
-        output.append([subject, "Instance", uuid_atom, predicate, "", ""])
+        output.append([subject, "Instance", atom_iri, predicate, "", ""])
 
         ### Setting the available data:
         if self.cif_label is not None:
             output.append([crystOntoPrefix + "hasAtomSiteLabel",
-                           "Data Property", uuid_atom, "",
+                           "Data Property", atom_iri, "",
                            self.cif_label, "xsd:string"])
             #print("cif_label =", self.cif_label)
         #else:
@@ -381,16 +381,16 @@ class AtomInformation:
 
         if self.occupancy is not None:
             output.append([crystOntoPrefix + "hasOccupancy",
-                           "Data Property", uuid_atom, "",
+                           "Data Property", atom_iri, "",
                            self.occupancy, "xsd:decimal"])
 
         if self.element is not None:
             # TODO add species
             #output.append("")
             #output.append([crystOntoPrefix + "has", "Data Property",
-            #                 uuid_atom, "", self.occupancy, "xsd:decimal"])
+            #                 atom_iri, "", self.occupancy, "xsd:decimal"])
             #output.append([crystOntoPrefix + "hasAtomSiteLabel",
-            #               "Data Property", uuid_atom,
+            #               "Data Property", atom_iri,
             #               "", self.element, "xsd:string"])
             pass
 
@@ -414,7 +414,7 @@ class AtomInformation:
             #atomPos.addComponent(label = "x", value = str(round(float(self.frac[0]), 10))) #, error = error)
             #atomPos.addComponent(label = "y", value = str(round(float(self.frac[1]), 10))) #, error = error)
             #atomPos.addComponent(label = "z", value = str(round(float(self.frac[2]), 10))) #, error = error)
-            output += atomPos.get_csv_arr(uuid_atom,
+            output += atomPos.get_csv_arr(atom_iri,
                                           crystOntoPrefix + "hasFractionalPosition",
                                           new_uuid=new_uuid)
 
@@ -439,7 +439,7 @@ class AtomInformation:
             #atomPos.addComponent(label = "x", value = str(round(float(self.cart[0]), 10))) #, error = error)
             #atomPos.addComponent(label = "y", value = str(round(float(self.cart[1]), 10))) #, error = error)
             #atomPos.addComponent(label = "z", value = str(round(float(self.cart[2]), 10))) #, error = error)
-            output += atomPos.get_csv_arr(uuid_atom,
+            output += atomPos.get_csv_arr(atom_iri,
                                           crystOntoPrefix + "hasCartesianPosition",
                                           new_uuid=new_uuid)
 
@@ -898,35 +898,8 @@ class CrystalData:
         """
         if isinstance(sga._space_group_data, dict):
             if "number" in sga._space_group_data.keys():
-
                 self.symmLatticeSystem = sga.get_crystal_system()
                 self.symmITNumber = sga.get_space_group_number()
-                """
-                print("SG number:", sga._space_group_data["number"], sga.get_space_group_number(), sga.get_crystal_system())
-                print("   ", #sga._get_symmetry(),
-                      sga.get_hall(),
-                      sga.get_lattice_type(), #sga.get_symmetry_dataset()
-                      #sga.int_symbol()
-                      #sga._abc_impl)
-                """
-                """
-            #if isinstance(sga.get_crystal_system(), str) :
-            output.append([crystOntoPrefix + "hasLatticeSystem",
-                               "Data Property", uuid_cif_uc, "",
-                               sga.get_crystal_system() , "string"])
-            output.append([crystOntoPrefix + "hasSymmetryNumber",
-                               "Data Property", uuid_cif_uc, "",
-                               sga.get_space_group_number() , "xsd:integer"])
-
-        if self.cifOutput.symmLatticeSystem != None:
-          output += self.cifOutput.symmLatticeSystem.getArr(uuid_uc_r_vec_abc,
-                    crystOntoPrefix + "hasLatticeSystem")
-
-        if self.cifOutput.symmITNumber != None:
-          output += self.cifOutput.symmITNumber.getArr(uuid_uc_r_vec_abc,
-                    crystOntoPrefix + "hasSymmetryNumber")
-
-                """
 
         # === end of CrystalData.evalPyMatGenUnitCell()
 
