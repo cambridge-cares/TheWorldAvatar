@@ -36,6 +36,7 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
 import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -49,44 +50,90 @@ public class Dataset extends AbstractDataObject {
 
     public static final String NAME_KEY = "name";
 
-    @JsonProperty(value = NAME_KEY)
+    @JsonProperty(NAME_KEY)
     @JacksonInject(NAME_KEY)
-    private final String name = null;
+    private final String name;
 
     @JsonProperty
-    private final Optional<Path> datasetDirectory = Optional.empty();
+    private final Optional<Path> datasetDirectory;
 
     @JsonProperty
-    private final Optional<String> database = Optional.empty();
+    private final Optional<String> database;
     @JsonProperty
-    private final Optional<Namespace> namespace = Optional.empty();
-    @JsonProperty(value = "workspace")
-    private final Optional<String> workspaceName = Optional.empty();
+    private final Optional<Namespace> namespace;
+    @JsonProperty("workspace")
+    private final Optional<String> workspaceName;
 
-    @JsonProperty(value = "externalDatasets")
+    @JsonProperty("externalDatasets")
     private final Optional<List<String>> externalDatasetNames;
     @JsonIgnore
     private final List<Dataset> externalDatasets = new ArrayList<>();
     @JsonProperty
-    private final Optional<List<DataSubset>> dataSubsets = Optional.empty();
-    @JsonProperty(value = "styles")
-    private final Optional<List<GeoServerStyle>> geoserverStyles = Optional.empty();
-    @JsonProperty(value = "mappings")
-    private final Optional<List<String>> ontopMappings = Optional.empty();
+    private final Optional<List<DataSubset>> dataSubsets;
+
+    @JsonProperty("styles")
+    private final Optional<List<GeoServerStyle>> geoserverStyles;
     @JsonProperty
-    private final Optional<StaticGeoServerData> staticGeoServerData = Optional.empty();
+    private final Optional<StaticGeoServerData> staticGeoServerData;
+
+    @JsonProperty("mappings")
+    private final Optional<List<String>> ontopMappings;
 
     @JsonProperty
-    private Optional<String> rdfType = Optional.empty();
-
+    private final Optional<String> rdfType;
     @JsonProperty
-    private final Optional<String> baseIRI = Optional.empty();
+    private final Optional<String> baseIRI;
 
     // for dcat cataloging
     @JsonIgnore
     private boolean exists; // used to determine whether this dataset exists in the catalog
     @JsonIgnore
     private String iri; // catalog iri
+
+    @JsonCreator
+    Dataset() {
+        this.name = null;
+        this.datasetDirectory = Optional.empty();
+        this.database = Optional.empty();
+        this.namespace = Optional.empty();
+        this.workspaceName = Optional.empty();
+        this.externalDatasetNames = Optional.empty();
+        this.dataSubsets = Optional.empty();
+        this.geoserverStyles = Optional.empty();
+        this.staticGeoServerData = Optional.empty();
+        this.ontopMappings = Optional.empty();
+        this.rdfType = Optional.empty();
+        this.baseIRI = Optional.empty();
+    }
+
+    Dataset(String name,
+            Optional<String> description,
+            Optional<Path> datasetDirectory,
+            Optional<String> database,
+            Optional<Namespace> namespace,
+            Optional<String> workspaceName,
+            Optional<List<String>> externalDatasetNames,
+            Optional<List<DataSubset>> dataSubsets,
+            Optional<List<GeoServerStyle>> geoserverStyles,
+            Optional<StaticGeoServerData> staticGeoServerData,
+            Optional<List<String>> ontopMappings,
+            boolean skip,
+            Optional<String> rdfType,
+            Optional<String> baseIRI) {
+        super(description, skip);
+        this.name = name;
+        this.datasetDirectory = datasetDirectory;
+        this.database = database;
+        this.namespace = namespace;
+        this.workspaceName = workspaceName;
+        this.externalDatasetNames = externalDatasetNames;
+        this.dataSubsets = dataSubsets;
+        this.geoserverStyles = geoserverStyles;
+        this.staticGeoServerData = staticGeoServerData;
+        this.ontopMappings = ontopMappings;
+        this.rdfType = rdfType;
+        this.baseIRI = baseIRI;
+    }
 
     public String getName() {
         return name;
