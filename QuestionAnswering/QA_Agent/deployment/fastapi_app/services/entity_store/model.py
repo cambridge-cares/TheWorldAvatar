@@ -8,7 +8,7 @@ ENTITIES_INDEX_NAME = "idx:entities"
 
 class LexiconEntry(BaseModel):
     iri: str
-    clsname: str
+    cls: str
     label: str
     surface_forms: List[str] = []
 
@@ -30,5 +30,5 @@ class ELConfig(BaseModel):
 class ELConfigEntry(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    clsname: str
+    cls: str
     el_config: ELConfig

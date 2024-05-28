@@ -118,7 +118,7 @@ class SGDispersionFuncExecutor(Name2Func):
             )
         )
         timestamp = time.time()
-        iris = self.entity_store.link(clsname="Ship", text=text, mmsi=mmsi)
+        iris = self.entity_store.link(cls="Ship", text=text, mmsi=mmsi)
         latency = time.time() - timestamp
         logger.info("Linked IRIs: " + str(iris))
         step = QAStep(

@@ -55,7 +55,7 @@ class SparqlActionExecutor:
                 iri
                 for val in binding.values
                 for iri in self.entity_store.link(
-                    clsname=binding.cls, text=val.text, identifier=val.identifier
+                    cls=binding.cls, text=val.text, identifier=val.identifier
                 )
             ]
             for binding in action.bindings

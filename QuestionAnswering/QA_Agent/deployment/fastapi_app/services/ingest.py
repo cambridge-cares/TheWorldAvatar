@@ -74,9 +74,7 @@ class DataIngester:
             f.write(self.adapter_list_pt.dump_json(data))
 
     def load_unprocessed_data(self, filename: str):
-        print(
-            "Loading unprocessed data {clsname} into memory...".format(clsname=filename)
-        )
+        print("Loading unprocessed data {cls} into memory...".format(cls=filename))
 
         data = [
             self.unprocessed_type.model_validate(datum)
@@ -152,9 +150,7 @@ class DataIngester:
                 data = self.load_processed_data(file.name)
             except:
                 print(
-                    "No cache of processed data for {clsname} found.".format(
-                        clsname=file.name
-                    )
+                    "No cache of processed data for {cls} found.".format(cls=file.name)
                 )
                 data = self.load_unprocessed_data(file.name)
                 data = self.process_data_by_batch(data)

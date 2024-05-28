@@ -7,7 +7,7 @@ from redis.commands.search.field import TextField, VectorField, TagField
 import regex
 
 from services.ingest import DataIngester
-from services.entity_store import get_clsname2config
+from services.entity_store import get_cls2config
 from services.embed import IEmbedder, TritonEmbedder
 from services.redis import does_index_exist
 from services.entity_store.model import (
@@ -45,7 +45,7 @@ def lexicon_preinsert_transform(data: List[LexiconEntryProcessed]):
     docs = [
         {
             "iri": entry.iri,
-            "clsname": entry.clsname,
+            "cls": entry.cls,
             "label": regex.escape(entry.label, special_only=False, literal_spaces=True),
             "surface_forms": [
                 regex.escape(sf, special_only=False, literal_spaces=True)
@@ -61,7 +61,7 @@ def lexicon_preinsert_transform(data: List[LexiconEntryProcessed]):
 def make_entity_search_schema(vector_dim: int):
     return (
         TagField("$.iri", as_name="iri"),
-        TagField("$.clsname", as_name="clsname"),
+        TagField("$.cls", as_name="cls"),
         TextField("$.label", as_name="label"),
         TextField("$.surface_forms.*", as_name="surface_forms"),
         VectorField(
@@ -96,10 +96,10 @@ if __name__ == "__main__":
 
         embedder = TritonEmbedder(url=os.environ["TEXT_EMBEDDING_URL"])
 
-        clsname2config = get_clsname2config()
+        cls2config = get_cls2config()
 
         def process_func(data: List[LexiconEntry]):
-            el_config = clsname2config.get(data[0].clsname)
+            el_config = cls2config.get(data[0].cls)
             make_embedding = (
                 True if el_config and el_config.strategy == "semantic" else False
             )

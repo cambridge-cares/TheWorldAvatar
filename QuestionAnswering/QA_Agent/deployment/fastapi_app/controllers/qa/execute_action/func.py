@@ -3,6 +3,7 @@ from typing import Annotated, Tuple
 from fastapi import Depends
 from services.example_store.model import FuncAction
 from services.funcs.base import Name2Func
+from services.funcs.sg_building import SGBuildingFuncExecutor, get_sgBuilding_funcExec
 from services.funcs.sg_dispersion import (
     SGDispersionFuncExecutor,
     get_sgDispersion_funcExec,
@@ -23,6 +24,9 @@ class FuncActionExecutor:
 
 
 def get_funcAction_executor(
+    sg_building_func_exec: Annotated[
+        SGBuildingFuncExecutor, Depends(get_sgBuilding_funcExec)
+    ],
     sg_dispersion_func_exec: Annotated[
         SGDispersionFuncExecutor, Depends(get_sgDispersion_funcExec)
     ],
@@ -31,5 +35,9 @@ def get_funcAction_executor(
     ],
 ):
     return FuncActionExecutor(
-        name2func_instances=(sg_dispersion_func_exec, sg_carpark_func_exec)
+        name2func_instances=(
+            sg_building_func_exec,
+            sg_dispersion_func_exec,
+            sg_carpark_func_exec,
+        )
     )
