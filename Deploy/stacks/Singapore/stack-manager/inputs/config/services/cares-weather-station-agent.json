@@ -10,7 +10,7 @@
                     "CARESWeatherStation_CLIENTPROPERTIES=/usr/local/tomcat/config/client.properties",
                     "CARESWeatherStation_AGENT_MAPPINGS=/usr/local/tomcat/config/mappings",
                     "LAYERNAME=caresweather",
-                    "DATABASE=caresweather",
+                    "DATABASE=postgres",
                     "GEOSERVER_WORKSPACE=twa"
                 ],
                 "Mounts": [
