@@ -26,17 +26,6 @@ public class ContainerClient extends BaseClient {
         this.dockerClient = dockerClient;
     }
 
-    @Override
-    public final <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
-        writeEndpointConfig(endpointConfig, dockerClient);
-    }
-
-    @Override
-    public final <E extends EndpointConfig> E readEndpointConfig(String endpointName,
-            Class<E> endpointConfigClass) {
-        return readEndpointConfig(endpointName, endpointConfigClass, dockerClient);
-    }
-
     protected final String executeSimpleCommand(String containerId, String... cmd) {
         return dockerClient.executeSimpleCommand(containerId, cmd);
     }
