@@ -243,7 +243,7 @@ function renderScatterPlot(title, traces, parentElem, id) {
 
 
 
-function renderWkt(wktText, parentElem, id) {
+function renderMap(title, wktText, parentElem, id) {
     const raster = new ol.layer.Tile({
         source: new ol.source.OSM()
     })
@@ -334,14 +334,13 @@ const qaDataContainer = (function () {
         render(data) {
             data.forEach((item, i) => {
                 item_type = item["type"]
-                item_data = item["data"]
                 id = `data-item-${i}`
                 if (item_type === "table") {
-                    renderDataTable(vars = item_data["vars"], bindings = item_data["bindings"], parentElem = elem, id = id)
+                    renderDataTable(vars = item["vars"], bindings = item["bindings"], parentElem = elem, id = id)
                 } else if (item_type === "scatter_plot") {
-                    renderScatterPlot(title = item_data["title"], traces = item_data["traces"], parentElem = elem, id = id)
-                } else if (item_type === "wkt_crs84") {
-                    renderWkt(wktText = item_data["wkt_text"], parentElem = elem, id = id)
+                    renderScatterPlot(title = item["title"], traces = item["traces"], parentElem = elem, id = id)
+                } else if (item_type === "map") {
+                    renderMap(title = item["title"], wktText = item["wkt_crs84"], parentElem = elem, id = id)
                 } else {
                     console.log("Unexpected data item: ", item)
                 }
