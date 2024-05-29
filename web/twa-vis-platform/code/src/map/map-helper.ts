@@ -65,17 +65,51 @@ const PLACENAME_LAYERS: string[] = [
  * @param {DataStore} data The data of interest to add to the map.
  */
 export function addData(map: Map, mapSettings: MapSettings, data: DataStore): void {
-   // Parse data configuration and load icons
-   const iconPromise = addIcons(map, mapSettings.icons);
+  // Parse data configuration and load icons
+  const iconPromise = addIcons(map, mapSettings.icons);
 
-   Promise.all([iconPromise]).then(() => {
-     // Once that is done and completed...
-     console.log("Data definitions fetched and parsed.");
+  Promise.all([iconPromise]).then(() => {
+    // Once that is done and completed...
+    console.log("Data definitions fetched and parsed.");
+    // Reset the map
+    resetMap(map);
+    // Plot data
+    addAllSources(map, data);
+    addAllLayers(map, data, mapSettings.imagery);
+  });
+}
 
-     // Plot data
-     addAllSources(map, data);
-     addAllLayers(map, data, mapSettings.imagery);
-   });
+/**
+ * Resets the map to its initial blank state.
+ * 
+ * @param {Map} map The current Mapbox map instance.
+ */
+function resetMap(map: Map): void {
+  const layers: mapboxgl.AnyLayer[] = map.getStyle().layers;
+  const sources: Set<string> = new Set();
+
+  layers.map(layer => {
+    const layerId: string = layer.id;
+    // @ts-expect-error: Ignore TypeScript error for accessing the 'source' property
+    const sourceId: string = layer.source;
+    // Conditional check to protect background and default styles
+    if (layer.type != "background" && sourceId != "composite") {
+      // Remove the layer
+      if (map.getLayer(layerId)) {
+        map.removeLayer(layerId);
+      }
+
+      // Add the source to the set if any exists
+      if (map.getSource(sourceId)) {
+        sources.add(sourceId);
+      }
+    }
+  });
+
+  // Remove sources independently from layers to prevent errors when multiple layers uses the same source
+  sources.forEach(source => {
+    map.removeSource(source);
+  });
 }
 
 /**
