@@ -136,7 +136,7 @@ A sample `controls.json` is:
 
 The filter panel's `resource.json` contains an array of UI elements that must be displayed within the panel. Examples of these elements include the dropdown or input elements. In the `json` file, each UI element must contain the following parameters:
 
-1. `type`: type of UI component. Valid inputs include `input`, `dropdown`.
+1. `type`: type of UI component. Valid inputs include `input`, `dropdown`, `checkbox`.
 2. `label`: parameter name.
 3. `query`: holds query-related configuration that is dependent on the type of UI component.
 
@@ -200,6 +200,38 @@ A sample response group is as follows:
       "label": "Max",
       "filter": "maxarea",
       "type": "number"
+    }
+  ]
+}
+```
+
+> Checkbox element
+
+Checkbox elements serve as filters for hiding/showing the associated features based on their inherent data. This approach is intended to enhance the user experience by reducing the number of duplicate layers (slower rendering) and consolidating all filters into one panel. The `query` parameter holds an array of expressions for setting the filter when toggled.
+
+An example for one checkbox element is as follows:
+
+```json
+{
+  "type": "checkbox",
+  "label": "More than 1000 m2",
+  "query": [
+    {
+      "expression": ["all", [">", ["get", "area"], 1000]]
+    }
+  ]
+}
+```
+
+A sample response is as follows:
+
+```json
+{
+  "type": "checkbox",
+  "label": "More than 1000 m2",
+  "options": [
+    {
+      "expression": ["all", [">", ["get", "area"], 1000]]
     }
   ]
 }

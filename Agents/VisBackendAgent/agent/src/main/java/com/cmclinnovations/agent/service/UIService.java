@@ -13,6 +13,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
+import com.cmclinnovations.agent.model.CheckboxResource;
 import com.cmclinnovations.agent.model.ControlsResource;
 import com.cmclinnovations.agent.model.DropdownResource;
 import com.cmclinnovations.agent.model.InputResource;
@@ -125,6 +126,9 @@ public class UIService {
         LOGGER.debug("Loading initial configuration for {} of type {}...", label, type);
         UIResource currentResource;
         switch (type) {
+          case CheckboxResource.CONFIG_TYPE:
+            currentResource = new CheckboxResource(label);
+            break;
           case DropdownResource.CONFIG_TYPE:
             boolean isRequired = uiNode.path("required").asBoolean();
             currentResource = new DropdownResource(label, isRequired);
@@ -133,9 +137,9 @@ public class UIService {
             currentResource = new InputResource(label);
             break;
           default:
-            LOGGER.error("Invalid type: {} . Only dropdown and input are permitted!", type);
+            LOGGER.error("Invalid type: {} . Only checkbox, dropdown, and input are permitted!", type);
             throw new IllegalArgumentException(
-                "Invalid type: " + type + " . Only dropdown and input are permitted!");
+                "Invalid type: " + type + " . Only checkbox, dropdown, and input are permitted!");
         }
         // Parse the query field with its own array
         JsonNode queryNodes = uiNode.path("query");
@@ -167,8 +171,9 @@ public class UIService {
     for (UIResource resource : uiResources) {
       LOGGER.debug("Getting {} configurations...", resource.getLabel());
       switch (resource.getType()) {
+        case CheckboxResource.CONFIG_TYPE:
         case InputResource.CONFIG_TYPE:
-          // No extra code required for input resources
+          // No extra code required for checkbox and input resources
           break;
         case DropdownResource.CONFIG_TYPE:
           this.getDropdownConfig((DropdownResource) resource);
