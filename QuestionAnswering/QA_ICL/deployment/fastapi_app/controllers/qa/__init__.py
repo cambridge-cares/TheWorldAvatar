@@ -10,8 +10,8 @@ from services.example_store import (
     get_example_store,
 )
 from services.schema_store import SchemaStore, get_schema_store
-from .execute_action import ActionExecMediator, get_actionExec_mediator
-from .translate import Nlq2ActionTranslator, get_nlq2action_translator
+from .execute_data_req import DataReqExecutor, get_dataReq_executor
+from .translate import Nlq2DataReqTranslator, get_nlq2datareq_translator
 
 
 logger = logging.getLogger(__name__)
@@ -22,8 +22,8 @@ class DataSupporter:
         self,
         example_store: ExampleStore,
         schema_store: SchemaStore,
-        translator: Nlq2ActionTranslator,
-        executor: ActionExecMediator,
+        translator: Nlq2DataReqTranslator,
+        executor: DataReqExecutor,
     ):
         self.example_store = example_store
         self.schema_store = schema_store
@@ -64,18 +64,18 @@ class DataSupporter:
 
         timestamp = time.time()
         # KIV: example permutation
-        action = self.translator.translate(
+        data_req = self.translator.translate(
             nlq=query, schema_items=schema_items, examples=examples
         )
         latency = time.time() - timestamp
-        logger.info("Predicted action: " + str(action))
+        logger.info("Predicted data request: " + str(data_req))
         steps.append(
             QAStep(
-                action="nlq2action", arguments=query, results=action, latency=latency
+                action="nlq2datareq", arguments=query, results=data_req, latency=latency
             )
         )
 
-        _steps, data = self.executor.exec(action)
+        _steps, data = self.executor.exec(data_req)
         steps.extend(_steps)
 
         return steps, data
@@ -84,8 +84,8 @@ class DataSupporter:
 def get_data_supporter(
     schema_store: Annotated[SchemaStore, Depends(get_schema_store)],
     example_store: Annotated[ExampleStore, Depends(get_example_store)],
-    translator: Annotated[Nlq2ActionTranslator, Depends(get_nlq2action_translator)],
-    executor: Annotated[ActionExecMediator, Depends(get_actionExec_mediator)],
+    translator: Annotated[Nlq2DataReqTranslator, Depends(get_nlq2datareq_translator)],
+    executor: Annotated[DataReqExecutor, Depends(get_dataReq_executor)],
 ):
     return DataSupporter(
         schema_store=schema_store,

@@ -28,7 +28,7 @@ def csvrow2jsonobj(row: pd.Series):
             raise e
 
         output = {
-            "action_type": "sparql",
+            "type": "sparql",
             **{
                 k: v
                 for k, v in {
@@ -42,13 +42,13 @@ def csvrow2jsonobj(row: pd.Series):
         }
     elif row["target"] == "func":
         output = {
-            "action_type": "func",
+            "type": "func",
             "name": row["func_name"],
             "args": json.loads(row["func_args"]),
         }
     else:
         raise ValueError(f'Unexpected target: {row["target"]}')
-    return {"nlq": row["question"], "action": output}
+    return {"nlq": row["question"], "data_req": output}
 
 
 if __name__ == "__main__":

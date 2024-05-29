@@ -12,8 +12,8 @@ from services.redis import does_index_exist
 from services.example_store.model import (
     EXAMPLES_INDEX_NAME,
     EXAMPLES_KEY_PREFIX,
-    Nlq2ActionExample,
-    Nlq2ActionExampleProcessed,
+    Nlq2DataReqExample,
+    Nlq2DataReqExampleProcessed,
 )
 
 
@@ -22,24 +22,24 @@ EXAMPLES_PROCESS_BATCHSIZE = 512
 EXAMPLES_INSERT_BATCHSIZE = 512
 
 
-def process_examples(embedder: IEmbedder, examples: List[Nlq2ActionExample]):
+def process_examples(embedder: IEmbedder, examples: List[Nlq2DataReqExample]):
     embeddings = (
         embedder([example.nlq for example in examples]).astype(np.float32).tolist()
     )
     processed_examples = [
-        Nlq2ActionExampleProcessed(
-            nlq=example.nlq, action=example.action, nlq_embedding=embedding
+        Nlq2DataReqExampleProcessed(
+            nlq=example.nlq, data_req=example.data_req, nlq_embedding=embedding
         )
         for example, embedding in zip(examples, embeddings)
     ]
     return processed_examples
 
 
-def transform_examples_preinsert(examples: List[Nlq2ActionExampleProcessed]):
+def transform_examples_preinsert(examples: List[Nlq2DataReqExampleProcessed]):
     return [
         {
             "nlq": example.nlq,
-            "action": example.action.model_dump_json(),
+            "data_req": example.data_req.model_dump_json(),
             "nlq_embedding": example.nlq_embedding,
         }
         for example in examples
@@ -82,8 +82,8 @@ if __name__ == "__main__":
 
         ingester = DataIngester(
             dirname=EXAMPLES_DIRNAME,
-            unprocessed_type=Nlq2ActionExample,
-            processed_type=Nlq2ActionExampleProcessed,
+            unprocessed_type=Nlq2DataReqExample,
+            processed_type=Nlq2DataReqExampleProcessed,
             process_func=lambda examples: process_examples(
                 embedder=embedder, examples=examples
             ),

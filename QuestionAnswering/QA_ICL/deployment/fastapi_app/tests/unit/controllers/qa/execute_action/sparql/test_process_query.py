@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 
 
 from services.entity_store  import EntityStore
-from controllers.qa.execute_action.sparql.process_query import SparqlQueryProcessor
+from controllers.qa.execute_data_req.sparql.process_query import SparqlQueryProcessor
 from tests.exceptions import UnexpectedMethodCallError
 
 

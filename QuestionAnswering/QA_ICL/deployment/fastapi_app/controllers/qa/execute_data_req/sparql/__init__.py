@@ -8,7 +8,7 @@ from fastapi import Depends
 from constants.prefixes import PREFIX_NAME2URI
 from controllers.qa.model import QAStep
 from services.entity_store import EntityStore, get_entity_store
-from services.example_store.model import SparqlAction
+from services.example_store.model import SparqlDataRequest
 from services.kg import KgClient
 from services.model import TableDataItem
 from utils.collections import FrozenDict
@@ -24,7 +24,7 @@ from .process_response import (
 logger = logging.getLogger(__name__)
 
 
-class SparqlActionExecutor:
+class SparqlDataReqExecutor:
     PREFIXES = (
         "\n".join(
             "PREFIX {name}: <{uri}>".format(name=name, uri=uri)
@@ -45,10 +45,10 @@ class SparqlActionExecutor:
         self.query_processor = query_processor
         self.response_processor = response_processor
 
-    def exec(self, action: SparqlAction):
+    def exec(self, req: SparqlDataRequest):
         steps: List[QAStep] = []
 
-        logger.info("Performing entity linking for bindings: " + str(action.bindings))
+        logger.info("Performing entity linking for bindings: " + str(req.bindings))
         timestamp = time.time()
         var2iris = {
             binding.var: [
@@ -58,21 +58,21 @@ class SparqlActionExecutor:
                     cls=binding.cls, text=val.text, identifier=val.identifier
                 )
             ]
-            for binding in action.bindings
+            for binding in req.bindings
         }
         latency = time.time() - timestamp
         logger.info("IRIs: " + str(var2iris))
 
-        logger.info("Input query:\n" + action.query)
+        logger.info("Input query:\n" + req.query)
         timestamp = time.time()
-        query = self.query_processor.process(sparql=action.query, bindings=var2iris)
+        query = self.query_processor.process(sparql=req.query, bindings=var2iris)
         latency = time.time() - timestamp
         logger.info("Processed query:\n" + query)
         steps.append(
             QAStep(
                 action="postprocess_sparql",
                 arguments={
-                    "sparql": action.query,
+                    "sparql": req.query,
                     "bindings": var2iris,
                 },
                 results=query,
@@ -82,15 +82,15 @@ class SparqlActionExecutor:
 
         prefixed_query = self.PREFIXES + query
         logger.info(
-            "Executing query at: " + self.ns2kg[action.namespace].sparql.endpoint
+            "Executing query at: " + self.ns2kg[req.namespace].sparql.endpoint
         )
         timestamp = time.time()
-        res = self.ns2kg[action.namespace].query(prefixed_query)
+        res = self.ns2kg[req.namespace].query(prefixed_query)
         latency = time.time() - timestamp
         steps.append(
             QAStep(
                 action="execute_sparql",
-                arguments=dict(namespace=action.namespace, query=query),
+                arguments=dict(namespace=req.namespace, query=query),
                 latency=latency,
             )
         )
@@ -99,14 +99,14 @@ class SparqlActionExecutor:
         table = TableDataItem(vars=vars, bindings=bindings)
 
         self.response_processor.process(
-            nodes_to_augment=action.bindings + action.nodes_to_augment, table=table
+            nodes_to_augment=req.bindings + req.nodes_to_augment, table=table
         )
 
         return steps, [table]
 
 
 @cache
-def get_sparqlAction_executor(
+def get_sparqlReq_executor(
     ns2kg: Annotated[FrozenDict[str, KgClient], Depends(get_ns2kg)],
     entity_store: Annotated[EntityStore, Depends(get_entity_store)],
     query_processor: Annotated[
@@ -116,7 +116,7 @@ def get_sparqlAction_executor(
         SparqlResponseProcessor, Depends(get_sparqlRes_processor)
     ],
 ):
-    return SparqlActionExecutor(
+    return SparqlDataReqExecutor(
         ns2kg=ns2kg,
         entity_store=entity_store,
         query_processor=query_processor,
