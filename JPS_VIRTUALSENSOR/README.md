@@ -61,7 +61,7 @@ An instance can emit multiple pollutants, the class of pollutant ID needs to be 
 - <https://www.theworldavatar.com/kg/ontodispersion/CO2>
 
 ## Important for visualisation if not deployed locally
-Modify instances of `http://localhost:3838` in [data.json] to the external URL of where the stack is going to be deployed.
+Modify instances of `http://localhost:4242` in [data.json] to the external URL of where the stack is going to be deployed.
 
 ## Start up the stack
 
@@ -80,7 +80,7 @@ There is an option in ShipInputAgent to pull data from https://aisstream.io/, th
 
 - Obtain an API key from this service at https://aisstream.io/authenticate.
 - Parameters relevant to this API are set in [ship-input-agent.json]
-    1) USE_LIVE_DATA - if this is set to true, ShipInputAgent will start pulling data at startup time. If set to false, live updates can still be triggered by submitting a POST request to http://localhost:3838/ship-input-agent/live-server
+    1) USE_LIVE_DATA - if this is set to true, ShipInputAgent will start pulling data at startup time. If set to false, live updates can still be triggered by submitting a POST request to http://localhost:4242/ship-input-agent/live-server
     2) API_KEY - API key for aistream.io
     3) BOUNDING_BOXES - see https://aisstream.io/documentation 
     4) UPLOAD_INTERVAL_MINUTES - The interval where ShipInputAgent accumulates data from aistream.io before uploading to the data to KG, default is 10 minutes.
@@ -92,12 +92,12 @@ To trigger scheduled live simulations, an example is given in [mbs-live.http].
     3) ny - number of y cells
     4) z - height to simulate (multiple values can be provided)
     5) label - Text to show in the visualisation for users to select which simulation to display
-    6) delayMinutes - Upon submitting the request, the duration to wait before executing a dispersion simulation, it is also the time to subtract from the current time to run the simulation for. For example, if delayMinutes = 30, and the current time is 1pm, the simulation will be executed at 1pm + 30 min, i.e. 130pm, for a simulation at 1pm (using weather and ship data at 1pm).
+    6) delayMinutes - Upon submitting the request, the duration to wait before executing a dispersion simulation
     7) intervalMinutes - Interval to execute dispersion calculations.
 
 To stop a scheduled task, change the request to DELETE instead of POST.
 
-### With ships (static data) 
+### With ships (static JSON data) 
 This workflow calls the ShipInputAgent to add 1 timestep worth of data before triggering an update for AERMOD.
 1) Make sure ShipInputAgent/data is populated with data.
 2) Initialise a simulation, e.g. [plymouth.http], you should receive a response in the form of 
@@ -105,7 +105,31 @@ This workflow calls the ShipInputAgent to add 1 timestep worth of data before tr
 {"derivation": "http://derivation_1"}
 ```
 record this derivation IRI.
+
 3) To trigger an AERMOD simulation, execute [GenerateDataWithShips.http], be sure to replace the derivation IRI in the request from the response from the previous step.
+
+### With ships (static CSV data)
+This workflow loads ship data from CSV files to Postgres database and be used in AERMOD simulations afterwards.
+1) Populate stack-data-uploader/inputs/data/ship/subdir with data.
+2) Modified stack-data-uploader/inputs/config/ship.json and stack-data-uploader/inputs/config/ship.sql accordingly. Currently they are tailor-made for [US AIS Data (AIS Broadcast Points)](https://marinecadastre.gov/ais/). The processed ship data need to be in a table called ``ship`` with these columns:
+
+- MMSI: Identifier of ship
+- BaseDateTime: Timestamp of data entry
+- LAT: Latitude of ship location
+- LON: Longitude of ship location
+- SOG: Speed over ground of ship
+- COG: Course over ground of ship
+- VesselType: Types of ship
+- geom: Point geometry of (LON,LAT) in EPSG:4326
+
+3) Initialise a simulation, e.g. [plymouth.http], you should receive a response in the form of 
+```
+{"derivation": "http://derivation_1"}
+```
+record this derivation IRI.
+
+4) Call ship input agent to load ship data into time series by calling [load-rdb.http]. Note this will only load ships that are inside the scopes of initialised simulations i.e. no ship data will be loaded if no simulations have been initialised.
+5) Execute [GenerateDataWithoutShips.http] to trigger AERMOD update, be sure to enter derivation IRI in the request.
 
 ### Without ships (only static point source)
 1) Initialise a simulation, e.g. [pirmasens1.http], record derivation IRI in the response.
@@ -113,7 +137,7 @@ record this derivation IRI.
 3) Execute [GenerateDataWithoutShips.http], be sure to enter derivation IRI in the request.
 
 ## Visualisation
-Visualisation can be viewed at http://localhost:3838/visualisation (replace localhost if deployed elsewhere). Note that if buildings data is present in ontop, the visualisation may take a while to load because the first query takes time. 
+Visualisation can be viewed at http://localhost:4242/visualisation (replace localhost if deployed elsewhere). Note that if buildings data is present in ontop, the visualisation may take a while to load because the first query takes time. 
 
 <!-- links -->
 [ship-input-agent.json]: ./stack-manager/inputs/config/services/ship-input-agent.json
@@ -126,3 +150,4 @@ Visualisation can be viewed at http://localhost:3838/visualisation (replace loca
 [building-pirmasens.json]: ./stack-data-uploader/inputs/config/building-pirmasens.json
 [elevation.json]: ./stack-data-uploader/inputs/config/elevation.json
 [data.json]: ./stack-manager/inputs/data/visualisation/data.json
+[load-rdb.http]: <./HTTP requests/trigger update/load-rdb.http>

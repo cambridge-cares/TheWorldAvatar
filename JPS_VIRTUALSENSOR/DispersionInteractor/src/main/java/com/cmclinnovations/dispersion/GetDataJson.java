@@ -186,7 +186,7 @@ public class GetDataJson extends HttpServlet {
             // extract buildings group from pirmasensData.json template
             try (InputStream is = getClass().getClassLoader().getResourceAsStream("pirmasensData.json")) {
                 String templateContent = IOUtils.toString(is, StandardCharsets.UTF_8);
-                templateContent = templateContent.replace("http://localhost:3838", Config.STACK_URL);
+                templateContent = templateContent.replace("http://localhost:4242", Config.STACK_URL);
 
                 JSONObject buildingjson = new JSONObject(templateContent);
                 JSONArray buildingGroups = buildingjson.getJSONArray("groups");
