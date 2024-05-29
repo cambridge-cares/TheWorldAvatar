@@ -15,7 +15,7 @@ In the main application, lexicons are used to perform:
 
 See [JSON schema for lexicons](#data-schema-of-lexicons).
 
-### Simplified Graph Schema
+### Simplified graph schema
 
 This project adopts the terminology used for heterogenous graphs `G=(V, E, τ, φ)`:
 
@@ -28,7 +28,7 @@ The simplified data schema captures only node types, edge types, and relation ty
 
 See [JSON schema for simplified graph schema](#data-schema-of-simplified-graph-schema).
 
-### Examples of Data Request Generation from Natural Language Questions
+### Examples of data request generation from natural language questions
 
 A question can be answered so long as appropriate data is supplied. The retrieval of pertinent data is carried out by executing structured data requests that correspond to the input questions. By prompting LLMs with pairs of natural language queries and their corresponding data requests, LLMs can perform in-context learning to automatically generate data requests for unseen input questions.
 
@@ -58,7 +58,7 @@ See [JSON schema for examples of data request generation](#data-schema-of-data-r
 
 For all scripts in this directory, run `python <path_to_script> -h` to view the command line argument options.
 
-### Generation of Lexicons
+### Generation of lexicons
 
 - Generate lexicon for all entities of a base class using only `rdfs:label` data: `lexicon/lexicon_from_label.py`.
 - Generate lexicon for all classes that inherit from a base class using only `rdfs:label` data: `lexicon/lexicon_from_owl.py`.
@@ -69,21 +69,21 @@ For all scripts in this directory, run `python <path_to_script> -h` to view the 
   - Entities of `purl:Element` type: `lexicon/Element_lexicon.py`.
   - Entities of `disp:Ship` type: `lexicon/Ship_lexicon.py`.
 
-### Generation of Simplified Graph Schema
+### Generation of simplified graph schema
 
 - Generate simplified graph schema from OWL files: `simplified_schema/extract_schema_from_tbox.py`.
 - Generate simplified grpah schema from a SPARQL endpoint: `simplified_schema/extract_schema_from_abox.py`
 
-### Augmentation of Data Request Examples
+### Augmentation of data request examples
 
 Augmentation refers to the process of artificially synthesising new data from existing data. 
 
 - With an OpenAI-compatible API: `make_examples.py`.
 - With a locally hosted Mixtral 8x7B model: `make_examples.sh`.
 
-## Schema Definitions
+## Schema definitions
 
-### Data Schema of Lexicons
+### Data schema of lexicons
 
 ```{json}
 {
@@ -115,7 +115,7 @@ Augmentation refers to the process of artificially synthesising new data from ex
 }
 ```
 
-### Data Schema of Simplified Graph Schema
+### Data schema of simplified graph schema
 
 Schema definition for node type and edge type data:
 
@@ -163,7 +163,7 @@ Schema definition for relation type data:
 }
 ```
 
-### Data Schema of Data Request Generation Examples
+### Data schema of data request generation examples
 
 Schema definition of SPARQL data requests:
 
