@@ -150,7 +150,7 @@ public class Dataset extends AbstractDataObject {
     }
 
     public String getOntopName() {
-        return getOntopMappings().isEmpty() ? null : EndpointNames.ONTOP + "-" + name;
+        return EndpointNames.ONTOP + "-" + name;
     }
 
     public List<String> getExternalDatasetNames() {
