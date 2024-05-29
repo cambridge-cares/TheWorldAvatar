@@ -46,7 +46,8 @@ export default function MapContainer(props: MapContainerProps) {
       fetch(`${currentScenario.url}/getDataJson/${selectedScenario}?dataset=${currentScenario.dataset}`)
         .then((res) => res.json())
         .then((data) => {
-          setMapData(parseMapDataSettings(data, mapSettings?.type));
+          const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, "1");
+          setMapData(parseMapDataSettings(JSON.parse(dataString), mapSettings?.type));
         });
     } else {
       setMapData(parseMapDataSettings(JSON.parse(props.data), mapSettings?.type));
