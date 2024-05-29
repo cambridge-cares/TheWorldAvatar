@@ -12,8 +12,8 @@ from redis.commands.search.query import Query
 from services.embed import IEmbedder, get_embedder
 from services.example_store.model import (
     EXAMPLES_INDEX_NAME,
-    DataRetrievalAction,
-    Nlq2ActionExample,
+    DataRequest,
+    Nlq2DataReqExample,
 )
 from services.redis import get_redis_client
 
@@ -29,7 +29,7 @@ class ExampleStore:
     ):
         self.redis_client = redis_client
         self.embedder = embedder
-        self.action_adapter = TypeAdapter(DataRetrievalAction)
+        self.datareq_adapter = TypeAdapter(DataRequest)
 
     def retrieve_examples(self, nlq: str, k: int = 5):
         encoded_nlq = self.embedder([nlq])[0].astype(np.float32)
@@ -37,7 +37,7 @@ class ExampleStore:
             Query("(*)=>[KNN {k} @vector $query_vector AS vector_score]".format(k=k))
             .sort_by("vector_score")
             .return_field("$.nlq", as_field="nlq")
-            .return_field("$.action", as_field="action")
+            .return_field("$.data_req", as_field="data_req")
             .dialect(2)
         )
         res = self.redis_client.ft(EXAMPLES_INDEX_NAME).search(
@@ -45,8 +45,8 @@ class ExampleStore:
         )
 
         return [
-            Nlq2ActionExample(
-                nlq=doc.nlq, action=self.action_adapter.validate_json(doc.action)
+            Nlq2DataReqExample(
+                nlq=doc.nlq, data_req=self.datareq_adapter.validate_json(doc.data_req)
             )
             for doc in res.docs
         ]

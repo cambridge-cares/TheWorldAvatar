@@ -6,26 +6,26 @@ from typing import List, Optional
 from openai import OpenAI
 from pydantic import TypeAdapter
 
-from services.example_store.model import DataRetrievalAction
+from services.example_store.model import DataRequest
 from services.schema_store.model import RDFRelation
 from utils.rdf import try_make_prefixed_iri
 
-from services.example_store import Nlq2ActionExample
+from services.example_store import Nlq2DataReqExample
 
 
 logger = logging.getLogger(__name__)
 
 
-class Nlq2ActionTranslator:
+class Nlq2DataReqTranslator:
     SYSTEM_MSG = "You are a SPARQL expert designed to output JSON."
     PROMPT_TEMPLATE = """### RDF schema:
 {schema}
 
-### Examples of translating natural language questions to executable actions:
+### Examples of translating natural language questions to executable data requests:
 {examples}
 
 ### Instruction: 
-Your task is to translate the following question to an executable action. Please do not provide any explanation and respond with a single JSON object exactly.
+Your task is to translate the following question to an executable data request. Please do not provide any explanation and respond with a single JSON object exactly.
 
 ### Question:
 {question}"""
@@ -38,19 +38,19 @@ Your task is to translate the following question to an executable action. Please
     ):
         self.openai_client = OpenAI(base_url=openai_base_url, api_key=openai_api_key)
         self.model = openai_model
-        self.action_adapter = TypeAdapter(DataRetrievalAction)
+        self.datareq_adapter = TypeAdapter(DataRequest)
 
     def translate(
         self,
         nlq: str,
         schema_items: List[RDFRelation],
-        examples: List[Nlq2ActionExample],
-    ) -> DataRetrievalAction:
+        examples: List[Nlq2DataReqExample],
+    ) -> DataRequest:
         prompt = self.PROMPT_TEMPLATE.format(
             examples="\n".join(
                 '"{input}" => {output}'.format(
                     input=example.nlq,
-                    output=example.action.model_dump_json(),
+                    output=example.data_req.model_dump_json(),
                 )
                 for example in examples
             ),
@@ -77,12 +77,12 @@ Your task is to translate the following question to an executable action. Please
         )
         logger.info("LLM's response: " + str(res))
 
-        return self.action_adapter.validate_json(res.choices[0].message.content)
+        return self.datareq_adapter.validate_json(res.choices[0].message.content)
 
 
 @cache
-def get_nlq2action_translator():
-    return Nlq2ActionTranslator(
+def get_nlq2datareq_translator():
+    return Nlq2DataReqTranslator(
         openai_base_url=os.getenv("TRANSLATOR_OPENAI_BASE_URL"),
         openai_api_key=os.getenv("TRANSLATOR_OPENAI_API_KEY"),
         openai_model=os.environ["TRANSLATOR_OPENAI_MODEL"],

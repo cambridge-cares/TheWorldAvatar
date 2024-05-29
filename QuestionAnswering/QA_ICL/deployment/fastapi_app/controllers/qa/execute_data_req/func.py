@@ -1,7 +1,7 @@
 from typing import Annotated, Tuple
 
 from fastapi import Depends
-from services.example_store.model import FuncAction
+from services.example_store.model import FuncDataRequest
 from services.funcs.base import Name2Func
 from services.funcs.sg_building import SGBuildingFuncExecutor, get_sgBuilding_funcExec
 from services.funcs.sg_dispersion import (
@@ -11,7 +11,7 @@ from services.funcs.sg_dispersion import (
 from services.funcs.sg_carpark import SGCarparkFuncExecutor, get_sgCarpark_funcExec
 
 
-class FuncActionExecutor:
+class FuncDataReqExecutor:
     def __init__(self, name2func_instances: Tuple[Name2Func, ...]):
         self.name2func = {
             name: func
@@ -19,11 +19,11 @@ class FuncActionExecutor:
             for name, func in instance.get_name2func().items()
         }
 
-    def exec(self, action: FuncAction):
-        return self.name2func[action.name](**action.args)
+    def exec(self, req: FuncDataRequest):
+        return self.name2func[req.name](**req.args)
 
 
-def get_funcAction_executor(
+def get_funcReq_executor(
     sg_building_func_exec: Annotated[
         SGBuildingFuncExecutor, Depends(get_sgBuilding_funcExec)
     ],
@@ -34,7 +34,7 @@ def get_funcAction_executor(
         SGCarparkFuncExecutor, Depends(get_sgCarpark_funcExec)
     ],
 ):
-    return FuncActionExecutor(
+    return FuncDataReqExecutor(
         name2func_instances=(
             sg_building_func_exec,
             sg_dispersion_func_exec,
