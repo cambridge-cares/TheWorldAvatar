@@ -12,7 +12,7 @@ import { formatAppUrl } from 'utils/client-utils';
  * @param {DataSource} dataStore Store containing parsed DataSource instances.
  */
 export function addAllSources(map: Map, dataStore: DataStore) {
-    const sourceArray: DataSource[] = dataStore.getSourceList();
+    const sourceArray: DataSource[] = dataStore?.getSourceList();
     sourceArray.forEach((source) => addSource(map, source));
     console.log("Added all registered sources to the map object.");
 }

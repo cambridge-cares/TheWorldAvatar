@@ -24,8 +24,8 @@ export function addMapboxEventListeners(map: mapboxgl.Map, dispatch: Dispatch, d
     const features: MapFeaturePayload[] = map.queryRenderedFeatures(e.point).map((feature) => ({
       ...feature.properties,
       name: feature.properties.name ?? (feature.id !== undefined ? "Feature #" + feature.id : "Feature"),
-      stack: dataStore.getStackEndpoint(feature.source), // Store the associated stack if available
-      layer: dataStore.getLayerWithID(feature.layer.id).name, // Store the layer's public-facing name
+      stack: dataStore?.getStackEndpoint(feature.source), // Store the associated stack if available
+      layer: dataStore?.getLayerWithID(feature.layer.id).name, // Store the layer's public-facing name
     }))
     dispatch(addFeatures(features));
   });
@@ -73,7 +73,7 @@ function addTooltipEventListener(map: mapboxgl.Map) {
 
  */
 function addHoverEventListener(map: mapboxgl.Map, dataStore: DataStore) {
-  dataStore.getLayerList().map(layer => {
+  dataStore?.getLayerList().map(layer => {
     if (layer.hasInjectableProperty(Interactions.HOVER)) {
       const hoverProperty = layer.getInjectableProperty(Interactions.HOVER).style;
       // Updates the conditional paint property with the IRI of the currently hovering feature

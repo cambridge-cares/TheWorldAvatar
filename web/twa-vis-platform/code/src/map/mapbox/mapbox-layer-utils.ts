@@ -17,7 +17,7 @@ import { getCurrentImageryOption } from '../map-helper';
 export async function addAllLayers(map: Map, dataStore: DataStore, imagerySettings: ImagerySettings) {
     const currentStyle = getCurrentImageryOption(imagerySettings);
 
-    const layerArray: DataLayer[] = dataStore.getLayerList();
+    const layerArray: DataLayer[] = dataStore?.getLayerList();
     layerArray.forEach((layer) => addLayer(map, layer, currentStyle));
     console.log("Added all registered layers to the map object.");
 }
