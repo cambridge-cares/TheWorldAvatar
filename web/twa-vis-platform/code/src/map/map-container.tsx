@@ -58,15 +58,13 @@ export default function MapContainer(props: MapContainerProps) {
   useEffect(() => {
     if (map && !showDialog) {
       if (mapSettings?.["type"] === "mapbox") {
-        map.on("load", function () {
-          // Add all map event listeners
-          addMapboxEventListeners(map, dispatch, mapData);
-          // Add data when loading the map for the first time
-          addData(map, mapSettings, mapData);
-        });
+        // All event listeners and data must be added when the map is initialised or data changes
+        addData(map, mapSettings, mapData);
+        addMapboxEventListeners(map, dispatch, mapData);
 
         // When the base imagery is updated, all data layers are removed (point annotations are not removed)
         // This event listener ensures that data layers are reloaded initially and after any style changes
+        // The same event listeners can be reused given the same underlying data
         map.on("style.load", function () {
           addData(map, mapSettings, mapData);
         });
