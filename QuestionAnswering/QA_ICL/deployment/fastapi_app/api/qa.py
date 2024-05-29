@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/")
+@router.post("/", response_model=QAResponse)
 def qa(
     req: QARequest,
     data_supporter: Annotated[DataSupporter, Depends(get_data_supporter)],
