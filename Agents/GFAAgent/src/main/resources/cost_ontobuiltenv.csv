@@ -1,31 +1,26 @@
-Key,Value,comments,OntoBuiltEnv,LU_DESC
-Type,Office,,Non-Domestic,BUSINESS 1
-,,,ReligiousFacility,CEMETERY
-,,,CulturalFacility,CIVIC & COMMUNITY INSTITUTION
-Type,Retail,,Non-Domestic,COMMERCIAL
-Type,Retail,,RetailEstablishment,
-,,,Non-Domestic,COMMERCIAL / INSTITUTION
-Type,Internationl School,,Education,EDUCATIONAL INSTITUTION
-Type,General Hospital,,Medical,HEALTH & MEDICAL CARE
-Type,General Hospital,,Clinic,
-Type,General Hospital,,Hospital,
-Type,City Hotel,,Hotel,HOTEL
-,,,TransportFacility,LIGHT RAPID TRANSIT
-,,,TransportFacility,MASS RAPID TRANSIT
-,,,SportsFacility,OPEN SPACE
-,,,SportsFacility,PARK
-,,,ReligiousFacility,PLACE OF WORSHIP
-,,,TransportFacility,PORT / AIRPORT
-Type,Residental,,Domestic,RESIDENTIAL
-Type,Residental,,SingleResidential,
-Type,Residental,,MultiResidential,
-,,,TransportFacility,ROAD
-,,,Non-Domestic,SPECIAL USE
-Type,Sports clubs,,SportsFacility,SPORTS & RECREATION
-,,,TransportFacility,TRANSPORT FACILITIES
-Type,Resort,,,
-Type,Industrial,,IndustrialFacility,
-SubCat,Light Duty Factory,,,
-SubCat,Warehouse,,IndustrialFacility,
-Type,Carparks,,,
-Type,Students' residences,,,
+Key,Value,OntoBuiltEnv
+Type,Residential,Domestic
+Type,Residential,SingleResidential
+Type,Residential,MultiResidential
+Type,Office,NonDomestic
+Type,Office,EmergencyService
+Type,Office,FireStation
+Type,Office,PoliceStation
+Type,Health,Medical
+Type,Health,Hospital
+Type,Health,Clinic
+Type,Health,Pharamacy
+Type,Office,Education
+Type,Office,School
+Type,Office,UniversityFacility
+Type,Office,Office
+Type,Commercial,RetailEstablishment
+Type,Office,ReligiousFacility
+Type,Industrial,IndustrialFacility
+Type,Commercial,EatingEstablishment
+Type,Commercial,DrinkingEstablishment
+Type,Hotel,Hotel
+Type,Commercial,SportsFacility
+Type,Commercial,CulturalFacility
+Type,Industrial,TransportFacility
+Type,Office,Office

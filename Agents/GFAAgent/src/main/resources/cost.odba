@@ -13,10 +13,10 @@ target		twa:Building/{building_iri} env:hasEstimatedConstructionCost om:Cost/{bu
             
 source      WITH iri_table AS (
                 SELECT cityobject_id, strval 
-                FROM cityobject_genericattrib
+                FROM citydb.cityobject_genericattrib
                 WHERE attrname = 'uuid'
             )
             SELECT cg.realval AS cost, iri.strval as building_iri
-            FROM cityobject_genericattrib AS cg, iri_table as iri
+            FROM citydb.cityobject_genericattrib AS cg, iri_table as iri
             WHERE cg.attrname = 'cost' AND cg.cityobject_id = iri.cityobject_id;
 ]]

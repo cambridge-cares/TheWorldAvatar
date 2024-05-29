@@ -5,6 +5,7 @@ public class BuildingInfo {
     private String type;
     private int floors;
     private String buildingIri;
+    private float usageshare;
 
     public BuildingInfo () {
         
@@ -22,6 +23,10 @@ public class BuildingInfo {
         return this.floors;
     }
 
+    public float getUsageShare(){
+        return this.usageshare;
+    }
+
     public void setType(String type) {
         this.type = type;
     }
@@ -32,5 +37,9 @@ public class BuildingInfo {
 
     public void setBuildingIri(String buildingIri) {
         this.buildingIri = buildingIri;
+    }
+
+    public void setUsageShare(float usageshare) {
+        this.usageshare = usageshare;
     }
 }

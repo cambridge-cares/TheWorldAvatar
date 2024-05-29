@@ -60,6 +60,7 @@ public class CostCalculation {
                     String buildingIri = building.getBuildingIri();
                     String buildingUsage = building.getType();
                     int floors = building.getFloors();
+                    float usageshare = building.getUsageShare();
                     String typeCost = "";
                     String keyCost = "";
                     
@@ -72,10 +73,8 @@ public class CostCalculation {
                     }
 
                     if(!typeCost.isEmpty() && !keyCost.isEmpty()){
-                        String costQuery ="SELECT cost FROM cost WHERE cost.\"Type\" = '" + typeCost + "' AND floorscat > " + floors + 
-                                        " union all select MIN(cost) from cost " +//
-                                        "where cost.\"" + keyCost + "\" = '" + typeCost + "' AND floorscat IS NULL " + //
-                                        "LIMIT 1";
+                        String costQuery ="SELECT average FROM cost WHERE cost.\"Category\" = '" + typeCost + 
+                                            "' AND cost.\"Type\" = 'all'" ;
 
                         String gfaQuery = "SELECT realval AS gfa, cityobject_id\r\n" + //
                                             "FROM citydb.cityobject_genericattrib\r\n" + //
@@ -113,14 +112,15 @@ public class CostCalculation {
                         .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                         .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                         .addWhere("?building", "env:hasPropertyUsage", "?property")
-                        .addWhere("?property", "a", "?buildingUsage");
+                        .addWhere("?property", "a", "?buildingUsage")
+                        .addWhere("?property", "env:hasUsageShare", "?usageshare");
 
             SelectBuilder sb = new SelectBuilder()
                     .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                     .addPrefix("twa", OntologyURIHelper.getOntologyUri(OntologyURIHelper.twa))
                     .addPrefix("rdfs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdfs))
                     .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
-                    .addVar("?building").addVar("?usage").addVar("?floor")
+                    .addVar("?building").addVar("?usage").addVar("?floor").addVar("?usageshare")
                     .addWhere("?building", "env:hasNumberOfFloors", "?NumberOfFloors")
                     .addWhere("?NumberOfFloors", "env:hasValue", "?floor")
                     .addOptional (usageWB)
@@ -143,6 +143,7 @@ public class CostCalculation {
                     building.setType(usage);
                 }                                              
                 building.setFloors(queryResultArray.getJSONObject(i).getInt("floor"));
+                building.setUsageShare(queryResultArray.getJSONObject(i).getFloat("usageshare"));
                 buildings.add(building);
             }
             return buildings;
