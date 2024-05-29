@@ -64,8 +64,10 @@ prefixBIBO = "bibo"
 # biboPrefix = "http://bibo/"
 biboPrefix = "http://purl.org/ontology/bibo/"
 
-# These two are required for the extension of Bibo (for list of authors):
+dctPrefix = "http://purl.org/dc/terms/"
+# required for the extension of Bibo (for list of authors):
 foafPrefix = "http://xmlns.com/foaf/0.1/"
+
 crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
 
@@ -643,7 +645,6 @@ class OntoBibo:
         # file = self.entryInBibFile[entity.key]
         # print("Starting key: ",  entity.key, file)
 
-        dctPrefix = "http://purl.org/dc/terms/"
         item_name = entity.key
         class_name = "AcademicArticle"
 
@@ -652,7 +653,7 @@ class OntoBibo:
         iri, uuidStr = get_bib_iri(item_name)
         if not iri:
             iri, uuidStr = self.uuidDB.addUUID(biboPrefix + class_name,
-                                                     self.abox_prefix + "Citation_" + safe_name)
+                                               self.abox_prefix + "Citation_" + safe_name)
         output.append([iri, "Instance", biboPrefix + class_name,
                        "", "", ""])
 
@@ -1018,7 +1019,6 @@ class OntoBibo:
         # file = self.entryInBibFile[entity.key]
         # print("Starting key: ",  entity.key, file)
 
-        dctPrefix = "http://purl.org/dc/terms/"
         item_name = entity.key
         class_name = "InProceedings"
 

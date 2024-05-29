@@ -243,7 +243,7 @@ class OntoZeolite:
         output = []
 
         zeoframe_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliteFramework",
-                                               self.abox_prefix + "ZeoFramework_" + frameworkCode)
+                                              self.abox_prefix + "ZeoFramework_" + frameworkCode)
 
         output.append([zeoframe_iri, "Instance", zeoOntoPrefix + "ZeoliteFramework",
                        "", "", ""])
@@ -269,19 +269,19 @@ class OntoZeolite:
         return output
         # === end of OntoZeolite.getCsvArrFramework()
 
-    def get_framework_UUID(self, frameworkCode):
+    def get_framework_iri(self, frameworkCode):
         zeoframe_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliteFramework",
                                               self.abox_prefix + "ZeoFramework_" + frameworkCode)
 
         return zeoframe_iri
-        # === end of OntoZeolite.get_framework_UUID()
+        # === end of OntoZeolite.get_framework_iri()
 
-    def get_material_UUID(self, cif_line, mat_line):
+    def get_material_iri(self, cif_line, mat_line):
         zeo_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "ZeoliticMaterial",
                                          self.abox_prefix + "Zeolite_" + mat_line[17])
 
         return zeo_iri
-        # === end of OntoZeolite.get_material_UUID()
+        # === end of OntoZeolite.get_material_iri()
 
     def get_cif_file(self, cif_line):
         if cif_line[5] != "":
@@ -1067,31 +1067,31 @@ class OntoZeolite:
                               " zeolite '%s'", sphere["unit"], code)
 
             sphere_vec = ocdt.OntoVector(class_name="SphereDiameter",
-                                          item_name="sphere_diam_" + code,
-                                          tbox_prefix=zeoOntoPrefix,
-                                          abox_prefix=self.abox_prefix,
-                                          unit=unit,
-                                          uuidDB=self.uuidDB)
+                                         item_name="sphere_diam_" + code,
+                                         tbox_prefix=zeoOntoPrefix,
+                                         abox_prefix=self.abox_prefix,
+                                         unit=unit,
+                                         uuidDB=self.uuidDB)
 
             if "included" in sphere:
                 sphere_vec.addComponent(label="included",
-                                         value=sphere["included"])  # , unit=unit)
+                                        value=sphere["included"])  # , unit=unit)
             else:
                 logging.error(" Missing 'included' SphereDiameter for '%s'.",
                               code)
             if "a" in sphere:
                 sphere_vec.addComponent(label="a",
-                                         value=sphere["a"])
+                                        value=sphere["a"])
             else:
                 logging.error(" Missing 'a' SphereDiameter for '%s'.", code)
             if "b" in sphere:
                 sphere_vec.addComponent(label="b",
-                                         value=sphere["b"])
+                                        value=sphere["b"])
             else:
                 logging.error(" Missing 'b' SphereDiameter for '%s'.", code)
             if "c" in sphere:
                 sphere_vec.addComponent(label="c",
-                                         value=sphere["c"])
+                                        value=sphere["c"])
             else:
                 logging.error(" Missing 'c' SphereDiameter for '%s'.", code)
 
@@ -1574,7 +1574,7 @@ class OntoZeolite:
 
                 if nCBU > 0:
                     cbu_iri, _ = self.uuidDB.addUUID("CompositeBU",
-                                                      "CompositeBU_" + code)
+                                                     self.abox_prefix + "CompositeBU_" + code)
                     output.append([cbu_iri, "Instance", "CompositeBU",
                                    "", "", ""])
                     output.append([zeotopo_iri, "Instance", cbu_iri,
@@ -1732,7 +1732,7 @@ class OntoZeolite:
         if "TopologicalDensity" in topo_data:
             if isinstance(topo_data["TopologicalDensity"], dict):
                 tden_iri, _ = self.uuidDB.addUUID(zeoOntoPrefix + "TopologicalDensity",
-                                                   "TopoDens_" + code)
+                                                  self.abox_prefix + "TopoDens_" + code)
                 output.append([tden_iri, "Instance", zeoOntoPrefix + "TopologicalDensity",
                                "", "", ""])
                 output.append([zeotopo_iri, "Instance", tden_iri,

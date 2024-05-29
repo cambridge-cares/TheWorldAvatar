@@ -6,39 +6,27 @@
 
 import os
 import sys
-import math
-import logging
+# import math
 import time
-
-import tools
+import logging
 import argparse
 
+import tools
 import crystaldata
-
-import ontocrystal_datatypes as ocdt
-
+# import ontocrystal_datatypes as ocdt
 import xrd_spectrum as xrds
 import xrd_simulation
 
-#logging.basicConfig(level = logging.DEBUG)
-#logging.basicConfig(level = logging.INFO)
-logging.basicConfig(level = logging.WARNING)
-#logging.basicConfig(level = logging.ERROR)
+# logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
+# logging.basicConfig(level=logging.ERROR)
 
-#if len(sys.argv) > 1:
-#    DATA_DIR = sys.argv[1]
-#else:
-#if True:
-#    DATA_DIR = "ontozeolite"
-    #print("Missing command line arg in crystalinfo, using '", DATA_DIR, "'.", sep="")
-
-#DB_FOLDER = os.path.join(DATA_DIR, "crystal")
 
 crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
-#zeoOntoPrefix = "https://www.theworldavatar.com/kg/ontozeolite/"
 
 
-CIF_IRI_FILE = os.path.join("cif_iri_list.csv")  # Format: filename, count/unique_id, iri, uuid
+CIF_IRI_FILE = os.path.join("cif_iri_list.csv")
 
 
 def read_command_line():
@@ -157,15 +145,12 @@ class CifIriData:
                 continue
             elif len(line) == 5:
                 # Do nothing. Correct behaviour.
-
-                #print("CifIriData missing error count")
-                #self.data[i_line].append(-1)
-                #err_count += 1
                 pass
             else:
+                # Do nothing. Not implemented.
                 pass
 
-        ###### Self test 3: does the file exist?
+        ###### Self test 3: check whether the file exist?
 
         return err_count
         # === end of CifIriData.self_test()
@@ -180,36 +165,27 @@ class CifIriData:
         found = False
         for i_line, line in enumerate(self.data):
             if line[0] == cif_path:
-                #self.data[i_line][4] = folder_id
-                #if err_count >= 0:
-                #    self.data[i_line][5] = err_count
                 found = True
                 break
 
         if not found:
             cif_uuid = tools.new_uuid()
-            cif_iri = "CrystalInformation_" + cif_uuid
+            cif_iri = crystOntoPrefix + "CrystalInformation_" + cif_uuid
 
             xrd_uuid = tools.new_uuid()
-            #xrd_file = os.path.join("xrd_file"
             xrd_iri = "XRDSpectrum_" + xrd_uuid
             data = [cif_path, cif_iri, cif_uuid, xrd_path, xrd_iri]
-            #if err_count >= 0:
-            #    data[5] = err_count
             self.data.append(data)
-            #print("In CifIriData saving xrd_path", xrd_path)
 
-        pass
         # === end of CifIriData.set_entry()
 
     def get_entry_iri(self, cif_path):
         """
         """
-        cif_iri  = None
+        cif_iri = None
+        xrd_iri = None
         cif_uuid = None
-        xrd_iri  = None
         xrd_uuid = None
-        #print("In get_entry_iri", cif_path)
         cif_path = cif_path.replace("/", "\\").lower().strip()
         for line in self.data:
             if line[0].lower().strip() == cif_path:
@@ -217,7 +193,6 @@ class CifIriData:
                 cif_uuid = line[2].strip()
                 xrd_iri  = line[3].strip()
                 xrd_uuid = line[4].strip()
-                #print("Found entry ", line)
                 break
 
         return cif_iri, cif_uuid, xrd_iri, xrd_uuid
@@ -236,7 +211,6 @@ class CifIriData:
    # === end of class CifIriData
 
 
-#CIF_IRI_DATA = CifIriData(CIF_IRI_FILE)
 CIF_IRI_DATA = CifIriData()
 
 BLACK_LIST = []
@@ -244,6 +218,7 @@ BLACK_LIST = []
              ['pdffiles\\10.1107_S0108768192009005-supp.cif',
 ]
 """
+
 
 class CrystalInfo:
     """ Manipulation with crystal data from CIF file.
@@ -258,8 +233,11 @@ class CrystalInfo:
     - OntoCrystal.AtomicStructure
         default name AtomicStructure_UUID, where UUID is the same
 
-    TODO write more doc for CrystalInfo
     """
+    __slots__ = ["uuidDB", "iri", "uuid",
+                 "cifOutput", "cifPyMatGen", "cifValAndErr",
+                 "abox_prefix", "cif_path", "cifStandard",
+                 "unitcell_iri", ]
 
     def __init__(self, uuidDB,
                  # tbox_prefix=None,
@@ -267,6 +245,7 @@ class CrystalInfo:
 
         self.uuidDB = uuidDB
         self.iri = None
+        self.uuid = None
 
         self.cifOutput = None
         self.cifPyMatGen = None
@@ -287,7 +266,8 @@ class CrystalInfo:
         self.unitcell_iri = ""
         self.cifStandard = None
         self.cif_path = ""
-        #self.
+        self.unitcell_iri = None
+
         # === end of CrystalInfo.__init__()
 
     def get_uuid(self):
@@ -333,46 +313,22 @@ class CrystalInfo:
 
         name = "UNDEF"
 
-        # First load data to (struct in cifPyMatGen and unitCellLengths in cifValAndErr)
-        self.loadPyMatGen( path, name)
+        # 1. load data to (struct in cifPyMatGen and unitCellLengths in cifValAndErr)
+        self.loadPyMatGen(path, name)
         self.loadValAndErr(path, name)
-        try:
-            pass
 
-        except :
-            logging.error("=================================================")
-            logging.error(" Failed to read data from '%s' cif file", path)
-            logging.error("=================================================")
-            with open("failed_cif_files.txt", "a", encoding="utf-8") as fp:
-                fp.write(path + "\n")
-
-        # Second evaluate data (create all arrays and internal data):
+        # 2. evaluate data (create all arrays and internal data):
         self.evalPyMatGen()
         self.evalValAndErr()
 
-        #print(" - Size ot listAtomAll =", len(self.cifValAndErr.listAtomAll))
-        # Third choose which to save from which crystal information:
-        #print(" ==> ", self.cifValAndErr.unitCellLengths)
+        # 3. choose which to save from which crystal information:
         self.mergeCrystInfo()
-
-        #print(" - Size ot listAtomAll =", len(self.cifValAndErr.listAtomAll))
-        #print(" - Size ot listAtomAll =", len(self.cifOutput.listAtomAll))
-
-        #self.cifOutput = self.cifValAndErr
-        #print(" -->  ", self.cifOutput.unitCellLengths)
-
-        #self.loadCifZeolite(z)
-        #self.evalCifData()
 
         return err_count
         # === end of CrystalInfo.load_cif_file()
 
-
     def load_cif_file_val_and_err(self, file_path, options=None):
         """ Load a CIF file and store the data in internal variables.
-
-            options - is a dictionary with keys:
-            ""?
 
             Returns the number of errors.
         """
@@ -395,39 +351,16 @@ class CrystalInfo:
         #path = self.cleanCif(path)[0]
         self.cif_path = path
 
-        # print("path =", path)
         name = "UNDEF"
 
-        # First load data to (struct in cifPyMatGen and unitCellLengths in cifValAndErr)
-        #self.loadPyMatGen( path, name)
+        # 1. load data as ValueAndError:
         self.loadValAndErr(path, name)
-        try:
-            pass
 
-        except :
-            logging.error("=================================================")
-            logging.error(" Failed to read data from '%s' cif file", path)
-            logging.error("=================================================")
-            with open("failed_cif_files.txt", "a", encoding="utf-8") as fp:
-                fp.write(path + "\n")
-
-        # Second evaluate data (create all arrays and internal data):
-        #self.evalPyMatGen()
+        # 2. evaluate data (create all arrays and internal data):
         self.evalValAndErr()
 
-        #print(" - Size ot listAtomAll =", len(self.cifValAndErr.listAtomAll))
-        # Third choose which to save from which crystal information:
-        #print(" ==> ", self.cifValAndErr.unitCellLengths)
+        # 3. choose which to save from which crystal information:
         self.mergeCrystInfo()
-
-        #print(" - Size ot listAtomAll =", len(self.cifValAndErr.listAtomAll))
-        #print(" - Size ot listAtomAll =", len(self.cifOutput.listAtomAll))
-
-        #self.cifOutput = self.cifValAndErr
-        #print(" -->  ", self.cifOutput.unitCellLengths)
-
-        #self.loadCifZeolite(z)
-        #self.evalCifData()
 
         return err_count
         # === end of CrystalInfo.load_cif_file()
@@ -464,7 +397,6 @@ class CrystalInfo:
 
         if new_uuid is None:
             # Check for existing uuids in the database of cif_files:
-            #self.iri = get_cif_iri(file_path)
             self.iri, self.uuid, _, __ = CIF_IRI_DATA.get_entry_iri(file_path)
             new_uuid = self.uuid
 
@@ -473,15 +405,14 @@ class CrystalInfo:
             if not self.iri:
                 self.iri, self.uuid = self.uuidDB.addUUID(
                                            crystOntoPrefix + "CrystalInformation",
-                                           "CrystalInformation_" + name)
+                                           self.abox_prefix + "CrystalInformation_" + name)
             else:
-                # Do nothing
-                #print("==============================")
+                # Do nothing, self.iri is already defined
                 pass
 
         else:
             self.uuid = new_uuid
-            self.iri = "CrystalInformation" + "_" + self.uuid
+            self.iri = "CrystalInformation_" + self.uuid
 
         if subject != "" and predicate != "":
             output.append([self.abox_prefix + self.iri, "Instance",
@@ -492,16 +423,17 @@ class CrystalInfo:
 
         logging.info("Continue initializing CIF:", file_path, self.iri)
 
-        output.append([self.iri, "Instance",
+        output.append([self.abox_prefix + self.iri, "Instance",
                        crystOntoPrefix + "CrystalInformation", "", "", ""])
 
         try:
             err_count = self.load_cif_file_py_mat_gen(file_path)
             pass
-        except :
-            #logging.error("=================================================")
-            logging.warning(" Failed to read data by PyMatGen '%s', start reading by ValAndErr.", file_path)
-            #logging.error("=================================================")
+        except Exception as e:
+            logging.warning("===============================================")
+            logging.warning(" Failed to read data by PyMatGen '%s'," +
+                            " start reading by ValAndErr.", file_path)
+            logging.warning("===============================================")
 
             err_count = self.load_cif_file_val_and_err(file_path)
 
@@ -514,18 +446,13 @@ class CrystalInfo:
             logging.error(" Failed to load cif file '%s', aborting", file_path)
 
             with open("list_of_cif_fails.txt", "a", encoding="utf-8") as fp:
-                #fp.write(file + "\n")
+                fp.write(file + "\n")
                 pass
             return output
 
-        #print("Starting get_csv_arr_from_cif() for", file_path, name)
-
-        if self.uuid: #new_uuid:
+        if self.uuid:
             self.iri = self.abox_prefix + "CrystalInformation_"
-            if name is not None and name != "":
-                #self.iri += name + "_"
-                pass
-            self.iri += self.uuid #new_uuid
+            self.iri += self.uuid
         else:
             self.iri, _ = self.uuidDB.addUUID(crystOntoPrefix + "CrystalInformation",
                                               self.abox_prefix + "CrystalInformation_" + name)
@@ -535,11 +462,10 @@ class CrystalInfo:
             output.append([self.iri, "Instance",
                            crystOntoPrefix + "CrystalInformation", "", "", ""])
 
-            #print("self.iri =", self.iri, type(self.iri))
             if "U" in flags or "R" in flags or "V" in flags:
                 tmp = self.arrUnitCell(self.iri,
                                        crystOntoPrefix + "hasUnitCell",
-                                       name, new_uuid=self.uuid) #new_uuid)
+                                       name, new_uuid=self.uuid)
                 if tmp is None:
                     logging.warning(" Missing Unit Cell information" +
                                     " in cif file '%s'.", file_path)
@@ -549,17 +475,18 @@ class CrystalInfo:
                 #################################################
                 if "V" in flags:
                     output += self.get_csv_arr_unit_cell_vector_set(self.unitcell_iri,
-                                   crystOntoPrefix + "hasUnitCellVectorSet", new_uuid=self.uuid) #new_uuid)
+                                   crystOntoPrefix + "hasUnitCellVectorSet",
+                                   new_uuid=self.uuid)
 
                 #################################################
                 if "R" in flags:
                     output += self.get_csv_arr_reciprocal_unit_cell(self.unitcell_iri,
-                                                                    new_uuid=self.uuid) #new_uuid)
+                                                                    new_uuid=self.uuid)
 
             if "T" in flags:
                 tmp = self.arrTransform(self.iri, crystOntoPrefix +
                                         "hasCoordinateTransformation",
-                                        name, new_uuid=self.uuid ) #new_uuid)
+                                        name, new_uuid=self.uuid)
                 if tmp is None:
                     logging.warning(" Missing Transformation information!")
                 else:
@@ -568,31 +495,11 @@ class CrystalInfo:
             if "A" in flags:
                 tmp = self.arrAtomSite(self.iri, crystOntoPrefix +
                                        "hasAtomicStructure", name,
-                                       new_uuid=self.uuid) #new_uuid)
+                                       new_uuid=self.uuid)
                 if tmp is None:
                     logging.warning(" Missing Atom Site information!")
                 else:
                     output += tmp
-
-            """
-            print("starting arrTile for", name)
-            tmp = self.arrTiles(self.iri, crystOntoPrefix + "hasTiledStructure", name)
-            if tmp is None:
-                logging.warning(" Missing Tiled Structure information!")
-            else:
-                output += tmp
-
-            tmp = self.arrSpectrum(self.iri, crystOntoPrefix + "hasXRDSpectrum", name)
-            if tmp is None:
-                logging.warning(" Missing Spectrum information!")
-            else:
-                output += tmp
-            # FIXME
-            """
-            #print("Finished hasCrystalInformation for", subject)
-            #for line in output[:20]:
-            #    print(line)
-            #    pass
 
         return output
         # === end of CrystalInfo.get_csv_arr_from_cif()
@@ -624,7 +531,7 @@ class CrystalInfo:
                               "_" + new_uuid
         else:
             uc_vec_abc_iri, _ = self.uuidDB.addUUID(crystOntoPrefix + "UnitCellVectorSet",
-                                                     "UnitCellVectorSet_" + new_uuid)
+                                                    "UnitCellVectorSet_" + new_uuid)
 
         output.append([uc_vec_abc_iri, "Instance",
                        crystOntoPrefix + "UnitCellVectorSet", "", "", ""])
@@ -634,19 +541,22 @@ class CrystalInfo:
 
         if self.cifOutput.unitCellVectorA:
             output += self.cifOutput.unitCellVectorA.get_csv_arr(uc_vec_abc_iri,
-                                     crystOntoPrefix + "hasUnitCellVector", new_uuid)
+                                     crystOntoPrefix + "hasUnitCellVector",
+                                     new_uuid)
         else:
             logging.warning(" Missing unit cell vector A for %s", cif_uc_iri)
 
         if self.cifOutput.unitCellVectorB:
             output += self.cifOutput.unitCellVectorB.get_csv_arr(uc_vec_abc_iri,
-                                     crystOntoPrefix + "hasUnitCellVector", new_uuid)
+                                     crystOntoPrefix + "hasUnitCellVector",
+                                     new_uuid)
         else:
             logging.warning(" Missing unit cell vector A for %s", cif_uc_iri)
 
         if self.cifOutput.unitCellVectorC:
             output += self.cifOutput.unitCellVectorC.get_csv_arr(uc_vec_abc_iri,
-                                     crystOntoPrefix + "hasUnitCellVector", new_uuid)
+                                     crystOntoPrefix + "hasUnitCellVector",
+                                     new_uuid)
         else:
             logging.warning(" Missing unit cell vector A for %s", cif_uc_iri)
 
@@ -666,24 +576,24 @@ class CrystalInfo:
                             " the name to contain 'UnitCell'.",
                             subject)
 
-        #if predicate.find("hasUnitCellVectorSet") < 0:
-        #    logging.warning(" Predicate in get_csv_arr_reciprocal_unit_cell() is '%s'," +
-        #                    " but expecting 'hasUnitCellVectorSet'.", predicate)
-
         output = []
         cif_uc_iri = subject
 
         if self.cifOutput.unitCellRecipLengths is not None:
             output += self.cifOutput.unitCellRecipLengths.get_csv_arr(cif_uc_iri,
-                      crystOntoPrefix + "hasReciprocalUnitCellLengths", new_uuid=new_uuid)
+                      crystOntoPrefix + "hasReciprocalUnitCellLengths",
+                      new_uuid=new_uuid)
         else:
-            logging.warning(" Missing unit cell reciprocal lengths for %s", cif_uc_iri)
+            logging.warning(" Missing unit cell reciprocal lengths for %s",
+                            cif_uc_iri)
 
         if self.cifOutput.unitCellRecipAngles is not None:
             output += self.cifOutput.unitCellRecipAngles.get_csv_arr(cif_uc_iri,
-                      crystOntoPrefix + "hasReciprocalUnitCellAngles", new_uuid=new_uuid)
+                      crystOntoPrefix + "hasReciprocalUnitCellAngles",
+                      new_uuid=new_uuid)
         else:
-            logging.warning(" Missing unit cell reciprocal angles for %s", cif_uc_iri)
+            logging.warning(" Missing unit cell reciprocal angles for %s",
+                            cif_uc_iri)
 
         # Vector to keep three Reciprocal Unit Cell vectors (a,b,c):
         if new_uuid:
@@ -691,15 +601,17 @@ class CrystalInfo:
                                 "_" + new_uuid
         else:
             uc_r_vec_abc_iri, _ = self.uuidDB.addUUID(crystOntoPrefix + "UnitCellVectorSet",
-                                                       "ReciprocalUnitCellVectorSet_" + new_uuid)
+                                                      "ReciprocalUnitCellVectorSet_" + new_uuid)
 
-        output.append([uc_r_vec_abc_iri, "Instance", crystOntoPrefix + "UnitCellVectorSet", "", "", ""])
+        output.append([uc_r_vec_abc_iri, "Instance",
+                       crystOntoPrefix + "UnitCellVectorSet", "", "", ""])
 
         output.append([cif_uc_iri, "Instance", uc_r_vec_abc_iri,
                        crystOntoPrefix + "hasReciprocalUnitCellVectorSet", "", ""])
 
         if self.cifOutput.unitCellRecipVectorA:
-            output += self.cifOutput.unitCellRecipVectorA.get_csv_arr(uc_r_vec_abc_iri,
+            output += self.cifOutput.unitCellRecipVectorA.get_csv_arr(
+                      uc_r_vec_abc_iri,
                       crystOntoPrefix + "hasUnitCellVector", new_uuid)
         else:
             logging.warning(" Missing unit cell reciprocal vector A for %s", cif_uc_iri)
@@ -740,14 +652,11 @@ class CrystalInfo:
 
         if new_uuid:
             cif_uc_iri = self.abox_prefix + "UnitCell_"
-            if zeoname is not None and zeoname != "":
-                #cif_uc_iri += zeoname + "_"
-                pass
             cif_uc_iri += new_uuid
 
         else:
             cif_uc_iri, _ = self.uuidDB.addUUID(crystOntoPrefix + "UnitCell",
-                                                 "UnitCell_" + zeoname)
+                                                "UnitCell_" + zeoname)
 
         output.append([cif_uc_iri, "Instance", crystOntoPrefix + "UnitCell", "", "", ""])
 
@@ -783,8 +692,6 @@ class CrystalInfo:
             output.append([crystOntoPrefix + "hasSymmetryNumber",
                            "Data Property", cif_uc_iri, "",
                            self.cifOutput.symmITNumber, "integer"])
-
-            #print("IT number", self.cifOutput.symmITNumber, type(self.cifOutput.symmITNumber))
 
             sym_code = crystaldata.SPACE_GROUP_SYMBOL[self.cifOutput.symmITNumber]
 
@@ -955,17 +862,16 @@ class CrystalInfo:
             self.cifOutput = self.cifValAndErr
 
         attrs = [
-                 "symmLatticeSystem", "symmITNumber", #"", "",
+                 "symmLatticeSystem", "symmITNumber",
                  "unitCellLengths",  "unitCellRecipLengths",
                  "unitCellAngles",  "unitCellRecipAngles",
                  "unitCellVectorA",      "unitCellVectorB",      "unitCellVectorC",
                  "unitCellRecipVectorA", "unitCellRecipVectorB", "unitCellRecipVectorC",
-                 "unitCellVolume",
-]
+                 "unitCellVolume"]
         """
-                "listAtomRaw", "listAtomAll", "listAtomSymm",
-                # other properties:
-                "cifStandard", "loopHeaders",
+                 "listAtomRaw", "listAtomAll", "listAtomSymm",
+                 # other properties:
+                 "cifStandard", "loopHeaders",
         """
 
         for attr in attrs:
@@ -1073,12 +979,13 @@ class CrystalInfo:
                 file_out = os.path.join(tmp_dir, file_base + "_" + str(i+1) + ext)
                 files_out.append(file_out)
                 self.readWithUncertainties(file_in, "zeoname", lineRanges[i],
-                                           lineRanges[i+1], file_out = fileOut)
+                                           lineRanges[i+1], file_out=fileOut)
 
         return files_out
         # === end of CrystalInfo.cleanCif()
 
     # === end of class CrystalInfo
+
 
 def list_files_with_extension(directory, extension):
     if not os.path.isdir(directory):
@@ -1110,15 +1017,6 @@ if __name__ == "__main__":
     # Algorithm to process the cif files:
     # 1. Get a directory with cif files and the list of files
     files = []
-    """
-    #data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "a_cifs.csv"))
-    data = tools.readCsv(os.path.join(DATA_DIR, "crystal", "data", "cif_list.csv"))
-    #data = data[1:]  # <= removed the header line, but there is no header.
-    for line in data[:]:
-        if line[5] != "" and line[5].lower() != "none":
-            if line[5].lower() not in files:
-                files += line[5].lower().split()
-    """
 
     args = read_command_line()
 
@@ -1133,8 +1031,6 @@ if __name__ == "__main__":
         if ext == ".cif":
             files = [args.cif]
         elif ext == ".csv" or ext == ".txt":
-            files = []
-            #print("Reading from input file:", args.cif)
             with open(args.cif, encoding="utf-8") as fp:
                 for line in fp:
                     value = line.strip()
@@ -1153,7 +1049,6 @@ if __name__ == "__main__":
     elif os.path.isdir(args.cif):
         print("Reading cif files from directory:", args.cif)
         all_files = os.listdir(args.cif)
-        files = []
         for f in all_files:
             if value.lower().endswith(".cif"):
                 files.append(value)
@@ -1175,19 +1070,6 @@ if __name__ == "__main__":
         line = tmp[i_line]
         if line.lower() == tmp[i_line+1].lower():
             print("Repeating file ", line)
-            pass
-
-    """
-    tmp = list(files)
-    files = []
-    for file in tmp:
-        #new_file = os.path.join(DATA_DIR, "crystal", "data", file)
-        new_file = file
-        if not os.path.isfile(new_file):
-            print("Missing file", new_file)
-        files.append(new_file)
-        #print(files[-1])
-    """
 
     # 2. Start processing files one by one:
     #    2a. If size exceeds size 20Mb move to the next folder
@@ -1223,27 +1105,22 @@ if __name__ == "__main__":
     CIF_IRI_DATA = CifIriData()
     CIF_IRI_DATA.self_test()
 
-    uuid_file = os.path.join(UUID_FOLDER, "crystal_uuid_" + str(db_count) +".csv")
+    uuid_file = os.path.join(UUID_FOLDER, "crystal_uuid_" + str(db_count) + ".csv")
     uuidDB = tools.UuidDB(filename=uuid_file)
 
     for i_file, file in enumerate(files):
-        #print("----------------------------------------------------------")
-        #print("PyMatGenStarting cif ", i_file, " of ", len(files),
-        #      ": '", file, "'.", sep="")
 
         cif_iri = ""
         cif_uuid = ""
         if "C" in FLAGS or "U" in FLAGS or "R" in FLAGS or \
            "V" in FLAGS or "T" in FLAGS or "A" in FLAGS:
             cif_iri, cif_uuid, _, __ = CIF_IRI_DATA.get_entry_iri(file)
-            #cif_uuid = str(uuid.uuid4())
             #cif_uuid = tools.new_uuid()
             if cif_iri is None and cif_uuid is None:
                 #CIF_IRI_DATA.set_entry(file, cif_iri, cif_uuid, "", "")
                 cif_iri, cif_uuid, _, __ = CIF_IRI_DATA.get_entry_iri(file)
 
             cryst = CrystalInfo(uuidDB=uuidDB, abox_prefix=args.abox_prefix)
-            #cif_iri = "CrystalInformation_" + cif_uuid
 
             cif_name = str(file)
             tmp = cryst.get_csv_arr_from_cif(file, cif_name,
@@ -1255,7 +1132,6 @@ if __name__ == "__main__":
             xrd_path = get_xrd_file(file, XRD_FOLDER)
             if not os.path.isfile(xrd_path):
                 file_in = os.path.join("", file)
-                #file_out = os.path.join(FOLDER_OUT, cif[])
                 file_out = xrd_path
 
                 try:
@@ -1269,10 +1145,10 @@ if __name__ == "__main__":
                         flog.write("Failed to read " + file_in + "\n")
 
             xrd = xrds.XRDSpectrum(abox_prefix=args.abox_prefix)
-            tmp = xrd.get_csv_arr(cif_iri, crystOntoPrefix + "hasXRDSpectrum", xrd_path)
+            tmp = xrd.get_csv_arr(args.abox_prefix + cif_iri,
+                                  crystOntoPrefix + "hasXRDSpectrum", xrd_path)
             if tmp != []:
                 output += tmp
-            #print("Computed new xrd_path =", xrd_path)
             CIF_IRI_DATA.set_entry(file, cif_iri, cif_uuid, xrd_path, xrd.iri)
 
         # To limit the file size, because blazegraph cannot accept big files.
@@ -1288,15 +1164,16 @@ if __name__ == "__main__":
 
             # Update the uuid database:
             uuidDB.saveDB()
-            uuid_file = os.path.join(UUID_FOLDER, "crystal_uuid_" + str(db_count) +".csv")
+            uuid_file = os.path.join(UUID_FOLDER,
+                                     "crystal_uuid_" + str(db_count) +".csv")
             if i_file < len(files) - 1:
                 uuidDB = tools.UuidDB(filename=uuid_file)
 
-            # Regularly saving the iri to reduce loss of data (optional):
-            CIF_IRI_DATA.save()
+            # Regular save IRI to reduce loss of data in case of crash (debug):
+            #CIF_IRI_DATA.save()
 
-            #print("=============  Early exit CrystalInfo.py =============")
-            #break
+            # print("=========  Early exit CrystalInfo.py (debug) ==========")
+            # break
 
     CIF_IRI_DATA.save()
 

@@ -1294,7 +1294,7 @@ class ZeoliteDB:
         return output
         # === end of ZeoliteDB.()
 
-    def get_framework_UUID(self, frameworkCode):
+    def get_framework_iri(self, frameworkCode):
         """ Return the IRI of the framework by its code (usually 3-letter).
 
         """
@@ -1302,7 +1302,7 @@ class ZeoliteDB:
                                               zeoOntoPrefix + "ZeoFramework_" + frameworkCode)
 
         return zeoframe_iri
-        # === end of ZeoliteDB.get_framework_UUID()
+        # === end of ZeoliteDB.get_framework_iri()
 
     def get_csv_arr_topology(self, subject, predicate, code):
         #logging.error(" In zeolite_db: Not implemented get_csv_arr_topology")

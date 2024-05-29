@@ -462,7 +462,6 @@ class CsvMaker:
         edgeN = data[10].split("+")
         faceN = data[11].split("+")
 
-        #print("faces =", faceN)
         for ic, cage in enumerate(cages):
             tile_iri, _     = self.uuidDB.addUUID(self.crystOntoPrefix + "Tile",
                                                    self.zeoOntoPrefix + "Tile_" + zeoname + "_cage" + str(ic+1))
@@ -470,7 +469,7 @@ class CsvMaker:
                                                    self.zeoOntoPrefix + "TileNumber_" + zeoname + "_cage" + str(ic+1))
 
             if ic >= len(codeN):
-                logging.error("Too big ic in tile signature, skipping it... FIXME")
+                logging.error(" Too big ic in tile signature, skipping it... Data corrupted?")
                 continue
 
             output.append([tile_iri, "Instance", self.crystOntoPrefix + "Tile",
@@ -479,27 +478,26 @@ class CsvMaker:
             output.append([uuid_tstructure, "Instance", tile_iri,
                            self.crystOntoPrefix + "hasTile", "", ""])
 
-            output.append([self.crystOntoPrefix + "hasTileCode", "Data Property",
-                           tile_iri, "UNDEF", codeN[ic], "string"])
+            output.append([self.crystOntoPrefix + "hasTileCode",
+                          "Data Property", tile_iri, "", codeN[ic], "string"])
 
-            output.append([self.crystOntoPrefix + "hasNumberOfFaces", "Data Property",
-                           tile_iri, "", faceN[ic], "integer"])
+            output.append([self.crystOntoPrefix + "hasNumberOfFaces",
+                           "Data Property", tile_iri, "", faceN[ic], "integer"])
 
-            output.append([self.crystOntoPrefix + "hasNumberOfEdges", "Data Property",
-                           tile_iri, "", edgeN[ic], "integer"])
+            output.append([self.crystOntoPrefix + "hasNumberOfEdges",
+                           "Data Property", tile_iri, "", edgeN[ic], "integer"])
 
-            output.append([self.crystOntoPrefix + "hasNumberOfVertices", "Data Property",
-                           tile_iri, "", vertN[ic], "integer"])
+            output.append([self.crystOntoPrefix + "hasNumberOfVertices",
+                           "Data Property", tile_iri, "", vertN[ic], "integer"])
 
-            # TODO
             #output.append([self.ontoPrefix + "hasTileSymmetry", "Data Property",
             #                                   tile_iri, "", symmN[ic], "string"])
 
-            output.append([self.crystOntoPrefix + "hasTileSignature", "Data Property",
-                           tile_iri, "", signN[ic], "string"])
+            output.append([self.crystOntoPrefix + "hasTileSignature",
+                           "Data Property", tile_iri, "", signN[ic], "string"])
 
-            output.append([tile_num_iri, "Instance", self.crystOntoPrefix + "TileNumber",
-                           "", "", ""])
+            output.append([tile_num_iri, "Instance",
+                           self.crystOntoPrefix + "TileNumber", "", "", ""])
 
             output.append([uuid_tstructure, "Instance", tile_num_iri,
                            self.crystOntoPrefix + "hasTileNumber", "", ""])
@@ -526,7 +524,7 @@ class CsvMaker:
                                "" , "", ""])
 
                 output.append([tile_iri,   "Instance", tile_face_iri,
-                             self.crystOntoPrefix + "hasTileFace" , "", ""])
+                               self.crystOntoPrefix + "hasTileFace" , "", ""])
 
                 output.append([tile_face_num_iri, "Instance",
                                self.crystOntoPrefix + "TileFaceNumber",
@@ -542,15 +540,21 @@ class CsvMaker:
                                tile_face_num_iri, "", face[1], "integer"])
 
                 output.append([self.crystOntoPrefix + "hasNumberOfEdges", "Data Property",
-                                  tile_face_iri, "", int(face[0]), "integer"])
+                               tile_face_iri, "", int(face[0]), "integer"])
 
                 if f < len(signF):  # FIXME why f here can exceed len(signF)?
                     output.append([self.crystOntoPrefix + "hasFaceCode", "Data Property",
                                    tile_face_iri, "", signF[f], "string"])
 
-                # TODO add face code (?), like 14a, 14b, etc
-                #output.append([self.ontoBase + "#hasFaceCode", "Data Property",
-                #                               tile_face_iri, "", int(cell[0]), "string"])
+                # Tile face code, like 14a, 14b, etc.
+                # The actual shape (coordinates of atoms) of the faces even
+                # for the same tile may be different in different frameworks,
+                # Blatov name them using a,b,c...
+                # For now this difference is not included, as a minor information.
+                # Also, the data from Blatov in incomplete because
+                # new frameworks have been discovered since publication.
+                #output.append([self.crystOntoPrefix + "hasFaceCode", "Data Property",
+                #               tile_face_iri, "", int(cell[0]), "string"])
 
         return output
         # === end of CsvMaker.arrTiles()
@@ -560,7 +564,6 @@ class CsvMaker:
             logging.error(" input must be string")
             return None
 
-        # print("In getTransitivity(): strValue =", strValue)
         short = strValue.strip()
         if short[0] != "[" or short[-1] != "]":
             logging.error(" Transitivity must be in [] brackets")
@@ -758,6 +761,7 @@ class CsvMaker:
         # === end of CsvMaker._setValueAndError()
     '''
 
+    '''
     def splitErrorBar(self, value, file_line):
         # TODO delete this function from here.
 
@@ -786,6 +790,7 @@ class CsvMaker:
         #print("value, vOut, eOut =", value, vOut, eOut)
         return vOut, eOut
         # === end of CsvMaker.splitErrorBar()
+    '''
 
     def readWithUncertainties(self, fileIn, cifName,
                               lineFr=None, lineTo=None,
@@ -869,9 +874,7 @@ class CsvMaker:
             elif pos1 > 0 or pos2 > 0:
                 logging.warning(" Comment starts not from beginning" +
                                 " of the line: '%s', %s.",
-                                line.strip(), file_line
-                               #+ " This is not supported by readWithUncertainties()."
-            )
+                                line.strip(), file_line)
                 if len(fileOut) > 0:
                     fOut.write(line)
                 continue
@@ -1020,7 +1023,7 @@ class CsvMaker:
             # Description of the framework:
             arr += zeoDataBase.get_csv_arr_framework(z)
 
-            zeoframe_iri = zeoDataBase.get_framework_UUID(z)
+            zeoframe_iri = zeoDataBase.get_framework_iri(z)
 
             # CIF information for the given framework:
             framework_cif = crystalinfo.CrystalInfo(uuidDB = self.uuidDB, abox_prefix=self.zeoOntoPrefix)
@@ -1093,7 +1096,8 @@ class CsvMaker:
 
                 for cif_path in paths:
                     try:
-                        material_cif = crystalinfo.CrystalInfo(uuidDB=self.uuidDB)
+                        material_cif = crystalinfo.CrystalInfo(uuidDB=self.uuidDB,
+                                                               abox_prefix=self.zeoOntoPrefix)
                         safe_name = zeolite.get_iri()
                         arr += material_cif.get_csv_arr_from_cif(cif_path, #safe_name,
                                                                  new_uuid=None,
