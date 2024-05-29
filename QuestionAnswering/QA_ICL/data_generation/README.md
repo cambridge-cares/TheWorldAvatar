@@ -1,4 +1,4 @@
-# Data Generation for TWA Question-Answering Applications using In-Context Learening
+# Data generation for QA applications using in-context learening
 
 ## Introduction
 
@@ -39,7 +39,7 @@ See [JSON schema for examples of data request generation](#data-schema-of-data-r
 ## Installation
 
 ### Prerequisites
-- `python>=3.8`
+- python>=3.8
 - (optional but recommended) [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
 
 ### Steps
@@ -60,26 +60,26 @@ For all scripts in this directory, run `python <path_to_script> -h` to view the 
 
 ### Generation of lexicons
 
-- Generate lexicon for all entities of a base class using only `rdfs:label` data: `lexicon/lexicon_from_label.py`.
-- Generate lexicon for all classes that inherit from a base class using only `rdfs:label` data: `lexicon/lexicon_from_owl.py`.
+- Generate lexicon for all entities of a base class using only `rdfs:label` data: [lexicon/lexicon_from_label.py](lexicon/lexicon_from_label.py).
+- Generate lexicon for all classes that inherit from a base class using only `rdfs:label` data: [lexicon/lexicon_from_owl.py](lexicon/lexicon_from_owl.py).
 - Synthesise lexicon with LLM:
-  - Optionally, retrieve all literal data associated with entities of a class first: `lexicon/retrieve_literal_data.py`.
-  - Then, run `lexicon/lexicon_from_llm.py`.
+  - Optionally, retrieve all literal data associated with entities of a class first: [lexicon/retrieve_literal_data.py](lexicon/retrieve_literal_data.py).
+  - Then, run [lexicon/lexicon_from_llm.py](lexicon/lexicon_from_llm.py).
 - Generate lexicon with scripts specific to entity types:
-  - Entities of `purl:Element` type: `lexicon/Element_lexicon.py`.
-  - Entities of `disp:Ship` type: `lexicon/Ship_lexicon.py`.
+  - Entities of `purl:Element` type: [lexicon/Element_lexicon.py](lexicon/Element_lexicon.py).
+  - Entities of `disp:Ship` type: [lexicon/Ship_lexicon.py](lexicon/Ship_lexicon.py).
 
 ### Generation of simplified graph schema
 
-- Generate simplified graph schema from OWL files: `simplified_schema/extract_schema_from_tbox.py`.
-- Generate simplified grpah schema from a SPARQL endpoint: `simplified_schema/extract_schema_from_abox.py`
+- Generate simplified graph schema from OWL files: [simplified_schema/extract_schema_from_tbox.py](simplified_schema/extract_schema_from_tbox.py).
+- Generate simplified grpah schema from a SPARQL endpoint: [simplified_schema/extract_schema_from_abox.py](simplified_schema/extract_schema_from_abox.py)
 
 ### Augmentation of data request examples
 
 Augmentation refers to the process of artificially synthesising new data from existing data. 
 
-- With an OpenAI-compatible API: `make_examples.py`.
-- With a locally hosted Mixtral 8x7B model: `make_examples.sh`.
+- With an OpenAI-compatible API: [make_examples.py](make_examples.py).
+- With a locally hosted Mixtral 8x7B model: [make_examples.sh](make_examples.sh).
 
 ## Schema definitions
 

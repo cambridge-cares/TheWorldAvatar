@@ -70,4 +70,4 @@ def get_sgDispersion_bgClient():
 
 @cache
 def get_sgCarpark_bgClient():
-    return KgClient(os.environ["KG_ENDPOINT_SG_CARPARKS"])
+    return KgClient(os.environ["KG_ENDPOINT_SG_CARPARK"])
