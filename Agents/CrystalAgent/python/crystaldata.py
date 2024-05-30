@@ -18,10 +18,10 @@ import ontocrystal_datatypes as ocdt
 
 import tools
 
-#logging.basicConfig(level = logging.DEBUG)
-#logging.basicConfig(level = logging.INFO)
-#logging.basicConfig(level = logging.WARNING)
-logging.basicConfig(level = logging.ERROR)
+#logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.ERROR)
 
 crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 
@@ -106,7 +106,7 @@ def cleanString(line):
     """
     """
     if not isinstance(line, str):
-        logging.error("Input line '%s' is not a string in cleanString()",
+        logging.error(" Input line '%s' is not a string in cleanString()",
                       str(line))
         return str(line)
     pos = line.find("#")
@@ -356,24 +356,24 @@ class AtomInformation:
 
         if new_uuid:
             # "Atom_" + 
-            uuid_atom = \
+            atom_iri = \
                         self.abox_prefix + self.cifName + "_" + atomLabel + "_" + new_uuid
         else:
-            uuid_atom, _ = self.uuidDB.addUUID(crystOntoPrefix + "AtomSite",
+            atom_iri, _ = self.uuidDB.addUUID(crystOntoPrefix + "AtomSite",
                                                "Atom_" + self.cifName + "_" + atomLabel)
-        #uuid_atom = tools.getUUID(self.uuidDB, "AtomSite", "Atom_" + self.cifName + atomLabel)
+        #atom_iri = tools.getUUID(self.uuidDB, "AtomSite", "Atom_" + self.cifName + atomLabel)
 
-        #print("==== crystdata, atom:", uuid_atom)
-        output.append([uuid_atom, "Instance", crystOntoPrefix + "AtomSite",
+        #print("==== crystdata, atom:", atom_iri)
+        output.append([atom_iri, "Instance", crystOntoPrefix + "AtomSite",
                        "", "", ""])
 
         # Define relation between the class instances:
-        output.append([subject, "Instance", uuid_atom, predicate, "", ""])
+        output.append([subject, "Instance", atom_iri, predicate, "", ""])
 
         ### Setting the available data:
         if self.cif_label is not None:
             output.append([crystOntoPrefix + "hasAtomSiteLabel",
-                           "Data Property", uuid_atom, "",
+                           "Data Property", atom_iri, "",
                            self.cif_label, "xsd:string"])
             #print("cif_label =", self.cif_label)
         #else:
@@ -381,16 +381,16 @@ class AtomInformation:
 
         if self.occupancy is not None:
             output.append([crystOntoPrefix + "hasOccupancy",
-                           "Data Property", uuid_atom, "",
+                           "Data Property", atom_iri, "",
                            self.occupancy, "xsd:decimal"])
 
         if self.element is not None:
             # TODO add species
             #output.append("")
             #output.append([crystOntoPrefix + "has", "Data Property",
-            #                 uuid_atom, "", self.occupancy, "xsd:decimal"])
+            #                 atom_iri, "", self.occupancy, "xsd:decimal"])
             #output.append([crystOntoPrefix + "hasAtomSiteLabel",
-            #               "Data Property", uuid_atom,
+            #               "Data Property", atom_iri,
             #               "", self.element, "xsd:string"])
             pass
 
@@ -414,7 +414,7 @@ class AtomInformation:
             #atomPos.addComponent(label = "x", value = str(round(float(self.frac[0]), 10))) #, error = error)
             #atomPos.addComponent(label = "y", value = str(round(float(self.frac[1]), 10))) #, error = error)
             #atomPos.addComponent(label = "z", value = str(round(float(self.frac[2]), 10))) #, error = error)
-            output += atomPos.get_csv_arr(uuid_atom,
+            output += atomPos.get_csv_arr(atom_iri,
                                           crystOntoPrefix + "hasFractionalPosition",
                                           new_uuid=new_uuid)
 
@@ -439,7 +439,7 @@ class AtomInformation:
             #atomPos.addComponent(label = "x", value = str(round(float(self.cart[0]), 10))) #, error = error)
             #atomPos.addComponent(label = "y", value = str(round(float(self.cart[1]), 10))) #, error = error)
             #atomPos.addComponent(label = "z", value = str(round(float(self.cart[2]), 10))) #, error = error)
-            output += atomPos.get_csv_arr(uuid_atom,
+            output += atomPos.get_csv_arr(atom_iri,
                                           crystOntoPrefix + "hasCartesianPosition",
                                           new_uuid=new_uuid)
 
@@ -562,7 +562,7 @@ class CrystalData:
     def readStandardFile(self, path):
         output = []
         if not os.path.isfile(path):
-            logging.warning(" CIF standard file does not exist: '%s', " +
+            logging.warning(" CIF standard file not found: '%s', " +
                             "no check of keywords for correctness.", path)
             return output
 
@@ -670,11 +670,11 @@ class CrystalData:
 
         # The Unit Cell Lengths:
         self.unitCellLengths = ocdt.OntoVector(
-                                      class_name = "UnitCellLengths",
-                                      item_name  = "UnitCellLengths" + self.cifName,
-                                      uuidDB    = self.uuidDB,
-                                      abox_prefix = self.abox_prefix,
-                                      unit      = "om:angstrom")
+                                      class_name="UnitCellLengths",
+                                      item_name="UnitCellLengths", # + self.cifName,
+                                      uuidDB=self.uuidDB,
+                                      abox_prefix=self.abox_prefix,
+                                      unit="om:angstrom")
 
         self.unitCellLengths.addComponent(label="a",
              value = str(round(self.struct.lattice.a, 12)), error="")
@@ -687,7 +687,7 @@ class CrystalData:
 
         # The Unit Cell Angles:
         self.unitCellAngles = ocdt.OntoVector(class_name="UnitCellAngles",
-                                              item_name="UnitCellAngles" + self.cifName,
+                                              item_name="UnitCellAngles", # + self.cifName,
                                               uuidDB=self.uuidDB,
                                               unit="om:degree",
                                               abox_prefix=self.abox_prefix)
@@ -703,10 +703,10 @@ class CrystalData:
 
         # The Reciprocal Unit Cell Lengths:
         self.unitCellRecipLengths = ocdt.OntoVector(
-                                           class_name = "UnitCellLengths",
-                                           item_name  = "ReciprocalUnitCellLengths" + self.cifName,
-                                           uuidDB = self.uuidDB,
-                                           unit  = "om:reciprocalAngstrom",
+                                           class_name="UnitCellLengths",
+                                           item_name="ReciprocalUnitCellLengths", #+ self.cifName,
+                                           uuidDB=self.uuidDB,
+                                           unit="om:reciprocalAngstrom",
                                            abox_prefix=self.abox_prefix)
 
         self.unitCellRecipLengths.addComponent(label="a",
@@ -720,9 +720,9 @@ class CrystalData:
 
         # The Reciprocal Unit Cell Angles:
         self.unitCellRecipAngles = ocdt.OntoVector(uuidDB = self.uuidDB,
-                                           class_name = "UnitCellAngles",
-                                           item_name  = "ReciprocalUnitCellAngles" + self.cifName,
-                                           unit  = "om:degree",
+                                           class_name="UnitCellAngles",
+                                           item_name="ReciprocalUnitCellAngles", # + self.cifName,
+                                           unit="om:degree",
                                            abox_prefix=self.abox_prefix)
 
         self.unitCellRecipAngles.addComponent(label = "alpha",
@@ -735,11 +735,11 @@ class CrystalData:
              value = str(round(self.struct.lattice.reciprocal_lattice.gamma, 12)), error = "")
 
         # Vectors to keep three Unit Cell vectors (a,b,c):
-        self.unitCellVectorA = ocdt.OntoVector(uuidDB = self.uuidDB,
-                                           class_name = "UnitCellLatticeVector",
-                                           item_name  = "UnitCellVectorA" + self.cifName,
-                                           unit  = "om:angstrom",
-                                           vector_label = "a",
+        self.unitCellVectorA = ocdt.OntoVector(uuidDB=self.uuidDB,
+                                           class_name="UnitCellLatticeVector",
+                                           item_name="UnitCellVectorA", # + self.cifName,
+                                           unit="om:angstrom",
+                                           vector_label="a",
                                            abox_prefix=self.abox_prefix)
 
         self.unitCellVectorA.addComponent(label = "x",
@@ -752,8 +752,8 @@ class CrystalData:
              value = str(round(self.struct.lattice.matrix[0][2], 12)), error = "")
 
         self.unitCellVectorB = ocdt.OntoVector(uuidDB = self.uuidDB,
-                                       class_name = "UnitCellLatticeVector",
-                                       item_name  = "UnitCellVectorB" + self.cifName,
+                                       class_name="UnitCellLatticeVector",
+                                       item_name="UnitCellVectorB", # + self.cifName,
                                        unit  = "om:angstrom",
                                        vector_label = "b",
                                        abox_prefix=self.abox_prefix)
@@ -768,11 +768,11 @@ class CrystalData:
              value = str(round(self.struct.lattice.matrix[1][2], 12)), error = "")
 
 
-        self.unitCellVectorC = ocdt.OntoVector(uuidDB = self.uuidDB,
-                                       class_name = "UnitCellLatticeVector",
-                                       item_name  = "UnitCellVectorC" + self.cifName,
-                                       unit  = "om:angstrom",
-                                       vector_label = "c",
+        self.unitCellVectorC = ocdt.OntoVector(uuidDB=self.uuidDB,
+                                       class_name="UnitCellLatticeVector",
+                                       item_name="UnitCellVectorC", # + self.cifName,
+                                       unit="om:angstrom",
+                                       vector_label="c",
                                        abox_prefix=self.abox_prefix)
 
         self.unitCellVectorC.addComponent(label = "x",
@@ -785,11 +785,11 @@ class CrystalData:
              value = str(round(self.struct.lattice.matrix[2][2], 12)), error = "")
 
         # Vectors to keep three Reciprocal Unit Cell vectors (a,b,c):
-        self.unitCellRecipVectorA = ocdt.OntoVector(uuidDB = self.uuidDB,
-                                  class_name = "UnitCellLatticeVector",
-                                  item_name  = "ReciprocalUnitCellLatticeVectorA" + self.cifName,
-                                  unit  = "om:reciprocalAngstrom",
-                                  vector_label = "a",
+        self.unitCellRecipVectorA = ocdt.OntoVector(uuidDB=self.uuidDB,
+                                  class_name="UnitCellLatticeVector",
+                                  item_name="ReciprocalUnitCellLatticeVectorA", # + self.cifName,
+                                  unit="om:reciprocalAngstrom",
+                                  vector_label="a",
                                   abox_prefix=self.abox_prefix)
 
         x_val = self.struct.lattice.reciprocal_lattice.matrix[0][0]
@@ -805,11 +805,11 @@ class CrystalData:
         self.unitCellRecipVectorA.addComponent(label = "z",
              value = str(round(z_val, 12)), error = "")
 
-        self.unitCellRecipVectorB = ocdt.OntoVector(uuidDB = self.uuidDB,
-                                  class_name = "UnitCellLatticeVector",
-                                  item_name  = "ReciprocalUnitCellLatticeVectorB" + self.cifName,
-                                  unit  = "om:reciprocalAngstrom",
-                                  vector_label = "b",
+        self.unitCellRecipVectorB = ocdt.OntoVector(uuidDB=self.uuidDB,
+                                  class_name="UnitCellLatticeVector",
+                                  item_name="ReciprocalUnitCellLatticeVectorB", # + self.cifName,
+                                  unit="om:reciprocalAngstrom",
+                                  vector_label="b",
                                   abox_prefix=self.abox_prefix)
 
         x_val = self.struct.lattice.reciprocal_lattice.matrix[1][0]
@@ -825,34 +825,34 @@ class CrystalData:
         self.unitCellRecipVectorB.addComponent(label = "z",
              value = str(round(z_val, 12)), error = "")
 
-        self.unitCellRecipVectorC = ocdt.OntoVector(uuidDB = self.uuidDB,
-                                  class_name = "UnitCellLatticeVector",
-                                  item_name  = "ReciprocalUnitCellLatticeVectorC" + self.cifName,
-                                  unit  = "om:reciprocalAngstrom",
-                                  vector_label = "c",
-                                  abox_prefix=self.abox_prefix)
+        self.unitCellRecipVectorC = ocdt.OntoVector(uuidDB=self.uuidDB,
+                                    class_name="UnitCellLatticeVector",
+                                    item_name="ReciprocalUnitCellLatticeVectorC", # + self.cifName,
+                                    unit="om:reciprocalAngstrom",
+                                    vector_label="c",
+                                    abox_prefix=self.abox_prefix)
 
         x_val = self.struct.lattice.reciprocal_lattice.matrix[2][0]
         y_val = self.struct.lattice.reciprocal_lattice.matrix[2][1]
         z_val = self.struct.lattice.reciprocal_lattice.matrix[2][2]
 
-        self.unitCellRecipVectorC.addComponent(label = "x",
-             value = str(round(x_val, 12)), error = "")
+        self.unitCellRecipVectorC.addComponent(label="x",
+             value = str(round(x_val, 12)), error="")
 
-        self.unitCellRecipVectorC.addComponent(label = "y",
-             value = str(round(y_val, 12)), error = "")
+        self.unitCellRecipVectorC.addComponent(label="y",
+             value = str(round(y_val, 12)), error="")
 
-        self.unitCellRecipVectorC.addComponent(label = "z",
-             value = str(round(z_val, 12)), error = "")
+        self.unitCellRecipVectorC.addComponent(label="z",
+             value = str(round(z_val, 12)), error="")
 
 
-        self.unitCellVolume = ocdt.OntoMeasureWithUncertainty(class_name = "UnitCellVolume",
-                                      item_name = "UnitCellVolume",  # + self.cifName,
-                                      uuidDB = self.uuidDB,
+        self.unitCellVolume = ocdt.OntoMeasureWithUncertainty(class_name="UnitCellVolume",
+                                      item_name="UnitCellVolume",  # + self.cifName,
+                                      uuidDB=self.uuidDB,
                                       abox_prefix=self.abox_prefix)
 
         self.unitCellVolume.setValue(round(self.struct.lattice.volume, 4),
-                                     unit = "om:cubicAngstrom")
+                                     unit="om:cubicAngstrom")
 
         sga = pymatgen.symmetry.analyzer.SpacegroupAnalyzer(self.struct)
 
@@ -890,7 +890,7 @@ class CrystalData:
         self.vectorCartToFrac.addComponentList(val_list=[0., 0., 0.])
 
         """
-        print(">>>>>>>>>>> Zeo Name = ")
+        A special module in pymatgen for the space group, has other info too:
         print("SG number:", sga._space_group_data)
         print("SG number:", sga.get_space_group_number())
         print("SG number:", sga.get_crystal_system())
@@ -898,35 +898,8 @@ class CrystalData:
         """
         if isinstance(sga._space_group_data, dict):
             if "number" in sga._space_group_data.keys():
-
                 self.symmLatticeSystem = sga.get_crystal_system()
                 self.symmITNumber = sga.get_space_group_number()
-                """
-                print("SG number:", sga._space_group_data["number"], sga.get_space_group_number(), sga.get_crystal_system())
-                print("   ", #sga._get_symmetry(),
-                      sga.get_hall(),
-                      sga.get_lattice_type(), #sga.get_symmetry_dataset()
-                      #sga.int_symbol()
-                      #sga._abc_impl)
-                """
-                """
-            #if isinstance(sga.get_crystal_system(), str) :
-            output.append([crystOntoPrefix + "hasLatticeSystem",
-                               "Data Property", uuid_cif_uc, "",
-                               sga.get_crystal_system() , "string"])
-            output.append([crystOntoPrefix + "hasSymmetryNumber",
-                               "Data Property", uuid_cif_uc, "",
-                               sga.get_space_group_number() , "xsd:integer"])
-
-        if self.cifOutput.symmLatticeSystem != None:
-          output += self.cifOutput.symmLatticeSystem.getArr(uuid_uc_r_vec_abc,
-                    crystOntoPrefix + "hasLatticeSystem")
-
-        if self.cifOutput.symmITNumber != None:
-          output += self.cifOutput.symmITNumber.getArr(uuid_uc_r_vec_abc,
-                    crystOntoPrefix + "hasSymmetryNumber")
-
-                """
 
         # === end of CrystalData.evalPyMatGenUnitCell()
 
@@ -1098,27 +1071,27 @@ class CrystalData:
                  len_c / sin_ga * math.sqrt(sin_ga**2 - cos_al**2 - cos_be**2 +
                                             2 * cos_al * cos_be * cos_ga) ]
 
-        self.unitCellVectorA = ocdt.OntoVector(uuidDB = self.uuidDB,
-                                               class_name = "UnitCellLatticeVector",
-                                               item_name  = "UnitCellVectorA",
-                                               unit  = "om:angstrom",
-                                               vector_label = "a",
+        self.unitCellVectorA = ocdt.OntoVector(uuidDB=self.uuidDB,
+                                               class_name="UnitCellLatticeVector",
+                                               item_name="UnitCellVectorA",
+                                               unit="om:angstrom",
+                                               vector_label="a",
                                                abox_prefix=self.abox_prefix)
         self.unitCellVectorA.addComponentList(val_list=vec_a) 
 
-        self.unitCellVectorB = ocdt.OntoVector(uuidDB = self.uuidDB,
-                                               class_name = "UnitCellLatticeVector",
-                                               item_name  = "UnitCellVectorB",
-                                               unit  = "om:angstrom",
-                                               vector_label = "b",
+        self.unitCellVectorB = ocdt.OntoVector(uuidDB=self.uuidDB,
+                                               class_name="UnitCellLatticeVector",
+                                               item_name="UnitCellVectorB",
+                                               unit="om:angstrom",
+                                               vector_label="b",
                                                abox_prefix=self.abox_prefix)
         self.unitCellVectorB.addComponentList(val_list=vec_b) 
 
-        self.unitCellVectorC = ocdt.OntoVector(uuidDB = self.uuidDB,
-                                               class_name = "UnitCellLatticeVector",
-                                               item_name  = "UnitCellVectorC",
-                                               unit  = "om:angstrom",
-                                               vector_label = "c",
+        self.unitCellVectorC = ocdt.OntoVector(uuidDB=self.uuidDB,
+                                               class_name="UnitCellLatticeVector",
+                                               item_name="UnitCellVectorC",
+                                               unit="om:angstrom",
+                                               vector_label="c",
                                                abox_prefix=self.abox_prefix)
         self.unitCellVectorC.addComponentList(val_list=vec_c) 
 
@@ -1130,11 +1103,10 @@ class CrystalData:
 
         if self.unitCellVolume is None:
             self.unitCellVolume = ocdt.OntoMeasureWithUncertainty(
-                        #tbox_prefix = "",
-                        abox_prefix = self.abox_prefix,
-                        uuidDB = self.uuidDB,
-                        class_name = "UnitCellVolume",
-                        item_name = "UnitCellVolume")
+                                  abox_prefix=self.abox_prefix,
+                                  uuidDB=self.uuidDB,
+                                  class_name="UnitCellVolume",
+                                  item_name="UnitCellVolume")
 
             self.unitCellVolume.setValue(value=vol,# error=error,
                                          unit="om:cubicAngstrom")
@@ -1147,11 +1119,11 @@ class CrystalData:
         np_rb = TWOPI * numpy.cross(np_c, np_a) / vol
         np_rc = TWOPI * numpy.cross(np_a, np_b) / vol
         self.unitCellRecipLengths = ocdt.OntoVector(
-                                           class_name = "UnitCellLengths",
-                                           item_name  = "ReciprocalUnitCellLengths" + self.cifName,
-                                           uuidDB = self.uuidDB,
-                                           unit  = "om:reciprocalAngstrom",
-                                           abox_prefix=self.abox_prefix)
+                                    class_name="UnitCellLengths",
+                                    item_name="ReciprocalUnitCellLengths", #+ self.cifName,
+                                    uuidDB=self.uuidDB,
+                                    unit="om:reciprocalAngstrom",
+                                    abox_prefix=self.abox_prefix)
 
         self.unitCellRecipLengths.addComponent(label="a",
              value = str(round(math.sqrt(numpy.dot(np_ra, np_ra)), 12)), error = "")
@@ -1163,11 +1135,11 @@ class CrystalData:
              value = str(round(math.sqrt(numpy.dot(np_rc, np_rc)), 12)), error = "")
 
         self.unitCellRecipAngles = ocdt.OntoVector(
-                                           class_name = "UnitCellAngles",
-                                           item_name  = "ReciprocalUnitCellAngles" + self.cifName,
-                                           uuidDB = self.uuidDB,
-                                           unit  = "om:degree",
-                                           abox_prefix=self.abox_prefix)
+                                   class_name="UnitCellAngles",
+                                   item_name="ReciprocalUnitCellAngles", # + self.cifName,
+                                   uuidDB=self.uuidDB,
+                                   unit="om:degree",
+                                   abox_prefix=self.abox_prefix)
 
         alpha = math.acos( numpy.dot(np_rb, np_rc) /
                            math.sqrt(numpy.dot(np_rb, np_rb) * numpy.dot(np_rc, np_rc)))
@@ -1190,7 +1162,7 @@ class CrystalData:
 
         self.unitCellRecipVectorA = ocdt.OntoVector(uuidDB = self.uuidDB,
                                   class_name = "UnitCellLatticeVector",
-                                  item_name  = "ReciprocalUnitCellLatticeVectorA" + self.cifName,
+                                  item_name  = "ReciprocalUnitCellLatticeVectorA", # + self.cifName,
                                   unit  = "om:reciprocalAngstrom",
                                   vector_label = "a",
                                   abox_prefix=self.abox_prefix)
@@ -1206,7 +1178,7 @@ class CrystalData:
 
         self.unitCellRecipVectorB = ocdt.OntoVector(uuidDB = self.uuidDB,
                                   class_name = "UnitCellLatticeVector",
-                                  item_name  = "ReciprocalUnitCellLatticeVectorB" + self.cifName,
+                                  item_name  = "ReciprocalUnitCellLatticeVectorB", # + self.cifName,
                                   unit  = "om:reciprocalAngstrom",
                                   vector_label = "b",
                                     abox_prefix=self.abox_prefix)
@@ -1222,7 +1194,7 @@ class CrystalData:
 
         self.unitCellRecipVectorC = ocdt.OntoVector(uuidDB = self.uuidDB,
                                     class_name = "UnitCellLatticeVector",
-                                    item_name  = "ReciprocalUnitCellLatticeVectorC" + self.cifName,
+                                    item_name  = "ReciprocalUnitCellLatticeVectorC", # + self.cifName,
                                     unit  = "om:reciprocalAngstrom",
                                     vector_label = "c",
                                     abox_prefix=self.abox_prefix)
@@ -1304,7 +1276,7 @@ class CrystalData:
 
     def _split_cif_to_parts(self, fileIn):
         if not os.path.isfile(fileIn):
-            logging.error(" Input file '%s' does not exist in cleanCif().", fileIn)
+            logging.error(" Input file '%s' not found in cleanCif().", fileIn)
             return None
 
         with open(fileIn, encoding="utf-8") as fIn:
@@ -1501,7 +1473,7 @@ class CrystalData:
         """
 
         if not os.path.isfile(fileIn):
-            logging.error(" Input file '%s' does not exist in cleanCif().", fileIn)
+            logging.error(" Input file '%s' not found in cleanCif().", fileIn)
             return -1
 
         fIn = open(fileIn)
@@ -1772,10 +1744,10 @@ class CrystalData:
         if ("_cell_angle_alpha" == entry or "_cell_angle_beta" == entry or
             "_cell_angle_gamma" == entry) and (self.unitCellAngles is None):
             self.unitCellAngles = ocdt.OntoVector(
-                                        class_name = "UnitCellAngles",
-                                        item_name  = "UnitCellAngles",  # + cifName,
-                                        uuidDB    = self.uuidDB,
-                                        unit      = "om:degree",
+                                        class_name="UnitCellAngles",
+                                        item_name="UnitCellAngles",  # + cifName,
+                                        uuidDB=self.uuidDB,
+                                        unit="om:degree",
                                         abox_prefix=self.abox_prefix)
 
         #logging.warning(" _setValueAndError(): cifName = '%s'," +
@@ -1783,29 +1755,29 @@ class CrystalData:
         #                str(cifName), str(entry), str(value), str(error))
 
         if "_cell_length_a" == entry:
-            self.unitCellLengths.addComponent(label = "a", value = value, error = error)
+            self.unitCellLengths.addComponent(label="a", value=value, error=error)
 
         elif "_cell_length_b" == entry:
-            self.unitCellLengths.addComponent(label = "b", value = value, error = error)
+            self.unitCellLengths.addComponent(label="b", value=value, error=error)
 
         elif "_cell_length_c" == entry:
-            self.unitCellLengths.addComponent(label = "c", value = value, error = error)
+            self.unitCellLengths.addComponent(label="c", value=value, error=error)
 
         elif "_cell_angle_alpha" == entry:
-            self.unitCellAngles.addComponent(label = "alpha", value = value, error = error)
+            self.unitCellAngles.addComponent(label="alpha", value=value, error=error)
 
         elif "_cell_angle_beta" == entry:
-            self.unitCellAngles.addComponent(label = "beta", value = value, error = error)
+            self.unitCellAngles.addComponent(label="beta", value=value, error=error)
 
         elif "_cell_angle_gamma" == entry:
-            self.unitCellAngles.addComponent(label = "gamma", value = value, error = error)
+            self.unitCellAngles.addComponent(label="gamma", value=value, error=error)
 
         elif "_cell_volume" == entry:
             self.unitCellVolume = ocdt.OntoMeasureWithUncertainty(
-                    tbox_prefix = "",
-                    uuidDB = self.uuidDB,
-                    class_name = crystOntoPrefix + "UnitCellVolume",
-                    item_name = "UnitCellVolume", # + str(cifName),
+                    tbox_prefix="",
+                    uuidDB=self.uuidDB,
+                    class_name=crystOntoPrefix + "UnitCellVolume",
+                    item_name="UnitCellVolume", # + str(cifName),
                     abox_prefix=self.abox_prefix)
 
             self.unitCellVolume.setValue(value=value, error=error,
