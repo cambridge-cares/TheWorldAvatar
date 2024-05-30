@@ -14,14 +14,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 abstract class BaseClient {
 
-    private final ObjectMapper objectMapper = JsonHelper.getMapper();
-    private final Path configsDir;
+    private static final ObjectMapper objectMapper = JsonHelper.getMapper();
+    private static final Path configsDir;
 
-    protected BaseClient() {
+    static {
         if (StackClient.isInTest()) {
-            configsDir = Path.of("testing_temp", "configs");
             try {
-                Files.createDirectories(configsDir);
+                configsDir = Files.createTempDirectory("configs");
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to create directories for test Docker/Podman config files.", ex);
             }
