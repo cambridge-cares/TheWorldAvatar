@@ -3,6 +3,7 @@ import styles from './dropdown.module.css';
 import React from 'react';
 
 interface GroupDropdownFieldProps {
+  placeholderText: string,
   options: string[];
   groups: string[];
   handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -15,14 +16,15 @@ interface SelectGroupMappings {
 /**
  * This component renders a dropdown field with a designated group for each option.
  * 
+ * @param {string} placeholderText Placeholder text for default.
  * @param {string[]} options The list of options to render.
  * @param {string[]} groups The list of groups associated with the options.
  * @param {Function} handleChange A function that handles the event when selecting a new element.
- * @param {Function} containerClass A function that handles the event when selecting a new element.
 */
 export default function GroupDropdownField(props: Readonly<GroupDropdownFieldProps>) {
   return (
     <select className={styles["simple-selector"]} onChange={props.handleChange}>
+      <option value="" disabled selected>{props.placeholderText}</option>
       {Object.entries(genMappings(props.groups, props.options)).map(([group, options]) => (
         <optgroup key={group} label={group}>
           {options.map((option, index) => (
