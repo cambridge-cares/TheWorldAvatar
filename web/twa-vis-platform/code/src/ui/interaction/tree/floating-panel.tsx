@@ -48,7 +48,7 @@ export default function FloatingPanelContainer(
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
   // Execute API call
-  const { queriedData, isFetching } = useFeatureInfoAgentService(
+  const { attributes, timeSeries, isFetching } = useFeatureInfoAgentService(
     genFIAEndpoint(selectedIri, selectedStack, selectedScenario),
     selectedProperties
   );
@@ -140,7 +140,8 @@ export default function FloatingPanelContainer(
           {activeIndex === 1 && <LegendTree settings={props.legend} />}
           {activeIndex === 2 &&
             <InfoTree
-              data={queriedData}
+              attributes={attributes}
+              timeSeries={timeSeries}
               isFetching={isFetching}
               activeTab={{
                 index: activeInfoTab,

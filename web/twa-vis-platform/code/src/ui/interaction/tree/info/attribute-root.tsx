@@ -7,36 +7,36 @@ import { Attribute, AttributeGroup } from 'types/attribute';
 import HeaderField from 'ui/text/header';
 
 // type definition for incoming properties
-interface InfoTreeNodeProps {
+interface AttributeRootProps {
   attribute: AttributeGroup;
 }
 
-interface InfoTreeSubNodeProps {
+interface AttributeNodeProps {
   group: AttributeGroup;
   depth: number;
 }
 
-interface InfoTreeAttributeNodeProps {
+interface AttributeTextNodeProps {
   attributes: Attribute[];
   depth: number;
 }
 
 /**
- * This component renders the Info Tree based on the input data.
+ * This component renders the input attributes as a tree starting from this root.
  *
  * @param {AttributeGroup} attribute The attribute group to render.
  */
-export default function InfoTreeNode(props: Readonly<InfoTreeNodeProps>) {
+export default function AttributeRoot(props: Readonly<AttributeRootProps>) {
   // This component is separate from the SubNode as the root node should not be indented and depth should start at 0
   return (
     <>
-      <InfoTreeAttributeNode
+      <AttributeTextNode
         attributes={props.attribute.attributes}
         depth={0}
       />
       {props.attribute.subGroups.map((subGroup) => {
         return (
-          <InfoTreeSubNode
+          <AttributeNode
             group={subGroup}
             depth={0}
             key={subGroup.name + "_" + 0}
@@ -53,7 +53,7 @@ export default function InfoTreeNode(props: Readonly<InfoTreeNodeProps>) {
  * @param {AttributeGroup} group The attribute group to render.
  * @param {number} depth The current depth to this group tree.
  */
-function InfoTreeSubNode(props: Readonly<InfoTreeSubNodeProps>) {
+function AttributeNode(props: Readonly<AttributeNodeProps>) {
   const group: AttributeGroup = props.group;
   const depth: number = props.depth;
   // Size of left hand indentation
@@ -88,12 +88,12 @@ function InfoTreeSubNode(props: Readonly<InfoTreeSubNodeProps>) {
 
       {/* Elements */}
       {!isCollapsed && (<>
-        <InfoTreeAttributeNode
+        <AttributeTextNode
           attributes={group.attributes}
           depth={depth + 1}
         />
         {group.subGroups.map((subGroup) => {
-          return (<InfoTreeSubNode
+          return (<AttributeNode
             group={subGroup}
             depth={depth + 1}
             key={subGroup.name + "_" + (depth + 1)}
@@ -110,7 +110,7 @@ function InfoTreeSubNode(props: Readonly<InfoTreeSubNodeProps>) {
  * @param {Attribute[]} attributes The list of attributes that should be rendered.
  * @param {number} depth The current depth to this group tree.
  */
-function InfoTreeAttributeNode(props: Readonly<InfoTreeAttributeNodeProps>) {
+function AttributeTextNode(props: Readonly<AttributeTextNodeProps>) {
   const elements: React.ReactElement[] = [];
   const spacing: string = props.depth * 0.5 + "rem";
 
