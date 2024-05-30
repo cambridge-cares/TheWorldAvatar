@@ -42,9 +42,10 @@ goto EXIT
 
 :CSV
 echo Generate crystal csv
-%PYTHON% %SRCDIR%crystalinfo.py %DATADIR%
+rem %PYTHON% %SRCDIR%crystalinfo.py %DATADIR%
+%PYTHON% %SRCDIR%crystalinfo.py --cif=ontozeolite\crystal\data\cif_list.csv --outDir=ontozeolite\crystal\csv\ --xrdDir=ontozeolite\crystal\xrd --abox-prefix=https://www.theworldavatar.com/kg/ontozeolite/
 
-goto EXIT
+goto EXIT   
 
 :OWL
 echo Generate crystal owl
@@ -54,7 +55,7 @@ if not exist %DATADIR%\crystal\owl (
   md %DATADIR%\crystal\owl
 )
 
-set RANGE=(0,1,130)
+set RANGE=(0,1,134)
 setlocal enabledelayedexpansion
 for /L %%i in %RANGE% do (
   if exist %DATADIR%\crystal\csv\cif_twa_%%i.csv (
