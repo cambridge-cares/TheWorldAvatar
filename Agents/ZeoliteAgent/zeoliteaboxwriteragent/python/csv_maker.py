@@ -856,7 +856,7 @@ class CsvMaker:
             pos1 = line.find("#")
             pos2 = line.find(";")
             if   0 == pos1:
-                logging.info("Found a comment in string '%s', %s.",
+                logging.info(" Found a comment in string '%s', %s.",
                              line.strip(), file_line)
                 #short = line[:pos] + "\n"
                 if len(fileOut) > 0:
@@ -1004,9 +1004,9 @@ class CsvMaker:
         self.prepare()   # <- self.zeoList is defined inside
 
         # Load all general information about zeolitic materials:
-        #zeoData = ontozeolite.OntoZeolite(#itemName = z, className = "Zeolite",
-        #                                  uuidDB = self.uuidDB)
-        #zeoData.load_zeolites()
+        zeoData = ontozeolite.OntoZeolite(uuidDB = self.uuidDB,
+                                          abox_prefix=self.zeoOntoPrefix)
+        zeoData.load_zeolites()
 
         zeoDataBase = zeolite_db.ZeoliteDB(uuidDB = self.uuidDB)
         zeoDataBase.load(os.path.join(DATA_DIR, "zeolite", # "data",
@@ -1026,7 +1026,8 @@ class CsvMaker:
             zeoframe_iri = zeoDataBase.get_framework_iri(z)
 
             # CIF information for the given framework:
-            framework_cif = crystalinfo.CrystalInfo(uuidDB = self.uuidDB, abox_prefix=self.zeoOntoPrefix)
+            framework_cif = crystalinfo.CrystalInfo(uuidDB = self.uuidDB,
+                                                    abox_prefix=self.zeoOntoPrefix)
 
             path = os.path.join("ontozeolite", "crystal", "data", "cifdir", z + ".cif")
 
@@ -1040,14 +1041,16 @@ class CsvMaker:
             if uuid_cif is None:
                 print("Error: uuid_cif is None")
 
-            tmp = self.arrTiles(self.zeoOntoPrefix + uuid_cif, self.crystOntoPrefix + "hasTiledStructure", z)
+            tmp = self.arrTiles(self.zeoOntoPrefix + uuid_cif,
+                                self.crystOntoPrefix + "hasTiledStructure", z)
             if tmp is None:
                 logging.warning(" Missing Tiled Structure information! for %s", z)
             else:
                 arr += tmp
                 pass
 
-            tmp = self.arrSpectrum(self.zeoOntoPrefix + uuid_cif, self.crystOntoPrefix + "hasXRDSpectrum", z)
+            tmp = self.arrSpectrum(self.zeoOntoPrefix + uuid_cif,
+                                   self.crystOntoPrefix + "hasXRDSpectrum", z)
             if tmp is None or tmp == []:
                 logging.warning(" Missing Spectrum information! for %s", z)
             else:
@@ -1092,17 +1095,17 @@ class CsvMaker:
                                       str(zeolite.data["cif_file"]))
 
                 if len(paths) == 0:
-                    print("  Not found CIF in zeolite", zeolite.data["safe_name"], zeolite.data["uuid"])
+                    print("  Not found CIF in zeolite",
+                          zeolite.data["safe_name"], zeolite.data["uuid"])
 
                 for cif_path in paths:
                     try:
                         material_cif = crystalinfo.CrystalInfo(uuidDB=self.uuidDB,
                                                                abox_prefix=self.zeoOntoPrefix)
                         safe_name = zeolite.get_iri()
-                        arr += material_cif.get_csv_arr_from_cif(cif_path, #safe_name,
-                                                                 new_uuid=None,
-                                                                 subject=zeolite_iri,
-                                                                 predicate=self.crystOntoPrefix + "hasCrystalInformation")
+                        arr += material_cif.get_csv_arr_from_cif(cif_path,
+                               new_uuid=None, subject=zeolite_iri,
+                               predicate=self.crystOntoPrefix + "hasCrystalInformation")
                         pass
                     except :
                         logging.error("=================================================")
@@ -1111,14 +1114,20 @@ class CsvMaker:
                         with open("failed_cif_files.txt", "a", encoding="utf-8") as fp:
                             fp.write(cif_path + "\n")
 
-                # Description of the recipe for the given zeolite (if exists):
-                logging.warning(" FIXME: no recipe data")
-                #arr += zeoData.get_csv_arr_recipe(cif_line, zeolite_iri, "")
-
                 # Description of the chemical constituent for the given zeolite:
                 #logging.warning(" FIXME: no constituent data")
                 #arr += zeoData.getCsvArrConstituent(cif_line, zeolite_iri, "")
                 arr += zeoDataBase.getCsvArrConstituent(zeolite_iri, "predicate")
+
+                # Description of the recipe for the given zeolite (if exists):
+                if "recipe" in zeolite.data:
+                    #cif_file = os.path.join("ontozeolite", "zeolite", "data", "recipes", "p403.txt")
+                    cif_file = zeolite.data["recipe"]
+                    arr += zeoData.get_csv_arr_recipe(cif_file, zeolite_iri,
+                                                      "", new_uuid=zeolite.get_uuid())
+                else:
+                    logging.warning(" For zeolite no recipe data")
+                    pass
 
             # Saving the framework in a file:
             path = os.path.join(self.outputDir, z + ".csv")
@@ -1129,12 +1138,13 @@ class CsvMaker:
                 t_finish = datetime.datetime.now()
                 t_delta = t_finish - t_start
                 t_delta = t_delta.total_seconds()
-                print("Finished", iz, "compounds. Saved uuidDB in", round(t_delta,1), "sec.")
+                print("Finished", iz, "compounds. Saved uuidDB in",
+                      round(t_delta,1), "sec.")
 
         self.finalize()
 
         if err_count > 0:
-            logging.warning("CSV_maker: Detected %d errors.", err_count)
+            logging.warning(" CSV_maker: Detected %d errors.", err_count)
 
         # === end of CsvMaker.makeCsvs()
 

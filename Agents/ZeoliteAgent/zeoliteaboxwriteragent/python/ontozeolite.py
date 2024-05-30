@@ -23,15 +23,14 @@ import logging
 import bib2csv
 
 import tools
-# from ontocrystal_datatypes import *
 import ontocrystal_datatypes as ocdt
 
 import genform
-# import csv_maker
 
 # logging.basicConfig(level=logging.WARNING)
 logging.basicConfig(level=logging.INFO)
 
+crystOntoPrefix = "https://www.theworldavatar.com/kg/ontocrystal/"
 zeoOntoPrefix = "https://www.theworldavatar.com/kg/ontozeolite/"
 
 ontoSpeciesPrefix = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
@@ -64,7 +63,7 @@ def load_recipes(dir_list):
             for path in paths:
                 output += load_recipes(os.path.join(dir_list, path))
     else:
-        logging.error("Invalid input type in load_recipes(): %s",
+        logging.error(" Invalid input type in load_recipes(): %s",
                       str(dir_list))
 
     return output
@@ -87,7 +86,7 @@ class OntoZeolite:
     #             "", "", "", "", "", "", "", "",]
 
     def __init__(self, uuidDB=None,  # className, itemName,
-                 tPrefix=None, aPrefix=None):  # , unit = None):
+                 tbox_prefix=None, abox_prefix=None):  # , unit = None):
 
         """
         if "" == itemName:
@@ -111,21 +110,20 @@ class OntoZeolite:
             logging.warning(" Creating a new uuidDB database in file '%s'.",
                             self.uuidDB.dbFilename)
 
-        if tPrefix is None:
+        if tbox_prefix is None:
             self.tbox_prefix = ""
         else:
-            self.tbox_prefix = tPrefix
+            self.tbox_prefix = tbox_prefix
 
-        if aPrefix is None:
+        if abox_prefix is None:
             self.abox_prefix = ""
         else:
-            self.abox_prefix = aPrefix
+            self.abox_prefix = abox_prefix
 
-        # self.iza_file_path = os.path.join("iza-data.json")
-        self.iza_file_path = os.path.join("ontozeolite", "izadata", "iza-data.json")
-        self.iza_data_base = {}
-        with open(self.iza_file_path, encoding="utf-8") as f:
-            self.iza_data_base = json.load(f)
+        #self.iza_file_path = os.path.join("ontozeolite", "zeolite", "data", "iza-data.json")
+        #self.iza_data_base = {}
+        #with open(self.iza_file_path, encoding="utf-8") as f:
+        #    self.iza_data_base = json.load(f)
 
         self.data_cif = None
         self.data_mat = None
@@ -473,13 +471,11 @@ class OntoZeolite:
         # === end of _get_compound_iri()
 
     def _get_elements_iri(self, mat_line):
-        #form = genform.GenFormula(mat_line[2])
-        form = genform.GenFormula() #mat_line[2])
+        form = genform.GenFormula()
         form.fullFormula = mat_line[2]
         form.getFormula()
         form.updateStatus()
         #print("formula =", form.formula)
-        #print("a")
 
         form.getElements()
         #form.getCoeff()
@@ -622,7 +618,8 @@ class OntoZeolite:
         return output
         # === end of OntoZeolite._get_recipe_by_name()
 
-    def get_csv_arr_recipe(self, cifLine, subject, predicate):
+    #def get_csv_arr_recipe(self, cifLine, subject, predicate):
+    def get_csv_arr_recipe(self, recipe_file, subject, predicate, new_uuid=None):
         """
         Here 'subject' is the zeolite material (with uuid).
              'predicate' is not used.
@@ -632,6 +629,7 @@ class OntoZeolite:
         # print(">>> cifLine =", cifLine)
         output = []
 
+        """
         # filePath = os.path.join("recipes", "p401.txt")
         filePaths = self._get_recipe_by_name(RECIPES, cifLine[1])
         if len(filePaths) > 1:
@@ -642,16 +640,24 @@ class OntoZeolite:
             return output
 
         filePath = filePaths[0]
+        """
+
+        filePath = recipe_file
         print(" Loading recipe from file", filePath)
         if not os.path.isfile(filePath):
             logging.error(" Recipe file '%s' does not exist" +
                           " in OntoZeolite.get_csv_arr_recipe().", filePath)
             return output
 
-        recipe_iri, _ = self.uuidDB.addUUID("Recipe", "Recipe_" + cifLine[0])
+        if new_uuid is None:
+            recipe_iri, _ = self.uuidDB.addUUID(self.abox_prefix + "Recipe",
+                                                zeoOntoPrefix + "Recipe_" + recipe_file)
+        else:
+            recipe_iri = self.abox_prefix + "Recipe_" + new_uuid
+            recipe_uuid = new_uuid
 
-        output.append([recipe_iri, "Instance", "Recipe", "", "", ""])
-        output.append([subject, "Instance", recipe_iri, "hasRecipe", "", ""])
+        output.append([recipe_iri, "Instance", zeoOntoPrefix + "Recipe", "", "", ""])
+        output.append([subject, "Instance", recipe_iri, zeoOntoPrefix + "hasRecipe", "", ""])
 
         # got_batch_comp = False
         # key_batch_comp = "Batch Composition"
@@ -701,7 +707,7 @@ class OntoZeolite:
                 output += self._get_csv_arr_refs(sections[key],
                                                  recipe_iri, filePath)
             elif "Note" == key:
-                print("Warning: found a note for recipe:", key, cifLine)
+                print("Warning: found a note for recipe:", key, recipe_file)
                 output += self._get_csv_arr_note(sections[key], recipe_iri)
 
             else:
@@ -874,7 +880,7 @@ class OntoZeolite:
                             section["value"][0])
 
         value = "\n".join(section["value"][1:])
-        output.append([self.crystOntoPrefix + "hasCrystallization",
+        output.append([crystOntoPrefix + "hasCrystallization",
                        "Data Property", subject, "", value, "string"])
 
         return output

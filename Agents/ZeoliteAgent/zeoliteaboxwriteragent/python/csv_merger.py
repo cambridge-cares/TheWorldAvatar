@@ -34,7 +34,7 @@ def read_command_line():
 def get_input_files( inDir, pathOut ):
 
     if not os.path.isdir( inDir ):
-        logging.error( "Input dir in not a directory" )
+        logging.error(" Input dir in not a directory" )
     files = os.listdir( inDir )
     # logging.info( str(files) )
 
@@ -140,7 +140,7 @@ def merge_files( pathsIn, pathOut ):
     count = 0
     for f in pathsIn:
         if not os.path.isfile( f ):
-            logging.error( "Failed to open file '" + str(f) + "'." ) 
+            logging.error(" Failed to open file '" + str(f) + "'." ) 
             continue
 
         if os.path.abspath( f ) == pathOut:

@@ -86,7 +86,7 @@ class UuidDB:
 
         """
         if not isinstance(value, str):
-            logging.error("Value must be string, but got '%s'.", str(value))
+            logging.error(" Value must be string, but got '%s'.", str(value))
             return False
 
         short = value.strip()
@@ -177,7 +177,7 @@ class UuidDB:
 
         nLinesWarn = 20 * 1000
         if len(array) > nLinesWarn:
-            logging.warning("The size of the uuid database is over %s" +
+            logging.warning(" The size of the uuid database is over %s" +
                             " entries: %s.", str(nLinesWarn), str(len(array)))
 
         writeCsv(file_path, array)

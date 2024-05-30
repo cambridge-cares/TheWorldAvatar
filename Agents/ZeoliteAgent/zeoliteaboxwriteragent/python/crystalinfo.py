@@ -421,18 +421,23 @@ class CrystalInfo:
                            predicate, "", ""])
             return output
 
-        logging.info("Continue initializing CIF:", file_path, self.iri)
+        logging.info(" Continue initializing CIF:", file_path, self.iri)
 
-        output.append([self.abox_prefix + self.iri, "Instance",
+        self.iri = self.abox_prefix + self.iri
+        output.append([self.iri, "Instance",
                        crystOntoPrefix + "CrystalInformation", "", "", ""])
 
         try:
             err_count = self.load_cif_file_py_mat_gen(file_path)
+            # logging.warning(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+            # logging.warning(">>>> Done CIF '%s' by PyMatGen >>>>", file_path)
+            # logging.warning(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
             pass
         except Exception as e:
             logging.warning("===============================================")
             logging.warning(" Failed to read data by PyMatGen '%s'," +
                             " start reading by ValAndErr.", file_path)
+            # logging.warning(" More details: %s", str(e))
             logging.warning("===============================================")
 
             err_count = self.load_cif_file_val_and_err(file_path)
@@ -450,17 +455,19 @@ class CrystalInfo:
                 pass
             return output
 
-        if self.uuid:
-            self.iri = self.abox_prefix + "CrystalInformation_"
-            self.iri += self.uuid
-        else:
-            self.iri, _ = self.uuidDB.addUUID(crystOntoPrefix + "CrystalInformation",
-                                              self.abox_prefix + "CrystalInformation_" + name)
+        #if self.uuid:
+        #    self.iri = self.abox_prefix + "CrystalInformation_"
+        #    self.iri += self.uuid
+        #else:
+        #    self.iri, _ = self.uuidDB.addUUID(crystOntoPrefix + "CrystalInformation",
+        #                                      self.abox_prefix + "CrystalInformation_" + name)
 
         if True:
             # Define relation between the class instances:
-            output.append([self.iri, "Instance",
-                           crystOntoPrefix + "CrystalInformation", "", "", ""])
+
+            # Redundant declaration of CrystalInformation:
+            #output.append([self.iri, "Instance",
+            #               crystOntoPrefix + "CrystalInformation", "", "", ""])
 
             if "U" in flags or "R" in flags or "V" in flags:
                 tmp = self.arrUnitCell(self.iri,

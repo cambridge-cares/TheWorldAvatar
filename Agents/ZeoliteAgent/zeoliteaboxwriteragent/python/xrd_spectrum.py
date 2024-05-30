@@ -48,7 +48,7 @@ class XRDSpectrum:
         output = []
 
         if not os.path.isfile(xrd_peak_path):
-            logging.error("Missing file with xrd peaks: '%s'. Skipping XRD.",
+            logging.error(" Missing file with xrd peaks: '%s'. Skipping XRD.",
                           xrd_peak_path)
             return output
 

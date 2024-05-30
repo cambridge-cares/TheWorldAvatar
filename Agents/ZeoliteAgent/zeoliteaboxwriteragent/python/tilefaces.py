@@ -39,7 +39,7 @@ class Tiling:
     pass # Tiling.__init__()
 
   def extractData( self, lines ):
-    logging.info( "Extracting data from " + str( len(lines) ) + " lines" )
+    logging.info(" Extracting data from " + str( len(lines) ) + " lines" )
 
     nLines = len(lines)
     iTiles = nLines
@@ -118,7 +118,7 @@ class Tiling:
           #print( "Adding face num =",  
           self.tiles.append( face )
 
-      #logging.info( "Increasing il from " + str(il) + ": " + lines[il]  )
+      #logging.info(" Increasing il from " + str(il) + ": " + lines[il]  )
       il += 1
       pass # while()
 
@@ -132,7 +132,7 @@ class Tiling:
             #print( "  Compare:", cages[i][1], "vs", t["sig"] )
             if cages[i][1].replace( "^", "" ) == t["sig"]:
               t["sig"] = cages[i][1]
-              #logging.info( ">>> Corrected cages for framework " + self.framework )
+              #logging.info(" >>> Corrected cages for framework " + self.framework )
             else:
               logging.error( "In framework " + self.framework + " wrong tile signature: " 
                              + t["sig"] + " vs " + cages[i][1] )
@@ -247,25 +247,25 @@ class Tiling:
     #    3.b. In most cases must contain at least one "^"
     pos = self.signature.find( "^" )
     if pos < 0:
-      logging.warning( " for " + self.framework + ": Singature should " +
+      logging.warning(" for " + self.framework + ": Singature should " +
                      "usually contain '^' but got '" + self.signature + "'." )
 
     #    3c. Check the Landau's rule, and the number of "[]" equals to number of tiles
     bra = findAll( self.signature, "[" )
     ket = findAll( self.signature, "]" )
     if len(bra) != len(ket):
-      logging.error( "Wrong number of brackets for " + self.framework + ": " 
+      logging.error(" Wrong number of brackets for " + self.framework + ": " 
                     + str(len(bra)) + " vs " +str(len(ket)) + ": " + self.signature )
     if len(bra) != len( self.tiles):
-      logging.warning( "Number of brackets is diff from nTiles for " + self.framework + ": " 
+      logging.warning(" Number of brackets is diff from nTiles for " + self.framework + ": " 
                     + str(len(bra)) + " vs " + str(len(self.tiles)) + ": " + self.signature )
                       
     #    3d. number of "[]" equals to number of tiles
     for i in range( len(ket) ):
       if i < len(bra)-1:
         if ket[i] >= bra[i+1]:
-          logging.error( "Wrong order of brackets for " + self.framework + ": " 
-                         + ": " + self.signature )
+          logging.error(" Wrong order of brackets for " + self.framework + ": " 
+                         + ": " + self.signature)
 
     #    3e. no illegal characters, only 0:9,[,],+,^,"."
     tmp = str( self.signature )
@@ -327,12 +327,12 @@ class TileSet:
 
   def run( self ):
 
-   #fname = os.path.join( "ontozeolite", "data", "tiles", "CON.tiles" ) 
-    #fname = os.path.join( "ontozeolite", "data", "tiles", "Tiles2010.tiles" ) 
-    fname = os.path.join( "ontozeolite", "data", "tiles", "TilesAdd2023.tiles" ) 
+    #fname = os.path.join("ontozeolite", "data", "tiles", "CON.tiles") 
+    #fname = os.path.join("ontozeolite", "data", "tiles", "Tiles2010.tiles") 
+    fname = os.path.join("ontozeolite", "data", "tiles", "TilesAdd2023.tiles") 
     chunks = self.getChunks( fname ) 
     for chunk in chunks:
-      logging.info( "Starting extractData from chunk '" + str(chunk[0][:12]) + "...'" )
+      logging.info(" Starting extractData from chunk '" + str(chunk[0][:12]) + "...'")
       t = Tiling()
       t.extractData( chunk )
       self.tiles.append( t )
@@ -343,7 +343,7 @@ class TileSet:
     #self.save()
     # 1. Get the list of zeolites (all known)
     zeoList = zeolist.getZeoList( ["main", "new"] )
-    logging.info( "There are " + str( len(zeoList) ) + " zeolites framworks" )
+    logging.info(" There are " + str( len(zeoList) ) + " zeolites framworks" )
     #print( zeoList )
 
     # 2. Read the fileIn csv

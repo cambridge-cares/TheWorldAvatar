@@ -248,5 +248,5 @@ if __name__ == "__main__":
         # 3. ?
 
     else:
-        logging.error("Invalid task: '%s' in xrd_library.py", args.task)
+        logging.error(" Invalid task: '%s' in xrd_library.py", args.task)
 

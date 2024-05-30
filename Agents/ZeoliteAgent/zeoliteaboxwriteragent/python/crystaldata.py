@@ -106,7 +106,7 @@ def cleanString(line):
     """
     """
     if not isinstance(line, str):
-        logging.error("Input line '%s' is not a string in cleanString()",
+        logging.error(" Input line '%s' is not a string in cleanString()",
                       str(line))
         return str(line)
     pos = line.find("#")

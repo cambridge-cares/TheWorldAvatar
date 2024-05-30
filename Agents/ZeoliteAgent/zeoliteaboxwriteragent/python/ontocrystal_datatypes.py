@@ -234,7 +234,7 @@ class OntoMeasureWithUncertainty:
         elif isinstance(uuidDB, tools.UuidDB):
             self.uuidDB = uuidDB
         else:
-            logging.error("Wrong type of uuidDB, expected 'UuidDB', got '%s'.",
+            logging.error(" Wrong type of uuidDB, expected 'UuidDB', got '%s'.",
                           str(type(uuidDB)))
 
         self.value = None
@@ -534,11 +534,11 @@ class OntoVector:
                               " in '%s'.", self.item_name)
                 err_count += 1
         else:
-            logging.info("value = '%s' is not a string in '%s'.",
+            logging.info(" value = '%s' is not a string in '%s'.",
                          str(value) ,self.item_name)
 
         if label in self.comp_dict:
-            logging.error("Over-writing an existing component with label" +
+            logging.error(" Over-writing an existing component with label" +
                           " '%s' for Vector '%s'.",label , self.item_name)
 
         self.comp_dict[label] = {}
@@ -635,7 +635,7 @@ class OntoVector:
 
         for iv, v in enumerate(self.comp_list):
             if v is None:
-                logging.error("Invalid value '%s' in '%s[%d]'.",
+                logging.error(" Invalid value '%s' in '%s[%d]'.",
                               str(v), self.item_name, iv)
                 continue
 
@@ -680,7 +680,7 @@ class OntoVector:
 
         for ik, k in enumerate(self.comp_dict.keys()):
             if k is None:
-                logging.error("Invalid value '%s' in '%s'.",
+                logging.error(" Invalid value '%s' in '%s'.",
                               str(k), self.item_name)
                 continue
 
@@ -799,12 +799,12 @@ class OntoMatrix:
                               " in '%s'. 22", self.item_name)
                 err_count += 1
         else:
-            logging.warning("label = '%s' is not a string in '%s.",
+            logging.warning(" label = '%s' is not a string in '%s.",
                             str(label), self.item_name)
 
         if label in self.comp_dict:
-            logging.error("Over-writing an existing component with label" +
-                          "'%s' for Matrix '%s'.", label, self.item_name)
+            logging.error(" Over-writing an existing component with label" +
+                          " '%s' for Matrix '%s'.", label, self.item_name)
 
         self.comp_dict[label] = {}
         if value is not None:
@@ -954,7 +954,7 @@ class OntoMatrix:
         for ir, row in enumerate(self.comp_list):
             for ic, val in enumerate(row):
                 if val is None:
-                    logging.error("Invalid value '%s' in '%s'.", str(val), self.item_name)
+                    logging.error(" Invalid value '%s' in '%s'.", str(val), self.item_name)
                     continue
 
                 if new_uuid:
@@ -999,7 +999,7 @@ class OntoMatrix:
 
     def _get_csv_value_dict(self, new_uuid=None):
         output = []
-        logging.error("Not implemented OntoMatrix._getCsvValueDict() ttt4")
+        logging.error(" Not implemented OntoMatrix._getCsvValueDict() ttt4")
 
         return output
         # === end of OntoMatrix._getCsvValueDict()
