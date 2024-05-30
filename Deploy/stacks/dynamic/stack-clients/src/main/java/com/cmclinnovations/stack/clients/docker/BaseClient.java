@@ -19,7 +19,7 @@ abstract class BaseClient {
 
     protected BaseClient() {
         if (StackClient.isInTest()) {
-            configsDir = Path.of("testing", "configs");
+            configsDir = Path.of("testing_temp", "configs");
             try {
                 Files.createDirectories(configsDir);
             } catch (IOException ex) {
