@@ -110,10 +110,13 @@ bash ./stack.sh start <STACK_NAME>
 ## Provided functionality
 
 The agent will automatically register a task upon startup to assimilate the data in our target GPS folder into the KG. This background task can be triggered by an HTTP request after the agent starts up, accessible at http://localhost:5000/. 
+The folder for http request is /TheWorldAvatar/Agents/FenlandTrajectoryAgent/trigger_service/SendHTTP
 
 <center>-------- Data Instantiation ------------</center>
 
-- Post request to instantiate all electricity consumption/meter data to KG
+- Post request to load and preprocess all GPS trajectory files 
+> /fenlandtrajectoryagent/load_and_preprocess
+- Post request to instantiate all GPS trajectory data to KG
 > /fenlandtrajectoryagent/process_and_instantiate
 
 
