@@ -1,13 +1,30 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.json.JSONArray;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.datatypes.xsd.XSDDateTime;
+import org.apache.jena.graph.GraphMemFactory;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.impl.ModelCom;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.testcontainers.junit.jupiter.Container;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
@@ -36,6 +53,15 @@ class DCATUpdateQueryTest {
         remoteStoreClient = blazegraph.getRemoteStoreClient();
     }
 
+    private String testName;
+    private Map<String, Integer> fileIndecies = new HashMap<>();
+
+    @BeforeEach
+    void setUp(TestInfo testInfo) {
+        testName = testInfo.getDisplayName();
+        fileIndecies.put(testName, 0);
+    }
+
     @BeforeEach
     void cleanNamespace() {
         remoteStoreClient.executeUpdate(BlazegraphContainer.DELETE_ALL_QUERY);
@@ -43,133 +69,122 @@ class DCATUpdateQueryTest {
 
     @Test
     void testAddDataset() {
-        {
+        Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1").build();
-            buildAndRunQuery(dataset, Service.NONE, 5);
-        }
-        {
+            buildAndRunQuery(dataset, Service.NONE);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2").build();
-            buildAndRunQuery(dataset, Service.NONE, 6);
-        }
-        {
+            buildAndRunQuery(dataset, Service.NONE);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3").build();
-            buildAndRunQuery(dataset, Service.NONE, 11);
-        }
+            buildAndRunQuery(dataset, Service.NONE);
+        });
     }
 
     @Test
     void testAddExternalDataset() {
-        (new TreeMap<>(Map.of("A", 5, "B", 10, "C", 15))).forEach((name, count) -> {
-            Dataset dataset = new DatasetBuilder(name).build();
-            buildAndRunQuery(dataset, Service.NONE, count);
-        });
-        {
+        Assertions.assertAll(() -> {
+            Assertions.assertAll(Stream.of("A", "B", "C").map(name -> () -> {
+                Dataset dataset = new DatasetBuilder(name).build();
+                buildAndRunQuery(dataset, Service.NONE);
+            }));
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1").withExternalDatasetNames(List.of("A", "B")).build();
-            buildAndRunQuery(dataset, Service.NONE, 22);
-        }
-        {
+            buildAndRunQuery(dataset, Service.NONE);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2").withExternalDatasetNames(List.of("B", "C")).build();
-            buildAndRunQuery(dataset, Service.NONE, 23);
-        }
-        {
+            buildAndRunQuery(dataset, Service.NONE);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3").withExternalDatasetNames(List.of("A", "B")).build();
-            buildAndRunQuery(dataset, Service.NONE, 30);
-        }
+            buildAndRunQuery(dataset, Service.NONE);
+        });
     }
 
     @Test
     void testAddBlazegraph() {
         writeBlazegraphConfig();
-        {
+        Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1").build();
-            buildAndRunQuery(dataset, Service.BLAZEGRAPH, 11);
-        }
-        {
+            buildAndRunQuery(dataset, Service.BLAZEGRAPH);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2").withNamespace(new Namespace("namespace1")).build();
-            buildAndRunQuery(dataset, Service.BLAZEGRAPH, 16);
-        }
-        {
+            buildAndRunQuery(dataset, Service.BLAZEGRAPH);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3").build();
-            buildAndRunQuery(dataset, Service.BLAZEGRAPH, 27);
-        }
+            buildAndRunQuery(dataset, Service.BLAZEGRAPH);
+        });
     }
 
     @Test
     void testAddPostGIS() {
         writePostGISConfig();
-        {
+        Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1").build();
-            buildAndRunQuery(dataset, Service.POSTGIS, 11);
-        }
-        {
+            buildAndRunQuery(dataset, Service.POSTGIS);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2").withDatabase("database1").build();
-            buildAndRunQuery(dataset, Service.POSTGIS, 16);
-        }
-        {
+            buildAndRunQuery(dataset, Service.POSTGIS);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3").build();
-            buildAndRunQuery(dataset, Service.POSTGIS, 27);
-        }
+            buildAndRunQuery(dataset, Service.POSTGIS);
+        });
     }
 
     @Test
     void testAddGeoServer() {
         writePostGISConfig();
-        {
+        Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1").build();
-            buildAndRunQuery(dataset, Service.GEOSERVER, 17);
-        }
-        {
+            buildAndRunQuery(dataset, Service.GEOSERVER);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2").withWorkspaceName("workspace1").build();
-            buildAndRunQuery(dataset, Service.GEOSERVER, 22);
-        }
-        {
+            buildAndRunQuery(dataset, Service.GEOSERVER);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3").build();
-            buildAndRunQuery(dataset, Service.GEOSERVER, 39);
-        }
+            buildAndRunQuery(dataset, Service.GEOSERVER);
+        });
     }
 
     @Test
     void testAddOntop() {
         writePostGISConfig();
-        {
+        Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1").withOntopMappings(List.of("ontop.obda")).build();
             writeOntopConfig(dataset.getOntopName());
-            buildAndRunQuery(dataset, Service.ONTOP, 18);
-        }
-        {
+            buildAndRunQuery(dataset, Service.ONTOP);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2").withOntopMappings(List.of("ontop.obda")).build();
-            buildAndRunQuery(dataset, Service.ONTOP, 19);
-        }
-        {
+            buildAndRunQuery(dataset, Service.ONTOP);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3").withOntopMappings(List.of("ontop.obda")).build();
             writeOntopConfig(dataset.getOntopName());
-            buildAndRunQuery(dataset, Service.ONTOP, 37);
-        }
+            buildAndRunQuery(dataset, Service.ONTOP);
+        });
     }
 
     @SuppressWarnings("null")
     @Test
     void testAddDataSubset() throws JsonMappingException, JsonProcessingException {
         ObjectMapper mapper = JsonHelper.getMapper();
-        {
+        Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1")
                     .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
@@ -177,9 +192,8 @@ class DCATUpdateQueryTest {
                             "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy nice TBox.\",\"subdirectory\":\"tbox\"}",
                             TBoxCSV.class)))
                     .build();
-            buildAndRunQuery(dataset, Service.NONE, 11);
-        }
-        {
+            buildAndRunQuery(dataset, Service.NONE);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2")
                     .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
@@ -187,9 +201,8 @@ class DCATUpdateQueryTest {
                             "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy bad TBox.\",\"subdirectory\":\"tbox\"}",
                             TBoxCSV.class)))
                     .build();
-            buildAndRunQuery(dataset, Service.NONE, 13);
-        }
-        {
+            buildAndRunQuery(dataset, Service.NONE);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3")
                     .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
@@ -197,34 +210,32 @@ class DCATUpdateQueryTest {
                             "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy awsome TBox.\",\"subdirectory\":\"tbox\"}",
                             TBoxCSV.class)))
                     .build();
-            buildAndRunQuery(dataset, Service.NONE, 24);
-        }
+            buildAndRunQuery(dataset, Service.NONE);
+        });
     }
 
     @Test
     void testCatalogingTrivial() {
-        {
+        Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1").build();
-            buildAndRunCatalogingQuery(dataset, 5);
-        }
-        {
+            buildAndRunCatalogingQuery(dataset);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2").build();
-            buildAndRunCatalogingQuery(dataset, 6);
-        }
-        {
+            buildAndRunCatalogingQuery(dataset);
+        }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3").build();
-            buildAndRunCatalogingQuery(dataset, 11);
-        }
+            buildAndRunCatalogingQuery(dataset);
+        });
     }
 
     private void writeBlazegraphConfig() {
         DockerClient dockerClient = DockerClient.getInstance();
         dockerClient.writeEndpointConfig(
                 new BlazegraphEndpointConfig("blazegraph", blazegraph.getHost(),
-                        blazegraph.getFirstMappedPort().toString(),
+                        "8080",
                         BlazegraphContainer.USERNAME, BlazegraphContainer.PASSWORD));
     }
 
@@ -249,7 +260,7 @@ class DCATUpdateQueryTest {
         ONTOP
     }
 
-    private void buildAndRunQuery(Dataset dataset, Service service, int expected) {
+    private void buildAndRunQuery(Dataset dataset, Service service) {
         DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
         dcatUpdateQuery.addDataset(dataset);
 
@@ -277,20 +288,120 @@ class DCATUpdateQueryTest {
         }
 
         String query = dcatUpdateQuery.getQuery();
-        remoteStoreClient.executeUpdate(query);
-
-        JSONArray results = remoteStoreClient.executeQuery(BlazegraphContainer.SELECT_ALL_QUERY);
-
-        Assertions.assertEquals(expected, results.length(), results.toString());
+        runAndCompareQuery(query);
     }
 
-    private void buildAndRunCatalogingQuery(Dataset dataset, int expectedNumberOfTriples) {
+    private void buildAndRunCatalogingQuery(Dataset dataset) {
         DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
         String query = dcatUpdateQuery.getQueryStringForCataloging(dataset);
 
-        remoteStoreClient.executeUpdate(query);
-        List<Object> result = remoteStoreClient.executeQuery(BlazegraphContainer.SELECT_ALL_QUERY).toList();
+        runAndCompareQuery(query);
+    }
 
-        Assertions.assertEquals(expectedNumberOfTriples, result.size());
+    private void runAndCompareQuery(String query) {
+        remoteStoreClient.executeUpdate(query);
+
+        Model results = remoteStoreClient.executeConstruct(BlazegraphContainer.CONSTRUCT_ALL_QUERY);
+
+        checkExpectedFile(results);
+
+        Model expectedResults = genericiseModel(readTurtleFromFile());
+        Model actualResults = genericiseModel(results);
+
+        Assertions.assertTrue(expectedResults.isIsomorphicWith(actualResults), () -> {
+            writeTurtleToFile(results);
+            return getMessage("has different statements.", expectedResults, actualResults);
+        });
+
+    }
+
+    private String getMessage(String message, Model expected, Model actual) {
+        StringBuilder stringBuilder = new StringBuilder(testName);
+        stringBuilder.append(" ").append(fileIndecies.get(testName)).append(" ").append(message);
+
+        stringBuilder.append("\nExpected:\n").append(toTurtle(expected));
+
+        stringBuilder.append("\nActual:\n").append(toTurtle(actual));
+
+        return stringBuilder.toString();
+    }
+
+    private void checkExpectedFile(Model results) {
+        fileIndecies.computeIfPresent(testName, (n, i) -> i + 1);
+        Path dirPath = getCheckedDir();
+        Path path = dirPath.resolve(getExpectedFilename());
+
+        Assumptions.assumeTrue(Files.exists(path), () -> {
+            writeTurtleToFile(results);
+            return "File '" + getExpectedFilename()
+                    + "' needs to be checked and moved from the 'forReview' directory to the correct test resources directory.";
+        });
+    }
+
+    private Model readTurtleFromFile() {
+        Path dirPath = getCheckedDir();
+        Model model = new ModelCom(GraphMemFactory.createDefaultGraph());
+        Path path = dirPath.resolve(getExpectedFilename());
+
+        model.read(path.toUri().toString());
+
+        return model;
+    }
+
+    private String getExpectedFilename() {
+        return testName + fileIndecies.get(testName) + ".ttl";
+    }
+
+    private Path getCheckedDir() {
+        return Assertions.assertDoesNotThrow(() -> Path.of(this.getClass().getResource(".").toURI()));
+    }
+
+    private Path getForReviewDir() {
+        return Path.of("testing_temp", "forReview", "DCATUpdateQueryTest");
+    }
+
+    private void writeTurtleToFile(Model model) {
+        Path dirPath = getForReviewDir();
+        try {
+            Files.createDirectories(dirPath);
+            try (FileWriter writer = new FileWriter(dirPath.resolve(getExpectedFilename()).toFile())) {
+                model.write(writer, "TURTLE");
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private Model genericiseModel(Model modelIn) {
+        Map<RDFNode, RDFNode> specificToGeneric = modelIn.listSubjects().toSet().stream()
+                .collect(Collectors.toMap(s -> s, s -> ResourceFactory.createResource()));
+        specificToGeneric.entrySet().stream()
+                .collect(Collectors.toMap(e -> ResourceFactory.createPlainLiteral(e.getKey().toString()),
+                        e -> ResourceFactory.createPlainLiteral(e.getValue().toString())));
+        List<Literal> dateTimes = modelIn.listObjects().toSet().stream().filter(o -> o.isLiteral())
+                .map(o -> o.asLiteral()).filter(o -> o.getDatatype().equals(XSDDatatype.XSDdateTime))
+                .sorted((o1, o2) -> ((XSDDateTime) o1.getValue()).compare((XSDDateTime) o2.getValue()))
+                .collect(Collectors.toList());
+        specificToGeneric.putAll(specificToGeneric.entrySet().stream()
+                .collect(Collectors.toMap(e -> ResourceFactory.createPlainLiteral(e.getKey().toString()),
+                        e -> ResourceFactory.createPlainLiteral("An URI as a literal!"))));
+        specificToGeneric.putAll(dateTimes.stream().collect(
+                Collectors.toMap(dt -> dt,
+                        dt -> ResourceFactory.createTypedLiteral(
+                                XSDDatatype.XSDdateTime.parseValidated("1970-01-0"
+                                        + (1 + Integer.toString(dateTimes.indexOf(dt))) + "T00:00:00.000Z")))));
+
+        Model modelOut = new ModelCom(GraphMemFactory.createDefaultGraph());
+        modelIn.listStatements().forEach(
+                state -> modelOut.add((Resource) specificToGeneric.get(state.getSubject()), state.getPredicate(),
+                        specificToGeneric.getOrDefault(state.getObject(), state.getObject())));
+        return modelOut;
+    }
+
+    private String toTurtle(Model results) {
+        StringWriter writer = new StringWriter();
+        results.write(writer, "TURTLE");
+        String turtle = writer.toString();
+        return turtle;
     }
 }
