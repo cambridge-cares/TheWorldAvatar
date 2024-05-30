@@ -162,7 +162,7 @@ class SGDispersionFuncExecutor(Name2Func):
 
             bindings.append(binding)
 
-        data = TableDataItem(vars=vars, bindings=bindings)
+        data = TableDataItem.from_vars_and_bindings(vars=vars, bindings=bindings)
 
         latency = time.time() - timestamp
         steps.append(

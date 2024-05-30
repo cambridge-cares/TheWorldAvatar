@@ -1,7 +1,7 @@
 from functools import cache
 import logging
 import time
-from typing import Annotated, Dict, List
+from typing import Annotated, Dict, List, Tuple, Union
 
 from fastapi import Depends
 
@@ -10,9 +10,9 @@ from controllers.qa.model import QAStep
 from services.entity_store import EntityStore, get_entity_store
 from services.example_store.model import SparqlDataRequest
 from services.kg import KgClient
-from services.model import TableDataItem
+from services.model import TableDataItem, TableHeader
 from utils.collections import FrozenDict
-from utils.rdf import flatten_sparql_response
+from utils.rdf import flatten_sparql_select_response
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
 from .process_response import (
@@ -81,11 +81,9 @@ class SparqlDataReqExecutor:
         )
 
         prefixed_query = self.PREFIXES + query
-        logger.info(
-            "Executing query at: " + self.ns2kg[req.namespace].sparql.endpoint
-        )
+        logger.info("Executing query at: " + self.ns2kg[req.namespace].sparql.endpoint)
         timestamp = time.time()
-        res = self.ns2kg[req.namespace].query(prefixed_query)
+        res = self.ns2kg[req.namespace].querySelect(prefixed_query)
         latency = time.time() - timestamp
         steps.append(
             QAStep(
@@ -95,12 +93,18 @@ class SparqlDataReqExecutor:
             )
         )
 
-        vars, bindings = flatten_sparql_response(res)
-        table = TableDataItem(vars=vars, bindings=bindings)
+        flattend_res: Tuple[List[str], List[Dict[str, Union[str, float, dict]]]] = (
+            flatten_sparql_select_response(res)
+        )
+        vars, bindings = flattend_res
 
         self.response_processor.process(
-            nodes_to_augment=req.bindings + req.nodes_to_augment, table=table
+            nodes_to_augment=req.bindings + req.nodes_to_augment,
+            vars=vars,
+            bindings=bindings,
         )
+
+        table = TableDataItem.from_vars_and_bindings(vars=vars, bindings=bindings)
 
         return steps, [table]
 

@@ -5,7 +5,7 @@ from typing import Annotated, DefaultDict, Dict, List, Sequence
 from fastapi import Depends
 from services.kg import KgClient, get_ontocompchem_bgClient
 from services.processs_response.augment_node import NodeDataRetriever
-from utils.rdf import flatten_sparql_response
+from utils.rdf import flatten_sparql_select_response
 
 
 def get_optimized_geometry_data(kg_client: KgClient, iris: Sequence[str]):
@@ -27,8 +27,8 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.query(query)
-    _, bindings = flatten_sparql_response(res)
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
 
     iri2data: DefaultDict[str, List[dict]] = defaultdict(list)
     for binding in bindings:
@@ -59,8 +59,8 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.query(query)
-    _, bindings = flatten_sparql_response(res)
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
 
     iri2values: DefaultDict[str, list] = defaultdict(list)
     iri2unit: Dict[str, str] = dict()
@@ -82,8 +82,8 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.query(query)
-    _, bindings = flatten_sparql_response(res)
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
 
     iri2data = {
         binding["MolComp"]: {"value": binding["Value"], "unit": binding["Unit"]}

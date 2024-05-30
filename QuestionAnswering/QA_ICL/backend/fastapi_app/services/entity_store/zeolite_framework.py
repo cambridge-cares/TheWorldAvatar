@@ -21,8 +21,8 @@ WHERE {{
             framework_code=kwargs["framework_code"]
         )
         return [
-            row["Framework"]["value"]
-            for row in self.bg_client.query(query)["results"]["bindings"]
+            row["Framework"].value
+            for row in self.bg_client.querySelect(query).results.bindings
         ]
 
 

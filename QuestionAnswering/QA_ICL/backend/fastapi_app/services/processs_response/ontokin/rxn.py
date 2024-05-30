@@ -4,7 +4,7 @@ from typing import DefaultDict, Dict, List, Optional, Sequence
 
 from constants.prefixes import URI_OKIN
 from services.kg import KgClient
-from utils.rdf import flatten_sparql_response
+from utils.rdf import flatten_sparql_select_response
 
 
 def get_rxn_data(kg_client: KgClient, iris: Sequence[str]):
@@ -19,8 +19,8 @@ GROUP BY ?Reaction""".format(
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.query(query)
-    _, bindings = flatten_sparql_response(res)
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
 
     iri2data = {
         binding["Reaction"]: {"Equation": binding["Equation"]} for binding in bindings
@@ -53,8 +53,8 @@ WHERE {{
         ),
     )
 
-    res = kg_client.query(query)
-    _, bindings = flatten_sparql_response(res)
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
 
     iri2data: DefaultDict[str, List[dict]] = defaultdict(list)
     for binding in bindings:
@@ -116,8 +116,8 @@ WHERE {{
         ),
     )
 
-    res = kg_client.query(query)
-    _, bindings = flatten_sparql_response(res)
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
 
     iri2data: DefaultDict[str, List[dict]] = defaultdict(list)
     for binding in bindings:
@@ -189,8 +189,8 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.query(query)
-    _, bindings = flatten_sparql_response(res)
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
 
     iri2troedata = {
         binding["TroeModel"]: {k: v for k, v in binding.items() if k != "TroeModel"}
@@ -249,8 +249,8 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.query(query)
-    _, bindings = flatten_sparql_response(res)
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
 
     type2iris = {
         key: [

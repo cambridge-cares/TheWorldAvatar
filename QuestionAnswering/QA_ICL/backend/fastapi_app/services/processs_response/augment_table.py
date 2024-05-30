@@ -1,5 +1,5 @@
 from functools import cache
-from typing import Annotated, List, Tuple
+from typing import Annotated, Dict, List, Tuple, Union
 
 from fastapi import Depends
 
@@ -25,22 +25,27 @@ class TableAugmenter:
             return [{} for _ in iris]
         return retriever.retrieve(type=type, iris=iris)
 
-    def augment(self, nodes_to_augment: List[TypedVarNode], item: TableDataItem):
-        vars_set = set(item.vars)
+    def augment(
+        self,
+        nodes_to_augment: List[TypedVarNode],
+        vars: List[str],
+        bindings: List[Dict[str, Union[str, float, object]]],
+    ):
+        vars_set = set(vars)
 
         for node in nodes_to_augment:
             if node.var not in vars_set:
                 continue
 
-            iris = [binding.get(node.var) for binding in item.bindings]
+            iris = [binding.get(node.var) for binding in bindings]
             data = self._retrieve(type=node.cls, iris=iris)
 
             if not any(data):
                 continue
 
             new_var = node.var + "Data"
-            item.vars.insert(item.vars.index(node.var) + 1, new_var)
-            for binding, datum in zip(item.bindings, data):
+            vars.insert(vars.index(node.var) + 1, new_var)
+            for binding, datum in zip(bindings, data):
                 if datum:
                     binding[new_var] = datum
 
