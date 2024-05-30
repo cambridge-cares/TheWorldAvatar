@@ -11,7 +11,7 @@ import { MapSettings } from 'types/settings';
 import { ScenarioDefinition } from 'types/scenario';
 import { DataStore } from 'io/data/data-store';
 import { parseMapDataSettings } from 'utils/client-utils';
-import MapEventManager from 'map/event-listeners';
+import MapEventManager from 'map/map-event-manager';
 import { addData } from 'map/map-helper';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
 import Ribbon from 'ui/interaction/ribbon/ribbon';
