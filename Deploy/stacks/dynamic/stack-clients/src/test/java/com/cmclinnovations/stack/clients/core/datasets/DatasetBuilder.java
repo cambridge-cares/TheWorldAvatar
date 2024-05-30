@@ -36,8 +36,15 @@ class DatasetBuilder {
 
     private String baseIRI;
 
+    private List<Service> services = List.of();
+
     DatasetBuilder(String name) {
         this.name = name;
+    }
+
+    public DatasetBuilder withServices(Service... services) {
+        this.services = List.of(services);
+        return this;
     }
 
     public DatasetBuilder withDescription(String description) {
@@ -101,11 +108,65 @@ class DatasetBuilder {
     }
 
     Dataset build() {
-        return new Dataset(name, Optional.ofNullable(description), Optional.ofNullable(datasetDirectory),
+        return new TestDataset(name, Optional.ofNullable(description), Optional.ofNullable(datasetDirectory),
                 Optional.ofNullable(database), Optional.ofNullable(namespace), Optional.ofNullable(workspaceName),
                 Optional.ofNullable(externalDatasetNames), Optional.ofNullable(dataSubsets),
                 Optional.ofNullable(geoserverStyles), Optional.ofNullable(staticGeoServerData),
                 Optional.ofNullable(ontopMappings), false, Optional.ofNullable(rdfType),
-                Optional.ofNullable(baseIRI));
+                Optional.ofNullable(baseIRI), services);
     }
+
+    static enum Service {
+        NONE,
+        BLAZEGRAPH,
+        POSTGIS,
+        GEOSERVER,
+        ONTOP
+    }
+
+    static class TestDataset extends Dataset {
+
+        private final List<Service> services;
+
+        private TestDataset(String name,
+                Optional<String> description,
+                Optional<Path> datasetDirectory,
+                Optional<String> database,
+                Optional<Namespace> namespace,
+                Optional<String> workspaceName,
+                Optional<List<String>> externalDatasetNames,
+                Optional<List<DataSubset>> dataSubsets,
+                Optional<List<GeoServerStyle>> geoserverStyles,
+                Optional<StaticGeoServerData> staticGeoServerData,
+                Optional<List<String>> ontopMappings,
+                boolean skip,
+                Optional<String> rdfType,
+                Optional<String> baseIRI, List<Service> services) {
+            super(name, description, datasetDirectory, database, namespace, workspaceName, externalDatasetNames,
+                    dataSubsets, geoserverStyles, staticGeoServerData, ontopMappings, skip, rdfType, baseIRI);
+            this.services = services;
+        }
+
+        @Override
+        boolean usesBlazegraph() {
+            return services.contains(Service.BLAZEGRAPH) || super.usesBlazegraph();
+        }
+
+        @Override
+        boolean usesPostGIS() {
+            return (services.contains(Service.POSTGIS) || services.contains(Service.GEOSERVER)
+                    || services.contains(Service.ONTOP)) || super.usesPostGIS();
+        }
+
+        @Override
+        boolean usesGeoServer() {
+            return services.contains(Service.GEOSERVER) || super.usesGeoServer();
+        }
+
+        @Override
+        boolean usesOntop() {
+            return services.contains(Service.ONTOP) || super.usesOntop();
+        }
+
+    };
 }
