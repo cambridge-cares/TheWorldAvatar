@@ -11,7 +11,7 @@ def load_json(file_path):
     except FileNotFoundError:
         print(f"Error: The file {file_path} does not exist.")
         return None
-
+    
 def save_json(data, file_path):
     with open(file_path, 'w') as file:
         json.dump(data, file, indent=4)
@@ -350,37 +350,104 @@ def produce_linkage_cof_instance_csv(library_data, known_cofs, csv_output_file):
 
     print(f"CSV file {csv_output_file} has been created.")
 
-if __name__ == "__main__":
-    file_path = 'cof_data/output_json/cofs.json'
-    known_cofs_file = 'cof_data/output_json/cofs.json' 
-    output_a_file = 'cof_data/output_json/output_a.json'
-    output_b_file = 'cof_data/output_json/output_b.json'
-    combined_output_file = 'cof_data/output_json/combined_output.json'
-    final_output_file = 'cof_data/output_json/new_cofs.json'
-    csv_output_file_assembly_model = 'cof_data/output_json/am_vs_cofs.csv'
-    csv_output_file_linkage = 'cof_data/output_json/linkage_vs_cofs.csv'
 
-    data = load_json(file_path)
+def load_csv(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            reader = csv.DictReader(file)
+            return [row for row in reader]
+    except FileNotFoundError:
+        print(f"Error: The file {file_path} does not exist.")
+        return None
+    
+def save_csv(data, file_path, fieldnames):
+    with open(file_path, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(data)
+    print(f"CSV file {file_path} has been created.")
 
+def get_am_long_formulas(cofs_data):
+    am_long_formula_map = {}
+    for cof in cofs_data:
+        assembly_model = cof.get('AssemblyModel', {})
+        am_uuid = assembly_model.get('AM_UUID')
+        am_long_formula = assembly_model.get('AM_Long_Formula')
+        if am_uuid and am_long_formula:
+            am_long_formula_map[am_uuid] = am_long_formula
+    return am_long_formula_map
+
+def update_csv_with_long_formulas(csv_data, am_long_formula_map):
+    updated_data = []
+    for row in csv_data:
+        am_uuid = row['AssemblyModel_UUID']
+        am_long_formula = am_long_formula_map.get(am_uuid, "Unknown")
+        updated_data.append({
+            'AssemblyModel_Long_Formula': am_long_formula,
+            'Number_of_Known_COF_Instances': row['Number_of_Known_COF_Instances'],
+            'Number_of_New_COF_Instances': row['Number_of_New_COF_Instances']
+        })
+    return updated_data
+
+def main():
+    # Define file paths
+    file_paths = {
+        'cofs': 'cof_data/output_json/cofs.json',
+        'known_cofs': 'cof_data/output_json/cofs.json',
+        'output_a': 'cof_data/output_json/output_a.json',
+        'output_b': 'cof_data/output_json/output_b.json',
+        'combined_output': 'cof_data/output_json/combined_output.json',
+        'final_output': 'cof_data/output_json/new_cofs.json',
+        'am_vs_cofs': 'cof_data/output_json/am_vs_cofs.csv',
+        'linkage_vs_cofs': 'cof_data/output_json/linkage_vs_cofs.csv',
+        'csv_with_formulas': 'cof_data/output_json/am_vs_cofs_with_formulas.csv'
+    }
+
+    # Process data
+    data = load_json(file_paths['cofs'])
     output_a = linkage_binding_site_analysis(data)
-    save_json(output_a, output_a_file)  # Save output_a to JSON file
-
+    save_json(output_a, file_paths['output_a'])
     output_b = find_assembly_models_and_precursors_by_gbu(data)
-    save_json(output_b, output_b_file)  # Save output_b to JSON file
+    save_json(output_b, file_paths['output_b'])
 
-    prepared_data = prepare_combined_data(output_a, output_b, combined_output_file)
+    # Combine outputs and generate final data
+    prepared_data = prepare_combined_data(output_a, output_b, file_paths['combined_output'])
+    final_output_data = generate_precursor_combinations(prepared_data, file_paths['known_cofs'])
+    save_json(final_output_data, file_paths['final_output'])
 
-    final_output_data = generate_precursor_combinations(prepared_data, known_cofs_file)
-    save_json(final_output_data, final_output_file)
-
-    known_cofs = load_json(known_cofs_file)
+    # Validate and produce CSV outputs
+    known_cofs = load_json(file_paths['known_cofs'])
     check_no_overlap(final_output_data, known_cofs)
-    produce_cof_instance_csv(final_output_data, known_cofs, csv_output_file_assembly_model)
-    produce_linkage_cof_instance_csv(final_output_data, known_cofs, csv_output_file_linkage)
+    produce_cof_instance_csv(final_output_data, known_cofs, file_paths['am_vs_cofs'])
+    produce_linkage_cof_instance_csv(final_output_data, known_cofs, file_paths['linkage_vs_cofs'])
 
-    print(f"Output A has been saved to {output_a_file}")
-    print(f"Output B has been saved to {output_b_file}")
-    print(f"Combined output has been saved to {combined_output_file}")
-    print(f"Final output data has been saved to {final_output_file}")
-    print(f"Assembly Model vs COFs CSV has been saved to {csv_output_file_assembly_model}")
-    print(f"Linkage vs COFs CSV has been saved to {csv_output_file_linkage}")
+    # Print status messages
+    print_status(file_paths)
+
+    # Update CSV with long formulas
+    update_csv_with_formulas(file_paths)
+
+def print_status(file_paths):
+    print(f"Output A has been saved to {file_paths['output_a']}")
+    print(f"Output B has been saved to {file_paths['output_b']}")
+    print(f"Combined output has been saved to {file_paths['combined_output']}")
+    print(f"Final output data has been saved to {file_paths['final_output']}")
+    print(f"Assembly Model vs COFs CSV has been saved to {file_paths['am_vs_cofs']}")
+    print(f"Linkage vs COFs CSV has been saved to {file_paths['linkage_vs_cofs']}")
+
+def update_csv_with_formulas(file_paths):
+    cofs_data = load_json(file_paths['cofs'])
+    csv_data = load_csv(file_paths['am_vs_cofs'])
+
+    if cofs_data is None or csv_data is None:
+        print("Error: One or more input files are missing.")
+        return
+
+    am_long_formula_map = get_am_long_formulas(cofs_data)
+    updated_csv_data = update_csv_with_long_formulas(csv_data, am_long_formula_map)
+
+    fieldnames = ['AssemblyModel_Long_Formula', 'Number_of_Known_COF_Instances', 'Number_of_New_COF_Instances']
+    save_csv(updated_csv_data, file_paths['csv_with_formulas'], fieldnames)
+
+if __name__ == "__main__":
+    main()
