@@ -308,7 +308,7 @@ def zeolite_material_adv_search_query(params):
             base_query += f"""
             ?zeo_material zeo:hasGuestCompound ?guest{i}IRI .
             FILTER(?guest{i}IRI = <{iri}>)
-            SERVICE <http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql> {{
+            SERVICE <{os.environ["KG_ENDPOINT_ONTOSPECIES"]}> {{
             ?guest{i}IRI rdfs:label ?guest{i}formula
             }}
             """
