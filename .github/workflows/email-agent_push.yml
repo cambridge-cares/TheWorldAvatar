@@ -72,8 +72,8 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          USERNAME: ${{github.actor}}
-          PASSWORD: ${{github.token}}
+          username: ${{github.actor}}
+          password: ${{github.token}}
           
           
       # Build and push the agent's Docker image

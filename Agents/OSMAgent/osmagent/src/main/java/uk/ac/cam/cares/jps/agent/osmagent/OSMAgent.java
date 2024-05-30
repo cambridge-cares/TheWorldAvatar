@@ -14,7 +14,6 @@ import javax.servlet.annotation.WebServlet;
 import java.nio.file.Path;
 
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +39,11 @@ public class OSMAgent extends JPSAgent {
     public String landUseTable;
     public String landGeometry;
     public String landUseCsv;
-    public static final String usageTable = "usage.usage";
+
+    public static final String DATA_SCHEMA = "buildinginfo";
+    public static final String USAGE_TABLE = DATA_SCHEMA + ".usage";
+    public static final String ADDRESS_TABLE = DATA_SCHEMA + ".address";
+
     public static final String KEY_BOUND = "bound_wkt";
     public static final String KEY_BOUND_SRID = "bound_srid";
     public void init() {
@@ -99,17 +102,17 @@ public class OSMAgent extends JPSAgent {
             geometryMatcher.matchGeometry(pointTable, polygonTable, bound, boundSRID);
 
             // intialise usage table and copy building IRI that has OSM usage
-            usageMatcher.copyFromOSM(pointTable, polygonTable, usageTable);
+            usageMatcher.copyFromOSM(pointTable, polygonTable, DATA_SCHEMA, USAGE_TABLE, ADDRESS_TABLE);
 
             // match buildings without OSM usage with land use
             if (!landUseTable.isEmpty()) {
-                geometryMatcher.updateLandUse(usageTable, landUseTable, landGeometry, landUseCsv, bound, boundSRID);
+                geometryMatcher.updateLandUse(USAGE_TABLE, landUseTable, landGeometry, landUseCsv, bound, boundSRID);
             }
 
             // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
             // buildings
-            shareCalculator.updateUsageShare(usageTable);
-            shareCalculator.addMaterializedView(usageTable, osmSchema);
+            shareCalculator.updateUsageShare(USAGE_TABLE);
+            shareCalculator.addMaterializedView(USAGE_TABLE, ADDRESS_TABLE, DATA_SCHEMA, osmSchema);
 
             //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
@@ -143,5 +146,5 @@ public class OSMAgent extends JPSAgent {
     }
 
 
-    private static final String buildingSQLQuery = "SELECT building_id, name, building_height, geom, uuid, iri, propertyusage_iri, ontobuilt, usageshare FROM usage.buildingusage_geoserver";
+    private static final String buildingSQLQuery = "SELECT building_id, name, building_height, geom, uuid, iri, propertyusage_iri, ontobuilt, usageshare FROM "+DATA_SCHEMA+".buildingusage_geoserver";
 }

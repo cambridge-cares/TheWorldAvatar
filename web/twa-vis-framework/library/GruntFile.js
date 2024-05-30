@@ -30,7 +30,7 @@ module.exports = function (grunt) {
             },
             target: {
                 files: {
-                    "./output/twa-vf.min.css": ["./src/css/twa-vf.css"]
+                    "./output/twa-vf.min.css": ["./src/css/twa-vf.css", "./src/css/slider.css" ]
                 }
             }
         },
