@@ -350,47 +350,9 @@ def produce_linkage_cof_instance_csv(library_data, known_cofs, csv_output_file):
 
     print(f"CSV file {csv_output_file} has been created.")
 
-# Combined execution
-
 if __name__ == "__main__":
     file_path = 'cof_data/output_json/cofs.json'
-    known_cofs_file = 'cof_data/output_json/cofs.json'  # Ensure this file path is correct
-    output_a_file = 'cof_data/output_json/output_a.json'
-    output_b_file = 'cof_data/output_json/output_b.json'
-    combined_output_file = 'cof_data/output_json/combined_output.json'
-    final_output_file = 'cof_data/output_json/new_cofs.json'
-    csv_output_file_assembly_model = 'cof_data/output_json/am_vs_cofs.csv'
-    csv_output_file_linkage = 'cof_data/output_json/linkage_vs_cofs.csv'
-
-    data = load_json(file_path)
-
-    output_a = linkage_binding_site_analysis(data)
-    save_json(output_a, output_a_file)  # Save output_a to JSON file
-
-    output_b = find_assembly_models_and_precursors_by_gbu(data)
-    save_json(output_b, output_b_file)  # Save output_b to JSON file
-
-    prepared_data = prepare_combined_data(output_a, output_b, combined_output_file)
-
-    final_output_data = generate_precursor_combinations(prepared_data, known_cofs_file)
-    save_json(final_output_data, final_output_file)
-
-    known_cofs = load_json(known_cofs_file)
-    check_no_overlap(final_output_data, known_cofs)
-    produce_cof_instance_csv(final_output_data, known_cofs, csv_output_file_assembly_model)
-    produce_linkage_cof_instance_csv(final_output_data, known_cofs, csv_output_file_linkage)
-
-    print(f"Output A has been saved to {output_a_file}")
-    print(f"Output B has been saved to {output_b_file}")
-    print(f"Combined output has been saved to {combined_output_file}")
-    print(f"Final output data has been saved to {final_output_file}")
-    print(f"Assembly Model vs COFs CSV has been saved to {csv_output_file_assembly_model}")
-    print(f"Linkage vs COFs CSV has been saved to {csv_output_file_linkage}")
-    
-
-if __name__ == "__main__":
-    file_path = 'cof_data/output_json/cofs.json'
-    known_cofs_file = 'cof_data/output_json/cofs.json'  # Ensure this file path is correct
+    known_cofs_file = 'cof_data/output_json/cofs.json' 
     output_a_file = 'cof_data/output_json/output_a.json'
     output_b_file = 'cof_data/output_json/output_b.json'
     combined_output_file = 'cof_data/output_json/combined_output.json'
