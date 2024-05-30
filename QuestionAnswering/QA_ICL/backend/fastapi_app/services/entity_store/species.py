@@ -25,8 +25,8 @@ SELECT ?Species WHERE {{
                 )
 
                 iris = [
-                    row["Species"]["value"]
-                    for row in self.bg_client.query(query)["results"]["bindings"]
+                    row["Species"].value
+                    for row in self.bg_client.querySelect(query).results.bindings
                 ]
                 if iris:
                     return iris
@@ -48,8 +48,8 @@ SELECT ?Species WHERE {{
         )
 
         return [
-            row["Species"]["value"]
-            for row in self.bg_client.query(query)["results"]["bindings"]
+            binding["Species"].value
+            for binding in self.bg_client.querySelect(query).results.bindings
         ]
 
     def lookup_iupac_name(self, iri: str) -> Optional[str]:
@@ -62,11 +62,10 @@ WHERE {{
 LIMIT 1""".format(
             IRI=iri
         )
-        res = self.bg_client.query(query)
-        bindings = res["results"]["bindings"]
-        if bindings:
-            return bindings[0]["IUPACName"]["value"]
-        else:
+        res = self.bg_client.querySelect(query)
+        try:
+            return next(binding["IUPACName"].value for binding in res.results.bindings)
+        except StopIteration:
             return None
 
 

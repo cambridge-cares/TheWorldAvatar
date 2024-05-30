@@ -4,7 +4,7 @@ from typing import Annotated, Sequence
 from fastapi import Depends
 from services.kg import KgClient, get_ontospecies_bgClient
 from services.processs_response.augment_node import NodeDataRetriever
-from utils.rdf import flatten_sparql_response
+from utils.rdf import flatten_sparql_select_response
 
 
 def get_species_unique_identifiers(kg_client: KgClient, iris: Sequence[str]):
@@ -32,8 +32,8 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.query(query)
-    _, bindings = flatten_sparql_response(res)
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
 
     iri2data = {
         binding["Species"]: {k: binding.get(k) for k in ["Label", "IUPACName", "InChI"]}

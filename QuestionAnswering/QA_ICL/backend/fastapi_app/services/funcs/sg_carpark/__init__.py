@@ -64,7 +64,7 @@ class SGCarparkFuncExecutor(Name2Func):
             binding["LotAvailability"] = carpark_feature_info.time[0].values[0][-1]
             binding["Time"] = carpark_feature_info.time[0].time[-1]
 
-        data = [TableDataItem(vars=vars, bindings=bindings)]
+        data = [TableDataItem.from_vars_and_bindings(vars=vars, bindings=bindings)]
 
         latency = time.time() - timestamp
         steps.append(

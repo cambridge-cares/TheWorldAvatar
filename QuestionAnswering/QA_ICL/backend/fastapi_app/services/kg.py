@@ -1,12 +1,40 @@
 from functools import cache
 import logging
 import os
-from typing import Optional
+from typing import Dict, List, Literal, Optional
 
 
 from SPARQLWrapper import SPARQLWrapper, POST, JSON
+from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 logger = logging.getLogger(__name__)
+
+
+class SparqlSelectResponseHead(BaseModel):
+    model_config = ConfigDict(froze=True)
+
+    vars: List[str]
+
+
+class SparqlSelectResponseBindingValue(BaseModel):
+    model_config = ConfigDict(froze=True)
+
+    datatype: Optional[str] = None
+    type: Literal["uri", "literal"]
+    value: str
+
+
+class SparqlSelectResponseResults(BaseModel):
+    model_config = ConfigDict(froze=True)
+
+    bindings: List[Dict[str, SparqlSelectResponseBindingValue]]
+
+
+class SparqlSelectResponse(BaseModel):
+    model_config = ConfigDict(froze=True)
+
+    head: SparqlSelectResponseHead
+    results: SparqlSelectResponseResults
 
 
 class KgClient:
@@ -19,13 +47,14 @@ class KgClient:
             sparql.setCredentials(user=user, passwd=password)
         sparql.setMethod(POST)
         self.sparql = sparql
+        self.res_adapter = TypeAdapter(SparqlSelectResponse)
 
-    def query(self, query: str):
+    def querySelect(self, query: str):
         logger.info("Executing SPARQL query:\n" + query)
         self.sparql.setQuery(query)
         res = self.sparql.queryAndConvert()
         logger.info("Execution done")
-        return res
+        return self.res_adapter.validate_python(res)
 
 
 @cache

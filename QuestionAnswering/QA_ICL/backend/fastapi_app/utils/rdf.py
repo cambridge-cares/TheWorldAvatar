@@ -1,6 +1,7 @@
 from typing import List
 
 from constants.prefixes import PREFIX_NAME2URI
+from services.kg import SparqlSelectResponse
 
 
 def extract_name(iri: str):
@@ -19,10 +20,10 @@ def try_make_prefixed_iri(iri: str):
             )
     return iri
 
-def flatten_sparql_response(res: dict):
-    vars: List[str] = res["head"]["vars"]
+
+def flatten_sparql_select_response(res: SparqlSelectResponse):
+    vars = list(res.head.vars)
     bindings = [
-        {k: v["value"] for k, v in binding.items()}
-        for binding in res["results"]["bindings"]
+        {k: v.value for k, v in binding.items()} for binding in res.results.bindings
     ]
     return vars, bindings

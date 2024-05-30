@@ -1,5 +1,5 @@
 from functools import cache
-from typing import Annotated, List
+from typing import Annotated, Dict, List, Union
 
 from fastapi import Depends
 
@@ -17,10 +17,12 @@ class SparqlResponseProcessor:
         self.entity_store = entity_store
         self.table_augmenter = table_augmenter
 
-    def add_labels(self, item: TableDataItem):
-        vars_set = set(item.vars)
+    def add_labels(
+        self, vars: List[str], bindings: List[Dict[str, Union[str, float, dict]]]
+    ):
+        vars_set = set(vars)
 
-        for binding in item.bindings:
+        for binding in bindings:
             new_kvs = dict()
             for k, v in binding.items():
                 if not isinstance(v, str) or not any(
@@ -37,16 +39,23 @@ class SparqlResponseProcessor:
                     continue
 
                 if label_key not in vars_set:
-                    idx = item.vars.index(k)
-                    item.vars.insert(idx + 1, label_key)
+                    idx = vars.index(k)
+                    vars.insert(idx + 1, label_key)
                     vars_set.add(label_key)
                 new_kvs[label_key] = label
 
             binding.update(new_kvs)
 
-    def process(self, nodes_to_augment: List[TypedVarNode], table: TableDataItem):
-        self.table_augmenter.augment(nodes_to_augment=nodes_to_augment, item=table)
-        self.add_labels(table)
+    def process(
+        self,
+        nodes_to_augment: List[TypedVarNode],
+        vars: List[str],
+        bindings: List[Dict[str, Union[str, float, dict]]],
+    ):
+        self.table_augmenter.augment(
+            nodes_to_augment=nodes_to_augment, vars=vars, bindings=bindings
+        )
+        self.add_labels(vars=vars, bindings=bindings)
 
 
 @cache

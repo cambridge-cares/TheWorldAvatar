@@ -21,8 +21,8 @@ WHERE {{
             formula=kwargs["formula"]
         )
         return [
-            row["Material"]["value"]
-            for row in self.bg_client.query(query)["results"]["bindings"]
+            row["Material"].value
+            for row in self.bg_client.querySelect(query).results.bindings
         ]
 
 
