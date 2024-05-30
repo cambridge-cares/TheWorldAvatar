@@ -1,0 +1,98 @@
+[PrefixDeclaration]
+:       https://www.theworldavatar.com/kg/landplot/
+zone:   https://www.theworldavatar.com/kg/ontozoning/
+plot:   https://www.theworldavatar.com/kg/ontoplot/
+opr:    https://www.theworldavatar.com/kg/ontoplanningregulation/
+rdf:    http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:   http://www.w3.org/2000/01/rdf-schema#
+owl:    http://www.w3.org/2002/07/owl#
+xsd:    http://www.w3.org/2001/XMLSchema#
+geo:    http://www.opengis.net/ont/geosparql#
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+mappingId       plots
+target          :{ogc_fid} a plot:Plot ;
+                    zone:hasLandUseType :{landuse_type};
+                    opr:isAwaitingDetailedGPREvaluation "{awaiting_detailed_evaluation}"^^xsd:boolean;
+                    plot:hasPlotArea :area/{ogc_fid};
+                    geo:hasDefaultGeometry :geometry/{ogc_fid} .
+                :geometry/{ogc_fid} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral.
+                :area/{ogc_fid} a om:Area;
+                    om:hasValue :areameasure/{ogc_fid} .
+                :areameasure/{ogc_fid} a om:Measure;
+                    om:hasUnit om:squareMetre ;
+                    om:hasNumericalValue "{area}"^^xsd:double.
+source          SELECT ogc_fid,
+                CASE WHEN "GPR" = 'EVA' THEN true
+                    WHEN "GPR" = 'LND' THEN true
+                    WHEN "GPR" = 'SDP' THEN true
+                    ELSE false
+                    END AS awaiting_detailed_evaluation,
+                ST_Area("lod1Geometry", true) AS area,
+                ST_ASTEXT("lod1Geometry") AS wkt,
+                CASE WHEN "LU_DESC" = 'AGRICULTURE' THEN 'LandUseType_a8e423e3-c628-4b08-9f63-fcf5b244873a'
+                    WHEN "LU_DESC" = 'BEACH AREA' THEN 'LandUseType_f93107ea-be85-4e40-a4ac-fd464ef26798'
+                    WHEN "LU_DESC" = 'BUSINESS 1' THEN 'LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075'
+                    WHEN "LU_DESC" = 'BUSINESS 1 - WHITE' THEN 'LandUseType_9a4a4a58-58a4-476b-a249-aeffeb9c2445'
+                    WHEN "LU_DESC" = 'BUSINESS 2' THEN 'LandUseType_a7fd8f8c-4cb3-4b08-b539-a64daeadd29e'
+                    WHEN "LU_DESC" = 'BUSINESS 2 - WHITE' THEN 'LandUseType_a9c70322-46c6-41f7-9bc9-5dc425501535'
+                    WHEN "LU_DESC" = 'BUSINESS PARK' THEN 'LandUseType_ffd32fe8-919a-4771-9bd1-2f13cabcf501'
+                    WHEN "LU_DESC" = 'BUSINESS PARK - WHITE' THEN 'LandUseType_51f02bc4-799e-4150-bf56-e55042503de7'
+                    WHEN "LU_DESC" = 'CEMETERY' THEN 'LandUseType_9f316da8-e0f8-41c8-bf0a-9efc4a9fd989'
+                    WHEN "LU_DESC" = 'CIVIC & COMMUNITY INSTITUTION' THEN 'LandUseType_84288400-567b-4f84-965c-cbd95e3dca26'
+                    WHEN "LU_DESC" = 'COMMERCIAL' THEN 'LandUseType_f45d365c-1d59-4fda-b240-afb0066f2d61'
+                    WHEN "LU_DESC" = 'COMMERCIAL & RESIDENTIAL' THEN 'LandUseType_964b8eae-7226-4e4e-af55-498f3e798fc3'
+                    WHEN "LU_DESC" = 'COMMERCIAL / INSTITUTION' THEN 'LandUseType_979948e3-4828-4b4a-b317-c2fb67e0409c'
+                    WHEN "LU_DESC" = 'EDUCATIONAL INSTITUTION' THEN 'LandUseType_cf32f28b-801c-4c1f-87d4-16b7ab51b041'
+                    WHEN "LU_DESC" = 'HEALTH & MEDICAL CARE' THEN 'LandUseType_14534f34-3cbc-40c8-9e52-30018d18c486'
+                    WHEN "LU_DESC" = 'HOTEL' THEN 'LandUseType_bc0e9391-f5de-4a2c-87be-a9435af6651f'
+                    WHEN "LU_DESC" = 'LIGHT RAPID TRANSIT' THEN 'LandUseType_b6530b45-7d9b-4d8b-b9a0-a5ccc45e8b10'
+                    WHEN "LU_DESC" = 'MASS RAPID TRANSIT' THEN 'LandUseType_b6530b45-7d9b-4d8b-b9a0-a5ccc45e8b10'
+                    WHEN "LU_DESC" = 'OPEN SPACE' THEN 'LandUseType_579c75a2-04e4-49f5-bc97-a9fab94a4284'
+                    WHEN "LU_DESC" = 'PARK' THEN 'LandUseType_0be686be-7ba6-410c-b7e5-ed7cb06e4590'
+                    WHEN "LU_DESC" = 'PLACE OF WORSHIP' THEN 'LandUseType_de2f9725-4360-4b0d-b237-fb71b7f09201'
+                    WHEN "LU_DESC" = 'PORT / AIRPORT' THEN 'LandUseType_80755ccd-8068-4446-b40c-ee064b0fae56'
+                    WHEN "LU_DESC" = 'RESERVE SITE' THEN 'LandUseType_1c2360fa-72fb-46d4-806a-02f6bf1a1a58'
+                    WHEN "LU_DESC" = 'RESIDENTIAL' THEN 'LandUseType_6cbda899-27e3-41e9-9ad1-9d4061a5818d'
+                    WHEN "LU_DESC" = 'RESIDENTIAL / INSTITUTION' THEN 'LandUseType_a720a895-80e0-4180-bd3d-95d42ed1a987'
+                    WHEN "LU_DESC" = 'RESIDENTIAL WITH COMMERCIAL AT 1ST STOREY' THEN 'LandUseType_b93f8e89-26e3-400c-94ca-fa6677b7f373'
+                    WHEN "LU_DESC" = 'ROAD' THEN 'LandUseType_60f77832-310c-424d-9eef-bad59ffcf098'
+                    WHEN "LU_DESC" = 'SPECIAL USE' THEN 'LandUseType_1115b7ad-184a-4014-9b87-ebcc3a0eee41'
+                    WHEN "LU_DESC" = 'SPORTS & RECREATION' THEN 'LandUseType_fa4db60a-16c6-4bbe-aff9-3209939142b6'
+                    WHEN "LU_DESC" = 'TRANSPORT FACILITIES' THEN 'LandUseType_dd78f0f5-ec0a-4a86-95b6-72008f913e51'
+                    WHEN "LU_DESC" = 'UTILITY' THEN 'LandUseType_7d6e19cb-0b9e-43f6-b1df-7a41001a7a34'
+                    WHEN "LU_DESC" = 'WATERBODY' THEN 'LandUseType_235abcb2-a42f-4b21-b13e-9e1ba3183477'
+                    WHEN "LU_DESC" = 'WHITE' THEN 'LandUseType_235abcb2-a42f-4b21-b13e-9e1ba3183477'
+                    END AS landuse_type
+                FROM landplot
+
+mappingId       plot-ratio
+target          :planningregulation/{ogc_fid} a opr:PlanningRegulation;
+                   opr:appliesTo :{ogc_fid};
+                   opr:allowsGrossPlotRatio :ratio/{ogc_fid}.
+                :ratio/{ogc_fid} a opr:GrossPlotRatio;
+                    om:hasValue :ratiomeasure/{ogc_fid} .
+                :ratiomeasure/{ogc_fid} a om:Measure;
+                    om:hasUnit om:one;
+                    om:hasNumericalValue "{gpr}"^^xsd:double.
+source          SELECT ogc_fid,
+                CASE WHEN "GPR" <> 'EVA' AND "GPR" <> 'LND' AND "GPR" <> 'SDP' 
+                    AND "GPR" <> 'NA' AND "GPR" <> 'NULL' THEN CAST("GPR" AS DOUBLE PRECISION)
+                    END AS gpr
+                FROM landplot
+
+mappingId       plot-permitted-gfa
+target          :{ogc_fid} a plot:Plot ;
+                    plot:hasMaximumPermittedGPR :gfa/{ogc_fid} .
+                :gfa/{ogc_fid} a om:Area;
+                    om:hasValue :gfameasure/{ogc_fid} .
+                :gfameasure/{ogc_fid} a om:Measure;
+                    om:hasUnit om:squareMetre ;
+                    om:hasNumericalValue "{gfa}"^^xsd:double.
+source          SELECT ogc_fid,
+                # If GPR is numeric with or without decimal places, multiply it by the area 
+                CASE WHEN "GPR" ~ '^\d+(\.\d+)?$' THEN ("GPR"::double precision * ST_Area("lod1Geometry", true))
+                END AS gfa
+                FROM landplot
+]]

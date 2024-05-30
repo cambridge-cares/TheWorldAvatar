@@ -1,0 +1,262 @@
+@prefix base: <https://www.theworldavatar.com/kg/landplot/>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix ontozoning: <https://www.theworldavatar.com/kg/ontozoning/>.
+@prefix opr: <https://www.theworldavatar.com/kg/ontoplanningregulation/>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18 rdf:type opr:CompetentAuthority;
+    rdfs:label "Urban Redevelopment Authority"^^xsd:string;
+    rdfs:comment "The planning authority of Singapore that are in charge of formulating long term strategic development plans, and evaluating development proposals."^^xsd:string.
+
+base:LandUseType_a8e423e3-c628-4b08-9f63-fcf5b244873a rdf:type ontozoning:Agriculture;
+    rdfs:label "Agriculture"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used for agricultural purposes and includes plant nursery."^^xsd:string.
+base:LandUseRegulation_33daf86c-fac8-4368-a1eb-8b3deb3c6937 rdf:type opr:LandUseRegulation;
+    rdfs:label "Agriculture Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_a8e423e3-c628-4b08-9f63-fcf5b244873a;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_f93107ea-be85-4e40-a4ac-fd464ef26798 rdf:type ontozoning:BeachArea;
+    rdfs:label "Beach Area"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used for coastal recreational purposes for the enjoyment of the general public."^^xsd:string.
+base:LandUseRegulation_8f5491a9-cfe1-4250-82e6-92650e419a45 rdf:type opr:LandUseRegulation;
+    rdfs:label "Beach Area Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_f93107ea-be85-4e40-a4ac-fd464ef26798;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075 rdf:type ontozoning:Business1;
+    rdfs:label "Business 1"^^xsd:string;
+    rdfs:comment "A land use type tailored to URA in Singapore. These are areas used or intended to be used mainly for clean industry, light industry, public utilities, and telecommunication uses and other public installations for which the relevant authority does not impose a nuisance buffer greater than 50m. General industrial uses that are able to meet the nuisance buffer requirements imposed by the relevant authority for general industries may be allowed in the B1 zones, subject to evaluation by the relevant authority and the competent authority."^^xsd:string.
+base:LandUseRegulation_884cb0fc-a44a-4486-a95c-89899d07b382 rdf:type opr:LandUseRegulation;
+    rdfs:label "Business 1 (Industrial) Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_618ab6ea-3d41-4841-95ef-369f000e5075;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_a7fd8f8c-4cb3-4b08-b539-a64daeadd29e rdf:type ontozoning:Business2;
+    rdfs:label "Business 2"^^xsd:string;
+    rdfs:comment "A land use type tailored to URA in Singapore. There are areas used or intended to be used for clean industry, light industry, general industry, warehouse, public utilities and telecommunication uses and other public installations. Special industries such as manufacture of industrial machinery, shipbuilding and repairing, may be allowed in selected areas subject to evaluation by the relevant authority and the competent authority."^^xsd:string.
+base:LandUseRegulation_15308331-9551-43c2-a69a-947c6e7dda38 rdf:type opr:LandUseRegulation;
+    rdfs:label "Business 2 (Industrial) Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_a7fd8f8c-4cb3-4b08-b539-a64daeadd29e;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_ffd32fe8-919a-4771-9bd1-2f13cabcf501 rdf:type ontozoning:BusinessPark;
+    rdfs:label "Business Park"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used for business park operations."^^xsd:string.
+base:LandUseRegulation_8fb0692f-d3bd-4a4c-a76c-56d4cf25a47a rdf:type opr:LandUseRegulation;
+    rdfs:label "Business Park Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_ffd32fe8-919a-4771-9bd1-2f13cabcf501;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_9f316da8-e0f8-41c8-bf0a-9efc4a9fd989 rdf:type ontozoning:Cemetery;
+    rdfs:label "Cemetery"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used for burial grounds, crematoria and columbaria."^^xsd:string.
+base:LandUseRegulation_b72a8457-2875-4c16-80c1-ba167b8a4ccd rdf:type opr:LandUseRegulation;
+    rdfs:label "Cemetery Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_9f316da8-e0f8-41c8-bf0a-9efc4a9fd989;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_84288400-567b-4f84-965c-cbd95e3dca26 rdf:type ontozoning:CivicAndCommunityInstitution;
+    rdfs:label "Civic and Community Institution"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for civic, community or cultural facilities or other similar purposes."^^xsd:string.
+base:LandUseRegulation_f69831c4-ea04-47f3-9a8a-0fde43c9386e rdf:type opr:LandUseRegulation;
+    rdfs:label "Civic and Community Institution Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_84288400-567b-4f84-965c-cbd95e3dca26;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_f45d365c-1d59-4fda-b240-afb0066f2d61 rdf:type ontozoning:Commercial;
+    rdfs:label "Commercial"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for commercial development."^^xsd:string.
+base:LandUseRegulation_63c30ba7-013d-4a06-80b6-a5dd2c577b4a rdf:type opr:LandUseRegulation;
+    rdfs:label "Commercial Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_f45d365c-1d59-4fda-b240-afb0066f2d61;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_964b8eae-7226-4e4e-af55-498f3e798fc3 rdf:type ontozoning:CommercialAndResidential;
+    rdfs:label "Commercial and Residential"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for mixed commercial and residential development."^^xsd:string.
+base:LandUseRegulation_ee2e8c7e-3d1b-48b9-a761-2e895d5a3244 rdf:type opr:LandUseRegulation;
+    rdfs:label "Mixed Commercial and Residential regulations under Commercial Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_964b8eae-7226-4e4e-af55-498f3e798fc3;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_979948e3-4828-4b4a-b317-c2fb67e0409c rdf:type ontozoning:CommercialOrInstitution;
+    rdfs:label "Commercial or Institution"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for commercial purpose, community institution facilities or other similar purposes."^^xsd:string.
+base:LandUseRegulation_60578d17-bc8b-4b11-b03c-cabb7648d855 rdf:type opr:LandUseRegulation;
+    rdfs:label "Commercial or Institution Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_979948e3-4828-4b4a-b317-c2fb67e0409c;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_cf32f28b-801c-4c1f-87d4-16b7ab51b041 rdf:type ontozoning:EducationalInstitution;
+    rdfs:label "Educational Institution"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for educational purposes including tertiary education."^^xsd:string.
+base:LandUseRegulation_cf36de5f-1259-4d00-bb21-cef4d0496e67 rdf:type opr:LandUseRegulation;
+    rdfs:label "Educational Institution Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_cf32f28b-801c-4c1f-87d4-16b7ab51b041;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_14534f34-3cbc-40c8-9e52-30018d18c486 rdf:type ontozoning:HealthAndMedicalCare;
+    rdfs:label "Health and Medical Care"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for medical services."^^xsd:string.
+base:LandUseRegulation_b2f8d9db-e8be-4b18-951e-77bc9d634a17 rdf:type opr:LandUseRegulation;
+    rdfs:label "Health and Medical Care Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_14534f34-3cbc-40c8-9e52-30018d18c486;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_bc0e9391-f5de-4a2c-87be-a9435af6651f rdf:type ontozoning:HotelType;
+    rdfs:label "Hotel"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for hotel development."^^xsd:string.
+base:LandUseRegulation_799b2d07-a81a-4dde-8603-6d9725c58a98 rdf:type opr:LandUseRegulation;
+    rdfs:label "Hotel Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_bc0e9391-f5de-4a2c-87be-a9435af6651f;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_579c75a2-04e4-49f5-bc97-a9fab94a4284 rdf:type ontozoning:OpenSpace;
+    rdfs:label "Open Space"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used as open space."^^xsd:string.
+base:LandUseRegulation_b04704c2-5f74-42ac-a11b-48557e75dc73 rdf:type opr:LandUseRegulation;
+    rdfs:label "Open Space Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_579c75a2-04e4-49f5-bc97-a9fab94a4284;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_0be686be-7ba6-410c-b7e5-ed7cb06e4590 rdf:type ontozoning:Park;
+    rdfs:label "Park"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for parks or gardens for the enjoyment of the general public and includes pedestrian linkages."^^xsd:string.
+base:LandUseRegulation_4701fa96-272a-4740-a330-64cd5f3a6be6 rdf:type opr:LandUseRegulation;
+    rdfs:label "Park Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_0be686be-7ba6-410c-b7e5-ed7cb06e4590;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_de2f9725-4360-4b0d-b237-fb71b7f09201 rdf:type ontozoning:PlaceOfWorship;
+    rdfs:label "Place of Worship"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for religious buildings."^^xsd:string.
+base:LandUseRegulation_1df039e9-9438-4dec-988a-8784d93d8502 rdf:type opr:LandUseRegulation;
+    rdfs:label "Place of Worship Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_de2f9725-4360-4b0d-b237-fb71b7f09201;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_80755ccd-8068-4446-b40c-ee064b0fae56 rdf:type ontozoning:PortOrAirport;
+    rdfs:label "Port or Airport"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used for airport/ airfield or dock/port purposes."^^xsd:string.
+base:LandUseRegulation_c384854c-2993-42c0-a498-fcdb76f711eb rdf:type opr:LandUseRegulation;
+    rdfs:label "Port or Airport Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_80755ccd-8068-4446-b40c-ee064b0fae56;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_b6530b45-7d9b-4d8b-b9a0-a5ccc45e8b10 rdf:type ontozoning:RapidTransit;
+    rdfs:label "Rapid Transit"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for Rapid Transit purposes."^^xsd:string.
+base:LandUseRegulation_602ebbb5-3135-4e5a-a11a-1dff57169fb2 rdf:type opr:LandUseRegulation;
+    rdfs:label "Rapid Transit under Transport Facilities Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_b6530b45-7d9b-4d8b-b9a0-a5ccc45e8b10;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_6cbda899-27e3-41e9-9ad1-9d4061a5818d rdf:type ontozoning:Residential;
+    rdfs:label "Residential"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for residential development."^^xsd:string.
+base:LandUseRegulation_660c6d71-9b73-4030-9ffe-0873fef0f587 rdf:type opr:LandUseRegulation;
+    rdfs:label "Residential Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_6cbda899-27e3-41e9-9ad1-9d4061a5818d;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_a720a895-80e0-4180-bd3d-95d42ed1a987 rdf:type ontozoning:ResidentialOrInstitution;
+    rdfs:label "Residential or Institution"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for residential purpose, community institution facilities or other similar purposes."^^xsd:string.
+base:LandUseRegulation_01520fb9-9b12-4833-8f2c-99ec95f44395 rdf:type opr:LandUseRegulation;
+    rdfs:label "Residential or Institution Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_a720a895-80e0-4180-bd3d-95d42ed1a987;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_b93f8e89-26e3-400c-94ca-fa6677b7f373 rdf:type ontozoning:ResidentialWithCommercialAtFirstStorey;
+    rdfs:label "Residential with Commercial at First Storey"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for residential development with commercial use at the first storey only."^^xsd:string.
+base:LandUseRegulation_f8fe61e3-59de-4d77-869f-d302c2617ab0 rdf:type opr:LandUseRegulation;
+    rdfs:label "Residential with Commercial at 1st storey regulations under Commercial Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_b93f8e89-26e3-400c-94ca-fa6677b7f373;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_60f77832-310c-424d-9eef-bad59ffcf098 rdf:type ontozoning:Road;
+    rdfs:label "Road"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used for existing and proposed roads."^^xsd:string.
+base:LandUseRegulation_b36dcaf0-85d6-4989-aa91-f4b728b853d6 rdf:type opr:LandUseRegulation;
+    rdfs:label "Road Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_60f77832-310c-424d-9eef-bad59ffcf098;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_fa4db60a-16c6-4bbe-aff9-3209939142b6 rdf:type ontozoning:SportsAndRecreation;
+    rdfs:label "Sports and Recreation"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for sports and recreational purposes."^^xsd:string.
+base:LandUseRegulation_2de02c9c-c6ca-4a07-9b8b-c12b8076b8de rdf:type opr:LandUseRegulation;
+    rdfs:label "Sports and Recreation Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_fa4db60a-16c6-4bbe-aff9-3209939142b6;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_dd78f0f5-ec0a-4a86-95b6-72008f913e51 rdf:type ontozoning:TransportFacilities;
+    rdfs:label "Transport Facilities"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for the parking of vehicles and transport facilities including garages and at-grade structure of underground road tunnel and rapid transit system."^^xsd:string.
+base:LandUseRegulation_0a612831-71f1-4290-a6bc-9b4a42356ddb rdf:type opr:LandUseRegulation;
+    rdfs:label "Transport Facilities Development Control Handbook"^^xsd:string;
+    opr:appliesTo base:LandUseType_dd78f0f5-ec0a-4a86-95b6-72008f913e51;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+    
+base:LandUseType_7d6e19cb-0b9e-43f6-b1df-7a41001a7a34 rdf:type ontozoning:Utility;
+    rdfs:label "Utility"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for public utilities and telecommunication infrastructure, including water works, sewage disposal works and other public installations such as electrical substations."^^xsd:string.
+base:LandUseRegulation_54b00bf2-78a8-4683-8398-e5861ed193f3 rdf:type opr:LandUseRegulation;
+    rdfs:label "Utility Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_7d6e19cb-0b9e-43f6-b1df-7a41001a7a34;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_235abcb2-a42f-4b21-b13e-9e1ba3183477 rdf:type ontozoning:Waterbody;
+    rdfs:label "Waterbody"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used for drainage purposes and water areas such as reservoirs, ponds, rivers and other water channels."^^xsd:string.
+base:LandUseRegulation_35dd3fb5-3178-4194-bd86-c04b14b84f32 rdf:type opr:LandUseRegulation;
+    rdfs:label "Waterbody Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_235abcb2-a42f-4b21-b13e-9e1ba3183477;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_1c2360fa-72fb-46d4-806a-02f6bf1a1a58 rdf:type ontozoning:ReserveSite;
+    rdfs:label "Reserve Site"^^xsd:string;
+    rdfs:comment "These are areas the specific use of which has yet to be determined. Interim uses that are compatible with the uses in the locality may be allowed subject to evaluation by the competent authority."^^xsd:string.
+base:LandUseType_1115b7ad-184a-4014-9b87-ebcc3a0eee41 rdf:type ontozoning:SpecialUse;
+    rdfs:label "Special Use"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used for special purposes."^^xsd:string.
+base:LandUseRegulation_140144fd-ade7-4ce1-8e59-dc037572c2b5 rdf:type opr:LandUseRegulation;
+    rdfs:label "URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_1115b7ad-184a-4014-9b87-ebcc3a0eee41;
+    opr:appliesTo base:LandUseType_1c2360fa-72fb-46d4-806a-02f6bf1a1a58;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_235abcb2-a42f-4b21-b13e-9e1ba3183477 rdf:type ontozoning:MixedUse;
+    rdfs:label "White"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for commercial, hotel, residential, sports & recreational and other compatible uses, or a combination of two or more such uses as a mixed development."^^xsd:string.
+base:LandUseRegulation_b04704c2-5f74-42ac-a11b-48557e75dc73 rdf:type opr:LandUseRegulation;
+    rdfs:label "White Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_235abcb2-a42f-4b21-b13e-9e1ba3183477;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_9a4a4a58-58a4-476b-a249-aeffeb9c2445 rdf:type ontozoning:MixedUse;
+    rdfs:label "Business 1 - White"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for commercial, hotel, residential, sports & recreational and other compatible uses, or a combination of two or more such uses as a mixed development."^^xsd:string.
+base:LandUseRegulation_b04704c2-5f74-42ac-a11b-48557e75dc73 rdf:type opr:LandUseRegulation;
+    rdfs:label "Business 1 - White Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_9a4a4a58-58a4-476b-a249-aeffeb9c2445;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_a9c70322-46c6-41f7-9bc9-5dc425501535 rdf:type ontozoning:MixedUse;
+    rdfs:label "Business 2 - White"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for commercial, hotel, residential, sports & recreational and other compatible uses, or a combination of two or more such uses as a mixed development."^^xsd:string.
+base:LandUseRegulation_b04704c2-5f74-42ac-a11b-48557e75dc73 rdf:type opr:LandUseRegulation;
+    rdfs:label "Business 2 - White Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_a9c70322-46c6-41f7-9bc9-5dc425501535;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
+
+base:LandUseType_51f02bc4-799e-4150-bf56-e55042503de7 rdf:type ontozoning:MixedUse;
+    rdfs:label "Business Park - White"^^xsd:string;
+    rdfs:comment "These are areas used or intended to be used mainly for commercial, hotel, residential, sports & recreational and other compatible uses, or a combination of two or more such uses as a mixed development."^^xsd:string.
+base:LandUseRegulation_b04704c2-5f74-42ac-a11b-48557e75dc73 rdf:type opr:LandUseRegulation;
+    rdfs:label "Business Park - White Zoning Interpretation for URA Master Plan 2019"^^xsd:string;
+    opr:appliesTo base:LandUseType_51f02bc4-799e-4150-bf56-e55042503de7;
+    opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
