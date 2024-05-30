@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 import os
 import sys
 import glob
-from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD,SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 import agent.datainstantiation.gps_client as gdi
 from agent.utils.baselib_gateway import jpsBaseLibGW
 from agent.kgutils.kgclient import KGClient
@@ -11,7 +11,10 @@ from agent.kgutils.utils import *
 from agent.datavectorization.geoserver_gen import create_functions, create_geoserver_layer
 import logging
 
+# Configure logging
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 # Blueprint configuration
 gps_instantiation_bp = Blueprint('gps_instantiation_bp', __name__)
@@ -51,7 +54,7 @@ def load_and_preprocess():
     except Exception as e:
         logger.error(f"Error in load_and_preprocess: {str(e)}")
         return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
-    
+
 @gps_instantiation_bp.route('/fenlandtrajectoryagent/process_and_instantiate', methods=['POST'])
 def process_and_instantiate():
     try:
