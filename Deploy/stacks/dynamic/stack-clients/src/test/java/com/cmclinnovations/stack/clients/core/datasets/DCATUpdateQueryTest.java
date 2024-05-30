@@ -30,6 +30,7 @@ import org.testcontainers.junit.jupiter.Container;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.core.datasets.DatasetBuilder.Service;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
@@ -72,15 +73,15 @@ class DCATUpdateQueryTest {
         Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1").build();
-            buildAndRunQuery(dataset, Service.NONE);
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2").build();
-            buildAndRunQuery(dataset, Service.NONE);
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3").build();
-            buildAndRunQuery(dataset, Service.NONE);
+            buildAndRunQuery(dataset);
         });
     }
 
@@ -89,20 +90,20 @@ class DCATUpdateQueryTest {
         Assertions.assertAll(() -> {
             Assertions.assertAll(Stream.of("A", "B", "C").map(name -> () -> {
                 Dataset dataset = new DatasetBuilder(name).build();
-                buildAndRunQuery(dataset, Service.NONE);
+                buildAndRunQuery(dataset);
             }));
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1").withExternalDatasetNames(List.of("A", "B")).build();
-            buildAndRunQuery(dataset, Service.NONE);
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2").withExternalDatasetNames(List.of("B", "C")).build();
-            buildAndRunQuery(dataset, Service.NONE);
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3").withExternalDatasetNames(List.of("A", "B")).build();
-            buildAndRunQuery(dataset, Service.NONE);
+            buildAndRunQuery(dataset);
         });
     }
 
@@ -111,16 +112,17 @@ class DCATUpdateQueryTest {
         writeBlazegraphConfig();
         Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
-                    .withDatasetDirectory("test1").build();
-            buildAndRunQuery(dataset, Service.BLAZEGRAPH);
+                    .withDatasetDirectory("test1").withServices(Service.BLAZEGRAPH).build();
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
-                    .withDatasetDirectory("test2").withNamespace(new Namespace("namespace1")).build();
-            buildAndRunQuery(dataset, Service.BLAZEGRAPH);
+                    .withDatasetDirectory("test2").withServices(Service.BLAZEGRAPH)
+                    .withNamespace(new Namespace("namespace1")).build();
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
-                    .withDatasetDirectory("test3").build();
-            buildAndRunQuery(dataset, Service.BLAZEGRAPH);
+                    .withDatasetDirectory("test3").withServices(Service.BLAZEGRAPH).build();
+            buildAndRunQuery(dataset);
         });
     }
 
@@ -129,16 +131,16 @@ class DCATUpdateQueryTest {
         writePostGISConfig();
         Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
-                    .withDatasetDirectory("test1").build();
-            buildAndRunQuery(dataset, Service.POSTGIS);
+                    .withDatasetDirectory("test1").withServices(Service.POSTGIS).build();
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
-                    .withDatasetDirectory("test2").withDatabase("database1").build();
-            buildAndRunQuery(dataset, Service.POSTGIS);
+                    .withDatasetDirectory("test2").withServices(Service.POSTGIS).withDatabase("database1").build();
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
-                    .withDatasetDirectory("test3").build();
-            buildAndRunQuery(dataset, Service.POSTGIS);
+                    .withDatasetDirectory("test3").withServices(Service.POSTGIS).build();
+            buildAndRunQuery(dataset);
         });
     }
 
@@ -147,16 +149,17 @@ class DCATUpdateQueryTest {
         writePostGISConfig();
         Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
-                    .withDatasetDirectory("test1").build();
-            buildAndRunQuery(dataset, Service.GEOSERVER);
+                    .withDatasetDirectory("test1").withServices(Service.GEOSERVER).build();
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
-                    .withDatasetDirectory("test2").withWorkspaceName("workspace1").build();
-            buildAndRunQuery(dataset, Service.GEOSERVER);
+                    .withDatasetDirectory("test2").withServices(Service.GEOSERVER).withWorkspaceName("workspace1")
+                    .build();
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
-                    .withDatasetDirectory("test3").build();
-            buildAndRunQuery(dataset, Service.GEOSERVER);
+                    .withDatasetDirectory("test3").withServices(Service.GEOSERVER).build();
+            buildAndRunQuery(dataset);
         });
     }
 
@@ -165,24 +168,28 @@ class DCATUpdateQueryTest {
         writePostGISConfig();
         Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
-                    .withDatasetDirectory("test1").withOntopMappings(List.of("ontop.obda")).build();
+                    .withDatasetDirectory("test1").withOntopMappings(List.of("ontop.obda"))
+                    .withServices(Service.ONTOP).build();
             writeOntopConfig(dataset.getOntopName());
-            buildAndRunQuery(dataset, Service.ONTOP);
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
-                    .withDatasetDirectory("test2").withOntopMappings(List.of("ontop.obda")).build();
-            buildAndRunQuery(dataset, Service.ONTOP);
+                    .withDatasetDirectory("test2").withOntopMappings(List.of("ontop.obda"))
+                    .withServices(Service.ONTOP).build();
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
-                    .withDatasetDirectory("test3").withOntopMappings(List.of("ontop.obda")).build();
+                    .withDatasetDirectory("test3").withOntopMappings(List.of("ontop.obda"))
+                    .withServices(Service.ONTOP).build();
             writeOntopConfig(dataset.getOntopName());
-            buildAndRunQuery(dataset, Service.ONTOP);
+            buildAndRunQuery(dataset);
         });
     }
 
     @SuppressWarnings("null")
     @Test
     void testAddDataSubset() throws JsonMappingException, JsonProcessingException {
+        writeBlazegraphConfig();
         ObjectMapper mapper = JsonHelper.getMapper();
         Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
@@ -192,7 +199,7 @@ class DCATUpdateQueryTest {
                             "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy nice TBox.\",\"subdirectory\":\"tbox\"}",
                             TBoxCSV.class)))
                     .build();
-            buildAndRunQuery(dataset, Service.NONE);
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2")
@@ -201,7 +208,7 @@ class DCATUpdateQueryTest {
                             "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy bad TBox.\",\"subdirectory\":\"tbox\"}",
                             TBoxCSV.class)))
                     .build();
-            buildAndRunQuery(dataset, Service.NONE);
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3")
@@ -210,7 +217,7 @@ class DCATUpdateQueryTest {
                             "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy awsome TBox.\",\"subdirectory\":\"tbox\"}",
                             TBoxCSV.class)))
                     .build();
-            buildAndRunQuery(dataset, Service.NONE);
+            buildAndRunQuery(dataset);
         });
     }
 
@@ -219,15 +226,15 @@ class DCATUpdateQueryTest {
         Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
                     .withDatasetDirectory("test1").build();
-            buildAndRunCatalogingQuery(dataset);
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
                     .withDatasetDirectory("test2").build();
-            buildAndRunCatalogingQuery(dataset);
+            buildAndRunQuery(dataset);
         }, () -> {
             Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
                     .withDatasetDirectory("test3").build();
-            buildAndRunCatalogingQuery(dataset);
+            buildAndRunQuery(dataset);
         });
     }
 
@@ -252,53 +259,11 @@ class DCATUpdateQueryTest {
                 new OntopEndpointConfig(name, StackClient.prependStackName(name).replace('_', '-'), "5678"));
     }
 
-    private static enum Service {
-        NONE,
-        BLAZEGRAPH,
-        POSTGIS,
-        GEOSERVER,
-        ONTOP
-    }
+    private void buildAndRunQuery(Dataset dataset) {
 
-    private void buildAndRunQuery(Dataset dataset, Service service) {
-        DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
-        dcatUpdateQuery.addDataset(dataset);
-
-        dataset.getExternalDatasetNames().forEach(dcatUpdateQuery::addExternalDataset);
-
-        dataset.getDataSubsets().forEach(dcatUpdateQuery::addDataSubset);
-
-        switch (service) {
-            case NONE:
-                break;
-            case BLAZEGRAPH:
-                dcatUpdateQuery.addBlazegraphServer(dataset);
-                break;
-            case POSTGIS:
-                dcatUpdateQuery.addPostGISServer(dataset);
-                break;
-            case GEOSERVER:
-                dcatUpdateQuery.addPostGISServer(dataset);
-                dcatUpdateQuery.addGeoServerServer(dataset);
-                break;
-            case ONTOP:
-                dcatUpdateQuery.addPostGISServer(dataset);
-                dcatUpdateQuery.addOntopServer(dataset);
-                break;
-        }
-
-        String query = dcatUpdateQuery.getQuery();
-        runAndCompareQuery(query);
-    }
-
-    private void buildAndRunCatalogingQuery(Dataset dataset) {
         DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
         String query = dcatUpdateQuery.getQueryStringForCataloging(dataset);
 
-        runAndCompareQuery(query);
-    }
-
-    private void runAndCompareQuery(String query) {
         remoteStoreClient.executeUpdate(query);
 
         Model results = remoteStoreClient.executeConstruct(BlazegraphContainer.CONSTRUCT_ALL_QUERY);
