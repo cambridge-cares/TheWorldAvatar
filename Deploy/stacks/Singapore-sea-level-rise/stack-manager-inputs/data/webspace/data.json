@@ -1057,6 +1057,39 @@
             ]
         },
         {
+            "name": "Roads",
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "id": "road",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Arouting_ways&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "road_layer",
+                    "name": "Road",
+                    "treeable": false,
+                    "source": "road",
+                    "type": "line",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#1A1A1A",
+                        "line-width": 0.5,
+                        "line-opacity": 0.5
+                    }
+                }
+            ]
+        }
+        ,
+        {
 
             "name": "Sea-level rise",
             "sources": [

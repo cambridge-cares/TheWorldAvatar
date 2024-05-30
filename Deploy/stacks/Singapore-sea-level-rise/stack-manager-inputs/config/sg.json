@@ -1,0 +1,21 @@
+{
+    "services": {
+        "includes": [
+            "visualisation",
+            "feature-info-agent",
+            "filter-agent",
+            "file-server",
+            "python-service",
+            "buildingidentificationagent",
+            "access-agent",
+            "carpark-agent"
+        ],
+        "excludes": [   
+        ]
+    },
+    "volumes": {
+        "vis-files": "webspace",
+        "fia-queries": "fia",
+        "filter-queries": "filters"
+    }
+}
