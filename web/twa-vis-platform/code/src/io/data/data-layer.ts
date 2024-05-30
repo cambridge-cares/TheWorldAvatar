@@ -68,6 +68,11 @@ export abstract class DataLayer {
         this.isGroupExpanded = isGroupExpanded;
         this.definition = definition as JsonObject;
         this.name = this.definition["name"] as string;
+
+        if (this.definition["order"]) {
+            this.order = this.definition["order"] as number;
+        }
+
         if (this.definition["grouping"]) {
             this.grouping = this.definition["grouping"] as string;
         }

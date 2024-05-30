@@ -18,6 +18,8 @@ export async function addAllLayers(map: Map, dataStore: DataStore, imagerySettin
     const currentStyle = getCurrentImageryOption(imagerySettings);
 
     const layerArray: DataLayer[] = dataStore?.getLayerList();
+    // Establish the layers based on the order property before adding to the map
+    layerArray.sort((current, next) => current.order - next.order);
     layerArray.forEach((layer) => addLayer(map, layer, currentStyle));
     console.log("Added all registered layers to the map object.");
 }
