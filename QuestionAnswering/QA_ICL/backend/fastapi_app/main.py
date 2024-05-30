@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from api import qa, html, chat
+from routers import qa, html, chat
 
 app = FastAPI()
 
