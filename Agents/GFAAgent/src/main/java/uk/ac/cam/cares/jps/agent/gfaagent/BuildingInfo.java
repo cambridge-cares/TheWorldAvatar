@@ -1,19 +1,19 @@
 package uk.ac.cam.cares.jps.agent.gfaagent;
 
+import java.util.List;
 public class BuildingInfo {
     
-    private String type;
+    
     private int floors;
     private String buildingIri;
-    private float usageshare;
+    private List<BuildingUsageInfo> usageInfo;
+    
 
     public BuildingInfo () {
         
     }
 
-    public String getType() {
-        return this.type;
-    }
+   
 
     public String getBuildingIri() {
         return this.buildingIri;
@@ -23,13 +23,10 @@ public class BuildingInfo {
         return this.floors;
     }
 
-    public float getUsageShare(){
-        return this.usageshare;
+    public List<BuildingUsageInfo> getBuildingUsageInfo(){
+        return this.usageInfo;
     }
-
-    public void setType(String type) {
-        this.type = type;
-    }
+    
 
     public void setFloors(int floors) {
         this.floors = floors;
@@ -39,7 +36,9 @@ public class BuildingInfo {
         this.buildingIri = buildingIri;
     }
 
-    public void setUsageShare(float usageshare) {
-        this.usageshare = usageshare;
+    public void setBuildingUisageInfo(List<BuildingUsageInfo> usageInfo) {
+        this.usageInfo = usageInfo;
     }
+
+    
 }

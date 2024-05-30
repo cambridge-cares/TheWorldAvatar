@@ -58,41 +58,68 @@ public class CostCalculation {
                 for (int i = 0; i < buildings.size(); i++) {
                     BuildingInfo building = buildings.get(i);
                     String buildingIri = building.getBuildingIri();
-                    String buildingUsage = building.getType();
                     int floors = building.getFloors();
-                    float usageshare = building.getUsageShare();
-                    String typeCost = "";
-                    String keyCost = "";
+                    //unit cost query
+                    List<BuildingUsageInfo> usageInfos = building.getBuildingUsageInfo();
+                    for (int u = 0; u < usageInfos.size(); u++) {
+                        String typeCost = "";
+                        String keyCost = "";
+                        BuildingUsageInfo usageInfo = usageInfos.get(u);
                     
-                    for (int j = 0; j < matchingType.size(); j++){
-                        if(buildingUsage.equals(matchingType.get(j).getenvType()) ){
-                            typeCost = matchingType.get(j).getType();
-                            keyCost = matchingType.get(j).getKey();
-                            break;
+                        for (int j = 0; j < matchingType.size(); j++){
+                            if(usageInfo.getUsage().equals(matchingType.get(j).getenvType()) ){
+                                typeCost = matchingType.get(j).getType();
+                                // keyCost = matchingType.get(j).getKey();
+                                break;
+                            }
                         }
-                    }
-
-                    if(!typeCost.isEmpty() && !keyCost.isEmpty()){
-                        String costQuery ="SELECT average FROM cost WHERE cost.\"Category\" = '" + typeCost + 
+                        if(!typeCost.isEmpty()){
+                            String costQuery ="SELECT average FROM cost WHERE cost.\"Category\" = '" + typeCost + 
                                             "' AND cost.\"Type\" = 'all'" ;
+                            Statement stmtQ = srcConn.createStatement();
+                            ResultSet costResult = stmtQ.executeQuery(costQuery);
+                            while (costResult.next()) {
+                                float cost = costResult.getFloat("average");
+                                usageInfos.get(u).setUnitCost(cost);
+                            }
+                        }
+                        
+                    }
+                    
 
-                        String gfaQuery = "SELECT realval AS gfa, cityobject_id\r\n" + //
+                    //GFA query
+                    String gfaQuery = "SELECT realval AS gfa, cityobject_id\r\n" + //
                                             "FROM citydb.cityobject_genericattrib\r\n" + //
                                             "WHERE attrname = 'GFA' AND cityobject_id = "+ //
                                             "(SELECT cityobject_id\r\n" + //
                                               "FROM citydb.cityobject_genericattrib WHERE strval = '" + buildingIri + "')";
+                    Statement stmtGFA = srcConn.createStatement();
+                    ResultSet gfaResult = stmtGFA.executeQuery(gfaQuery);
+                    float gfa = 0;
+                    int cityobject_id = 0;
+                    while (gfaResult.next()) {
+                        gfa = gfaResult.getFloat("gfa");
+                        cityobject_id = gfaResult.getInt("cityobject_id");
+                    }
 
-                        String costCal = "with cost_table as (" + costQuery + "), gfa_table as ( " + gfaQuery + ")\n" + //
-                                    "INSERT INTO citydb.cityobject_genericattrib (cityobject_id, attrname, realval)\n" +
-                                    "SELECT DISTINCT ON (cityobject_id, attrname) * FROM(\n" +
-                                    "SELECT gfa_table.cityobject_id,'cost', gfa_table.gfa * cost_table.cost\n" +
-                                    "FROM gfa_table, cost_table) AS cg(cityobject_id, attrname, realval) " +
-                                    "ON CONFLICT (attrname, cityobject_id) DO UPDATE SET realval= cityobject_genericattrib.realval;";
+                    //cost calculation
+                    if(cityobject_id!=0){
+                        float costAll = 0;
+                        for(int t = 0; t < usageInfos.size(); t++) {
+                            float cost = usageInfos.get(t).getUnitCost() * usageInfos.get(t).getUsageShare() * gfa;
+                            costAll = costAll + cost;
+                        }
+                            
+    
+                        String costCal = "INSERT INTO citydb.cityobject_genericattrib (cityobject_id, attrname, realval)\n" +
+                                        "VALUES (" + cityobject_id + ", 'cost', " + costAll +")\n" +
+                                        "ON CONFLICT (cityobject_id, attrname) DO UPDATE SET realval= " + costAll +";";
                         
                         Statement stmtupdate = srcConn.createStatement();
                         stmtupdate.executeUpdate(costCal);
                     }
-
+                    
+                    
                 }
             }
         }catch (SQLException e) {
@@ -133,18 +160,36 @@ public class CostCalculation {
 
             for (int i = 0; i < queryResultArray.length(); i++) {
                 BuildingInfo building = new BuildingInfo();
+                BuildingUsageInfo usageInfo = new BuildingUsageInfo();
+                List<BuildingUsageInfo> usageInfos = new ArrayList<>();
                 String[] buildingIri = queryResultArray.getJSONObject(i).getString("building").split("Building/");
-                building.setBuildingIri(buildingIri[1]);
                 String usage = queryResultArray.getJSONObject(i).getString("usage");
+                building.setFloors(queryResultArray.getJSONObject(i).getInt("floor"));
                 if (!usage.equals("null")){
                     String[] buildingType = usage.split("ontobuiltenv/");
-                    building.setType(buildingType[1]);
+                    usageInfo.setUsge(buildingType[1]);
+                    usageInfo.setUsageShare(queryResultArray.getJSONObject(i).getFloat("usageshare"));
                 }else {
-                    building.setType(usage);
-                }                                              
-                building.setFloors(queryResultArray.getJSONObject(i).getInt("floor"));
-                building.setUsageShare(queryResultArray.getJSONObject(i).getFloat("usageshare"));
-                buildings.add(building);
+                    usageInfo.setUsge(usage);
+                    usageInfo.setUsageShare(0);
+                }   
+
+                if (i > 0){
+                    if(!buildingIri[1].equals(buildings.get(buildings.size()-1).getBuildingIri())){
+                        building.setBuildingIri(buildingIri[1]);
+                        usageInfos.add(usageInfo);
+                        building.setBuildingUisageInfo(usageInfos);
+                        buildings.add(building);
+                    }else{
+                        buildings.get(buildings.size()-1).getBuildingUsageInfo().add(usageInfo);
+                    }
+                }else{
+                    building.setBuildingIri(buildingIri[1]);
+                    usageInfos.add(usageInfo);
+                    building.setBuildingUisageInfo(usageInfos);
+                    buildings.add(building);                   
+                }                                                                                   
+                
             }
             return buildings;
         }catch (Exception e) {
