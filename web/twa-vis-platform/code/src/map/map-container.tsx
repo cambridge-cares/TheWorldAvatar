@@ -11,13 +11,13 @@ import { MapSettings } from 'types/settings';
 import { ScenarioDefinition } from 'types/scenario';
 import { DataStore } from 'io/data/data-store';
 import { parseMapDataSettings } from 'utils/client-utils';
+import MapEventManager from 'map/event-listeners';
+import { addData } from 'map/map-helper';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
 import Ribbon from 'ui/interaction/ribbon/ribbon';
 import ScenarioModal from 'ui/interaction/modal/scenario';
 import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
 import { getScenario } from 'state/map-feature-slice';
-import { addMapboxEventListeners } from './event-listeners';
-import { addData } from './map-helper';
 
 // Type definition of incoming properties
 interface MapContainerProps {
@@ -32,6 +32,7 @@ interface MapContainerProps {
 export default function MapContainer(props: MapContainerProps) {
   const dispatch = useDispatch();
   const [map, setMap] = useState<Map>(null);
+  const [mapEventManager, setMapEventManager] = useState<MapEventManager>(null);
   const [showDialog, setShowDialog] = useState<boolean>(!!props.scenarios);
   const [mapData, setMapData] = useState<DataStore>(null);
   const mapSettings: MapSettings = JSON.parse(props.settings);
@@ -60,7 +61,7 @@ export default function MapContainer(props: MapContainerProps) {
       if (mapSettings?.["type"] === "mapbox") {
         // All event listeners and data must be added when the map is initialised or data changes
         addData(map, mapSettings, mapData);
-        addMapboxEventListeners(map, dispatch, mapData);
+        mapEventManager.addMapboxEventListeners(dispatch, mapData);
 
         // When the base imagery is updated, all data layers are removed (point annotations are not removed)
         // This event listener ensures that data layers are reloaded initially and after any style changes
@@ -88,6 +89,7 @@ export default function MapContainer(props: MapContainerProps) {
           settings={mapSettings}
           currentMap={map}
           setMap={setMap}
+          setMapEventManager={setMapEventManager}
         />
       }
 

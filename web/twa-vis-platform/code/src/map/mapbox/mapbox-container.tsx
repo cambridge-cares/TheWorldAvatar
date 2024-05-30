@@ -9,12 +9,14 @@ import React, { useRef, useEffect } from 'react';
 import { MapSettings } from 'types/settings';
 import { getCurrentImageryOption, getDefaultCameraPosition } from '../map-helper';
 import { formatAppUrl } from 'utils/client-utils';
+import MapEventManager from 'map/event-listeners';
 
 // Type definition of incoming properties
 interface MapProperties {
   settings: MapSettings;
   currentMap: Map;
   setMap: React.Dispatch<React.SetStateAction<Map>>;
+  setMapEventManager: React.Dispatch<React.SetStateAction<MapEventManager>>;
 }
 
 /**
@@ -81,7 +83,8 @@ export default function MapboxMapComponent(props: MapProperties) {
         );
       }
       // Map is only settable after the styles have loaded
-      props.setMap(map)
+      props.setMap(map);
+      props.setMapEventManager(new MapEventManager(map));
     });
   };
 
