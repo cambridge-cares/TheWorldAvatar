@@ -13,7 +13,6 @@ export const mapFeatureSlice = createSlice({
         iri: null,
         stack: null,
         scenario: null,
-        queryTrigger: false,
         features: [] as MapFeaturePayload[],
     },
     reducers: {
@@ -29,9 +28,6 @@ export const mapFeatureSlice = createSlice({
         setScenario: (state, action) => {
             state.scenario = action.payload;
         },
-        setQueryTrigger: (state, action) => {
-            state.queryTrigger = action.payload;
-        },
         addFeatures: (state, action: PayloadAction<MapFeaturePayload[]>) => {
             state.features = state.features.concat(action.payload);
         },
@@ -46,11 +42,10 @@ export const getProperties = (state: ReduxState) => state.mapFeature.properties;
 export const getIri = (state: ReduxState) => state.mapFeature.iri;
 export const getStack = (state: ReduxState) => state.mapFeature.stack;
 export const getScenario = (state: ReduxState) => state.mapFeature.scenario;
-export const getQueryTrigger = (state: ReduxState) => state.mapFeature.queryTrigger;
 export const getFeatures = (state: ReduxState) => state.mapFeature.features;
 
 // Export the actions
-export const { setProperties, setIri, setStack, setScenario, setQueryTrigger, addFeatures, clearFeatures } = mapFeatureSlice.actions;
+export const { setProperties, setIri, setStack, setScenario, addFeatures, clearFeatures } = mapFeatureSlice.actions;
 
 // Export the reducer
 export default mapFeatureSlice.reducer;

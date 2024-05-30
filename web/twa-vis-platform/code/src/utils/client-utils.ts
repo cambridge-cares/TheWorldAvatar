@@ -6,7 +6,7 @@ import { Dispatch } from 'redux';
 
 import { DataParser } from 'io/data/data-parser';
 import { DataStore } from 'io/data/data-store';
-import { MapFeaturePayload, clearFeatures, setIri, setProperties, setQueryTrigger, setStack } from 'state/map-feature-slice';
+import { MapFeaturePayload, clearFeatures, setIri, setProperties, setStack } from 'state/map-feature-slice';
 import { JsonObject } from "types/json";
 import { TimeSeriesGroup, TimeSeries } from 'types/timeseries';
 
@@ -119,7 +119,6 @@ export function setSelectedFeature(selectedFeature: MapFeaturePayload, dispatch:
         dispatch(setIri(iri));
         dispatch(setProperties(selectedProperties));
         dispatch(setStack(stack));
-        dispatch(setQueryTrigger(true));
         dispatch(clearFeatures());
     }
 }
