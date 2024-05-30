@@ -14,8 +14,9 @@ public class BlazegraphContainer extends GenericContainer<BlazegraphContainer> {
     public static final String BLAZEGRAPH_PASSWORD_FILE = "/run/secrets/blazegraph_password";
 
     public static final String BLAZEGRAPH_URL_PATH = "/blazegraph/namespace/kb/sparql";
-    public static final String SELECT_ALL_QUERY = "SELECT * WHERE {?s ?p ?o.}";
-    public static final String DELETE_ALL_QUERY = "DELETE {?s ?p ?o.} WHERE {?s ?p ?o.}";
+    public static final String SELECT_ALL_QUERY = "SELECT * WHERE {?s ?p ?o}";
+    public static final String CONSTRUCT_ALL_QUERY = "CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}";
+    public static final String DELETE_ALL_QUERY = "DELETE {?s ?p ?o} WHERE {?s ?p ?o}";
 
     private boolean authenticated;
 
