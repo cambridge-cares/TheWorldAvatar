@@ -1,0 +1,85 @@
+@prefix bd:     <http://www.bigdata.com/rdf#> .
+@prefix bds:    <http://www.bigdata.com/rdf/search#> .
+@prefix dc:     <http://purl.org/dc/elements/1.1/> .
+@prefix fn:     <http://www.w3.org/2005/xpath-functions#> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix hint:   <http://www.bigdata.com/queryHints#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sesame: <http://www.openrdf.org/schema/sesame#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+<https://theworldavatar.io/kg/a92b2077-8ab1-4ab9-a34b-83fb79ae3bc1>
+        rdf:type  <http://www.w3.org/ns/dcat#Dataset>;
+        <http://purl.org/dc/terms/description>
+                "A realy bad TBox.";
+        <http://purl.org/dc/terms/issued>
+                "2024-05-30T16:50:21.653Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/modified>
+                "2024-05-30T16:50:21.816Z"^^xsd:dateTime , "2024-05-30T16:50:21.653Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/title>
+                "Tbox1" .
+
+<https://theworldavatar.io/kg/08b4e560-9de1-4023-a17b-ba274df37572>
+        rdf:type  <http://www.w3.org/ns/dcat#Dataset>;
+        <http://purl.org/dc/terms/description>
+                "A realy awsome TBox.";
+        <http://purl.org/dc/terms/issued>
+                "2024-05-30T16:50:21.919Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/modified>
+                "2024-05-30T16:50:21.919Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/title>
+                "Tbox1" .
+
+<https://theworldavatar.io/kg/0c44816e-6af9-4d11-918d-91f491019313>
+        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox>;
+        <http://purl.org/dc/terms/description>
+                "Dataset for testing3";
+        <http://purl.org/dc/terms/issued>
+                "2024-05-30T16:50:21.919Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/modified>
+                "2024-05-30T16:50:21.919Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/title>
+                "testDataset3";
+        <http://www.w3.org/ns/dcat#dataset>
+                <https://theworldavatar.io/kg/08b4e560-9de1-4023-a17b-ba274df37572>;
+        <http://www.w3.org/ns/dcat#service>
+                <https://theworldavatar.io/kg/e87a0482-b124-437a-8454-a74001572533> .
+
+<https://theworldavatar.io/kg/23bf2d07-843d-4120-a2ea-924863841820>
+        rdf:type  <https://theworldavatar.io/kg/service#Blazegraph>;
+        <http://purl.org/dc/terms/identifier>
+                "https://theworldavatar.io/kg/23bf2d07-843d-4120-a2ea-924863841820";
+        <http://purl.org/dc/terms/title>
+                "testDataset";
+        <http://www.w3.org/ns/dcat#endpointURL>
+                <http://localhost:8080/blazegraph/namespace/testDataset/sparql/>;
+        <http://www.w3.org/ns/dcat#servesDataset>
+                <https://theworldavatar.io/kg/b1bf3df3-67fc-4026-8945-855d13bb1026> .
+
+<https://theworldavatar.io/kg/e87a0482-b124-437a-8454-a74001572533>
+        rdf:type  <https://theworldavatar.io/kg/service#Blazegraph>;
+        <http://purl.org/dc/terms/identifier>
+                "https://theworldavatar.io/kg/e87a0482-b124-437a-8454-a74001572533";
+        <http://purl.org/dc/terms/title>
+                "testDataset3";
+        <http://www.w3.org/ns/dcat#endpointURL>
+                <http://localhost:8080/blazegraph/namespace/testDataset3/sparql/>;
+        <http://www.w3.org/ns/dcat#servesDataset>
+                <https://theworldavatar.io/kg/0c44816e-6af9-4d11-918d-91f491019313> .
+
+<https://theworldavatar.io/kg/b1bf3df3-67fc-4026-8945-855d13bb1026>
+        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox>;
+        <http://purl.org/dc/terms/description>
+                "Dataset for testing2";
+        <http://purl.org/dc/terms/issued>
+                "2024-05-30T16:50:21.653Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/modified>
+                "2024-05-30T16:50:21.816Z"^^xsd:dateTime , "2024-05-30T16:50:21.653Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/title>
+                "testDataset";
+        <http://www.w3.org/ns/dcat#dataset>
+                <https://theworldavatar.io/kg/a92b2077-8ab1-4ab9-a34b-83fb79ae3bc1>;
+        <http://www.w3.org/ns/dcat#service>
+                <https://theworldavatar.io/kg/23bf2d07-843d-4120-a2ea-924863841820> .
