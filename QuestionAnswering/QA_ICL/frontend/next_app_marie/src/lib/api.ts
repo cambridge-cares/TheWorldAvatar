@@ -4,7 +4,7 @@ export interface QARequest {
   question: string
 }
 
-interface QAResponse {
+export interface QAResponse {
   metdata: object,
   data: DataItem[]
 }

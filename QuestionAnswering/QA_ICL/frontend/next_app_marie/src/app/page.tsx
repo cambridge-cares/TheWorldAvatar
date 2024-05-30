@@ -2,15 +2,19 @@
 
 import React, { MouseEvent, useState } from "react";
 import Image from "next/image";
-import { Accordion } from "@radix-ui/react-accordion";
-import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { DataItem } from "@/lib/model";
+import { queryQa } from "@/lib/api";
+import { DataTable } from "@/components/ui/data-table";
 
 export default function Home() {
   const [question, setQuestion] = useState("");
+  const [qaData, setQaData] = useState<DataItem[] | null>(null);
 
-  const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log(question);
+    const qaRes = await queryQa(question);
+    setQaData(qaRes.data);
   }
 
   return (
@@ -102,6 +106,9 @@ export default function Home() {
             <span className="sr-only">Search</span>
           </button>
         </form>
+      </div>
+      <div className="max-w-4xl">
+        {qaData && qaData.map((item, idx) => item.type === "table" ? <DataTable key={idx} headers={item.headers} data={item.data} /> : <></>)}
       </div>
       <div className="max-w-2xl w-full">
         <h2>Example Questions</h2>
