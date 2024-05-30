@@ -286,6 +286,7 @@ As with sources, definitions of layers vary depending on the chosen mapping prov
 - `name` (required): This is the user facing name of the layer (that will appear in the tree). Multiple layers can use the same name, they'll be combined in a single entry in the tree.
 - `source` (required): This is the ID of the source used to populate the layer.
 - `grouping` (optional): A grouping field for displaying only a subset of layers within this group.
+- `clickable` (optional): Enables the layer to be clickable. Set to true by default.
 - `hovering` (optional): Creates a highlight effect when hovering over the layer's features. This parameter is an array of two numbers indicating the opacity for the highlighted and non-highlighted states respectively.
 
 ```json

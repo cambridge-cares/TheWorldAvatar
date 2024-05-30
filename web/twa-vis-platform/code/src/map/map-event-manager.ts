@@ -41,8 +41,10 @@ export default class MapEventManager {
     this.addEventListener("click", (e) => {
       // Reset features upon clicked
       dispatch(clearFeatures());
-      // Store all features within the clicked radius with some additional metadata
-      const features: MapFeaturePayload[] = this.map.queryRenderedFeatures(e.point).map((feature) => ({
+      // Store all clickable features within the clicked radius with some additional metadata
+      const features: MapFeaturePayload[] = this.map.queryRenderedFeatures(e.point).filter((feature) =>
+        dataStore?.getLayerWithID(feature.layer.id).getInjectableProperty(Interactions.CLICKABLE).style[0]
+      ).map((feature) => ({
         ...feature.properties,
         name: feature.properties.name ?? (feature.id !== undefined ? "Feature #" + feature.id : "Feature"),
         stack: dataStore?.getStackEndpoint(feature.source), // Store the associated stack if available
