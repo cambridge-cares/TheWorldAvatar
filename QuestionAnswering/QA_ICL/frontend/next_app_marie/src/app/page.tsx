@@ -2,6 +2,8 @@
 
 import React, { MouseEvent, useState } from "react";
 import Image from "next/image";
+import { Accordion } from "@radix-ui/react-accordion";
+import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/accordion";
 
 export default function Home() {
   const [question, setQuestion] = useState("");
@@ -12,8 +14,8 @@ export default function Home() {
   }
 
   return (
-    <main className="p-4 min-h-screen grid grid-cols-1 gap-4 justify-items-center">
-      <div className="grid gap-4 lg:w-full lg:max-w-5xl lg:grid-cols-4">
+    <main className="p-4 min-h-screen flex flex-col justify-center items-center">
+      <div className="max-w-4xl mb-8 grid gap-4 lg:grid-cols-4">
         <div className="grid place-content-center">
           <Image
             src="/images/marie-thumbnail.jpg"
@@ -23,7 +25,7 @@ export default function Home() {
             priority
           />
         </div>
-        <div className="content-center space-y-4 lg:col-span-3">
+        <div className="text-sm content-center space-y-4 lg:col-span-3">
           <h1 className="text-3xl font-semibold text-blue-500">Marie</h1>
           <p>
             This website presents a proof-of-concept search engine system for
@@ -62,7 +64,7 @@ export default function Home() {
           </p>
         </div>
       </div>
-      <div className="flex justify-center items-center w-full lg:max-w-5xl">
+      <div className="max-w-4xl mb-12 flex justify-center items-center w-full lg:max-w-5xl">
         <form className="flex items-center w-full lg:w-3/4 l">
           <label htmlFor="search-input" className="sr-only">
             Search
@@ -101,7 +103,30 @@ export default function Home() {
           </button>
         </form>
       </div>
-      <div></div>
+      <div className="max-w-2xl w-full">
+        <h2>Example Questions</h2>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1">
+            <AccordionTrigger>Chemical Species Properties</AccordionTrigger>
+            <AccordionContent>
+              <ul>
+                <li>What is the charge of benzene?</li>
+                <li>Provide a roster of chemical entities used as pH regulating agent</li>
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="item-2">
+            <AccordionTrigger>Gas-Phase Reaction Mechanisms</AccordionTrigger>
+            <AccordionContent>
+              <ul>
+                <li>List all mechanisms that involve O, H, and AR</li>
+                <li>What are reactions in which O2 is a reactant and OH is a product</li>
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
     </main>
   );
 }
