@@ -10,26 +10,26 @@
 @prefix sesame: <http://www.openrdf.org/schema/sesame#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
-<https://theworldavatar.io/kg/aae01301-9a18-4835-8417-cde81671fe9e>
+<https://theworldavatar.io/kg/674f1848-32d4-42dc-914c-9ccb7919b7be>
         rdf:type  <https://theworldavatar.io/kg/service#Blazegraph>;
         <http://purl.org/dc/terms/identifier>
-                "https://theworldavatar.io/kg/aae01301-9a18-4835-8417-cde81671fe9e";
+                "https://theworldavatar.io/kg/674f1848-32d4-42dc-914c-9ccb7919b7be";
         <http://purl.org/dc/terms/title>
                 "testDataset";
         <http://www.w3.org/ns/dcat#endpointURL>
-                <http://localhost:8080/blazegraph/namespace/testDataset/sparql/>;
+                <http://blazegraph:8080/blazegraph/namespace/testDataset/sparql/>;
         <http://www.w3.org/ns/dcat#servesDataset>
-                <https://theworldavatar.io/kg/633ae7ca-d1d8-4299-8636-f5b4d90080f7> .
+                <https://theworldavatar.io/kg/bb89c291-fac1-4382-b9ae-0d1e890e718c> .
 
-<https://theworldavatar.io/kg/633ae7ca-d1d8-4299-8636-f5b4d90080f7>
+<https://theworldavatar.io/kg/bb89c291-fac1-4382-b9ae-0d1e890e718c>
         rdf:type  <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
                 "Dataset for testing";
         <http://purl.org/dc/terms/issued>
-                "2024-05-30T15:30:07.467Z"^^xsd:dateTime;
+                "2024-05-30T17:12:56.625Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/modified>
-                "2024-05-30T15:30:07.467Z"^^xsd:dateTime;
+                "2024-05-30T17:12:56.625Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/title>
                 "testDataset";
         <http://www.w3.org/ns/dcat#service>
-                <https://theworldavatar.io/kg/aae01301-9a18-4835-8417-cde81671fe9e> .
+                <https://theworldavatar.io/kg/674f1848-32d4-42dc-914c-9ccb7919b7be> .

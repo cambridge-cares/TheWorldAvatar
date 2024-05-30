@@ -241,7 +241,7 @@ class DCATUpdateQueryTest {
     private void writeBlazegraphConfig() {
         DockerClient dockerClient = DockerClient.getInstance();
         dockerClient.writeEndpointConfig(
-                new BlazegraphEndpointConfig("blazegraph", blazegraph.getHost(),
+                new BlazegraphEndpointConfig("blazegraph", "blazegraph",
                         "8080",
                         BlazegraphContainer.USERNAME, BlazegraphContainer.PASSWORD));
     }
