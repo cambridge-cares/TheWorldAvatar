@@ -1,16 +1,16 @@
 import { Icon, Tooltip } from '@mui/material';
 import styles from './floating-panel.module.css';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Map } from 'mapbox-gl';
 
 import { getIndex, setIndex } from 'state/floating-panel-slice';
-import { getQueryTrigger, getIri, getStack, getScenario, setQueryTrigger, getProperties, getFeatures, MapFeaturePayload } from 'state/map-feature-slice';
-import { useGetMetadataQuery } from 'utils/server-utils';
+import { getIri, getStack, getScenario, getProperties, getFeatures, MapFeaturePayload } from 'state/map-feature-slice';
 import { DataStore } from 'io/data/data-store';
 import { MapLayerGroup } from 'types/map-layer';
 import { IconSettings, LegendSettings } from 'types/settings';
+import { genFIAEndpoint, useFeatureInfoAgentService } from 'utils/data-services';
 import LayerTree from './layer/layer-tree';
 import LegendTree from './legend/legend-tree';
 import InfoTree from './info/info-tree';
@@ -24,13 +24,6 @@ interface FloatingPanelContainerProps {
   hideInfo?: boolean;
 }
 
-function genQueryEndpoint(iri: string, stack: string, scenario: string): string {
-  if (scenario) {
-    return `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenario}?iri=${encodeURIComponent(iri)}`;
-  }
-  return `${stack}/feature-info-agent/get?iri=${encodeURIComponent(iri)}`;
-}
-
 /**
  * Floating panel that contains the layer tree and legend components.
  */
@@ -38,7 +31,6 @@ export default function FloatingPanelContainer(
   props: Readonly<FloatingPanelContainerProps>
 ) {
   const [isPanelVisible, setIsPanelVisible] = useState(true);
-  const [queriedData, setQueriedData] = useState(null);
   const [activeInfoTab, setActiveInfoTab] = React.useState(0);
   const [mapLayerGroups, setMapLayerGroups] = useState<MapLayerGroup[]>([]);
 
@@ -51,38 +43,15 @@ export default function FloatingPanelContainer(
   const selectedProperties = useSelector(getProperties);
   const selectedStack = useSelector(getStack);
   const selectedScenario = useSelector(getScenario);
-  const trigger = useSelector(getQueryTrigger);
   const availableFeatures: MapFeaturePayload[] = useSelector(getFeatures);
 
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
-
   // Execute API call
-  const { data, isFetching } = useGetMetadataQuery(genQueryEndpoint(selectedIri, selectedStack, selectedScenario), { skip: !trigger });
-
-  // Effect to display additional feature information retrieved from an agent only once it has been loaded
-  useEffect(() => {
-    if (isFetching) {
-      // WIP: Add required functionality while data is still being fetched
-    } else {
-      // If there is any data retrieved, set that first
-      if (data && Object.keys(data).length !== 0) {
-        setQueriedData(data);
-        dispatch(setQueryTrigger(false));
-      } else if (selectedProperties) {
-      // Else default to built in data that excludes IRI
-        const builtInData = {
-          meta: {
-            Properties: Object.fromEntries(
-              Object.entries(selectedProperties)
-                .filter(([key]) => key !== 'iri')
-            )
-          }
-        }
-        setQueriedData(builtInData);
-      }
-    }
-  }, [isFetching]);
+  const { queriedData, isFetching } = useFeatureInfoAgentService(
+    genFIAEndpoint(selectedIri, selectedStack, selectedScenario),
+    selectedProperties
+  );
 
   const clickAction = (index: number) => {
     dispatch(
