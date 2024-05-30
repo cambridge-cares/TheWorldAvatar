@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  dispersion-interactor:
-    image: ghcr.io/cambridge-cares/dispersion-interactor:1.8
+  ship-data-agent:
+    image: ghcr.io/cambridge-cares/ship-data-agent:1.0
     deploy:
       mode: replicated
       replicas: 1
@@ -11,9 +11,8 @@ services:
     configs:
       - postgis
       - blazegraph
-      - geoserver
     secrets:
       - postgis_password
-      - geoserver_password
     networks:
       - stack
+

@@ -655,9 +655,8 @@ public class QueryClient {
                         double concentration = result.getDouble("val");
                         concentrations.add(concentration);
                     } else {
-                        String errmsg = "Could not obtain raster value";
-                        LOGGER.error(errmsg);
-                        throw new RuntimeException(errmsg);
+                        LOGGER.warn("Mismatch between uploaded raster data and time series records");
+                        concentrations.add(null);
                     }
                 } catch (SQLException e) {
                     String errmsg = "Possible error at reading sql query result";
