@@ -23,8 +23,8 @@ interface SelectGroupMappings {
 */
 export default function GroupDropdownField(props: Readonly<GroupDropdownFieldProps>) {
   return (
-    <select className={styles["simple-selector"]} onChange={props.handleChange}>
-      <option value="" disabled selected>{props.placeholderText}</option>
+    <select className={styles["simple-selector"]} defaultValue={"DEFAULT"} onChange={props.handleChange}>
+      <option value="DEFAULT" disabled>{props.placeholderText}</option>
       {Object.entries(genMappings(props.groups, props.options)).map(([group, options]) => (
         <optgroup key={group} label={group}>
           {options.map((option, index) => (
