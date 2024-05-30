@@ -64,7 +64,7 @@
 }
 
 /* Header for Tree Entry Styling */
-.treeEntryHeader {
+.treeEntrySubHeader {
   display: flex;
   flex-direction: row;
   border-style: solid;
@@ -74,11 +74,11 @@
   transition: background-color 0.3s ease;
 }
 
-.treeEntryHeader:hover {
+.treeEntrySubHeader:hover {
   background-color: var(--background-secondary);
 }
 
-.treeEntryHeaderName {
+.treeEntrySubHeaderName {
   color: var(--text-color-primary);
   font-size: var(--font-size-secondary-text);
 }

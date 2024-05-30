@@ -1,12 +1,9 @@
-
-
 import styles from './info-tree.module.css';
-import iconStyles from 'ui/graphic/icon/icon-button.module.css';
+import parentStyles from '../floating-panel.module.css';
 
 import React, { useState } from 'react';
 
 import { Attribute, AttributeGroup } from 'types/attribute';
-import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import HeaderField from 'ui/text/header';
 
 // type definition for incoming properties
@@ -67,68 +64,44 @@ function InfoTreeSubNode(props: Readonly<InfoTreeSubNodeProps>) {
     setIsCollapsed(!isCollapsed);
   };
   const collapsedIcon: string = isCollapsed ? "keyboard_arrow_down" : "keyboard_arrow_up";
+  // Header element differs for root element in styling
+  const headerElement = depth === 0 ?
+    <HeaderField
+      name={group.name}
+      icon={collapsedIcon}
+      containerStyle={parentStyles.treeHeader}
+      headerNameStyle={parentStyles.treeHeaderName}
+      spacing={spacing}
+      toggleExpansion={toggleExpansion}
+    /> : <HeaderField
+      name={group.name}
+      icon={collapsedIcon}
+      containerStyle={styles.treeEntrySubHeader}
+      headerNameStyle={styles.treeEntrySubHeaderName}
+      spacing={spacing}
+      toggleExpansion={toggleExpansion}
+    />;
 
-  // For root element
-  if (depth === 0) {
-    return (
-      <div className={styles.treeEntry}>
-        <HeaderField
-          name={group.name}
-          spacing={spacing}
-          isCollapsed={isCollapsed}
-          toggleExpansion={toggleExpansion}
+  return (
+    <div className={styles.treeEntry}>
+      {headerElement}
+
+      {/* Elements */}
+      {!isCollapsed && (<>
+        <InfoTreeAttributeNode
+          attributes={group.attributes}
+          depth={depth + 1}
         />
-
-        {/* Elements */}
-        {!isCollapsed && (<>
-          <InfoTreeAttributeNode
-            attributes={group.attributes}
+        {group.subGroups.map((subGroup) => {
+          return (<InfoTreeSubNode
+            group={subGroup}
             depth={depth + 1}
-          />
-          {group.subGroups.map((subGroup) => {
-            return (<InfoTreeSubNode
-              group={subGroup}
-              depth={depth + 1}
-              key={subGroup.name + "_" + (depth + 1)}
-            />)
-          })} </>
-        )}
-      </div>
-    );
-  } else {
-    // For non-root elements
-    return (
-      <div className={styles.treeEntry}>
-        <div className={styles.treeEntryHeader} style={{ paddingLeft: spacing }} onClick={toggleExpansion}>
-          {/* Header Name */}
-          <div className={styles.treeEntryHeaderName}>
-            {group.name}
-          </div>
-          {/* Expand/collapse icon */}
-          <MaterialIconButton
-            iconName={collapsedIcon}
-            className={iconStyles["push-right"]}
-          />
-        </div>
-        {/* Elements */}
-        {!isCollapsed && (<>
-          <InfoTreeAttributeNode
-            attributes={group.attributes}
-            depth={depth + 1}
-          />
-          {group.subGroups.map((subGroup) => {
-            return (
-              <InfoTreeSubNode
-                group={subGroup}
-                depth={depth + 1}
-                key={subGroup.name + "_" + (depth + 1)}
-              />)
-          })}
-        </>
-        )}
-      </div>
-    );
-  }
+            key={subGroup.name + "_" + (depth + 1)}
+          />)
+        })} </>
+      )}
+    </div>
+  );
 }
 
 /**
