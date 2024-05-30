@@ -10,6 +10,7 @@ from rdkit.Chem.MolStandardize import rdMolStandardize
 
 # -------------------------------------- COMPONENT DIFFERENTIATOR ----------------------------------------------
 
+
 def component_handler(assemblyModel, componentTypeNumber, precursors, linkages):
     components = {}
     result = component_am_mol_matcher(assemblyModel, componentTypeNumber, precursors=precursors, linkages=linkages)

@@ -120,11 +120,16 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, a
                     if precursor_2 and precursor_2 in precursor_dict:
                         precursors.append(precursor_dict[precursor_2])
                         
-               
                 assembly_model_dict = assembly_db[assembly_model_string]
                 componentTypeNumber = create_componentTypeNumber_dict(assembly_model_string)
             
-                input_dir = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\input_dir\\'
+                input_dir = r'D:\TheWorldAvatar\Agents\COFmerDrawingAgent\Data\input_dir'
+                
+                # Ensure input_dir exists
+                if not os.path.exists(input_dir):
+                    print(f"Error: Input directory {input_dir} does not exist.")
+                    continue
+                
                 run_cofmer_pipeline(assembly_model_dict, componentTypeNumber, precursors, linkage, input_dir, full_output_path)
 
             except Exception as e:
@@ -132,17 +137,13 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, a
                 print(traceback.format_exc())  # This prints the traceback
                 continue
 
-
-# Assuming the CSV file is located at 'data.csv'
-linkage_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\LinkagesTEST.csv'
-precursor_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\PrecursorsTEST.csv'
-COFs_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\COFs_CLEAN.csv'
-output_dir = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\'
-#print(initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir))
+linkage_path = r'D:\TheWorldAvatar\Agents\COFmerDrawingAgent\Data\data_csv\LinkagesTEST.csv'
+precursor_path = r'D:\TheWorldAvatar\Agents\COFmerDrawingAgent\Data\data_csv\PrecursorsTEST.csv'
+COFs_path = r'D:\TheWorldAvatar\Agents\COFmerDrawingAgent\Data\data_csv\error_output_updated.csv'
+output_dir = r'D:\TheWorldAvatar\Agents\COFmerDrawingAgent\Data\output_new_failed'
 
 def main():
-    # your code here
-    initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir,assembly_db)
+    initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, assembly_db)
 
 if __name__ == '__main__':
     main()

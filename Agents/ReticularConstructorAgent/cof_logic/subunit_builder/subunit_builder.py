@@ -715,8 +715,8 @@ class SubunitBuilder:
 if __name__ == "__main__":
     builder = SubunitBuilder()
 
-    core_json_path = r'C:\TheWorldAvatar\Agents\ReticularConstructorAgent\cof_logic\subunit_builder\output\core.json'
-    lfr_folder_path = r'C:\TheWorldAvatar\Agents\ReticularConstructorAgent\cof_logic\subunit_builder\output'
+    core_json_path = r'D:\TheWorldAvatar\Agents\ReticularConstructorAgent\cof_logic\subunit_builder\output\core.json'
+    lfr_folder_path = r'D:\TheWorldAvatar\Agents\RetiDularConstructorAgent\cof_logic\subunit_builder\output'
     bs_type = "MDNH2"
 
     # Find the midpoint and shift atoms to the origin in core.json

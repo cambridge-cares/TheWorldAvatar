@@ -109,8 +109,8 @@ class SubunitConverter:
             logging.info(f"Data for copy {i+1} has been written to {output_path}")
 
 def main():
-    directory = r'C:\TheWorldAvatar\Agents\ReticularConstructorAgent\cof_logic\subunit_builder'
-    output_directory = r'C:\TheWorldAvatar\Agents\ReticularConstructorAgent\cof_logic\subunit_builder\output'
+    directory = r'D:\TheWorldAvatar\Agents\ReticularConstructorAgent\cof_logic\subunit_builder'
+    output_directory = r'D:\TheWorldAvatar\Agents\ReticularConstructorAgent\cof_logic\subunit_builder\output'
     bs_denticity = "Monodentate"
     bs_type = "NH2"
     
