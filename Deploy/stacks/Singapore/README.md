@@ -58,7 +58,7 @@ To generate dispersion data, make sure the weather agent and ship input agent ar
 
 ### Carpark
 Add postgis password to db.password in [client.properties].
-Run the following requests:
+Run the following requests from the command line or use the convenience file [carpark.http]:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"interval\":\"180\",\"timeunit\":\"seconds\"}" http://localhost:3838/carpark-agent/retrieve
 ```
@@ -89,7 +89,7 @@ If they are not named `aqmesh`, [client.properties (aqmesh)] and [aqmesh-input-a
 
 Modify `db.password` in [client.properties].
 
-Modify `aqmesh.username` and `aqmesh.password` in [api.properties].
+Modify `aqmesh.username` and `aqmesh.password` in [api.properties], credentials can be obtained from https://www.dropbox.com/scl/fo/24gyly40ezoyx04i6xomi/AHLZ6DHl_IVFNXy6Ym2-oFc?rlkey=xpvzka6b5smg53cppe3f98zt8&st=mleraqpx&dl=0
 
 Run the following request to start scheduled data retrieval, the request is also available at [aqmesh.http] to execute,
 ```
@@ -106,12 +106,42 @@ Run the following request to instantiate geolocation, the request is also availa
 curl -X POST --header "Content-Type: application/json" -d "{\"iri\":\"http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl/AQMesh123\",\"name\":\"AQMesh\"}" http://localhost:3838/aqmesh-input-agent/instantiateGeoLocation
 ```
 
+### CEA data
+CEA data is stored in the `cea` namespace in Blazegraph and the `CEAAgent` database in postgres for timeseries data.
+
+The CEA agent has not been run directly on this stack. Refer to [CEAAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/CEAAgent) for more details, it requires [AccessAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent) and [OpenMeteoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OpenMeteoAgent). Namespace for OpenMeteoAgent requires Blazegraph's geospatial capabilities to be enabled.
+
+In the visualisation, there is a layer that shows buildings with CEA data, a table containing the IRIs of buildings with CEA data is required for the layer. This table is named `cea`, located in the default `postgres` database, under the `cea` schema.
+
+The contents of this table is generated via the following query on the `cea` namespace:
+```
+SELECT ?s WHERE {?s a <http://www.opengis.net/citygml/building/2.0/Building> .}
+```
+
+### CARES weather station
+Create `caresweather` namespace in Blazegraph. 
+
+Modify [api.properties (weather)] with credentials from https://www.dropbox.com/scl/fo/24gyly40ezoyx04i6xomi/AHLZ6DHl_IVFNXy6Ym2-oFc?rlkey=xpvzka6b5smg53cppe3f98zt8&st=mleraqpx&dl=0
+
+Update db.password in [client.properties (weather)].
+
+Time series data for CARES weather station is stored in the main database (postgres) due to it sharing the same rdf type with virtual weather station and virtual sensors.
+
+Execute [cares_weather.http] to instantiate and start periodic updates.
+
 ### GeoServer layer for buildings
 Currently the creation of the layer is not automated through the data uploader because it requires data from different sources (city furniture, heat emissions from companies etc.).
 
-Execute [geoserver_layer.sql] to create the materialised view manually. Edit the SQL view of building_usage layer to
+Execute [geoserver_layer.sql], this will create two materialised views. 
+
+Edit the SQL view of twa:building_usage layer to
 ```
 select * from usage.buildingusage_geoserver_sg
+```
+
+Create a new layer under the twa workspace with the name `cea`, i.e. `twa:cea` with the following view:
+```
+select * from usage.cea
 ```
 
 ## Generating colourbars for visualisation
@@ -152,3 +182,7 @@ The script generates the corresponding colours for each value range (population_
 [client.properties]: ./aqmesh_config/client.properties
 [api.properties]: ./aqmesh_config/api.properties
 [gfa.obda]: ./gfa.obda
+[carpark.http]: ./HTTP_requests/carpark.http
+[api.properties (weather)]: ./cares_weather_config/api.properties
+[client.properties (weather)]: ./cares_weather_config/client.properties
+[cares_weather.http]: ./HTTP_requests/cares_weather.http
