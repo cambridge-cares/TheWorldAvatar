@@ -4,7 +4,7 @@
 ################################################
 
 
-from agent.utils.baselib_gateway import jpsBaseLibGW
+from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
 
 #TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%sZ'
 FORMAT = '%Y-%m-%dT%H:%M:%SZ'
