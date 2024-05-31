@@ -84,6 +84,14 @@ To accommodate developers deploying applications to various subdomains and envir
 
 It's important to note that this URL configuration impacts both routes and images referenced with relative paths within your Next.js application.
 
+### 1.7 Dependent services
+
+This project have the following dependent services:
+
+1. [Feature Info Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent)
+
+The Feature Info Agent serves to retrieve data from the Knowledge Graph and pass it back to the TWA ViP for further interactions when called. The platform can currently visualise the metadata and time series returned from the agent, whether in full or by parts. To make it queriable in parts, please ensure an IRI is passed for the subproperty so for eg `"Subproperty" : {"iri" : "PLACEHOLDER FOR IRI"}`.
+
 ## 2. Style Guide
 
 This guide outlines a set of standards and best practices to ensure consistency and maintainability in our codebase. While the codebase is still being developed and may not fully comply with the following standards, please follow the conventions stated here.
@@ -115,7 +123,7 @@ interface ButtonProps {
 
 function Button(props: ButtonProps) {
   return <button onClick={onClick}>{text}</button>;
-};
+}
 
 // Avoid
 type ButtonProps = {
