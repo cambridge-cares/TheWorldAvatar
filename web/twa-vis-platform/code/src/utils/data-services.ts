@@ -13,6 +13,8 @@ const displayOrderKey: string = "display_order";
 const collapseKey: string = "collapse";
 const valueKey: string = "value";
 const unitKey: string = "unit";
+const iriKey: string = "iri";
+const stackKey: string = "stack";
 
 /**
  * A utility function for generating the Feature Info Agent endpoint for a specific feature.
@@ -145,10 +147,15 @@ function recurseParseAttributeGroup(data: JsonObject, currentNode: string): Attr
 
   // When subqueries should be executed to retrieve more information, they will only have an iri that will be stored
   let subQueryIri: string;
-  if (Object.hasOwn(currentDataObject, "iri")) {
+  let subQueryStack: string;
+  if (Object.hasOwn(currentDataObject, iriKey)) {
     // The header should always be collapsed
     isCollapsed = true;
-    subQueryIri = currentDataObject["iri"] as string;
+    subQueryIri = currentDataObject[iriKey] as string;
+    // Subqueries can still be executed within the same stack endpoint but will be overwritten if another stack is included
+    if (Object.hasOwn(currentDataObject, stackKey)) {
+      subQueryStack = currentDataObject[stackKey] as string;
+    }
   }
 
   // Display order will follow the indicated order if a display_order property is passed. Else, it will follow the random order returned by the agent.
@@ -179,6 +186,7 @@ function recurseParseAttributeGroup(data: JsonObject, currentNode: string): Attr
     displayOrder: displayOrder,
     isCollapsed: isCollapsed,
     subQueryIri: subQueryIri,
+    subQueryStack: subQueryStack,
   };
   return currentGroup;
 }
@@ -265,5 +273,5 @@ function parseTimeSeries(data: JsonObject): TimeSeriesGroup {
  * @param {string} updateIri The IRI of interest.
  */
 function containsUpdateIri(group: AttributeGroup, updateIri: string): boolean {
-  return group.attributes.length === 1 && group.attributes[0].name === "iri" && group.attributes[0].value === updateIri;
+  return group.attributes.some(attr => attr.name === "iri" && attr.value === updateIri);
 }

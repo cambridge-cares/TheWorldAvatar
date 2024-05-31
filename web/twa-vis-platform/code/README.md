@@ -90,7 +90,7 @@ This project have the following dependent services:
 
 1. [Feature Info Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent)
 
-The Feature Info Agent serves to retrieve data from the Knowledge Graph and pass it back to the TWA ViP for further interactions when called. The platform can currently visualise the metadata and time series returned from the agent, whether in full or by parts. To make it queriable in parts, please ensure an IRI is passed for the subproperty so for eg `"Subproperty" : {"iri" : "PLACEHOLDER FOR IRI"}`.
+The Feature Info Agent serves to retrieve data from the Knowledge Graph and pass it back to the TWA ViP for further interactions when called. The platform can currently visualise the metadata and time series returned from the agent, whether in full or by parts. To make it queriable in parts, please ensure an IRI is passed for the subproperty so for eg `"Subproperty" : {"iri" : "PLACEHOLDER FOR IRI"}`. An optional `stack` parameter can also be passed if the subquery should be executed on another stack.
 
 ## 2. Style Guide
 

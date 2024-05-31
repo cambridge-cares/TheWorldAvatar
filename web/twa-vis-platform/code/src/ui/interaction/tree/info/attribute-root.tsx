@@ -7,7 +7,7 @@ import { Attribute, AttributeGroup } from 'types/attribute';
 import HeaderField from 'ui/text/header';
 import { useDispatch } from 'react-redux';
 import { setHasExistingData } from 'state/floating-panel-slice';
-import { setIri } from 'state/map-feature-slice';
+import { setIri, setStack } from 'state/map-feature-slice';
 
 // type definition for incoming properties
 interface AttributeRootProps {
@@ -71,6 +71,10 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
     if (group.subQueryIri) {
       dispatch(setHasExistingData(true));
       dispatch(setIri(group.subQueryIri));
+      // Only update the selected stack if it is required for the subquery
+      if (group.subQueryStack) {
+        dispatch(setStack(group.subQueryStack));
+      }
     }
     else {
       setIsCollapsed(!isCollapsed);
