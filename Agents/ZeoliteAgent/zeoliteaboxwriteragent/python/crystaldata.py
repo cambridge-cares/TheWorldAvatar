@@ -500,8 +500,10 @@ class CrystalData:
             self.uuidDB = None
 
         if cif_standard is None:
+            cifStandardFile = os.path.join("ontozeolite", "crystal",
+                                           "data", "CIF_standard_2.4.5.txt")
             #self.cifStandard = None
-            self.cifStandard = self.readStandardFile(os.path.join("CIF_standard_2.4.5.txt"))
+            self.cifStandard = self.readStandardFile(cifStandardFile)
             #self.cifStandard = self.readStandardFile("CIF_standard_2.4.5.txt")
             self.cifStandard += ["_symmetry_Int_Tables_number"]
         else:
@@ -510,7 +512,7 @@ class CrystalData:
             elif isinstance(cif_standard, str):
                 logging.warning(" Got CIF_standard as string:", cif_standard,
                                 ", loading it. Expect a list of keywords")
-                self.cifStandard = self.readStandardFile(os.path.join("CIF_standard_2.4.5.txt"))
+                self.cifStandard = self.readStandardFile(cif_standard)
             else:
                 logging.error(" Invalid CIF_standard: '%s'" ", expect" +
                               " a list of keywords", str(cif_standard))

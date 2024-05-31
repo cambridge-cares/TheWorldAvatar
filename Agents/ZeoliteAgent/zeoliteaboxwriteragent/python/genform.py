@@ -159,7 +159,7 @@ class GenFormula:
 
     def __init__(self, inArr=[]):
         if len(inArr) == 0:
-            print("No data provided for GenericFormula")
+            # print("No data provided for GenericFormula")
             for s in self.__slots__:
                 setattr(self, s, "")
             return

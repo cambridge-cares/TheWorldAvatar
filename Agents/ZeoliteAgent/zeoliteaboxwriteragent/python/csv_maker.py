@@ -1052,7 +1052,8 @@ class CsvMaker:
             tmp = self.arrSpectrum(self.zeoOntoPrefix + uuid_cif,
                                    self.crystOntoPrefix + "hasXRDSpectrum", z)
             if tmp is None or tmp == []:
-                logging.warning(" Missing Spectrum information! for %s", z)
+                # logging.warning(" Missing Spectrum information! for %s", z)
+                pass
             else:
                 arr += tmp
                 pass
@@ -1121,12 +1122,13 @@ class CsvMaker:
 
                 # Description of the recipe for the given zeolite (if exists):
                 if "recipe" in zeolite.data:
-                    #cif_file = os.path.join("ontozeolite", "zeolite", "data", "recipes", "p403.txt")
+                    # Example of the recipe file:
+                    # cif_file = os.path.join("ontozeolite", "zeolite", "data", "recipes", "p403.txt")
                     cif_file = zeolite.data["recipe"]
                     arr += zeoData.get_csv_arr_recipe(cif_file, zeolite_iri,
                                                       "", new_uuid=zeolite.get_uuid())
                 else:
-                    logging.warning(" For zeolite no recipe data")
+                    # logging.warning(" For zeolite no recipe data")
                     pass
 
             # Saving the framework in a file:

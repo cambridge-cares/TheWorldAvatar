@@ -1124,7 +1124,8 @@ if __name__ == "__main__":
             cif_iri, cif_uuid, _, __ = CIF_IRI_DATA.get_entry_iri(file)
             #cif_uuid = tools.new_uuid()
             if cif_iri is None and cif_uuid is None:
-                #CIF_IRI_DATA.set_entry(file, cif_iri, cif_uuid, "", "")
+                xrd_path = get_xrd_file(file, XRD_FOLDER)
+                CIF_IRI_DATA.set_entry(file, cif_iri, cif_uuid, xrd_path, "")
                 cif_iri, cif_uuid, _, __ = CIF_IRI_DATA.get_entry_iri(file)
 
             cryst = CrystalInfo(uuidDB=uuidDB, abox_prefix=args.abox_prefix)
