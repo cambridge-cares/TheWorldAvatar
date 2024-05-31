@@ -165,12 +165,12 @@ Schema definition for relation type data:
 
 ### Data schema of data request generation examples
 
-Schema definition of SPARQL data requests:
+Schema definition of SPARQL data request forms:
 
 ```{json}
 {
-  "$id": "/schemas/sparql_data_request",
-  "title": "SparqlDataRequest",
+  "$id": "/schemas/sparql_data_request_form",
+  "title": "SparqlDataRequestForm",
   "type": "object",
   "properties": {
     "type": {
@@ -180,15 +180,68 @@ Schema definition of SPARQL data requests:
       "description": "Namespace that uniquely identifies a SPARQL endpoint",
       "type": "string"
     },
-    "bindings": {
-      "type": "array",
-      "items": {
+    "query": {
+      "description": "SPARQL query",
+      "type": "string"
+    },
+    "res_map": {
+      "description": "Configuration that determines the transformation of a SPARQL SELECT response to a document collection",
+      "type": "object",
+      "additionalProperties": {
         "type": "object",
         "properties": {
-          "var": {
-            "description": "Variable name",
-            "type": "string"
+          "pkey": {
+            "description": "If true, group bindings with the same value of this key; if false, aggregate the values into a list",
+            "type": "boolean"
           },
+          "cls": {
+            "description": "Class tag",
+            "type": "string"
+          } 
+        }
+      }
+    }
+  },
+  "required": [
+    "type",
+    "namespace",
+    "query"
+  ]
+}
+```
+
+Schema definition for function call data request forms:
+
+```{json}
+{
+  "$id": "/schemas/func_data_request_form",
+  "title": "FuncDataRequestForm",
+  "type": "object",
+  "properties": {
+    "type": {
+      "const": "func"
+    },
+    "name": {
+      "description": "Function name",
+      "type": "string"
+    },
+  },
+  "required": ["type", "name"]
+}
+```
+
+Schema definition of data requests:
+
+```{json}
+{
+  "$id": "/schemas/data_request",
+  "title": "DataRequest",
+  "properties": {
+    "entity_bindings": {
+      "type": "object",
+      "additionalProperties": { 
+        "type": "object",
+        "properties": {
           "cls": {
             "description": "Class tag",
             "type": "string"
@@ -212,70 +265,18 @@ Schema definition of SPARQL data requests:
         }
       }
     },
-    "query": {
-      "description": "SPARQL query",
-      "type": "string"
+    "const_bindings": {
+      "type": "object",
+      "additionalProperties": true
     },
-    "nodes_to_augment": {
-      "description": "Additional class-specific data will be retrieved for these nodes after the execution of the main SPARQL query",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "var": {
-            "description": "Variable name",
-            "type": "string"
-          },
-          "cls": {
-            "description": "Class tag",
-            "type": "string"
-          }
-        }
-      }
+    "req_form": {
+      "oneOf": [
+        { "$ref": "/schemas/sparql_data_request" },
+        { "$ref": "/schemas/func_data_request" }
+      ]
     }
   },
-  "required": [
-    "type",
-    "namespace",
-    "query"
-  ]
-}
-```
-
-Schema definition for function call data requests:
-
-```{json}
-{
-  "$id": "/schemas/func_data_request",
-  "title": "FuncDataRequest",
-  "type": "object",
-  "properties": {
-    "type": {
-      "const": "func"
-    },
-    "name": {
-      "description": "Function name",
-      "type": "string"
-    },
-    "args": {
-      "description": "Arguments to pass into the function call",
-      "type": "object"
-    }
-  },
-  "required": ["type", "name"]
-}
-```
-
-Schema definition of data requests:
-
-```{json}
-{
-  "$id": "/schemas/data_request",
-  "title": "DataRequest",
-  "oneOf": [
-    { "$ref": "/schemas/sparql_data_request" },
-    { "$ref": "/schemas/func_data_request" }
-  ]
+  "required": ["req_form"]
 }
 ```
 
