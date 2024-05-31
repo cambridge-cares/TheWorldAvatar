@@ -4,6 +4,7 @@ export type AttributeGroup = {
   subGroups?: AttributeGroup[];
   displayOrder?: string[];
   isCollapsed: boolean; // track open/closed state
+  subQueryIri: string // triggers subqueries to extract more information
 };
 
 export type Attribute = {

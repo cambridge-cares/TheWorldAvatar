@@ -5,6 +5,9 @@ import React, { useState } from 'react';
 
 import { Attribute, AttributeGroup } from 'types/attribute';
 import HeaderField from 'ui/text/header';
+import { useDispatch } from 'react-redux';
+import { setHasExistingData } from 'state/floating-panel-slice';
+import { setIri } from 'state/map-feature-slice';
 
 // type definition for incoming properties
 interface AttributeRootProps {
@@ -54,16 +57,25 @@ export default function AttributeRoot(props: Readonly<AttributeRootProps>) {
  * @param {number} depth The current depth to this group tree.
  */
 function AttributeNode(props: Readonly<AttributeNodeProps>) {
+  const dispatch = useDispatch();
   const group: AttributeGroup = props.group;
   const depth: number = props.depth;
   // Size of left hand indentation
   const spacing: string = depth * 0.5 + "rem";
   // State for managing collapse and expansion
   const [isCollapsed, setIsCollapsed] = useState<boolean>(group.isCollapsed);
-  const toggleExpansion = () => {
-    setIsCollapsed(!isCollapsed);
-  };
   const collapsedIcon: string = isCollapsed ? "keyboard_arrow_down" : "keyboard_arrow_up";
+
+  const toggleExpansion = () => {
+    if (group.subQueryIri) {
+      dispatch(setHasExistingData(true));
+      dispatch(setIri(group.subQueryIri));
+    }
+    else {
+      setIsCollapsed(!isCollapsed);
+    }
+  };
+
   // Header element differs for root element in styling
   const headerElement = depth === 0 ?
     <HeaderField

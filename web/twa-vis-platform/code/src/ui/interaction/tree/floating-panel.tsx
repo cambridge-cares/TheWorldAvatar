@@ -48,8 +48,9 @@ export default function FloatingPanelContainer(
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
   // Execute API call
-  const { attributes, timeSeries, isFetching } = useFeatureInfoAgentService(
+  const { attributes, timeSeries, isFetching, isUpdating } = useFeatureInfoAgentService(
     genFIAEndpoint(selectedIri, selectedStack, selectedScenario),
+    selectedIri,
     selectedProperties
   );
 
@@ -143,6 +144,7 @@ export default function FloatingPanelContainer(
               attributes={attributes}
               timeSeries={timeSeries}
               isFetching={isFetching}
+              isUpdating={isUpdating}
               activeTab={{
                 index: activeInfoTab,
                 setActiveTab: setActiveInfoTab,

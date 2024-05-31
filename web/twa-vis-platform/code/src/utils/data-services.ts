@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import moment from 'moment';
 
 import { useFetchDataQuery } from 'state/api/fia-api';
+import { getHasExistingData, setHasExistingData } from 'state/floating-panel-slice';
 import { JsonObject } from 'types/json';
 import { Attribute, AttributeGroup } from 'types/attribute';
 import { TimeSeriesGroup, TimeSeries } from 'types/timeseries';
+import { useDispatch, useSelector } from 'react-redux';
 
 const rootKey: string = "meta";
 const displayOrderKey: string = "display_order";
@@ -31,16 +33,21 @@ export function genFIAEndpoint(iri: string, stack: string, scenario: string): st
  * If no data is available in the response, it defaults to the inherent feature properties, excluding the 'iri' key.
  * 
  * @param {string} endpoint The target FIA endpoint.
+ * @param {string} selectedIri The selected IRI.
  * @param {object} featureProperties The selected feature's inherent properties, which is used as a fallback.
  * 
  * @returns {{ queriedData: object | null, isFetching: boolean }} - An object containing the queried data and the fetching status.
  */
-export const useFeatureInfoAgentService = (endpoint: string, featureProperties: object) => {
+export const useFeatureInfoAgentService = (endpoint: string, selectedIri: string, featureProperties: object) => {
+  const dispatch = useDispatch();
   const { data, isFetching } = useFetchDataQuery(endpoint);
 
   const [queriedData, setQueriedData] = useState(null);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [attributes, setAttributes] = useState<AttributeGroup>(null);
   const [timeSeries, setTimeSeries] = useState<TimeSeriesGroup>(null);
+
+  const hasExistingData: boolean = useSelector(getHasExistingData);
 
   useEffect(() => {
     if (!isFetching) {
@@ -62,19 +69,61 @@ export const useFeatureInfoAgentService = (endpoint: string, featureProperties: 
   }, [isFetching]);
 
   useEffect(() => {
+    setIsUpdating(true);
     if (queriedData?.meta && Object.keys(queriedData.meta).length > 0) {
-      const attributes: AttributeGroup = recurseParseAttributeGroup(queriedData, rootKey);
-      setAttributes(attributes);
+      let latestAttributes: AttributeGroup;
+      if (hasExistingData) {
+        latestAttributes = recurseUpdateAttributeGroup(attributes, selectedIri, queriedData);
+        dispatch(setHasExistingData(false));
+      } else {
+        latestAttributes = recurseParseAttributeGroup(queriedData, rootKey);
+      }
+      setAttributes(latestAttributes);
     }
-    
+
     if (queriedData?.time && Object.keys(queriedData.time).length > 0) {
       const timeSeriesData: TimeSeriesGroup = parseTimeSeries(queriedData);
       setTimeSeries(timeSeriesData);
     }
+
+    // Add a delay of 100ms delay so that the data can be properly propagated to the component
+    setTimeout(() => {
+      setIsUpdating(false);
+    }, 100);
   }, [queriedData]);
 
-  return { attributes, timeSeries, isFetching };
+  return { attributes, timeSeries, isFetching, isUpdating };
 };
+
+/**
+ * Recursively searches for the attribute group of interest containing the update IRI, and
+ * update its contents with with the updated data returned.
+ *
+ * @param {AttributeGroup} currentGroup The current attribute group that will be updated.
+ * @param {string} updateIri The IRI of interest.
+ * @param {JsonObject} updatedData The updated data that is retrieved and should be integrated into the target.
+ */
+function recurseUpdateAttributeGroup(currentGroup: AttributeGroup, updateIri: string, updatedData: JsonObject): AttributeGroup {
+  // When the update IRI is present, replace the contents with the updated data
+  if (containsUpdateIri(currentGroup, updateIri)) {
+    const revisedAttributes: AttributeGroup = recurseParseAttributeGroup(updatedData, rootKey);
+    revisedAttributes.name = currentGroup.name;
+    return revisedAttributes;
+  } else {
+    // Otherwise, recursively look for the attribute group of interest
+    const revisedSubGroups: AttributeGroup[] = [];
+    currentGroup.subGroups.map(subGroup => {
+      // If the current group contains the subgroup of interest, the isCollapsed must be set to false
+      if (containsUpdateIri(subGroup, updateIri)) {
+        currentGroup.isCollapsed = false;
+      }
+      const revisedAttributes: AttributeGroup = recurseUpdateAttributeGroup(subGroup, updateIri, updatedData);
+      revisedSubGroups.push(revisedAttributes);
+    })
+    currentGroup.subGroups = revisedSubGroups;
+  }
+  return currentGroup;
+}
 
 /**
  * Recursively parse the data returned from the Feature Info Agent into the attribute group data model.
@@ -92,7 +141,15 @@ function recurseParseAttributeGroup(data: JsonObject, currentNode: string): Attr
   const keys: string[] = Object.keys(currentDataObject);
 
   // If property is included, assign it or defaults to false
-  const isCollapsed: boolean = typeof currentDataObject[collapseKey] === "boolean" ? currentDataObject[collapseKey] : false;
+  let isCollapsed: boolean = typeof currentDataObject[collapseKey] === "boolean" ? currentDataObject[collapseKey] : false;
+
+  // When subqueries should be executed to retrieve more information, they will only have an iri that will be stored
+  let subQueryIri: string;
+  if (Object.hasOwn(currentDataObject, "iri")) {
+    // The header should always be collapsed
+    isCollapsed = true;
+    subQueryIri = currentDataObject["iri"] as string;
+  }
 
   // Display order will follow the indicated order if a display_order property is passed. Else, it will follow the random order returned by the agent.
   const filterValues: string[] = [collapseKey, valueKey, unitKey];
@@ -121,6 +178,7 @@ function recurseParseAttributeGroup(data: JsonObject, currentNode: string): Attr
     subGroups: subGroups,
     displayOrder: displayOrder,
     isCollapsed: isCollapsed,
+    subQueryIri: subQueryIri,
   };
   return currentGroup;
 }
@@ -198,4 +256,14 @@ function parseTimeSeries(data: JsonObject): TimeSeriesGroup {
     times: rawTimes,
     data: timeSeries,
   };
+}
+
+/**
+ * Verifies if the group contains the update IRI.
+ *
+ * @param {AttributeGroup} group The target attribute group.
+ * @param {string} updateIri The IRI of interest.
+ */
+function containsUpdateIri(group: AttributeGroup, updateIri: string): boolean {
+  return group.attributes.length === 1 && group.attributes[0].name === "iri" && group.attributes[0].value === updateIri;
 }

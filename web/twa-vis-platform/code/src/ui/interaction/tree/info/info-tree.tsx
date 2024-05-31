@@ -16,6 +16,7 @@ interface InfoTreeProps {
   attributes: AttributeGroup;
   timeSeries: TimeSeriesGroup;
   isFetching: boolean;
+  isUpdating: boolean;
   activeTab: {
     index: number;
     setActiveTab: React.Dispatch<React.SetStateAction<number>>;
@@ -39,7 +40,7 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
   // A function that renders the required contents for this panel
   const renderPanelContents: () => React.ReactElement = () => {
     // Render loading spinner if it is still fetching data
-    if (props.isFetching) {
+    if (props.isFetching || props.isUpdating) {
       return <div className={styles.spinner}></div>;
     }
 
