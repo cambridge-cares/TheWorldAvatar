@@ -1,0 +1,14 @@
+{
+    "name": "sealevelprojections",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "sealevelprojections",
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "skip": false,
+            "table": "sealevelprojections",
+            "subdirectory": "eiv-igp-model"
+        }
+    ]
+}
