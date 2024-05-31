@@ -1,6 +1,7 @@
 from collections import defaultdict
 from typing import Any, Dict, List, Protocol, Sequence
 from services.kg import KgClient
+from utils.collections import FrozenDict
 
 
 class NodeDataGetter(Protocol):
@@ -13,7 +14,7 @@ class NodeDataRetriever:
         self.type2getter = type2getter
 
     def retrieve(self, type: str, iris: List[Any]):
-        data = [{} for _ in iris]
+        data = [FrozenDict({}) for _ in iris]
         getter = self.type2getter.get(type)
 
         if not getter:
@@ -27,7 +28,9 @@ class NodeDataRetriever:
 
         str_iris = iri2idxes.keys()
         iri2dataidx = {iri: i for i, iri in enumerate(str_iris)}
-        node_data = getter(kg_client=self.kg_client, iris=str_iris)
+        node_data = [
+            FrozenDict(obj) for obj in getter(kg_client=self.kg_client, iris=str_iris)
+        ]
 
         for iri, idxes in iri2idxes.items():
             for idx in idxes:

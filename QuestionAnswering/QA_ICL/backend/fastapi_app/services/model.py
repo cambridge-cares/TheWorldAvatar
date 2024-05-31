@@ -1,36 +1,17 @@
-from typing import Annotated, Dict, List, Literal, Optional, Union
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel, Field
 
 
-class TableHeader(BaseModel):
-    value: str
-    label: str
-    dtype: Literal["string", "number", "object"]
+class DocumentCollectionDataItem(BaseModel):
+    type: Literal["document_collection"] = "document_collection"
+    data: List[Dict[str, Any]]
 
 
 class TableDataItem(BaseModel):
     type: Literal["table"] = "table"
-    headers: List[TableHeader]
-    data: List[Dict[str, Union[str, float, dict]]]
-
-    @classmethod
-    def from_vars_and_bindings(
-        cls, vars: List[str], bindings: List[Dict[str, Union[str, float, dict]]]
-    ):
-        def resolve_dtype(var: str):
-            for ptype, jstype in [(float, "number"), (dict, "object")]:
-                if any(isinstance(binding[var], ptype) for binding in bindings):
-                    return jstype
-            return "string"
-
-        return cls(
-            headers=[
-                TableHeader(value=var, label=var, dtype=resolve_dtype(var))
-                for var in vars
-            ],
-            data=bindings,
-        )
+    columns: List[str]
+    data: List[Dict[str, Any]]
 
 
 class TypedSeries(BaseModel):
@@ -60,6 +41,6 @@ class MapDataItem(BaseModel):
 
 
 DataItem = Annotated[
-    Union[TableDataItem, ScatterPlotDataItem, MapDataItem],
+    Union[DocumentCollectionDataItem, TableDataItem, ScatterPlotDataItem, MapDataItem],
     Field(discriminator="type"),
 ]

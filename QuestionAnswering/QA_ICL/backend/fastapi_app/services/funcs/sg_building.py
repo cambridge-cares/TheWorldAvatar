@@ -8,7 +8,6 @@ from fastapi import Depends
 import shapely
 import shapely.wkt
 
-from controllers.qa.model import QAStep
 from services.entity_store import EntityStore, get_entity_store
 from services.funcs.base import Name2Func
 from services.kg import KgClient, get_sg_ontopClient
@@ -31,27 +30,12 @@ class SGBuildingFuncExecutor(Name2Func):
         return {"visualise_building_footprint": self.visualise_building_footprint}
 
     def visualise_building_footprint(self, cls: str, text: str):
-        steps: List[QAStep] = []
-
         logger.info("Perform entity linking for `text`: {text}".format(text=text))
-        timestamp = time.time()
-
         iris = self.entity_store.link(cls=cls, text=text)
-
-        latency = time.time() - timestamp
         logger.info("Linked IRIs: " + str(iris))
-        steps.append(
-            QAStep(
-                action="link_entity",
-                arguments={"text": text},
-                results=iris,
-                latency=latency,
-            )
-        )
 
         if cls == "Facility":
             logger.info("Retrieve WKT for " + str(iris))
-            timestamp = time.time()
 
             query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
@@ -95,15 +79,10 @@ SELECT * WHERE {{
                 if iri in iri2merged
             ]
 
-            latency = time.time() - timestamp
-            steps.append(
-                QAStep(action="retrieve_wkt", arguments={"iris": iris}, latency=latency)
-            )
-
         else:
             data = []
 
-        return steps, data
+        return data
 
 
 @cache

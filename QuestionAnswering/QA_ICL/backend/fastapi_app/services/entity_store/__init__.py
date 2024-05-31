@@ -179,7 +179,7 @@ class EntityStore:
         )
         texts = [text] + list(identifier.values())
 
-        iris = []
+        iris: List[str] = []
         for text in texts:
             if len(iris) >= k:
                 break

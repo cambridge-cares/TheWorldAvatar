@@ -1,7 +1,7 @@
-from typing import Annotated, Tuple
+from typing import Annotated, Any, Dict, List, Tuple
 
 from fastapi import Depends
-from services.example_store.model import FuncDataRequest
+from services.example_store.model import FuncDataReqForm
 from services.funcs.base import Name2Func
 from services.funcs.sg_building import SGBuildingFuncExecutor, get_sgBuilding_funcExec
 from services.funcs.sg_dispersion import (
@@ -19,8 +19,13 @@ class FuncDataReqExecutor:
             for name, func in instance.get_name2func().items()
         }
 
-    def exec(self, req: FuncDataRequest):
-        return self.name2func[req.name](**req.args)
+    def exec(
+        self,
+        entity_bindings: Dict[str, List[str]],
+        const_bindings: Dict[str, Any],
+        req_form: FuncDataReqForm,
+    ):
+        return self.name2func[req_form.name](**entity_bindings, **const_bindings)
 
 
 def get_funcReq_executor(

@@ -7,7 +7,6 @@ from fastapi import Depends
 
 from services.geocoding.base import IGeocoder
 from services.geocoding.serial import get_serial_geocoder
-from controllers.qa.model import QAStep
 from services.funcs.base import Name2Func
 from services.model import TableDataItem
 from .nearest import NearestCarparkLocator, get_nearestCarpark_locator
@@ -31,21 +30,9 @@ class SGCarparkFuncExecutor(Name2Func):
         return {"find_nearest_carpark": self.find_nearest_carpark}
 
     def find_nearest_carpark(self, location: str):
-        steps: List[QAStep] = []
-
         logger.info("Get coordinates for the location: " + location)
-        timestamp = time.time()
         place = self.geocoder.search(location)
-        latency = time.time() - timestamp
         logger.info("Geo-decoded data: " + str(place))
-        steps.append(
-            QAStep(
-                action="geodecode",
-                arguments=location,
-                results=str(place),
-                latency=latency,
-            )
-        )
 
         timestamp = time.time()
 
@@ -66,16 +53,7 @@ class SGCarparkFuncExecutor(Name2Func):
 
         data = [TableDataItem.from_vars_and_bindings(vars=vars, bindings=bindings)]
 
-        latency = time.time() - timestamp
-        steps.append(
-            QAStep(
-                action="get_nearest_carpark",
-                arguments=str(place),
-                latency=latency,
-            )
-        )
-
-        return steps, data
+        return data
 
 
 @cache

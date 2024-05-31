@@ -11,7 +11,6 @@ from services.geocoding.serial import get_serial_geocoder
 from services.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient
 
-from controllers.qa.model import QAStep
 from services.funcs.base import Name2Func
 from services.model import (
     ScatterPlotDataItem,
@@ -50,23 +49,10 @@ class SGDispersionFuncExecutor(Name2Func):
         }
 
     def get_pollutant_conc(self, location: str, **kwargs):
-        steps: List[QAStep] = []
-
         logger.info("Get coordinates for the location: " + location)
-        timestamp = time.time()
         place = self.geocoder.search(location)
-        latency = time.time() - timestamp
         logger.info("Geo-decoded data: " + str(place))
-        steps.append(
-            QAStep(
-                action="geodecode",
-                arguments=location,
-                results=str(place),
-                latency=latency,
-            )
-        )
 
-        timestamp = time.time()
         try:
             res = self.pollutant_conc_client.get(lat=place.lat, lon=place.lon)
         except requests.HTTPError as e:
@@ -94,16 +80,7 @@ class SGDispersionFuncExecutor(Name2Func):
             if key != "time"
         ]
 
-        latency = time.time() - timestamp
-        steps.append(
-            QAStep(
-                action="get_pollutant_concentrations",
-                arguments=str(place),
-                latency=latency,
-            )
-        )
-
-        return steps, data
+        return data
 
     def _sanitise(self, text: str):
         text = text.split("^^", maxsplit=1)[0]

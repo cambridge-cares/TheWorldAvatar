@@ -6,37 +6,42 @@ EXAMPLES_KEY_PREFIX = "nlq2datareqExamples:"
 EXAMPLES_INDEX_NAME = "idx:nlq2datareqExamples_vss"
 
 
-class SparqlBindingValuesItem(BaseModel):
+class LexicalBindingValue(BaseModel):
     text: Optional[str] = None
-    identifier: dict = dict()
+    identifier: Dict[str, str] = dict()
 
 
-class TypedVarNode(BaseModel):
-    var: str
+class LexicalEntityBinding(BaseModel):
     cls: str
+    values: List[LexicalBindingValue]
 
 
-class TypedVarNodeWithValues(TypedVarNode):
-    values: List[SparqlBindingValuesItem]
+class SparqlNodeMappingConfig(BaseModel):
+    pkey: bool = False
+    cls: Optional[str] = None
 
 
-class SparqlDataRequest(BaseModel):
+class SparqlDataReqForm(BaseModel):
     type: Literal["sparql"] = "sparql"
     namespace: str
-    bindings: List[TypedVarNodeWithValues] = []
     query: str
-    nodes_to_augment: List[TypedVarNode] = []
+    res_map: Dict[str, SparqlNodeMappingConfig]
 
 
-class FuncDataRequest(BaseModel):
+class FuncDataReqForm(BaseModel):
     type: Literal["func"] = "func"
     name: str
-    args: Dict[str, Any]
 
 
-DataRequest = Annotated[
-    Union[SparqlDataRequest, FuncDataRequest], Field(discriminator="type")
+DataRequestForm = Annotated[
+    Union[SparqlDataReqForm, FuncDataReqForm], Field(discriminator="type")
 ]
+
+
+class DataRequest(BaseModel):
+    entity_bindings: Dict[str, LexicalEntityBinding] = dict()
+    const_bindings: Dict[str, Any] = dict()
+    req_form: DataRequestForm
 
 
 class Nlq2DataReqExample(BaseModel):

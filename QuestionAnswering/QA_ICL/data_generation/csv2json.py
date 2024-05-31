@@ -4,51 +4,58 @@ import json
 import pandas as pd
 
 
+def parse_json_if_not_na(obj):
+    if pd.isna(obj):
+        return None
+    try:
+        return json.loads(obj)
+    except Exception as e:
+        print("Invalid JSON: ")
+        print(obj)
+        raise e
+
+
 def csvrow2jsonobj(row: pd.Series):
-    output = dict()
+    entity_bindings = parse_json_if_not_na(row["entity_bindings"])
+    const_bindings = parse_json_if_not_na(row["const_bindings"])
+
     if row["target"] == "sparql":
-        try:
-            bindings = (
-                json.loads(row["sparql_bindings"])
-                if not pd.isna(row["sparql_bindings"])
-                else None
-            )
-        except Exception as e:
-            print(row["sparql_bindings"])
-            raise e
+        res_map = parse_json_if_not_na(row["sparql_res_map"])
 
-        try:
-            nodes_to_augment = (
-                json.loads(row["sparql_nodes_to_augment"])
-                if not pd.isna(row["sparql_nodes_to_augment"])
-                else None
-            )
-        except Exception as e:
-            print(row["sparql_nodes_to_augment"])
-            raise e
-
-        output = {
+        req_form = {
             "type": "sparql",
             **{
                 k: v
                 for k, v in {
                     "namespace": row["sparql_namespace"],
-                    "bindings": bindings,
                     "query": row["sparql_query"],
-                    "nodes_to_augment": nodes_to_augment,
+                    "res_map": res_map,
                 }.items()
                 if v
             },
         }
     elif row["target"] == "func":
-        output = {
+        req_form = {
             "type": "func",
             "name": row["func_name"],
-            "args": json.loads(row["func_args"]),
         }
     else:
         raise ValueError(f'Unexpected target: {row["target"]}')
-    return {"nlq": row["question"], "data_req": output}
+
+    data_req = {
+        k: v
+        for k, v in {
+            "entity_bindings": entity_bindings,
+            "const_bindings": const_bindings,
+            "req_form": req_form,
+        }.items()
+        if v
+    }
+
+    return {
+        "nlq": row["question"],
+        "data_req": data_req,
+    }
 
 
 if __name__ == "__main__":

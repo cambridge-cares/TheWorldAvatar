@@ -1,6 +1,6 @@
 from functools import cache
 import logging
-from typing import Annotated, Dict, List
+from typing import Annotated, Any, Dict, List
 
 from fastapi import Depends
 
@@ -52,41 +52,46 @@ class SparqlQueryProcessor:
 
         return sparql
 
-    def inject_bindings(self, sparql: str, bindings: Dict[str, List[str]]):
+    def inject_bindings(
+        self,
+        sparql: str,
+        entity_bindings: Dict[str, List[str]],
+        const_bindings: Dict[str, Any],
+    ):
         values_clauses = [
             "VALUES ?{var} {{ {iris} }}".format(
                 var=var, iris=" ".join("<{iri}>".format(iri=iri) for iri in iris)
             )
-            for var, iris in bindings.items()
+            for var, iris in entity_bindings.items()
         ]
 
         if values_clauses:
-            qn_mark_idx = sparql.find(
-                "?"
-            )  # assumed to be the first variable in SPARQL's projection
             open_brace_idx = sparql.find(
                 "{"
             )  # assumed to be the start of WHERE patterns
 
-            cur_vars = set(sparql[qn_mark_idx:open_brace_idx].strip().split())
-            new_vars = ["?" + var for var in bindings.keys()]
-            new_vars = [var for var in new_vars if var not in cur_vars]
-
-            return "{before}{new_vars}{between}{{  {values_clauses}{after}".format(
-                before=sparql[:qn_mark_idx],
-                new_vars=" ".join(new_vars) + " ",
-                between=sparql[qn_mark_idx:open_brace_idx],
+            return "{before}{{\n  {values_clauses}{after}".format(
+                before=sparql[:open_brace_idx],
                 values_clauses="\n  ".join(values_clauses),
                 after=sparql[open_brace_idx + 1 :],
             )
         else:
             return sparql
 
-    def process(self, sparql: str, bindings: Dict[str, List[str]]):
-        logger.info("Process SPARQL query:\n" + sparql)
+    def process(
+        self,
+        sparql: str,
+        entity_bindings: Dict[str, List[str]],
+        const_bindings: Dict[str, Any],
+    ):
+        logger.info("Processing SPARQL query...")
 
         sparql = self.inject_service_endpoint(sparql)
-        return self.inject_bindings(sparql=sparql, bindings=bindings)
+        return self.inject_bindings(
+            sparql=sparql,
+            entity_bindings=entity_bindings,
+            const_bindings=const_bindings,
+        )
 
 
 @cache
