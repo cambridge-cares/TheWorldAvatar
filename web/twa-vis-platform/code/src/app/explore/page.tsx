@@ -21,7 +21,7 @@ async function getScenarios(scenarioUrl: string): Promise<ScenarioDefinition[]> 
 }
 
 /**
- * A server component that handles the visualisation route (i.e. "/visualisation") to display the map container and its components.
+ * A server component that handles the explore  route (i.e. "/explore") to display the map container and its components.
  * 
  */
 export default async function VisualisationPage() {
