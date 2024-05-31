@@ -1,0 +1,48 @@
+[PrefixDeclaration]
+:               https://www.theworldavatar.com/kg/Building/
+bot:            https://w3id.org/bot#
+ontobuiltenv:   https://www.theworldavatar.com/kg/ontobuiltenv/
+opr:            https://www.theworldavatar.com/kg/ontoplanningregulations/
+rdf:            http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:           http://www.w3.org/2000/01/rdf-schema#
+owl:            http://www.w3.org/2002/07/owl#
+xsd:            http://www.w3.org/2001/XMLSchema#
+skos:           http://www.w3.org/2004/02/skos/core#
+om:             http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+mappingId       building
+target          :{uuid} a bot:Building ;
+                    ontobuiltenv:hasHeight :height/{uuid}.
+                :height/{uuid} om:hasValue :height/measure/{uuid}.
+                :height/measure/{uuid} om:hasNumericalValue "{building_height}"^^xsd:float;
+                    om:hasUnit :height/unit/{uuid}. 
+                :height/unit/{uuid} skos:notation "m"^^xsd:string.
+source          SELECT
+                    "building"."id" AS "building_id",
+                    COALESCE("measured_height", 100.0) AS "building_height",
+                    uuid_table."uuid",
+                    iri_table."iri",
+                    "geometry"
+                FROM
+                    "citydb"."building"
+                JOIN
+                    "citydb"."surface_geometry"
+                    ON "citydb"."surface_geometry"."root_id" = "citydb"."building"."lod0_footprint_id"
+                JOIN
+                    (
+                        SELECT "strval" AS "uuid", "cityobject_id"
+                        FROM   "citydb"."cityobject_genericattrib"
+                        WHERE  "attrname" = 'uuid'
+                    ) AS uuid_table
+                    ON "citydb"."building"."id" = uuid_table."cityobject_id"
+                JOIN
+                    (
+                        SELECT "urival" AS "iri", "cityobject_id"
+                        FROM   "citydb"."cityobject_genericattrib"
+                        WHERE  "attrname" = 'iri'
+                    ) AS iri_table
+                    ON "citydb"."building"."id" = iri_table."cityobject_id"
+                WHERE
+                    "citydb"."surface_geometry"."geometry" IS NOT NULL  
+]]

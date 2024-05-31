@@ -23,7 +23,7 @@ Singapore population distribution 2000 is retrieved from [Facebook Data For Good
 Street network data is retrieved from OpenStreetMap through [Geofabrik](https://download.geofabrik.de/).
 
 ## Sea-Level Rise
-Sea-level rise projections are provided by the courtesy of Prof. Benjamin Horton and Dr. Timothy A. Shaw from Nanyang Technological University, Earth Observatory of Singapore.
+Sea-level rise projections are provided by the courtesy of Prof. Benjamin Horton and Dr. Timothy A. Shaw from Nanyang Technological University, Earth Observatory of Singapore, published under [`Shaw, T.A., Li, T., Ng, T. et al. Deglacial perspectives of future sea level for Singapore. Commun Earth Environ 4, 204 (2023)`](https://doi.org/10.1038/s43247-023-00868-5).
 
 # Agent Setup
 ## OSMAgent

@@ -1,5 +1,5 @@
 {
-    "name": "tree",
+    "name": "culture",
     "database": "postgres",
     "workspace": "twa",
     "skip": false,
@@ -44,6 +44,19 @@
                 "sridIn": "EPSG:4326",
                 "sridOut": "EPSG:4326"
             }
+        },
+        {
+            "name": "heritagetrees",
+            "type": "vector",
+            "subdirectory": "heritagetrees",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            }
         }
+    ],
+    "mappings": [
+      "culture.obda"
     ]
 }
