@@ -13,6 +13,18 @@ class TableDataItem(BaseModel):
     columns: List[str]
     data: List[Dict[str, Any]]
 
+    @classmethod
+    def from_data(cls, data: List[Dict[str, Any]]):
+        cols = []
+        cols_set = set()
+        for datum in data:
+            for k in datum.keys():
+                if k not in cols_set:
+                    cols.append(k)
+                    cols_set.add(k)
+
+        return cls(columns=cols, data=data)
+
 
 class TypedSeries(BaseModel):
     data: list

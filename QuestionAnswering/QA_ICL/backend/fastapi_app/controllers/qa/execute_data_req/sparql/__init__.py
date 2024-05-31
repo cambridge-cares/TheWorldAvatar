@@ -3,13 +3,13 @@ import logging
 from typing import Annotated, Any, Dict, List
 
 from fastapi import Depends
-import pandas as pd
 
 from constants.prefixes import PREFIX_NAME2URI
 from services.example_store.model import SparqlDataReqForm
 from services.kg import KgClient
 from services.model import DocumentCollectionDataItem, TableDataItem
 from utils.collections import FrozenDict
+from utils.json import flatten_dict
 from utils.rdf import flatten_sparql_select_response
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
@@ -70,8 +70,8 @@ class SparqlDataReqExecutor:
         logger.info("Done")
 
         logger.info("Linearising documents into a table...")
-        df = pd.json_normalize(docs)
-        table_item = TableDataItem(columns=df.columns, data=df.to_dict("records"))
+        flattened_docs = [flatten_dict(doc) for doc in docs]
+        table_item = TableDataItem.from_data(flattened_docs)
         logger.info("Done")
 
         return [docs_item, table_item]
