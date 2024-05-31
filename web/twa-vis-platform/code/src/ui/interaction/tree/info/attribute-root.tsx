@@ -65,6 +65,7 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
   // State for managing collapse and expansion
   const [isCollapsed, setIsCollapsed] = useState<boolean>(group.isCollapsed);
   const collapsedIcon: string = isCollapsed ? "keyboard_arrow_down" : "keyboard_arrow_up";
+  const displayIcon: string = group.subQueryIri ? "/images/defaults/icons/fia-logo.svg" : collapsedIcon;
 
   const toggleExpansion = () => {
     if (group.subQueryIri) {
@@ -80,14 +81,14 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
   const headerElement = depth === 0 ?
     <HeaderField
       name={group.name}
-      icon={collapsedIcon}
+      icon={displayIcon}
       containerStyle={parentStyles.treeHeader}
       headerNameStyle={parentStyles.treeHeaderName}
       spacing={spacing}
       toggleExpansion={toggleExpansion}
     /> : <HeaderField
       name={group.name}
-      icon={collapsedIcon}
+      icon={displayIcon}
       containerStyle={styles.treeEntrySubHeader}
       headerNameStyle={styles.treeEntrySubHeaderName}
       spacing={spacing}

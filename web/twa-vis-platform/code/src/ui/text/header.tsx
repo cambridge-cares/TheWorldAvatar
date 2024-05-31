@@ -2,7 +2,7 @@ import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 
 import React from 'react';
 
-import MaterialIconButton from 'ui/graphic/icon/icon-button';
+import IconComponent from 'ui/graphic/icon/icon';
 
 interface HeaderFieldProps {
   name: string;
@@ -32,9 +32,9 @@ export default function HeaderField(props: Readonly<HeaderFieldProps>) {
       </div>
 
       {/* Expand/collapse icon */}
-      <MaterialIconButton
-        iconName={props.icon}
-        className={iconStyles["push-right"]}
+      <IconComponent
+        icon={props.icon}
+        classes={iconStyles["push-right"]}
       />
     </div>
   );
