@@ -1,23 +1,21 @@
 from functools import cache
 import logging
-import time
-from typing import Annotated, Dict, List, Tuple, Union
+from typing import Annotated, Any, Dict, List
 
 from fastapi import Depends
+import pandas as pd
 
 from constants.prefixes import PREFIX_NAME2URI
-from controllers.qa.model import QAStep
-from services.entity_store import EntityStore, get_entity_store
-from services.example_store.model import SparqlDataRequest
+from services.example_store.model import SparqlDataReqForm
 from services.kg import KgClient
-from services.model import TableDataItem, TableHeader
+from services.model import DocumentCollectionDataItem, TableDataItem
 from utils.collections import FrozenDict
 from utils.rdf import flatten_sparql_select_response
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
-from .process_response import (
-    SparqlResponseProcessor,
-    get_sparqlRes_processor,
+from .transform_response import (
+    SparqlResponseTransformer,
+    get_sparqlRes_transformer,
 )
 
 
@@ -36,93 +34,61 @@ class SparqlDataReqExecutor:
     def __init__(
         self,
         ns2kg: Dict[str, KgClient],
-        entity_store: EntityStore,
         query_processor: SparqlQueryProcessor,
-        response_processor: SparqlResponseProcessor,
+        response_processor: SparqlResponseTransformer,
     ):
         self.ns2kg = ns2kg
-        self.entity_store = entity_store
         self.query_processor = query_processor
         self.response_processor = response_processor
 
-    def exec(self, req: SparqlDataRequest):
-        steps: List[QAStep] = []
-
-        logger.info("Performing entity linking for bindings: " + str(req.bindings))
-        timestamp = time.time()
-        var2iris = {
-            binding.var: [
-                iri
-                for val in binding.values
-                for iri in self.entity_store.link(
-                    cls=binding.cls, text=val.text, identifier=val.identifier
-                )
-            ]
-            for binding in req.bindings
-        }
-        latency = time.time() - timestamp
-        logger.info("IRIs: " + str(var2iris))
-
-        logger.info("Input query:\n" + req.query)
-        timestamp = time.time()
-        query = self.query_processor.process(sparql=req.query, bindings=var2iris)
-        latency = time.time() - timestamp
-        logger.info("Processed query:\n" + query)
-        steps.append(
-            QAStep(
-                action="postprocess_sparql",
-                arguments={
-                    "sparql": req.query,
-                    "bindings": var2iris,
-                },
-                results=query,
-                latency=latency,
-            )
+    def exec(
+        self,
+        entity_bindings: Dict[str, List[str]],
+        const_bindings: Dict[str, Any],
+        req_form: SparqlDataReqForm,
+    ):
+        logger.info("Unprocessed query:\n" + req_form.query)
+        query = self.query_processor.process(
+            sparql=req_form.query,
+            entity_bindings=entity_bindings,
+            const_bindings=const_bindings,
         )
+        logger.info("Processed query:\n" + query)
 
         prefixed_query = self.PREFIXES + query
-        logger.info("Executing query at: " + self.ns2kg[req.namespace].sparql.endpoint)
-        timestamp = time.time()
-        res = self.ns2kg[req.namespace].querySelect(prefixed_query)
-        latency = time.time() - timestamp
-        steps.append(
-            QAStep(
-                action="execute_sparql",
-                arguments=dict(namespace=req.namespace, query=query),
-                latency=latency,
-            )
+        logger.info(
+            "Executing query at: " + self.ns2kg[req_form.namespace].sparql.endpoint
         )
+        res = self.ns2kg[req_form.namespace].querySelect(prefixed_query)
+        vars, bindings = flatten_sparql_select_response(res)
 
-        flattend_res: Tuple[List[str], List[Dict[str, Union[str, float, dict]]]] = (
-            flatten_sparql_select_response(res)
+        logger.info("Transforming SPARQL response to documents...")
+        docs = self.response_processor.transform(
+            vars=vars, bindings=bindings, res_map=req_form.res_map
         )
-        vars, bindings = flattend_res
+        docs_item = DocumentCollectionDataItem(data=docs)
+        logger.info("Done")
 
-        self.response_processor.process(
-            nodes_to_augment=req.bindings + req.nodes_to_augment,
-            vars=vars,
-            bindings=bindings,
-        )
+        logger.info("Linearising documents into a table...")
+        df = pd.json_normalize(docs)
+        table_item = TableDataItem(columns=df.columns, data=df.to_dict("records"))
+        logger.info("Done")
 
-        table = TableDataItem.from_vars_and_bindings(vars=vars, bindings=bindings)
-
-        return steps, [table]
+        return [docs_item, table_item]
 
 
 @cache
 def get_sparqlReq_executor(
     ns2kg: Annotated[FrozenDict[str, KgClient], Depends(get_ns2kg)],
-    entity_store: Annotated[EntityStore, Depends(get_entity_store)],
     query_processor: Annotated[
         SparqlQueryProcessor, Depends(get_sparqlQuery_processor)
     ],
     response_processor: Annotated[
-        SparqlResponseProcessor, Depends(get_sparqlRes_processor)
+        SparqlResponseTransformer, Depends(get_sparqlRes_transformer)
     ],
 ):
     return SparqlDataReqExecutor(
         ns2kg=ns2kg,
-        entity_store=entity_store,
         query_processor=query_processor,
         response_processor=response_processor,
     )

@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from controllers.qa import DataSupporter, get_data_supporter
-from controllers.qa.model import QAStep
 from services.model import DataItem
 
 
@@ -14,13 +13,7 @@ class QARequest(BaseModel):
     question: str
 
 
-class QAResponseMetadata(BaseModel):
-    latency: float
-    steps: List[QAStep]
-
-
 class QAResponse(BaseModel):
-    metadata: QAResponseMetadata
     data: List[DataItem]
 
 
@@ -37,10 +30,6 @@ def qa(
     logger.info("Received request to QA endpoint with the following request body")
     logger.info(req)
 
-    timestamp = time.time()
-    steps, data = data_supporter.query(query=req.question)
-    latency = time.time() - timestamp
+    data = data_supporter.query(query=req.question)
 
-    metadata = QAResponseMetadata(latency=latency, steps=steps)
-
-    return QAResponse(metadata=metadata, data=data)
+    return QAResponse(data=data)

@@ -50,7 +50,11 @@ class KgClient:
         self.res_adapter = TypeAdapter(SparqlSelectResponse)
 
     def querySelect(self, query: str):
-        logger.info("Executing SPARQL query:\n" + query)
+        logger.info(
+            "Executing the following SPARQL query at {endpoint}:\n{query}".format(
+                endpoint=self.sparql.endpoint, query=query
+            )
+        )
         self.sparql.setQuery(query)
         res = self.sparql.queryAndConvert()
         logger.info("Execution done")
