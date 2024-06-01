@@ -1,9 +1,9 @@
 from functools import cache
-import os
 from typing import Annotated, List
 from fastapi import Depends
 from pydantic import BaseModel, Field
 
+from config import AppSettings, get_app_settings
 from services.requests import request_get_obj
 
 
@@ -30,10 +30,7 @@ class PollutantConcClient:
 
 
 @cache
-def get_pollutantConc_endpoint():
-    return os.environ["ENDPOINT_POLLUTANT_CONCENTRATIONS"]
-
-
-@cache
-def get_pollutantConc_client(url: Annotated[str, Depends(get_pollutantConc_endpoint)]):
-    return PollutantConcClient(url)
+def get_pollutantConc_client(
+    settings: Annotated[AppSettings, Depends(get_app_settings)]
+):
+    return PollutantConcClient(settings.singapore_endpoints.pollutant_concentration)

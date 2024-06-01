@@ -1,0 +1,32 @@
+ga_measurement_id: ""
+redis:
+  host: localhost
+text_embedding:
+  backend: triton
+  url: "localhost:8001"
+  model: mpnet
+translator:
+  base_url: https://api.openai.com/v1/
+  api_key: ""
+  model: gpt-3.5-turbo-0125
+chat:
+  base_url: https://api.openai.com/v1/
+  api_key: ""
+  model: gpt-3.5-turbo-0125
+location_iq:
+  api_key: ""
+chemistry_endpoints:
+  ontospecies: http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql
+  ontokin: http://178.128.105.213:3838/blazegraph/namespace/ontokin/sparql
+  ontocompchem: http://178.128.105.213:3838/blazegraph/namespace/ontocompchem/sparql
+  ontozeolite: http://178.128.105.213:3838/blazegraph/namespace/ontozeolite/sparql
+singapore_endpoints:
+  ontop: http://174.138.23.221:3838/ontop/ui/sparql
+  ontop_internal: http://sg-ontop:8080/sparql
+  dispersion: http://174.138.23.221:3838/blazegraph/namespace/kb/sparql
+  plot: http://174.138.23.221:3838/blazegraph/namespace/plot/sparql
+  company: http://174.138.23.221:3838/blazegraph/namespace/company/sparql
+  carpark: http://174.138.23.221:3838/blazegraph/namespace/carpark/sparql
+  carpark_internal: http://sg-blazegraph:8080/blazegraph/namespace/carpark/sparql
+  feature_info_agent: http://174.138.23.221:3838/feature-info-agent/get
+  pollutant_concentration: http://174.138.23.221:3838/dispersion-interactor/GetPollutantConcentrations
