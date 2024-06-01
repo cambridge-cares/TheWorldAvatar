@@ -1,5 +1,6 @@
 import os
-from pyderivationagent.kg_operations import PySparqlClient
+import re
+import pyderivationagent
 
 class MOPGeometryUpdater:
     OM      = 'http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#'
@@ -7,19 +8,19 @@ class MOPGeometryUpdater:
     RDFS    = 'http://www.w3.org/2000/01/rdf-schema#'
     
     def __init__(self, query_endpoint, update_endpoint, kg_user, kg_password, file_directory):
-        self.sparql_client      = PySparqlClient(
+        self.sparql_client      = pyderivationagent.kg_operations.PySparqlClient(
             query_endpoint      = query_endpoint,
             update_endpoint     = update_endpoint,
             kg_user             = kg_user,
             kg_password         = kg_password
         )
         self.file_directory     = file_directory
+        cbus                    = []
 
     def query_MOPFormula(self):
-        """Quer for newly instantiated Mops and return the MOPFormula to deduce the MOPFormula"""
+        """Query for newly instantiated Mops and return the MOPFormula to deduce the MOPFormula"""
         query = f"""
         PREFIX om: <{self.OM}>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX rdfs: <{self.RDFS}>
 
         SELECT ?MOPFormula
@@ -33,8 +34,28 @@ class MOPGeometryUpdater:
         return self.sparql_client.performQuery(query)
 
     def deduceCBU(self, MOPFormula):
-        
-        return CBU1, CBU2
+        """Deduce CBU by splitting the MOPFormula string into the two parts, 
+        e.g. [Mg4C40H44O12S4]3[(C4H2S)(CO2)2]6"""
+        matches = re.findall(r'\[([^\[\]]+)\]', MOPFormula)
+        if len(matches) == 2:
+            return matches[0], matches[1]
+        else:
+            raise ValueError("The input string does not contain exactly two bracketed parts.")
+    
+    def checkCBU(self, cbu):
+        """Query the old MOPs for the CBU and check if it exists."""
+        query = f"""
+        PREFIX om: <{self.OM}>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <{self.RDFS}>
+
+        ASK WHERE {{
+            ?MOPID om:hasChemicalBuildingUnit "{cbu}" .
+        }}
+        """
+        return self.sparql_client.performQuery(query)
+
+            
 
     def delete_geometry(self, response):
         for res in response:
@@ -78,9 +99,21 @@ def main():
         file_directory          = FILE_DIRECTORY
     )
     response                    = updater.query_MOPFormula()
+    
     for res in response:
         mop_formula     = res['MOPFormula']
+        cbus            = updater.deduceCBU(mop_formula)
         print(f"MOPFormula: {mop_formula}")
+        print(f"CBU1: {cbus[0]},CBU2: {cbus[1]}")
+        # check if CBUs exist:
+        for cbu in cbus:
+            if updater.checkCBU(cbu):
+                print(f"Successfully identified cbu: {cbu}!")
+            else:
+                print(f"Cbu: {cbu} is not yet in the database check if there is an error!")
+                raise Exception("Deduced CBU is not in KG! Check the code or KG.")
+
+        print("---------- Finished MOP -------------- \n")
     # updater.process_results(response)
     
 
