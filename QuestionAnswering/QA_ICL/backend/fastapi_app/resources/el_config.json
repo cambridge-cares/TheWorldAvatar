@@ -1,20 +1,20 @@
 [
     {
-        "cls": "Element",
+        "cls": "pt:Element",
         "el_config": {
             "strategy": "fuzzy",
             "k": 1
         }
     },
     {
-        "cls": "ChemicalClass",
+        "cls": "os:ChemicalClass",
         "el_config": {
             "strategy": "semantic",
             "k": 1
         }
     },
     {
-        "cls": "Use",
+        "cls": "os:Use",
         "el_config": {
             "strategy": "semantic",
             "k": 2
