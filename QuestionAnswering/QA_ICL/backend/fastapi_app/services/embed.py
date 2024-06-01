@@ -10,10 +10,7 @@ from tritonclient.grpc import InferenceServerClient, InferInput
 from transformers import AutoTokenizer
 
 
-from config import (
-    TextEmbeddingSettings,
-    get_text_embedding_settings,
-)
+from config import AppSettings, get_app_settings
 
 
 class IEmbedder(ABC):
@@ -27,12 +24,13 @@ class IEmbedder(ABC):
 class OpenAIEmbedder(IEmbedder):
     def __init__(
         self,
-        url: Optional[str] = None,
+        base_url: Optional[str] = None,
+        api_key: Optional[str] = None,
         model: str = "text-embedding-3-small",
         chunk_size: int = 1000,
         **kwargs
     ):
-        self.client = OpenAI(base_url=url)
+        self.client = OpenAI(base_url=base_url, api_key=api_key)
         self.model = model
         self.chunk_size = chunk_size
 
@@ -54,13 +52,13 @@ class TritonEmbedder(IEmbedder):
     def __init__(
         self,
         url: str = "localhost:8001",
-        triton_model: str = "mpnet",
+        model: str = "mpnet",
         tokenizer_model: str = "sentence-transformers/all-mpnet-base-v2",
         batch_size: int = 256,
         **kwargs
     ):
         self.client = InferenceServerClient(url)
-        self.triton_model = triton_model
+        self.model = model
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_model)
         self.batch_size = batch_size
 
@@ -77,20 +75,20 @@ class TritonEmbedder(IEmbedder):
                     "attention_mask", encoded.attention_mask.shape, datatype="INT64"
                 ).set_data_from_numpy(encoded.attention_mask),
             ]
-            response = self.client.infer(
-                model_name=self.triton_model, inputs=input_tensors
-            )
+            response = self.client.infer(model_name=self.model, inputs=input_tensors)
             arrs.append(response.as_numpy("sentence_embedding"))
         return np.vstack(arrs)
 
 
 @cache
-def get_embedder(
-    settings: Annotated[TextEmbeddingSettings, Depends(get_text_embedding_settings)]
-):
-    if settings.server == "openai":
-        cls = OpenAIEmbedder
+def get_embedder(settings: Annotated[AppSettings, Depends(get_app_settings)]):
+    if settings.text_embedding.backend == "openai":
+        return OpenAIEmbedder(
+            base_url=settings.text_embedding.base_url,
+            api_key=settings.text_embedding.api_key,
+            model=settings.text_embedding.model,
+        )
     else:
-        cls = TritonEmbedder
-
-    return cls(**{k: v for k, v in settings.model_dump().items() if v is not None})
+        return TritonEmbedder(
+            url=settings.text_embedding.url, model=settings.text_embedding.model
+        )

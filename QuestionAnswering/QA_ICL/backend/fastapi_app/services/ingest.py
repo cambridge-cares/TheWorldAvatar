@@ -1,10 +1,12 @@
+from argparse import ArgumentParser
 import importlib.resources
 import json
 import math
 import os
-from typing import Callable, List, Tuple, Type, TypeVar
+from typing import Callable, Generic, List, Literal, Tuple, Type, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
+import pydantic
 from redis import Redis
 from redis.commands.search.field import Field
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
@@ -13,14 +15,50 @@ from tqdm import tqdm
 from utils.itertools_recipes import batched
 
 
+class IngestArgs(BaseModel):
+    redis_host: str
+    text_embedding_server: Literal["triton", "openai"]
+    text_embedding_url: str
+    drop_index: bool
+    invalidate_cache: bool
+
+
+def load_ingest_args():
+    parser = ArgumentParser()
+    parser.add_argument("--redis_host", required=True, type=str)
+    parser.add_argument("--text_embedding_server", choices=["triton", "openai"])
+    parser.add_argument("--text_embedding_url")
+    parser.add_argument(
+        "--drop_index",
+        action="store_true",
+        default=False,
+        help="Whether to drop existing index in Redis server if exists",
+    )
+    parser.add_argument(
+        "--invalidate_cache",
+        action="store_true",
+        default=False,
+        help="Whether to invalidate on-disk cache of processed data if exists",
+    )
+    args = parser.parse_args()
+    return IngestArgs(
+        redis_host=args.redis_host,
+        text_embedding_server=args.text_embedding_server,
+        text_embedding_url=args.text_embedding_url,
+        drop_index=args.drop_index,
+        invalidate_cache=args.invalidate_cache,
+    )
+
+
 UT = TypeVar("UT", bound=BaseModel)
 PT = TypeVar("PT", bound=BaseModel)
 
 
-class DataIngester:
+class DataIngester(Generic[UT, PT]):
     def __init__(
         self,
         dirname: str,
+        invalidate_cache: bool,
         unprocessed_type: Type[UT],
         processed_type: Type[PT],
         process_func: Callable[[List[UT]], List[PT]],
@@ -33,6 +71,7 @@ class DataIngester:
         redis_ft_schema: Tuple[Field, ...],
     ):
         self.data_dir = importlib.resources.files("data").joinpath(dirname)
+        self.invalidate_cache = invalidate_cache
         self.unprocessed_type = unprocessed_type
         self.processed_type = processed_type
         self.adapter_list_pt = TypeAdapter(List[processed_type])
@@ -55,51 +94,55 @@ class DataIngester:
         print("{num} data files discovered.\n".format(num=len(files)))
         return files
 
-    def load_processed_data(self, filename: str):
+    def load_processed_data_from_cache(self, filename: str):
         text = self.data_dir.joinpath(".cache").joinpath(filename).read_text()
         data = self.adapter_list_pt.validate_json(text)
 
         print("Found cache of processed data for {name}.\n".format(name=filename))
         return data
 
-    def save_processed_data(self, filename: str, data: List[PT]):
-        path = self.data_dir.joinpath(".cache").joinpath(filename)
-        path = str(path)
+    def load_processed_data(self, filename: str):
+        if not self.invalidate_cache:
+            try:
+                return self.load_processed_data_from_cache(filename)
+            except:
+                print(
+                    "No cache of processed data for {cls} found.".format(cls=filename)
+                )
 
-        dirpath = os.path.dirname(path)
-        if dirpath:
-            os.makedirs(dirpath, exist_ok=True)
-
-        with open(str(path), "wb") as f:
-            f.write(self.adapter_list_pt.dump_json(data))
-
-    def load_unprocessed_data(self, filename: str):
         print("Loading unprocessed data {cls} into memory...".format(cls=filename))
-
-        data = [
+        unprocessed_data = [
             self.unprocessed_type.model_validate(datum)
             for datum in json.loads(self.data_dir.joinpath(filename).read_text())
         ]
+        print(
+            "{num} rows of data loaded into memory.\n".format(num=len(unprocessed_data))
+        )
 
-        print("{num} rows of data loaded into memory.\n".format(num=len(data)))
-        return data
-
-    def process_data_by_batch(self, data: List[UT]):
         print(
             "Processing data with batch size {batchsize}...".format(
                 batchsize=self.process_batchsize
             )
         )
-
-        processed_entries: List[PT] = []
+        processed_data: List[PT] = []
         for batch in tqdm(
-            batched(data, self.process_batchsize),
-            total=math.ceil(len(data) / self.process_batchsize),
+            batched(unprocessed_data, self.process_batchsize),
+            total=math.ceil(len(unprocessed_data) / self.process_batchsize),
         ):
-            processed_entries.extend(self.process_func(batch))
-
+            processed_data.extend(self.process_func(batch))
         print("Processing complete.\n")
-        return processed_entries
+
+        print("Saving processed data to on-disk cache...")
+        path = self.data_dir.joinpath(".cache").joinpath(filename)
+        path = str(path)
+        dirpath = os.path.dirname(path)
+        if dirpath:
+            os.makedirs(dirpath, exist_ok=True)
+        with open(str(path), "wb") as f:
+            f.write(self.adapter_list_pt.dump_json(processed_data))
+        print("Done saving to disk.")
+
+        return processed_data
 
     def insert_data(self, offset: int, data: List[PT]):
         print(
@@ -146,15 +189,7 @@ class DataIngester:
 
         offset = 0
         for file in files:
-            try:
-                data = self.load_processed_data(file.name)
-            except:
-                print(
-                    "No cache of processed data for {cls} found.".format(cls=file.name)
-                )
-                data = self.load_unprocessed_data(file.name)
-                data = self.process_data_by_batch(data)
-                self.save_processed_data(filename=file.name, data=data)
-            offset = self.insert_data(offset=offset, data=data)
+            processed_data = self.load_processed_data(file.name)
+            offset = self.insert_data(offset=offset, data=processed_data)
 
         self.index_data()

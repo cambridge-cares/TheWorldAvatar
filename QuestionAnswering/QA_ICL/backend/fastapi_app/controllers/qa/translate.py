@@ -2,10 +2,12 @@ from functools import cache
 import json
 import logging
 import os
-from typing import List, Optional
+from typing import Annotated, List, Optional
+from fastapi import Depends
 from openai import OpenAI
 from pydantic import TypeAdapter
 
+from config import AppSettings, get_app_settings
 from services.example_store.model import DataRequest
 from services.schema_store.model import RDFRelation
 from utils.rdf import try_make_prefixed_iri
@@ -81,9 +83,11 @@ Your task is to translate the following question to an executable data request. 
 
 
 @cache
-def get_nlq2datareq_translator():
+def get_nlq2datareq_translator(
+    settings: Annotated[AppSettings, Depends(get_app_settings)]
+):
     return Nlq2DataReqTranslator(
-        openai_base_url=os.getenv("TRANSLATOR_OPENAI_BASE_URL"),
-        openai_api_key=os.getenv("TRANSLATOR_OPENAI_API_KEY"),
-        openai_model=os.environ["TRANSLATOR_OPENAI_MODEL"],
+        openai_base_url=settings.translator.base_url,
+        openai_api_key=settings.translator.api_key,
+        openai_model=settings.translator.model,
     )

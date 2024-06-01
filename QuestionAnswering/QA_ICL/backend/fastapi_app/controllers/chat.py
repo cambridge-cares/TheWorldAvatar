@@ -1,10 +1,14 @@
+from functools import cache
 import logging
 import os
-from typing import Callable, Optional
+from typing import Annotated, Callable, Optional
 
+from fastapi import Depends
 from openai import OpenAI, Stream
 from openai.types.chat.chat_completion_chunk import ChatCompletionChunk
 import tiktoken
+
+from config import AppSettings, get_app_settings
 
 logger = logging.getLogger(__name__)
 
@@ -93,9 +97,10 @@ Answer: """
         )
 
 
-def get_chatbot_client():
+@cache
+def get_chatbot_client(settings: Annotated[AppSettings, Depends(get_app_settings)]):
     return ChatbotClient(
-        openai_base_url=os.getenv("CHAT_OPENAI_BASE_URL"),
-        openai_api_key=os.getenv("CHAT_OPENAI_API_KEY"),
-        openai_model=os.environ["CHAT_OPENAI_MODEL"],
+        openai_base_url=settings.chat.base_url,
+        openai_api_key=settings.chat.api_key,
+        openai_model=settings.chat.model,
     )
