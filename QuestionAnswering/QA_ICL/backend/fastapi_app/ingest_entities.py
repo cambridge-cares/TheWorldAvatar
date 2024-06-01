@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 import numpy as np
@@ -6,7 +5,7 @@ from redis import Redis
 from redis.commands.search.field import TextField, VectorField, TagField
 import regex
 
-from services.ingest import DataIngester
+from services.ingest import DataIngester, load_ingest_args
 from services.entity_store import get_cls2config
 from services.embed import IEmbedder, TritonEmbedder
 from services.redis import does_index_exist
@@ -77,10 +76,9 @@ def make_entity_search_schema(vector_dim: int):
     )
 
 
-if __name__ == "__main__":
-    redis_client = Redis(
-        host=os.getenv("REDIS_HOST", "localhost"), decode_responses=True
-    )
+def main():
+    args = load_ingest_args()
+    redis_client = Redis(host=args.redis_host, decode_responses=True)
     if does_index_exist(redis_client=redis_client, index_name=ENTITIES_INDEX_NAME):
         print(
             "Index {index_name} exists; entities have already been ingested".format(
@@ -94,7 +92,7 @@ if __name__ == "__main__":
             )
         )
 
-        embedder = TritonEmbedder(url=os.environ["TEXT_EMBEDDING_URL"])
+        embedder = TritonEmbedder(url=args.text_embedding_url)
 
         cls2config = get_cls2config()
 
@@ -115,6 +113,7 @@ if __name__ == "__main__":
 
         ingester = DataIngester(
             dirname=ENTITIES_DIRNAME,
+            invalidate_cache=args.invalidate_cache,
             unprocessed_type=LexiconEntry,
             processed_type=LexiconEntryProcessed,
             process_func=process_func,
@@ -128,3 +127,7 @@ if __name__ == "__main__":
         )
         ingester.ingest()
         print("Ingestion complete.")
+
+
+if __name__ == "__main__":
+    main()

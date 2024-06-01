@@ -1,5 +1,3 @@
-import json
-import os
 from typing import List
 
 import numpy as np
@@ -7,7 +5,7 @@ from redis import Redis
 from redis.commands.search.field import VectorField
 
 from services.embed import IEmbedder, TritonEmbedder
-from services.ingest import DataIngester
+from services.ingest import DataIngester, load_ingest_args
 from services.redis import does_index_exist
 from services.example_store.model import (
     EXAMPLES_INDEX_NAME,
@@ -57,12 +55,13 @@ def make_example_search_schema(vector_dim: int):
     )
 
 
-if __name__ == "__main__":
-    redis_client = Redis(
-        host=os.getenv("REDIS_HOST", "localhost"), decode_responses=True
-    )
+def main():
+    args = load_ingest_args()
+    redis_client = Redis(host=args.redis_host, decode_responses=True)
 
-    if does_index_exist(redis_client=redis_client, index_name=EXAMPLES_INDEX_NAME):
+    if not args.drop_index and does_index_exist(
+        redis_client=redis_client, index_name=EXAMPLES_INDEX_NAME
+    ):
         print(
             "Index {index_name} exists; examples have already been ingested.".format(
                 index_name=EXAMPLES_INDEX_NAME
@@ -75,13 +74,14 @@ if __name__ == "__main__":
             )
         )
 
-        embedder = TritonEmbedder(url=os.environ["TEXT_EMBEDDING_URL"])
+        embedder = TritonEmbedder(url=args.text_embedding_url)
         vector_dim = len(embedder(["warmup"])[0])
         print("Vector dimension: ", vector_dim)
         schema = make_example_search_schema(vector_dim=vector_dim)
 
         ingester = DataIngester(
             dirname=EXAMPLES_DIRNAME,
+            invalidate_cache=args.invalidate_cache,
             unprocessed_type=Nlq2DataReqExample,
             processed_type=Nlq2DataReqExampleProcessed,
             process_func=lambda examples: process_examples(
@@ -97,3 +97,7 @@ if __name__ == "__main__":
         )
         ingester.ingest()
         print("Ingestion complete.")
+
+
+if __name__ == "__main__":
+    main()
