@@ -20,14 +20,14 @@ class MOPCBU:
     def query_MOPFormula(self):
         """Query for newly instantiated Mops and return the MOPFormula to deduce the MOPFormula"""
         query = f"""
-        PREFIX om: <{self.OM}>
-        PREFIX rdfs: <{self.RDFS}>
+        PREFIX om:      <{self.OM}>
+        PREFIX rdfs:    <{self.RDFS}>
 
         SELECT ?MOPFormula
         WHERE {{
-            ?MOPID om:hasProvenance ?ProvenanceID ;
-                   om:hasMOPFormula ?MOPFormula .
-            ?ProvenanceID om:hasReferenceDOI "Not in OntoMOPs KG" .
+            ?MOPID          om:hasProvenance      ?ProvenanceID         ;
+                            om:hasMOPFormula      ?MOPFormula           .
+            ?ProvenanceID   om:hasReferenceDOI    "Not in OntoMOPs KG"  .
         }}
         LIMIT 10
         """
@@ -46,9 +46,9 @@ class MOPCBU:
     def checkCBU(self, cbu):
         """Query the old MOPs for the CBU and check if it exists."""
         query = f"""
-        PREFIX om: <{self.OM}>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX rdfs: <{self.RDFS}>
+        PREFIX om:      <{self.OM}>
+        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs:    <{self.RDFS}>
 
         ASK WHERE {{
             ?MOPID om:hasChemicalBuildingUnit "{cbu}" .

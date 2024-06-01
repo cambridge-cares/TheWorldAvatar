@@ -20,13 +20,13 @@ class MOPGBU:
     def query_Geometry(self):
         """Query for newly instantiated Mops and return the Geometry value to deduce the GBUs"""
         query = f"""
-        PREFIX om: <{self.OM}>
-        PREFIX rdfs: <{self.RDFS}>
+        PREFIX om:      <{self.OM}>
+        PREFIX rdfs:    <{self.RDFS}>
 
         SELECT ?Geometry
         WHERE {{
-        ?MOPID          om:hasAssemblyModel    ?AMID .
-        ?AMID           om:value    ?Geometry .
+        ?MOPID          om:hasAssemblyModel     ?AMID       .
+        ?AMID           om:value                ?Geometry   .
         }}
         LIMIT 10
         """
@@ -44,9 +44,9 @@ class MOPGBU:
     def checkGBU(self, gbu):
         """Query the old MOPs for the GBU and check if it exists. Error if there is one wrongly identified."""
         query = f"""
-        PREFIX om: <{self.OM}>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX rdfs: <{self.RDFS}>
+        PREFIX om:      <{self.OM}>
+        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs:    <{self.RDFS}>
 
         ASK WHERE {{
             ?MOPID om:hasGeneralBuildingUnit "{gbu}" .
