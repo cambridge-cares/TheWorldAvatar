@@ -1,4 +1,3 @@
-import os
 from typing import Dict, List
 import importlib.resources
 
@@ -8,7 +7,7 @@ from redis import Redis
 from redis.commands.search.field import VectorField
 
 from services.embed import IEmbedder, TritonEmbedder
-from services.ingest import DataIngester
+from services.ingest import DataIngester, load_ingest_args
 from services.redis import does_index_exist
 from services.schema_store.model import (
     RELATIONS_INDEX_NAME,
@@ -75,17 +74,27 @@ def make_relation_search_schema(vector_dim: int):
     )
 
 
-if __name__ == "__main__":
-    redis_client = Redis(
-        host=os.getenv("REDIS_HOST", "localhost"), decode_responses=True
-    )
+def main():
+    args = load_ingest_args()
+    redis_client = Redis(host=args.redis_host, decode_responses=True)
 
-    if does_index_exist(redis_client=redis_client, index_name=RELATIONS_INDEX_NAME):
+    if not args.drop_index and does_index_exist(
+        redis_client=redis_client, index_name=RELATIONS_INDEX_NAME
+    ):
         print(
             "Index {index_name} exists; schema descriptions have already been ingested.".format(
                 index_name=RELATIONS_INDEX_NAME
             )
         )
+        return
+
+    if args.drop_index:
+        print(
+            "Index {index_name} exists but will be recreated.\n".format(
+                index_name=RELATIONS_INDEX_NAME
+            )
+        )
+        redis_client.ft(RELATIONS_INDEX_NAME).dropindex(delete_documents=True)
     else:
         print(
             "Index {index_name} does not exist.\n".format(
@@ -93,36 +102,41 @@ if __name__ == "__main__":
             )
         )
 
-        texts = [
-            file.read_text()
-            for file in importlib.resources.files("data")
-            .joinpath("schema/annotations")
-            .iterdir()
-            if file.is_file() and file.name.endswith(".json")
-        ]
-        adapter = TypeAdapter(List[RDFItemAnnotated])
-        items = [item for text in texts for item in adapter.validate_json(text)]
-        iri2annotation = {item.iri: item.annotation for item in items}
+    texts = [
+        file.read_text()
+        for file in importlib.resources.files("data")
+        .joinpath("schema/annotations")
+        .iterdir()
+        if file.is_file() and file.name.endswith(".json")
+    ]
+    adapter = TypeAdapter(List[RDFItemAnnotated])
+    items = [item for text in texts for item in adapter.validate_json(text)]
+    iri2annotation = {item.iri: item.annotation for item in items}
 
-        embedder = TritonEmbedder(url=os.environ["TEXT_EMBEDDING_URL"])
-        vector_dim = len(embedder(["warmup"])[0])
-        print("Vector dimension: ", vector_dim)
-        schema = make_relation_search_schema(vector_dim=vector_dim)
+    embedder = TritonEmbedder(url=args.text_embedding_url)
+    vector_dim = len(embedder(["warmup"])[0])
+    print("Vector dimension: ", vector_dim)
+    schema = make_relation_search_schema(vector_dim=vector_dim)
 
-        ingester = DataIngester(
-            dirname=RELATIONS_DIRNAME,
-            unprocessed_type=RDFRelation,
-            processed_type=RDFRelationProcessed,
-            process_func=lambda relations: process_relations(
-                embedder=embedder, iri2annotation=iri2annotation, relations=relations
-            ),
-            process_batchsize=RELATIONS_PROCESS_BATCHSIZE,
-            redis_client=redis_client,
-            redis_key_prefix=RELATIONS_KEY_PREFIX,
-            redis_preinsert_transform=transform_relations_preinsert,
-            redis_insert_batchsize=RELATIONS_INSERT_BATCHSIZE,
-            redis_index_name=RELATIONS_INDEX_NAME,
-            redis_ft_schema=schema,
-        )
-        ingester.ingest()
-        print("Ingestion complete.")
+    ingester = DataIngester(
+        dirname=RELATIONS_DIRNAME,
+        invalidate_cache=args.invalidate_cache,
+        unprocessed_type=RDFRelation,
+        processed_type=RDFRelationProcessed,
+        process_func=lambda relations: process_relations(
+            embedder=embedder, iri2annotation=iri2annotation, relations=relations
+        ),
+        process_batchsize=RELATIONS_PROCESS_BATCHSIZE,
+        redis_client=redis_client,
+        redis_key_prefix=RELATIONS_KEY_PREFIX,
+        redis_preinsert_transform=transform_relations_preinsert,
+        redis_insert_batchsize=RELATIONS_INSERT_BATCHSIZE,
+        redis_index_name=RELATIONS_INDEX_NAME,
+        redis_ft_schema=schema,
+    )
+    ingester.ingest()
+    print("Ingestion complete.")
+
+
+if __name__ == "__main__":
+    main()
