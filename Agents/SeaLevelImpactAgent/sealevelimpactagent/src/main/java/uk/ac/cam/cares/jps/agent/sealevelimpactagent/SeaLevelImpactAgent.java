@@ -28,16 +28,12 @@ public class SeaLevelImpactAgent extends JPSAgent {
 
     private static final String PROPETIES_PATH = "/inputs/config.properties";
     private final String FUNCTION_KEY = "function";
-
-
     private static final Logger LOGGER = LogManager.getLogger(SeaLevelImpactAgent.class);
-
     private EndpointConfig endpointConfig = new EndpointConfig();
     private String dbName;
     private String kgEndpoint;
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
-
 
     /**
      * Initialise agent
@@ -56,8 +52,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
             this.storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         }
 
-        this.remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName),
-                endpointConfig.getDbUser(), endpointConfig.getDbPassword());
+        this.remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName), endpointConfig.getDbUser(), endpointConfig.getDbPassword());
     }
 
     /**
