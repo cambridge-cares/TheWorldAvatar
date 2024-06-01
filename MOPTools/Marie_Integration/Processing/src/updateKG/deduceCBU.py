@@ -2,7 +2,7 @@ import os
 import re
 import pyderivationagent
 
-class MOPGeometryUpdater:
+class MOPCBU:
     OM      = 'http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#'
     RDF     = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
     RDFS    = 'http://www.w3.org/2000/01/rdf-schema#'
@@ -36,6 +36,7 @@ class MOPGeometryUpdater:
     def deduceCBU(self, MOPFormula):
         """Deduce CBU by splitting the MOPFormula string into the two parts, 
         e.g. [Mg4C40H44O12S4]3[(C4H2S)(CO2)2]6"""
+        # extract the part between the squared brackets:
         matches = re.findall(r'\[([^\[\]]+)\]', MOPFormula)
         if len(matches) == 2:
             return matches[0], matches[1]
@@ -91,7 +92,7 @@ def main():
     KG_PASSWORD                 = 'admin'
     FILE_DIRECTORY              = "../data/MOPGeometryData"
 
-    updater = MOPGeometryUpdater(
+    updater = MOPCBU(
         query_endpoint          = SPARQL_QUERY_ENDPOINT,
         update_endpoint         = SPARQL_UPDATE_ENDPOINT,
         kg_user                 = KG_USERNAME,
