@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.travellingsalesmanagent;
+package uk.ac.cam.cares.jps.agent.sealevelimpactagent;
 
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
@@ -22,7 +22,7 @@ import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 @WebServlet(urlPatterns = "/runtsp")
 
-public class TravellingSalesmanAgent extends JPSAgent {
+public class SeaLevelImpactAgent extends JPSAgent {
     
     private static String tspFunction = null; 
 
@@ -30,7 +30,7 @@ public class TravellingSalesmanAgent extends JPSAgent {
     private final String FUNCTION_KEY = "function";
 
 
-    private static final Logger LOGGER = LogManager.getLogger(TravellingSalesmanAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(SeaLevelImpactAgent.class);
 
     private EndpointConfig endpointConfig = new EndpointConfig();
     private String dbName;
@@ -116,11 +116,6 @@ public class TravellingSalesmanAgent extends JPSAgent {
             // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
             JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
 
-            // Split road into multiple smaller segment and find the nearest_node
-            NearestNodeFinder nearestNodeFinder = new NearestNodeFinder();
-
-            // Create a table to store nearest_node
-            nearestNodeFinder.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
             //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();

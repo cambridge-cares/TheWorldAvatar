@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.travellingsalesmanagent;
+package uk.ac.cam.cares.jps.agent.sealevelimpactagent;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
