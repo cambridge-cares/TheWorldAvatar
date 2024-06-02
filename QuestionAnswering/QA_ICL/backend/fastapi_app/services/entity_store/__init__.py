@@ -231,9 +231,9 @@ def get_cls2linker(
     return FrozenDict(
         {
             "Ship": ship_linker,
-            "Species": species_linker,
-            "ZeoliteFramework": zeolite_framework_linker,
-            "ZeoliticMaterial": zeolitic_material_linker,
+            "os:Species": species_linker,
+            "zeo:ZeoliteFramework": zeolite_framework_linker,
+            "zeo:ZeoliticMaterial": zeolitic_material_linker,
         }
     )
 
