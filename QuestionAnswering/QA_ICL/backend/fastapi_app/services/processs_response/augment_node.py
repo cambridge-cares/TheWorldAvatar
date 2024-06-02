@@ -29,7 +29,8 @@ class NodeDataRetriever:
         str_iris = iri2idxes.keys()
         iri2dataidx = {iri: i for i, iri in enumerate(str_iris)}
         node_data = [
-            FrozenDict(obj) for obj in getter(kg_client=self.kg_client, iris=str_iris)
+            FrozenDict.from_dict(obj)
+            for obj in getter(kg_client=self.kg_client, iris=str_iris)
         ]
 
         for iri, idxes in iri2idxes.items():

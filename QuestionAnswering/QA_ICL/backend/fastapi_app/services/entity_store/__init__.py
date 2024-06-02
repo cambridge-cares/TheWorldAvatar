@@ -214,7 +214,7 @@ def get_cls2config():
     config = adapter.validate_json(
         files("resources").joinpath("el_config.json").read_text()
     )
-    return FrozenDict({entry.cls: entry.el_config for entry in config})
+    return FrozenDict.from_dict({entry.cls: entry.el_config for entry in config})
 
 
 @cache
@@ -228,7 +228,7 @@ def get_cls2linker(
         ZeoliticMaterialLinker, Depends(get_zeoliticMaterial_linker)
     ],
 ):
-    return FrozenDict(
+    return FrozenDict.from_dict(
         {
             "Ship": ship_linker,
             "os:Species": species_linker,

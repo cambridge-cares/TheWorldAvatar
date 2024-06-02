@@ -7,6 +7,7 @@ from services.kg import KgClient
 from utils.rdf import flatten_sparql_select_response
 
 
+# TODO: ORM
 def get_rxn_data(kg_client: KgClient, iris: Sequence[str]):
     query = """PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 

@@ -24,7 +24,7 @@ def get_ns2kg(
     plot_client: Annotated[KgClient, Depends(get_sgPlot_bgClient)],
     company_client: Annotated[KgClient, Depends(get_sgCompany_bgClient)],
 ):
-    return FrozenDict(
+    return FrozenDict.from_dict(
         {
             "ontospecies": ontospecies_client,
             "ontokin": ontokin_client,

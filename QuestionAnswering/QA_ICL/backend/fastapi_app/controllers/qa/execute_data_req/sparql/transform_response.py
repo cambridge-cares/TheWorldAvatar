@@ -1,3 +1,4 @@
+from collections import defaultdict
 from functools import cache
 from typing import Annotated, Dict, List, Sequence, Union
 
@@ -9,6 +10,7 @@ from services.processs_response.augment_node import NodeDataRetriever
 from services.processs_response.ontocompchem import get_ontocompchem_nodeDataRetriever
 from services.processs_response.ontokin import get_ontokin_nodeDataRetriever
 from services.processs_response.ontospecies import get_ontospecies_nodeDataRetriever
+from utils.collections import listofdict2dictoflist
 
 
 class SparqlResponseTransformer:
@@ -30,8 +32,6 @@ class SparqlResponseTransformer:
         bindings: List[Dict[str, Union[str, float]]],
         res_map: Dict[str, SparqlNodeMappingConfig],
     ):
-        df = pd.DataFrame(bindings, columns=vars)
-
         for var in vars:
             transform_config = res_map.get(var)
             if not transform_config:
@@ -41,19 +41,29 @@ class SparqlResponseTransformer:
             if not node_data_retriever:
                 continue
 
-            df[var] = node_data_retriever.retrieve(
-                type=transform_config.cls, iris=df[var]
+            retrieved_data = node_data_retriever.retrieve(
+                type=transform_config.cls,
+                iris=[binding.get(var) for binding in bindings],
             )
+            for binding, datum in zip(bindings, retrieved_data):
+                binding[var] = datum
 
         pkeys = [var for var, config in res_map.items() if config.pkey]
         non_pkeys = [var for var, config in res_map.items() if not config.pkey]
 
-        return (
-            df.groupby(pkeys)[non_pkeys]
-            .apply(lambda gp: pd.Series({col: gp[col].dropna().to_list() for col in gp.columns}))
-            .reset_index()
-            .to_dict("records")
-        )
+        pkeys2data: defaultdict[str, list[dict]] = defaultdict(list)
+        for binding in bindings:
+            pkeys2data[tuple(binding.get(k) for k in pkeys)].append(
+                {k: binding.get(k) for k in non_pkeys}
+            )
+
+        return [
+            {
+                **{pkey: val for pkey, val in zip(pkeys, pkeyvalues)},
+                **listofdict2dictoflist(data),
+            }
+            for pkeyvalues, data in pkeys2data.items()
+        ]
 
 
 @cache
