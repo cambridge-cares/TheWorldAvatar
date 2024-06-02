@@ -8,7 +8,7 @@ from openai import BaseModel
 from pydantic import ConfigDict, Field, TypeAdapter
 import yaml
 
-from utils.dict import deep_update
+from utils.collections import deep_update
 
 
 logger = logging.getLogger()

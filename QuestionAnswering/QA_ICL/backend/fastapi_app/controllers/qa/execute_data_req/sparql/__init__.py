@@ -9,7 +9,7 @@ from services.example_store.model import SparqlDataReqForm
 from services.kg import KgClient
 from services.model import DocumentCollectionDataItem, TableDataItem
 from utils.collections import FrozenDict
-from utils.json import flatten_dict
+from utils.json import deep_pd_json_normalize_list
 from utils.rdf import flatten_sparql_select_response
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
@@ -70,7 +70,7 @@ class SparqlDataReqExecutor:
         logger.info("Done")
 
         logger.info("Linearising documents into a table...")
-        flattened_docs = [flatten_dict(doc) for doc in docs]
+        flattened_docs = deep_pd_json_normalize_list(docs)
         table_item = TableDataItem.from_data(flattened_docs)
         logger.info("Done")
 

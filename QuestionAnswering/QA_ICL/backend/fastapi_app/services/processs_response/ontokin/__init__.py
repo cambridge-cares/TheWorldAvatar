@@ -19,8 +19,8 @@ def get_ontokin_nodeDataRetriever(
     return NodeDataRetriever(
         kg_client=bg_client,
         type2getter={
-            "ThermoModel": get_thermo_model_data,
-            "TransportModel": get_transport_model_data,
-            "KineticModel": get_kinetic_model_data,
+            "okin:ThermoModel": get_thermo_model_data,
+            "okin:TransportModel": get_transport_model_data,
+            "okin:KineticModel": get_kinetic_model_data,
         },
     )
