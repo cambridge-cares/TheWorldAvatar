@@ -33,6 +33,15 @@ public class SeaLevelImpactAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(SeaLevelImpactAgent.class);
     private EndpointConfig endpointConfig = new EndpointConfig();
     private String dbName;
+    public static String heritagetreesTable = null;
+    public static String historicsitesTable = null;
+    public static String monumentsTable = null;
+    public static String museumsTable = null;
+    public static String touristattractionsTable = null;
+    public static String landplotTable= null;
+    public static String populationTable= null;
+    public static String osm_streetTable= null;
+
     private String kgEndpoint;
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
@@ -55,6 +64,14 @@ public class SeaLevelImpactAgent extends JPSAgent {
             Properties prop = new Properties();
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
+            this.heritagetreesTable= prop.getProperty("heritagetreesTable.name");
+            this.historicsitesTable= prop.getProperty("historicsitesTable.name");
+            this.monumentsTable= prop.getProperty("monumentsTable.name");
+            this.museumsTable= prop.getProperty("museumsTable.name");
+            this.touristattractionsTable= prop.getProperty("touristattractionsTable.name");
+            this.landplotTable= prop.getProperty("landplotTable.name");
+            this.populationTable= prop.getProperty("populationTable.name");
+            this.osm_streetTable= prop.getProperty("osm_streetTable.name");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
@@ -87,11 +104,13 @@ public class SeaLevelImpactAgent extends JPSAgent {
         this.projectionyear = requestParams.getInt(PROJECTIONYEAR_KEY);
         this.quantile = requestParams.getInt(QUANTILE_KEY);
         LOGGER.info("Successfully set SSP Scenario to " + sspScenario);
+        LOGGER.info("Successfully set Projection year to "+projectionyear);
         LOGGER.info("Successfully set Confidence level to " + confidence);
         LOGGER.info("Successfully set Quantile to " + quantile);
 
         JSONObject response = new JSONObject();
         response.put("message", "Successfully set SSP Scenario to " + sspScenario);
+        response.put("message", "Successfully set Projection Year to " + projectionyear);
         response.put("message", "Successfully set Confidence level to " + confidence);
         response.put("message", "Successfully set Quantile to " + quantile);
 
@@ -101,6 +120,10 @@ public class SeaLevelImpactAgent extends JPSAgent {
             String seaLevelChangeUUID =impactAssessor.getSeaLevelChangeUUID(remoteRDBStoreClient, sspScenario, projectionyear, confidence, quantile);
             if (seaLevelChangeUUID.isEmpty()){response.put("message","No sealevelchange UUID");}
             LOGGER.info("Assessing sea-level rise impact for uuid "+ seaLevelChangeUUID);
+
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);

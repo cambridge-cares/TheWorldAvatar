@@ -61,7 +61,7 @@ Generates travelling salesman route via geoserver SQL view. this route runs thro
 To run the agent, simply run the following cURL command:
 
 ```bash
-curl -X POST "localhost:3838/sealevelimpactagent/slrimpact?ssp=ssp585&confidence=low&quantile=95"
+curl -X POST "localhost:3838/sealevelimpactagent/slrimpact?ssp=ssp585&projectionyear=2150&confidence=low&quantile=95"
 ```
 
 ## 6. Debugging
