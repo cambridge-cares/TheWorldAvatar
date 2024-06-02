@@ -61,7 +61,7 @@ Generates travelling salesman route via geoserver SQL view. this route runs thro
 To run the agent, simply run the following cURL command:
 
 ```bash
-curl -X POST "localhost:3838/sealevelimpactagent/runtsp?function=UR"
+curl -X POST "localhost:3838/sealevelimpactagent/slrimpact?ssp=ssp585&confidence=low&quantile=95"
 ```
 
 ## 6. Debugging
@@ -85,3 +85,6 @@ The debugger port will be available at 5005.
 
 [stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
 [stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+
+
+docker service rm singapore-sealevelimpactagent
