@@ -17,14 +17,15 @@ public class ImpactAssessor {
      * @return
      * @throws SQLException
      */
-    public String getSeaLevelChangeUUID(RemoteRDBStoreClient remoteRDBStoreClient, String sspScenario, String confidence, Double quantile) throws SQLException {
+    public String getSeaLevelChangeUUID(RemoteRDBStoreClient remoteRDBStoreClient, String sspScenario, Integer projectionyear, String confidence, Integer quantile) throws SQLException {
 
-        String findNearestNode_sql = "";
+        String findSeaLevelChangeUUID_sql = "SELECT uuid FROM sealevelprojections WHERE \"ssp scenario\" = '"+sspScenario+"' AND confidence = '"+confidence+"' AND quantile = "+quantile+" AND projectionyear = "+projectionyear+"";
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
-
+            
             try (Statement statement = connection.createStatement()) {
-                try (ResultSet resultSet = statement.executeQuery(findNearestNode_sql)) {
+
+                try (ResultSet resultSet = statement.executeQuery(findSeaLevelChangeUUID_sql)) {
                     if (resultSet.next()) {
                         // Assuming 'uuid' and 'distance' are columns in your query result
                         String uuid = resultSet.getString("uuid");
@@ -37,7 +38,7 @@ public class ImpactAssessor {
             }
         }
     }
-
+    
 
     /**
      * Create connection to remoteStoreClient and execute SQL statement
@@ -50,5 +51,6 @@ public class ImpactAssessor {
         }
     }
 }
+
 
 

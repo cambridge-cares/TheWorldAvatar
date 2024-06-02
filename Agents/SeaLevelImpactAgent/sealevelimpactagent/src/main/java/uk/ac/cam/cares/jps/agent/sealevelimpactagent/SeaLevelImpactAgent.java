@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.json.JSONObject;
+import org.openrdf.query.algebra.In;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -20,11 +21,13 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class SeaLevelImpactAgent extends JPSAgent {
     
     private static String sspScenario = null;
+    private static Integer projectionyear = null;
     private static String confidence = null;
-    private static Double quantile = null;
+    private static Integer quantile = null;
 
     private static final String PROPETIES_PATH = "/inputs/config.properties";
     private final String SSP_SCENARIO_KEY = "ssp";
+    private final String PROJECTIONYEAR_KEY = "projectionyear";
     private final String CONFIDENCE_KEY = "confidence";
     private final String QUANTILE_KEY = "quantile";
     private static final Logger LOGGER = LogManager.getLogger(SeaLevelImpactAgent.class);
@@ -81,7 +84,8 @@ public class SeaLevelImpactAgent extends JPSAgent {
 
         this.sspScenario = requestParams.getString(SSP_SCENARIO_KEY);
         this.confidence = requestParams.getString(CONFIDENCE_KEY);
-        this.quantile = requestParams.getDouble(QUANTILE_KEY);
+        this.projectionyear = requestParams.getInt(PROJECTIONYEAR_KEY);
+        this.quantile = requestParams.getInt(QUANTILE_KEY);
         LOGGER.info("Successfully set SSP Scenario to " + sspScenario);
         LOGGER.info("Successfully set Confidence level to " + confidence);
         LOGGER.info("Successfully set Quantile to " + quantile);
@@ -94,9 +98,9 @@ public class SeaLevelImpactAgent extends JPSAgent {
         try {
             init();
             ImpactAssessor impactAssessor = new ImpactAssessor();
-            String seaLevelChangeUUID =impactAssessor.getSeaLevelChangeUUID(remoteRDBStoreClient, sspScenario, confidence, quantile);
+            String seaLevelChangeUUID =impactAssessor.getSeaLevelChangeUUID(remoteRDBStoreClient, sspScenario, projectionyear, confidence, quantile);
             if (seaLevelChangeUUID.isEmpty()){response.put("message","No sealevelchange UUID");}
-
+            LOGGER.info("Assessing sea-level rise impact for uuid "+ seaLevelChangeUUID);
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
