@@ -7,6 +7,7 @@ from services.processs_response.augment_node import NodeDataRetriever
 from utils.rdf import flatten_sparql_select_response
 
 
+# TODO: ORM
 def get_species_unique_identifiers(kg_client: KgClient, iris: Sequence[str]):
     query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
     
@@ -43,7 +44,44 @@ WHERE {{
         iri: {k: v for k, v in data.items() if v} for iri, data in iri2data.items()
     }
 
-    return [iri2data.get(iri, {}) for iri in iris]
+    return [{"IRI": iri, **iri2data.get(iri, {})} for iri in iris]
+
+
+def get_ontospecies_property_data(kg_client: KgClient, iris: Sequence[str]):
+    query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    
+SELECT *
+WHERE {{
+    VALUES ?Property {{ {values} }}
+    ?Property os:value ?Value .
+    OPTIONAL {{
+        ?Property os:unit/rdfs:label ?Unit .
+    }}
+    OPTIONAL {{
+        ?Property os:hasReferenceState [ os:value ?RefStateValue ; os:unit/rdfs:label ?RefStateUnit ] .
+    }}
+    OPTIONAL {{
+        ?Property os:hasProvenance/rdfs:label ?Provenance
+    }}
+}}""".format(
+        values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
+    )
+
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
+
+    iri2data = {
+        binding["Property"]: {
+            k: binding.get(k)
+            for k in ["Value", "Unit", "RefStateValue", "RefStateUnit", "Provenance"]
+        }
+        for binding in bindings
+    }
+    iri2data = {
+        iri: {k: v for k, v in data.items() if v} for iri, data in iri2data.items()
+    }
+
+    return [{"IRI": iri, **iri2data.get(iri, {})} for iri in iris]
 
 
 @cache
@@ -52,5 +90,8 @@ def get_ontospecies_nodeDataRetriever(
 ):
     return NodeDataRetriever(
         kg_client=bg_client,
-        type2getter={"Species": get_species_unique_identifiers},
+        type2getter={
+            "os:Species": get_species_unique_identifiers,
+            "os:Property": get_ontospecies_property_data,
+        },
     )

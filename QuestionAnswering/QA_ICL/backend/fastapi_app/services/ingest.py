@@ -26,7 +26,9 @@ class IngestArgs(BaseModel):
 def load_ingest_args():
     parser = ArgumentParser()
     parser.add_argument("--redis_host", required=True, type=str)
-    parser.add_argument("--text_embedding_server", choices=["triton", "openai"])
+    parser.add_argument(
+        "--text_embedding_server", choices=["triton", "openai"], default="triton"
+    )
     parser.add_argument("--text_embedding_url")
     parser.add_argument(
         "--drop_index",
@@ -72,8 +74,7 @@ class DataIngester(Generic[UT, PT]):
     ):
         self.data_dir = importlib.resources.files("data").joinpath(dirname)
         self.invalidate_cache = invalidate_cache
-        self.unprocessed_type = unprocessed_type
-        self.processed_type = processed_type
+        self.adapter_list_ut = TypeAdapter(List[unprocessed_type])
         self.adapter_list_pt = TypeAdapter(List[processed_type])
         self.process_func = process_func
         self.process_batchsize = process_batchsize
@@ -111,10 +112,9 @@ class DataIngester(Generic[UT, PT]):
                 )
 
         print("Loading unprocessed data {cls} into memory...".format(cls=filename))
-        unprocessed_data = [
-            self.unprocessed_type.model_validate(datum)
-            for datum in json.loads(self.data_dir.joinpath(filename).read_text())
-        ]
+        unprocessed_data = self.adapter_list_ut.validate_json(
+            self.data_dir.joinpath(filename).read_text()
+        )
         print(
             "{num} rows of data loaded into memory.\n".format(num=len(unprocessed_data))
         )
