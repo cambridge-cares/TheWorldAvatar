@@ -40,17 +40,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
     public void init() {
         readConfig();
 
-        if(!kgEndpoint.isEmpty() ){
-            try {
-                this.storeClient = new RemoteStoreClient(kgEndpoint, kgEndpoint);
-            } catch (Exception e) {
-             System.out.println(e + "Invalid blazegraph endpoint specified");
-            }
-        }else
-        {   //Follow the running stack's blazegraph URL
-            this.storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        }
-
+        this.storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         this.remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName), endpointConfig.getDbUser(), endpointConfig.getDbPassword());
     }
 
@@ -62,8 +52,6 @@ public class SeaLevelImpactAgent extends JPSAgent {
             Properties prop = new Properties();
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
-            this.kgEndpoint = prop.getProperty("kgEndpoint");
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
@@ -85,6 +73,8 @@ public class SeaLevelImpactAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
+
+
         if (!validateInput(requestParams)) {
             throw new JPSRuntimeException("Unable to validate request sent to the agent.");
         }
@@ -103,6 +93,9 @@ public class SeaLevelImpactAgent extends JPSAgent {
 
         try {
             init();
+            ImpactAssessor impactAssessor = new ImpactAssessor();
+            String seaLevelChangeUUID =impactAssessor.getSeaLevelChangeUUID(remoteRDBStoreClient, sspScenario, confidence, quantile);
+            if (seaLevelChangeUUID.isEmpty()){response.put("message","No sealevelchange UUID");}
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,11 +113,9 @@ public class SeaLevelImpactAgent extends JPSAgent {
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (!requestParams.has(SSP_SCENARIO_KEY)) {
-            LOGGER.error("Function is missing.");
+            LOGGER.error("SSP is missing.");
             return false;
         }
         return true;
     }
-
-
 }
