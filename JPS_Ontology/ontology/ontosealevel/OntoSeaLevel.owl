@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontosealevel="https://www.theworldavatar.com/kg/ontosealevel/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontosealevel/">
-        <dc:date>21 May 2024</dc:date>
+        <dc:date>23 May 2024</dc:date>
         <rdfs:comment>The Ontology for Sea Level is developed to represent information about sea level.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -488,6 +488,9 @@
                 <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelMeasurement"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A change in the sea level</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/"/>
+        <rdfs:label>Sea level change</rdfs:label>
     </owl:Class>
     
 
