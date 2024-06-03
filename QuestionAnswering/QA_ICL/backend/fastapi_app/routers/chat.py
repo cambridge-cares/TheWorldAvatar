@@ -30,15 +30,10 @@ async def chat(
     logger.info(req)
 
     def generate():
-        start = time.time()
         for chunk in chatbot_client.request_stream(req.question, req.data):
             content = chunk.choices[0].delta.content
             if content is not None:
-                yield "data: {data}\n\n".format(
-                    data=json.dumps(
-                        {"content": content, "latency": time.time() - start}
-                    )
-                )
+                yield "data: {data}\n\n".format(data=json.dumps({"content": content}))
 
     return StreamingResponse(
         generate(),

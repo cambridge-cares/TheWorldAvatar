@@ -2,6 +2,7 @@ from typing import Annotated, Sequence
 
 from fastapi import Depends
 from model.nlq2req import FuncDataReqForm
+from model.qa import DataItem
 from services.funcs.base import Name2Func
 from services.funcs.sg_building import SGBuildingFuncExecutor, get_sgBuilding_funcExec
 from services.funcs.sg_dispersion import (
@@ -24,8 +25,10 @@ class FuncDataReqExecutor:
         entity_bindings: dict[str, list[str]],
         const_bindings: dict[str, object],
         req_form: FuncDataReqForm,
-    ):
-        return self.name2func[req_form.name](**entity_bindings, **const_bindings)
+    ) -> tuple[list[DataItem], object]:
+        data = self.name2func[req_form.name](**entity_bindings, **const_bindings)
+        artifact = data
+        return data, artifact
 
 
 def get_funcReq_executor(

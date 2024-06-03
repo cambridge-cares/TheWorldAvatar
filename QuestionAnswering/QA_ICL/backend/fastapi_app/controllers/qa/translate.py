@@ -7,6 +7,7 @@ from pydantic import TypeAdapter
 
 from config import AppSettings, get_app_settings
 from model.nlq2req import DataRequest
+from model.qa import TranslationContext
 from model.rdf_schema import RDFRelation
 from utils.rdf import try_make_prefixed_iri
 
@@ -43,8 +44,7 @@ Your task is to translate the following question to an executable data request. 
     def translate(
         self,
         nlq: str,
-        schema_items: list[RDFRelation],
-        examples: list[Nlq2DataReqExample],
+        translation_context: TranslationContext
     ) -> DataRequest:
         prompt = self.PROMPT_TEMPLATE.format(
             examples="\n".join(
@@ -52,7 +52,7 @@ Your task is to translate the following question to an executable data request. 
                     input=example.nlq,
                     output=example.data_req.model_dump_json(),
                 )
-                for example in examples
+                for example in translation_context.examples
             ),
             schema="\n".join(
                 "({s})-[{p}]->({o})".format(
@@ -60,7 +60,7 @@ Your task is to translate the following question to an executable data request. 
                     p=try_make_prefixed_iri(rel.p),
                     o=try_make_prefixed_iri(rel.o),
                 )
-                for rel in schema_items
+                for rel in translation_context.schema
             ),
             question=nlq,
         )

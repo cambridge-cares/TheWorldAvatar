@@ -10,7 +10,7 @@ import shapely.wkt
 from services.entity_store import EntityStore, get_entity_store
 from services.funcs.base import Name2Func
 from services.kg import KgClient, get_sg_ontopClient
-from model.qa_data import WKTGeometryData
+from model.qa import WKTGeometryData
 from services.wkt import WKTTextSRS
 from utils.rdf import flatten_sparql_select_response
 

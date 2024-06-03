@@ -11,7 +11,7 @@ from services.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient
 
 from services.funcs.base import Name2Func
-from model.qa_data import (
+from model.qa import (
     ScatterPlotData,
     ScatterPlotTrace,
     TableData,

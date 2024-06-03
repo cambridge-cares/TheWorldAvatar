@@ -29,7 +29,7 @@ class DataReqExecutor:
         if isinstance(req_form, SparqlDataReqForm):
             exec_func = self.sparql_executor.exec
         elif isinstance(req_form, FuncDataReqForm):
-            return self.func_executor.exec
+            exec_func = self.func_executor.exec
         else:
             raise ValueError("Unsupported: " + str(req_form))
 

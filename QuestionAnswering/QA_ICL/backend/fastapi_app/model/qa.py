@@ -1,7 +1,13 @@
 from __future__ import annotations
-from typing import Annotated, Any, Dict, Literal, Sequence, Union
+from typing import Annotated, Literal, Sequence
 
 from pydantic import BaseModel, Field
+
+from model.nlq2req import (
+    DataRequest,
+    Nlq2DataReqExample,
+)
+from model.rdf_schema import RDFRelation
 
 
 class DocumentCollection(BaseModel):
@@ -16,7 +22,7 @@ class TableDataBase(BaseModel):
     ]
 
     @classmethod
-    def from_data(cls, data: Sequence[dict[str, Any]]):
+    def from_data(cls, data: Sequence[dict[str, object]]):
         cols = []
         cols_set = set()
         for datum in data:
@@ -26,7 +32,7 @@ class TableDataBase(BaseModel):
                     cols_set.add(k)
 
         for datum in data:
-            new_kv: Dict[str, cls] = dict()
+            new_kv: dict[str, cls] = dict()
             for k, v in datum.items():
                 if isinstance(v, Sequence) and all(
                     isinstance(elem, dict) for elem in v
@@ -76,3 +82,30 @@ DataItem = Annotated[
     DocumentCollection | TableData | ScatterPlotData | WKTGeometryData,
     Field(discriminator="type"),
 ]
+
+
+class QARequestArtifact(BaseModel):
+    nlq: str
+    data_req: DataRequest
+    data: object
+
+
+class QARequest(BaseModel):
+    question: str
+
+
+class TranslationContext(BaseModel):
+    examples: list[Nlq2DataReqExample]
+    schema: list[RDFRelation]
+
+
+class QAResponseMetadata(BaseModel):
+    translation_context: TranslationContext
+    data_request: DataRequest
+    linked_variables: dict[str, list[str]]
+
+
+class QAResponse(BaseModel):
+    request_id: str
+    metadata: QAResponseMetadata
+    data: list[DataItem]

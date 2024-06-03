@@ -1,19 +1,10 @@
 import logging
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 
 from controllers.qa import DataSupporter, get_data_supporter
-from model.qa_data import DataItem
-
-
-class QARequest(BaseModel):
-    question: str
-
-
-class QAResponse(BaseModel):
-    data: List[DataItem]
+from model.qa import QARequest, QAResponse
 
 
 logger = logging.getLogger(__name__)
@@ -29,6 +20,4 @@ def qa(
     logger.info("Received request to QA endpoint with the following request body")
     logger.info(req)
 
-    data = data_supporter.query(query=req.question)
-
-    return QAResponse(data=data)
+    return data_supporter.query(query=req.question)
