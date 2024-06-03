@@ -11,19 +11,16 @@ import uk.ac.cam.cares.jps.login.LoginRepository;
 public class SensorRepository {
     UserPhoneNetworkSource userPhoneNetworkSource;
     SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository;
-    LoginRepository loginRepository;
     Logger LOGGER = Logger.getLogger(SensorRepository.class);
     Intent serviceIntent;
     Context context;
 
     public SensorRepository(Context applicationContext,
                             UserPhoneNetworkSource userPhoneNetworkSource,
-                            SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository,
-                            LoginRepository loginRepository) {
+                            SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository) {
         this.context = applicationContext;
         this.userPhoneNetworkSource = userPhoneNetworkSource;
         this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
-        this.loginRepository = loginRepository;
 
         serviceIntent = new Intent(context, SensorService.class);
     }

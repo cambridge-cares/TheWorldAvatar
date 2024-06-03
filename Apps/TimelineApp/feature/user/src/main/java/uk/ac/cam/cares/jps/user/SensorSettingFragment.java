@@ -47,6 +47,10 @@ public class SensorSettingFragment extends Fragment {
         binding = FragmentSensorSettingBinding.inflate(inflater);
         sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasAccountError -> {
+            if (!hasAccountError) {
+                return;
+            }
+
             NavDeepLinkRequest request = NavDeepLinkRequest.Builder
                     .fromUri(Uri.parse(requireContext().getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
                     .build();
