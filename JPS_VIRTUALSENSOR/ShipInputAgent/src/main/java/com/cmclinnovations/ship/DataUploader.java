@@ -204,12 +204,21 @@ public class DataUploader {
         return ships;
     }
 
-    public static int loadDataFromRDB(QueryClient queryClient) throws IOException {
+    public static int loadDataFromRDB(QueryClient queryClient, String derivation) throws IOException {
+        String polygonQuery = "(SELECT \"geom\" FROM \"scopes\")";
+        if (derivation != null) {
+            try {
+                polygonQuery = "(SELECT \"geom\" FROM \"scopes\" WHERE \"iri\" = '" + queryClient.getScopeIRI(derivation) +"')";
+            } catch (Exception e) {
+                LOGGER.warn("Unable to find the scope of the specified derivation");
+            }
+        }
         String sqlQuery = "SELECT DISTINCT points.\"MMSI\", points.\"VesselType\" AS \"SHIPTYPE\", 0 AS \"SPEED\", " + //
                 " 0.0 AS \"COURSE\", 0.0 AS \"LAT\", 0.0 AS \"LON\", '2024-01-01T12:00:00' AS \"TIMESTAMP\" " + //
                 "FROM (SELECT \"MMSI\", \"VesselType\", \"geom\" FROM \"ship\") AS points, " + //
-                "(SELECT \"geom\" FROM \"scopes\") AS polygon WHERE " + //
+                polygonQuery + " AS polygon WHERE " + //
                 "ST_Contains(polygon.geom, points.geom)";
+        LOGGER.info(polygonQuery);
         JSONArray shipData = queryClient.getRemoteRDBStoreClient().executeQuery(sqlQuery);
         LOGGER.info(String.format("Number of ships within scopes: %d", shipData.length()));
         List<Ship> ships = parseShip(shipData, 0);

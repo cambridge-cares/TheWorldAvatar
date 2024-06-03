@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cmclinnovations</groupId>
     <artifactId>ShipInputAgent</artifactId>
-    <version>1.6</version>
+    <version>1.8-dev-DOME-SNAPSHOT</version>
     <packaging>war</packaging>
     
     <!-- Parent POM -->
