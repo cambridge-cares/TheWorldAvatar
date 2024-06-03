@@ -4,13 +4,13 @@ from typing import Annotated, Any, Dict, List
 
 from fastapi import Depends
 
-from constants.prefixes import PREFIX_NAME2URI
+from constants.prefixes import PREFIX_NAME2URI, TWA_ABOX_PREFIXES
 from services.example_store.model import SparqlDataReqForm
 from services.kg import KgClient
 from services.model import DocumentCollectionDataItem, TableDataItem
 from utils.collections import FrozenDict
 from utils.json import deep_pd_json_normalize_list
-from utils.rdf import flatten_sparql_select_response
+from utils.rdf import filter_remove_iris_from_list, flatten_sparql_select_response
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
 from .transform_response import (
@@ -71,6 +71,7 @@ class SparqlDataReqExecutor:
 
         logger.info("Linearising documents into a table...")
         flattened_docs = deep_pd_json_normalize_list(docs)
+        flattened_docs = filter_remove_iris_from_list(flattened_docs, iri_prefixes=TWA_ABOX_PREFIXES)
         table_item = TableDataItem.from_data(flattened_docs)
         logger.info("Done")
 
