@@ -65,11 +65,11 @@ bash ./stack.sh build
 In case of time out issues in automatically building the StackClients resource indicated in agent building logs, please try pulling the required stack-clients image first by execute `docker pull ghcr.io/cambridge-cares/stack-client:1.27.2` in the terminal before building the agent.
 
 ## 3.3 Deploying the Agent
-### **1) Configuration and Adding Services
+### 1) Configuration and Adding Services
 
 Please place [FenlandTrajectoryAgent.json] in [stack manager configuration service directory]. Afterward, ensure that the 'fenland-trajectory-agent service' is included in your stack configuration files normally placed in [stack manager configuration directory]
 
-### **2) Starting with the Stack Manager
+### 2) Starting with the Stack Manager
 To spin up the stack, both a `postgis_password` and `geoserver_password` file need to be created in the `Deploy/stacks/dynamic/stack-manager/inputs/secrets/` directory (see detailed guidance in the [Stack Manager README]).
 To spin up the stack, create `postgis_password` and `geoserver_password` files in the Deploy/stacks/dynamic/stack-manager/inputs/secrets/ directory. Detailed guidance can be found in the [Stack Manager README]. Thereafter，navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal, Once the stack is up, the agent can be started within the stack autimatically, and will be available in the stack's drop-down container menu.
 
@@ -148,6 +148,6 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [FenlandTrajectoryAgent.json]: ./stack-manager-input-config-service/
 [stack manager configuration service directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
 [stack manager configuration directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/
-[CURL commands]: ./trigger_service/curl
-[SendHTTP]: ./trigger_service/SendHTTTP/
+[CURL commands]: ./example-requests/curl
+[SendHTTP]: ./example-requests/SendHTTTP/
 

@@ -8,7 +8,7 @@ from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.utils import *
-from agent.datavectorization.geoserver_gen import create_functions, create_geoserver_layer
+from agent.layergenerator.geoserver_gen import create_functions, create_geoserver_layer
 import logging
 
 # Configure logging
