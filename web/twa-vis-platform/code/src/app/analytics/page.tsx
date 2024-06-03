@@ -1,20 +1,21 @@
 import styles from './analytics.module.css';
 import React from 'react';
 
+import SettingsStore from 'io/config/settings';
+import { DefaultSettings } from 'types/settings';
+
 /**
- * Dynamically load and render content from an optional metadata file
- * based on the incoming URL route.
- * 
- * @param params incoming route parameters.
+ * A page displaying the dashboard.
  * 
  * @returns React component for display. 
  */
-export default async function DashContainer() {
+export default function DashContainer() {
+  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  if (uiSettings.resources?.dashboard?.url) {
     return (
-        <div className={styles.dashContainer}>
-
-            <h1>Grafana dashboard will be embedded here.</h1>
-
-        </div>
+      <div className={styles.dashContainer}>
+        <iframe className={styles.dashboard} src={uiSettings.resources.dashboard.url} title="Dashboard"></iframe>
+      </div>
     )
+  }
 }

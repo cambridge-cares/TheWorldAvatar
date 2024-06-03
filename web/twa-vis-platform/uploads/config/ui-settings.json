@@ -1,12 +1,19 @@
 {
-    "branding": {
-        "logo": "/images/whatever.svg",
-        "navbarLogo": "/images/defaults/navbar-logo.svg"
+  "branding": {
+    "navbarLogo": "/images/defaults/navbar-logo.svg"
+  },
+  "modules": {
+    "landing": true,
+    "help": true,
+    "map": true
+  },
+  "resources": {
+    "dashboard": {
+      "url": ""
     },
-    "modules": {
-        "landing": true,
-        "help": true,
-        "map": true,
-        "dashboard": true
+    "scenario": {
+      "url": "",
+      "data": "dataset"
     }
+  }
 }

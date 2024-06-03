@@ -1,6 +1,18 @@
+# TWA-VF Change Log
+
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
-# TWA-VF Change Log
+## 4.7.3
+
+### Bug Fixes
+
+* Fixed instant time series not being displayed as time series on the chart
+
+## 4.7.2
+
+### Bug Fixes
+
+* Added an esc key / x button to the scenario selector since current scenario could not be selected
 
 ## 4.7.1
 

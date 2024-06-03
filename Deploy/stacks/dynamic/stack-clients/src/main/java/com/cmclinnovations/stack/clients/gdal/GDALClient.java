@@ -98,7 +98,31 @@ public class GDALClient extends ContainerClient {
             tmpDir.copyFrom(Path.of(dirPath));
             String gdalContainerId = getContainerId(GDAL);
             Multimap<String, String> foundGeoFiles = findGeoFiles(gdalContainerId, tmpDir.toString());
-            for (Collection<String> filesOfType : foundGeoFiles.asMap().values()) {
+            for (var entry : foundGeoFiles.asMap().entrySet()) {
+                Collection<String> filesOfType = entry.getValue();
+
+                switch (entry.getKey()) {
+                    case "XLSX":
+                    case "XLS":
+                        Collection<String> filesToRemove = new ArrayList<>();
+                        Collection<String> filesToAdd = new ArrayList<>();
+                        for (String filePath : filesOfType) {
+                            String newDirPath = excelToCSV(filePath);
+                            filesToRemove.add(filePath);
+                            try (Stream<Path> files = Files.list(Path.of(newDirPath))) {
+                                filesToAdd.addAll(files.map(Object::toString)
+                                        .collect(Collectors.toList()));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        filesOfType.removeAll(filesToRemove);
+                        filesOfType.addAll(filesToAdd);
+                        break;
+                    default:
+                        break;
+                }
+
                 for (String filePath : filesOfType) {
                     uploadVectorToPostGIS(database, layerName, filePath, options, append);
                     // If inserting multiple sources into a single layer then ensure subsequent
@@ -147,6 +171,26 @@ public class GDALClient extends ContainerClient {
                 .withEvaluationTimeout(300)
                 .exec();
         handleErrors(errorStream, execId, logger);
+    }
+
+    private String excelToCSV(String filePath) {
+        String containerId = getContainerId(GDAL);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
+        String outputDirectory = FileUtils.removeExtension(filePath);
+        String execId = createComplexCommand(containerId, "ogr2ogr",
+                "-oo", "HEADERS=FORCE",
+                "-f", "CSV",
+                outputDirectory, // all sheets get put as individual csv into directory with same name as input
+                                 // file
+                filePath)
+                .withOutputStream(outputStream)
+                .withErrorStream(errorStream)
+                .withEvaluationTimeout(300)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+        return outputDirectory;
     }
 
     public void uploadRasterFilesToPostGIS(String database, String schema, String layerName,

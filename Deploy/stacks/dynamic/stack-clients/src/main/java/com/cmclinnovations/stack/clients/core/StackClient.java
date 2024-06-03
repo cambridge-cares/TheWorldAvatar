@@ -28,8 +28,6 @@ public final class StackClient {
 
     private static final Map<String, String> stackNameLabelMap;
 
-    private static boolean inStack = true;
-
     static {
         String envVarStackName = System.getenv(StackClient.STACK_NAME_KEY);
         stackName = (null != envVarStackName) ? envVarStackName : "Test_Stack";
@@ -60,12 +58,8 @@ public final class StackClient {
         return stackNameLabelMap;
     }
 
-    public static boolean isInStack() {
-        return inStack;
-    }
-
-    public static void setInStack(boolean inStack) {
-        StackClient.inStack = inStack;
+    public static boolean isInTest() {
+        return null == System.getenv(StackClient.STACK_NAME_KEY);
     }
 
     public static String getContainerEngineName() {

@@ -13,7 +13,7 @@ import NavbarComponent from './navbar-component';
 import IconComponent from 'ui/graphic/icon/icon';
 
 // Type definition for navbar properties
-type NavbarProps = {
+interface NavbarProps {
   showLanding?: boolean,
   showMap?: boolean,
   showDash?: boolean,
@@ -34,7 +34,7 @@ const defaultProps: NavbarProps = {
  * Represents the top level navigation bar, that loads a number of 
  * custom navbar components.
  */
-export default function Navbar(props: NavbarProps) {
+export default function Navbar(props: Readonly<NavbarProps>) {
 
   // Visibility state of navigation bar
   const navbarState = useSelector(selectItem(navbarItem.name));

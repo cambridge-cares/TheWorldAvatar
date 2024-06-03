@@ -2,9 +2,11 @@
  * Utilities to be run on the client.
  */
 import moment from 'moment';
+import { Dispatch } from 'redux';
 
 import { DataParser } from 'io/data/data-parser';
 import { DataStore } from 'io/data/data-store';
+import { MapFeaturePayload, clearFeatures, setIri, setProperties, setQueryTrigger, setStack } from 'state/map-feature-slice';
 import { JsonObject } from "types/json";
 import { TimeSeriesGroup, TimeSeries } from 'types/timeseries';
 
@@ -12,10 +14,14 @@ import { TimeSeriesGroup, TimeSeries } from 'types/timeseries';
  * Format any internal app url path. Append a base path prefix if set.
  */
 export function formatAppUrl(url: string): string {
-    // Append the base path prefix if there is a base environment
-    const appUrl: string = `${process.env.BASE_PATH || "/"}${url}`;
-    // Replace any double slashes with a single slash
-    return appUrl.replace(/\/\//g, "/");
+    // Only append a base path if there is a relative path
+    if (url.startsWith("/")) {
+        // Append the base path prefix if there is a base environment
+        const appUrl: string = `${process.env.BASE_PATH || "/"}${url}`;
+        // Replace any double slashes with a single slash
+        return appUrl.replace(/\/\//g, "/");
+    }
+    return url;
 }
 
 /**
@@ -92,4 +98,28 @@ export function parseTimeSeries(data: JsonObject): TimeSeriesGroup {
         times: rawTimes,
         data: timeSeries,
     };
+}
+
+/**
+ * Set the selected feature and its required properties in Redux state for global access.
+ *
+ * @param {MapFeaturePayload} selectedFeature The feature of interest.
+ * @param {Dispatch<any>} dispatch The dispatch function from Redux for dispatching actions.
+ */
+export function setSelectedFeature(selectedFeature: MapFeaturePayload, dispatch: Dispatch): void {
+    if (selectedFeature) {
+        // Disable linting as we wish to remove layer but do not require it in this function
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { layer, stack, iri, ...selectedProperties } = selectedFeature;
+        if (!iri) {
+            console.warn("IRI is missing. Data fetching will be skipped.");
+        } else if (!stack) {
+            console.warn("Feature does not have a defined stack. Data fetching will be skipped.");
+        }
+        dispatch(setIri(iri));
+        dispatch(setProperties(selectedProperties));
+        dispatch(setStack(stack));
+        dispatch(setQueryTrigger(true));
+        dispatch(clearFeatures());
+    }
 }

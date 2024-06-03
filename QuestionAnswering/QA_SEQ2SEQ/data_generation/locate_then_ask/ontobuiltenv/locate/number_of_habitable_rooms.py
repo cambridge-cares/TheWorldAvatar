@@ -1,6 +1,6 @@
 import random
 
-from constants.functions import OBE_NUM_OPS, NumOp
+from constants.functions import BASIC_NUM_OPS
 from constants.ontobuiltenv import OBEAttrKey
 from locate_then_ask.ontobuiltenv.locate.attr import OBEAttrLocator
 from locate_then_ask.ontobuiltenv.model import OBEProperty
@@ -13,7 +13,7 @@ class OBENumOfHabitableRoomsLocator(OBEAttrLocator):
         if entity.number_of_habitable_rooms is None:
             raise ValueError("The `number_of_habitable_rooms` field of `entity` must not be None.")
         
-        operator = random.choice(OBE_NUM_OPS)
+        operator = random.choice(BASIC_NUM_OPS)
         operand, verbn = make_operand_and_verbn(
             operator, value=entity.number_of_habitable_rooms, to_int=True
         )

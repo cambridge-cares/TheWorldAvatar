@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Iterable, Tuple
 
+from .abc import SparqlBase
 from .exceptions import SparqlParseError
-from .sparql_base import SparqlBase
 
 
 @dataclass(order=True, frozen=True)
