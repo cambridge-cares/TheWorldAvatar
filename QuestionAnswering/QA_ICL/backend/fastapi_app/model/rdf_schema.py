@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -24,4 +24,4 @@ class RDFRelation(BaseModel):
 
 class RDFRelationProcessed(RDFRelation):
     triple_repr: str
-    triple_repr_embedding: List[float]
+    triple_repr_embedding: list[float]

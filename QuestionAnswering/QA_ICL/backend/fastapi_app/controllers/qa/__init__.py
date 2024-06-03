@@ -1,6 +1,5 @@
 import logging
-import time
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import Depends
 

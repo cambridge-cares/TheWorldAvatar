@@ -1,15 +1,13 @@
 from functools import cache
-import json
 import logging
-import os
-from typing import Annotated, List, Optional
+from typing import Annotated
 from fastapi import Depends
 from openai import OpenAI
 from pydantic import TypeAdapter
 
 from config import AppSettings, get_app_settings
-from services.example_store.model import DataRequest
-from services.schema_store.model import RDFRelation
+from model.nlq2req import DataRequest
+from model.rdf_schema import RDFRelation
 from utils.rdf import try_make_prefixed_iri
 
 from services.example_store import Nlq2DataReqExample
@@ -34,8 +32,8 @@ Your task is to translate the following question to an executable data request. 
 
     def __init__(
         self,
-        openai_base_url: Optional[str],
-        openai_api_key: Optional[str],
+        openai_base_url: str | None,
+        openai_api_key: str | None,
         openai_model: str,
     ):
         self.openai_client = OpenAI(base_url=openai_base_url, api_key=openai_api_key)
@@ -45,8 +43,8 @@ Your task is to translate the following question to an executable data request. 
     def translate(
         self,
         nlq: str,
-        schema_items: List[RDFRelation],
-        examples: List[Nlq2DataReqExample],
+        schema_items: list[RDFRelation],
+        examples: list[Nlq2DataReqExample],
     ) -> DataRequest:
         prompt = self.PROMPT_TEMPLATE.format(
             examples="\n".join(

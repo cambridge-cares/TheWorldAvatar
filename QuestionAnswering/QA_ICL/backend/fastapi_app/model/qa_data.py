@@ -6,12 +6,14 @@ from pydantic import BaseModel, Field
 
 class DocumentCollection(BaseModel):
     type: Literal["document_collection"] = "document_collection"
-    data: list[dict[str, Any]]
+    data: list[dict[str, object]]
 
 
 class TableDataBase(BaseModel):
     columns: list[str]
-    data: Sequence[dict[str, str | float | Sequence[str] | Sequence[float] | TableDataBase | None]]
+    data: Sequence[
+        dict[str, str | float | Sequence[str] | Sequence[float] | TableDataBase | None]
+    ]
 
     @classmethod
     def from_data(cls, data: Sequence[dict[str, Any]]):
@@ -39,7 +41,7 @@ class TableData(TableDataBase):
     type: Literal["table"] = "table"
 
     @classmethod
-    def from_data(cls, data: Sequence[dict[str, Any]]):
+    def from_data(cls, data: Sequence[dict[str, object]]):
         return cls(**super().from_data(data).model_dump())
 
 
@@ -71,6 +73,6 @@ class WKTGeometryData(BaseModel):
 
 
 DataItem = Annotated[
-    Union[DocumentCollection, TableData, ScatterPlotData, WKTGeometryData],
+    DocumentCollection | TableData | ScatterPlotData | WKTGeometryData,
     Field(discriminator="type"),
 ]

@@ -9,7 +9,7 @@ from redis.commands.search.query import Query
 
 from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
-from .model import RELATIONS_INDEX_NAME, RDFRelation
+from model.rdf_schema import RELATIONS_INDEX_NAME, RDFRelation
 
 
 logger = logging.getLogger(__name__)

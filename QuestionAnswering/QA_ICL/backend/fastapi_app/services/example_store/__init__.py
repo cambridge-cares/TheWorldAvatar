@@ -1,5 +1,4 @@
 from functools import cache
-import json
 import logging
 from typing import Annotated
 
@@ -10,7 +9,7 @@ from redis import Redis
 from redis.commands.search.query import Query
 
 from services.embed import IEmbedder, get_embedder
-from services.example_store.model import (
+from model.nlq2req import (
     EXAMPLES_INDEX_NAME,
     DataRequest,
     Nlq2DataReqExample,

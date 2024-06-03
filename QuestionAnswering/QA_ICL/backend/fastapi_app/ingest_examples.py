@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 from redis import Redis
 from redis.commands.search.field import VectorField
@@ -7,7 +5,7 @@ from redis.commands.search.field import VectorField
 from services.embed import IEmbedder, TritonEmbedder
 from services.ingest import DataIngester, IngestArgs, load_ingest_args
 from services.redis import does_index_exist
-from services.example_store.model import (
+from model.nlq2req import (
     EXAMPLES_INDEX_NAME,
     EXAMPLES_KEY_PREFIX,
     Nlq2DataReqExample,
@@ -20,7 +18,7 @@ EXAMPLES_PROCESS_BATCHSIZE = 512
 EXAMPLES_INSERT_BATCHSIZE = 512
 
 
-def process_examples(embedder: IEmbedder, examples: List[Nlq2DataReqExample]):
+def process_examples(embedder: IEmbedder, examples: list[Nlq2DataReqExample]):
     embeddings = (
         embedder([example.nlq for example in examples]).astype(np.float32).tolist()
     )
@@ -33,7 +31,7 @@ def process_examples(embedder: IEmbedder, examples: List[Nlq2DataReqExample]):
     return processed_examples
 
 
-def transform_examples_preinsert(examples: List[Nlq2DataReqExampleProcessed]):
+def transform_examples_preinsert(examples: list[Nlq2DataReqExampleProcessed]):
     return [
         {
             "nlq": example.nlq,

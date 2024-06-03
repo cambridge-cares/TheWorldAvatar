@@ -1,4 +1,3 @@
-from typing import Dict, List
 import importlib.resources
 
 import numpy as np
@@ -9,7 +8,7 @@ from redis.commands.search.field import VectorField
 from services.embed import IEmbedder, TritonEmbedder
 from services.ingest import DataIngester, IngestArgs, load_ingest_args
 from services.redis import does_index_exist
-from services.schema_store.model import (
+from model.rdf_schema import (
     RELATIONS_INDEX_NAME,
     RELATIONS_KEY_PREFIX,
     RDFItemAnnotated,
@@ -25,7 +24,7 @@ RELATIONS_PROCESS_BATCHSIZE = 512
 RELATIONS_INSERT_BATCHSIZE = 512
 
 
-def format_rdf_item(iri: str, iri2annotation: Dict[str, RDFItemAnnotation]):
+def format_rdf_item(iri: str, iri2annotation: dict[str, RDFItemAnnotation]):
     name = extract_name(iri)
     annotation = iri2annotation.get(iri, RDFItemAnnotation())
     if annotation.label:
@@ -38,8 +37,8 @@ def format_rdf_item(iri: str, iri2annotation: Dict[str, RDFItemAnnotation]):
 
 def process_relations(
     embedder: IEmbedder,
-    iri2annotation: Dict[str, RDFItemAnnotation],
-    relations: List[RDFRelation],
+    iri2annotation: dict[str, RDFItemAnnotation],
+    relations: list[RDFRelation],
 ):
     triples = [
         "{s} {p} {o}".format(
@@ -59,7 +58,7 @@ def process_relations(
     return processed_relations
 
 
-def transform_relations_preinsert(relations: List[RDFRelationProcessed]):
+def transform_relations_preinsert(relations: list[RDFRelationProcessed]):
     return [rel.model_dump() for rel in relations]
 
 
@@ -108,7 +107,7 @@ def main(args: IngestArgs):
         .iterdir()
         if file.is_file() and file.name.endswith(".json")
     ]
-    adapter = TypeAdapter(List[RDFItemAnnotated])
+    adapter = TypeAdapter(list[RDFItemAnnotated])
     items = [item for text in texts for item in adapter.validate_json(text)]
     iri2annotation = {item.iri: item.annotation for item in items}
 

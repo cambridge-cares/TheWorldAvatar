@@ -1,12 +1,11 @@
 import logging
-import time
 from typing import Annotated, List
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from controllers.qa import DataSupporter, get_data_supporter
-from services.model import DataItem
+from model.qa_data import DataItem
 
 
 class QARequest(BaseModel):
