@@ -9,9 +9,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(Parameterized.class)
 public class DataSubsetTest {
@@ -39,7 +39,7 @@ public class DataSubsetTest {
     @Test
     public void testClass() throws JsonMappingException, JsonProcessingException {
 
-        DataSubset readValue = new ObjectMapper().readValue(json, DataSubset.class);
+        DataSubset readValue = JsonHelper.getMapper().readValue(json, DataSubset.class);
         Assert.assertEquals(clazz, readValue.getClass());
     }
 
