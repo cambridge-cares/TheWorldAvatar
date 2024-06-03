@@ -33,7 +33,6 @@ import net.openid.appauth.TokenResponse;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.util.Arrays;
@@ -68,18 +67,6 @@ public class AuthStateManager {
     private final SharedPreferences mPrefs;
     private final ReentrantLock mPrefsLock;
     private final AtomicReference<AuthState> mCurrentAuthState;
-
-    // todo: need to fix the singleton pattern
-//    @AnyThread
-//    public static AuthStateManager getInstance(@NonNull Context context) {
-//        AuthStateManager manager = INSTANCE_REF.get().get();
-//        if (manager == null) {
-//            manager = new AuthStateManager(context.getApplicationContext());
-//            INSTANCE_REF.set(new WeakReference<>(manager));
-//        }
-//
-//        return manager;
-//    }
 
     public AuthStateManager(Context context) {
         mPrefs = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
@@ -144,7 +131,7 @@ public class AuthStateManager {
         return replace(current);
     }
 
-    public void clearSharedPref() {
+    public void clearLoginState() {
         // discard the authorization and token state, but retain the configuration and
         // dynamic client registration (if applicable), to save from retrieving them again.
         AuthState currentState = getCurrent();
@@ -153,6 +140,12 @@ public class AuthStateManager {
         if (currentState.getLastRegistrationResponse() != null) {
             clearedState.update(currentState.getLastRegistrationResponse());
         }
+        replace(clearedState);
+    }
+
+    public void clearSharedPref() {
+        // discard the authorization, token state and the client configuration
+        AuthState clearedState = new AuthState();
         replace(clearedState);
     }
 

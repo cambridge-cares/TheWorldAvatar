@@ -91,7 +91,7 @@ public class LoginRepository {
                     if (result.getResultCode() == RESULT_CANCELED) {
                         callback.onFailure(new Throwable("cancelled"));
                     } else {
-                        loginSource.authStateManager.clearSharedPref();
+                        loginSource.authStateManager.clearLoginState();
                         String userId = user.getId();
                         user = null;
                         callback.onSuccess(new Pair<>(true, userId));
@@ -110,7 +110,7 @@ public class LoginRepository {
                 .setTitle(R.string.session_expired_title)
                 .setMessage(R.string.session_expired)
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-                    loginSource.authStateManager.clearSharedPref();
+                    loginSource.authStateManager.clearLoginState();
                     NavDeepLinkRequest request = NavDeepLinkRequest.Builder
                             .fromUri(Uri.parse(fragment.getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
                             .build();

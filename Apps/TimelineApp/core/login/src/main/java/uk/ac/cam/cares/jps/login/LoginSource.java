@@ -92,6 +92,7 @@ public class LoginSource {
 
         if (this.configuration.hasConfigurationChanged()) {
             this.configuration.acceptConfiguration();
+            this.authStateManager.clearSharedPref();
         }
 
     }
