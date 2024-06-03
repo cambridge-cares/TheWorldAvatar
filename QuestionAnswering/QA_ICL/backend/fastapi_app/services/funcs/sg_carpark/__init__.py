@@ -8,7 +8,7 @@ from fastapi import Depends
 from services.geocoding.base import IGeocoder
 from services.geocoding.serial import get_serial_geocoder
 from services.funcs.base import Name2Func
-from model.qa_data import TableData
+from model.qa import TableData
 from .nearest import NearestCarparkLocator, get_nearestCarpark_locator
 from .feature_info import CarparkFeatureInfoClient, get_carpark_featureInfo_client
 

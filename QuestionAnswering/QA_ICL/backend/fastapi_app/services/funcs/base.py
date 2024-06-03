@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Callable
 
-from model.qa_data import DataItem
+from model.qa import DataItem
 
 
 class Name2Func(ABC):

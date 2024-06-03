@@ -3,11 +3,13 @@ import logging
 from typing import Annotated
 
 from fastapi import Depends
+from redis import Redis
 
 from constants.prefixes import PREFIX_NAME2URI, TWA_ABOX_PREFIXES
 from model.nlq2req import SparqlDataReqForm
 from services.kg import KgClient
-from model.qa_data import DocumentCollection, TableData
+from model.qa import DataItem, DocumentCollection, QARequestArtifact, TableData
+from services.qa_artifact_store import QARequestArtifactStore
 from utils.collections import FrozenDict
 from utils.json import deep_pd_json_normalize_list
 from utils.rdf import filter_remove_iris_from_list, flatten_sparql_select_response
@@ -46,7 +48,7 @@ class SparqlDataReqExecutor:
         entity_bindings: dict[str, list[str]],
         const_bindings: dict[str, object],
         req_form: SparqlDataReqForm,
-    ):
+    ) -> tuple[list[DataItem], object]:
         logger.info("Unprocessed query:\n" + req_form.query)
         query = self.query_processor.process(
             sparql=req_form.query,
@@ -71,11 +73,15 @@ class SparqlDataReqExecutor:
 
         logger.info("Linearising documents into a table...")
         flattened_docs = deep_pd_json_normalize_list(docs)
-        flattened_docs = filter_remove_iris_from_list(flattened_docs, iri_prefixes=TWA_ABOX_PREFIXES)
+        flattened_docs = filter_remove_iris_from_list(
+            flattened_docs, iri_prefixes=TWA_ABOX_PREFIXES
+        )
         table_data = TableData.from_data(flattened_docs)
         logger.info("Done")
 
-        return [docs_collection, table_data]
+        data_artifact = docs_collection
+
+        return [docs_collection, table_data], data_artifact
 
 
 @cache
