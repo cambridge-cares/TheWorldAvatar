@@ -34,10 +34,13 @@ public class ElementFacade {
         // Create a union group for the possible element classes remaining
         SelectBuilder buildingElementProxyClassUnionBuilder = selectBuilder.clone();
         buildingElementProxyClassUnionBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_BUILDING_ELEMENT_PROXY);
+        SelectBuilder flowSegmentClassUnionBuilder = selectBuilder.clone();
+        flowSegmentClassUnionBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_FLOW_SEGMENT);
         SelectBuilder flowTerminalClassUnionBuilder = selectBuilder.clone();
         flowTerminalClassUnionBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_FLOW_TERMINAL);
         SelectBuilder furnishingElementClassUnionBuilder = selectBuilder.clone();
         furnishingElementClassUnionBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_FURNISHING_ELEMENT);
+        buildingElementProxyClassUnionBuilder.addUnion(flowSegmentClassUnionBuilder);
         buildingElementProxyClassUnionBuilder.addUnion(flowTerminalClassUnionBuilder);
         buildingElementProxyClassUnionBuilder.addUnion(furnishingElementClassUnionBuilder);
         selectBuilder.addWhere(buildingElementProxyClassUnionBuilder);

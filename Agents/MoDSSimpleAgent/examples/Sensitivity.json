@@ -4,7 +4,7 @@
 		{
 			"name": "algorithm1",
 			"type": "GenSurrogateAlg",
-			"surrogateToLoad": "mods-sim-8700472979756370358",
+			"surrogateToLoad": "example-surrogate",
 			"variables": [
 				{
 					"name": "var1",

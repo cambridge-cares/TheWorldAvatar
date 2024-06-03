@@ -1,0 +1,89 @@
+From 12c593246dd2951e38c4ef46a6dd183ab6f7cf73 Mon Sep 17 00:00:00 2001
+From: Feroz Farazi <msff2@cam.ac.uk>
+Date: Mon, 2 Oct 2023 13:48:45 +0100
+Subject: [PATCH] SVD-Calculation: Extended the newtonpf and runpf modules for
+ the SVD calculation.
+
+---
+ pypower/newtonpf.py | 13 +++++++++++--
+ pypower/runpf.py    |  8 +++++---
+ 2 files changed, 16 insertions(+), 5 deletions(-)
+
+diff --git a/pypower/newtonpf.py b/pypower/newtonpf.py
+index eec0e5a..0f2e43b 100644
+--- a/pypower/newtonpf.py
++++ b/pypower/newtonpf.py
+@@ -7,7 +7,7 @@
+ 
+ import sys
+ 
+-from numpy import array, angle, exp, linalg, conj, r_, Inf
++from numpy import array, angle, exp, linalg, conj, r_, Inf, where
+ 
+ from scipy.sparse import hstack, vstack
+ from scipy.sparse.linalg import spsolve
+@@ -96,6 +96,15 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
+                 hstack([J21, J22])
+             ], format="csr")
+ 
++        ## SVD of the Jacobian Matrix of the first iteration
++        if i == 1: 
++            U, s, _V = linalg.svd(J.toarray(), full_matrices=True)        
++            normalised_V = abs(_V[-1]/(linalg.norm(_V[-1])))        
++            indexOfMaxV_firstIteration = where(normalised_V == max(normalised_V))[0][0]  
++            J_first = J.toarray()
++            print('The maximum V is:', indexOfMaxV_firstIteration)      
++
++
+         ## compute update step
+         dx = -1 * spsolve(J, F)
+ 
+@@ -130,4 +139,4 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
+             sys.stdout.write("\nNewton's method power did not converge in %d "
+                              "iterations.\n" % i)
+ 
+-    return V, converged, i
++    return V, converged, i, indexOfMaxV_firstIteration, J_first
+diff --git a/pypower/runpf.py b/pypower/runpf.py
+index 8ffcf4e..d0cadec 100644
+--- a/pypower/runpf.py
++++ b/pypower/runpf.py
+@@ -23,7 +23,8 @@ from pypower.makeBdc import makeBdc
+ from pypower.makeSbus import makeSbus
+ from pypower.dcpf import dcpf
+ from pypower.makeYbus import makeYbus
+-from pypower.newtonpf import newtonpf
++# from pypower.newtonpf import newtonpf
++import UK_Digital_Twin_Package.PYPOWER.pypower.newtonpf as newtonpf_modified
+ from pypower.fdpf import fdpf
+ from pypower.gausspf import gausspf
+ from pypower.makeB import makeB
+@@ -182,7 +183,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
+             ## run the power flow
+             alg = ppopt["PF_ALG"]
+             if alg == 1:
+-                V, success, _ = newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt)
++                V, success, _ , indexOfMaxV_firstIteration, J_first = newtonpf_modified.newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt) # add a new return which is relevant to the SVD of the Jacobian matrix
+             elif alg == 2 or alg == 3:
+                 Bp, Bpp = makeB(baseMVA, bus, branch, alg)
+                 V, success, _ = fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt)
+@@ -289,6 +290,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
+ 
+     ppc["et"] = time() - t0
+     ppc["success"] = success
++    ppc["BusSwitchingIndicator"] = indexOfMaxV_firstIteration
+ 
+     ##-----  output results  -----
+     ## convert back to original bus numbering & print results
+@@ -319,7 +321,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
+     if solvedcase:
+         savecase(solvedcase, results)
+ 
+-    return results, success
++    return results, success, J_first
+ 
+ 
+ if __name__ == '__main__':
+-- 
+2.42.0.windows.2
+

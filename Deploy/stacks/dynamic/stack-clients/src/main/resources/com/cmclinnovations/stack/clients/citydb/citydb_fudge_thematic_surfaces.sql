@@ -1,10 +1,12 @@
-INSERT INTO citydb.thematic_surface(
+INSERT INTO
+    citydb.thematic_surface(
         id,
         objectclass_id,
         building_id,
         lod2_multi_surface_id
     )
-SELECT b.id,
+SELECT
+    b.id,
     b.objectclass_id,
     b.id AS building_id,
     COALESCE(
@@ -17,13 +19,10 @@ SELECT b.id,
         b.lod4_solid_id,
         b.lod1_solid_id
     ) AS lod2_multi_surface_id
-FROM citydb.building b
-WHERE NOT EXISTS(
-        SELECT 1
-        FROM citydb.thematic_surface ts
-        WHERE b.id = ts.building_id
-    )
-    AND COALESCE(
+FROM
+    citydb.building b
+WHERE
+    COALESCE(
         b.lod2_multi_surface_id,
         b.lod3_multi_surface_id,
         b.lod4_multi_surface_id,
@@ -32,5 +31,4 @@ WHERE NOT EXISTS(
         b.lod3_solid_id,
         b.lod4_solid_id,
         b.lod1_solid_id
-    ) IS NOT NULL
-RETURNING id;
+    ) IS NOT NULL ON CONFLICT (id) DO NOTHING RETURNING id;

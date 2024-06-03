@@ -1,0 +1,62 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "./",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "rdf",
+            "subdirectory": "ontoeip",
+            "skip": false
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "dukes_2023",
+            "subdirectory": "dukes_2023",
+            "sql": "ALTER TABLE dukes_2023 ADD COLUMN IF NOT EXISTS uuid uuid DEFAULT gen_random_uuid(); ALTER TABLE dukes_2023 ADD COLUMN IF NOT EXISTS iri varchar DEFAULT 'irigoeshere'; UPDATE dukes_2023 SET iri = 'https://theworldavatar.io/demos/uk-power-system/PowerPlant/' || uuid;",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "Longitude",
+                    "Y_POSSIBLE_NAMES": "Latitude",
+                    "EMPTY_STRING_AS_NULL": "YES"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "dukes_2023_geo",
+                    "sql": "SELECT wkb_geometry, 'http://UKBASEWORLD-blazegraph:8080/blazegraph/namespace/dukes_2023/sparql' as endpoint, \"Site Name\" as name, 'Generation type: ' || \"Site Type\" || '<br/>Installed Capacity: ' || \"Installed Capacity (MW)\" || ' [MW]' as desc, \"Site Technology\" as technology, \"Country\" as country, \"Site Type\" as type, \"Primary Fuel\" as primary_fuel, \"Installed Capacity (MW)\" as capacity, iri FROM dukes_2023",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "dukes_2023_pop",
+            "subdirectory": "dukes_2023",
+            "sql": "@/inputs/config/sql/dukes_2023_pop.sql",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "Longitude",
+                    "Y_POSSIBLE_NAMES": "Latitude",
+                    "EMPTY_STRING_AS_NULL": "YES"
+                }
+            }
+        }
+    ],
+    "mappings": [
+        "dukes_2023/dukes_2023.obda"
+    ]
+}

@@ -1,0 +1,1 @@
+Put content of folder sie02f here following instruction [here](../../../../README.md#242-digitales-landschaftsmodell-dlm-land-use-data).

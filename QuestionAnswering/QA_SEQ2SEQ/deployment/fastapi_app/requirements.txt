@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+SPARQLWrapper
+tritonclient[http]
+openai
+numpy
+unit_parse
+Pint
+Levenshtein
+jinja2
+dash
+python-multipart
+periodictable
+tiktoken

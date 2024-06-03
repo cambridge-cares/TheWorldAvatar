@@ -1,0 +1,44 @@
+{
+    "ServiceSpec": {
+        "Name": "grafana",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "grafana/grafana-oss:9.5.2",
+                "Env": [
+                    "GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/dashboard/",
+                    "GF_SERVER_SERVE_FROM_SUB_PATH=true",
+                    "GF_AUTH_ANONYMOUS_ENABLED=true",
+                    "GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_password",
+                    "GF_INSTALL_PLUGINS=volkovlabs-echarts-panel",
+                    "GF_PATHS_CONFIG=/usr/share/grafana/custom/grafana-config.ini",
+                    "GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer"
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "grafana_password"
+                    }
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "grafana-data",
+                        "Target": "/var/lib/grafana",
+                        "ReadOnly": false
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "grafana-conf",
+                        "Target": "/usr/share/grafana/custom",
+                        "ReadOnly": false
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:3000/",
+            "externalPath": "/dashboard/"
+        }
+    }
+}

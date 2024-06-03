@@ -1,0 +1,23 @@
+#
+# Compose file for the TWA-VF.
+#
+version: "3.8"
+
+# All Services
+services:
+
+  # Empty TWA-VF visualisation image for deployment. Builds a base image that, when combined
+  # with a volume of files, can be used as a visualisation. It is not intended that this
+  # config is used to run the twa-vf image.
+  visualise:
+    image: ghcr.io/cambridge-cares/twa-vf:latest
+    container_name: "twa-vf"
+    restart: "no"
+    build:
+      context: "./"
+      dockerfile: "Dockerfile"
+      labels:
+        authors: "support@cmcl.io"
+        description: "Empty TWA visualisation framework image, ready to host web files."
+    ports:
+      - "80:80" 

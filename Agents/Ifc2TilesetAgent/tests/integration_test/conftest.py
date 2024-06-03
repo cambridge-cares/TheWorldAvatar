@@ -19,11 +19,12 @@ from agent import create_app
 from agent.kgutils import KGClient
 from . import testconsts as C
 
-
 # ----------------------------------------------------------------------------------
 # Session-scoped test fixtures
 # (i.e. the fixture is destroyed at the end of the test session)
 # ----------------------------------------------------------------------------------
+
+
 @pytest.fixture(scope="session")
 def endpoint():
     return C.KG_ENDPOINT
@@ -43,7 +44,8 @@ def gen_sample_ifc_file():
         # Create a blank model
         model = ifcopenshell.file()
         # All projects must have one IFC Project element
-        project = run("root.create_entity", model, ifc_class="IfcProject", name="My Project")
+        project = run("root.create_entity", model,
+                      ifc_class="IfcProject", name="My Project")
 
         # To generate geometry, must assign units, defaults to metric units without args
         run("unit.assign_unit", model)
@@ -54,19 +56,26 @@ def gen_sample_ifc_file():
                    target_view="MODEL_VIEW", parent=context)
 
         # Create a site, building, and storey
-        site = run("root.create_entity", model, ifc_class="IfcSite", name="My Site")
-        building = run("root.create_entity", model, ifc_class="IfcBuilding", name="Building A")
-        storey = run("root.create_entity", model, ifc_class="IfcBuildingStorey", name="Ground Floor")
+        site = run("root.create_entity", model,
+                   ifc_class="IfcSite", name="My Site")
+        building = run("root.create_entity", model,
+                       ifc_class="IfcBuilding", name="Building A")
+        storey = run("root.create_entity", model,
+                     ifc_class="IfcBuildingStorey", name="Ground Floor")
 
         # Assign their relations
-        run("aggregate.assign_object", model, relating_object=project, product=site)
-        run("aggregate.assign_object", model, relating_object=site, product=building)
-        run("aggregate.assign_object", model, relating_object=building, product=storey)
+        run("aggregate.assign_object", model,
+            relating_object=project, product=site)
+        run("aggregate.assign_object", model,
+            relating_object=site, product=building)
+        run("aggregate.assign_object", model,
+            relating_object=building, product=storey)
 
         ifc_building_elements = []
         ifc_furnishing_elements = []
 
-        ifc_building_element_permissible_values = ("water_meter", "fridge", "solar_panel")
+        ifc_building_element_permissible_values = (
+            "water_meter", "fridge", "solar_panel", "sewage_network")
         ifc_furnishing_element_permissible_values = ("chair", "table")
 
         for asset in assets:
@@ -80,16 +89,18 @@ def gen_sample_ifc_file():
                 representation = run("geometry.add_wall_representation", model, context=body, length=5, height=3,
                                      thickness=0.2)
                 # Assign body geometry to the wall
-                run("geometry.assign_representation", model, product=wall, representation=representation)
+                run("geometry.assign_representation", model,
+                    product=wall, representation=representation)
                 # Place the wall on ground floor
-                run("spatial.assign_container", model, relating_structure=storey, product=wall)
+                run("spatial.assign_container", model,
+                    relating_structure=storey, product=wall)
             elif asset in ifc_building_element_permissible_values:
                 ifc_building_elements.append(asset)
             elif asset in ifc_furnishing_element_permissible_values:
                 ifc_furnishing_elements.append(asset)
             else:
                 permissible_values = ("building", "wall") + ifc_building_element_permissible_values \
-                                     + ifc_furnishing_element_permissible_values
+                    + ifc_furnishing_element_permissible_values
                 raise ValueError(f"Unexpected argument `{asset}` for an asset value; must be either "
                                  f"{permissible_values}.")
 
@@ -106,8 +117,10 @@ def gen_sample_ifc_file():
 
         # Assign geometries to each element
         for asset, product in {**ifc_building_element_proxy_products, **ifc_furnishing_element_products}.items():
-            _representation = _create_box(model, context, C.SAMPLE_ONTOBIM_GEOM_STORE[asset])
-            run("geometry.assign_representation", model, product=product, representation=_representation)
+            _representation = _create_box(
+                model, context, C.SAMPLE_ONTOBIM_GEOM_STORE[asset])
+            run("geometry.assign_representation", model,
+                product=product, representation=_representation)
 
         # Write out to a file
         model.write(ifc_path)
@@ -147,18 +160,22 @@ def flaskapp():
     app.config.update({
         "TESTING": True,
     })
-
     # Create a sample yaml file with required properties for retrieval
-    yaml_path = "./config/properties.yaml"
+    yaml_path = C.SAMPLE_YAML_PATH
     data = dict(
         query_endpoint=C.KG_ENDPOINT,
-        update_endpoint=C.KG_ENDPOINT
+        update_endpoint=C.KG_ENDPOINT,
+        bim_tileset_iri="",
+        bim_tileset_name="",
+        solar_panel_tileset_iri="",
+        solar_panel_tileset_name="",
+        sewage_tileset_iri="",
+        sewage_tileset_name=""
     )
     with open(yaml_path, 'w') as outfile:
         yaml.dump(data, outfile)
-
     yield app.test_client()
-
+    # Remove once test is over
     os.remove(yaml_path)
 
 
@@ -171,7 +188,8 @@ def clear_loggers():
     """Remove handlers from all loggers. Adopted from
     https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873"""
     import logging
-    loggers = [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values())
+    loggers = [logging.getLogger()] + \
+        list(logging.Logger.manager.loggerDict.values())
     for logger in loggers:
         handlers = getattr(logger, 'handlers', [])
         for handler in handlers:
@@ -191,7 +209,8 @@ Point = Tuple[float, float, float]
 
 def _create_box(ifcfile: ifcopenshell.file, context, extreme_coordinates: Tuple[Point, Point]):
     unit_scale = ifcopenshell.util.unit.calculate_unit_scale(ifcfile)
-    lower, upper = (tuple(x / unit_scale for x in p) for p in extreme_coordinates)
+    lower, upper = (tuple(x / unit_scale for x in p)
+                    for p in extreme_coordinates)
 
     point1 = lower
     point2 = (upper[0], lower[1], lower[2])
@@ -224,7 +243,8 @@ def _create_ifc_axis2placement3d(
     point = ifcfile.createIfcCartesianPoint(point)
     direction1 = ifcfile.createIfcDirection(direction1)
     direction2 = ifcfile.createIfcDirection(direction2)
-    axis2placement = ifcfile.createIfcAxis2Placement3D(point, direction1, direction2)
+    axis2placement = ifcfile.createIfcAxis2Placement3D(
+        point, direction1, direction2)
     return axis2placement
 
 
@@ -236,8 +256,10 @@ def _create_ifc_extruded_area_solid(
         extrusion_length: float,
 ):
     """Creates an IfcExtrudedAreaSolid from a list of points, specified as Python tuples"""
-    curve = ifcfile.createIfcPolyLine([ifcfile.createIfcCartesianPoint(p) for p in points])
-    ifc_closed_profile = ifcfile.createIfcArbitraryClosedProfileDef("AREA", None, curve)
+    curve = ifcfile.createIfcPolyLine(
+        [ifcfile.createIfcCartesianPoint(p) for p in points])
+    ifc_closed_profile = ifcfile.createIfcArbitraryClosedProfileDef(
+        "AREA", None, curve)
     ifc_extrusion_direction = ifcfile.createIfcDirection(extrusion_direction)
 
     return ifcfile.createIfcExtrudedAreaSolid(

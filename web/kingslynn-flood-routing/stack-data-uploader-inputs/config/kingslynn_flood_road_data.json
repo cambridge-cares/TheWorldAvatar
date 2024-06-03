@@ -1,0 +1,171 @@
+{
+    "name": "kingslynn_flood_road_data",
+    "database": "postgres",
+    "workspace": "kingslynn",
+    "datasetDirectory": "kingslynn",
+    "styles": [
+        {
+            "name": "flood-style",
+            "file": "flood-style.sld"
+        }
+    ],
+    "dataSubsets": [
+        {
+            "type": "OSMRouting",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "routing",
+            "name": "routing",
+            "verticesGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/nearest_vertex.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "Point",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "lon",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        },
+                        {
+                            "name": "lat",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        }
+                    ]
+                }
+            },
+            "waysGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/roaddisplay.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                }
+            },
+            "poiGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/shortest_paths.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d]+$"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "raster",
+            "name": "flood",
+            "skip": false,
+            "subdirectory": "flood",
+            "sql": "@/inputs/data/kingslynn/sql/static/flood.sql",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "kingslynn:flood-style"
+                }
+            }
+        },
+        {
+            "type": "raster",
+            "name": "elevation",
+            "skip": true,
+            "subdirectory": "elevation",
+            "sql": "@/inputs/data/kingslynn/sql/static/elevation.sql",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        }
+        ,
+        {
+            "type": "raster",
+            "name": "population",
+            "skip": false,
+            "subdirectory": "population",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "name": "flood_polygon_single_10cm",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from flood_polygon_single_10cm",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "name": "flood_polygon_single_30cm",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from flood_polygon_single_30cm",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "name": "flood_polygon_single_90cm",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from flood_polygon_single_90cm",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        }
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    }
+}

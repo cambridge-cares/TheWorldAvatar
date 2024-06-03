@@ -517,7 +517,7 @@ def execute_update_derivation(all_instances, sparql_client, update_endpoint, exi
 
     # invoke UpdateDerivations via HTTP request
     # endpoint of update agent in docker, e.g., "http://localhost:7004/update"
-    response = requests.get(update_endpoint)
+    response = requests.post(update_endpoint)
     logger.info(f"Update request sent to endpoint <{update_endpoint}>, received response status: {response}, response body: {str(response.content)}")
 
     # once timestamp of difference derivation updated, the iri of difference should

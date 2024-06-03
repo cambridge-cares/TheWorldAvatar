@@ -42,7 +42,7 @@ consistsOf,"Object Property, Asymmetric Property",,,Wall,Door UNION Window,only,
 hasNumOfRise,Data Property,,,StairFlight,integer,,Defines the number of risers on a stair flight.,https://www.theworldavatar.com/kg/ontobuildingstructure/,has number of risers
 hasNumOfTread,Data Property,,,StairFlight,integer,,Defines the number of treads on a stair flight.,https://www.theworldavatar.com/kg/ontobuildingstructure/,has number of treads
 hasRiserHeight,Data Property,,,StairFlight,double,,Defines the height of each riser on a stair flight.,https://www.theworldavatar.com/kg/ontobuildingstructure/,has riser height
-hasTreadLength,Data Property,,,StairFlight,String,,Defines the length of each tread on a stair flight.,https://www.theworldavatar.com/kg/ontobuildingstructure/,has tread length
+hasTreadLength,Data Property,,,StairFlight,double,,Defines the length of each tread on a stair flight.,https://www.theworldavatar.com/kg/ontobuildingstructure/,has tread length
 isHeatSupportSuitable,Data Property,,,Roof,boolean,,"A Boolean indicator that is true when the roof is suitable for installation of heat support, and is false, otherwise.",https://www.theworldavatar.com/kg/ontobuildingstructure/,is heat support suitable
 isPVPanelSuitable,Data Property,,,Roof,boolean,,"A Boolean indicator that is true when the roof is suitable for installation of photovoltaic panels, and is false, otherwise.",https://www.theworldavatar.com/kg/ontobuildingstructure/,is pv panel suitable
 isSolarCollectorSuitable,Data Property,,,Roof,boolean,,"A Boolean indicator that is true when the roof is suitable for installation of solar collectors, and is false, otherwise.",https://www.theworldavatar.com/kg/ontobuildingstructure/,is solar collector suitable

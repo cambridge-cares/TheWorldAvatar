@@ -1,9 +1,10 @@
 package com.cmclinnovations.virtualsensor;
 
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
-import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 public class EndpointConfig {
@@ -17,15 +18,12 @@ public class EndpointConfig {
     private String ontopurl;
 
     public EndpointConfig() {
-        ContainerClient containerClient = new ContainerClient();
-        PostGISEndpointConfig postGISEndpointConfig = containerClient.readEndpointConfig("postgis",
-                PostGISEndpointConfig.class);
+        PostGISEndpointConfig postGISEndpointConfig = PostGISClient.getInstance().getEndpoint();
         this.dburl = postGISEndpointConfig.getJdbcURL(EnvConfig.DATABASE);
         this.dbuser = postGISEndpointConfig.getUsername();
         this.dbpassword = postGISEndpointConfig.getPassword();
 
-        BlazegraphEndpointConfig blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph",
-                BlazegraphEndpointConfig.class);
+        BlazegraphEndpointConfig blazegraphEndpointConfig = BlazegraphClient.getInstance().getEndpoint();
         this.kgurl = blazegraphEndpointConfig.getUrl("kb");
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
