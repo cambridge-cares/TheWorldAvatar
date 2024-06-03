@@ -1,5 +1,4 @@
 from functools import cache
-from importlib import resources
 import json
 import logging
 import os
@@ -10,7 +9,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from openai import OpenAI
 from pydantic import BaseModel
-import sentencepiece as spm
+import tiktoken
 
 from services.chatbot import ChatbotClient, OpenAiConfig
 
@@ -34,13 +33,10 @@ def get_openai_client():
 
 @cache
 def get_tokens_counter():
-    with resources.as_file(
-        resources.files("resources.common").joinpath("tokenizer.model")
-    ) as path:
-        sp = spm.SentencePieceProcessor(model_file=str(path))
+    tokenizer = tiktoken.get_encoding("cl100k_base")
 
     def get_tokens_num(text: str):
-        return len(sp.encode(text))
+        return len(tokenizer.encode(text))
 
     return get_tokens_num
 

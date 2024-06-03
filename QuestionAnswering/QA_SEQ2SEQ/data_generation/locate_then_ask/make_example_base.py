@@ -1,7 +1,7 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class ExampleMakerBase(ABC):
-    @classmethod
+    @abstractmethod
     def make_example(self, entity_iri: str):
         pass
