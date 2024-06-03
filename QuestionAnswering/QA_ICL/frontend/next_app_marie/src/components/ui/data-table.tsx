@@ -20,7 +20,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { CaretSortIcon } from "@radix-ui/react-icons"
 import { TableDataBase, TableDataRow, TableDataValue } from "@/lib/model"
 import { ScrollArea, ScrollBar } from "./scroll-area"
 
@@ -31,6 +30,7 @@ export interface DataTableProps extends TableDataBase {
   scrollable: boolean
 }
 
+type TableDataRowNumbered = TableDataRow & { num: number }
 
 function DataTableBase({
   columns,
@@ -38,20 +38,17 @@ function DataTableBase({
   scrollable,
   ...props
 }: DataTableProps) {
+  const processedColumns = ["num"].concat(columns)
+  const processedData = data.map((datum, idx) => ({ num: idx + 1, ...datum }))
+
   const { paginated = false, bordered = false, ...otherProps } = props
 
-  const cols = columns.map(h => ({
+  const columnsOption = processedColumns.map(h => ({
     id: h,
-    accessorFn: (row: TableDataRow) => row[h],
-    header: ({ column }: { column: Column<TableDataRow> }) => {
+    accessorFn: (row: TableDataRowNumbered) => row[h],
+    header: ({ column }: { column: Column<TableDataRowNumbered> }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          {h}
-          <CaretSortIcon className="ml-2 h-4 w-4" />
-        </Button>
+        <div>{h === "num" ? "No." : h}</div>
       )
     },
     cell: ({ row }: { row: Row<TableDataRow> }) => {
@@ -71,8 +68,8 @@ function DataTableBase({
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const tableOptions = {
-    data,
-    columns: cols,
+    data: processedData,
+    columns: columnsOption,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -86,7 +83,6 @@ function DataTableBase({
   }
   const table = useReactTable(tableOptions)
 
-  // const scrollableClassName = scrollable ? "h-fit max-h-80 w-fit max-w-full overflow-y-auto overflow-x-auto relative" : null
   const borderClassName = bordered ? "rounded-md border" : ""
   const tableComponent = (
     <Table>
@@ -124,7 +120,7 @@ function DataTableBase({
           ))
         ) : (
           <TableRow>
-            <TableCell colSpan={cols.length} className="h-24 text-center">
+            <TableCell colSpan={columnsOption.length} className="h-24 text-center">
               No results.
             </TableCell>
           </TableRow>

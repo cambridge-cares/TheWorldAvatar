@@ -9,8 +9,30 @@ import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { JSONTree } from "@/components/ui/json-tree";
 
 const MemoDataTable = React.memo(DataTable)
+
+
+interface DataItemComponentInterface {
+  dataItem: DataItem
+}
+
+function DataItemComponent({ dataItem, ...props }: DataItemComponentInterface) {
+  if (dataItem.type === "document_collection") {
+    return (
+      <JSONTree data={dataItem.data} />
+    )
+  } else if (dataItem.type === "table") {
+    return (
+      <MemoDataTable columns={dataItem.columns} data={dataItem.data} {...props} />
+    )
+  } else {
+    return (
+      <></>
+    )
+  }
+}
 
 export default function Home() {
   const [question, setQuestion] = React.useState("");
@@ -87,8 +109,8 @@ export default function Home() {
           <Button type="submit" variant="outline" size="icon" disabled={isSubmitting}><MagnifyingGlassIcon /></Button>
         </form>
       </div>
-      <div className="max-w-4xl">
-        {qaData && qaData.map((item, idx) => item.type === "table" ? <MemoDataTable key={idx} columns={item.columns} data={item.data} /> : <></>)}
+      <div className="max-w-4xl flex flex-col space-y-4">
+        {qaData && qaData.map((item, idx) => <DataItemComponent key={idx} dataItem={item} />)}
       </div>
       <div className="max-w-2xl w-full">
         <h2>Example Questions</h2>
