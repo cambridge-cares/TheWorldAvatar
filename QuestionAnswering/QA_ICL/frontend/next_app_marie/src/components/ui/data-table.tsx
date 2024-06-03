@@ -21,22 +21,27 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { CaretSortIcon } from "@radix-ui/react-icons"
+import { TableDataBase, TableDataRow } from "@/lib/model"
 
 
-interface DataTableProps<TData> {
-  headers: string[]
-  data: TData[]
+export interface DataTableProps extends TableDataBase {
+  paginated: boolean
+  isInner: boolean
 }
 
-export function DataTable<TData extends { [key: string]: string | number | string[] | number[] | TData }>({
-  headers,
+
+function DataTableBase({
+  columns,
   data,
+  paginated,
+  isInner,
   ...props
-}: DataTableProps<TData>) {
-  const columns = headers.map(h => ({
+}: DataTableProps) {
+  console.log("drawing table")
+  const cols = columns.map(h => ({
     id: h,
-    accessorFn: (row: TData) => row[h],
-    header: ({ column }: { column: Column<TData> }) => {
+    accessorFn: (row: TableDataRow) => row[h],
+    header: ({ column }: { column: Column<TableDataRow> }) => {
       return (
         <Button
           variant="ghost"
@@ -47,17 +52,23 @@ export function DataTable<TData extends { [key: string]: string | number | strin
         </Button>
       )
     },
-    cell: ({ row }: { row: Row<TData> }) => {
-      const val = row.getValue(h);
-      return typeof val === 'object' ? JSON.stringify(val) : val;
+    cell: ({ row }: { row: Row<TableDataRow> }) => {
+      const val = row.getValue(h) as TableDataBase;
+      if (!(val)) {
+        return ""
+      } else if (typeof val === "object") {
+        return (<DataTableBase columns={val.columns} data={val.data} paginated={false} isInner={true} />)
+      } else {
+        return val;
+      }
     }
   }));
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  const table = useReactTable({
+  const tableOptions = {
     data,
-    columns,
+    columns: cols,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -65,11 +76,15 @@ export function DataTable<TData extends { [key: string]: string | number | strin
     state: {
       sorting,
     },
-  })
+  }
+  if (paginated) {
+    tableOptions["getPaginationRowModel"] = getPaginationRowModel()
+  }
+  const table = useReactTable(tableOptions)
 
   return (
     <div {...props}>
-      <div className="rounded-md border">
+      <div className={isInner ? "" : "rounded-md border"}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -105,7 +120,7 @@ export function DataTable<TData extends { [key: string]: string | number | strin
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell colSpan={cols.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -113,24 +128,33 @@ export function DataTable<TData extends { [key: string]: string | number | strin
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+      {paginated && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
+
+
+export const DataTable = ({
+  columns,
+  data,
+  ...props
+}: TableDataBase) => DataTableBase({ columns, data, paginated: true, isInner: false, ...props })
