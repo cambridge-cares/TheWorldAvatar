@@ -1,7 +1,7 @@
 import { Icon, Tooltip } from '@mui/material';
 import styles from './floating-panel.module.css';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Map } from 'mapbox-gl';
 
@@ -11,7 +11,7 @@ import { DataStore } from 'io/data/data-store';
 import { MapLayerGroup } from 'types/map-layer';
 import { IconSettings, LegendSettings } from 'types/settings';
 import { genFIAEndpoint, useFeatureInfoAgentService } from 'utils/data-services';
-import LayerTree from './layer/layer-tree';
+import LayerTree, { parseIntoTreeStucture } from './layer/layer-tree';
 import LegendTree from './legend/legend-tree';
 import InfoTree from './info/info-tree';
 
@@ -53,6 +53,10 @@ export default function FloatingPanelContainer(
     selectedIri,
     selectedProperties
   );
+
+  useEffect(() => {
+    parseIntoTreeStucture(props.dataStore, props.icons, setMapLayerGroups);
+  }, [])
 
   const clickAction = (index: number) => {
     dispatch(
@@ -131,7 +135,7 @@ export default function FloatingPanelContainer(
       {/* Conditionally render the panel's body */}
       {isPanelVisible && (
         <div className={styles.floatingPanelBody}>
-          {activeIndex === 0 && <LayerTree
+          {mapLayerGroups.length > 0 && activeIndex === 0 && <LayerTree
             map={props.map}
             dataStore={props.dataStore}
             icons={props.icons}
