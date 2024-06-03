@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Fenland Trajectory Agent',  # Change this to your project's name
-    version='0.1.0',  # Increment version as needed
+    version='0.1.1',  # Increment version as needed
     author='Jiying Chen',  
     author_email='jc2341@cam.ac.uk',  
     packages=find_packages(),  # Automatically find all packages 
@@ -25,13 +25,13 @@ setup(
         'seaborn==0.12.2',
         'beautifulsoup4==4.11.1',
         'urllib3==1.26.13',
-        'PySimpleGUI==4.60.4',
+        'PySimpleGUI',
         'cryptography==39.0.0',
         'python-dotenv==0.21.0',
         'docopt==0.6.2',
         'pandas==1.3.5',
         'JayDeBeApi==1.2.3',
-        'py4jps==1.0.38',
+        'twa',
         'requests==2.28.1',
         'gunicorn==20.1.0',
         'click>=8.0',

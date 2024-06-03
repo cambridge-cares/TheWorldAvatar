@@ -4,7 +4,7 @@
 # avoid import issues when deploying the agent in "standalone" mode 
 # (i.e. ensure functionality without the StackClients resource installed via jpsrm)
 
-from py4jps.resources import StackClients
+from twa.resources import StackClients
 
 stackClientsGw = StackClients()
 stackClientsGw.launchGateway()

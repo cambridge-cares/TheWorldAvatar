@@ -8,13 +8,13 @@
 ################################################
 
 # The purpose of this module is to provide functionality to interact with the
-# overarching Docker Stack using the Stack Clients wrapped by py4jps
+# overarching Docker Stack using the Stack Clients wrapped by twa
 
 import glob
 import jaydebeapi
 import json
 
-from py4jps import agentlogging
+from twa import agentlogging
 from agent.errorhandling.exceptions import StackException
 from agent.datainstantiation.jpsSingletons import jpsBaseLibGW, stackClientsGw
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL

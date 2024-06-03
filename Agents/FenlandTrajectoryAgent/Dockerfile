@@ -17,7 +17,7 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy StackClients resource required to update py4jps later
+# Copy StackClients resource required to update twa later
 RUN mkdir -p ./tmp_stack
 COPY --from=stackclients /app ./tmp_stack
 
@@ -36,7 +36,7 @@ RUN pip install -e .
 # COPY requirements.txt .
 # RUN pip install -r requirements.txt
 
-# Install StackClients py4jps resource
+# Install StackClients twa resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
     jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
 

@@ -3,7 +3,7 @@
 # May, 2024                         #
 #####################################
 
-from py4jps import agentlogging
+from twa import agentlogging
 from agent.utils.stack_gateway import stackClientsGw
 from agent.utils.env_configs import DATABASE, NAMESPACE
 

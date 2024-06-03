@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Create directory for stack_client resource files (to be imported by py4jps)
+# Create directory for stack_client resource files (to be imported by twa)
 mkdir tmp_stack
 
 # Build latest STACK_CLIENTS .jar

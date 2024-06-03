@@ -13,7 +13,7 @@
 import os
 import requests
 
-from py4jps import agentlogging
+from twa import agentlogging
 
 from agent.datamodel.iris import *
 from agent.kgutils.kgclient import KGClient

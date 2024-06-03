@@ -10,7 +10,7 @@ from pathlib import Path
 from configobj import ConfigObj
 from pathlib import Path
 # Initialise logger
-from py4jps import agentlogging
+from twa import agentlogging
 logger = agentlogging.get_logger("prod")
 
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT

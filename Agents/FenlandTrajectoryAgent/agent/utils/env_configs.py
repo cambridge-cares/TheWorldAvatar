@@ -9,7 +9,7 @@
 import os
 import warnings
 
-from py4jps import agentlogging
+from twa import agentlogging
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

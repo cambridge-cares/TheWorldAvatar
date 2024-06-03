@@ -6,7 +6,7 @@
 
 from contextlib import contextmanager
 
-from py4jps import agentlogging
+from twa import agentlogging
 
 from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD

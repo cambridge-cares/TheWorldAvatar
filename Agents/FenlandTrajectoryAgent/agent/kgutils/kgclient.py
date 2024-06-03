@@ -7,7 +7,7 @@
 # using the RemoteStoreClient from the JPS_BASE_LIB
 
 import json
-from py4jps import agentlogging
+from twa import agentlogging
 from agent.errorhandling.exceptions import InvalidInput, TSException, KGException
 from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
 

@@ -36,8 +36,8 @@ While building the Docker image of this agent, it also needs to pull images from
 ```
 
 ## 2.3 Stack Client Settings (Optional)
-The Fenland Trajectory Agent requires importing [JPS_BASE_LIB] and [Stack-Clients] from the [py4jps] package. The [py4jps] package, now upgraded to [twa] serves as a [Python wrapper] capable of packaging compiled Java code into .jar files for use within Python. 
-Currently, [py4jps] by default only packages [JPS_BASE_LIB]. To utilize [Stack-Clients] through py4jps,the [Stack-Clients] resource needs to be added and allow for access. This adding procee can be executed automatically by [Dockerfile] employing jpsrm commands. 
+The Fenland Trajectory Agent requires importing [JPS_BASE_LIB] and [Stack-Clients] from the [twa] package. The [twa] package, formerly known as the [py4jps] package, serves as a [Python wrapper] capable of packaging compiled Java code into .jar files for use within Python. 
+Currently, [twa] with version 0.0.1 exclusively packages [JPS_BASE_LIB]. To utilize [Stack-Clients] through [twa],the [Stack-Clients] resource needs to be added and allow for access. This adding procee can be executed automatically by [Dockerfile] employing jpsrm commands. 
 However, occasionally commands executed within the Docker environment may not successfully package the components due to potential discrepancies between the Java and Python environments or specific configurations within Docker that interfere with the packaging process. If this occurs, the stack client can be manually configured following th instructions provided at the [JPS_Document]
 
 
@@ -116,6 +116,7 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
 [Stack Manager README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
 [JPS_Document]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-pydantic-rdflib/JPS_BASE_LIB/python_wrapper/docs/examples/additional_java_lib.md
+[twa]: https://pypi.org/project/twa/
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
 [Python wrapper]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper#installing-additional-java-resources
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
