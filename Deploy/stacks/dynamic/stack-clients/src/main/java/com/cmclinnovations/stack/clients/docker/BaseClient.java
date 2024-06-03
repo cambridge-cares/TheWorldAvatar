@@ -41,20 +41,22 @@ abstract class BaseClient {
                         ex);
             }
         }
-        DockerClient dockerClient = DockerClient.getInstance();
-        if (!dockerClient.configExists(endpointName)) {
-            try {
-                dockerClient.addConfig(endpointName, objectMapper.writeValueAsBytes(endpointConfig));
-            } catch (JsonProcessingException ex) {
-                throw new RuntimeException("Failed to add Docker config file with name '" + endpointName + "'.",
-                        ex);
+        if (!StackClient.isInTest()) {
+            DockerClient dockerClient = DockerClient.getInstance();
+            if (!dockerClient.configExists(endpointName)) {
+                try {
+                    dockerClient.addConfig(endpointName, objectMapper.writeValueAsBytes(endpointConfig));
+                } catch (JsonProcessingException ex) {
+                    throw new RuntimeException("Failed to add Docker config file with name '" + endpointName + "'.",
+                            ex);
+                }
+            } else {
+                /**
+                 * TODO Decide what to do if the config already exists.
+                 * See https://docs.docker.com/engine/swarm/secrets/#example-rotate-a-secret
+                 * for details on how to update a secret/config that is in use.
+                 */
             }
-        } else {
-            /**
-             * TODO Decide what to do if the config already exists.
-             * See https://docs.docker.com/engine/swarm/secrets/#example-rotate-a-secret
-             * for details on how to update a secret/config that is in use.
-             */
         }
     }
 
