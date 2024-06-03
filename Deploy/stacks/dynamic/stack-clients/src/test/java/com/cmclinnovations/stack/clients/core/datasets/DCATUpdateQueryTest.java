@@ -221,6 +221,41 @@ class DCATUpdateQueryTest {
         });
     }
 
+    @SuppressWarnings("null")
+    @Test
+    void testAddDataSubsetSkipping() throws JsonMappingException, JsonProcessingException {
+        writeBlazegraphConfig();
+        ObjectMapper mapper = JsonHelper.getMapper();
+        Assertions.assertAll(() -> {
+            Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                    .withDatasetDirectory("test1")
+                    .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                    .withDataSubsets(List.of(mapper.readValue(
+                            "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy nice TBox.\",\"subdirectory\":\"tbox\",\"skip\": true}",
+                            TBoxCSV.class)))
+                    .build();
+            buildAndRunQuery(dataset);
+        }, () -> {
+            Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                    .withDatasetDirectory("test1")
+                    .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                    .withDataSubsets(List.of(mapper.readValue(
+                            "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy nice TBox.\",\"subdirectory\":\"tbox\"}",
+                            TBoxCSV.class)))
+                    .build();
+            buildAndRunQuery(dataset);
+        }, () -> {
+            Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                    .withDatasetDirectory("test1")
+                    .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                    .withDataSubsets(List.of(mapper.readValue(
+                            "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy bad TBox.\",\"subdirectory\":\"tbox2\",\"skip\": true}",
+                            TBoxCSV.class)))
+                    .build();
+            buildAndRunQuery(dataset);
+        });
+    }
+
     @Test
     void testCatalogingTrivial() {
         Assertions.assertAll(() -> {

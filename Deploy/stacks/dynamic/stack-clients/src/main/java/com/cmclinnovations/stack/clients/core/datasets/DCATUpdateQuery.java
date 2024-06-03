@@ -109,40 +109,60 @@ final class DCATUpdateQuery {
 
     private void addDataSubset(DataSubset dataSubset) {
         Variable dataSubsetVar = SparqlBuilder.var("dataSubset" + dataSubsetCount++);
-        Variable issuedVar = createVar(dataSubsetVar, "issued");
-
-        // If there is already a description then remove it
-        Variable existingDescriptionVar = createVar(dataSubsetVar, "descripton_existing");
-        query.delete(dataSubsetVar.has(DCTERMS.DESCRIPTION, existingDescriptionVar));
-
-        // Insert new or updated values
-        query.insert(datasetVar.has(DCAT.HAS_DATASET, dataSubsetVar));
-        query.insert(dataSubsetVar.isA(DCAT.DATASET).andHas(DCTERMS.TITLE, dataSubset.getName())
-                .andHas(DCTERMS.DESCRIPTION, dataSubset.getDescription())
-                // Insert new "issued" triple the first time and then just re-insert same triple
-                // on subsequent runs, see comment in WHERE block.
-                .andHas(DCTERMS.ISSUED, issuedVar)
-                // Add new "modified" triple on each upload
-                .andHas(DCTERMS.MODIFIED, currentTime));
-
-        // Try to find the DataSubset but bind a new IRI if not found
-        Variable existingDataSubsetVar = createVar(dataSubsetVar, "existing");
-        Variable existingIssuedVar = createVar(issuedVar, "existing");
-        query.where(GraphPatterns.and(
-                // "type" and "name" define the dataset
-                existingDataSubsetVar.isA(DCAT.DATASET)
-                        .andHas(DCTERMS.TITLE, dataSubset.getName())
-                        .andHas(DCTERMS.DESCRIPTION, existingDescriptionVar)
-                        .andHas(DCTERMS.ISSUED, existingIssuedVar)
-                        .and(datasetVar.has(DCAT.HAS_DATASET, existingDataSubsetVar))
-                        .optional()),
-                // If an issued triple already exists then keep that value otherwise use the
-                // current time.
-                Expressions.bind(Expressions.coalesce(existingIssuedVar, currentTime), issuedVar));
-
         if (!dataSubset.isSkip()) {
+            Variable issuedVar = createVar(dataSubsetVar, "issued");
+
+            // If there is already a description then remove it
+            Variable existingDescriptionVar = createVar(dataSubsetVar, "descripton_existing");
+            query.delete(dataSubsetVar.has(DCTERMS.DESCRIPTION, existingDescriptionVar));
+
+            // Insert new or updated values
+            query.insert(datasetVar.has(DCAT.HAS_DATASET, dataSubsetVar));
+            query.insert(dataSubsetVar.isA(DCAT.DATASET).andHas(DCTERMS.TITLE, dataSubset.getName())
+                    .andHas(DCTERMS.DESCRIPTION, dataSubset.getDescription())
+                    // Insert new "issued" triple the first time and then just re-insert same triple
+                    // on subsequent runs, see comment in WHERE block.
+                    .andHas(DCTERMS.ISSUED, issuedVar)
+                    // Add new "modified" triple on each upload
+                    .andHas(DCTERMS.MODIFIED, currentTime));
+
+            // Try to find the DataSubset but bind a new IRI if not found
+            Variable existingDataSubsetVar = createVar(dataSubsetVar, "existing");
+            Variable existingIssuedVar = createVar(issuedVar, "existing");
+            query.where(GraphPatterns.and(
+                    // "type" and "name" define the dataset
+                    existingDataSubsetVar.isA(DCAT.DATASET)
+                            .andHas(DCTERMS.TITLE, dataSubset.getName())
+                            .andHas(DCTERMS.DESCRIPTION, existingDescriptionVar)
+                            .andHas(DCTERMS.ISSUED, existingIssuedVar)
+                            .and(datasetVar.has(DCAT.HAS_DATASET, existingDataSubsetVar))
+                            .optional()),
+                    // If an issued triple already exists then keep that value otherwise use the
+                    // current time.
+                    Expressions.bind(Expressions.coalesce(existingIssuedVar, currentTime), issuedVar));
+
             query.where(Expressions.bind(Expressions.coalesce(existingDataSubsetVar, createIRI()), dataSubsetVar));
+        } else {
+            // If skipped just re-add the link from the dataset.
+            Variable existingDataSubsetVar = createVar(dataSubsetVar, "existing");
+            query.insert(datasetVar.has(DCAT.HAS_DATASET, existingDataSubsetVar));
+            // Try to find the DataSubset but bind a new IRI if not found
+            query.where( // "type" and "name" define the dataset
+                    existingDataSubsetVar.isA(DCAT.DATASET)
+                            .andHas(DCTERMS.TITLE, dataSubset.getName())
+                            .and(datasetVar.has(DCAT.HAS_DATASET, existingDataSubsetVar))
+                            .optional());
         }
+    }
+
+    private void removeExistingDataSubsetLinks() {
+        Variable oldDataSubsetVar = SparqlBuilder.var("dataSubset_old");
+
+        // Remove all existing links to data subsets
+        query.delete(datasetVar.has(DCAT.DATASET, oldDataSubsetVar));
+
+        // Find existing links to data subsets
+        query.where(datasetVar.has(DCAT.DATASET, oldDataSubsetVar).optional());
     }
 
     private void addBlazegraphServer(Dataset dataset) {
@@ -177,46 +197,59 @@ final class DCATUpdateQuery {
 
     private void addService(Variable serviceVar, String title, Iri type, String url, IRI postgisRelation,
             boolean isUsed) {
-        Variable serviceLiteral = createVar(serviceVar, "literal");
-
-        // Remove all existing triples that have this service as the subject
-        Variable existingServiceVar = createVar(serviceVar, "existing");
-        query.delete(existingServiceVar
-                .has(createVar(serviceVar, "p"),
-                        createVar(serviceVar, "o")));
-
-        // Insert common triples
-        TriplePattern serviceTriples = serviceVar.isA(type)
-                .andHas(DCTERMS.TITLE, title)
-                .andHas(DCTERMS.IDENTIFIER, serviceLiteral)
-                .andHas(DCAT.SERVES_DATASET, datasetVar);
-
-        // Insert optional triples
-        if (null != url) {
-            serviceTriples.andHas(DCAT.ENDPOINT_URL, Rdf.iri(url));
-        }
-        if (null != postgisRelation) {
-            serviceTriples.andHas(postgisRelation, postgisServiceVar);
-        }
-        query.insert(serviceTriples);
-        // Insert link from the dataset
-        query.insert(datasetVar.has(DCAT.HAS_SERVICE, serviceVar));
-
-        query.where(GraphPatterns.and(
-                // Look for existing instance of this service
-                existingServiceVar.isA(type)
-                        .andHas(DCTERMS.TITLE, title)
-                        .andHas(DCAT.SERVES_DATASET, datasetVar)
-                        .andHas(createVar(serviceVar, "p"),
-                                createVar(serviceVar, "o")))
-                .optional());
 
         if (isUsed) {
+            Variable serviceLiteral = createVar(serviceVar, "literal");
+
+            // Remove all existing triples that have this service as the subject
+            Variable existingServiceVar = createVar(serviceVar, "existing");
+            query.delete(existingServiceVar
+                    .has(createVar(serviceVar, "p"),
+                            createVar(serviceVar, "o")));
+
+            // Insert common triples
+            TriplePattern serviceTriples = serviceVar.isA(type)
+                    .andHas(DCTERMS.TITLE, title)
+                    .andHas(DCTERMS.IDENTIFIER, serviceLiteral)
+                    .andHas(DCAT.SERVES_DATASET, datasetVar);
+
+            // Insert optional triples
+            if (null != url) {
+                serviceTriples.andHas(DCAT.ENDPOINT_URL, Rdf.iri(url));
+            }
+            if (null != postgisRelation) {
+                serviceTriples.andHas(postgisRelation, postgisServiceVar);
+            }
+            query.insert(serviceTriples);
+            // Insert link from the dataset
+            query.insert(datasetVar.has(DCAT.HAS_SERVICE, serviceVar));
+
+            query.where(GraphPatterns.and(
+                    // Look for existing instance of this service
+                    existingServiceVar.isA(type)
+                            .andHas(DCTERMS.TITLE, title)
+                            .andHas(DCAT.SERVES_DATASET, datasetVar)
+                            .andHas(createVar(serviceVar, "p"),
+                                    createVar(serviceVar, "o")))
+                    .optional());
+
             // Create new IRI for this service if not already present
             query.where(Expressions.bind(Expressions.coalesce(existingServiceVar, createIRI()), serviceVar));
+
+            // Create literal from IRI for "identifier"
+            query.where(Expressions.bind(Expressions.str(serviceVar), serviceLiteral));
+        } else {
+            Variable existingServiceVar = createVar(serviceVar, "existing");
+            // Insert link from the dataset
+            query.insert(datasetVar.has(DCAT.HAS_SERVICE, existingServiceVar));
+            query.insert(existingServiceVar.has(DCAT.SERVES_DATASET, datasetVar));
+            // Ignore this service if not already present
+            query.where( // Look for existing instance of this service
+                    existingServiceVar.isA(type)
+                            .andHas(DCTERMS.TITLE, title)
+                            .andHas(DCAT.SERVES_DATASET, datasetVar)
+                            .optional());
         }
-        // Create literal from IRI for "identifier"
-        query.where(Expressions.bind(Expressions.str(serviceVar), serviceLiteral));
     }
 
     private void removeExistingServiceLinks() {
@@ -236,8 +269,8 @@ final class DCATUpdateQuery {
         removeExistingExternalDatasetLinks();
         dataset.getExternalDatasetNames().forEach(this::addExternalDataset);
 
+        removeExistingDataSubsetLinks();
         dataset.getDataSubsets().stream()
-                .filter(Predicate.not(DataSubset::isSkip))
                 .forEach(this::addDataSubset);
 
         removeExistingServiceLinks();
