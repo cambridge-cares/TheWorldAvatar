@@ -78,11 +78,11 @@ def process_gps_csv_file(csv_file):
 def instantiate_gps_data(gps_object, kg_client, ts_client, double_class):
     """Takes a processed GPS data object and instantiates it into the RDF store and time series database."""
     try:
-        objectIRI = utils.PREFIXES['ontodevice'] + 'Object/' + str(uuid.uuid4())
+        objectIRI = utils.PREFIXES['ontodevice'] + 'GPSDevice/' + str(uuid.uuid4())
         dataIRIs = []
         for ts in gps_object['timeseries']:
             # Add a slash after 'owl'
-            dataIRI = utils.PREFIXES['ontodevice'] + '/' + ts + '/' + str(uuid.uuid4())
+            dataIRI = utils.PREFIXES['ontodevice'] + ts + '/' + str(uuid.uuid4())
             dataIRIs.append(dataIRI)
             unit = gps_object['units'][ts] if gps_object['units'][ts] else ""
             query = utils.create_sparql_prefix('ex') + \

@@ -12,7 +12,7 @@
 ######--- --- --- --- --- URLs to ontologies --- --- --- --- ---######
 
 
-ontodevice = "https://www.theworldavatar.com/kg/ontodevice.owl"
+ontodevice = "https://www.theworldavatar.com/kg/ontodevice.owl/"
 fhr = "http://www.theworldavatar.com/ontology/OntoFHRS"
 ts = "https://www.theworldavatar.com/kg/ontotimeseries/"
 ABOX_URL_ontodevice = 'https://www.theworldavatar.com/kg/ontodevice'

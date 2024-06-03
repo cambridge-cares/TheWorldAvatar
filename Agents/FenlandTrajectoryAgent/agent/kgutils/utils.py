@@ -30,7 +30,7 @@ PREFIXES = {
     'xsd': 'http://www.w3.org/2001/XMLSchema#',
     'geolit': 'http://www.bigdata.com/rdf/geospatial/literals/v1',
     'geo': 'http://www.bigdata.com/rdf/geospatial#',
-    'ontodevice': 'https://www.theworldavatar.com/kg/ontodevice.owl'
+    'ontodevice': 'https://www.theworldavatar.com/kg/ontodevice.owl/'
 }
 
 

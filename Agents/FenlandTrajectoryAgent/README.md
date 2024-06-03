@@ -95,13 +95,16 @@ The files for example http request are displayed at [SendHTTP] folder.
 - Post request to instantiate all GPS trajectory data to KG
 > ./gpstasks/fenlandtrajectoryagent/process_and_instantiate
 
-Additionally, services above can be triggered using [CURL commands] from a bash terminal. This method provides a straightforward and scriptable way to interact with the agent. An example CURL command is displayed as follows. In this example, the stack is assumed at port 3840
+Additionally, services above can be triggered using [CURL commands] from a bash terminal. This method provides a straightforward and scriptable way to interact with the agent. An example CURL command used to load the GPS trajectory files is displayed as follows. In this example, the stack is assumed at port 3840
 
 ```
 curl -X POST http://localhost:3840/fenland-trajectory-agent/gpstasks/fenlandtrajectoryagent/load_and_preprocess \
      -H "Content-Type: application/json" \
      -d '{"file_path":"/app/agent/raw_data/gps_target_folder"}'
+
 ```
+
+
 
 &nbsp;
 # Authors
