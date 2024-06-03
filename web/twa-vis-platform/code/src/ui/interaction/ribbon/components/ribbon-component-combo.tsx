@@ -3,14 +3,12 @@
 import styles from './ribbon-component.module.css';
 
 import React, { useEffect, useState } from 'react';
-import SVG from 'react-inlinesvg';
 import { Icon, Tooltip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOption, setOption } from 'state/ribbon-component-slice';
-import { formatAppUrl } from 'utils/client-utils';
+import IconComponent from 'ui/graphic/icon/icon';
 
-
-type Props = {
+interface RibbonComponentComboProps {
     icon: string,
     text: string,
     tooltip: string,
@@ -20,7 +18,7 @@ type Props = {
     iconClickable?: boolean
 }
 
-export default function RibbonComponentCombo(props: Props) {
+export default function RibbonComponentCombo(props: Readonly<RibbonComponentComboProps>) {
     const [expanded, setExpanded] = useState(false);
     const option = useSelector(getOption(props.text));
     const dispatch = useDispatch();
@@ -63,22 +61,6 @@ export default function RibbonComponentCombo(props: Props) {
         document.removeEventListener("click", closeAction);
     }, []);
 
-    let iconElement;
-    if(props.icon.endsWith(".svg")) {
-        
-        // Image file
-        iconElement = (
-            <SVG src={formatAppUrl(props.icon)}/>
-        );
-    } else {
-        // Name of Google material icon
-        iconElement = (
-            <Icon className="material-symbols-outlined">
-                {props.icon}
-            </Icon>
-        );
-    }
-
     let innerClass = styles.ribbonComponentInner;
     if(props.iconClickable != null && !props.iconClickable) {
         innerClass = styles.ribbonComponentInnerDisabled;
@@ -95,7 +77,7 @@ export default function RibbonComponentCombo(props: Props) {
                 <>
                     <div className={innerClass} onClick={props.action}>
                         <div className={styles.ribbonComponentIcon}>
-                            {iconElement}
+                            <IconComponent icon={props.icon} />
                         </div>
                         <div className={styles.ribbonComponentText}>
                             {props.text}

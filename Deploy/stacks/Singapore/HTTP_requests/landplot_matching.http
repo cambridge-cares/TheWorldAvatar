@@ -1,0 +1,12 @@
+POST http://localhost:3838/buildingidentificationagent/postgis
+content-type: application/json
+
+{
+    "maxDistance": "100.0",
+    "table": "landplot",
+    "column": "lod1Geometry",
+    "oneToMany": "true",
+    "filterColumns": ["LU_DESC"],
+    "excludedValues": [["ROAD", "PARK"]],
+    "newTable": "landplot_buildings"
+}

@@ -59,7 +59,10 @@ public class HeatEmissionAgent extends JPSAgent {
 			rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
 
 			updateCityFurnitureEmissions();
-			updateFactoryEmissions();
+			updateChemicalsEmissions();
+			updateSemiconductorsEmissions();
+			updateFoodEmissions();
+			updatePharmaceuticalsEmissions();
 			updatePrintingEmissions();
 			updatePrecisionEmissions();
 			updateDataCentreEmissions();
@@ -108,8 +111,8 @@ public class HeatEmissionAgent extends JPSAgent {
 
 	}
 
-	void updateFactoryEmissions() {
-		String tableName = "factories";
+	void updateChemicalsEmissions() {
+		String tableName = "chemicals";
 		try (Connection conn = rdbStoreClient.getConnection();
 				Statement stmt = conn.createStatement();) {
 
@@ -118,7 +121,64 @@ public class HeatEmissionAgent extends JPSAgent {
 						" alter table \"%s\" add column %s double precision; " +
 						" update table \"%s\" set %s = case when specific_energy_consumption > 0.0 then " +
 						"production_volume*specific_energy_consumption*(1.0 - thermal_efficiency) " +
-						"when specific_energy_consumption < 0.0 then -1.0*production_volume*specific_energy_consumption end ; ",
+						"when specific_energy_consumption < 0.0 then -1.0*production_volume*specific_energy_consumption*(1.0 - thermal_efficiency) end ; ",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	void updateSemiconductorsEmissions() {
+		String tableName = "semiconductors";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
+
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = production_volume*surface_area*specific_energy_consumption*(1.0 - thermal_efficiency) ;",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	void updateFoodEmissions() {
+		String tableName = "food_beverages";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
+
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = production_volume*specific_energy_consumption*(1.0 - thermal_efficiency) ;",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	void updatePharmaceuticalsEmissions() {
+		String tableName = "pharmaceuticals";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
+
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = revenue*energy_consumption_per_unit_revenue*(1.0 - thermal_efficiency)/number_facilities ;",
 						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
 				stmt.executeUpdate(sqlString);
 			}

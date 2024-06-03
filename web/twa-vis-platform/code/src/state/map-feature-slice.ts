@@ -1,5 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ReduxState } from 'app/store';
+
+export interface MapFeaturePayload {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [name: string]: any;
+}
 
 export const mapFeatureSlice = createSlice({
     name: 'mapFeature',
@@ -9,6 +14,7 @@ export const mapFeatureSlice = createSlice({
         stack: null,
         scenario: null,
         queryTrigger: false,
+        features: [] as MapFeaturePayload[],
     },
     reducers: {
         setProperties: (state, action) => {
@@ -26,6 +32,12 @@ export const mapFeatureSlice = createSlice({
         setQueryTrigger: (state, action) => {
             state.queryTrigger = action.payload;
         },
+        addFeatures: (state, action: PayloadAction<MapFeaturePayload[]>) => {
+            state.features = state.features.concat(action.payload);
+        },
+        clearFeatures: (state) => {
+            state.features = [];
+        },
     },
 });
 
@@ -35,9 +47,10 @@ export const getIri = (state: ReduxState) => state.mapFeature.iri;
 export const getStack = (state: ReduxState) => state.mapFeature.stack;
 export const getScenario = (state: ReduxState) => state.mapFeature.scenario;
 export const getQueryTrigger = (state: ReduxState) => state.mapFeature.queryTrigger;
+export const getFeatures = (state: ReduxState) => state.mapFeature.features;
 
 // Export the actions
-export const { setProperties, setIri, setStack, setScenario, setQueryTrigger } = mapFeatureSlice.actions;
+export const { setProperties, setIri, setStack, setScenario, setQueryTrigger, addFeatures, clearFeatures } = mapFeatureSlice.actions;
 
 // Export the reducer
 export default mapFeatureSlice.reducer;

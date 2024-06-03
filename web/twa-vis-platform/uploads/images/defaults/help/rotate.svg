@@ -7,13 +7,13 @@
       }
 
       .cls-1, .cls-2 {
-        stroke: #231f20;
+        stroke: #5a5a5b;
         stroke-miterlimit: 10;
         stroke-width: 2px;
       }
 
       .cls-3 {
-        fill: #231f20;
+        fill: #5a5a5b;
         font-family: Verdana-Bold, Verdana;
         font-size: 24px;
         font-weight: 700;

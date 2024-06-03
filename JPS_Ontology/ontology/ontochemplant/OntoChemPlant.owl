@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontochemplant="http://www.theworldavatar.com/kg/ontochemplant#">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontochemplant">
-        <dc:date>18 March 2024</dc:date>
+        <dc:date>18 May 2024</dc:date>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment>An ontology defined for representing the processes, business and geospatial information of a chemical plant</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
@@ -1066,6 +1066,18 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontochemplant#ChemicalVent -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontochemplant#ChemicalVent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/PlantItem"/>
+        <rdfs:comment>A vent designed to release gases, vapors, or fumes from a vessel, reactor, or storage tank to prevent pressure buildup, ensure safety, and maintain controlled environmental conditions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl"/>
+        <rdfs:label>Chemical vent</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontochemplant#ChemicalWasteStorageTank -->
 
 
@@ -1082,6 +1094,18 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontochemplant#Company"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontochemplant#CoolingJacket -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontochemplant#CoolingJacket">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/PlantItem"/>
+        <rdfs:comment>An external layer or covering around a vessel, through which a cooling fluid circulates to control the temperature of the contents inside the vessel.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl"/>
+        <rdfs:label>Cooling jacket</rdfs:label>
+    </owl:Class>
     
 
 
@@ -1289,6 +1313,18 @@
         <rdfs:comment>Separator in a chemical plant</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl"/>
         <rdfs:label>Separator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontochemplant#StirredGlassVessel -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontochemplant#StirredGlassVessel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/PlantItem"/>
+        <rdfs:comment>A lab equipment designed for conducting chemical reactions, mixing, blending, or other processes that require agitation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontochemplant/OntoChemPlant.owl"/>
+        <rdfs:label>Stirred glass vessel</rdfs:label>
     </owl:Class>
     
 

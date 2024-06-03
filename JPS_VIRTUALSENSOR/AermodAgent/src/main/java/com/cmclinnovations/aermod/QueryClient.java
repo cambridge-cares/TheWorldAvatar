@@ -173,6 +173,7 @@ public class QueryClient {
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_DISPERSION_COLOUR_BAR = P_DISP.iri("hasDispersionColourBar");
+    private static final Iri HAS_SRID = P_DISP.iri("hasSRID");
     private static final Iri HAS_HEIGHT = P_DISP.iri("hasHeight");
     private static final Iri LOD0_FOOTPRINT = P_BLDG.iri("lod0FootPrint");
     private static final Iri MEASURED_HEIGHT = P_BLDG.iri("measuredHeight");
@@ -1201,7 +1202,7 @@ public class QueryClient {
     }
 
     void updateOutputs(String derivation, Map<String, DispersionOutput> zIriToOutputMap, boolean hasShips,
-            long timeStamp, boolean hasStaticPoints, boolean hasBuildings, boolean usesElevation) {
+            long timeStamp, boolean hasStaticPoints, boolean hasBuildings, boolean usesElevation, int srid) {
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
@@ -1219,13 +1220,14 @@ public class QueryClient {
                         .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_RASTER, dispRaster)
                         .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar),
                 pollutantIri.isA(pollutant)).prefix(P_DISP)
-                .select(zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
+                .select(entity,zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         List<String> tsDataList = new ArrayList<>();
         List<List<?>> tsValuesList = new ArrayList<>();
 
         for (int i = 0; i < queryResult.length(); i++) {
+            String entityIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
             String zIri = queryResult.getJSONObject(i).getString(zVar.getQueryString().substring(1));
             String pollutantIRI = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
             String dispersionMatrixIRI = queryResult.getJSONObject(i)
@@ -1248,6 +1250,11 @@ public class QueryClient {
                 tsValuesList.add(List.of(dispersionRaster));
                 tsValuesList.add(List.of(dispersionColourBar));
             }
+
+            ModifyQuery modify = Queries.MODIFY();
+            modify.prefix(P_DISP);
+            modify.insert(iri(entityIri).has(HAS_SRID,srid));
+            storeClient.executeUpdate(modify.getQueryString());
         }
 
         SelectQuery query2 = Queries.SELECT();
