@@ -1,13 +1,15 @@
 from collections import defaultdict
 from functools import cache
-from typing import Annotated, DefaultDict, Dict, List, Sequence
+from typing import Annotated, Sequence
 
 from fastapi import Depends
+from constants.prefixes import URI_OCC
 from services.kg import KgClient, get_ontocompchem_bgClient
 from services.processs_response.augment_node import NodeDataRetriever
 from utils.rdf import flatten_sparql_select_response
 
 
+# TODO: ORM
 def get_optimized_geometry_data(kg_client: KgClient, iris: Sequence[str]):
     query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>
@@ -30,7 +32,7 @@ WHERE {{
     res = kg_client.querySelect(query)
     _, bindings = flatten_sparql_select_response(res)
 
-    iri2data: DefaultDict[str, List[dict]] = defaultdict(list)
+    iri2data: defaultdict[str, list[dict]] = defaultdict(list)
     for binding in bindings:
         iri2data[binding["OptimizedGeometry"]].append(
             {
@@ -62,8 +64,8 @@ WHERE {{
     res = kg_client.querySelect(query)
     _, bindings = flatten_sparql_select_response(res)
 
-    iri2values: DefaultDict[str, list] = defaultdict(list)
-    iri2unit: Dict[str, str] = dict()
+    iri2values: defaultdict[str, list] = defaultdict(list)
+    iri2unit: dict[str, str] = dict()
     for binding in bindings:
         iri2values[binding["RotationalConstants"]].append(binding["Value"])
         iri2unit[binding["RotationalConstants"]] = binding["Unit"]
@@ -71,13 +73,13 @@ WHERE {{
     return [{"values": iri2values[iri], "unit": iri2unit.get(iri)} for iri in iris]
 
 
-def get_molcomp_value_unit(kg_client: KgClient, iris: Sequence[str]):
+def get_calculation_result_value_unit(kg_client: KgClient, iris: Sequence[str]):
     query = """PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>
 
 SELECT *
 WHERE {{
-    VALUES ?MolComp {{ {values} }}
-    ?MolComp occ:value ?Value ; occ:unit ?Unit .
+    VALUES ?CalculationResult {{ {values} }}
+    ?CalculationResult occ:value ?Value ; occ:unit ?Unit .
 }}""".format(
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
@@ -86,38 +88,58 @@ WHERE {{
     _, bindings = flatten_sparql_select_response(res)
 
     iri2data = {
-        binding["MolComp"]: {"value": binding["Value"], "unit": binding["Unit"]}
+        binding["CalculationResult"]: {
+            "value": binding["Value"],
+            "unit": binding["Unit"],
+        }
         for binding in bindings
     }
 
     return [iri2data.get(iri, {}) for iri in iris]
 
 
-ONTOCOMPCHEM_TYPE2GETTER = {
-    "OptimizedGeometry": get_optimized_geometry_data,
-    "RotationalConstants": get_rotational_constants_data,
-    **{
-        key: get_molcomp_value_unit
-        for key in [
-            "SCFEnergy",
-            "TotalGibbsFreeEnergy",
-            "ZeroPointEnergy",
-            "HOMOEnergy",
-            "HOMOMinus1Energy",
-            "HOMOMinus2Energy",
-            "LUMOEnergy",
-            "LUMOPlus1Energy",
-            "LUMOPlus2Energy",
-            "TotalEnergy",
-            "TotalEnthalpy",
-            "Frequencies",
-        ]
+CALCULATION_RESULT_TYPE_TO_GETTER = defaultdict(
+    lambda: get_calculation_result_value_unit,
+    {
+        URI_OCC + k: v
+        for k, v in {
+            "OptimizedGeometry": get_optimized_geometry_data,
+            "RotationalConstants": get_rotational_constants_data,
+        }.items()
     },
-}
+)
+
+
+def get_calc_result_data(kg_client: KgClient, iris: Sequence[str]):
+    query = """SELECT * 
+WHERE {{
+    VALUES ?CalculationResult {{ {values} }}
+    ?CalculationResult a ?Type .
+}}""".format(
+        values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
+    )
+
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
+
+    type2iris: defaultdict[str, list[dict]] = defaultdict(list)
+    for binding in bindings:
+        type2iris[binding["Type"]].append(binding["CalculationResult"])
+
+    iri2data: dict[str, dict] = dict()
+    for type, same_type_iris in type2iris.items():
+        data = CALCULATION_RESULT_TYPE_TO_GETTER[type](
+            kg_client=kg_client, iris=same_type_iris
+        )
+        iri2data.update({iri: datum for iri, datum in zip(same_type_iris, data)})
+
+    return [iri2data.get(iri, {}) for iri in iris]
 
 
 @cache
 def get_ontocompchem_nodeDataRetriever(
     bg_client: Annotated[KgClient, Depends(get_ontocompchem_bgClient)]
 ):
-    return NodeDataRetriever(kg_client=bg_client, type2getter=ONTOCOMPCHEM_TYPE2GETTER)
+    return NodeDataRetriever(
+        kg_client=bg_client, type2getter={"occ:CalculationResult": get_calc_result_data}
+    )

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import DefaultDict, Dict, List, Optional, Sequence
+from typing import Optional, Sequence
 
 
 from constants.prefixes import URI_OKIN
@@ -57,7 +57,7 @@ WHERE {{
     res = kg_client.querySelect(query)
     _, bindings = flatten_sparql_select_response(res)
 
-    iri2data: DefaultDict[str, List[dict]] = defaultdict(list)
+    iri2data: defaultdict[str, list[dict]] = defaultdict(list)
     for binding in bindings:
         datum = {
             "Pressure": binding.get("PressureValue"),
@@ -120,7 +120,7 @@ WHERE {{
     res = kg_client.querySelect(query)
     _, bindings = flatten_sparql_select_response(res)
 
-    iri2data: DefaultDict[str, List[dict]] = defaultdict(list)
+    iri2data: defaultdict[str, list[dict]] = defaultdict(list)
     for binding in bindings:
         iri2data[binding["IRI"]].append(
             {"Label": binding["Label"], "Efficiency": binding["Efficiency"]}
@@ -232,12 +232,15 @@ def get_kinetic_model_data_pdep_arrhenius(kg_client: KgClient, iris: Sequence[st
 
 
 KINETIC_MODEL_TYPE_TO_GETTER = {
-    "ArrheniusModel": get_kinetic_model_data_arrhenius,
-    "MultiArrheniusModel": get_kinetic_model_data_multi_arrhenius,
-    "ThreeBodyReactionModel": get_kinetic_model_data_three_body_rxn,
-    "LindemannModel": get_kinetic_model_data_lindemann,
-    "TroeModel": get_kinetic_model_data_troe,
-    "PDepArrheniusModel": get_kinetic_model_data_pdep_arrhenius,
+    URI_OKIN + k: v
+    for k, v in {
+        "ArrheniusModel": get_kinetic_model_data_arrhenius,
+        "MultiArrheniusModel": get_kinetic_model_data_multi_arrhenius,
+        "ThreeBodyReactionModel": get_kinetic_model_data_three_body_rxn,
+        "LindemannModel": get_kinetic_model_data_lindemann,
+        "TroeModel": get_kinetic_model_data_troe,
+        "PDepArrheniusModel": get_kinetic_model_data_pdep_arrhenius,
+    }.items()
 }
 
 
@@ -245,7 +248,7 @@ def get_kinetic_model_data(kg_client: KgClient, iris: Sequence[str]):
     query = """SELECT * 
 WHERE {{
     VALUES ?KineticModel {{ {values} }}
-    ?KineticModel a ?Type .        
+    ?KineticModel a ?Type .
 }}""".format(
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
@@ -253,16 +256,11 @@ WHERE {{
     res = kg_client.querySelect(query)
     _, bindings = flatten_sparql_select_response(res)
 
-    type2iris = {
-        key: [
-            binding["KineticModel"]
-            for binding in bindings
-            if binding["Type"] == URI_OKIN + key
-        ]
-        for key in KINETIC_MODEL_TYPE_TO_GETTER.keys()
-    }
+    type2iris: defaultdict[str, list] = defaultdict(list)
+    for binding in bindings:
+        type2iris[binding["Type"]].append(binding["KineticModel"])
 
-    iri2data: Dict[str, dict] = dict()
+    iri2data: dict[str, dict] = dict()
     for type, same_type_iris in type2iris.items():
         data = KINETIC_MODEL_TYPE_TO_GETTER[type](
             kg_client=kg_client, iris=same_type_iris
