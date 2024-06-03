@@ -11,7 +11,7 @@ class DocumentCollection(BaseModel):
 
 class TableDataBase(BaseModel):
     columns: list[str]
-    data: Sequence[dict[str, str | float | Sequence[str | float] | TableDataBase | None]]
+    data: Sequence[dict[str, str | float | Sequence[str] | Sequence[float] | TableDataBase | None]]
 
     @classmethod
     def from_data(cls, data: Sequence[dict[str, Any]]):
