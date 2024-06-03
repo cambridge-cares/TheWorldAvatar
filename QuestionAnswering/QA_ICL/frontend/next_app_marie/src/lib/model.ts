@@ -1,3 +1,8 @@
+export interface DocumentCollection {
+  type: "document_collection"
+  data: { [key: string]: any }[]
+}
+
 export type TableDataValue = string | number | string[] | number[] | TableDataBase | null
 
 export interface TableDataRow {
@@ -37,4 +42,4 @@ export interface WKTGeometryData {
   literal: string
 }
 
-export type DataItem = TableData | ScatterPlotData | WKTGeometryData 
+export type DataItem = DocumentCollection | TableData | ScatterPlotData | WKTGeometryData 
