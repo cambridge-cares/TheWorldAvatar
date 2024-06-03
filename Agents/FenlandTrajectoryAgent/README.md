@@ -1,130 +1,122 @@
-# Description
+# 1. Description
 
-The `Fenland Trajectory Agent` is dedicated to process time series GPS data stored in the relational database, instantiate this data as triples based on relevant ontologies, and then upload the triples into the knowledge graph.
+The `Fenland Trajectory Agent` is a specialized tool for batch instantiation of structured time-series GPS trajectory data. This agent is capable of receiving HTTP POST requests or CURL commands to load GPS trajectory files, which it subsequently instantiates into triples before uploading them into knowledge graphs.
 
-Currently, this agent is focusing on the data provided from Fenland Study to analyze the interaction between GPS trajectories and environmental features in the digital twin. The example data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample gps data.csv
-The data instatiated in the knowledge graph follows the ontology of device (ontodevice) https://www.theworldavatar.com/kg/ontodevice in the https://github.com/cambridge-cares/TheWorldAvatar. 
-The agent is implemented as Docker container to be deployed to a Docker stack spun up by the https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager. `
-
-# Environment setup (Optional)
-
-For development and testing reasons, please follow instructions below to get started.
-
-### Virtual environment setup 
-
-It is highly recommended to use a virtual environment (https://docs.python.org/3/tutorial/venv.html). Follow these steps to set up a virtual environment as described in the Python documentation
-
-`(Windows)`
-
-cmd
-$ python -m venv <venv_name>
-$ <venv_name>\Scripts\activate.bat
-(<venv_name>) $
+Presently, the agent focuses on data from the Fenland Study to analyze the interaction between GPS trajectories and environmental features within the context of a digital twin. Example data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample_gps_data.csv. By default, the data instantiated from the Fenland Study using this agent encompasses Speed, Height, Distance, Heading, Latitude, and Longitude. This method is also applicable to other categories of time-series structured data in Febland Study by replacing or adding the relevant column names. The information instantiated into the knowledge graph adheres to the Ontology of Devices [OntoDevice] in [TheWorldAvatar] project. The instantiation process is executed based on the [TimeSeriesClient]. This agent is implemented as a Docker container, designed for deployment within a stack managed by the [Stack Manager]
 
 
-`(Linux)`
-sh
-$ python3 -m venv <venv_name>
-$ source <venv_name>/bin/activate
-(<venv_name>) $
+# 2. Agent Setup
 
+This section specifies the minimum requirements to build and deploy the Docker image of this agent.
 
-The above commands will create and activate the virtual environment `<venv_name>` in the current directory.
+## 2.1 Environment Variables
+Before building and deploying the Docker image, several key properties is demanded to be set in the [docker compose file] (further details and defaults are provided in the file):
 
-### Stack Client Settings 
-Our Fenland Trajectory Agent requires importing [JPS_BASE_LIB] and [Stack-Clients] from the [py4jps] package. The [py4jps] package, 
-now upgraded to [twa] serves as a [Python wrapper] capable of packaging compiled Java code into .jar files for use within Python. 
-Currently, [py4jps] by default only packages [JPS_BASE_LIB]. To utilize [Stack-Clients] through py4jps,the [Stack-Clients] resource 
-needs to be added and allow for access. This adding procee can be executed automatically by Docker file employing jpsrm commands. 
-However, occasionally commands executed within the Docker environment may not successfully package the components due to potential discrepancies between the Java and Python environments or specific configurations within Docker that interfere with the packaging process.
-It is highly recommended to manually configure this environment following the instructions provided at this link: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-pydantic-rdflib/JPS_BASE_LIB/python_wrapper/docs/examples/additional_java_lib.md.
-&nbsp;
-# 1. Agent Setup
+```bash
+#--- Deployment specific parameters ---#
 
-This section outlines the minimum requirements for building and deploying the Docker image.
-
-## 1.1 Prerequisites
-
-### *1) Place the GPS trajectory in the target position*
-
-In this case, the format of the GPS data table is .csv. Each table consists of a series of record points, each point containing six essential pieces of information. They are UTC date, UTC time, longitude, latitude, speed, and the distance between the current record point and the position corresponding to the previous record point. After preparing all files, please place them in `./FenlandTrajectoryAgent/agent/raw_data/gps_target_data
-
-
-folder.
-
-### *2) The environment variables used by the agent container*
-Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
-bash
-# Agent configuration
-
-# Stack & Stack Clients configuration
 STACK_NAME            # Name of stack to which agent shall be deployed
 NAMESPACE             # Blazegraph namespace into which to instantiate data
 DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`)
 LAYERNAME             # Geoserver layer name, Also table name for geospatial features in PostGIS
-GEOSERVER_WORKSPACE   
+GEOSERVER_WORKSPACE   # Name of the Workspace in Geoserver 
+ONTOP_FILE            # Path to ontop mapping file (default: `/app/resources/ontop.obda`)
 
-### *3) Accessing Github's Container registry*
+```
 
-While building the Docker image of the agent, it also gets pushed to the [Github container registry]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Github container registry] simply run the following command to establish the connection and provide the access token when prompted:
+## 2.2 Access to GitHub's Container Registry
 
-docker login ghcr.io -u <github_username>
-<github_personal_access_token>
+While building the Docker image of this agent, it also needs to pull images from the [Github container registry], or push images to GitHub if there are any local modifications to the agent made by the user. Access is required to be ensured beforehand via your github [personal access token], which must have a scope that [allows you to publish and install packages]. To log in to the [Github container registry] simply run the following command to establish the connection and provide the access token when prompted:
 
-&nbsp;
-## 1.2 Spinning up the stack
+```
+  $ docker login ghcr.io -u <github_username>
+```
+```
+  $ <github_personal_access_token>
+```
 
-Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a bash terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
-
-bash
-# Start the stack (please note that this might take some time) - the port is optional and defaults to 3838
-bash ./stack.sh start <STACK_NAME> <PORT>
-
-# Stop the stack
-bash ./stack.sh stop <STACK_NAME>
-
-# Remove stack services (incl. volumes)
-bash ./stack.sh remove <STACK_NAME> -v
+## 2.3 Stack Client Settings (Optional)
+The Fenland Trajectory Agent requires importing [JPS_BASE_LIB] and [Stack-Clients] from the [py4jps] package. The [py4jps] package, now upgraded to [twa] serves as a [Python wrapper] capable of packaging compiled Java code into .jar files for use within Python. 
+Currently, [py4jps] by default only packages [JPS_BASE_LIB]. To utilize [Stack-Clients] through py4jps,the [Stack-Clients] resource needs to be added and allow for access. This adding procee can be executed automatically by [Dockerfile] employing jpsrm commands. 
+However, occasionally commands executed within the Docker environment may not successfully package the components due to potential discrepancies between the Java and Python environments or specific configurations within Docker that interfere with the packaging process. If this occurs, the stack client can be manually configured following th instructions provided at the [JPS_Document]
 
 
-After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
+# 3. Spinning Up the Agent
 
-&nbsp;
-## 1.3 Deploying the agent to the stack
+## 3.1 Placing the GPS Data
 
-As mentioned earlier, this agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.32`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the commands provided below shall suffice to compile the latest `StackClients` resource locally and install it inside the Docker container using the provided [Dockerfile]. If you encounter any error for spinning up the stack, please manually execute commands mentioned in Stack Client Settings section in this page.
+The GPS trajectory data is structured and stored in tables (in .csv format). Each table consists of a series of record points, with each point containing eight essential pieces of information for instantiation, including UTC Date, UTC Time, Longitude (degrees), Latitude (degrees), Speed (km/h), Heading (degrees), Height (meters), and Distance (meters). Please place GPS files in the [gps_target_folder]. Below is an example of the columns and values in GPS trajectory tables for instantiation:
 
-Simply execute the following command in the same folder as this `README` to build the required [Stack-Clients] resource and spin up the production version of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
+| UTC DATE   | UTC TIME | LATITUDE  | LONGITUDE | SPEED  | HEADING | HEIGHT | DISTANCE |
+|------------|----------|-----------|-----------|--------|---------|--------|----------|
+| 2015/05/22 | 11:34:46 | 52.174374 | 0.137380  | 5.796  | 0       | 48.135 | 18.06    |
+| 2015/05/22 | 11:34:56 | 52.174315 | 0.137153  | 5.785  | 0       | 48.611 | 16.86    |
+| 2015/05/22 | 11:35:06 | 52.174194 | 0.137029  | 6.320  | 0       | 53.210 | 16.55    |
+| ...        | ...      | ...       | ...       | ...    | ...     | ...    | ...      |
 
+## 3.2 Building the Agent
 
-# Buildings the agent Docker image and pushing it
+Simply execute the following command from a bash terminal in the same folder as this [README] to build the agent. This will build the Fenland-Trajectory-Agent local Docker Image. 
+
+```
 bash ./stack.sh build
+```
 
-# Deploying the agent (using pulled image)
-bash ./stack.sh start <STACK_NAME>
+In case of time out issues in automatically building the StackClients resource indicated in agent building logs, please try pulling the required stack-clients image first by execute `docker pull ghcr.io/cambridge-cares/stack-client:1.27.2` in the terminal before building the agent.
 
+## 3.3 Deploying the Agent
+### **1) Configuration and Adding Services
 
-&nbsp;
-# 2. Using the Agent
- 
+Please place [FenlandTrajectoryAgent.json] in [stack manager configuration service directory]. Afterward, ensure that the 'fenland-trajectory-agent service' is included in your stack configuration files normally placed in [stack manager configuration directory]
+
+### **2) Starting with the Stack Manager
+To spin up the stack, both a `postgis_password` and `geoserver_password` file need to be created in the `Deploy/stacks/dynamic/stack-manager/inputs/secrets/` directory (see detailed guidance in the [Stack Manager README]).
+To spin up the stack, create `postgis_password` and `geoserver_password` files in the Deploy/stacks/dynamic/stack-manager/inputs/secrets/ directory. Detailed guidance can be found in the [Stack Manager README]. Thereafter，navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal, Once the stack is up, the agent can be started within the stack autimatically, and will be available in the stack's drop-down container menu.
+
+```
+
+./stack.sh start <STACK NAME> <PORT>
+
+```
+
+# 4. Using the Agent
+
+The agent will automatically register a task upon startup to assimilate the data from the target GPS folder into the Knowledge Graph (KG). This background task can be triggered via an HTTP request after the agent has started, accessible at http://localhost:{Port}/fenland-trajectory-agent. Please replace {Port} with the numerical value of the port on which your stack is running.
+
 ## Provided functionality
 
-The agent will automatically register a task upon startup to assimilate the data in our target GPS folder into the KG. This background task can be triggered by an HTTP request after the agent starts up, accessible at http://localhost:5000/. 
-The folder for http request is /TheWorldAvatar/Agents/FenlandTrajectoryAgent/trigger_service/SendHTTP
+The files for example http request are displayed at [SendHTTP] folder.
 
 <center>-------- Data Instantiation ------------</center>
 
 - Post request to load and preprocess all GPS trajectory files 
-> /fenlandtrajectoryagent/load_and_preprocess
-- Post request to instantiate all GPS trajectory data to KG
-> /fenlandtrajectoryagent/process_and_instantiate
+> ./gpstasks/fenlandtrajectoryagent/load_and_preprocess
 
+- Post request to instantiate all GPS trajectory data to KG
+> ./gpstasks/fenlandtrajectoryagent/process_and_instantiate
+
+Additionally, services above can be triggered using [CURL commands] from a bash terminal. This method provides a straightforward and scriptable way to interact with the agent. An example CURL command is displayed as follows. In this example, the stack is assumed at port 3840
+
+```
+curl -X POST http://localhost:3840/fenland-trajectory-agent/gpstasks/fenlandtrajectoryagent/load_and_preprocess \
+     -H "Content-Type: application/json" \
+     -d '{"file_path":"/app/agent/raw_data/gps_target_folder"}'
+```
 
 &nbsp;
 # Authors
-Jiying Chen (jc2341@cam.ac.uk) April 2024
+Jiying Chen (jc2341@cam.ac.uk), May 2024
  
+
+<!-- Links -->
 <!-- websites -->
+[OntoDevice]: https://www.theworldavatar.com/kg/ontodevice
+[TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
+[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
+[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
+[Stack Manager README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[JPS_Document]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-pydantic-rdflib/JPS_BASE_LIB/python_wrapper/docs/examples/additional_java_lib.md
+[virtual environment]: https://docs.python.org/3/tutorial/venv.html
 [Python wrapper]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper#installing-additional-java-resources
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
@@ -148,8 +140,14 @@ Jiying Chen (jc2341@cam.ac.uk) April 2024
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 
 <!-- files -->
-[Dockerfile]: Dockerfile
-[docker compose file]: docker-compose.yml
-[docker-compose.test.yml]: tests\docker-compose.test.yml
-[resources]: resources
-[stack.sh]: stack.sh
+[Dockerfile]: ./Dockerfile
+[docker compose file]: ./docker-compose.yml
+[gps_target_folder]: ./agent/raw_data/gps_target_folder
+[resources]: ./resources
+[README]: ./README.md
+[FenlandTrajectoryAgent.json]: ./stack-manager-input-config-service/
+[stack manager configuration service directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[stack manager configuration directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/
+[CURL commands]: ./trigger_service/curl
+[SendHTTP]: ./trigger_service/SendHTTTP/
+
