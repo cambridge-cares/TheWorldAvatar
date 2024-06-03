@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.28.1-hotfix-stack-clients-spring-nested-jars-SNAPSHOT</version>
+  <version>1.29.1-hotfix-stack-clients-spring-nested-jars-SNAPSHOT</version>
 
   <name>Stack Clients</name>
   <url>https://theworldavatar.io</url>
@@ -40,6 +40,12 @@
   </distributionManagement>
 
   <dependencies>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jdk8</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
     <dependency>
@@ -144,6 +150,18 @@
       <artifactId>bigdata-client</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <version>5.10.2</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -175,6 +193,7 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
+            <?m2e ignore?>
             <id>copy-jar-dependencies</id>
             <phase>prepare-package</phase>
             <goals>
