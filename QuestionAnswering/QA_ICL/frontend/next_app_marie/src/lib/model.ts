@@ -1,5 +1,7 @@
+export type TableDataValue = string | number | string[] | number[] | TableDataBase | null
+
 export interface TableDataRow {
-  [key: string]: string | number | string[] | number[] | TableDataBase | null
+  [key: string]: TableDataValue
 }
 
 export interface TableDataBase {
