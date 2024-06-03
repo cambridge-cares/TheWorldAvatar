@@ -1,4 +1,4 @@
-from typing import Annotated, Any, Dict, List, Literal, Optional, Union
+from typing import Annotated, Literal, Union
 from pydantic import BaseModel, Field
 
 
@@ -7,25 +7,25 @@ EXAMPLES_INDEX_NAME = "idx:nlq2datareqExamples_vss"
 
 
 class LexicalBindingValue(BaseModel):
-    text: Optional[str] = None
-    identifier: Dict[str, str] = dict()
+    text: str | None = None
+    identifier: dict[str, str] = dict()
 
 
 class LexicalEntityBinding(BaseModel):
     cls: str
-    values: List[LexicalBindingValue]
+    values: list[LexicalBindingValue]
 
 
 class SparqlNodeMappingConfig(BaseModel):
     pkey: bool = False
-    cls: Optional[str] = None
+    cls: str | None = None
 
 
 class SparqlDataReqForm(BaseModel):
     type: Literal["sparql"] = "sparql"
     namespace: str
     query: str
-    res_map: Dict[str, SparqlNodeMappingConfig]
+    res_map: dict[str, SparqlNodeMappingConfig]
 
 
 class FuncDataReqForm(BaseModel):
@@ -34,13 +34,13 @@ class FuncDataReqForm(BaseModel):
 
 
 DataRequestForm = Annotated[
-    Union[SparqlDataReqForm, FuncDataReqForm], Field(discriminator="type")
+    SparqlDataReqForm | FuncDataReqForm, Field(discriminator="type")
 ]
 
 
 class DataRequest(BaseModel):
-    entity_bindings: Dict[str, LexicalEntityBinding] = dict()
-    const_bindings: Dict[str, Any] = dict()
+    entity_bindings: dict[str, LexicalEntityBinding] = dict()
+    const_bindings: dict[str, object] = dict()
     req_form: DataRequestForm
 
 
@@ -50,4 +50,4 @@ class Nlq2DataReqExample(BaseModel):
 
 
 class Nlq2DataReqExampleProcessed(Nlq2DataReqExample):
-    nlq_embedding: List[float]
+    nlq_embedding: list[float]

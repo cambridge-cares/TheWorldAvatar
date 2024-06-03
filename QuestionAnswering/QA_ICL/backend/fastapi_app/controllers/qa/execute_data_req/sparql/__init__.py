@@ -1,13 +1,13 @@
 from functools import cache
 import logging
-from typing import Annotated, Any, Dict, List
+from typing import Annotated
 
 from fastapi import Depends
 
 from constants.prefixes import PREFIX_NAME2URI, TWA_ABOX_PREFIXES
-from services.example_store.model import SparqlDataReqForm
+from model.nlq2req import SparqlDataReqForm
 from services.kg import KgClient
-from services.model import DocumentCollection, TableData
+from model.qa_data import DocumentCollection, TableData
 from utils.collections import FrozenDict
 from utils.json import deep_pd_json_normalize_list
 from utils.rdf import filter_remove_iris_from_list, flatten_sparql_select_response
@@ -33,7 +33,7 @@ class SparqlDataReqExecutor:
 
     def __init__(
         self,
-        ns2kg: Dict[str, KgClient],
+        ns2kg: dict[str, KgClient],
         query_processor: SparqlQueryProcessor,
         response_processor: SparqlResponseTransformer,
     ):
@@ -43,8 +43,8 @@ class SparqlDataReqExecutor:
 
     def exec(
         self,
-        entity_bindings: Dict[str, List[str]],
-        const_bindings: Dict[str, Any],
+        entity_bindings: dict[str, list[str]],
+        const_bindings: dict[str, object],
         req_form: SparqlDataReqForm,
     ):
         logger.info("Unprocessed query:\n" + req_form.query)

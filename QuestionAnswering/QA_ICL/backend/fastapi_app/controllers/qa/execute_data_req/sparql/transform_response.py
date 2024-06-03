@@ -1,11 +1,10 @@
 from collections import defaultdict
 from functools import cache
-from typing import Annotated, Dict, List, Sequence, Union
+from typing import Annotated, Sequence
 
 from fastapi import Depends
-import pandas as pd
 
-from services.example_store.model import SparqlNodeMappingConfig
+from model.nlq2req import SparqlNodeMappingConfig
 from services.processs_response.augment_node import NodeDataRetriever
 from services.processs_response.ontocompchem import get_ontocompchem_nodeDataRetriever
 from services.processs_response.ontokin import get_ontokin_nodeDataRetriever
@@ -28,9 +27,9 @@ class SparqlResponseTransformer:
 
     def transform(
         self,
-        vars: List[str],
-        bindings: List[Dict[str, Union[str, float]]],
-        res_map: Dict[str, SparqlNodeMappingConfig],
+        vars: list[str],
+        bindings: list[dict[str, str | float]],
+        res_map: dict[str, SparqlNodeMappingConfig],
     ):
         for var in vars:
             transform_config = res_map.get(var)

@@ -1,7 +1,7 @@
-from typing import Annotated, Any, Dict, List, Tuple
+from typing import Annotated, Sequence
 
 from fastapi import Depends
-from services.example_store.model import FuncDataReqForm
+from model.nlq2req import FuncDataReqForm
 from services.funcs.base import Name2Func
 from services.funcs.sg_building import SGBuildingFuncExecutor, get_sgBuilding_funcExec
 from services.funcs.sg_dispersion import (
@@ -12,7 +12,7 @@ from services.funcs.sg_carpark import SGCarparkFuncExecutor, get_sgCarpark_funcE
 
 
 class FuncDataReqExecutor:
-    def __init__(self, name2func_instances: Tuple[Name2Func, ...]):
+    def __init__(self, name2func_instances: Sequence[Name2Func]):
         self.name2func = {
             name: func
             for instance in name2func_instances
@@ -21,8 +21,8 @@ class FuncDataReqExecutor:
 
     def exec(
         self,
-        entity_bindings: Dict[str, List[str]],
-        const_bindings: Dict[str, Any],
+        entity_bindings: dict[str, list[str]],
+        const_bindings: dict[str, object],
         req_form: FuncDataReqForm,
     ):
         return self.name2func[req_form.name](**entity_bindings, **const_bindings)

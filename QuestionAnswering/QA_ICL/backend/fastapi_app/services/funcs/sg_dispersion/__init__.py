@@ -1,7 +1,6 @@
 from functools import cache
 import logging
-import time
-from typing import Annotated, Dict, List, Optional
+from typing import Annotated
 
 from fastapi import Depends, HTTPException
 import requests
@@ -12,7 +11,7 @@ from services.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient
 
 from services.funcs.base import Name2Func
-from services.model import (
+from model.qa_data import (
     ScatterPlotData,
     ScatterPlotTrace,
     TableData,
@@ -88,37 +87,24 @@ class SGDispersionFuncExecutor(Name2Func):
             text = text[1:-1]
         return text
 
-    def _link_ship(self, text: Optional[str], mmsi: Optional[str]):
+    def _link_ship(self, text: str | None, mmsi: str | None):
         logger.info(
             "Perform entity linking for `text`: {text}, `mmsi`: {mmsi}".format(
                 text=text, mmsi=mmsi
             )
         )
-        timestamp = time.time()
         iris = self.entity_store.link(cls="Ship", text=text, mmsi=mmsi)
-        latency = time.time() - timestamp
         logger.info("Linked IRIs: " + str(iris))
-        step = QAStep(
-            action="link_entity",
-            arguments={"text": text, "mmsi": mmsi},
-            results=iris,
-            latency=latency,
-        )
 
-        return iris, step
+        return iris
 
     def lookup_ship_attributes(
-        self, text: Optional[str] = None, mmsi: Optional[str] = None, **kwargs
+        self, text: str | None = None, mmsi: str | None = None, **kwargs
     ):
         """
         Given ship name or MMSI, returns MMSI, maximum static draught, dimension, IMO number, ship type, call sign
         """
-        steps: List[QAStep] = []
-
-        iris, step = self._link_ship(text=text, mmsi=mmsi)
-        steps.append(step)
-
-        timestamp = time.time()
+        iris = self._link_ship(text=text, mmsi=mmsi)
 
         vars = ["Ship", "ShipName"]
         vars_set = set(vars)
@@ -139,34 +125,19 @@ class SGDispersionFuncExecutor(Name2Func):
 
             bindings.append(binding)
 
-        data = TableData.from_vars_and_bindings(vars=vars, bindings=bindings)
+        data = TableData(columns=vars, data=bindings)
 
-        latency = time.time() - timestamp
-        steps.append(
-            QAStep(
-                action="lookup_ship_attributes",
-                arguments=dict(iris=iris),
-                latency=latency,
-            )
-        )
-
-        return steps, [data]
+        return [data]
 
     def lookup_ship_timeseries(
-        self, text: Optional[str] = None, mmsi: Optional[str] = None, **kwargs
+        self, text: str | None = None, mmsi: str | None = None, **kwargs
     ):
         """
         Given ship name or MMSI, returns speed over ground, course over ground, longitude, latitude
         """
-        steps: List[QAStep] = []
+        iris = self._link_ship(text=text, mmsi=mmsi)
 
-        iris, step = self._link_ship(text=text, mmsi=mmsi)
-        steps.append(step)
-
-        timestamp = time.time()
-
-        key2plot: Dict[str, ScatterPlotData] = dict()
-
+        key2plot: dict[str, ScatterPlotData] = dict()
         for iri in iris:
             ship_feature_info = self.ship_feature_info_client.query(iri=iri)
 
@@ -196,16 +167,7 @@ class SGDispersionFuncExecutor(Name2Func):
                     )
                 )
 
-        latency = time.time() - timestamp
-        steps.append(
-            QAStep(
-                action="lookup_ship_timeseries",
-                arguments=dict(iris=iris),
-                latency=latency,
-            )
-        )
-
-        return steps, list(key2plot.values())
+        return list(key2plot.values())
 
 
 @cache

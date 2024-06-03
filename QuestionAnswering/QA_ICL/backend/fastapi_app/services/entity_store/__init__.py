@@ -1,7 +1,7 @@
 from functools import cache
 from importlib.resources import files
 import logging
-from typing import Annotated, Dict, List, Optional, Tuple
+from typing import Annotated
 
 from fastapi import Depends
 import numpy as np
@@ -17,6 +17,7 @@ from services.entity_store.zeolitic_material import (
 from utils.collections import FrozenDict
 from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
+from model.lexicon import ENTITIES_INDEX_NAME, ELConfig, ELConfigEntry
 from .base import IEntityLinker
 from .ship import ShipLinker, get_ship_linker
 from .species import SpeciesStore, get_species_store
@@ -24,8 +25,6 @@ from .zeolite_framework import (
     ZeoliteFrameworkLinker,
     get_zeoliteFramework_linker,
 )
-from .model import ENTITIES_INDEX_NAME, ELConfig, ELConfigEntry
-
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +34,8 @@ class EntityStore:
         self,
         redis_client: Redis,
         embedder: IEmbedder,
-        cls2elconfig: Dict[str, ELConfig],
-        cls2linker: Dict[str, IEntityLinker],
+        cls2elconfig: dict[str, ELConfig],
+        cls2linker: dict[str, IEntityLinker],
     ):
         self.redis_client = redis_client
         self.embedder = embedder
@@ -48,7 +47,7 @@ class EntityStore:
             cls=regex.escape(cls, special_only=False, literal_spaces=True)
         )
 
-    def link_exact(self, surface_form: str, cls: Optional[str]) -> List[str]:
+    def link_exact(self, surface_form: str, cls: str | None) -> list[str]:
         """Performs exact matching over canonical labels.
         Note: This does not work if either the surface form or stored label contains forward slash.
         """
@@ -67,7 +66,7 @@ class EntityStore:
         res = self.redis_client.ft(ENTITIES_INDEX_NAME).search(inverse_label_query)
         return [doc.iri for doc in res.docs]
 
-    def link_semantic(self, surface_form: str, cls: Optional[str], k: int):
+    def link_semantic(self, surface_form: str, cls: str | None, k: int):
         """Performs vector similarity search over candidate surface forms.
         If input surface form exactly matches any label, preferentially return the associated IRIs.
         """
@@ -103,7 +102,7 @@ class EntityStore:
 
         return list(set(iris))[:k]
 
-    def link_fuzzy(self, surface_form: str, cls: Optional[str], k: int):
+    def link_fuzzy(self, surface_form: str, cls: str | None, k: int):
         """Performs fuzzy search over candidate surface forms.
         If input surface form exactly matches any label, preferentially return the associated IRIs.
         """
@@ -157,9 +156,9 @@ class EntityStore:
     def link(
         self,
         cls: str,
-        text: Optional[str],
-        identifier: Dict[str, str] = dict(),
-        k: Optional[int] = None,
+        text: str | None,
+        identifier: dict[str, str] = dict(),
+        k: int | None = None,
     ):
         logger.info(
             f"Performing entity linking for surface form `{text}` and identifier `{identifier}` of class `{cls}`."
@@ -179,7 +178,7 @@ class EntityStore:
         )
         texts = [text] + list(identifier.values())
 
-        iris: List[str] = []
+        iris: list[str] = []
         for text in texts:
             if len(iris) >= k:
                 break
@@ -187,7 +186,7 @@ class EntityStore:
 
         return iris[:k]
 
-    def lookup_label(self, iri: str) -> Optional[str]:
+    def lookup_label(self, iri: str):
         query = Query(
             "@iri:{{{iri}}}".format(
                 iri=regex.escape(iri, special_only=False, literal_spaces=True)
@@ -198,7 +197,7 @@ class EntityStore:
             regex.sub(r"\\(.)", r"\1", res.docs[0].label) if len(res.docs) > 0 else None
         )
 
-    def lookup_cls(self, iri: str) -> Optional[str]:
+    def lookup_cls(self, iri: str) -> str | None:
         query = Query(
             "@iri:{{{iri}}}".format(
                 iri=regex.escape(iri, special_only=False, literal_spaces=True)
@@ -210,7 +209,7 @@ class EntityStore:
 
 @cache
 def get_cls2config():
-    adapter = TypeAdapter(Tuple[ELConfigEntry, ...])
+    adapter = TypeAdapter(tuple[ELConfigEntry, ...])
     config = adapter.validate_json(
         files("resources").joinpath("el_config.json").read_text()
     )

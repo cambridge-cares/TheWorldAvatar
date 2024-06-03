@@ -1,9 +1,9 @@
 from functools import cache
-from typing import Annotated, Any, Dict, List
+from typing import Annotated
 
 from fastapi import Depends
 
-from services.example_store.model import (
+from model.nlq2req import (
     DataRequestForm,
     FuncDataReqForm,
     SparqlDataReqForm,
@@ -22,8 +22,8 @@ class DataReqExecutor:
 
     def exec(
         self,
-        entity_bindings: Dict[str, List[str]],
-        const_bindings: Dict[str, Any],
+        entity_bindings: dict[str, list[str]],
+        const_bindings: dict[str, object],
         req_form: DataRequestForm,
     ):
         if isinstance(req_form, SparqlDataReqForm):

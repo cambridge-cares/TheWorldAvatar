@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 from redis import Redis
 from redis.commands.search.field import TextField, VectorField, TagField
@@ -9,7 +7,7 @@ from services.ingest import DataIngester, IngestArgs, load_ingest_args
 from services.entity_store import get_cls2config
 from services.embed import IEmbedder, TritonEmbedder
 from services.redis import does_index_exist
-from services.entity_store.model import (
+from model.lexicon import (
     ENTITIES_INDEX_NAME,
     ENTITIES_KEY_PREFIX,
     LexiconEntry,
@@ -23,7 +21,7 @@ ENTITIES_INSERT_BATCHSIZE = 1024
 
 
 def process_lexicon(
-    embedder: IEmbedder, make_embedding: bool, data: List[LexiconEntry]
+    embedder: IEmbedder, make_embedding: bool, data: list[LexiconEntry]
 ):
     embeddings = (
         (
@@ -40,7 +38,7 @@ def process_lexicon(
     ]
 
 
-def lexicon_preinsert_transform(data: List[LexiconEntryProcessed]):
+def lexicon_preinsert_transform(data: list[LexiconEntryProcessed]):
     docs = [
         {
             "iri": entry.iri,
@@ -95,7 +93,7 @@ def main(args: IngestArgs):
 
         cls2config = get_cls2config()
 
-        def process_func(data: List[LexiconEntry]):
+        def process_func(data: list[LexiconEntry]):
             el_config = cls2config.get(data[0].cls)
             make_embedding = (
                 True if el_config and el_config.strategy == "semantic" else False
