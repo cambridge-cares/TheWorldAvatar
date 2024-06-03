@@ -1,6 +1,6 @@
 "use client";
 
-import React, { MouseEvent, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { DataItem } from "@/lib/model";
@@ -10,14 +10,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
-export default function Home() {
-  const [question, setQuestion] = useState("");
-  const [qaData, setQaData] = useState<DataItem[] | null>(null);
+const MemoDataTable = React.memo(DataTable)
 
-  const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const qaRes = await queryQa(question);
-    setQaData(qaRes.data);
+export default function Home() {
+  const [question, setQuestion] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [qaData, setQaData] = React.useState<DataItem[] | null>(null);
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+      setIsSubmitting(true);
+      const qaRes = await queryQa(question);
+      setQaData(qaRes.data);
+    } catch (err) {
+
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -71,12 +81,14 @@ export default function Home() {
           </p>
         </div>
       </div>
-      <div className="max-w-3xl mb-12 flex justify-center items-center w-full">
-        <Input placeholder="Type your query..." className="mr-2" onChange={e => setQuestion(e.target.value)} />
-        <Button variant="outline" size="icon" onClick={handleSubmit}><MagnifyingGlassIcon /></Button>
+      <div className="max-w-3xl mb-12 w-full">
+        <form className="flex justify-center items-center" onSubmit={handleFormSubmit}>
+          <Input placeholder="Type your query..." required className="mr-2" onChange={e => setQuestion(e.target.value)} />
+          <Button type="submit" variant="outline" size="icon" disabled={isSubmitting}><MagnifyingGlassIcon /></Button>
+        </form>
       </div>
       <div className="max-w-4xl">
-        {qaData && qaData.map((item, idx) => item.type === "table" ? <DataTable key={idx} headers={item.columns} data={item.data} /> : <></>)}
+        {qaData && qaData.map((item, idx) => item.type === "table" ? <MemoDataTable key={idx} columns={item.columns} data={item.data} /> : <></>)}
       </div>
       <div className="max-w-2xl w-full">
         <h2>Example Questions</h2>

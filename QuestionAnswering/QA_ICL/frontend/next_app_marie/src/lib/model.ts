@@ -1,6 +1,10 @@
+export interface TableDataRow {
+  [key: string]: string | number | string[] | number[] | TableDataBase | null
+}
+
 export interface TableDataBase {
   columns: string[]
-  data: { [key: string]: string | number | string[] | number[] | TableDataBase | null }[]
+  data: TableDataRow[]
 }
 
 export interface TableData extends TableDataBase {
