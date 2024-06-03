@@ -11,7 +11,7 @@ import shapely.wkt
 from services.entity_store import EntityStore, get_entity_store
 from services.funcs.base import Name2Func
 from services.kg import KgClient, get_sg_ontopClient
-from services.model import MapDataItem
+from services.model import WKTGeometryData
 from services.wkt import WKTTextSRS
 from utils.rdf import flatten_sparql_select_response
 
@@ -71,9 +71,9 @@ SELECT * WHERE {{
             }
 
             data = [
-                MapDataItem(
+                WKTGeometryData(
                     title=self.entity_store.lookup_label(iri),
-                    wkt_crs84=iri2merged[iri],
+                    literal=iri2merged[iri],
                 )
                 for iri in iris
                 if iri in iri2merged
