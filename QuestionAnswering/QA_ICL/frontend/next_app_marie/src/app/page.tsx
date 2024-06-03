@@ -6,6 +6,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { DataItem } from "@/lib/model";
 import { queryQa } from "@/lib/api";
 import { DataTable } from "@/components/ui/data-table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input"
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 export default function Home() {
   const [question, setQuestion] = useState("");
@@ -68,47 +71,12 @@ export default function Home() {
           </p>
         </div>
       </div>
-      <div className="max-w-4xl mb-12 flex justify-center items-center w-full lg:max-w-5xl">
-        <form className="flex items-center w-full lg:w-3/4 l">
-          <label htmlFor="search-input" className="sr-only">
-            Search
-          </label>
-          <div className="w-full">
-            <input
-              type="text"
-              id="search-input"
-              className="text-sm rounded-md w-full ps-3 p-2.5 border-2 outline-gray-200 focus:outline-blue-300"
-              placeholder="Type your query..."
-              required
-              onChange={e => setQuestion(e.target.value)}
-            />
-          </div>
-          <button
-            type="submit"
-            className="p-2.5 ms-2 text-sm font-medium rounded-lg border focus:ring-4 focus:outline-none"
-            onClick={handleSubmit}
-          >
-            <svg
-              className="w-4 h-4"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-              />
-            </svg>
-            <span className="sr-only">Search</span>
-          </button>
-        </form>
+      <div className="max-w-3xl mb-12 flex justify-center items-center w-full">
+        <Input placeholder="Type your query..." className="mr-2" onChange={e => setQuestion(e.target.value)} />
+        <Button variant="outline" size="icon" onClick={handleSubmit}><MagnifyingGlassIcon /></Button>
       </div>
       <div className="max-w-4xl">
-        {qaData && qaData.map((item, idx) => item.type === "table" ? <DataTable key={idx} headers={item.headers} data={item.data} /> : <></>)}
+        {qaData && qaData.map((item, idx) => item.type === "table" ? <DataTable key={idx} headers={item.columns} data={item.data} /> : <></>)}
       </div>
       <div className="max-w-2xl w-full">
         <h2>Example Questions</h2>
