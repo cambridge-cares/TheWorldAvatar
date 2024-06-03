@@ -1,4 +1,5 @@
-import express from "express"
+import express, { Request } from "express"
+import cors from "cors"
 import { readdirSync, readFileSync } from "fs"
 import * as path from "path"
 
@@ -7,7 +8,18 @@ const PORT = 5000
 
 
 const app = express()
+app.use(express.json())
+app.use(cors<Request>())
 
+app.use((req, res, next) => {
+    console.log(new Date().toISOString(), "Incoming request:")
+    console.log({
+        url: req.originalUrl,
+        method: req.method,
+        body: req.body
+    })
+    next()
+})
 
 app.get('/', (_, res) => {
     res.send('Hello World!')
@@ -27,7 +39,7 @@ readdirSync("data", { withFileTypes: true }).filter(dirent => dirent.isDirectory
                 console.log("File does not exists\n")
                 return
             }
-            
+
             let obj
             try {
                 obj = JSON.parse(data)
@@ -36,9 +48,9 @@ readdirSync("data", { withFileTypes: true }).filter(dirent => dirent.isDirectory
                 throw err
             }
 
-            const routerPath = "/" + dirent.name
-            console.log(`Registering mock data at path ${routerPath}\n`)
-            app[verb](routerPath, (_, res) => res.json(obj))
+            const route = "/" + dirent.name
+            console.log(`Registering mock data at path ${route}\n`)
+            app[verb](route, (_, res) => res.json(obj))
         })
     )
 
