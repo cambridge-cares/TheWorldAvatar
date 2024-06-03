@@ -20,11 +20,11 @@ The `line_buffer_query.sql` file also uses a 100-metre buffer but starts by form
 **Daily Path Area Query:**<br/>
 The `daily_path_area_query.sql` file retrieves and counts food retailers that intersect with the daily path area, which is formed by a 100-metre buffer around the line(s) created with the set of data points for a day.
 
-**Single Entity Count Query:**<br/>
-The `single_count_query.sql` file constructs a 100-metre buffer around the daily trajectory to identify food retailers intersecting with the buffer. Each exposed entity is correlated with the nearest GPS point of the daily path. Finally, it enumerates the number of entities associated with each GPS point.
+**Nearest Entity Query:**<br/>
+The `nearest_entity_query.sql` file constructs a 100-metre buffer around the daily trajectory to identify food retailers intersecting with the buffer. Each exposed entity is correlated with the nearest GPS point of the daily path. Finally, it enumerates the number of entities associated with each GPS point.
 
-**Single Counted Entity Details Query:**<br/>
-The `single_counted_entity_details_query.sql` file is an enhanced version of the Single Entity Count Query, providing the location, name, and address of each exposed food retailer.
+**Nearest Entity Details Query:**<br/>
+The `nearest_entity_details_query.sql` file is an enhanced version of the Nearest Entity Details Query, providing the location, name, and address of each exposed food retailer.
 
 ## Discussion ##
 All three queries—Distance, Point Buffer, and Line Buffer—assess areas within a 100-metre radius around each data point, effectively yielding the same exposure results. The primary difference lies in their execution times due to their varying computational demands. The Distance Query is the quickest, whereas the Point Buffer Query requires the most resources. Testing against a trajectory dataset of 365 data points and a food retailer dataset comprising 932 entries yielded the following execution times, indicating their performance.
@@ -37,7 +37,10 @@ All three queries—Distance, Point Buffer, and Line Buffer—assess areas withi
 
 The Daily Path Area query outperforms the Distance, Point Buffer and Line Buffer queries, being approximately five times faster than the Distance query, taking only 0.37 seconds.
 
-The execution time of the Single Entity Count Query and Single Counted Entity Details Query is comparable with that of the Daily Path Query.
+The execution time of the Nearest Entity Query and Nearest Entity Details Query is comparable with that of the Daily Path Query.
+
+## Test Data Queries ##
+The TestDataQueries folder contains queries against test data to cover and explain different test cases, the processes being applied, and their outcomes.
 
 ## Authors ##
 Feroz Farazi (msff2@cam.ac.uk), May 2024
