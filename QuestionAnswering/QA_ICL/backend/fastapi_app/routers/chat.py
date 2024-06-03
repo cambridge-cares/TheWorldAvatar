@@ -7,13 +7,11 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from controllers.chat import ChatbotClient, get_chatbot_client
+from controllers.chat import ChatController, get_chatbot_client
 
 
 class ChatRequest(BaseModel):
-    # TODO: client to request for chat using a qa_request_id rather than direct data
-    question: str
-    data: str
+    qa_request_id: str
 
 
 logger = logging.getLogger(__name__)
@@ -24,13 +22,13 @@ router = APIRouter()
 @router.post("/", responses={200: {"content": {"text/event-stream": {}}}})
 async def chat(
     req: ChatRequest,
-    chatbot_client: Annotated[ChatbotClient, Depends(get_chatbot_client)],
+    chatbot_client: Annotated[ChatController, Depends(get_chatbot_client)],
 ):
     logger.info("Request received to chat endpoint with the following request body")
     logger.info(req)
 
     def generate():
-        for chunk in chatbot_client.request_stream(req.question, req.data):
+        for chunk in chatbot_client.request_stream(req.qa_request_id):
             content = chunk.choices[0].delta.content
             if content is not None:
                 yield "data: {data}\n\n".format(data=json.dumps({"content": content}))
