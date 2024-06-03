@@ -209,7 +209,7 @@ base:LandUseRegulation_54b00bf2-78a8-4683-8398-e5861ed193f3 rdf:type opr:LandUse
     opr:appliesTo base:LandUseType_7d6e19cb-0b9e-43f6-b1df-7a41001a7a34;
     opr:isLegislatedBy base:CompetentAuthority_ce9269f2-0fa4-4e73-ae37-7dac8680bd18.
 
-base:LandUseType_235abcb2-a42f-4b21-b13e-9e1ba3183477 rdf:type ontozoning:Waterbody;
+base:LandUseType_848d93ef-1fa6-4209-8ca7-b12f73df3e6b rdf:type ontozoning:Waterbody;
     rdfs:label "Waterbody"^^xsd:string;
     rdfs:comment "These are areas used or intended to be used for drainage purposes and water areas such as reservoirs, ponds, rivers and other water channels."^^xsd:string.
 base:LandUseRegulation_35dd3fb5-3178-4194-bd86-c04b14b84f32 rdf:type opr:LandUseRegulation;

@@ -3,8 +3,7 @@ prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix om:   <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 prefix ems:  <https://www.theworldavatar.com/kg/ontoems/>
 prefix owl:  <http://www.w3.org/2002/07/owl#>
-
-
+prefix time: <https://www.theworldavatar.com/kg/ontotimeseries/>
 
 SELECT ?Measurement ?Name ?Unit
 WHERE { 
@@ -118,5 +117,31 @@ WHERE {
 		?quantity om:hasValue ?Measurement.
         BIND("SO&#x2082;" AS ?Name).
         BIND("&micro;g/m&#179;" AS ?Unit).
+    }
+    UNION
+    {
+        [IRI] ems:reports ?quantity.
+        ?quantity om:hasValue ?Measurement.
+        ?Measurement rdfs:label ?measurement_label.
+        OPTIONAL {
+            ?quantity om:hasAggregateFunction ?function.
+            ?function rdfs:label ?label.
+            BIND(
+                IF(?label = "maximum", "Max",
+                    IF(?label = "minimum", "Min",
+                        IF(?label = "average", "Avg",
+                            IF(?label = "sum", "Total",
+                                ?label
+                            )
+                        )
+                    )
+                ) AS ?function_label
+            )
+        }
+        BIND(IF(BOUND(?function_label), CONCAT(?function_label, " ", ?measurement_label), ?measurement_label) AS ?Name).
+        ?Measurement time:hasTimeSeries ?TimeSeries.
+        ?Measurement <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit> ?unit.
+        ?unit <http://www.ontology-of-units-of-measure.org/resource/om-2/symbol> ?symbol.
+        BIND (?symbol AS ?Unit).
     }
 }

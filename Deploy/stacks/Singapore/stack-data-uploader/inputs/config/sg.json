@@ -10,6 +10,7 @@
     "tree",
     "tbox",
     "tbox-carpark",
-    "osm"
+    "osm",
+    "aqmesh"
   ]
 }

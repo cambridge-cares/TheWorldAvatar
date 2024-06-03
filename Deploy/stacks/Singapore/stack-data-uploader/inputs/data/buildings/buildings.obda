@@ -30,6 +30,7 @@ tun:		http://www.opengis.net/citygml/tunnel/2.0/
 xml:		http://www.w3.org/XML/1998/namespace
 data:		http://mydata.example.org/
 twa:        https://www.theworldavatar.com/kg/
+plot:   https://www.theworldavatar.com/kg/ontoplot/
 
 [MappingDeclaration] @collection [[
 mappingId   City Object IRI
@@ -48,4 +49,26 @@ mappingId	Furniture
 target		city:cityobject/{"id"} a frn:CityFurniture .
 source		SELECT "id"
 			FROM "citydb"."city_furniture"
+			
+mappingId	Surface Geometry to City Object
+target		city:cityobject/{"cityobject_id"} geo:hasGeometry city:geometry/{"id"} . 
+source		SELECT "cityobject_id", "id"
+			FROM "citydb"."surface_geometry"
+			WHERE "geometry" IS NOT NULL
+			
+mappingId	Surface Geometry - Parent
+target		city:geometry/{"id"} grp:parent city:geometry/{"parent_id"} . 
+source		SELECT "id", "parent_id"
+			FROM "citydb"."surface_geometry"
+			
+mappingId	Non-Solid Geometry
+target		city:geometry/{"id"} a sf:Polygon ; geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {geometry_wkt}"^^geo:wktLiteral ; geo:hasMetricArea {"area_sqm"}^^www:XMLSchema#double . 
+source		SELECT "id", ST_ASTEXT(ST_TRANSFORM("geometry", 4326)) AS "geometry_wkt", ST_AREA("geometry") AS "area_sqm"
+			FROM "citydb"."surface_geometry"
+			WHERE "geometry" IS NOT NULL
+			
+mappingId	Building - LoDFootprint
+target		city:cityobject/{"id"} bldg:lod0FootPrint city:geometry/{"lod0_footprint_id"} . 
+source		SELECT "id", "lod0_footprint_id"
+			FROM "citydb"."building"
 ]]

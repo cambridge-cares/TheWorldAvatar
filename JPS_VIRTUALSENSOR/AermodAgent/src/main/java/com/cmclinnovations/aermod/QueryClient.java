@@ -21,7 +21,6 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -33,10 +32,6 @@ import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 import com.cmclinnovations.aermod.sparqlbuilder.GeoSPARQL;
 import com.cmclinnovations.aermod.sparqlbuilder.ServiceEndpoint;
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
-import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -178,6 +173,7 @@ public class QueryClient {
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_DISPERSION_COLOUR_BAR = P_DISP.iri("hasDispersionColourBar");
+    private static final Iri HAS_SRID = P_DISP.iri("hasSRID");
     private static final Iri HAS_HEIGHT = P_DISP.iri("hasHeight");
     private static final Iri LOD0_FOOTPRINT = P_BLDG.iri("lod0FootPrint");
     private static final Iri MEASURED_HEIGHT = P_BLDG.iri("measuredHeight");
@@ -1178,8 +1174,35 @@ public class QueryClient {
         return hasElevationData;
     }
 
+    boolean timestepExists(long simTime, String derivation) {
+        SelectQuery query = Queries.SELECT();
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+        Variable entity = query.var();
+        Variable dispMatrix = query.var();
+
+        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_DISPERSION_MATRIX, dispMatrix)).prefix(P_DISP);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        // this will give a list of outputs, one for each pollutant/height combo, but
+        // they are in the same time series table
+        if (queryResult.length() > 0) {
+            String dataIri = queryResult.getJSONObject(0).getString(dispMatrix.getQueryString().substring(1));
+            try (Connection conn = rdbStoreClient.getConnection()) {
+                TimeSeries<Long> ts = tsClientLong.getTimeSeriesWithinBounds(List.of(dataIri), simTime, simTime, conn);
+                return !ts.getTimes().isEmpty();
+            } catch (SQLException e) {
+                LOGGER.error("Failure in timestepExists, failed at closing connection");
+                LOGGER.error(e.getMessage());
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     void updateOutputs(String derivation, Map<String, DispersionOutput> zIriToOutputMap, boolean hasShips,
-            long timeStamp, boolean hasStaticPoints, boolean hasBuildings, boolean usesElevation) {
+            long timeStamp, boolean hasStaticPoints, boolean hasBuildings, boolean usesElevation, int srid) {
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
@@ -1197,13 +1220,14 @@ public class QueryClient {
                         .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_RASTER, dispRaster)
                         .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar),
                 pollutantIri.isA(pollutant)).prefix(P_DISP)
-                .select(zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
+                .select(entity,zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         List<String> tsDataList = new ArrayList<>();
         List<List<?>> tsValuesList = new ArrayList<>();
 
         for (int i = 0; i < queryResult.length(); i++) {
+            String entityIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
             String zIri = queryResult.getJSONObject(i).getString(zVar.getQueryString().substring(1));
             String pollutantIRI = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
             String dispersionMatrixIRI = queryResult.getJSONObject(i)
@@ -1226,6 +1250,11 @@ public class QueryClient {
                 tsValuesList.add(List.of(dispersionRaster));
                 tsValuesList.add(List.of(dispersionColourBar));
             }
+
+            ModifyQuery modify = Queries.MODIFY();
+            modify.prefix(P_DISP);
+            modify.insert(iri(entityIri).has(HAS_SRID,srid));
+            storeClient.executeUpdate(modify.getQueryString());
         }
 
         SelectQuery query2 = Queries.SELECT();

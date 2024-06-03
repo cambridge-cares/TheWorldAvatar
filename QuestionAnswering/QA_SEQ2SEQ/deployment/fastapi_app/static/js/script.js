@@ -4,7 +4,7 @@ Constants
 ------------------------------
 */
 
-TWA_ABOX_IRI_PREFIXES = ["http://www.theworldavatar.com/kb/", "https://www.theworldavatar.com/kg/"]
+TWA_ABOX_IRI_PREFIXES = ["http://www.theworldavatar.com/kb/", "https://www.theworldavatar.com/kg/", "http://www.theworldavatar.com/kg/"]
 
 /* 
 ------------------------------
@@ -27,7 +27,6 @@ Global states
 
 const globalState = (function () {
     const states = {
-        domain: null,
         isProcessing: false,
         chatbotLatency: null,
         err: null
@@ -66,14 +65,14 @@ async function throwErrorIfNotOk(res) {
     return res
 }
 
-async function fetchTranslation(question) {
+async function fetchTranslation(question, domain) {
     return fetch("./translate", {
         method: "POST",
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ question, domain: globalState.get("domain") })
+        body: JSON.stringify({ question, domain })
     })
         .then(throwErrorIfNotOk)
         .then(res => res.json())
@@ -212,6 +211,20 @@ globalState.registerWatcher("chatbotLatency", (oldVal, newVal) => {
     }
 })
 
+function hideEndpoint(sparqlQuery) {
+    const ltIdx = sparqlQuery.indexOf("<")
+    if (ltIdx < 0) {
+        return sparqlQuery
+    }
+
+    const gtIdx = sparqlQuery.indexOf(">", ltIdx)
+    if (gtIdx < 0) {
+        return sparqlQuery
+    }
+
+    return sparqlQuery.slice(0, ltIdx + 1) + sparqlQuery.slice(gtIdx)
+}
+
 const sparqlContainer = (function () {
     const elem = document.getElementById("sparql-container")
     const sparqlQueryPredictedDiv = document.getElementById("sparql-query-predicted")
@@ -220,12 +233,16 @@ const sparqlContainer = (function () {
     const sparqlQueryPostprocessedContainer = document.getElementById('sparql-query-postprocessed-container')
 
     function displaySparqlQueryPredicted(sparql_query) {
-        sparqlQueryPredictedDiv.innerHTML = sparql_query
+        sparqlQueryPredictedDiv.innerHTML = ""
+        const text = document.createTextNode(hideEndpoint(sparql_query))
+        sparqlQueryPredictedDiv.appendChild(text)
         sparqlQueryPredictedContainer.style.display = "block";
     }
 
     function displaySparqlQueryPostProcessed(sparql_query) {
-        sparqlQueryPostprocessedDiv.innerHTML = sparql_query;
+        sparqlQueryPostprocessedDiv.innerHTML = ""
+        const text = document.createTextNode(hideEndpoint(sparql_query))
+        sparqlQueryPostprocessedDiv.appendChild(text)
         sparqlQueryPostprocessedContainer.style.display = "block";
     }
 
@@ -247,11 +264,97 @@ const sparqlContainer = (function () {
     }
 })()
 
+function displayIRIDetails(data, iri, filename) {
+    const iriInfoPara = document.getElementById("iri-response");
+    const jsmolContainer = document.getElementById("jsmolAppletContainer");
+
+    iriInfoPara.innerHTML = "";
+    jsmolContainer.innerHTML = "";
+
+    let detailsHTML = `<strong>IRI</strong>: ${iri}<br>`;
+
+    for (const [key, value] of Object.entries(data)) {
+        detailsHTML += `<strong>${key}</strong>: ${value}<br>`;
+    }
+
+    iriInfoPara.innerHTML = detailsHTML;
+    console.log(iriInfoPara.innerHTML);
+
+    // JSmol applet configuration
+    var Info = {
+        width: 400,
+        height: 400,
+        debug: false,
+        color: "white",
+        addSelectionOptions: false,
+        use: "HTML5",
+        j2sPath: "./static/jmol-16.1.41/jsmol/j2s",
+        script: `load ./static/${filename} {1 1 1}; 
+        select Gd*; 
+        connect (selected) (all) DELETE;
+        connect 0.0 2.8 (selected) (all) CREATE; 
+        select Al*; 
+        connect (selected) (all) DELETE;
+        connect 0.0 2.0 (selected) (all) CREATE; 
+        select Si*; 
+        connect (selected) (all) DELETE;
+        connect 0.0 2.0 (selected) (all) CREATE; `
+    };
+
+    Jmol.setDocument(0);
+
+    var jsmolApplet = Jmol.getApplet("jsmolApplet", Info);
+
+    // var script = `
+    // select all
+    // n = {*}.length
+    // for (var i = 1; i <= n; i++) {
+    //     for (var j = i + 1;j <= n; j++) {
+    //         var dis = {*}[i].distance({*}[j]);
+    //         if (dis < 1.23) {
+    //             hide {atomno=j}
+    //         }
+    //     }
+    // }
+    // `;
+    
+    // Jmol.script(jsmolApplet, script);
+
+    jsmolContainer.innerHTML = Jmol.getAppletHtml(jsmolApplet);
+}
+
+
+
+async function handleIRIClick(iri) {
+    const iriInfoContainer = document.getElementById("iri-info-card")
+    console.log("Retrieve and display info for IRI:", iri);
+    
+    iriInfoContainer.style.display = "block";
+
+    try {
+        const response = await fetch(`./get-iri-details?iri=${encodeURIComponent(iri)}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch IRI details');
+        }
+        const responseData = await response.json();
+        const data = responseData.details; 
+        const filename = responseData.filename; 
+        displayIRIDetails(data, iri, filename);
+        console.log(filename);
+    } catch (error) {
+        console.error("Error fetching IRI details:", error);
+        iriInfoContainer.style.display = "none"
+    }
+}
+
 const kgResponseContainer = (function () {
     const kgResultsDiv = document.getElementById("kg-response-container")
     const tableContainer = document.getElementById("table-container")
     const toggleIriButton = document.getElementById("toggle-iri")
-
+    const iriInfoContainer = document.getElementById("iri-info-card")
+    const iriInfoPara = document.getElementById("iri-response")
+    const jsmolContainer = document.getElementById("jsmolAppletContainer")
+    
     let table = null
     let isShowingIRI = false
 
@@ -285,10 +388,32 @@ const kgResponseContainer = (function () {
         }
     }
 
+    async function _handleIRIClick(iri) {
+        console.log("Retrieve and display info for IRI:", iri);
+        
+        iriInfoContainer.style.display = "block";
+    
+        try {
+            const response = await fetch(`/get-iri-details?iri=${encodeURIComponent(iri)}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch IRI details');
+            }
+            const responseData = await response.json();
+            const data = responseData.details; 
+            const filename = responseData.filename; 
+            _displayIRIDetails(data, iri, filename);
+            console.log(filename);
+        } catch (error) {
+            console.error("Error fetching IRI details:", error);
+            iriInfoContainer.innerHTML = "Error loading IRI details.";
+        }
+    }
+
     return {
         reset() {
             kgResultsDiv.style.display = "none"
             tableContainer.innerHTML = ""
+            iriInfoContainer.style.display = "none"
         },
 
         render(data) {
@@ -313,7 +438,14 @@ const kgResponseContainer = (function () {
                 content += `<tr><td>${idx + 1}</td>`
                 vars.forEach(varname => {
                     if (varname in valueset) {
-                        content += `<td>${valueset[varname]["value"]}</td>`
+                        let cellValue = valueset[varname].value;
+                        let isIRI = TWA_ABOX_IRI_PREFIXES.some(prefix => cellValue.startsWith(prefix));
+                        let cellClass = isIRI ? 'clickable-iri' : '';
+                        let onclickStr = ''
+                        if (isIRI) {
+                            onclickStr = `onclick='handleIRIClick("` + cellValue + `")'`
+                        }
+                        content += `<td class="${cellClass}" ${onclickStr}>${cellValue}</td>`;
                     } else {
                         content += "<td></td>"
                     }
@@ -484,7 +616,7 @@ globalState.registerWatcher("isProcessing", (oldVal, newVal) => {
     }
 })
 
-async function askQuestion() {
+async function askQuestion(domain = null) {
     if (globalState.get("isProcessing")) { // No concurrent questions
         return;
     }
@@ -505,7 +637,7 @@ async function askQuestion() {
     inferenceMetadataCard.reset()
 
     try {
-        const trans_results = await fetchTranslation(question)
+        const trans_results = await fetchTranslation(question, domain)
         sparqlContainer.render(trans_results)
         document.getElementById("result-section").style.display = "block"
 
@@ -532,4 +664,65 @@ async function askQuestion() {
         globalState.set("isProcessing", false);
         chatbotResponseCard.hideChatbotSpinner()
     }
+}
+
+async function AdvSearch(domain) {
+    if (globalState.get("isProcessing")) { // No concurrent questions
+        return;
+    }
+
+    document.getElementById("result-section").style.display = "none"
+
+    globalState.set("isProcessing", true);
+
+    errorContainer.reset()
+    sparqlContainer.reset()
+    kgResponseContainer.reset()
+    chatbotResponseCard.reset()
+    inferenceMetadataCard.reset()
+
+    try {
+        
+        const form = document.getElementById('search-form-' + domain); // Adjust selector as needed
+        const formData = new FormData(form);
+        const serializedData = JSON.stringify(Object.fromEntries(formData));
+        document.getElementById("result-section").style.display = "block"
+        const kg_results = await fetchSearchResults(serializedData, domain);
+        kgResponseContainer.render(kg_results["data"])
+
+        inferenceMetadataCard.displayKgExecMetadata({ latency: kg_results["latency"] })
+    } catch (error) {
+        console.log(error)
+        if ((error instanceof HttpError) && (error.statusCode == 500)) {
+            globalState.set("err", "An internal server error is encountered. Please try again.")
+        } else {
+            globalState.set("err", "An unexpected error is encountered. Please report it with the following error message<br/>" + error)
+        }
+    } finally {
+        globalState.set("isProcessing", false);
+    }
+}
+
+async function fetchSearchResults(serializedData, domain) {
+    const url = new URL("./adv_search", window.location.href);
+    url.searchParams.append("domain", domain); // Append domain as a query parameter
+
+    return fetch(url, {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: serializedData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+        return data;
+    });
 }

@@ -3,13 +3,6 @@
     "stack": "https://theworldavatar.io/demos/singapore",
     "sources": [
         {
-            "id": "plot",
-            "type": "vector",
-            "tiles": [
-                "https://theworldavatar.io/demos/singapore/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:landplot&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-            ]
-        },
-        {
             "id": "population",
             "type": "raster",
             "tiles": [
@@ -22,98 +15,16 @@
             "tiles": [
                 "https://theworldavatar.io/demos/singapore/geoserver/carparks/wms?service=WMS&version=1.1.0&request=GetMap&layers=carparks%3Acarparks&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
             ]
+        },
+        {
+            "type": "vector",
+            "tiles": [
+                "https://theworldavatar.io/demos/singapore/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:cea&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            ],
+            "id": "cea"
         }
     ],
     "layers": [
-        {
-            "id": "sglandplot",
-            "name": "Land plots",
-            "source": "plot",
-            "source-layer": "landplot",
-            "type": "fill",
-            "order": 1,
-            "layout": {
-                "visibility": "none"
-            },
-            "paint": {
-                "fill-color": [
-                    "match",
-                    [
-                        "get",
-                        "LU_DESC"
-                    ],
-                    "AGRICULTURE",
-                    "#8c875d",
-                    "BEACH AREA",
-                    "#f9f7c7",
-                    "BUSINESS 1",
-                    "#c8a5cf",
-                    "BUSINESS 1 - WHITE",
-                    "#c8a5cf",
-                    "BUSINESS 2",
-                    "#b10166",
-                    "BUSINESS 2 - WHITE",
-                    "#b10166",
-                    "BUSINESS PARK",
-                    "#227fa2",
-                    "BUSINESS PARK - WHITE",
-                    "#227fa2",
-                    "CEMETERY",
-                    "#9f8900",
-                    "CIVIC & COMMUNITY INSTITUTION",
-                    "#cc0022",
-                    "COMMERCIAL",
-                    "#215297",
-                    "COMMERCIAL / INSTITUTION",
-                    "#9ffeff",
-                    "COMMERCIAL & RESIDENTIAL",
-                    "#36ade5",
-                    "EDUCATIONAL INSTITUTION",
-                    "#f4f2c2",
-                    "HEALTH & MEDICAL CARE",
-                    "#cc0022",
-                    "HOTEL",
-                    "#a79cc6",
-                    "LIGHT RAPID TRANSIT",
-                    "#ffffff",
-                    "MASS RAPID TRANSIT",
-                    "#ffffff",
-                    "OPEN SPACE",
-                    "#abb20e",
-                    "PARK",
-                    "#3ba339",
-                    "PLACE OF WORSHIP",
-                    "#cc0022",
-                    "PORT / AIRPORT",
-                    "#d0d0d0",
-                    "RESERVE SITE",
-                    "#fef66d",
-                    "RESIDENTIAL",
-                    "#f6bb81",
-                    "RESIDENTIAL / INSTITUTION",
-                    "#ef9c36",
-                    "RESIDENTIAL WITH COMMERCIAL AT 1ST STOREY",
-                    "#e78384",
-                    "ROAD",
-                    "#ffffff",
-                    "SPECIAL USE",
-                    "#516703",
-                    "SPORTS & RECREATION",
-                    "#a3d49d",
-                    "TRANSPORT FACILITIES",
-                    "#959a9d",
-                    "UTILITY",
-                    "#959a9d",
-                    "WATERBODY",
-                    "#bedef3",
-                    "WHITE",
-                    "#f5f1f2",
-                    "#808080"
-                ],
-                "fill-opacity": 0.5,
-                "fill-outline-color": "#000000"
-            }
-        },
         {
             "id": "population",
             "type": "raster",
@@ -147,6 +58,35 @@
                     0.1
                 ],
                 "icon-anchor": "bottom"
+            }
+        },
+        {
+            "id": "cea-layer",
+            "name": "Buildings with CEA data",
+            "source": "cea",
+            "source-layer": "cea",
+            "type": "fill-extrusion",
+            "minzoom": 8,
+            "order": 23,
+            "layout": {
+                "visibility": "none"
+            },
+            "paint": {
+                "fill-extrusion-color": "#8D99AE",
+                "fill-extrusion-opacity": 0.9,
+                "fill-extrusion-base": 0,
+                "fill-extrusion-height": [
+                    "case",
+                    [
+                        "has",
+                        "building_height"
+                    ],
+                    [
+                        "get",
+                        "building_height"
+                    ],
+                    8
+                ]
             }
         }
     ],
@@ -443,6 +383,13 @@
                     ],
                     "id": "sensor-source",
                     "type": "vector"
+                },
+                {
+                    "id": "AQMesh-source",
+                    "type": "vector",
+                    "tiles": [
+                        "https://theworldavatar.io/demos/singapore/geoserver/aqmesh/wms?service=WMS&version=1.1.0&request=GetMap&layers=aqmesh%3Aaqmesh&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
                 }
             ],
             "layers": [
@@ -508,6 +455,30 @@
                     "source-layer": "sensors",
                     "type": "circle",
                     "minzoom": 4
+                },
+                {
+                    "id": "AQMesh-layer",
+                    "name": "AQMesh sensor",
+                    "source": "AQMesh-source",
+                    "source-layer": "aqmesh",
+                    "type": "symbol",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "aqmesh_image",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ],
+                        "icon-anchor": "bottom"
+                    }
                 }
             ]
         },
@@ -1537,7 +1508,7 @@
             ]
         },
         {
-            "name": "Heat emissions",
+            "name": "Industry heat emissions",
             "expanded": false,
             "sources": [
                 {
@@ -1587,7 +1558,7 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                5
+                                10
                             ],
                             "#00ffff",
                             [
@@ -1596,25 +1567,34 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                10
-                            ],
-                            "#2ad5ff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
-                                15
-                            ],
-                            "#55aaff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
                                 20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
                             ],
                             "#807fff",
                             [
@@ -1623,18 +1603,27 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                25
+                                200
                             ],
-                            "#aa55ff",
+                            "#a05fff",
                             [
                                 "<=",
                                 [
                                     "get",
                                     "heat_emissions"
                                 ],
-                                31
+                                400
                             ],
-                            "#d52aff",
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
                             "#8D99AE"
                         ],
                         "fill-extrusion-base": 0,
@@ -1690,7 +1679,7 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                5
+                                10
                             ],
                             "#00ffff",
                             [
@@ -1699,25 +1688,34 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                10
-                            ],
-                            "#2ad5ff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
-                                15
-                            ],
-                            "#55aaff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
                                 20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
                             ],
                             "#807fff",
                             [
@@ -1726,18 +1724,27 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                25
+                                200
                             ],
-                            "#aa55ff",
+                            "#a05fff",
                             [
                                 "<=",
                                 [
                                     "get",
                                     "heat_emissions"
                                 ],
-                                31
+                                400
                             ],
-                            "#d52aff",
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
                             "#8D99AE"
                         ],
                         "fill-extrusion-base": 0,
@@ -1793,7 +1800,7 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                5
+                                10
                             ],
                             "#00ffff",
                             [
@@ -1802,25 +1809,34 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                10
-                            ],
-                            "#2ad5ff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
-                                15
-                            ],
-                            "#55aaff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
                                 20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
                             ],
                             "#807fff",
                             [
@@ -1829,18 +1845,27 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                25
+                                200
                             ],
-                            "#aa55ff",
+                            "#a05fff",
                             [
                                 "<=",
                                 [
                                     "get",
                                     "heat_emissions"
                                 ],
-                                31
+                                400
                             ],
-                            "#d52aff",
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
                             "#8D99AE"
                         ],
                         "fill-extrusion-base": 0,
@@ -1896,7 +1921,7 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                5
+                                10
                             ],
                             "#00ffff",
                             [
@@ -1905,25 +1930,34 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                10
-                            ],
-                            "#2ad5ff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
-                                15
-                            ],
-                            "#55aaff",
-                            [
-                                "<=",
-                                [
-                                    "get",
-                                    "heat_emissions"
-                                ],
                                 20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
                             ],
                             "#807fff",
                             [
@@ -1932,20 +1966,141 @@
                                     "get",
                                     "heat_emissions"
                                 ],
-                                25
+                                200
                             ],
-                            "#aa55ff",
+                            "#a05fff",
                             [
                                 "<=",
                                 [
                                     "get",
                                     "heat_emissions"
                                 ],
-                                31
+                                400
                             ],
-                            "#d52aff",
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
                             "#8D99AE"
                         ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "City furniture",
+                    "source-layer": "building_usage",
+                    "name": "City furniture",
+                    "source": "usage",
+                    "filter": [
+                        "==",
+                        [
+                            "get",
+                            "objectclass"
+                        ],
+                        "CityFurniture"
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                10
+                            ],
+                            "#00ffff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                20
+                            ],
+                            "#20dfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                30
+                            ],
+                            "#40bfff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                50
+                            ],
+                            "#609fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                100
+                            ],
+                            "#807fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                200
+                            ],
+                            "#a05fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                400
+                            ],
+                            "#c03fff",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "heat_emissions"
+                                ],
+                                600
+                            ],
+                            "#e01fff",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-opacity": 0.9,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
@@ -1994,6 +2149,191 @@
                             ],
                             8
                         ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Land plots",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "plot-source",
+                    "type": "vector",
+                    "tiles": [
+                        "https://theworldavatar.io/demos/singapore/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:landplot&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "all-landplot",
+                    "name": "All",
+                    "source": "plot-source",
+                    "source-layer": "landplot",
+                    "type": "fill",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": [
+                            "match",
+                            [
+                                "get",
+                                "LU_DESC"
+                            ],
+                            "AGRICULTURE",
+                            "#8c875d",
+                            "BEACH AREA",
+                            "#f9f7c7",
+                            "BUSINESS 1",
+                            "#c8a5cf",
+                            "BUSINESS 1 - WHITE",
+                            "#c8a5cf",
+                            "BUSINESS 2",
+                            "#b10166",
+                            "BUSINESS 2 - WHITE",
+                            "#b10166",
+                            "BUSINESS PARK",
+                            "#227fa2",
+                            "BUSINESS PARK - WHITE",
+                            "#227fa2",
+                            "CEMETERY",
+                            "#9f8900",
+                            "CIVIC & COMMUNITY INSTITUTION",
+                            "#cc0022",
+                            "COMMERCIAL",
+                            "#215297",
+                            "COMMERCIAL / INSTITUTION",
+                            "#9ffeff",
+                            "COMMERCIAL & RESIDENTIAL",
+                            "#36ade5",
+                            "EDUCATIONAL INSTITUTION",
+                            "#f4f2c2",
+                            "HEALTH & MEDICAL CARE",
+                            "#cc0022",
+                            "HOTEL",
+                            "#a79cc6",
+                            "LIGHT RAPID TRANSIT",
+                            "#ffffff",
+                            "MASS RAPID TRANSIT",
+                            "#ffffff",
+                            "OPEN SPACE",
+                            "#abb20e",
+                            "PARK",
+                            "#3ba339",
+                            "PLACE OF WORSHIP",
+                            "#cc0022",
+                            "PORT / AIRPORT",
+                            "#d0d0d0",
+                            "RESERVE SITE",
+                            "#fef66d",
+                            "RESIDENTIAL",
+                            "#f6bb81",
+                            "RESIDENTIAL / INSTITUTION",
+                            "#ef9c36",
+                            "RESIDENTIAL WITH COMMERCIAL AT 1ST STOREY",
+                            "#e78384",
+                            "ROAD",
+                            "#ffffff",
+                            "SPECIAL USE",
+                            "#516703",
+                            "SPORTS & RECREATION",
+                            "#a3d49d",
+                            "TRANSPORT FACILITIES",
+                            "#959a9d",
+                            "UTILITY",
+                            "#959a9d",
+                            "WATERBODY",
+                            "#bedef3",
+                            "WHITE",
+                            "#f5f1f2",
+                            "#808080"
+                        ],
+                        "fill-opacity": 0.5,
+                        "fill-outline-color": "#000000"
+                    }
+                },
+                {
+                    "id": "gfa-exceeded",
+                    "name": "GFA exceeded",
+                    "source": "plot-source",
+                    "source-layer": "landplot",
+                    "type": "fill",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            ">",
+                            [
+                                "get",
+                                "calc_gfa"
+                            ],
+                            [
+                                "get",
+                                "ref_gfa"
+                            ]
+                        ],
+                        [
+                            "!=",
+                            [
+                                "get",
+                                "ref_gfa"
+                            ],
+                            0
+                        ],
+                        [
+                            "has",
+                            "calc_gfa"
+                        ]
+                    ],
+                    "paint": {
+                        "fill-color": "#c00000",
+                        "fill-opacity": 0.5,
+                        "fill-outline-color": "#c00000"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Weather",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "cares-weather-station-source",
+                    "type": "vector",
+                    "tiles": [
+                        "https://theworldavatar.io/demos/singapore/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:caresweather&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "Cares-weather-station-layer",
+                    "name": "CARES weather station",
+                    "source": "cares-weather-station-source",
+                    "source-layer": "caresweather",
+                    "type": "symbol",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "weather_station_image",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ],
+                        "icon-anchor": "bottom"
                     }
                 }
             ]

@@ -91,5 +91,19 @@
                 "queryFile": "city_furniture.sparql"
             }
         },
+        {
+            "id": "aqmesh",
+            "class": "http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl#AQMesh",
+            "meta": {
+                "queryFile": "aqmesh_meta.sparql"
+            },
+            "time": {
+                "queryFile": "aqmesh_time.sparql",
+                "database": "aqmesh",
+                "limit": 24,
+                "unit": "hours",
+                "reference": "latest"
+            }
+        }
     ]
 }
