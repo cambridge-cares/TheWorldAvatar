@@ -27,7 +27,7 @@ def load_ingest_args():
     parser = ArgumentParser()
     parser.add_argument("--redis_host", required=True, type=str)
     parser.add_argument(
-        "--text_embedding_server", choices=["triton", "openai"], default="triton"
+        "--text_embedding_backend", choices=["triton", "openai"], default="triton"
     )
     parser.add_argument("--text_embedding_url")
     parser.add_argument(

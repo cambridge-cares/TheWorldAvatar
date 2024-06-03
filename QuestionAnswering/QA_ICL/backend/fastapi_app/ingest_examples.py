@@ -5,7 +5,7 @@ from redis import Redis
 from redis.commands.search.field import VectorField
 
 from services.embed import IEmbedder, TritonEmbedder
-from services.ingest import DataIngester, load_ingest_args
+from services.ingest import DataIngester, IngestArgs, load_ingest_args
 from services.redis import does_index_exist
 from services.example_store.model import (
     EXAMPLES_INDEX_NAME,
@@ -55,8 +55,7 @@ def make_example_search_schema(vector_dim: int):
     )
 
 
-def main():
-    args = load_ingest_args()
+def main(args: IngestArgs):
     redis_client = Redis(host=args.redis_host, decode_responses=True)
 
     if not args.drop_index and does_index_exist(
@@ -100,4 +99,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    args = load_ingest_args()
+    main(args)

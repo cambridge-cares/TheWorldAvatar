@@ -40,35 +40,21 @@ All data schemas are defined in [../../data_generation/README.md](../../data_gen
    pip install -r requirements.txt
    ```
 
-1. Set the following environment variables
-   
-   Common environment variables:
-
-   - `REDIS_HOST`: host name of Redis server.
-   - `TEXT_EMBDDING_SERVER`: either `openai` if connecting to an OpenAI compatible server, or `triton` if connecting to Triton server.
-   - `TEXT_EMBEDDING_URL`: url of text embedding server.
-   - `TRANSLATOR_OPENAI_BASE_URL` (optional): base URL of OpenAI compatible server used by internal translation service (i.e. the conversion of natural language questions into structured data requests), if different from OpenAI's default.
-   - `TRANSLATOR_OPENAI_API_KEY` (optional): API key to authorise requests to OpenAI server used by internal translation service; defaults to `OPENAI_API_KEY` if not set.
-   - `TRANSLATOR_OPENAI_MODEL`: name of model at OpenAI server called by internal translation service.
-   - `CHAT_OPENAI_BASE_URL` (optional): base URL of OpenAI compatible server used by internal chat service (i.e. the formulation of human-like response from structured data), if different from OpenAI's default.
-   - `CHAT_OPENAI_API_KEY` (optional): API key to authorise requests to OpenAI server used by internal chat service; defaults to `OPENAI_API_KEY` if not set.
-   - `CHAT_OPENAI_MODEL`: name of model at OpenAI server called by internal chat service.
-
-   Marie-specific environment variables:
-   - `KG_ENDPOINT_ONTOSPECIES`, `KG_ENDPOINT_ONTOKIN`, `KG_ENDPOINT_ONTOCOMPCHEM`, `KG_ENDPOINT_ONTOZEOLITE`: SPARQL endpoints of OntoSpecies, OntoKin, OntoCompChem, OntoZeolite KGs.
-   
-   Zaha-specific environment variables:
-   - `KG_ENDPOINT_SG_ONTOP`, `KG_ENDPOINT_SG_DISPERSION`, `KG_ENDPOINT_SG_PLOT`, `KG_ENDPOINT_SG_COMPANY`, `KG_ENDPOINT_SG_CARPARK`: public SPARQL endpoints of Singapore's stack Ontop, dispersion, plot, company, carpark KGs
-   - `SG_STACK_INTERNAL_ONTOP_ENDPOINT`, `SG_STACK_INTERNAL_CARPARK_ENDPOINT`: SPARQL endpoints of Singapore's stack Ontop and carpark KGs within its internal network.
-   - `ENDPOINT_FEATURE_INFO_AGENT`: endpoint of the feature info agent of Singapore's stack
-   - `ENDPOINT_POLLUTANT_CONCENTRATIONS`: endpoint to retrieve pollutant concentrations
-   - `LOCATION_IQ_API_KEY`: API key to make requests to LocationIQ server
-
+1. Create an `app.local.yaml` file using the following template.
+   ```{yaml}
+   translator:
+     api_key: <openai_api_key_for_translation_service>
+   chat:
+     api_key: <openai_api_key_for_chat_service>
+   location_iq:
+     api_key: <location_iq_api_key_for_geocoding_service>
+   ```
 
 1. Ingest lexicon, simplified graph schema, and example data into Redis server. 
-   <!-- TODO: allow user to pass in endpoints for Redis and text embedding servers when executing the script. -->
+   Execute `python ingest.py --help` to see a list of all available command line options.
+   Example execution:
    ```
-   sh ingest.sh
+   python ingest.py --redis_host localhost --text_embedding_backend triton --text_embedding_url localhost:8001 --drop_indx --invalidate_cache
    ```
 
 2. Start the development server in debug mode (app is automatically reloaded upon code changes) `uvicorn main:app --port 5000 --reload --log-config=log_conf.yaml`. The app will be running at `localhost:5000`.
