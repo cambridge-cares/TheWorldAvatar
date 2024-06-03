@@ -2,10 +2,9 @@
 
 ## 1. Description
 
-The TravellingSalesmanAgent is an agent that
-
-1) Retrieves Points of Interest (POI) locations from the knowledge graph.
-2) Based on the specific usecases, generate geoserver layers on Travelling Salesman Problem.
+The SeaLevelImpactAgent is an agent that
+1) Receives inputs - `SSP Scenario`, `Confidence Level`, `Percentage Quantile`
+2) Instantiate the sealevelimpact
 
 ## 2. Prerequisites
 
@@ -16,29 +15,12 @@ The agent has been implemented to work in the stack. Follow the instructions in 
 ## 3. Agent Configuration
 
 ### 3.1 Config Properties
+1) `dbName` - Specify the postgresql database
 
-1) `kgEndpoint` - The blazegraph endpoint for retrieval of POI information. Blazegraph endpoint can be on the same stack or different stack. When left blank, it is assumed to be on the same stack.
-
-### 3.2 SPARQL Queries
-
-SPARQL queries are used to retrieve the locations of POI.
-
-The SPARQL queries follow the format which requires the returned variable to be in this format:
-
-1) `poi_iri` refers to the POI's iri.
-2) `poi_type` refers to the POI's iri type.
-3) `geometry` refers to the WKT literals of the POI location in EPSG 4326.
-
-SPARQL queries are created for [UR in King's Lynn](inputs/UR/POIqueries/) use cases.
-
-### 3.3 EdgeTableSQL
-
-[EdgeTableSQL](https://docs.pgrouting.org/2.5/en/pgRouting-concepts.html#description-of-the-edges-sql-query-for-dijkstra-like-functions) describes the characteristic of the road networks. It represents the cost table used for routing calculations. EdgeTableSQL have been generated for [Urban Resillience (UR)](inputs/UR/edgesSQLTable/) use case in King's Lynn.
 
 ## 4. Build
 
 ### 4.1. GitHub Credentials
-
 The docker image uses TheWorldAvatar maven repository (`https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/`).
 You will need to provide your credentials (GitHub username/personal access token) in single-word text files as follows:
 
@@ -50,19 +32,19 @@ You will need to provide your credentials (GitHub username/personal access token
 
 ## 5. Deployment
 
-### 5.1 Retrieving TravellingSalesmanAgent's image
+### 5.1 Retrieving SeaLevelImpactAgent's image
 
-The TravellingSalesmanAgent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/travellingsalesmanagent) using `docker pull ghcr.io/cambridge-cares/travellingsalesmanagent:<LATEST-VERSION>`
+The SeaLevelImpactAgent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/sealevelimpactagent) using `docker pull ghcr.io/cambridge-cares/sealevelimpactagent:<LATEST-VERSION>`
 
 ### 5.2 Starting with the stack-manager
 
-The agent has been implemented to work in the stack, which requires the TravellingSalesmanAgent Docker container to be deployed in the stack. To do so, place [travellingsalesmanagent.json](stack-manager-config/inputs/config/services/travellingsalesmanagent.json) in the [stack-manager config directory].
+The agent has been implemented to work in the stack, which requires the SeaLevelImpactAgent Docker container to be deployed in the stack. To do so, place [sealevelimpactagent.json](stack-manager-config/inputs/config/services/sealevelimpactagent.json) in the [stack-manager config directory].
 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
 ### 5.3 Running the Agent
 
-The agent is reachable at the `/runtsp` endpoint.
+The agent is reachable at the `/slrimpact` endpoint.
 
 #### Input specification
 
@@ -79,18 +61,18 @@ Generates travelling salesman route via geoserver SQL view. this route runs thro
 To run the agent, simply run the following cURL command:
 
 ```bash
-curl -X POST "localhost:3838/travellingsalesmanagent/runtsp?function=UR"
+curl -X POST "localhost:3838/sealevelimpactagent/slrimpact?ssp=ssp585&projectionyear=2150&confidence=low&quantile=95"
 ```
 
 ## 6. Debugging
 
 ### 6.1 Building Docker Image
 
-In the same directory as this README, run `docker compose build`. This will build the TravellingSalesmanAgent local Docker Image.
+In the same directory as this README, run `docker compose build`. This will build the SeaLevelImpactAgent local Docker Image.
 
 ### 6.2 Spinning up with stack-manager
 
-To debug the agent, replace [`travellingsalesmanagent-debug.json`](stack-manager-config/inputs/config/services/travellingsalesmanagent-debug.json) instead of [`travellingsalesmanagent.json`](stack-manager-config/inputs/config/services/travellingsalesmanagent.json) in the [stack-manager config directory].
+To debug the agent, replace [`sealevelimpactagent-debug.json`](stack-manager-config/inputs/config/services/sealevelimpactagent-debug.json) instead of [`sealevelimpactagent.json`](stack-manager-config/inputs/config/services/sealevelimpactagent.json) in the [stack-manager config directory].
 
 Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager]'s main folder.
 The debugger port will be available at 5005.
@@ -103,3 +85,6 @@ The debugger port will be available at 5005.
 
 [stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
 [stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+
+
+docker service rm singapore-sealevelimpactagent

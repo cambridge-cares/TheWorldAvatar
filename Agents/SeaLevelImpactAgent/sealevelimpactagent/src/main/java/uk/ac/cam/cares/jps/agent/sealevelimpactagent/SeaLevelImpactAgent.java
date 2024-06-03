@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.travellingsalesmanagent;
+package uk.ac.cam.cares.jps.agent.sealevelimpactagent;
 
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
@@ -7,37 +7,44 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.util.Map;
 import java.util.Properties;
-import org.json.JSONArray;
+
 import org.json.JSONObject;
+import org.openrdf.query.algebra.In;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
-@WebServlet(urlPatterns = "/runtsp")
+@WebServlet(urlPatterns = "/slrimpact")
 
-public class TravellingSalesmanAgent extends JPSAgent {
+public class SeaLevelImpactAgent extends JPSAgent {
     
-    private static String tspFunction = null; 
+    private static String sspScenario = null;
+    private static Integer projectionyear = null;
+    private static String confidence = null;
+    private static Integer quantile = null;
 
     private static final String PROPETIES_PATH = "/inputs/config.properties";
-    private final String FUNCTION_KEY = "function";
-
-
-    private static final Logger LOGGER = LogManager.getLogger(TravellingSalesmanAgent.class);
-
+    private final String SSP_SCENARIO_KEY = "ssp";
+    private final String PROJECTIONYEAR_KEY = "projectionyear";
+    private final String CONFIDENCE_KEY = "confidence";
+    private final String QUANTILE_KEY = "quantile";
+    private static final Logger LOGGER = LogManager.getLogger(SeaLevelImpactAgent.class);
     private EndpointConfig endpointConfig = new EndpointConfig();
     private String dbName;
+    public static String heritagetreesTable = null;
+    public static String historicsitesTable = null;
+    public static String monumentsTable = null;
+    public static String museumsTable = null;
+    public static String touristattractionsTable = null;
+    public static String landplotTable= null;
+    public static String populationTable= null;
+    public static String osm_streetTable= null;
+
     private String kgEndpoint;
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
-
 
     /**
      * Initialise agent
@@ -45,19 +52,8 @@ public class TravellingSalesmanAgent extends JPSAgent {
     public void init() {
         readConfig();
 
-        if(!kgEndpoint.isEmpty() ){
-            try {
-                this.storeClient = new RemoteStoreClient(kgEndpoint, kgEndpoint);
-            } catch (Exception e) {
-             System.out.println(e + "Invalid blazegraph endpoint specified");
-            }
-        }else
-        {   //Follow the running stack's blazegraph URL
-            this.storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        }
-
-        this.remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName),
-                endpointConfig.getDbUser(), endpointConfig.getDbPassword());
+        this.storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+        this.remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName), endpointConfig.getDbUser(), endpointConfig.getDbPassword());
     }
 
     /**
@@ -68,8 +64,14 @@ public class TravellingSalesmanAgent extends JPSAgent {
             Properties prop = new Properties();
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
-            this.kgEndpoint = prop.getProperty("kgEndpoint");
-
+            this.heritagetreesTable= prop.getProperty("heritagetreesTable.name");
+            this.historicsitesTable= prop.getProperty("historicsitesTable.name");
+            this.monumentsTable= prop.getProperty("monumentsTable.name");
+            this.museumsTable= prop.getProperty("museumsTable.name");
+            this.touristattractionsTable= prop.getProperty("touristattractionsTable.name");
+            this.landplotTable= prop.getProperty("landplotTable.name");
+            this.populationTable= prop.getProperty("populationTable.name");
+            this.osm_streetTable= prop.getProperty("osm_streetTable.name");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
@@ -91,69 +93,33 @@ public class TravellingSalesmanAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
+
+
         if (!validateInput(requestParams)) {
             throw new JPSRuntimeException("Unable to validate request sent to the agent.");
         }
 
-        this.tspFunction = requestParams.getString(FUNCTION_KEY);
-
-        LOGGER.info("Successfully set tspFunction to " + tspFunction);
+        this.sspScenario = requestParams.getString(SSP_SCENARIO_KEY);
+        this.confidence = requestParams.getString(CONFIDENCE_KEY);
+        this.projectionyear = requestParams.getInt(PROJECTIONYEAR_KEY);
+        this.quantile = requestParams.getInt(QUANTILE_KEY);
+        LOGGER.info("Successfully set SSP Scenario to " + sspScenario);
+        LOGGER.info("Successfully set Projection year to "+projectionyear);
+        LOGGER.info("Successfully set Confidence level to " + confidence);
+        LOGGER.info("Successfully set Quantile to " + quantile);
 
         JSONObject response = new JSONObject();
-        response.put("message", "Successfully set tspFunction to " + tspFunction);
-
-
-        Path POI_PATH = Path.of("/inputs/"+tspFunction+"/POIqueries");
-        Path EDGESTABLESQL_PATH = Path.of("/inputs/"+tspFunction+"/edgesSQLTable");
-
+        response.put("message", "Successfully set SSP Scenario to " + sspScenario);
+        response.put("message", "Successfully set Projection Year to " + projectionyear);
+        response.put("message", "Successfully set Confidence level to " + confidence);
+        response.put("message", "Successfully set Quantile to " + quantile);
 
         try {
             init();
-            // Read SPARQL and SQL files.
-            Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
-            Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
-
-            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
-            JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
-
-            // Split road into multiple smaller segment and find the nearest_node
-            NearestNodeFinder nearestNodeFinder = new NearestNodeFinder();
-
-            // Create a table to store nearest_node
-            nearestNodeFinder.insertPoiData(remoteRDBStoreClient, cumulativePOI);
-
-            //Create geoserver layer
-            GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            String workspaceName= "twa";
-            String schema = "public";
-            geoServerClient.createWorkspace(workspaceName);
-
-            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-            virtualTable.setSql("SELECT CONCAT('https://www.theworldavatar.com/kg/',poi_tsp_iri) as iri, poi_tsp_type, nearest_node, geom FROM poi_tsp_nearest_node");
-            virtualTable.setEscapeSql(true);
-            virtualTable.setName("poi_tsp_nearest_node");
-            virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
-            geoServerVectorSettings.setVirtualTable(virtualTable);
-            geoServerClient.createPostGISDataStore(workspaceName,"poi_tsp_nearest_node" , dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName,"poi_tsp_nearest_node" ,geoServerVectorSettings);
-
-
-            /**
-             *  Loop through the edgeTable SQL and generate two geoserver layer for each edgeTableSQL
-             *  - TSP_route:  Gives the geometry of the shortest path for all TSP points
-             *  - TSP_seq:  Gives the sequence of order to visit all the TSP points
-             */
-            if (tspFunction.equals("UR")){
-                TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator();
-                for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
-                    String layerName = "TSP_"+entry.getKey();
-                    String sql = entry.getValue();
-                    tspRouteGenerator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
-                    tspRouteGenerator.generateSequenceLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
-                }
-            }
-
+            ImpactAssessor impactAssessor = new ImpactAssessor();
+            String seaLevelChangeUUID =impactAssessor.getSeaLevelChangeUUID(remoteRDBStoreClient, sspScenario, projectionyear, confidence, quantile);
+            if (seaLevelChangeUUID.isEmpty()){response.put("message","No sealevelchange UUID");}
+            LOGGER.info("Assessing sea-level rise impact for uuid "+ seaLevelChangeUUID);
 
 
 
@@ -173,12 +139,10 @@ public class TravellingSalesmanAgent extends JPSAgent {
      */
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (!requestParams.has(FUNCTION_KEY)) {
-            LOGGER.error("Function is missing.");
+        if (!requestParams.has(SSP_SCENARIO_KEY)) {
+            LOGGER.error("SSP is missing.");
             return false;
         }
         return true;
     }
-
-
 }

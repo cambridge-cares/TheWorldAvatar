@@ -10,7 +10,7 @@
         "Mounts": [
           {
             "Type": "bind",
-            "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/SeaLevelImpactAgent/inputs",
+            "Source": "../../../../../../Agents/SeaLevelImpactAgent/inputs",
             "Target": "/inputs"
           }
         ],
