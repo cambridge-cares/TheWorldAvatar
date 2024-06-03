@@ -1,5 +1,7 @@
+"use client"
+
 import styles from './ribbon.module.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Tabs, Tab } from '@mui/material';
 import { Map } from 'mapbox-gl';
@@ -46,9 +48,15 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
   const cameraDefault: string = props.mapSettings.camera.default;
   const [activeIndex, SetActiveIndex] = useState(props.startingIndex);
   const ribbonState: ContextItemDefinition = useSelector(selectItem("Show Controls Ribbon"));
+  const [isRibbonToggled, setIsRibbonToggled] = useState<boolean>(ribbonState?.toggled);
   const cameraNames: string[] = getCameraPositions(props.mapSettings.camera);
   const imageryNames: string[] = getImageryOptions(props.mapSettings.imagery);
   const currentImagery: ImageryOption = getDefaultImageryOption(props.mapSettings.imagery);
+
+  useEffect(() => {
+    setIsRibbonToggled(ribbonState?.toggled);
+  }, [isRibbonToggled])
+
 
   // State for map configuration settings
   const dispatch = useDispatch();
@@ -63,7 +71,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
   }
 
   // Return renderable element
-  if (ribbonState?.toggled != null && ribbonState.toggled) {
+  if (isRibbonToggled) {
     return (
       <div className={styles.ribbonContainer}>
 
