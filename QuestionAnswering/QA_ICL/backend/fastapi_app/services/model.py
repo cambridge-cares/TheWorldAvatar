@@ -4,14 +4,14 @@ from typing import Annotated, Any, Dict, Literal, Sequence, Union
 from pydantic import BaseModel, Field
 
 
-class DocumentCollectionDataItem(BaseModel):
+class DocumentCollection(BaseModel):
     type: Literal["document_collection"] = "document_collection"
     data: list[dict[str, Any]]
 
 
-class TableDataItemBase(BaseModel):
+class TableDataBase(BaseModel):
     columns: list[str]
-    data: Sequence[dict[str, str | float | Sequence[str | float] | TableDataItemBase | None]]
+    data: Sequence[dict[str, str | float | Sequence[str | float] | TableDataBase | None]]
 
     @classmethod
     def from_data(cls, data: Sequence[dict[str, Any]]):
@@ -35,7 +35,7 @@ class TableDataItemBase(BaseModel):
         return cls(columns=cols, data=data)
 
 
-class TableDataItem(TableDataItemBase):
+class TableData(TableDataBase):
     type: Literal["table"] = "table"
 
     @classmethod
@@ -54,7 +54,7 @@ class ScatterPlotTrace(BaseModel):
     y: TypedSeries
 
 
-class ScatterPlotDataItem(BaseModel):
+class ScatterPlotData(BaseModel):
     type: Literal["scatter_plot"] = "scatter_plot"
     title: str | None = None
     traces: list[ScatterPlotTrace] = []
@@ -63,13 +63,14 @@ class ScatterPlotDataItem(BaseModel):
 CRS84_URI = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
 
 
-class MapDataItem(BaseModel):
-    type: Literal["map"] = "map"
+class WKTGeometryData(BaseModel):
+    type: Literal["wkt_geometry"] = "wkt_geometry"
+    srs: Literal["crs84"] = "crs84"
     title: str | None = None
-    wkt_crs84: str
+    literal: str
 
 
 DataItem = Annotated[
-    Union[DocumentCollectionDataItem, TableDataItem, ScatterPlotDataItem, MapDataItem],
+    Union[DocumentCollection, TableData, ScatterPlotData, WKTGeometryData],
     Field(discriminator="type"),
 ]

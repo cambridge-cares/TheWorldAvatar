@@ -1,13 +1,10 @@
-export interface TableDataItemHeader {
-  value: string
-  label: string
-  dtype: "string" | "number" | "object"
+export interface TableDataBase {
+  columns: string[]
+  data: { [key: string]: string | number | string[] | number[] | TableDataBase | null }[]
 }
 
-export interface TableDataItem {
+export interface TableData extends TableDataBase {
   type: "table"
-  headers: TableDataItemHeader[]
-  data: { [key: string]: string | number | object }
 }
 
 export interface TypedSeries {
@@ -21,16 +18,17 @@ export interface ScatterPlotTrace {
   y: TypedSeries
 }
 
-export interface ScatterPlotDataItem {
+export interface ScatterPlotData {
   type: "scatter_plot"
   title: string
   traces: ScatterPlotTrace[]
 }
 
-export interface MapDataItem {
-  type: "map"
+export interface WKTGeometryData {
+  type: "wkt_geometry"
+  srs: "crs84"
   title?: string
-  wkt_crs84: string
+  literal: string
 }
 
-export type DataItem = TableDataItem | ScatterPlotDataItem | MapDataItem 
+export type DataItem = TableData | ScatterPlotData | WKTGeometryData 

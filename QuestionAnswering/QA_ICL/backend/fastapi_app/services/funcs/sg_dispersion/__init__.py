@@ -13,9 +13,9 @@ from services.feature_info_client import FeatureInfoClient
 
 from services.funcs.base import Name2Func
 from services.model import (
-    ScatterPlotDataItem,
+    ScatterPlotData,
     ScatterPlotTrace,
-    TableDataItem,
+    TableData,
     TypedSeries,
 )
 from .pollutant_conc import (
@@ -65,7 +65,7 @@ class SGDispersionFuncExecutor(Name2Func):
                 raise e
 
         data = [
-            ScatterPlotDataItem(
+            ScatterPlotData(
                 title="{key} ({unit}) in {location}".format(
                     key=key, unit="µg/m³", location=place.name
                 ),
@@ -139,7 +139,7 @@ class SGDispersionFuncExecutor(Name2Func):
 
             bindings.append(binding)
 
-        data = TableDataItem.from_vars_and_bindings(vars=vars, bindings=bindings)
+        data = TableData.from_vars_and_bindings(vars=vars, bindings=bindings)
 
         latency = time.time() - timestamp
         steps.append(
@@ -165,7 +165,7 @@ class SGDispersionFuncExecutor(Name2Func):
 
         timestamp = time.time()
 
-        key2plot: Dict[str, ScatterPlotDataItem] = dict()
+        key2plot: Dict[str, ScatterPlotData] = dict()
 
         for iri in iris:
             ship_feature_info = self.ship_feature_info_client.query(iri=iri)
@@ -180,7 +180,7 @@ class SGDispersionFuncExecutor(Name2Func):
                 if key in key2plot:
                     plot = key2plot[key]
                 else:
-                    plot = ScatterPlotDataItem(
+                    plot = ScatterPlotData(
                         title="{key} ({unit})".format(key=key, unit=unit)
                     )
                     key2plot[key] = plot

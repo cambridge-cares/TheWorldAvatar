@@ -8,7 +8,7 @@ from fastapi import Depends
 from services.geocoding.base import IGeocoder
 from services.geocoding.serial import get_serial_geocoder
 from services.funcs.base import Name2Func
-from services.model import TableDataItem
+from services.model import TableData
 from .nearest import NearestCarparkLocator, get_nearestCarpark_locator
 from .feature_info import CarparkFeatureInfoClient, get_carpark_featureInfo_client
 
@@ -51,7 +51,7 @@ class SGCarparkFuncExecutor(Name2Func):
             binding["LotAvailability"] = carpark_feature_info.time[0].values[0][-1]
             binding["Time"] = carpark_feature_info.time[0].time[-1]
 
-        data = [TableDataItem.from_vars_and_bindings(vars=vars, bindings=bindings)]
+        data = [TableData.from_vars_and_bindings(vars=vars, bindings=bindings)]
 
         return data
 
