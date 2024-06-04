@@ -49,7 +49,7 @@ class ChatController:
 ### Query execution results:
 {data}
 
-Given the context information, please answer the query."""
+Given the context information, please answer the query. For readability, please format your response using HTML tags but do not render tables."""
 
     def __init__(
         self,

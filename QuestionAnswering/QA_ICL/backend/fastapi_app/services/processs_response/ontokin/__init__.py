@@ -5,6 +5,7 @@ from fastapi import Depends
 
 from services.kg import KgClient, get_ontokin_bgClient
 from services.processs_response.augment_node import NodeDataRetriever
+from services.processs_response.ontokin.mechanism import get_mechanism_data
 from services.processs_response.ontokin.rxn import get_kinetic_model_data
 from services.processs_response.ontokin.species import (
     get_thermo_model_data,
@@ -22,5 +23,6 @@ def get_ontokin_nodeDataRetriever(
             "okin:ThermoModel": get_thermo_model_data,
             "okin:TransportModel": get_transport_model_data,
             "okin:KineticModel": get_kinetic_model_data,
+            "okin:Mechanism": get_mechanism_data,
         },
     )
