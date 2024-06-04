@@ -180,3 +180,7 @@ img {
 .MuiTabs-indicator {
     display: none !important;
 }
+
+.mapboxgl-ctrl-attrib-inner {
+    color: rgba(0,0,0,0.75);
+}
