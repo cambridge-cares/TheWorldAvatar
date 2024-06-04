@@ -22,16 +22,13 @@ export class DataGroup {
     public readonly stackEndpoint: string;
 
     /**
-<<<<<<< HEAD
      * Should this group be expanded in the layer tree?
      */
     public readonly isExpanded: boolean; 
 
     /**
      * Data sources.
-=======
      * Layer sources.
->>>>>>> dev-op-timeseries-newviz
      */
     public readonly layerSources: LayerSource[] = [];
 
