@@ -50,6 +50,6 @@ public class OSMRouting extends GeoServerDataSubset {
     }
 
     private String getTablePrefix() {
-        return getName() + "_";
+        return getTable() + "_";
     }
 }

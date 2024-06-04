@@ -41,6 +41,8 @@ public class ScheduledDispersion extends HttpServlet {
         String simulationTimeIri = req.getParameter("simulationTimeIri"); // optional
         String delayMinutes = req.getParameter("delayMinutes"); // optional
         String intervalMinutes = req.getParameter("intervalMinutes"); // optional
+        String maxTimeMinutes = req.getParameter("maxTimeMinutes");
+        int maxTimeInt = Integer.parseInt(maxTimeMinutes); // maximum time to wait for one sim to complete
 
         int delay;
         if (delayMinutes != null) {
@@ -77,13 +79,26 @@ public class ScheduledDispersion extends HttpServlet {
 
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                Instant nextUpdate = Instant.now().plus(1, ChronoUnit.HOURS);
+                Instant nextUpdate = Instant.now().plus(interval, ChronoUnit.MINUTES);
 
                 // timestamp to run dispersion simulations
-                long simTime = Instant.now().minus(delay, ChronoUnit.MINUTES).getEpochSecond();
+                long simTime = Instant.now().getEpochSecond();
 
                 queryClient.updateSimulationTime(derivation, simTime);
-                devClient.updatePureSyncDerivation(derivation);
+
+                Thread thread = new Thread(() -> devClient.updatePureSyncDerivation(derivation));
+                try {
+                    thread.start();
+                    thread.join(maxTimeInt * 60 * 1000); // convert to milliseconds
+                } catch (Exception e) {
+                    LOGGER.error("Problem executing timestep = {}", Instant.ofEpochSecond(simTime));
+                    LOGGER.error(e.getMessage());
+                }
+
+                if (thread.isAlive()) {
+                    LOGGER.warn("Process took longer than {} minutes, interrupting and proceeding", maxTimeInt);
+                    thread.interrupt();
+                }
 
                 LOGGER.info("Next update will be at {}", nextUpdate);
             } catch (Exception ex) {

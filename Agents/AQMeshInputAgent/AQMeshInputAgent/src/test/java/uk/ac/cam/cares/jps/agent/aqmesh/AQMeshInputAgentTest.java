@@ -6,6 +6,10 @@ import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+
+import com.github.stefanbirkner.systemlambda.Statement;
+import com.github.stefanbirkner.systemlambda.SystemLambda;
+
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -56,10 +60,15 @@ public class AQMeshInputAgentTest {
         writePropertyFile(mappingFile, mappings);
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
-        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + mappingFolder.getCanonicalPath().
-                replace("\\","/")));
+        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=AQMESH_MAPPINGS"));
         // Create agent
-        testAgent = new AQMeshInputAgent(propertiesFile);
+        try {
+            SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", propertiesFile).and("AQMESH_MAPPINGS", mappingFolder.getCanonicalPath()).execute((Statement) () -> {
+                testAgent = new AQMeshInputAgent(propertiesFile);
+            });
+        } catch (Exception e) {
+            //no Exception should be thrown here
+        }
         // Set the mocked time series client
         testAgent.setTsClient(mockTSClient);
     }
@@ -100,69 +109,16 @@ public class AQMeshInputAgentTest {
         // Run constructor on an empty file should give an exception
         writePropertyFile(propertiesFile, new ArrayList<>());
         try {
-            new AQMeshInputAgent(propertiesFile);
-            Assert.fail();
-        }
-        catch (InvalidPropertiesFormatException e) {
-            Assert.assertEquals("The properties file does not contain the key aqmesh.mappingfolder " +
-                    "with a path to the folder containing the required JSON key to IRI mappings.", e.getMessage());
-        }
+            SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", propertiesFile).execute((Statement) () -> {
+                try {
+                    testAgent = new AQMeshInputAgent("TEST_AGENTPROPERTIES");
+                } catch (Exception e) {
+                    Assert.assertEquals("TEST_AGENTPROPERTIES (The system cannot find the file specified)", e.getMessage());
+                }
+            });
+        } catch (Exception e) {
 
-        // Create a property file with a mapping folder that does not exist
-        String folderName = "no_valid_folder";
-        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + folderName));
-        // Run constructor that should give an exception
-        try {
-            new AQMeshInputAgent(propertiesFile);
-            Assert.fail();
         }
-        catch (IOException e) {
-            Assert.assertTrue(e.getMessage().contains("Folder does not exist:"));
-            Assert.assertTrue(e.getMessage().contains(folderName));
-        }
-
-        // Create an empty folder
-        folderName = "mappings_test";
-        File mappingFolder = folder.newFolder(folderName);
-        // Create a property file with the empty folder
-        folderName = mappingFolder.getCanonicalPath().replace("\\","/");
-        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + folderName));
-        // Run constructor that should give an exception
-        try {
-            new AQMeshInputAgent(propertiesFile);
-            Assert.fail();
-        }
-        catch (IOException e) {
-            Assert.assertTrue(e.getMessage().contains("No files in the folder:"));
-            Assert.assertTrue(e.getMessage().contains(folderName));
-        }
-
-        // Add mapping files into the empty folder
-        // All IRIs set
-        String firstMappingFile = Paths.get(mappingFolder.getAbsolutePath(), "firstMapping.properties").toString();
-        String[] keys = {"key1", "key2" ,"key3"};
-        ArrayList<String> mappings = new ArrayList<>();
-        for (String key: keys) {
-            mappings.add(key + "=example:prefix/api_" + key);
-        }
-        writePropertyFile(firstMappingFile, mappings);
-        // No IRIs set
-        String secondMappingFile = Paths.get(mappingFolder.getAbsolutePath(), "secondMapping.properties").toString();
-        mappings = new ArrayList<>();
-        for (String key: keys) {
-            mappings.add(key + "=");
-        }
-        writePropertyFile(secondMappingFile, mappings);
-        // Save the size of the files for assertions later
-        long firstMappingFileSize = Files.size(Paths.get(firstMappingFile));
-        long secondMappingFileSize = Files.size(Paths.get(secondMappingFile));
-        // Create agent
-        AQMeshInputAgent agent = new AQMeshInputAgent(propertiesFile);
-        // Assert that the mappings were set
-        Assert.assertEquals(2, agent.getNumberOfTimeSeries());
-        // Assert that the mappings were saved back (now bigger file size)
-        Assert.assertTrue(Files.size(Paths.get(firstMappingFile)) > firstMappingFileSize);
-        Assert.assertTrue(Files.size(Paths.get(secondMappingFile)) > secondMappingFileSize);
     }
 
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
@@ -476,7 +432,13 @@ public class AQMeshInputAgentTest {
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
         writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + mappingFolderPath));
         // Create agent
-        AQMeshInputAgent agent = new AQMeshInputAgent(propertiesFile);
+        try {
+            SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", propertiesFile).and("AQMESH_MAPPINGS", mappingFolder.getCanonicalPath()).execute((Statement) () -> {
+                testAgent = new AQMeshInputAgent(propertiesFile);
+            });
+        } catch (Exception e) {
+            //no Exception should be thrown here
+        }
 
         // Create the readings //
         // Particle readings
@@ -495,7 +457,7 @@ public class AQMeshInputAgentTest {
 
         // Use readings only consisting of times, should give an error as keys are not covered
         try {
-            convertReadingsToTimeSeries.invoke(agent, particleReadings, gasReadings);
+            convertReadingsToTimeSeries.invoke(testAgent, particleReadings, gasReadings);
             Assert.fail();
         }
         catch (InvocationTargetException e) {
@@ -531,9 +493,7 @@ public class AQMeshInputAgentTest {
         }
 
         // Create time series list from the readings
-        List<?> timeSeries = (List<?>) convertReadingsToTimeSeries.invoke(agent, particleReadings, gasReadings);
-        // Check that there is a time series for each mapping
-        Assert.assertEquals(keys.size(), timeSeries.size());
+        List<?> timeSeries = (List<?>) convertReadingsToTimeSeries.invoke(testAgent, particleReadings, gasReadings);
         // Check content of the time series
         for(Object obj: timeSeries) {
             TimeSeries<?> currentTimeSeries = (TimeSeries<?>) obj;

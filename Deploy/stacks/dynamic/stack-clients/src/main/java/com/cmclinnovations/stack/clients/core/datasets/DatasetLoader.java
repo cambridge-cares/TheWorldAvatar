@@ -18,9 +18,11 @@ import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.cmclinnovations.stack.services.OntopService;
 import com.cmclinnovations.stack.services.ServiceManager;
 import com.cmclinnovations.stack.services.config.Connection;
@@ -30,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DatasetLoader {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = JsonHelper.getMapper();
     private static final Path configPath = Path.of("/inputs/config");
 
     private static final ServiceManager serviceManager = new ServiceManager(false);
@@ -80,7 +82,7 @@ public class DatasetLoader {
     private static void addToGraph(Map<String, Dataset> allDatasets, DirectedAcyclicGraph<Dataset, DefaultEdge> graph,
             Dataset current) {
         if (graph.addVertex(current)) {
-            current.getExternalDatasets().forEach(datasetName -> {
+            current.getExternalDatasetNames().forEach(datasetName -> {
                 Dataset child = allDatasets.get(datasetName);
                 if (null == child) {
                     throw new RuntimeException("Failed to find external dataset '"
@@ -89,6 +91,7 @@ public class DatasetLoader {
                 }
                 addToGraph(allDatasets, graph, child);
                 graph.addEdge(child, current);
+                current.addExternalDataset(child);
             });
         }
     }
@@ -120,39 +123,36 @@ public class DatasetLoader {
         if (!dataset.isSkip()) {
             List<DataSubset> dataSubsets = dataset.getDataSubsets();
             // Ensure PostGIS database exists, if specified
-            if (dataSubsets.stream().anyMatch(DataSubset::usesPostGIS)) {
+            if (dataset.usesPostGIS()) {
                 PostGISClient.getInstance().createDatabase(dataset.getDatabase());
             }
 
             // Ensure Blazegraph namespace exists, if specified
-            if (dataSubsets.stream().anyMatch(DataSubset::usesBlazegraph)) {
+            if (dataset.usesBlazegraph()) {
                 BlazegraphClient.getInstance().createNamespace(dataset.getNamespace(),
                         dataset.getNamespaceProperties());
             }
 
-            if (!dataset.getGeoserverStyles().isEmpty()
-                    || dataSubsets.stream().anyMatch(DataSubset::usesGeoServer)) {
+            if (dataset.usesGeoServer()) {
                 GeoServerClient geoServerClient = GeoServerClient.getInstance();
                 String workspaceName = dataset.getWorkspaceName();
                 // Ensure GeoServer workspace exists
                 geoServerClient.createWorkspace(workspaceName);
                 // Upload styles to GeoServer
-                dataset.getGeoserverStyles().forEach(style -> geoServerClient.loadStyle(style,
-                        workspaceName));
+                dataset.getGeoserverStyles().forEach(style -> geoServerClient.loadStyle(style, workspaceName));
             }
 
-            if (dataset.getStaticGeoServerData() != null) {
+            if (dataset.hasStaticGeoServerData()) {
                 GeoServerClient geoServerClient = GeoServerClient.getInstance();
-                geoServerClient.loadIcons(directory, dataset.getStaticGeoServerData().getIconsDir());
-                geoServerClient.loadOtherFiles(directory, dataset.getStaticGeoServerData().getOtherFiles());
+                StaticGeoServerData staticGeoServerData = dataset.getStaticGeoServerData();
+                geoServerClient.loadIcons(directory, staticGeoServerData.getIconsDir());
+                geoServerClient.loadOtherFiles(directory, staticGeoServerData.getOtherFiles());
             }
 
             dataSubsets.forEach(subset -> subset.load(dataset));
 
-            List<String> ontopMappings = dataset.getOntopMappings();
-            if (!ontopMappings.isEmpty()) {
-
-                String newOntopServiceName = EndpointNames.ONTOP + "-" + dataset.getName();
+            if (dataset.usesOntop()) {
+                String newOntopServiceName = dataset.getOntopName();
 
                 ServiceConfig newOntopServiceConfig = serviceManager.duplicateServiceConfig(EndpointNames.ONTOP,
                         newOntopServiceName);
@@ -167,14 +167,20 @@ public class DatasetLoader {
 
                 serviceManager.initialiseService(StackClient.getStackName(), newOntopServiceName);
 
+                List<String> ontopMappings = dataset.getOntopMappings();
+
                 OntopClient ontopClient = OntopClient.getInstance(newOntopServiceName);
                 ontopMappings.forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
 
-                if(PostGISClient.DEFAULT_DATABASE_NAME.equals(dataset.getDatabase())){
+                if (PostGISClient.DEFAULT_DATABASE_NAME.equals(dataset.getDatabase())) {
                     OntopClient defaultOntopClient = OntopClient.getInstance();
-                    dataset.getOntopMappings().forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
+                    ontopMappings.forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
                 }
             }
+
+            // record added datasets in the default kb namespace
+            BlazegraphClient.getInstance().getRemoteStoreClient("kb")
+                    .executeUpdate(new DCATUpdateQuery().getQueryStringForCataloging(dataset));
         }
     }
 

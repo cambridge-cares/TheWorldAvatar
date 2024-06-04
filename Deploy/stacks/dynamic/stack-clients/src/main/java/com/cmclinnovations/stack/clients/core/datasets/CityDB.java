@@ -145,7 +145,7 @@ public class CityDB extends GeoServerDataSubset {
         }
 
         GeoServerClient.getInstance()
-                .createPostGISLayer(workspaceName, database, getName(), geoServerSettings);
+                .createPostGISLayer(workspaceName, database, getTable(), geoServerSettings);
     }
 
     public void createLayer(String database) {
