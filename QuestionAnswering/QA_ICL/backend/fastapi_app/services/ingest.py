@@ -1,12 +1,10 @@
 from argparse import ArgumentParser
 import importlib.resources
-import json
 import math
 import os
 from typing import Callable, Generic, List, Literal, Tuple, Type, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
-import pydantic
 from redis import Redis
 from redis.commands.search.field import Field
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
