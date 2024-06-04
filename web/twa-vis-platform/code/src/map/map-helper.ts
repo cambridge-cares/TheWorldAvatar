@@ -209,7 +209,7 @@ export function getCurrentImageryOption(imagerySettings: ImagerySettings): Image
   if (items == null || items.length == 0) {
     return getDefaultImageryOption(imagerySettings);
   } else {
-    const match = items.find(option => option.name === "Imagery");
+    const match = items.find(option => option.name === "Map Style");
     if (match == null) {
       return getDefaultImageryOption(imagerySettings);
     } else {
@@ -321,7 +321,7 @@ export function resetCamera(cameraSettings: CameraSettings, map: Map): void {
   if (items.length == 0) {
     position = getDefaultCameraPosition(cameraSettings);
   } else {
-    const positionName = items.find(position => position.name === "Reset Camera")?.selection;
+    const positionName = items.find(position => position.name === "Reset")?.selection;
     position = getCameraPosition(positionName, cameraSettings);
   }
 
