@@ -15,13 +15,6 @@
                 "JPDA_TRANSPORT=dt_socket",
                 "DEBUG=ON"
               ],
-              "Mounts": [
-                {
-                  "Type": "bind",
-                  "Source": "../../../../../../Agents/BuildingFloorAgent/src/main/resources",
-                  "Target": "/resources"
-                }
-              ],
               "Configs": [
                   {
                       "ConfigName": "blazegraph"
