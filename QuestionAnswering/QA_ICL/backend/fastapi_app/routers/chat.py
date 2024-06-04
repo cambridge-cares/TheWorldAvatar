@@ -26,7 +26,6 @@ async def chat(
         for chunk in chatbot_client.request_stream(req.qa_request_id):
             content = chunk.choices[0].delta.content
             if content is not None:
-                print("Sending:", content)
                 yield "data: {data}\n\n".format(data=json.dumps({"content": content}))
 
     return StreamingResponse(
