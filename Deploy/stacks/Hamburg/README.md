@@ -2,12 +2,20 @@
 
 This is a collection of stack input configuration files to spin up a basic visualisation of some data of the city of Hamburg.
 
+## Data uploader
+Contents for the stack data uploader, excluding TBox for OntoDispersion: 
+https://www.dropbox.com/scl/fi/2ctt7bmax2eqsldwez2hw/hh-data.tar.gz?rlkey=3niplbiyrxpc9itp5h5bedrno&dl=1
+
+Place contents in ./stack-data-uploader-inputs/data
+
+Run [copy_tbox.sh] to copy tbox files into the right places for data uploader.
+
+Then start the data uploader from ./stack-data-uploader-inputs/:
+```
+./stack.sh start <STACK_NAME>
+```
 ## Dispersion
 ### Requirements
-Run [copy_tbox.sh] to copy tbox files into right places for data upload
-```
-./copy_tbox.sh
-```
 Two API keys required for weather and ship data.
 1) Obtain an API key from OpenWeather, the API key needs to have OneCall enabled (credit card required, you can set the call limit below the limit before it starts charging). Set the value of API_KEY in [weather-agent.json] to the API key obtained from OpenWeather.
 2) Obtain an API key from aisstream.io. Set the value of API_KEY in [ship-input-agent.json] to the obtained API key.
