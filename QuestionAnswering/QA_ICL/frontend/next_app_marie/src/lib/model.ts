@@ -42,4 +42,77 @@ export interface WKTGeometryData {
   literal: string
 }
 
-export type DataItem = DocumentCollection | TableData | ScatterPlotData | WKTGeometryData 
+export type DataItem = DocumentCollection | TableData | ScatterPlotData | WKTGeometryData
+
+
+
+export interface QARequest {
+  question: string
+}
+
+export interface LexicalBindingValue {
+  text?: string
+  identifier: { [key: string]: string }
+}
+
+export interface LexicalEntityBinding {
+  cls: string
+  values: LexicalBindingValue[]
+}
+
+export interface SparqlNodeMappingConfig {
+  pkey: boolean
+  cls?: string
+}
+
+export interface SparqlDataReqForm {
+  type: "sparql"
+  namespace: string
+  query: string
+  res_map: { [key: string]: SparqlNodeMappingConfig }
+}
+
+export interface FuncDataReqForm {
+  type: "func"
+  name: string
+}
+
+export type DataRequestForm = SparqlDataReqForm | FuncDataReqForm
+
+export interface DataRequest {
+  entity_bindings: { [key: string]: LexicalEntityBinding }
+  const_bindings: { [key: string]: any }
+  req_form: DataRequestForm
+}
+
+export interface Nlq2DataReqExample {
+  nlq: string
+  data_req: DataRequest
+}
+
+export interface RDFRelation {
+  s: string
+  p: string
+  o: string
+}
+
+export interface TranslationContext {
+  examples: Nlq2DataReqExample[]
+  schema_relations: RDFRelation[]
+}
+
+export interface QAResponseMetadata {
+  translation_context: TranslationContext
+  data_request: DataRequest
+  linked_variables: { [key: string]: string[] }
+}
+
+export interface QAResponse {
+  request_id: string
+  metdata: QAResponseMetadata,
+  data: DataItem[]
+}
+
+export interface ChatRequest {
+  qa_request_id: string
+}

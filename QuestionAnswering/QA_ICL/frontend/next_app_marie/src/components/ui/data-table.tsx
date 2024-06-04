@@ -51,7 +51,7 @@ function DataTableBase({
         <div>{h === "num" ? "No." : h}</div>
       )
     },
-    cell: ({ row }: { row: Row<TableDataRow> }) => {
+    cell: ({ row }: { row: Row<TableDataRowNumbered> }) => {
       const val = row.getValue(h) as TableDataValue;
       if (!(val)) {
         return ""
