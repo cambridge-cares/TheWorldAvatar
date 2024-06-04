@@ -4,6 +4,8 @@
     min-width: 100px;
     min-height: 100px;
 
+background-color: --var(--background-inverse-primary);
+
     position: relative;
     top: 20px;
     left: 20px;

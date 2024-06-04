@@ -106,7 +106,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
             <RibbonPanel>
               <RibbonComponentCombo
                 icon="/images/defaults/icons/imagery.svg"
-                text="Imagery"
+                text="Map Style"
                 tooltip="Change map imagery"
                 options={imageryNames}
                 initialOption={currentImagery?.name}
@@ -117,7 +117,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               />
               <RibbonComponentCombo
                 icon="/images/defaults/icons/camera.svg"
-                text="Reset Camera"
+                text="Location"
                 tooltip="Reset camera to default position."
                 options={cameraNames}
                 initialOption={cameraDefault}
@@ -127,7 +127,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               />
               <RibbonComponentToggle
                 icon="glyphs"
-                text="Hide Labels"
+                text="Toggle Labels"
                 tooltip="Toggle display of place names."
                 initialState={false}
                 action={() => {
