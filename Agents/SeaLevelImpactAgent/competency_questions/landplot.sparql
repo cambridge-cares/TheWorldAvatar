@@ -1,0 +1,16 @@
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX : <https://www.theworldavatar.com/kg/>
+PREFIX sea: <https://www.theworldavatar.com/kg/ontosealevel/>
+PREFIX be: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX ic: <http://ontology.eil.utoronto.ca/icontact.owl#>
+PREFIX sch: <https://schema.org/>
+PREFIX dbo: <https://dbpedia.org/ontology/>
+PREFIX landplot: <https://www.theworldavatar.com/kg/landplot/>
+
+SELECT ?seaLevel ?landPlot ?affectedArea
+WHERE {
+    ?seaLevel sea:hasPotentialImpact ?landPlot .
+    ?landPlot sea:hasaffectedarea ?affectedArea .
+}
+LIMIT 10

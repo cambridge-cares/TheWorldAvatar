@@ -22,7 +22,7 @@ import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 public class SeaLevelImpactAgent extends JPSAgent {
 
-    private static final Path obdaFile = Path.of("/resources/slr.obda");
+    private static final Path obdaFile = Path.of("/inputs/slr.obda");
     private static String sspScenario = null;
     private static Integer projectionyear = null;
     private static String confidence = null;
@@ -162,7 +162,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
                 OntopClient ontopClient = OntopClient.getInstance();
                 ontopClient.updateOBDA(obdaFile);
             } catch (Exception e) {
-                System.out.println("Could not retrieve building_usage.obda file.");
+                System.out.println("Could not retrieve slr.obda file.");
             }
 
         } catch (Exception e) {
