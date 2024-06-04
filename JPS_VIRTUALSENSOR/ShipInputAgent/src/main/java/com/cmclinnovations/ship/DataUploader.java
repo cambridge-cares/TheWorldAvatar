@@ -12,7 +12,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -190,18 +192,30 @@ public class DataUploader {
     }
 
     static List<Ship> parseShip(JSONArray shipData, int timeOffset) {
-        int numship = shipData.length();
+        Map<Integer, Ship> mmsiToShipMap = new HashMap<>();
 
-        List<Ship> ships = new ArrayList<>(numship);
         // create ship objects from API data
-        for (int i = 0; i < numship; i++) {
+        for (int i = 0; i < shipData.length(); i++) {
+            Ship ship;
             try {
-                ships.add(new Ship(shipData.getJSONObject(i), timeOffset));
+                ship = new Ship(shipData.getJSONObject(i), timeOffset);
             } catch (JSONException e) {
                 LOGGER.error(e.getMessage());
+                continue;
+            }
+
+            if (mmsiToShipMap.containsKey(ship.getMmsi())) {
+                Ship existingShip = mmsiToShipMap.get(ship.getMmsi());
+
+                // replace with latest value
+                if (existingShip.getTimestamp().isBefore(ship.getTimestamp())) {
+                    mmsiToShipMap.put(ship.getMmsi(), ship);
+                }
+            } else {
+                mmsiToShipMap.put(ship.getMmsi(), ship);
             }
         }
-        return ships;
+        return new ArrayList<>(mmsiToShipMap.values());
     }
 
     public static int loadDataFromRDB(QueryClient queryClient) throws IOException {
