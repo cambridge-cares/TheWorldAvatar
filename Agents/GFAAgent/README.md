@@ -1,13 +1,14 @@
 # GFAAgent
 ## 1. Description
-This agent has been developed to compute the Gross Floor Area (GFA) and construction cost of buildings. Presently, the agent performs the following two tasks:
+This agent has been developed to compute the Gross Floor Area (GFA) and GFA cost of buildings. Presently, the agent performs the following two tasks:
 1) Calculate the Gross Floor Area of buildings through multiplying the area of the building footprint with the number of storeys
-2) Calculate the construction cost of buildings by GFA and standard unit price of construction cost.
+2) Calculate the GFA cost of buildings by GFA and standard unit price of GFA cost.
 
 ### 1.1 Requirements
 1) The agent requires 3D building models based on the CityGML standard. These models must be uploaded through the [stack-data-uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#citydb-data).
 2) The agent requires number of floors data. Therefore, the Building Floor Agent should be run firstly.
-3) Construction cost standard unit price: The latest standard construction cost should be integrated in csv file named as [cost.csv], which need to upload to postgresql by stack-data-uploader first.
+3) GFA cost standard unit price: The latest standard GFA cost should be integrated in csv file named as [ais_cost.csv](https://github.com/cambridge-cares/TheWorldAvatar/blob/4a5b2b6eaf60be88f95e1561da24b043943fec83/Agents/GFAAgent/stack-data-uploader-input-config/ais_cost.csv), which need to upload to postgresql by stack-data-uploader first.
+4) Building usage matching: The mathcing of building cost standard and OntobBuiltEnv, which stores in the [cost_ontobuiltenv.csv](https://github.com/cambridge-cares/TheWorldAvatar/blob/4a5b2b6eaf60be88f95e1561da24b043943fec83/Agents/GFAAgent/src/main/resources/cost_ontobuiltenv.csv).
 
 ## 2. GFA Agent
 The agent is designed for execution through a Docker container. Other deployment workflows are beyond the scope of this document. Follow the steps below to build and deploy the agent.
@@ -35,8 +36,8 @@ Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. Th
 The agent is reachable at four endpoints:
 1) `/calculation`: calculate GFA
 2) `/calculationwithodba`: calculate GFA and upload gfa.odba
-3) `/cost`: calculate construction cost
-4) `/costwithodba`: calculate construction cost and upload cost.odba
+3) `/cost`: calculate GFA cost
+4) `/costwithodba`: calculate GFA cost and upload cost.odba
 
 
 To run the agent, run the following cURL command:
