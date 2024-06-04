@@ -1,0 +1,63 @@
+.time-label {
+    position: absolute;
+    background-color: #f6f8fa;
+    padding: 3px 10px;
+    /* border-radius: 10px; */
+
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    transition: all .5s ease;
+}
+
+.time-label:hover {
+    background-color: var(--cmcl-blue);
+    color: var(--background-color);
+}
+
+#sliderStartTime {
+    left: -40px;
+}
+
+#sliderEndTime {
+    right: -40px;
+}
+
+.sliderContainer:hover #timeSliderLabel {
+    background-color: var(--cmcl-blue);
+    color: var(--background-color);
+
+    /* display: block; */
+}
+
+.sliderContainer {
+    position: absolute;
+    width: 40%;
+    margin: auto;
+    bottom: 15%;
+    left: 25%;
+    z-index: 1;
+}
+
+/* The slider itself */
+.time-slider {
+    width: 100%;
+    opacity: 0.7;
+    position: relative;
+    /* -webkit-transition: .2s;
+  transition: opacity .2s;
+  box-shadow: 0 4px 8px 0 #18677a; */
+    margin: 4px;
+    height: 7px;
+    box-shadow: 0 1px 0px rgba(255, 255, 255, 0.25), inset 0 0 4px rgba(0, 0, 0, 0.9);
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+    -ms-border-radius: 7px;
+    -o-border-radius: 7px;
+    border-radius: 7px;
+}
+
+.time-slider::-webkit-slider-thumb {
+    background-color: #18677a;
+}

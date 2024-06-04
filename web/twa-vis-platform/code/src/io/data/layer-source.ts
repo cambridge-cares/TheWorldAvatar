@@ -3,7 +3,7 @@ import { JsonObject } from 'types/json';
 /**
  * This class represents a single source of geographical data within the visualisation.
  */
-export class DataSource {
+export class LayerSource {
 
     /**
      * Unique name/id for this source.
@@ -26,7 +26,7 @@ export class DataSource {
     public readonly definition: JsonObject;
    
     /**
-     * Initialise a new DataSource instance based on a JSON object.
+     * Initialise a new LayerSource instance based on a JSON object.
      * 
      * @param id Unique name/id for this source.
      * @param type Type of data.
@@ -39,6 +39,6 @@ export class DataSource {
         this.definition = (definition as JsonObject);
         this.stackEndpoint = stackEndpoint;
 
-        console.info("Created DataSource instance '" + this.id + "'.");
+        console.info("Created LayerSource instance '" + this.id + "'.");
     }    
 }

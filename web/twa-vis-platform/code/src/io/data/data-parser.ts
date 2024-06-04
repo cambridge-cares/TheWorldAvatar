@@ -1,7 +1,8 @@
 import { JsonArray, JsonObject } from 'types/json';
+import { ScenarioDimensionsData } from '../../types/timeseries';
 import { DataGroup } from './data-group';
 import { DataLayer } from './data-layer';
-import { DataSource } from './data-source';
+import { LayerSource } from './layer-source';
 import { DataStore } from './data-store';
 import { MapboxDataLayer } from './mapbox/mapbox-data-layer';
 
@@ -33,7 +34,12 @@ export class DataParser {
                 this.recurse(dataset, null, null, 0);
             })
         } else {
-            this.recurse(rawJson, null, null, 0);
+    
+        if (this.sliderHandler && this.sliderHandler.scenarioDimensionsData) {
+            rawJson = DataGroup.handleDimensions(rawJson, this.sliderHandler.scenarioDimensionsData, value)
+        }
+
+        this.recurse(rawJson, null, null, 0);
         }
         console.info("Data definition loading complete.");
         return this.dataStore;
@@ -88,7 +94,7 @@ export class DataParser {
 
         // Parse sources and layers (if present)
         if (current["sources"]) {
-            this.parseDataSources(current["sources"] as JsonArray, dataGroup);
+            this.parseLayerSources(current["sources"] as JsonArray, dataGroup);
         }
         if (current["layers"]) {
             const currentLayerArray: JsonArray = current["layers"] as JsonArray;
@@ -122,17 +128,18 @@ export class DataParser {
      * @param sourceArray array of JSON source objects.
      * @param dataGroup group to add sources to.,
      */
-    private parseDataSources(sourceArray: JsonArray, dataGroup: DataGroup) {
-        for (const element of sourceArray) {
+    private parseLayerSources(sourceArray: JsonArray, dataGroup: DataGroup) {
+        for(const element of sourceArray) {
+            
             const sourceID = dataGroup.id + "." + (element["id"] as string);
-            const source = new DataSource(
+            const source = new LayerSource(
                 sourceID,
                 element["type"] as string,
                 dataGroup.stackEndpoint,
                 element
             );
 
-            dataGroup.dataSources.push(source);
+            dataGroup.layerSources.push(source);
         }
     }
 
@@ -261,11 +268,19 @@ export class DataParser {
      * @returns 
      */
     private recurseUpForSource(dataGroup: DataGroup, sourceID: string): string {
-        for (const source of dataGroup.dataSources) {
+        for(const source of dataGroup.layerSources) {
             const sourceDef = source.definition;
             if ((sourceDef["id"] as string) === sourceID) return source.id;
         }
         return this.recurseUpForSource(dataGroup.parentGroup, sourceID);
+    }
+
+    public static handleDimensions(element: JsonObject, scenarioDimensionsData: ScenarioDimensionsData, value: number): JsonObject {
+        let stringified = JSON.stringify(element);
+        for (const dimension of Object.keys(scenarioDimensionsData)) {
+            stringified = stringified.replaceAll(`{` + dimension + `}`, value.toString())
+        }
+        return JSON.parse(stringified);
     }
 
 }

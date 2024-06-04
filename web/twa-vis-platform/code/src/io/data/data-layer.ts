@@ -1,4 +1,4 @@
-import { DataSource } from './data-source';
+import { LayerSource } from './layer-source';
 import { Interactions } from 'io/config/interactions';
 import { InjectableMapProperties, InjectableProperty, MapboxClickableProperty, MapboxHoverProperty } from 'types/map-properties';
 import { JsonArray, JsonObject } from 'types/json';
@@ -21,7 +21,7 @@ export abstract class DataLayer {
     /**
      * Source of the layer's data.
      */
-    public readonly source: DataSource;
+    public readonly source: LayerSource;
 
     /**
      * The JSON object that originally defined this layer (unadjusted).
@@ -62,7 +62,7 @@ export abstract class DataLayer {
      * @param source Source of the layer's data.
      * @param definition The JSON object that originally defined this layer.
      */
-    constructor(id: string, isGroupExpanded: boolean, source: DataSource, definition: object) {
+    constructor(id: string, isGroupExpanded: boolean, source: LayerSource, definition: object) {
         this.id = id;
         this.source = source;
         this.isGroupExpanded = isGroupExpanded;
