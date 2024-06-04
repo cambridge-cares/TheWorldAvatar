@@ -244,7 +244,7 @@ public class ImpactAssessor {
                                                     "    WHERE\n" +
                                                     "        \"attrname\" = 'iri'\n" +
                                                     ")\n" +
-                                                    "SELECT\n" +
+                                                    "SELECT DISTINCT\n" +
                                                     "    \"building\".\"id\" AS \"building_id\",\n" +
                                                     "    COALESCE(\"measured_height\", 100.0) AS \"building_height\",\n" +
                                                     "    \"geometry\",\n" +
