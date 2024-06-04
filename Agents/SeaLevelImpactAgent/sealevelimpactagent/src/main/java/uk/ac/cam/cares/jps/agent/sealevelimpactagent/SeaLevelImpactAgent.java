@@ -94,8 +94,6 @@ public class SeaLevelImpactAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
-
-
         if (!validateInput(requestParams)) {
             throw new JPSRuntimeException("Unable to validate request sent to the agent.");
         }
@@ -125,24 +123,22 @@ public class SeaLevelImpactAgent extends JPSAgent {
             if (seaLevelChangeUUID.isEmpty()){response.put("message","No sealevelchange UUID");}
             LOGGER.info("Assessing sea-level rise impact for uuid "+ seaLevelChangeUUID);
 
-
             //Create SLR impact table
             impactAssessor.createTableIfNotExists(remoteRDBStoreClient);
 
-            //Map population
+            //Map population at risk
             try {
-                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID);
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, populationTable);
             }catch (Exception e) {
                 LOGGER.info("Population failed to map: ", e);
             }
 
+            //Map landplot at risk
             try {
-                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID);
+                impactAssessor.mapLandplotAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, populationTable);
             }catch (Exception e) {
-                LOGGER.info("Population failed to map: ", e);
+                LOGGER.info("Landplot failed to map: ", e);
             }
-
-
 
         } catch (Exception e) {
             e.printStackTrace();
