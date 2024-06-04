@@ -8,8 +8,9 @@ import { queryChat, queryQa } from "@/lib/api";
 import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { MagnifyingGlassIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { JSONTree } from "@/components/ui/json-tree";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const MemoDataTable = React.memo(DataTable)
 
@@ -19,36 +20,39 @@ interface DataItemComponentInterface {
 }
 
 function DataItemComponent({ dataItem, ...props }: DataItemComponentInterface) {
+  let headerText, component
   if (dataItem.type === "document_collection") {
-    return (
-      <JSONTree data={dataItem.data} />
-    )
+    headerText = "JSON data"
+    component = (<JSONTree data={dataItem.data} />)
   } else if (dataItem.type === "table") {
-    return (
-      <MemoDataTable columns={dataItem.columns} data={dataItem.data} {...props} />
-    )
-  } else {
-    return (
-      <></>
-    )
+    headerText = "Tabular data"
+    component = (<MemoDataTable columns={dataItem.columns} data={dataItem.data} />)
   }
+  return headerText && component
+    ? (
+      <div {...props}>
+        <p className="text-lg font-semibold text-blue-500">{headerText}</p>
+        {component}
+      </div>
+    ) : <></>
+
 }
 
 export default function Home() {
   const [question, setQuestion] = React.useState("")
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [isQueryingQA, setIsQueryingQA] = React.useState(false)
   const [qaData, setQaData] = React.useState<DataItem[] | null>(null)
   const [chatAnswer, setChatAnswer] = React.useState<string | null>(null)
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault()
-      setIsSubmitting(true)
+      setIsQueryingQA(true)
       setQaData(null)
       setChatAnswer(null)
 
       const qaRes = await queryQa(question)
-      console.log(qaRes)
+      setIsQueryingQA(false)
       setQaData(qaRes.data)
 
       const textStream = await queryChat(qaRes.request_id)
@@ -68,7 +72,7 @@ export default function Home() {
                 const dataChunk = JSON.parse(msg)
                 const content = dataChunk["content"]
                 if (typeof content === "string") {
-                  setChatAnswer(oldValue => oldValue ? oldValue + content : content)
+                  setChatAnswer(oldValue => (oldValue || "") + content)
                 }
               } catch (err) {
                 console.log("Unexpected data received from server: ".concat(msg))
@@ -83,7 +87,7 @@ export default function Home() {
     } catch (err) {
 
     } finally {
-      setIsSubmitting(false);
+      setIsQueryingQA(false)
     }
   }
 
@@ -141,12 +145,18 @@ export default function Home() {
       <div className="max-w-3xl mb-12 w-full">
         <form className="flex justify-center items-center" onSubmit={handleFormSubmit}>
           <Input placeholder="Type your query..." required className="mr-2" onChange={e => setQuestion(e.target.value)} />
-          <Button type="submit" variant="outline" size="icon" disabled={isSubmitting}><MagnifyingGlassIcon /></Button>
+          <Button type="submit" variant="outline" size="icon" disabled={isQueryingQA}><MagnifyingGlassIcon /></Button>
         </form>
       </div>
-      <div className="max-w-4xl flex flex-col space-y-4">
+      <div className="max-w-5xl mb-12 w-full flex flex-col space-y-4 justify-center">
+        {isQueryingQA && (<ReloadIcon className="self-center mr-2 h-4 w-4 animate-spin" />)}
         {qaData && qaData.map((item, idx) => <DataItemComponent key={idx} dataItem={item} />)}
-        {chatAnswer && (<p>{chatAnswer}</p>)}
+        {chatAnswer && (
+          <div className="w-full rounded-md border p-4">
+            <p className="text-xl font-semibold text-blue-500">Marie&apos;s response</p>
+            <ScrollArea className="h-96 w-full"><div dangerouslySetInnerHTML={{ __html: chatAnswer }} /></ScrollArea>
+          </div>
+        )}
       </div>
       <div className="max-w-2xl w-full">
         <h2>Example Questions</h2>

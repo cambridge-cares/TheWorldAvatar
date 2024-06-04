@@ -17,7 +17,7 @@ from utils.itertools_recipes import batched
 
 class IngestArgs(BaseModel):
     redis_host: str
-    text_embedding_server: Literal["triton", "openai"]
+    text_embedding_backend: Literal["triton", "openai"]
     text_embedding_url: str
     drop_index: bool
     invalidate_cache: bool
@@ -45,7 +45,7 @@ def load_ingest_args():
     args = parser.parse_args()
     return IngestArgs(
         redis_host=args.redis_host,
-        text_embedding_server=args.text_embedding_server,
+        text_embedding_backend=args.text_embedding_backend,
         text_embedding_url=args.text_embedding_url,
         drop_index=args.drop_index,
         invalidate_cache=args.invalidate_cache,

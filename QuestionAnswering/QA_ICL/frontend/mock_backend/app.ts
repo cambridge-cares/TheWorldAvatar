@@ -4,7 +4,11 @@ import { readdirSync, readFileSync } from "fs"
 import * as path from "path"
 
 const PORT = 5000
-
+function sleep(ms: number) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
 
 const app = express()
 app.use(express.json())
@@ -41,30 +45,34 @@ readdirSync("data", { withFileTypes: true }).filter(dirent => dirent.isDirectory
                     throw err
                 }
 
-                const callback = contentType === "json" ? (_: Request, res: Response) => res.json(obj) : (_: Request, res: Response) => {
-                    res.setHeader('Cache-Control', 'no-cache');
-                    res.setHeader('Content-Type', 'text/event-stream');
-                    res.setHeader('Connection', 'keep-alive');
-                    res.setHeader('X-Accel-Buffering', 'no')
-                    res.flushHeaders(); // flush the headers to establish SSE with client
+                const callback = contentType === "json"
+                    ? async (_: Request, res: Response) => {
+                        await sleep(2000);
+                        return res.json(obj)
+                    } : (_: Request, res: Response) => {
+                        res.setHeader('Cache-Control', 'no-cache');
+                        res.setHeader('Content-Type', 'text/event-stream');
+                        res.setHeader('Connection', 'keep-alive');
+                        res.setHeader('X-Accel-Buffering', 'no')
+                        res.flushHeaders(); // flush the headers to establish SSE with client
 
-                    let idx = 0;
-                    let intervalId = setInterval(() => {
-                        idx++;
-                        if (idx >= obj.length) {
+                        let idx = 0;
+                        let intervalId = setInterval(() => {
+                            idx++;
+                            if (idx >= obj.length) {
+                                clearInterval(intervalId);
+                                res.end();
+                                return;
+                            }
+                            res.write(`data: ${JSON.stringify(obj[idx])}\n\n`);
+                        }, 10);
+
+                        res.on('close', () => {
+                            console.log('Client drops connection');
                             clearInterval(intervalId);
                             res.end();
-                            return;
-                        }
-                        res.write(`data: ${JSON.stringify(obj[idx])}\n\n`);
-                    }, 50);
-
-                    res.on('close', () => {
-                        console.log('Client drops connection');
-                        clearInterval(intervalId);
-                        res.end();
-                    });
-                }
+                        });
+                    }
 
                 const route = "/" + dir.name
                 if ((verb === "get") || (verb === "post")) {
