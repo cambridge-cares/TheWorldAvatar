@@ -26,5 +26,5 @@ const THEME = {
 };
 
 export const JSONTree = ({ ...props }: React.ComponentProps<typeof ReactJSONTree.JSONTree>) => {
-  return (<ReactJSONTree.JSONTree theme={THEME} {...props} />)
+  return (<ReactJSONTree.JSONTree shouldExpandNodeInitially={() => false} theme={THEME} {...props} />)
 }

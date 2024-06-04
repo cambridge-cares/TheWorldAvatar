@@ -23,6 +23,6 @@ def get_ontokin_nodeDataRetriever(
             "okin:ThermoModel": get_thermo_model_data,
             "okin:TransportModel": get_transport_model_data,
             "okin:KineticModel": get_kinetic_model_data,
-            "okin:Mechanism": get_mechanism_data,
+            "okin:ReactionMechanism": get_mechanism_data,
         },
     )
