@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { DataItem } from "@/lib/model";
-import { queryQa } from "@/lib/api";
+import { queryChat, queryQa } from "@/lib/api";
 import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
@@ -35,16 +35,51 @@ function DataItemComponent({ dataItem, ...props }: DataItemComponentInterface) {
 }
 
 export default function Home() {
-  const [question, setQuestion] = React.useState("");
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [qaData, setQaData] = React.useState<DataItem[] | null>(null);
+  const [question, setQuestion] = React.useState("")
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [qaData, setQaData] = React.useState<DataItem[] | null>(null)
+  const [chatAnswer, setChatAnswer] = React.useState<string | null>(null)
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
-      e.preventDefault();
-      setIsSubmitting(true);
-      const qaRes = await queryQa(question);
-      setQaData(qaRes.data);
+      e.preventDefault()
+      setIsSubmitting(true)
+      setQaData(null)
+      setChatAnswer(null)
+
+      const qaRes = await queryQa(question)
+      console.log(qaRes)
+      setQaData(qaRes.data)
+
+      const textStream = await queryChat(qaRes.request_id)
+
+      const pump = ({ done, value }: { done: boolean, value?: string }): Promise<void> => {
+        if (done) {
+          return Promise.resolve()
+        }
+
+        // TODO: Use TransformerStream to do the parsing in API call code
+        if (value) {
+          value.split("\n").forEach(line => {
+            const trimmedLine = line.trim()
+            if (trimmedLine.startsWith("data: ")) {
+              const msg = trimmedLine.substring("data: ".length)
+              try {
+                const dataChunk = JSON.parse(msg)
+                const content = dataChunk["content"]
+                if (typeof content === "string") {
+                  setChatAnswer(oldValue => oldValue ? oldValue + content : content)
+                }
+              } catch (err) {
+                console.log("Unexpected data received from server: ".concat(msg))
+              }
+            }
+          })
+        }
+        return textStream.read().then(pump)
+      }
+      await textStream.read().then(pump)
+
     } catch (err) {
 
     } finally {
@@ -111,6 +146,7 @@ export default function Home() {
       </div>
       <div className="max-w-4xl flex flex-col space-y-4">
         {qaData && qaData.map((item, idx) => <DataItemComponent key={idx} dataItem={item} />)}
+        {chatAnswer && (<p>{chatAnswer}</p>)}
       </div>
       <div className="max-w-2xl w-full">
         <h2>Example Questions</h2>
