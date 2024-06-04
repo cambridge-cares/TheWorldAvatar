@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.json.JSONObject;
-import org.openrdf.query.algebra.In;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -33,6 +32,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(SeaLevelImpactAgent.class);
     private EndpointConfig endpointConfig = new EndpointConfig();
     private String dbName;
+    public static String citydbName =null;
     public static String heritagetreesTable = null;
     public static String historicsitesTable = null;
     public static String monumentsTable = null;
@@ -64,6 +64,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
             Properties prop = new Properties();
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
+            this.citydbName = prop.getProperty("citydb.name");
             this.heritagetreesTable= prop.getProperty("heritagetreesTable.name");
             this.historicsitesTable= prop.getProperty("historicsitesTable.name");
             this.monumentsTable= prop.getProperty("monumentsTable.name");
@@ -117,10 +118,29 @@ public class SeaLevelImpactAgent extends JPSAgent {
         try {
             init();
             ImpactAssessor impactAssessor = new ImpactAssessor();
+
+            //Get sealevelchange UUID
             String seaLevelChangeUUID =impactAssessor.getSeaLevelChangeUUID(remoteRDBStoreClient, sspScenario, projectionyear, confidence, quantile);
+
             if (seaLevelChangeUUID.isEmpty()){response.put("message","No sealevelchange UUID");}
             LOGGER.info("Assessing sea-level rise impact for uuid "+ seaLevelChangeUUID);
 
+
+            //Create SLR impact table
+            impactAssessor.createTableIfNotExists(remoteRDBStoreClient);
+
+            //Map population
+            try {
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID);
+            }catch (Exception e) {
+                LOGGER.info("Population failed to map: ", e);
+            }
+
+            try {
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID);
+            }catch (Exception e) {
+                LOGGER.info("Population failed to map: ", e);
+            }
 
 
 
