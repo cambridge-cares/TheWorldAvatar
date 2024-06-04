@@ -2,6 +2,18 @@
 
 This is a collection of stack input configuration files to spin up a basic visualisation of some data of the city of Hamburg.
 
+## Start the stack
+Make sure to populate ./stack-manager-inputs/inputs/secrets/ with these files
+- geoserver_password
+- mapbox_api_key
+- mapbox_username
+- postgis_password
+
+Navigate to ./stack-manager-inputs/
+```
+./stack.sh start <STACK_NAME>
+```
+
 ## Data uploader
 Contents for the stack data uploader, excluding TBox for OntoDispersion: 
 https://www.dropbox.com/scl/fi/2ctt7bmax2eqsldwez2hw/hh-data.tar.gz?rlkey=3niplbiyrxpc9itp5h5bedrno&dl=1
@@ -23,6 +35,9 @@ Two API keys required for weather and ship data.
 ### Data generation
 Start ship live updates using [live-ship-updates.http].
 After one timestep's worth of data is added by the ship input agent (make sure there are no ongoing logs in the form of `Instantiated derivation <https://www.theworldavatar.com/kg/ontodispersion/Derivation_bfeb8f72-701e-44c9-91a5-f4c8352eddfb> with derivation type <https://www.theworldavatar.com/kg/ontoderivation/Derivation>`), start scheduled Hamburg updates using [hamburg-live.http], the default parameters will run one simulation every 30 minutes.
+
+### Visualisation
+Visualisation will be available at http://localhost:3838/visualisation locally.
 
 ## Useful links
 
