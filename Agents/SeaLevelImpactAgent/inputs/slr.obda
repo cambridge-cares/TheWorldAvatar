@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+rdfs:	http://www.w3.org/2000/01/rdf-schema#
+:       https://www.theworldavatar.com/kg/
+sea:    https://www.theworldavatar.com/kg/ontosealevel/
+be:     https://www.theworldavatar.com/kg/ontobuiltenv/
+ic:     http://ontology.eil.utoronto.ca/icontact.owl#
+sch:    https://schema.org/
+dbo:    https://dbpedia.org/ontology/
+landplot: https://www.theworldavatar.com/kg/landplot/
+
+[MappingDeclaration] @collection [[
+mappingId	SLR - Heritage Tree
+target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :HeritageTree/{"heritagetree_uuid"} .
+source		SELECT "slr_uuid", "heritagetree_uuid" FROM "public"."slr_heritagetree"
+
+mappingId	SLR - Historic Site
+target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :HistoricSite/{"historicsite_uuid"} .
+source		SELECT "slr_uuid", "historicsite_uuid" FROM "public"."slr_historicsite"
+
+mappingId	SLR - Monument
+target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :Monument/{"monument_uuid"} .
+source		SELECT "slr_uuid", "monument_uuid" FROM "public"."slr_monument"
+
+mappingId	SLR - Museum
+target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :Museum/{"museum_uuid"} .
+source		SELECT "slr_uuid", "museum_uuid" FROM "public"."slr_museum"
+
+mappingId	SLR - TouristAttraction
+target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :TouristAttraction/{"touristattraction_uuid"} .
+source		SELECT "slr_uuid", "touristattraction_uuid" FROM "public"."slr_touristattraction"
+
+mappingId	SLR - Landplot
+target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact landplot:{"landplot_uuid"} .
+            landplot:{"landplot_uuid"} sea:hasaffectedarea {"affectedarea"}^^xsd:Double.
+source		SELECT "slr_uuid", "landplot_uuid", "affectedarea" FROM "public"."slr_landplot"
+
+mappingId	SLR - TouristAttraction
+target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact {"populationatrisk"}^^xsd:Integer.
+source		SELECT "slr_uuid", "populationatrisk" FROM "public"."slr_population"
+]]

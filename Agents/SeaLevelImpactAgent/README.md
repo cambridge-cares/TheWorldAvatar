@@ -87,4 +87,4 @@ The debugger port will be available at 5005.
 [stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
 
 
-docker service rm singapore-sealevelimpactagent
+./stack.sh rm singapore sealevelimpactagent

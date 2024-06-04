@@ -47,7 +47,7 @@ public class ImpactAssessor {
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.heritagetreesTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.heritagetreesTable+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.heritagetreesTable+"_uuid));");
 
                 //Create table for historicsites
-                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.historicsitesTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.heritagetreesTable+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.heritagetreesTable+"_uuid));");
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.historicsitesTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.historicsitesTable+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.historicsitesTable+"_uuid));");
                 
                 //Create table for monuments
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.monumentsTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.monumentsTable+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.monumentsTable+"_uuid));");
@@ -58,22 +58,105 @@ public class ImpactAssessor {
                 //Create table for touristattractions
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.touristattractionsTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.touristattractionsTable+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.touristattractionsTable+"_uuid));");
 
-
                 //Create table for landplot
-                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.landplotTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.landplotTable+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.landplotTable+"_uuid));");
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.landplotTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.landplotTable+"_uuid VARCHAR, affectedarea DOUBLE PRECISION, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.landplotTable+"_uuid));");
 
                 //Create table for population
-                
-                //Create table for landplot
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.populationTable+" (slr_uuid VARCHAR, populationatrisk INTEGER, PRIMARY KEY (slr_uuid));");
                 
                 //Create table for buildings
-                
-                //Create table for road 
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.citydbName+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.citydbName+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.citydbName+"_uuid));");
+
+                //Create table for road
+                //Write code once road has been instantiated
             }
-
-
     }
-    
+
+    public void mapPopulationAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String populationTable)throws SQLException{
+
+        //check if slr_uuid ID exists in slr_population
+        if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, populationTable)) {
+
+            try (Connection connection = remoteRDBStoreClient.getConnection()) {
+                String populationInsertSQL = "INSERT INTO slr_population (slr_uuid, populationatrisk)\n" +
+                        "SELECT subquery.uuid, subquery.sum\n" +
+                        "FROM (\n" +
+                        "SELECT sealevelprojections.uuid, SUM((ST_SummaryStats(ST_Clip(population.rast, sealevelprojections.geom, TRUE))).sum) AS sum\n" +
+                        "FROM sealevelprojections, population\n" +
+                        "WHERE sealevelprojections.uuid = '" + slr_uuid + "'\n" +
+                        "GROUP BY sealevelprojections.uuid\n" +
+                        ") AS subquery;";
+
+                executeSql(connection, populationInsertSQL);
+            }
+            System.out.println("SLR_UUID: "+slr_uuid+" is now mapped with "+populationTable+" at risk.");
+        }
+        else {
+            System.out.println("SLR_UUID: "+slr_uuid+" has already been mapped with "+populationTable+" at risk, data skipped.");
+        }
+    }
+
+     public void mapLandplotAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String landplotTable)throws SQLException{
+
+         //check if slr_uuid ID exists in slr_population
+         if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, landplotTable)) {
+
+             try (Connection connection = remoteRDBStoreClient.getConnection()) {
+                 String landplotInsertSQL = "INSERT INTO slr_landplot (slr_uuid, landplot_uuid, affectedarea)\n" +
+                                             "WITH slr AS (\n" +
+                                             "    SELECT uuid, geom\n" +
+                                             "    FROM sealevelprojections\n" +
+                                             "    WHERE uuid='"+slr_uuid+"'\n" +
+                                             "    ORDER BY sealevelriseinmeters DESC\n" +
+                                             ")\n" +
+                                             "SELECT\n" +
+                                             "    slr.uuid AS slr_uuid,\n" +
+                                             "    lp.ogc_fid AS lp_uuid,\n" +
+                                             "    ROUND(ST_AREA(ST_TRANSFORM(ST_INTERSECTION(slr.geom, ST_MAKEVALID(lp.\"lod1Geometry\")), 3857))::numeric, 2) AS affectedarea\n" +
+                                             "FROM slr\n" +
+                                             "JOIN landplot lp ON ST_INTERSECTS(slr.geom, lp.\"lod1Geometry\");";
+
+                 executeSql(connection, landplotInsertSQL);
+             }
+             System.out.println("SLR_UUID: "+slr_uuid+" is now mapped with "+landplotTable+" at risk.");
+         }
+         else {
+             System.out.println("SLR_UUID: "+slr_uuid+" has already been mapped with "+landplotTable+" at risk, data skipped.");
+         }
+
+
+     }
+
+
+    public void mapCulturalSitesAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String culturalsiteTable)throws SQLException{
+
+        //check if slr_uuid ID exists in slr_population
+        if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, culturalsiteTable)) {
+
+            try (Connection connection = remoteRDBStoreClient.getConnection()) {
+                String culturalsitesInsertSQL = "INSERT INTO slr_"+ culturalsiteTable +" (slr_uuid, "+ culturalsiteTable +"_uuid)\n" +
+                                                "WITH slr AS (\n" +
+                                                "    SELECT geom, uuid\n" +
+                                                "    FROM \"sealevelprojections\"\n" +
+                                                "    WHERE uuid='"+slr_uuid+"'\n" +
+                                                "),\n" +
+                                                "     "+ culturalsiteTable +" AS (\n" +
+                                                "         SELECT uuid, wkb_geometry\n" +
+                                                "         FROM "+ culturalsiteTable +"\n" +
+                                                "     )\n" +
+                                                "SELECT slr.uuid as slr_uuid, "+ culturalsiteTable +".uuid as "+ culturalsiteTable +"_uuid\n" +
+                                                "FROM slr,"+ culturalsiteTable +"\n" +
+                                                "WHERE ST_INTERSECTS(slr.geom, "+ culturalsiteTable +".wkb_geometry)";
+
+                executeSql(connection, culturalsitesInsertSQL);
+            }
+            System.out.println("SLR_UUID: "+slr_uuid+" is now mapped with "+culturalsiteTable+" at risk.");
+        }
+        else {
+            System.out.println("SLR_UUID: "+slr_uuid+" has already been mapped with "+culturalsiteTable+" at risk, data skipped.");
+        }
+    }
+
 
     /**
      * Create connection to remoteStoreClient and execute SQL statement
@@ -85,6 +168,25 @@ public class ImpactAssessor {
             statement.execute(sql);
         }
     }
+
+    private boolean isSLRDataExistsInSLRTable (RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String tableName) throws SQLException {
+
+        String slrImpactTable = "slr_"+tableName;
+
+        try (Connection connection = remoteRDBStoreClient.getConnection()) {
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT 1 FROM "+slrImpactTable+" WHERE slr_uuid ='"+slr_uuid+"'");
+
+                if (resultSet.next()) {
+                    //slr_uuid exists in table
+                    return true;
+                } else {
+                    //slr_uuid does not exist in table
+                    return false;
+                }
+        }
+    }
+
 }
 
 

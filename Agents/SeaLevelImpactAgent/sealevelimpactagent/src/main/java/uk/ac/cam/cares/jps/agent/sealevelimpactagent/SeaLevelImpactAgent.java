@@ -9,17 +9,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import java.nio.file.Path;
+
 import org.json.JSONObject;
-import org.openrdf.query.algebra.In;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 @WebServlet(urlPatterns = "/slrimpact")
 
 public class SeaLevelImpactAgent extends JPSAgent {
-    
+
+    private static final Path obdaFile = Path.of("/inputs/slr.obda");
     private static String sspScenario = null;
     private static Integer projectionyear = null;
     private static String confidence = null;
@@ -33,6 +36,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(SeaLevelImpactAgent.class);
     private EndpointConfig endpointConfig = new EndpointConfig();
     private String dbName;
+    public static String citydbName =null;
     public static String heritagetreesTable = null;
     public static String historicsitesTable = null;
     public static String monumentsTable = null;
@@ -64,6 +68,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
             Properties prop = new Properties();
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
+            this.citydbName = prop.getProperty("citydb.name");
             this.heritagetreesTable= prop.getProperty("heritagetreesTable.name");
             this.historicsitesTable= prop.getProperty("historicsitesTable.name");
             this.monumentsTable= prop.getProperty("monumentsTable.name");
@@ -93,8 +98,6 @@ public class SeaLevelImpactAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
-
-
         if (!validateInput(requestParams)) {
             throw new JPSRuntimeException("Unable to validate request sent to the agent.");
         }
@@ -117,12 +120,50 @@ public class SeaLevelImpactAgent extends JPSAgent {
         try {
             init();
             ImpactAssessor impactAssessor = new ImpactAssessor();
+
+            //Get sealevelchange UUID
             String seaLevelChangeUUID =impactAssessor.getSeaLevelChangeUUID(remoteRDBStoreClient, sspScenario, projectionyear, confidence, quantile);
+
             if (seaLevelChangeUUID.isEmpty()){response.put("message","No sealevelchange UUID");}
             LOGGER.info("Assessing sea-level rise impact for uuid "+ seaLevelChangeUUID);
 
+            //Create SLR impact table
+            impactAssessor.createTableIfNotExists(remoteRDBStoreClient);
+
+            //Map population at risk
+            try {
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, populationTable);
+            }catch (Exception e) {
+                LOGGER.info("Population failed to map: ", e);
+            }
+
+            //Map landplot at risk
+            try {
+                impactAssessor.mapLandplotAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, landplotTable);
+            }catch (Exception e) {
+                LOGGER.info("Landplot failed to map: ", e);
+            }
+
+            //Map culturalsites at risk
+            //Map landplot at risk
+            try {
+                impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, monumentsTable);
+                impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, historicsitesTable);
+                impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, heritagetreesTable);
+                impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, museumsTable);
+                impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, touristattractionsTable);
+            }catch (Exception e) {
+                LOGGER.info("Landplot failed to map: ", e);
+            }
 
 
+            //Upload Isochrone Ontop mapping
+            try {
+                OntopClient ontopClient = OntopClient.getInstance();
+                ontopClient.updateOBDA(obdaFile);
+            } catch (Exception e) {
+                System.out.println("Could not retrieve slr.obda file.");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
