@@ -11,13 +11,6 @@
                   "osmPoints=points",
                   "osmPolygons=polygons"
                 ],
-                "Mounts": [
-                  {
-                    "Type": "bind",
-                    "Source": "../../../../../../Agents/GFAAgent/src/main/resources",
-                    "Target": "/resources"
-                  }
-                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
