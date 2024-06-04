@@ -28,18 +28,18 @@ When executing the task to instantiate the number of floors from other data sour
 
 1. Number of floors from a specified csv file
 
-An example of the csv file is the HDB properties data from [Data.gov.sg](https://beta.data.gov.sg/collections/150/datasets/d_17f5382f26140b1fdae0ba2ef6239d2f/view). The csv file must contain the `blk_no`, `street`, and `max_floor_lvl` columns for this task to perform successfully. 
+An example of the [HDBPropertyInformation.csv](https://github.com/cambridge-cares/TheWorldAvatar/blob/1a91bcfbcabf75b1e5a727c9944c017e9f5d42f3/Agents/BuildingFloorAgent/src/main/resources/HDBPropertyInformation.csv) file is the HDB properties data from [Data.gov.sg](https://beta.data.gov.sg/collections/150/datasets/d_17f5382f26140b1fdae0ba2ef6239d2f/view). The csv file must contain the `blk_no`, `street`, and `max_floor_lvl` columns for this task to perform successfully. 
 
-The csv file path and database name should be specified as environment variables in the `gfaagent.json` file. See below for an example:
+The csv file path and database name should be specified as environment variables in the `buildingfloor.json` file. See below for an example:
 ```
 "Env": [
     "DATABASE=postgres",
-    "floors_csv=/resources/HDBfloors/HDBPropertyInformation.csv"
+    "floors_csv=/resources/HDBPropertyInformation.csv"
 ]
 ```
 2. OpenStreetMap linked to the 3D CityGML Buildings
 
-Please upload the OpenStreetMap following the [OSM Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OSMAgent)'s instructions and link their building IRIs by running the OSM Agent. This agent requires both steps, as it will conduct fuzzy matching between the address in the specified csv file and the address in the OpenStreetMap data. When matched, the GFA agent can instantiate the number of storeys from the csv file into the right building data in the citydb schema with the matching building IRI.
+Please upload the OpenStreetMap following the [OSM Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OSMAgent)'s instructions and link their building IRIs by running the OSM Agent. This agent requires both steps, as it will conduct fuzzy matching between the address in the specified csv file and the address in the OpenStreetMap data. When matched, the building floor agent can instantiate the number of storeys from the csv file into the right building data in the citydb schema with the matching building IRI.
 
 3. Estimated calculation
 
@@ -48,10 +48,10 @@ According to the general standard of Singapore, there are two cases:
 2) Domestic building: 1st floor height is 3.6m, the rest floor height is 2.8m
 
 ### 2.3 Retrieving BuildingFloorAgent's image
-The GFAagent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/buildingflooragent) using `docker pull ghcr.io/cambridge-cares/buildingflooragent:<LATEST-VERSION>`
+The Building Floor Agent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/buildingflooragent) using `docker pull ghcr.io/cambridge-cares/buildingflooragent:<LATEST-VERSION>`
 
 ### 2.4 Starting with the stack-manager
-The agent has been implemented to work in the stack. To do so, place gfaagent.json in the [stack-manager config directory]. 
+The agent has been implemented to work in the stack. To do so, place buildingfloor.json in the [stack-manager config directory]. 
 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
