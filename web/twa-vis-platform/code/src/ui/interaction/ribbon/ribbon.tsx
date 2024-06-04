@@ -3,7 +3,7 @@
 import styles from './ribbon.module.css';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Tabs, Tab } from '@mui/material';
+import { Box, Tabs, Tab, Divider } from '@mui/material';
 import { Map } from 'mapbox-gl';
 
 import RibbonPanel from './ribbon-panel';
@@ -55,7 +55,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
 
   useEffect(() => {
     setIsRibbonToggled(ribbonState?.toggled);
-  }, [isRibbonToggled])
+  }, [isRibbonToggled, ribbonState?.toggled])
 
 
   // State for map configuration settings
@@ -117,7 +117,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               />
               <RibbonComponentCombo
                 icon="/images/defaults/icons/camera.svg"
-                text="Location"
+                text="Reset"
                 tooltip="Reset camera to default position."
                 options={cameraNames}
                 initialOption={cameraDefault}
@@ -127,7 +127,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               />
               <RibbonComponentToggle
                 icon="glyphs"
-                text="Toggle Labels"
+                text="Hide Labels"
                 tooltip="Toggle display of place names."
                 initialState={false}
                 action={() => {
@@ -143,6 +143,20 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                   set3DTerrain(state, props.map);
                 }}
               />
+                <RibbonComponentToggle
+                  icon="/images/defaults/icons/maximise.svg"
+                  text="Full Screen"
+                  tooltip="Toggle fullscreen mode."
+                  initialState={false}
+                  action={state => {
+                    if (state) {
+                      openFullscreen();
+                    } else {
+                      closeFullscreen();
+                    }
+                  }}
+                />
+              <Divider orientation="vertical" flexItem />
               {props.hasScenario &&
                 <RibbonComponentToggle
                   icon="huboutlined"
@@ -152,19 +166,6 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                   action={props.toggleScenarioSelection}
                 />
               }
-              <RibbonComponentToggle
-                icon="/images/defaults/icons/maximise.svg"
-                text="Full Screen"
-                tooltip="Toggle fullscreen mode."
-                initialState={false}
-                action={state => {
-                  if (state) {
-                    openFullscreen();
-                  } else {
-                    closeFullscreen();
-                  }
-                }}
-              />
             </RibbonPanel>
           }
 
