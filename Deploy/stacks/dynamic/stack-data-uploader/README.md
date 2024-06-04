@@ -724,7 +724,7 @@ mappingId   exampleMapping
 ```
 
 ```turtle
-target      ex:building{id} ex:hasName "{name}"^^xsd:string;
+target      ex:building/{id} ex:hasName "{name}"^^xsd:string;
                 ex:hasId {id}^^xsd:integer .
 ```
 
@@ -734,7 +734,7 @@ source      SELECT id, name
 ```
 
 Here the the PostgreSQL table `buildings` is assumed to contain the columns `id` (containing integers) and `name` (containing strings).
-For each row in that table two virtual triples will be created `ex:building{id} ex:hasName "{name}"^^xsd:string` and `ex:building{id} ex:hasId {id}^^xsd:integer`.
+For each row in that table two virtual triples will be created `ex:building/{id} ex:hasName "{name}"^^xsd:string` and `ex:building/{id} ex:hasId {id}^^xsd:integer`.
 
 For example if the `buildings` table was as follows then the subsequent virtual triples would be created.
 
@@ -743,13 +743,13 @@ For example if the `buildings` table was as follows then the subsequent virtual 
 | 1234 | "building 1" | ...  |
 | 1235 | "building 2" | ...  |
 
-`ex:building1234 ex:hasName "building 1"^^xsd:string`
+`ex:building/1234 ex:hasName "building 1"^^xsd:string`
 
-`ex:building1234 ex:hasId 1234^^xsd:integer`
+`ex:building/1234 ex:hasId 1234^^xsd:integer`
 
-`ex:building1235 ex:hasName "building 2"^^xsd:string`
+`ex:building/1235 ex:hasName "building 2"^^xsd:string`
 
-`ex:building1235 ex:hasId 1235^^xsd:integer`
+`ex:building/1235 ex:hasId 1235^^xsd:integer`
 
 #### SPARQL Queries on Ontop
 
