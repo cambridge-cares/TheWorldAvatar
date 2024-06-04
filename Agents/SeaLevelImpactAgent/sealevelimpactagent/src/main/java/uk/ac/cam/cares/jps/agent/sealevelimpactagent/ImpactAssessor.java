@@ -66,7 +66,7 @@ public class ImpactAssessor {
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.populationTable+" (slr_uuid VARCHAR, populationatrisk INTEGER, PRIMARY KEY (slr_uuid));");
                 
                 //Create table for buildings
-                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.buildingsMatViewName +"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.buildingsMatViewName +"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.buildingsMatViewName +"_uuid));");
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.buildingsMatViewName +"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.buildingsMatViewName +"_uuid VARCHAR);");
 
                 //Create table for road
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.osm_streetTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.osm_streetTable+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.osm_streetTable+"_uuid));");
@@ -176,12 +176,12 @@ public class ImpactAssessor {
                         "    WHERE uuid='"+slr_uuid+"'\n" +
                         "),\n" +
                         "     "+ buildingTable +" AS (\n" +
-                        "         SELECT uuid, wkb_geometry\n" +
+                        "         SELECT uuid, ST_TRANSFORM(geometry,4326) as geometry\n" +
                         "         FROM "+ buildingTable +"\n" +
                         "     )\n" +
                         "SELECT slr.uuid as slr_uuid, "+ buildingTable +".uuid as "+ buildingTable +"_uuid\n" +
                         "FROM slr,"+ buildingTable +"\n" +
-                        "WHERE ST_INTERSECTS(slr.geom, "+ buildingTable +".wkb_geometry)";
+                        "WHERE ST_INTERSECTS(slr.geom, "+ buildingTable +".geometry)";
 
                 executeSql(connection, buildingInsertSQL);
             }
@@ -267,7 +267,7 @@ public class ImpactAssessor {
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
-            ResultSet resultSet = metaData.getTables(null, null, cityDBMaterializedViewName, new String[] {"TABLE", "VIEW"});
+            ResultSet resultSet = metaData.getTables(null, null, cityDBMaterializedViewName,null);
 
             if (resultSet.next()) {
                 //view exists
