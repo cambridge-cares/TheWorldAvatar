@@ -36,7 +36,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(SeaLevelImpactAgent.class);
     private EndpointConfig endpointConfig = new EndpointConfig();
     private String dbName;
-    public static String citydbName =null;
+    public static String buildingsMatViewName =null;
     public static String heritagetreesTable = null;
     public static String historicsitesTable = null;
     public static String monumentsTable = null;
@@ -68,7 +68,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
             Properties prop = new Properties();
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
-            this.citydbName = prop.getProperty("citydb.name");
+            this.buildingsMatViewName = prop.getProperty("buildingsMatViewName.name");
             this.heritagetreesTable= prop.getProperty("heritagetreesTable.name");
             this.historicsitesTable= prop.getProperty("historicsitesTable.name");
             this.monumentsTable= prop.getProperty("monumentsTable.name");
@@ -145,7 +145,6 @@ public class SeaLevelImpactAgent extends JPSAgent {
             }
 
             //Map culturalsites at risk
-            //Map landplot at risk
             try {
                 impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, monumentsTable);
                 impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, historicsitesTable);
@@ -156,8 +155,15 @@ public class SeaLevelImpactAgent extends JPSAgent {
                 LOGGER.info("Landplot failed to map: ", e);
             }
 
+            //Map buildings at risk
+            try {
+                impactAssessor.mapBuildingAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, buildingsMatViewName);
+            }catch (Exception e) {
+                LOGGER.info("Landplot failed to map: ", e);
+            }
 
-            //Upload Isochrone Ontop mapping
+
+            //Upload Impact Ontop mapping
             try {
                 OntopClient ontopClient = OntopClient.getInstance();
                 ontopClient.updateOBDA(obdaFile);

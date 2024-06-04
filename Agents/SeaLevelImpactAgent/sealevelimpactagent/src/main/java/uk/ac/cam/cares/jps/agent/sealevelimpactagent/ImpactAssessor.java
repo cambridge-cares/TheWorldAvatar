@@ -65,10 +65,10 @@ public class ImpactAssessor {
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.populationTable+" (slr_uuid VARCHAR, populationatrisk INTEGER, PRIMARY KEY (slr_uuid));");
                 
                 //Create table for buildings
-                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.citydbName+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.citydbName+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.citydbName+"_uuid));");
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.buildingsMatViewName +"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.buildingsMatViewName +"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.buildingsMatViewName +"_uuid));");
 
                 //Create table for road
-                //Write code once road has been instantiated
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.osm_streetTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.osm_streetTable+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.osm_streetTable+"_uuid));");
             }
     }
 
@@ -157,6 +157,40 @@ public class ImpactAssessor {
         }
     }
 
+    public void mapBuildingAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String buildingTable)throws SQLException{
+
+        //create materialized view if not exists
+        if (isCityDBMaterializedViewExists(remoteRDBStoreClient, buildingTable)){
+            createCityDBMaterializedView(remoteRDBStoreClient,buildingTable);
+        }
+
+        //check if slr_uuid ID exists in slr_population
+        if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, buildingTable)) {
+
+            try (Connection connection = remoteRDBStoreClient.getConnection()) {
+                String buildingInsertSQL = "INSERT INTO slr_"+ buildingTable +" (slr_uuid, "+ buildingTable +"_uuid)\n" +
+                        "WITH slr AS (\n" +
+                        "    SELECT geom, uuid\n" +
+                        "    FROM \"sealevelprojections\"\n" +
+                        "    WHERE uuid='"+slr_uuid+"'\n" +
+                        "),\n" +
+                        "     "+ buildingTable +" AS (\n" +
+                        "         SELECT uuid, wkb_geometry\n" +
+                        "         FROM "+ buildingTable +"\n" +
+                        "     )\n" +
+                        "SELECT slr.uuid as slr_uuid, "+ buildingTable +".uuid as "+ buildingTable +"_uuid\n" +
+                        "FROM slr,"+ buildingTable +"\n" +
+                        "WHERE ST_INTERSECTS(slr.geom, "+ buildingTable +".wkb_geometry)";
+
+                executeSql(connection, buildingInsertSQL);
+            }
+            System.out.println("SLR_UUID: "+slr_uuid+" is now mapped with "+ buildingTable +" at risk.");
+        }
+        else {
+            System.out.println("SLR_UUID: "+slr_uuid+" has already been mapped with "+ buildingTable +" at risk, data skipped.");
+        }
+    }
+
 
     /**
      * Create connection to remoteStoreClient and execute SQL statement
@@ -168,6 +202,7 @@ public class ImpactAssessor {
             statement.execute(sql);
         }
     }
+
 
     private boolean isSLRDataExistsInSLRTable (RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String tableName) throws SQLException {
 
@@ -186,6 +221,64 @@ public class ImpactAssessor {
                 }
         }
     }
+
+    private void createCityDBMaterializedView (RemoteRDBStoreClient remoteRDBStoreClient, String cityDBMaterializedViewName) throws SQLException{
+
+        String createCityDBMaterializedView_sql = "CREATE MATERIALIZED VIEW public."+cityDBMaterializedViewName+" AS\n" +
+                                                    "WITH \"uuid_table\" AS (\n" +
+                                                    "    SELECT\n" +
+                                                    "        \"strval\" AS \"uuid\",\n" +
+                                                    "        \"cityobject_id\"\n" +
+                                                    "    FROM\n" +
+                                                    "        \"citydb\".\"cityobject_genericattrib\"\n" +
+                                                    "    WHERE\n" +
+                                                    "        \"attrname\" = 'uuid'\n" +
+                                                    "),\n" +
+                                                    "\"iri_table\" AS (\n" +
+                                                    "    SELECT\n" +
+                                                    "        \"urival\" AS \"iri\",\n" +
+                                                    "        \"cityobject_id\"\n" +
+                                                    "    FROM\n" +
+                                                    "        \"citydb\".\"cityobject_genericattrib\"\n" +
+                                                    "    WHERE\n" +
+                                                    "        \"attrname\" = 'iri'\n" +
+                                                    ")\n" +
+                                                    "SELECT\n" +
+                                                    "    \"building\".\"id\" AS \"building_id\",\n" +
+                                                    "    COALESCE(\"measured_height\", 100.0) AS \"building_height\",\n" +
+                                                    "    \"geometry\",\n" +
+                                                    "    \"uuid\",\n" +
+                                                    "    \"iri\"\n" +
+                                                    "FROM\n" +
+                                                    "    \"citydb\".\"building\"\n" +
+                                                    "    JOIN \"citydb\".\"surface_geometry\" ON \"citydb\".\"surface_geometry\".\"root_id\" = \"citydb\".\"building\".\"lod0_footprint_id\"\n" +
+                                                    "    JOIN \"uuid_table\" ON \"citydb\".\"building\".\"id\" = \"uuid_table\".\"cityobject_id\"\n" +
+                                                    "    JOIN \"iri_table\" ON \"citydb\".\"building\".\"id\" = \"iri_table\".\"cityobject_id\"\n" +
+                                                    "WHERE\n" +
+                                                    "    \"citydb\".\"surface_geometry\".\"geometry\" IS NOT NULL;";
+
+        try (Connection connection = remoteRDBStoreClient.getConnection()) {
+            executeSql(connection, createCityDBMaterializedView_sql);
+        }
+    }
+
+    private boolean isCityDBMaterializedViewExists (RemoteRDBStoreClient remoteRDBStoreClient, String cityDBMaterializedViewName) throws SQLException {
+
+        try (Connection connection = remoteRDBStoreClient.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT 1 FROM "+cityDBMaterializedViewName+" LIMIT 10");
+
+            if (resultSet.next()) {
+                //view exists
+                return true;
+            } else {
+                //slr_uuid does not exist in table
+                return false;
+            }
+        }
+    }
+
+
 
 }
 
