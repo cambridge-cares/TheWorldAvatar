@@ -16,7 +16,7 @@ nx = '200'
 ny = '200'
 STACK_NAME = os.getenv('STACK_NAME')
 HTTP_DI = f"http://{STACK_NAME}-dispersion-interactor:8080/DispersionInteractor/"
-HTTP_SHIP = f"http://{STACK_NAME}-ship-input-agent:8080/ShipDataAgent/"
+HTTP_SHIP = f"http://{STACK_NAME}-ship-input-agent:8080/ShipInputAgent/"
 
 
 @get_simulation_geojson_bp.route(ROUTE, methods=['GET'])
@@ -31,7 +31,12 @@ def api():
     polygon = getpolygon(lon, lat, dlon, dlat)
 
     # initialise simulation if it doesn't exist. currently check by label
-    return initialise_simulation(polygon, label)
+    derivation_iri = initialise_simulation(polygon, label)
+    logger.info(f'Initialised derivation with IRI: {derivation_iri}')
+    # load ship data from relational database
+    load_ship = callhttp(HTTP_SHIP, f'load-rdb?derivation={derivation_iri}', 'post')
+    logger.info(f'Number of ships loaded: {load_ship.json()["numNewShips"]}')
+    return jsonify({'numShip': load_ship.json()["numNewShips"], 'derivation_iri': derivation_iri}), 200
 
 
 def getpolygon(lon, lat, dlon, dlat):
@@ -45,6 +50,7 @@ def getpolygon(lon, lat, dlon, dlat):
 def callhttp(http_endpoint, custom_request, method):
     response = getattr(requests, method)(http_endpoint+custom_request)
     if response.status_code != 200:
+        logger.info(f'Call to {http_endpoint+custom_request} returns with the following response:')
         logger.warn(response.content)
     return response
 
@@ -68,4 +74,4 @@ def initialise_simulation(polygon, label):
         url_init = f'InitialiseSimulation?ewkt=SRID={SRID};{polygon}&nx={nx}&ny={ny}&label={label}'
         response = calldi(url_init, 'post')
         derivation_iri = response.json()['derivation']
-    return jsonify({'derivationIri': derivation_iri}), 200
+    return derivation_iri

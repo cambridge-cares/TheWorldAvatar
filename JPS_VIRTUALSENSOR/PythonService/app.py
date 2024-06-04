@@ -12,4 +12,4 @@ app.register_blueprint(elevation.get_elevation_geojson_bp)
 app.register_blueprint(newSimulation.get_simulation_geojson_bp)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(threaded=True)
