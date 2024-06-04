@@ -1,17 +1,12 @@
 import json
 import logging
-import time
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 
 from controllers.chat import ChatController, get_chatbot_client
-
-
-class ChatRequest(BaseModel):
-    qa_request_id: str
+from model.chat import ChatRequest
 
 
 logger = logging.getLogger(__name__)
@@ -31,6 +26,7 @@ async def chat(
         for chunk in chatbot_client.request_stream(req.qa_request_id):
             content = chunk.choices[0].delta.content
             if content is not None:
+                print("Sending:", content)
                 yield "data: {data}\n\n".format(data=json.dumps({"content": content}))
 
     return StreamingResponse(

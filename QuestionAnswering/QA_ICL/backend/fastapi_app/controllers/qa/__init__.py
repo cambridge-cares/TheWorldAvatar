@@ -51,7 +51,7 @@ class DataSupporter:
         examples = self.example_store.retrieve_examples(nlq=query, k=10)
         logger.info("Retrieved examples: " + str(examples))
 
-        translation_context = TranslationContext(examples=examples, schema=schema)
+        translation_context = TranslationContext(examples=examples, schema_relations=schema)
         logger.info("Translating input question into data request...")
         # KIV: example permutation
         data_req = self.translator.translate(

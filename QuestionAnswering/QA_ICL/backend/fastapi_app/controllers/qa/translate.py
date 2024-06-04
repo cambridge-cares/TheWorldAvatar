@@ -60,7 +60,7 @@ Your task is to translate the following question to an executable data request. 
                     p=try_make_prefixed_iri(rel.p),
                     o=try_make_prefixed_iri(rel.o),
                 )
-                for rel in translation_context.schema
+                for rel in translation_context.schema_relations
             ),
             question=nlq,
         )

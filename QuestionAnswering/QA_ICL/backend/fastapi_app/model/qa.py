@@ -96,7 +96,7 @@ class QARequest(BaseModel):
 
 class TranslationContext(BaseModel):
     examples: list[Nlq2DataReqExample]
-    schema: list[RDFRelation]
+    schema_relations: list[RDFRelation]
 
 
 class QAResponseMetadata(BaseModel):
