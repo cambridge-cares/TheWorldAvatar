@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.sealevelimpactagent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -160,7 +161,7 @@ public class ImpactAssessor {
     public void mapBuildingAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String buildingTable)throws SQLException{
 
         //create materialized view if not exists
-        if (isCityDBMaterializedViewExists(remoteRDBStoreClient, buildingTable)){
+        if (!isCityDBMaterializedViewExists(remoteRDBStoreClient, buildingTable)){
             createCityDBMaterializedView(remoteRDBStoreClient,buildingTable);
         }
 
@@ -265,8 +266,8 @@ public class ImpactAssessor {
     private boolean isCityDBMaterializedViewExists (RemoteRDBStoreClient remoteRDBStoreClient, String cityDBMaterializedViewName) throws SQLException {
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT 1 FROM "+cityDBMaterializedViewName+" LIMIT 10");
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet resultSet = metaData.getTables(null, null, cityDBMaterializedViewName, new String[] {"TABLE", "VIEW"});
 
             if (resultSet.next()) {
                 //view exists

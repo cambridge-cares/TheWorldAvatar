@@ -152,14 +152,14 @@ public class SeaLevelImpactAgent extends JPSAgent {
                 impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, museumsTable);
                 impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, touristattractionsTable);
             }catch (Exception e) {
-                LOGGER.info("Landplot failed to map: ", e);
+                LOGGER.info("CulturalSites failed to map: ", e);
             }
 
             //Map buildings at risk
             try {
                 impactAssessor.mapBuildingAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, buildingsMatViewName);
             }catch (Exception e) {
-                LOGGER.info("Landplot failed to map: ", e);
+                LOGGER.info("Buildings failed to map: ", e);
             }
 
 
