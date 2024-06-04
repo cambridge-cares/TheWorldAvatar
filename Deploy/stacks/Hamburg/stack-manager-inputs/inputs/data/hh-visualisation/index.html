@@ -242,12 +242,12 @@
                     </div>
                 `);
 
-            // MapHandler.MAP.doubleClickZoom.disable();
-            // MapHandler.MAP.on("dblclick", (e) => {
-            //     dispersionHandler.createVirtualSensor(e.lngLat.lat, e.lngLat.lng).done().then(() => dispersionHandler.plotData());
-            // });
+            MapHandler.MAP.doubleClickZoom.disable();
+            MapHandler.MAP.on("dblclick", (e) => {
+                dispersionHandler.createVirtualSensor(e.lngLat.lat, e.lngLat.lng).done().then(() => dispersionHandler.plotData());
+            });
 
-            // dispersionHandler.updateVirtualSensors();
+            dispersionHandler.updateVirtualSensors();
         }
 
     </script>
