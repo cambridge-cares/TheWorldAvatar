@@ -53,7 +53,7 @@ export default function MapContainer(props: MapContainerProps) {
     } else {
       setMapData(parseMapDataSettings(JSON.parse(props.data), mapSettings?.type));
     }
-  }, [showDialog]);
+  }, [mapSettings?.type, props.data, props.scenarios, selectedScenario, showDialog]);
 
   // Populates the map after it has loaded and scenario selection is not required
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function MapContainer(props: MapContainerProps) {
         });
       }
     }
-  }, [map, mapData]);
+  }, [dispatch, map, mapData, mapEventManager, mapSettings, showDialog]);
 
   return (
     <>
