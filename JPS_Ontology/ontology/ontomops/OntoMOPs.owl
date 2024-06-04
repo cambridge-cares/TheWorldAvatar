@@ -1,0 +1,917 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl"
+     xmlns:OntoMOPs="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">13 September 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for representing Metal-Organic Polyhedra (MOPs).</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Volume"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasAssemblyModel -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasAssemblyModel">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation depicting to which assembly model a particular metal organic polyhedron belongs to.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasBindingDirection -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasBindingDirection">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation defining the orientation between a binding unit in respect to the propagation of the building unit core. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasBindingSite -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasBindingSite">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the building unit and the type of associated binding sites. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCavity -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCavity">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between molecular cages and the exisitence of within the molecular cages. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasChemicalBuildingUnit -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasChemicalBuildingUnit">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation betwenn  a MOP and its building unit. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCore -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCore">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a building units and its smaller central consitutent that conencts the binding sites. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasGenericBuildingUnit -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasGenericBuildingUnit">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the chemical assembly model and the constituting generic buildinng unit.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasGenericBuildingUnitNumber -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasGenericBuildingUnitNumber">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a the chemical assembly model the number of generic units constructing that assembly model. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasMOPCavityVolume -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasMOPCavityVolume">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a cavity of a cage and the amount of space referring to the volume. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasPolyhedralShape -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasPolyhedralShape">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an assembly mode MOP and its most basic polyhedral shape addopted by that MOP. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasProvenance -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasProvenance">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a molecular cage and the literature where such cage has been reported. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSpacer -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSpacer">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the building units and the existence of a smaller constituent that connects the binding and the core unit. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSubstituent -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSubstituent">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation defining the type of substituent associated with the core of the chemical building unit. </rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation defining the type of substituent associated with the spacer.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#isFunctioningAs -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#isFunctioningAs">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that connects the chemical building unit and the more abstract generic building unit. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#isNumberOf -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#isNumberOf">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that connects the number of generic units with the type of the generic unit. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between chemical species and the formal charge associated with those species. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a metal-organic polyhedron and its molecular weight.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasUniqueSpecies -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasUniqueSpecies">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between chemical chemical entity and its unique species. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCBUFormula -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCBUFormula">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#ChemicalBuildingUnit"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Data string outlying the formula of the chemical building unit. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCCDCNumber -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCCDCNumber">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MetalOrganicPolyhedron"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A data property that informs on the exact deposition number of the MOP in the CCDC database.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasMOPFormula -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasMOPFormula">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MetalOrganicPolyhedron"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasModularity -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasModularity">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnit"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The number of generic building units that connect to a selected generic building.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasOuterCoordinationNumber -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasOuterCoordinationNumber">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingSite"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasPlanarity -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasPlanarity">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnit"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Description of how the other beneric building units are spatially oriented arround the building unit of interst. (e.g. linear, bent, off-set, pyramidal, planar).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasReferenceDOI -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasReferenceDOI">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Provenance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DOI number provided as an identifier not as a link. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymmetryPointGroup -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymmetryPointGroup">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#AssemblyModel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between chemcial species and their idealised symmetry pointgroup. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasUnitNumberValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasUnitNumberValue">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnitNumber"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasXYZGeometry -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasXYZGeometry">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MetalOrganicPolyhedron"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that represents the geometry of the MOP.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#AssemblyModel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingDirection"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingSite"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Core"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Spacer"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Substituent"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2000/01/rdf-schema</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Unit -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#AssemblyModel -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#AssemblyModel">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasGenericBuildingUnit"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasGenericBuildingUnitNumber"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnitNumber"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasPolyhedralShape"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An assembly model represent a spatial constract (i.e. skeleton) of discrete and well-defined interacting generic building units. Many chemical structures may share same assembly model. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingDirection -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingDirection">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A binding direction specifies the orientation of the binding site with respect to the overall building unit core. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingSite -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingSite">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A binding site is the segment of the building unit that involves in chemical reactivity and enhances the interlocking between different building blocks. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Cavity -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Cavity">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasMOPCavityVolume"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Volume"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cavity is the interior void in a molecular cage. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#ChemicalBuildingUnit -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#ChemicalBuildingUnit">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasBindingDirection"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingDirection"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasBindingSite"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingSite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCore"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Core"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSpacer"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Spacer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#isFunctioningAs"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasUniqueSpecies"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A chemical building unit is a  virtual molecular fragment or a real chemical compound that participates in the construction of larger complex assemblies such as molecular cages. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#CoordinationCage -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#CoordinationCage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MolecularCage"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A coordination cage is a molecular cage comprised of metal-based and organic building units.  A metal-organic cage (MOC) may be a synonym for coordination cage. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Core -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Core">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSubstituent"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Substituent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A core is the central chemical fragment of a building unit to which the substituents, spacers and binding sites connect. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Cube -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Cube">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A cube is a polyhedral shape defined by six square plane faces. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Cuboctahedron -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Cuboctahedron">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A cuboctahedron is a polyhedron with 8 triangular faces and 6 square faces.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#DirectBinding -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#DirectBinding">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingDirection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direct binding occurs when the direction of the coordination of the binding site is alligned is in a straight line from the central core of the building unit.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Dodecahedron -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Dodecahedron">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A dodecahedron is a polyhedral shape defined by with twelve pentagonal plane faces.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnit -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnit">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Generic Building Unit is a modular entity that is able to connect to other generic units, leading to a variety of assembly models. The generic building unit has a unique modularity and spatial connectivity. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnitNumber -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnitNumber">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#isNumberOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#GenericBuildingUnit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A generic building unit number provides the number of copies of generic units present in a particular assembly model. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Icosahedron -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Icosahedron">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Icosahedron is a polyhedral shape defined by twenty triangular plane faces. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MetalOrganicPolyhedron -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MetalOrganicPolyhedron">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#CoordinationCage"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasAssemblyModel"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#AssemblyModel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCavity"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Cavity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasChemicalBuildingUnit"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#ChemicalBuildingUnit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasProvenance"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Provenance"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A metal-organic polyhedron (MOP) is a highly symmetrical coordination cage.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MetalSite -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MetalSite">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingSite"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A metal-based site is a form of binding site that is typically made of electrophilic metal centres. A label to the metal site may be the type of the element (e.g. V, Fe, Zn etc.).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MolecularCage -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MolecularCage">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A molecular cage is chemical species that has a dimensional chamber (i.e. cavity) surrounded by a molecular framework. It is a form of a polyatomic entity. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Octahedron -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Octahedron">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An octahedron is a polyhedral shape defined by eight triangular plane faces.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#OrganicSite -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#OrganicSite">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingSite"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An organic site is a form of a binding site that is made of orgnaic functional groups (e.g. carboxylate, pyridine, bypiridine etc). </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Symbol"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A polyhedral shape refers to the shape of a solid defined by many plane faces</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Provenance -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Provenance">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A provenance refers to the journal article where a particular MOP has been reported. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#RhombicDodecahedron -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#RhombicDodecahedron">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A rhombic dodecahedron is a convex polyhedron with 12 congruent rhombic faces.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Rhombicuboctahedron -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Rhombicuboctahedron">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A rhombicuboctahedron, is an Archimedean solid with eight triangular and eighteen square faces.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#SidewayBinding -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#SidewayBinding">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#BindingDirection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sideway binding occurs when the direction of the coordination of the binding site is not alligned is in a straight line from the central core of the building unit and point sto the side.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Spacer -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Spacer">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSubstituent"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Substituent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A spacer is a chemical entity whose main purpose is to introduce size differences. In the particular building unit, the pacer is used to adjust the distance between a core and a binding site. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Substituent -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Substituent">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A substituent is an atom or a group of atoms that introduces lateral changes in a building block, not affecting the primary reactivity and MOP assembly.  </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Symbol -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Symbol"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Tetrahedron -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Tetrahedron">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A tetrahedron is a polyhedral shape defined by four triangular plane faces. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Volume -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Volume">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An amount of space, in the context defined by a molecular cage cavity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A charge refers to the formal charge associated with chemical species. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species or molecular entity and the total mass of one mole of this species or molecular entity in g/mol.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoSpecies is a web ontology for chemical species. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A data property describing polyhedral shape through a letter code.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the polyhedral shape of a MOP and its letter code abbreviation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+
