@@ -10,7 +10,7 @@
      xmlns:ontodevice="https://www.theworldavatar.com/kg/ontodevice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date>31 May 2024</dc:date>
+        <dc:date>04 June 2024</dc:date>
         <rdfs:comment>OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo>1.5</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -444,6 +444,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontochemplant#Fluid"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Zone"/>
                 </owl:unionOf>
