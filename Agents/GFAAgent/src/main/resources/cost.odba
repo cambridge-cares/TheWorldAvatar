@@ -11,12 +11,12 @@ target		twa:Building/{building_iri} env:hasEstimatedConstructionCost om:Cost/{bu
             om:Cost/{building_iri} om:hasValue om:Measure/{building_iri}
             om:Measure/{building_iri} om:hasNumericalValue {cost}^^xsd:float .
             
-source      WITH iri_table AS (
-                SELECT cityobject_id, strval 
-                FROM citydb.cityobject_genericattrib
-                WHERE attrname = 'uuid'
-            )
-            SELECT cg.realval AS cost, iri.strval as building_iri
-            FROM citydb.cityobject_genericattrib AS cg, iri_table as iri
-            WHERE cg.attrname = 'cost' AND cg.cityobject_id = iri.cityobject_id;
+source     SELECT cg1.realval AS cost, cg1.cityobject_id, cg2.strval AS building_iri
+            FROM citydb.cityobject_genericattrib AS cg1 
+            JOIN
+            citydb.cityobject_genericattrib AS cg2
+            ON
+            cg1.attrname = 'cost' AND
+            cg2.attrname = 'uuid' AND
+            cg1.cityobject_id = cg2.cityobject_id;
 ]]
