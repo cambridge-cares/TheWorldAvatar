@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 import agentlogging
 import os
 import requests
+from datetime import datetime
+from threading import Thread
 
 ROUTE = "/newSimulation"
 
@@ -33,10 +35,23 @@ def api():
     # initialise simulation if it doesn't exist. currently check by label
     derivation_iri = initialise_simulation(polygon, label)
     logger.info(f'Initialised derivation with IRI: {derivation_iri}')
+
     # load ship data from relational database
-    load_ship = callhttp(HTTP_SHIP, f'load-rdb?derivation={derivation_iri}', 'post')
+    load_ship = callhttp(
+        HTTP_SHIP, f'load-rdb?derivation={derivation_iri}', 'post')
     logger.info(f'Number of ships loaded: {load_ship.json()["numNewShips"]}')
-    return jsonify({'numShip': load_ship.json()["numNewShips"], 'derivation_iri': derivation_iri}), 200
+
+    # run simulation
+    timesteps = [datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
+                 for t in request.args.getlist("t")]
+    logger.info(f'Running simulations for {len(timesteps)} timesteps.')
+
+    #run_simulation(derivation_iri, label, timesteps)
+    thread = Thread(target=run_simulation, args=(derivation_iri,label,timesteps))
+    thread.start()
+    logger.info("Sent simulation requests, now forget about it.")
+
+    return jsonify({'numNewShips': load_ship.json()["numNewShips"], 'derivation_iri': derivation_iri}), 200
 
 
 def getpolygon(lon, lat, dlon, dlat):
@@ -50,7 +65,8 @@ def getpolygon(lon, lat, dlon, dlat):
 def callhttp(http_endpoint, custom_request, method):
     response = getattr(requests, method)(http_endpoint+custom_request)
     if response.status_code != 200:
-        logger.info(f'Call to {http_endpoint+custom_request} returns with the following response:')
+        logger.info(
+            f'Call to {http_endpoint+custom_request} returns with the following response:')
         logger.warn(response.content)
     return response
 
@@ -75,3 +91,15 @@ def initialise_simulation(polygon, label):
         response = calldi(url_init, 'post')
         derivation_iri = response.json()['derivation']
     return derivation_iri
+
+
+def run_simulation(derivation_iri, label, timesteps):
+    req = f'GenerateDataWithoutShips?derivation={derivation_iri}'
+    metadata = getmetadata()
+    for t in timesteps:
+        if int(t.timestamp()) not in metadata[label]['time']:
+            req = req + f'&timestep={int(t.timestamp())}'
+        else:
+            logger.info(f'{t} for {label} has already been simulated.')
+    logger.info(req)
+    calldi(req, 'post')
