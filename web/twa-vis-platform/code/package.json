@@ -9,9 +9,9 @@
     "verbose": true
   },
   "scripts": {
-    "dev": "NODE_ENV=development node server.js",
+    "dev": "NODE_ENV=development node --env-file='.env.local' server.js",
     "build": "next build",
-    "start": "NODE_ENV=production node server.js",
+    "start": "NODE_ENV=production node --env-file='.env.local' server.js",
     "lint": "next lint",
     "test": "jest"
   },
