@@ -9,16 +9,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import java.nio.file.Path;
+
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 @WebServlet(urlPatterns = "/slrimpact")
 
 public class SeaLevelImpactAgent extends JPSAgent {
-    
+
+    private static final Path obdaFile = Path.of("/resources/slr.obda");
     private static String sspScenario = null;
     private static Integer projectionyear = null;
     private static String confidence = null;
@@ -153,7 +157,13 @@ public class SeaLevelImpactAgent extends JPSAgent {
             }
 
 
-
+            //Upload Isochrone Ontop mapping
+            try {
+                OntopClient ontopClient = OntopClient.getInstance();
+                ontopClient.updateOBDA(obdaFile);
+            } catch (Exception e) {
+                System.out.println("Could not retrieve building_usage.obda file.");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
