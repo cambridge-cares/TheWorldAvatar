@@ -66,6 +66,9 @@
                 "siblings_only": true
             },
             "MD028":false
+        },
+        "[markdown]": {
+            "editor.defaultFormatter": "yzhang.markdown-all-in-one"
         }
     },
     "extensions": {
