@@ -41,7 +41,6 @@ public class RunDispersionDefinedInterval extends HttpServlet {
         Instant startTimeInstant = Instant.ofEpochSecond(startTimeLong);
 
         int numStepsInt = Integer.parseInt(numSteps);
-        int maxTimeInt = Integer.parseInt(maxTimeMinutes);
 
         int interval;
         if (intervalMinutes != null) {
@@ -70,15 +69,25 @@ public class RunDispersionDefinedInterval extends HttpServlet {
             Thread thread = new Thread(() -> devClient.updatePureSyncDerivation(derivation));
             try {
                 thread.start();
-                thread.join(maxTimeInt * 60 * 1000); // convert to milliseconds
             } catch (Exception e) {
                 LOGGER.error("Problem executing timestep = {}", currentTimestep);
                 LOGGER.error(e.getMessage());
             }
 
-            if (thread.isAlive()) {
-                LOGGER.warn("Process took longer than 30 minutes, proceeding to the next run");
-                thread.interrupt();
+            try {
+                if (maxTimeMinutes != null) {
+                    int maxTimeInt = Integer.parseInt(maxTimeMinutes);
+                    thread.join(maxTimeInt * 60 * 1000); // convert to milliseconds
+
+                    if (thread.isAlive()) {
+                        LOGGER.warn("Process took longer than 30 minutes, proceeding to the next run");
+                        thread.interrupt();
+                    }
+                } else {
+                    thread.join();
+                }
+            } catch (InterruptedException e) {
+                LOGGER.error(e.getMessage());
             }
 
             currentTimestep = currentTimestep.plus(interval, ChronoUnit.MINUTES);
