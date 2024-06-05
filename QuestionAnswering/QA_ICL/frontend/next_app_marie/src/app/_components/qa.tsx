@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { ReloadIcon } from "@radix-ui/react-icons";
 
-import { DataItem } from "@/lib/model";
+import { QAResponse } from "@/lib/model";
 import { queryChat, queryQa } from "@/lib/api";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { NLPSearchForm } from "./nlp-search-form";
@@ -19,18 +19,20 @@ export interface QAFragmentProps {
 export default function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
   const [question, setQuestion] = React.useState("")
   const [isQueryingQA, setIsQueryingQA] = React.useState(false)
-  const [structuredData, setStructuredData] = React.useState<DataItem[] | undefined>(undefined)
+  const [qaResponse, setQaResponse] = React.useState<QAResponse | undefined>(undefined)
+  const [isQueryingChat, setIsQueryingChat] = React.useState(false)
   const [chatAnswer, setChatAnswer] = React.useState<string | undefined>(undefined)
 
   const queryDataThenDisplay = async () => {
     setIsQueryingQA(true)
-    setStructuredData(undefined)
+    setQaResponse(undefined)
     setChatAnswer(undefined)
     try {
       const qaRes = await queryQa(question)
       setIsQueryingQA(false)
-      setStructuredData(qaRes.data)
+      setQaResponse(qaRes)
 
+      setIsQueryingChat(true)
       const textStream = await queryChat(qaRes.request_id)
 
       const pump = ({ done, value }: { done: boolean, value?: string }): Promise<void> => {
@@ -63,6 +65,7 @@ export default function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
 
     } finally {
       setIsQueryingQA(false)
+      setIsQueryingChat(false)
     }
   }
 
@@ -99,15 +102,15 @@ export default function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
           onSubmit={handleNLPSearchFormSubmit}
           inputValue={question}
           onInputChange={e => setQuestion(e.target.value)}
-          disabled={isQueryingQA}
+          disabled={isQueryingQA || isQueryingChat}
         />
       </section>
       <section className="mb-12 w-full flex flex-col space-y-4 justify-center">
         {isQueryingQA && (<ReloadIcon className="self-center mr-2 h-4 w-4 animate-spin" />)}
-        {(structuredData || chatAnswer) && (
+        {(qaResponse || chatAnswer) && (
           <div className="flex justify-center">
             <QAResponseDiv
-              structuredData={structuredData}
+              qaResponse={qaResponse}
               chatAnswer={chatAnswer}
               className="p-4 w-full md:w-3/4 lg:w-2/4"
             />

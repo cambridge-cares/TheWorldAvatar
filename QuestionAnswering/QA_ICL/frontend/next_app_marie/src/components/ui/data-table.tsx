@@ -12,7 +12,6 @@ import {
 } from "@tanstack/react-table"
 import { DoubleArrowLeftIcon, DoubleArrowRightIcon } from "@radix-ui/react-icons"
 
-import { TableDataBase, TableDataRow, TableDataValue } from "@/lib/model"
 import { cn } from "@/lib/utils"
 import {
   Table,
@@ -27,15 +26,32 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 
-export type DataTableProps = React.HTMLAttributes<HTMLDivElement> & TableDataBase
+export interface DataTableColumn {
+  value: string
+  label: string
+}
+
+export type DataTableCellValue = string | number | string[] | number[] | DataTableDataProps | undefined
+
+export interface DataTableRow {
+  [key: string]: DataTableCellValue
+}
+
+export interface DataTableDataProps {
+  columns: DataTableColumn[]
+  data: DataTableRow[]
+}
+
+export type DataTableProps = React.HTMLAttributes<HTMLDivElement> & DataTableDataProps
 
 export type DataTableBaseProps = DataTableProps & {
+  numbered?: boolean
   paginated?: boolean
   bordered?: boolean
   scrollable?: boolean
 }
 
-type TableDataRowNumbered = TableDataRow & { num: number }
+type DataTableRowNumbered = DataTableRow & { num: number }
 
 function DataTableBase({
   columns,
@@ -43,31 +59,31 @@ function DataTableBase({
   className,
   ...props
 }: DataTableBaseProps) {
+  const { numbered = false, paginated = false, bordered = false, scrollable = false, ...otherProps } = props
+
   const processedColumns = React.useMemo(
-    () => ["num"].concat(columns),
-    [columns]
+    () => numbered ? [{ value: "num", label: "No." }].concat(columns) : columns,
+    [numbered, columns]
   )
   const processedData = React.useMemo(
-    () => data.map((datum, idx) => ({ num: idx + 1, ...datum })),
-    [data]
+    () => numbered ? data.map((datum, idx) => ({ num: idx + 1, ...datum })) : data,
+    [numbered, data]
   )
 
-  const { paginated = false, bordered = false, scrollable = false, ...otherProps } = props
-
   const columnsOption = processedColumns.map(h => ({
-    id: h,
-    accessorFn: (row: TableDataRowNumbered) => row[h],
-    header: ({ column }: { column: Column<TableDataRowNumbered> }) => {
+    id: h.value,
+    accessorFn: (row: DataTableRow | DataTableRowNumbered) => row[h.value],
+    header: ({ column }: { column: Column<DataTableRow | DataTableRowNumbered> }) => {
       return (
-        <div>{h === "num" ? "No." : h}</div>
+        <div>{h.label}</div>
       )
     },
-    cell: ({ row }: { row: Row<TableDataRowNumbered> }) => {
-      const val = row.getValue(h) as TableDataValue;
+    cell: ({ row }: { row: Row<DataTableRow | DataTableRowNumbered> }) => {
+      const val = row.getValue(h.value) as DataTableCellValue;
       if (!(val)) {
         return ""
       } else if (Array.isArray(val)) {
-        return (<ul>{val.map((elem, idx) => <li key={idx}>elem</li>)}</ul>)
+        return (<ul>{val.map((elem, idx) => <li key={idx}>{elem}</li>)}</ul>)
       } else if (typeof val === "object") {
         return (<DataTableBase columns={val.columns} data={val.data} />)
       } else {
@@ -222,6 +238,7 @@ export const DataTable = ({
   <DataTableBase
     columns={columns}
     data={data}
+    numbered
     paginated
     bordered
     scrollable

@@ -3,14 +3,19 @@ export interface DocumentCollection {
   data: { [key: string]: any }[]
 }
 
-export type TableDataValue = string | number | string[] | number[] | TableDataBase | null
+export interface TableDataColumn {
+  value: string
+  label: string
+}
+
+export type TableDataValue = string | number | string[] | number[] | TableDataBase | undefined
 
 export interface TableDataRow {
   [key: string]: TableDataValue
 }
 
 export interface TableDataBase {
-  columns: string[]
+  columns: TableDataColumn[]
   data: TableDataRow[]
 }
 
@@ -109,7 +114,7 @@ export interface QAResponseMetadata {
 
 export interface QAResponse {
   request_id: string
-  metdata: QAResponseMetadata,
+  metadata: QAResponseMetadata,
   data: DataItem[]
 }
 
