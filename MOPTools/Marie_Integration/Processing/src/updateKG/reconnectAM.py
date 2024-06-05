@@ -1,7 +1,9 @@
 import UpdateKG
 class AMUpdater(UpdateKG.UpdateKG):
     """Child class of UpdateKG with additional methods specific for GBU handling."""
+    
 
+    # Reconnect: -----------------------------------
     def reconnect_values(self):
         """Removes all wrong predicates and inserts the correct."""
         where_triples   = """
@@ -52,30 +54,6 @@ class AMUpdater(UpdateKG.UpdateKG):
 
             self.delete_overhead(am_iris, "AMIri")
             
-            """
-            for j, iri in enumerate(am_iris):
-                # store in variable to reduce dictionairy calls:
-                subjectx                = iri["AMIri"]
-                incoming, outgoing      = self.find_all_connections(subjectx)
-                # save the IR of the first GBU-IRI
-                if j == 0:
-                        print("-------------------------\n")
-                        new_subject        = iri["AMIri"]
-                        print(print(new_subject))
-                        print("-------------------------\n")
-                # all other GBU-IRIs are redundant -> delete existing tripples and reconect with the first IRI
-                else:
-
-                    # reconnect incoming to the i==0
-                    for k, am_inconnection in enumerate(incoming):
-                        self.generate_triple(am_inconnection["subject_incoming"],am_inconnection["predicate_incoming"], new_subject, literal=False)
-                    for l, am_outconnection in enumerate(outgoing):
-                        self.generate_triple(new_subject, am_outconnection["predicate_outgoing"], am_outconnection["object_outgoing"], literal=False)
-                    # delete all outgoing and incoming triples
-                    self.delete_connections(iri["AMIri"])
-                    """
-                    
-
     def delete_shape(self):
         delete_shape       = f"""
         {self.prefix}
@@ -85,10 +63,62 @@ class AMUpdater(UpdateKG.UpdateKG):
         }}
         """
         self.sparql_client.performUpdate(delete_shape)
-                
         return
-            
+    # Generate new entries: ----------------------------
+    def query_geometry(self):
+        """Query for old Mops and return the Geometry value to deduce the GBUs"""
 
+        query = f"""
+        {self.prefix}
+        SELECT ?MOPIRI 
+        (GROUP_CONCAT(?modularity;      SEPARATOR=" ")   AS ?modularities)
+        (GROUP_CONCAT(?planarity;       SEPARATOR=" ")   AS ?planarities)
+        (GROUP_CONCAT(?num;             SEPARATOR=" ")   AS ?numbers)
+        (GROUP_CONCAT(DISTINCT ?AMIRI;  SEPARATOR=" ")   AS ?AMIRIs)
+        WHERE {{
+        ?MOPIRI om:hasAssemblyModel           	?AMIRI     ;
+                om:hasMOPFormula            	?MOPFormula .
+        ?AMIRI  om:hasGenericBuildingUnit       ?GBUIRI     .
+        ?GBUIRI om:hasPlanarity             	?planarity  ;
+                om:hasModularity            	?modularity .
+        ?GBUNUM om:isNumberOf 				    ?GBUIRI		.
+        ?GBUNUM os:value				        ?num		.
+                }}
+        GROUP BY ?MOPIRI
+        """
+        return self.sparql_client.performQuery(query)
+    
+    def check_geometry(self, geometryName):
+        """Query the old MOPs for the CBU and check if it exists."""
+        query = f"""
+        {self.prefix}
+        ASK WHERE {{
+            ?AMID os:value "{geometryName}" .
+        }}
+        """
+        return self.sparql_client.performQuery(query)
+    
+    def deduce_geometry(self):
+        response                    = self.query_geometry()
+        for i, mop in enumerate(response):
+            print({mop["planarities"]}, {mop["modularities"]}, {mop["numbers"]}, "\n")
+            print(f"MOP {i+1}   \n")
+            geometry_string         = self.deduce_geometry(mop["planarities"], mop["modularities"], mop["numbers"])
+            print(geometry_string)
+            print(mop["AMIRIs"])
+            self.generate_triple(mop["AMIRIs"], 'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value', geometry_string, literal=True)
+            print("---------- Finished MOP -------------- \n")
+    
+    def build_geometry(self, planarity, modularity, num):    
+        # example: (4-pyramidal)x6(2-bent)x12
+        s1          = f"({modularity.split()[0]}-{planarity.split()[0]})x{num.split()[0]}"
+        s2          = f"({modularity.split()[1]}-{planarity.split()[1]})x{num.split()[1]}"
+        if self.check_geometry(s1+s2):
+            return s1+s2
+        elif self.check_geometry(s2+s1):
+            return s2+s1
+        else:
+            raise Exception(f"Geometry: {s1+s2} and {s2+s1} not found")
 
 def main():
     SPARQL_QUERY_ENDPOINT       = 'http://localhost:7578/blazegraph/namespace/OntoMOPs'
