@@ -27,7 +27,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 
-export type DataTableProps = React.HTMLAttributes<HTMLDivElement> & TableDataBase & {
+export type DataTableProps = React.HTMLAttributes<HTMLDivElement> & TableDataBase
+
+export type DataTableBaseProps = DataTableProps & {
   paginated?: boolean
   bordered?: boolean
   scrollable?: boolean
@@ -40,7 +42,7 @@ function DataTableBase({
   data,
   className,
   ...props
-}: DataTableProps) {
+}: DataTableBaseProps) {
   const processedColumns = React.useMemo(
     () => ["num"].concat(columns),
     [columns]
@@ -216,4 +218,13 @@ export const DataTable = ({
   columns,
   data,
   ...props
-}: TableDataBase) => (<DataTableBase columns={columns} data={data} paginated bordered scrollable {...props} />)
+}: DataTableProps) => (
+  <DataTableBase
+    columns={columns}
+    data={data}
+    paginated
+    bordered
+    scrollable
+    {...props}
+  />
+)
