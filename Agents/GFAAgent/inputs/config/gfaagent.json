@@ -1,0 +1,52 @@
+{
+    "ServiceSpec": {
+        "Name": "gfaagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/gfaagent:1.2.0",
+                "Env": [
+                  "STACK_NAME=${STACK_NAME}",
+                  "DATABASE=postgres",
+                  "osmSchema=osm",
+                  "osmPoints=points",
+                  "osmPolygons=polygons"
+                ],
+                "Mounts": [
+                  {
+                    "Type": "bind",
+                    "Source": "../../../../../../Agents/GFAAgent/src/main/resources",
+                    "Target": "/resources"
+                  }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                      "ConfigName": "geoserver"
+                    },
+                    {
+                      "ConfigName": "ontop"
+                    }
+                  ],
+                "Secrets": [
+                  {
+                    "SecretName": "postgis_password"
+                  },
+                  {
+                    "SecretName": "geoserver_password"
+                  }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "gfaagent": {
+          "url": "http://localhost:8080/gfaagent/",
+          "externalPath": "/gfaagent/"
+        }
+    }
+}
