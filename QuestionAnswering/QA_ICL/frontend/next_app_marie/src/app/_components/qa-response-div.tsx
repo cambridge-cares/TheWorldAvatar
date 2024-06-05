@@ -17,6 +17,12 @@ export interface QAResponseDivProps extends React.HTMLAttributes<HTMLDivElement>
 
 
 export function QAResponseDiv({ structuredData, chatAnswer, className, ...props }: QAResponseDivProps) {
+  const chatRef = React.useRef<null | HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    chatRef.current?.scrollIntoView()
+  }, [chatAnswer])
+
   return (
     <div className={cn("flex flex-col space-y-6", className)} {...props}>
       {structuredData && (
@@ -52,7 +58,7 @@ export function QAResponseDiv({ structuredData, chatAnswer, className, ...props 
       )}
       {
         chatAnswer && (
-          <div>
+          <div ref={chatRef}>
             <p className="text-xl font-semibold text-blue-500 mb-2">Marie&apos;s response</p>
             <Markdown className="prose max-w-none prose-sm prose-slate">{chatAnswer}</Markdown>
           </div>
