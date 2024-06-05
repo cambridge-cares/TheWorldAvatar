@@ -14,7 +14,22 @@ class UpdateKG:
             kg_user             = kg_user,
             kg_password         = kg_password
         )
-
+    def query_triple(self, triple, select_var):
+        """query a specified triple or tripple patter, simple query without fancy stuff
+        Inputs: 
+        triple:     String in where clause.
+        select_var: String with return variables
+        """
+        query_triple = f"""
+        {self.prefix}
+        SELECT {select_var}
+        WHERE {{
+        {triple}
+            }}
+        """
+        # query
+        return self.sparql_client.performQuery(query_triple)
+        
 
          
     def find_all_connections(self, iri):
@@ -44,25 +59,76 @@ class UpdateKG:
         "Delete all connections to the input IRI."
         delete_incoming_query       = f"""
         {self.prefix}
-        DELETE DATA {{
+        DELETE WHERE {{
         ?incomingIRI ?incomingP <{iri}> .
         }}
         """
         delete_outgoing_query       = f"""
         {self.prefix}
-        DELETE DATA {{
+        DELETE WHERE {{
         <{iri}> ?outgoingP ?outgoingIRI .
         }}
         """
+        self.sparql_client.performUpdate(delete_incoming_query)
+        self.sparql_client.performUpdate(delete_outgoing_query)
+        print(f"deleted outgoing: {delete_incoming_query}")
 
-    def generate_triple(self, subject, predicate, object):
-        """takes subject, predicate and object of a tripple as input and instantiates a new triple. Requires all of them to be IRIs!"""
+    def delete_triple(self, tsubject, tpredicate, tobject, literal=False):
+        "Delete all connections to the input IRI."
+        if literal:
+            insert_string       = f"""<{tsubject}> <{tpredicate}> "{tobject}" ."""
+        else:
+            insert_string       = f"""<{tsubject}> <{tpredicate}> <{tobject}> ."""
+        delete_query       = f"""
+        {self.prefix}
+        DELETE DATA {{
+        {insert_string}
+        }}
+        """
+        print(f"deleted triple: <{tsubject}>, <{tpredicate}>, {tobject}")
+        self.sparql_client.performUpdate(delete_query)
+
+    def generate_triple(self, tsubject, tpredicate, tobject, literal=False):
+        """takes subject, predicate and object of a tripple as input and instantiates a new triple. Please specify if object is literal => literal=True or not literal=False (Default)."""
+        if literal:
+            insert_string       = f"""<{tsubject}> <{tpredicate}> "{tobject}" ."""
+        else:
+            insert_string       = f"""<{tsubject}> <{tpredicate}> <{tobject}> ."""
+        print(f"generated tripple: {insert_string}.")
         update_query        = f"""
         {self.prefix}
         INSERT DATA {{
-            <{subject}> <{predicate}> <{object}> .
+            {insert_string}
         }}
         """
+        self.sparql_client.performUpdate(update_query)
+        
+    def delete_disconnected(self):
+        insert_string       = f"""  ?instance rdf:type <Class> .
+                                    MINUS {{ ?s ?p ?instance }}
+                                    MINUS {{ ?instance ?p ?o }}"""
+    def delete_overhead(self, iris, dic_string):
+        
+            for j, iri in enumerate(iris):
+                subjectx                = iri[f"{dic_string}"]
+                incoming, outgoing      = self.find_all_connections(subjectx)
+                # save the IR of the first GBU-IRI
+                if j == 0:
+                        print("-------------------------\n")
+                        new_subject        = subjectx
+                        print(print(new_subject))
+                        print("-------------------------\n")
+                # all other GBU-IRIs are redundant -> delete existing tripples and reconect with the first IRI
+                else:
+                    print(subjectx)
+                    # reconnect incoming to the i==0
+                    for k, am_inconnection in enumerate(incoming):
+                        self.generate_triple(am_inconnection["subject_incoming"],am_inconnection["predicate_incoming"], new_subject, literal=False)
+                    for l, am_outconnection in enumerate(outgoing):
+                        self.generate_triple(new_subject, am_outconnection["predicate_outgoing"], am_outconnection["object_outgoing"], literal=False)
+                        # delete all outgoing and incoming triples
+                    self.delete_connections(subjectx)
+                    
 
 
 def main():
