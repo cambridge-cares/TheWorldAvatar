@@ -107,8 +107,7 @@ public class ImpactAssessor {
                                              "WITH slr AS (\n" +
                                              "    SELECT uuid, geom\n" +
                                              "    FROM sealevelprojections\n" +
-                                             "    WHERE uuid='"+slr_uuid+"'\n" +
-                                             "    ORDER BY sealevelriseinmeters DESC\n" +
+                                             "    WHERE uuid = 'feffeb88-4718-4152-8016-9099fedc5414'\n" +
                                              ")\n" +
                                              "SELECT\n" +
                                              "    slr.uuid AS slr_uuid,\n" +
@@ -127,6 +126,34 @@ public class ImpactAssessor {
 
 
      }
+
+    public void mapRoadAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String roadTable)throws SQLException{
+
+        //check if slr_uuid ID exists in slr_population
+        if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, roadTable)) {
+
+            try (Connection connection = remoteRDBStoreClient.getConnection()) {
+                String culturalsitesInsertSQL = "INSERT INTO slr_"+ roadTable +" (slr_uuid, "+ roadTable +"_uuid)\n" +
+                                                "WITH slr AS (\n" +
+                                                "    SELECT uuid, geom\n" +
+                                                "    FROM sealevelprojections\n" +
+                                                "    WHERE uuid = 'feffeb88-4718-4152-8016-9099fedc5414'\n" +
+                                                "    ORDER BY sealevelriseinmeters DESC\n" +
+                                                ")\n" +
+                                                "SELECT\n" +
+                                                "    slr.uuid AS slr_uuid,\n" +
+                                                "    lp.osm_id AS "+ roadTable +"_uuid,\n" +
+                                                "    ROUND(ST_LENGTH(ST_TRANSFORM(ST_INTERSECTION(slr.geom, lp.geom), 3857))::numeric, 2) AS affectedlength\n" +
+                                                "FROM slr\n" +
+                                                "JOIN "+ roadTable +" lp ON ST_INTERSECTS(slr.geom, lp.geom);";
+                executeSql(connection, culturalsitesInsertSQL);
+            }
+            System.out.println("SLR_UUID: "+slr_uuid+" is now mapped with "+ roadTable +" at risk.");
+        }
+        else {
+            System.out.println("SLR_UUID: "+slr_uuid+" has already been mapped with "+ roadTable +" at risk, data skipped.");
+        }
+    }
 
 
     public void mapCulturalSitesAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String culturalsiteTable)throws SQLException{
@@ -191,6 +218,8 @@ public class ImpactAssessor {
             System.out.println("SLR_UUID: "+slr_uuid+" has already been mapped with "+ buildingTable +" at risk, data skipped.");
         }
     }
+
+
 
 
     /**
