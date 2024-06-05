@@ -2,12 +2,13 @@ from dataclasses import dataclass
 import logging
 from typing import Dict, Optional
 
-
+from services.utils.frozendict import FrozenDict
 from .data_processing.constants import T5_PREFIX_DOMAINCLS, T5_PREFIX_NL2SPARQL
 from .data_processing.nl import preprocess_nl
 from .data_processing.ontokin.postprocess import OKPostProcessor
 from .data_processing.ontospecies.postprocess import OSPostProcessor
 from .data_processing.ontocompchem.postprocess import OCCPostProcessor
+from .data_processing.ontozeolite.postprocess import OZPostProcessor
 from .data_processing.ontobuiltenv.postprocess import OBEPostProcessor
 from .data_processing.singapore.postprocess import SgPostProcessor
 from .data_processing.postprocess import IdentityPostProcessor, PostProcessor
@@ -38,12 +39,18 @@ class Translator:
         self,
         seq2seq_client: ISeq2SeqClient,
         feature_extraction_client: IFeatureExtractionClient,
+        domain2kgconfig: FrozenDict[str, FrozenDict[str, str]],
     ):
         self.model = seq2seq_client
         self.domain2postprocessor: Dict[str, PostProcessor] = dict(
             ontospecies=OSPostProcessor(feature_extraction_client),
-            ontokin=OKPostProcessor(),
+            ontokin=OKPostProcessor(
+                ontospecies_endpoint=domain2kgconfig["ontospecies"]["endpoint"]
+            ),
             ontocompchem=OCCPostProcessor(),
+            ontozeolite=OZPostProcessor(
+                ontospecies_endpoint=domain2kgconfig["ontospecies"]["endpoint"]
+            ),
             kingslynn=OBEPostProcessor(),
             singapore=SgPostProcessor(),
         )

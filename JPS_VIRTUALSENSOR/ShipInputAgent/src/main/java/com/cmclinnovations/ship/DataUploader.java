@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,7 +29,12 @@ public class DataUploader {
     private static final Logger LOGGER = LogManager.getLogger(DataUploader.class);
     private static final String JSON_EXT = ".json";
 
-    public static void uploadShips(List<Ship> ships, QueryClient queryClient) throws IOException {
+    public enum ShipDataSource {
+        JSON,
+        RDB,
+    }
+
+    public static int uploadShips(List<Ship> ships, QueryClient queryClient, ShipDataSource source) throws IOException {
         if (!queryClient.initialised()) {
             PostGISClient postGISClient = PostGISClient.getInstance();
             Path sqlFunctionFile = new ClassPathResource("function.sql").getFile().toPath();
@@ -57,11 +64,39 @@ public class DataUploader {
         // sets course, speed, location measure IRI in ship objects to be used later
         queryClient.setMeasureIri(ships);
 
-        // add a row in RDB time series data, also updates derivation timestamps
-        queryClient.updateTimeSeriesData(ships);
+        switch (source) {
+            case JSON:
+
+                LOGGER.info("Upload ship data from JSON.");
+                // add a row in RDB time series data, also updates derivation timestamps
+                queryClient.updateTimeSeriesData(ships);
+
+                break;
+
+            case RDB:
+
+                LOGGER.info("Upload ship data from relational database.");
+                if (EnvConfig.SKIP_UPDATE_RDB) {
+                    // only update time series of new ships
+                    // skip updating existing ships
+                    queryClient.bulkUpdateTimeSeriesData(newlyCreatedShips);
+                } else {
+                    // update all ships
+                    queryClient.bulkUpdateTimeSeriesData(ships);
+                }
+                break;
+
+            default:
+
+                LOGGER.info("Unknown source of ship data.");
+                break;
+        }
 
         // new derivations are created on the spot (request sent to agent immediately)
         queryClient.createNewDerivations(newlyCreatedShips);
+
+        return (newlyCreatedShips.size());
+
     }
 
     static List<Ship> uploadDataFromFile(QueryClient queryClient) throws IOException {
@@ -124,7 +159,10 @@ public class DataUploader {
                 updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(index + 1)));
             } else {
                 // increment timeOffset and start a new cycle
-                timeOffset += fileNamesAsInt.size();
+                Instant firstTime = Instant.ofEpochSecond(fileNamesAsInt.get(0));
+                Instant lastTime = Instant.ofEpochSecond(fileNamesAsInt.get(fileNamesAsInt.size() - 1));
+                Duration timeRange = Duration.between(firstTime, lastTime);
+                timeOffset += (int) timeRange.toHours() + 1;
                 updateFile(timeOffsetFile, String.valueOf(timeOffset));
                 updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(0)));
                 dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + JSON_EXT).toFile();
@@ -134,9 +172,24 @@ public class DataUploader {
         }
 
         FileInputStream inputStream = new FileInputStream(dataFile);
-
         JSONTokener tokener = new JSONTokener(inputStream);
         JSONArray shipData = new JSONArray(tokener);
+        List<Ship> ships = parseShip(shipData, timeOffset);
+
+        uploadShips(ships, queryClient, ShipDataSource.JSON);
+
+        return ships;
+    }
+
+    static void updateFile(File file, String fileContent) {
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            outputStream.write(fileContent.getBytes());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
+    static List<Ship> parseShip(JSONArray shipData, int timeOffset) {
         int numship = shipData.length();
 
         List<Ship> ships = new ArrayList<>(numship);
@@ -148,18 +201,22 @@ public class DataUploader {
                 LOGGER.error(e.getMessage());
             }
         }
-
-        uploadShips(ships, queryClient);
-
         return ships;
     }
 
-    static void updateFile(File file, String fileContent) {
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            outputStream.write(fileContent.getBytes());
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
+    public static int loadDataFromRDB(QueryClient queryClient) throws IOException {
+        String sqlQuery = "SELECT DISTINCT points.\"MMSI\", points.\"VesselType\" AS \"SHIPTYPE\", 0 AS \"SPEED\", " + //
+                " 0.0 AS \"COURSE\", 0.0 AS \"LAT\", 0.0 AS \"LON\", '2024-01-01T12:00:00' AS \"TIMESTAMP\" " + //
+                "FROM (SELECT \"MMSI\", \"VesselType\", \"geom\" FROM \"ship\") AS points, " + //
+                "(SELECT \"geom\" FROM \"scopes\") AS polygon WHERE " + //
+                "ST_Contains(polygon.geom, points.geom)";
+        JSONArray shipData = queryClient.getRemoteRDBStoreClient().executeQuery(sqlQuery);
+        LOGGER.info(String.format("Number of ships within scopes: %d", shipData.length()));
+        List<Ship> ships = parseShip(shipData, 0);
+
+        // initialise both triples and time series if ship is new
+
+        return uploadShips(ships, queryClient, ShipDataSource.RDB);
     }
 
     private DataUploader() {

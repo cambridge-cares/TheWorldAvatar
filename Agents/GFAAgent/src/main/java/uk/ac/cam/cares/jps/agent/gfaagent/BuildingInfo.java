@@ -1,23 +1,44 @@
 package uk.ac.cam.cares.jps.agent.gfaagent;
 
+import java.util.List;
 public class BuildingInfo {
     
-    private String type;
+    
     private int floors;
+    private String buildingIri;
+    private List<BuildingUsageInfo> usageInfo;
+    
 
-    public String getType() {
-        return this.type;
+    public BuildingInfo () {
+        
+    }
+
+   
+
+    public String getBuildingIri() {
+        return this.buildingIri;
     }
 
     public int getFloors() {
         return this.floors;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public List<BuildingUsageInfo> getBuildingUsageInfo(){
+        return this.usageInfo;
     }
+    
 
     public void setFloors(int floors) {
         this.floors = floors;
     }
+
+    public void setBuildingIri(String buildingIri) {
+        this.buildingIri = buildingIri;
+    }
+
+    public void setBuildingUisageInfo(List<BuildingUsageInfo> usageInfo) {
+        this.usageInfo = usageInfo;
+    }
+
+    
 }

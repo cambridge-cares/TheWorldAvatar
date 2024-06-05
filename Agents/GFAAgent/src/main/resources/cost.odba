@@ -1,0 +1,22 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+env: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+twa:    https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+mappingId	cost
+target		twa:Building/{building_iri} env:hasEstimatedConstructionCost om:Cost/{building_iri}.
+            om:Cost/{building_iri} om:hasValue om:Measure/{building_iri}
+            om:Measure/{building_iri} om:hasNumericalValue {cost}^^xsd:float .
+            
+source     SELECT cg1.realval AS cost, cg1.cityobject_id, cg2.strval AS building_iri
+            FROM citydb.cityobject_genericattrib AS cg1 
+            JOIN
+            citydb.cityobject_genericattrib AS cg2
+            ON
+            cg1.attrname = 'cost' AND
+            cg2.attrname = 'uuid' AND
+            cg1.cityobject_id = cg2.cityobject_id;
+]]

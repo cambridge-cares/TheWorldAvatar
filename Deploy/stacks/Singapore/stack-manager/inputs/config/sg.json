@@ -15,7 +15,10 @@
             "buildingidentificationagent",
             "carpark-agent",
             "osmagent",
-            "gfaagent"
+            "gfaagent",
+            "aqmesh-input-agent",
+            "ship-data-agent",
+            "cares-weather-station-agent"
         ],
         "excludes": []
     },

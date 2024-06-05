@@ -8,7 +8,7 @@ BMS_DEVICE_FILE = os.path.abspath(os.path.join(ROOT_DIR, "files", "dummyBMSDevic
 
 ###BACNET related properties
 BACNET_IP = "10.10.9.7/16:47808"
-
+DOMAIN = "https://www.example.com/kg/bms/"
 ####JAVA Module realted Properties
 PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "ts_example.properties"))
 DB_URL_KEY = "db.url"
