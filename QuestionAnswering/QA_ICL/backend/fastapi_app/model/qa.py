@@ -15,20 +15,24 @@ class DocumentCollection(BaseModel):
     data: list[dict[str, object]]
 
 
+class TableDataColumn(BaseModel):
+    value: str
+    label: str
+
 class TableDataBase(BaseModel):
-    columns: list[str]
+    columns: list[TableDataColumn]
     data: Sequence[
         dict[str, str | float | Sequence[str] | Sequence[float] | TableDataBase | None]
     ]
 
     @classmethod
     def from_data(cls, data: Sequence[dict[str, object]]):
-        cols = []
+        cols: list[TableDataColumn] = []
         cols_set = set()
         for datum in data:
             for k in datum.keys():
                 if k not in cols_set:
-                    cols.append(k)
+                    cols.append(TableDataColumn(value=k, label=k))
                     cols_set.add(k)
 
         for datum in data:
