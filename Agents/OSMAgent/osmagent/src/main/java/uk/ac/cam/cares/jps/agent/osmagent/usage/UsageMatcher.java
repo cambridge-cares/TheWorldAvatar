@@ -104,6 +104,18 @@ public class UsageMatcher {
     public void checkAndAddColumns(String pointTable, String polygonTable) {
         List<String> tableNames = Arrays.asList(polygonTable, pointTable);
 
+        try (Connection connection = rdbStoreClient.getConnection()) {
+            if (!isColumnExist(connection, polygonTable, "area")) {
+                String addAreaCol = String.format("ALTER TABLE %s ADD COLUMN area DOUBLE PRECISION", polygonTable);
+                executeSql(connection, addAreaCol);
+                calculateArea(polygonTable);
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
         Map<String, String> columns = new HashMap<>();
         columns.put("building_iri", "TEXT");
         columns.put("ontobuilt", "TEXT");
@@ -125,6 +137,13 @@ public class UsageMatcher {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
+
+    }
+
+    public void calculateArea(String polygonTable) {
+        String update = String.format("UPDATE %s SET area = public.ST_Area(\"geometryProperty\"::public.geography)", polygonTable);
+
+        rdbStoreClient.executeUpdate(update);
     }
 
     /**
