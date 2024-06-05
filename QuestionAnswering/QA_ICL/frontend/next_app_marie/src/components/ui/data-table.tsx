@@ -1,14 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import {
   Column,
   Row,
-  SortingState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 import {
@@ -64,21 +61,12 @@ function DataTableBase({
     }
   }));
 
-  const [sorting, setSorting] = useState<SortingState>([]);
 
   const tableOptions = {
     data: processedData,
     columns: columnsOption,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    state: {
-      sorting,
-    },
-  }
-  if (paginated) {
-    tableOptions["getPaginationRowModel"] = getPaginationRowModel()
+    ...paginated ? ({ getPaginationRowModel: getPaginationRowModel() }) : ({})
   }
   const table = useReactTable(tableOptions)
 
