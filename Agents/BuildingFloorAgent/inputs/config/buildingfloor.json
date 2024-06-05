@@ -12,6 +12,13 @@
                     "osmPolygons=polygons",
                     "floors_csv=/resources/HDBPropertyInformation.csv"
                   ],
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/BuildingFloorAgent/src/main/resources",
+                        "Target": "/resources"
+                    }
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
