@@ -1,15 +1,16 @@
 "use client";
 
-import React from "react";
+import * as React from "react";
+import Markdown from "react-markdown";
 import { DataItem } from "@/lib/model";
 import { queryChat, queryQa } from "@/lib/api";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"
-import { MagnifyingGlassIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { JSONTree } from "@/components/ui/json-tree";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import Markdown from "react-markdown";
+import { NLPSearchForm } from "./nlp-search-form";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ExampleQuestionAccordion, ExampleQuestionGroup } from "./example-question-accordion";
 
 
 const MemoDataTable = React.memo(DataTable)
@@ -37,19 +38,21 @@ function DataItemComponent({ dataItem, ...props }: DataItemComponentInterface) {
     ) : <></>
 }
 
-export default function QAFragment() {
+export interface QAFragmentProps {
+  exampleQuestionGroups: ExampleQuestionGroup[]
+}
+
+export default function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
   const [question, setQuestion] = React.useState("")
   const [isQueryingQA, setIsQueryingQA] = React.useState(false)
   const [qaData, setQaData] = React.useState<DataItem[] | null>(null)
   const [chatAnswer, setChatAnswer] = React.useState<string | null>(null)
 
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const queryDataThenDisplay = async () => {
+    setIsQueryingQA(true)
+    setQaData(null)
+    setChatAnswer(null)
     try {
-      e.preventDefault()
-      setIsQueryingQA(true)
-      setQaData(null)
-      setChatAnswer(null)
-
       const qaRes = await queryQa(question)
       setIsQueryingQA(false)
       setQaData(qaRes.data)
@@ -82,7 +85,6 @@ export default function QAFragment() {
         return textStream.read().then(pump)
       }
       await textStream.read().then(pump)
-
     } catch (err) {
 
     } finally {
@@ -90,16 +92,38 @@ export default function QAFragment() {
     }
   }
 
+  const handleExampleQuestionClick = async (qn: string, e: React.MouseEvent<HTMLLIElement>) => {
+    e.preventDefault()
+    setQuestion(qn)
+    await queryDataThenDisplay()
+  }
+
+  const handleNLPSearchFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    await queryDataThenDisplay()
+  }
 
   return (
     <>
-      <div className="max-w-3xl mb-12 w-full">
-        <form className="flex justify-center items-center" onSubmit={handleFormSubmit}>
-          <Input placeholder="Type your query..." required className="mr-2" onChange={e => setQuestion(e.target.value)} />
-          <Button type="submit" variant="outline" size="icon" disabled={isQueryingQA}><MagnifyingGlassIcon /></Button>
-        </form>
-      </div>
-      <div className="max-w-5xl mb-12 w-full flex flex-col space-y-4 justify-center">
+      <section className="max-w-3xl w-full">
+        <Accordion type="single" collapsible className='w-full mb-8'>
+          <AccordionItem value="0">
+            <AccordionTrigger>Example Questions</AccordionTrigger>
+            <AccordionContent className='px-4'>
+              <ExampleQuestionAccordion
+                type="single"
+                collapsible
+                data={exampleQuestionGroups}
+                questionOnClick={handleExampleQuestionClick}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+      <section className="max-w-3xl mb-12 w-full">
+        <NLPSearchForm onSubmit={handleNLPSearchFormSubmit} inputValue={question} onInputChange={e => setQuestion(e.target.value)} disabled={isQueryingQA} />
+      </section>
+      <section className="max-w-5xl mb-12 w-full flex flex-col space-y-4 justify-center">
         {isQueryingQA && (<ReloadIcon className="self-center mr-2 h-4 w-4 animate-spin" />)}
         {qaData && qaData.map((item, idx) => <DataItemComponent key={idx} dataItem={item} />)}
         {chatAnswer && (
@@ -108,7 +132,7 @@ export default function QAFragment() {
             <ScrollArea className="h-96 w-full"><Markdown className="prose max-w-none prose-sm prose-slate">{chatAnswer}</Markdown></ScrollArea>
           </div>
         )}
-      </div>
+      </section>
     </>
   )
 }
