@@ -27,7 +27,7 @@ import { ScrollArea, ScrollBar } from "./scroll-area"
 export interface DataTableProps extends TableDataBase {
   paginated?: boolean
   bordered?: boolean
-  scrollable: boolean
+  scrollable?: boolean
 }
 
 type TableDataRowNumbered = TableDataRow & { num: number }
@@ -35,13 +35,12 @@ type TableDataRowNumbered = TableDataRow & { num: number }
 function DataTableBase({
   columns,
   data,
-  scrollable,
   ...props
 }: DataTableProps) {
   const processedColumns = ["num"].concat(columns)
   const processedData = data.map((datum, idx) => ({ num: idx + 1, ...datum }))
 
-  const { paginated = false, bordered = false, ...otherProps } = props
+  const { paginated = false, bordered = false, scrollable = false, ...otherProps } = props
 
   const columnsOption = processedColumns.map(h => ({
     id: h,
@@ -58,7 +57,7 @@ function DataTableBase({
       } else if (Array.isArray(val)) {
         return (<ul>{val.map((elem, idx) => <li key={idx}>elem</li>)}</ul>)
       } else if (typeof val === "object") {
-        return (<DataTableBase columns={val.columns} data={val.data} scrollable={false} />)
+        return (<DataTableBase columns={val.columns} data={val.data} />)
       } else {
         return val;
       }
