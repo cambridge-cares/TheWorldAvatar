@@ -29,29 +29,25 @@ def api():
     dlon = float(request.args["dLON"])
     dlat = float(request.args["dLAT"])
     label = request.args["label"]
+    timesteps = [datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
+                 for t in request.args.getlist("t")]
 
     polygon = getpolygon(lon, lat, dlon, dlat)
 
     # initialise simulation if it doesn't exist. currently check by label
     derivation_iri = initialise_simulation(polygon, label)
     logger.info(f'Initialised derivation with IRI: {derivation_iri}')
-
-    # load ship data from relational database
-    load_ship = callhttp(
-        HTTP_SHIP, f'load-rdb?derivation={derivation_iri}', 'post')
-    logger.info(f'Number of ships loaded: {load_ship.json()["numNewShips"]}')
-
+    
     # run simulation
-    timesteps = [datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
-                 for t in request.args.getlist("t")]
-    logger.info(f'Running simulations for {len(timesteps)} timesteps.')
 
-    #run_simulation(derivation_iri, label, timesteps)
-    thread = Thread(target=run_simulation, args=(derivation_iri,label,timesteps))
+    logger.info(f'Running {len(timesteps)} timesteps for simulation at {label}.')
+
+    thread = Thread(target=run_simulation, args=(
+        derivation_iri, label, timesteps))
     thread.start()
     logger.info("Sent simulation requests, now forget about it.")
 
-    return jsonify({'numNewShips': load_ship.json()["numNewShips"], 'derivation_iri': derivation_iri}), 200
+    return jsonify({'derivation_iri': derivation_iri}), 200
 
 
 def getpolygon(lon, lat, dlon, dlat):
@@ -94,6 +90,11 @@ def initialise_simulation(polygon, label):
 
 
 def run_simulation(derivation_iri, label, timesteps):
+     # load ship data from relational database
+    load_ship = callhttp(
+        HTTP_SHIP, f'load-rdb?derivation={derivation_iri}', 'post')
+    logger.info(f'Number of ships loaded for {label}: {load_ship.json()["numNewShips"]}')
+    
     req = f'GenerateDataWithoutShips?derivation={derivation_iri}'
     metadata = getmetadata()
     for t in timesteps:
@@ -101,5 +102,5 @@ def run_simulation(derivation_iri, label, timesteps):
             req = req + f'&timestep={int(t.timestamp())}'
         else:
             logger.info(f'{t} for {label} has already been simulated.')
-    logger.info(req)
+    logger.info(f"Sending simulation request: {req}")
     calldi(req, 'post')
