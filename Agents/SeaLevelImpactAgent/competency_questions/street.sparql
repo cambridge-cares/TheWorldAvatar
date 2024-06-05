@@ -1,0 +1,11 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ost: <https://www.theworldavatar.com/kg/ontostreet/>
+PREFIX sea: <https://www.theworldavatar.com/kg/ontosealevel/>
+SELECT DISTINCT * WHERE {
+  ?sub a ost:RoadSegment.
+  ?sub sea:hasAffectedLength ?affectedLength.
+  ?sub ost:hasLength ?length.
+}
+ORDER BY DESC(?g)
+LIMIT 10
