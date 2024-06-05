@@ -47,5 +47,5 @@ source		SELECT "slr_uuid", "bldg_mat_view_uuid" FROM "public"."slr_bldg_mat_view
 mappingId	SLR - osm_road_mat_view
 target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact ost:{"osm_road_mat_view_uuid"} .
             ost:{"osm_road_mat_view_uuid"} sea:hasAffectedLength {"affectedlength"}^^xsd:Double.
-source		SELECT "slr_uuid", "osm_road_mat_view_uuid", "affectedarea" FROM "public"."slr_osm_road_mat_view"
+source		SELECT "slr_uuid", "osm_road_mat_view_uuid", "affectedlength" FROM "public"."slr_osm_road_mat_view"
 ]]
