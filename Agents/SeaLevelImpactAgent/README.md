@@ -4,22 +4,41 @@
 
 The SeaLevelImpactAgent is an agent that
 1) Receives inputs - `SSP Scenario`, `Confidence Level`, `Percentage Quantile`
-2) Instantiate the sealevelimpact
-
+2) Instatiate sea level change impacts on:
+```
+- Buildings 
+- Landplots
+- Monuments
+- Heritage Trees
+- Historic Sites
+- Monuments
+- Museums
+- Tourist Attractions
+```
 ## 2. Prerequisites
+This agent is part of the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise). 
+
+Data need to be uploaded by stack-data-uploader before running this agent.
 
 ### 2.1. Stack Set Up
-
-The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack. Several pre-configured examples for the different use cases for King's Lynn can be found in [stack-data-uploader-inputs](stack-data-uploader-inputs/).
+The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack.
 
 ## 3. Agent Configuration
 
 ### 3.1 Config Properties
+The [Config.properties](inputs/config.properties) file contain the table name for the different datasets. A default value is set following the stack-data-uploader table names specified in [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise).
 1) `dbName` - Specify the postgresql database
-
+2) `buildingsMatViewName` - Specify the table name for CityDB buildings footprint
+3) `heritagetreesTable` - Specify the table name for heritage tree
+4) `historicsitesTable` - Specify the table name for historic site
+5) `monumentsTable` - Specify the table name for monument 
+6) `museumsTable` - Specify the table name for museum
+7) `touristattractionsTable` - Specify the table name for tourist attraction
+8) `landplotTable` - Specify the table name for landplot
+9) `populationTable` - Specify the table name for population
+10) `osm_streetTable` - Specify the table name for OpenStreetMap road newtwork
 
 ## 4. Build
-
 ### 4.1. GitHub Credentials
 The docker image uses TheWorldAvatar maven repository (`https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/`).
 You will need to provide your credentials (GitHub username/personal access token) in single-word text files as follows:
@@ -48,19 +67,14 @@ The agent is reachable at the `/slrimpact` endpoint.
 
 #### Input specification
 
-1) `function` - The use case scenario to run the travelling salesman problem.
+1) `ssp` - Specify the Shared Socioeconomic Pathways (SSPs), which can take in value `ssp119`,`ssp126`,`ssp245`,`ssp370`,`ssp585`
+2) `projectionyear` - Specify the projection year of the sea-level rise, which be in the interval of 10 years from `2020` to `2150`
+3) `confidence` - Specify the confidence, which can take in value `medium`, `low`
+4) `quantile` - Specify the percentile quantile, which can take in the value `5`, `17`, `50`, `83`, `95`
 
-#### Urban Resilience Planning (UR)
-
-Generates travelling salesman route via geoserver SQL view. this route runs through the points of interest and return back to the original location. The SQL view layers takes TWA-VF marker location as the target node for its calculations. The geoserver layers generated include:
-
-- Normal wading depth capability
-- 30cm wading depth capability
-- 90cm wading depth capability
-
-To run the agent, simply run the following cURL command:
-
+To run the agent, simply run the following cURL command in the format below:
 ```bash
+# Sample request with Shared Socioeconomic Pathway - ssp585, projection year - 2150, confidence - low
 curl -X POST "localhost:3838/sealevelimpactagent/slrimpact?ssp=ssp585&projectionyear=2150&confidence=low&quantile=95"
 ```
 
@@ -76,15 +90,5 @@ To debug the agent, replace [`sealevelimpactagent-debug.json`](stack-manager-con
 
 Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager]'s main folder.
 The debugger port will be available at 5005.
-
-## 7. TWA-VF Visualisation
-
-### 7.1 Feature Info Agent
-
-1) In the directory [stack-manager-config/data/webspace/](stack-manager-config/data/webspace/), contains the TWA-VF `data.json` prepared for the different scnearios that is meant to be placed inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation).
-
-[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
-
 
 ./stack.sh rm singapore sealevelimpactagent

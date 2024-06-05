@@ -162,11 +162,11 @@ public class SeaLevelImpactAgent extends JPSAgent {
                 LOGGER.info("Buildings failed to map: ", e);
             }
 
-
             //Upload Impact Ontop mapping
             try {
                 OntopClient ontopClient = OntopClient.getInstance();
                 ontopClient.updateOBDA(obdaFile);
+                System.out.println("OBDA file has been uploaded");
             } catch (Exception e) {
                 System.out.println("Could not retrieve slr.obda file.");
             }
