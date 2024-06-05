@@ -33,8 +33,7 @@ jpsBaseLib_view = jpsBaseLibGW.createModuleView()
 > ```
 > where the `resGateway` is the gateway of a resource we wish to create the module view for.
 
-It is recommended to create the module view for each Python module in your application that requires access to the java resource, followed by any desired import statements (see next section). The name of the module view is arbitrary, though it is recommended to name it after your parent resource to avoid confusion.
-
+It is recommended to create the module view for each Python module in your application that requires access to the java resource, followed by any desired import statements (see [Accessing Java classes and methods in Python](#accessing-java-classes-and-methods-in-python)). The name of the module view is arbitrary, though it is recommended to name it after your parent resource to avoid confusion.
 
 ## Accessing Java classes and methods in Python
 
@@ -46,9 +45,9 @@ Once your resource gateway is launched you can access any **public** classes and
 RemoteStoreClient = jpsBaseLibGW.gateway.jvm.uk.ac.cam.cares.jps.base.query.RemoteStoreClient
 ```
 
-As can be seen, the gateway's JVM class serves as an entry point to any java classes and objects you wish to access. Simply provide the fully qualified name of the resource to access it. The `uk.ac.cam.cares.jps.base.query.StoreRouter` path is for example purposes only. **Please note that though accessing objects via their fully qualified names is possible, it is NOT RECOMMENDED**. A much simpler way exists, through the java import statements explained in the **JVM module views** section, i.e. once can create the module view and use it to import the desired java classes using the `importPackages` method, e.g:
+As can be seen, the gateway's JVM class serves as an entry point to any java classes and objects you wish to access. Simply provide the fully qualified name of the resource to access it. The `uk.ac.cam.cares.jps.base.query.StoreRouter` path is for example purposes only. **Please note that though accessing objects via their fully qualified names is possible, it is NOT RECOMMENDED**. A much simpler way exists, through the java import statements explained in the [JVM module views](#jvm-module-views), i.e. once can create the module view and use it to import the desired java classes using the `importPackages` method, e.g:
 
-> NOTE that any such import will be **global**.
+> NOTE that any such import will be **global**, i.e. it will be carried everywhere the gateway object is imported.
 
 ```python
 # Import classes into the module view
