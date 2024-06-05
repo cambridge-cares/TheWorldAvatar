@@ -1,42 +1,16 @@
 "use client";
 
 import * as React from "react";
-import Markdown from "react-markdown";
+
+import { ReloadIcon } from "@radix-ui/react-icons";
+
 import { DataItem } from "@/lib/model";
 import { queryChat, queryQa } from "@/lib/api";
-import { DataTable } from "@/components/ui/data-table";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { JSONTree } from "@/components/ui/json-tree";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { NLPSearchForm } from "./nlp-search-form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { NLPSearchForm } from "./nlp-search-form";
 import { ExampleQuestionAccordion, ExampleQuestionGroup } from "./example-question-accordion";
+import { QAResponseDiv } from "./qa-response-div";
 
-
-const MemoDataTable = React.memo(DataTable)
-
-
-interface DataItemComponentInterface {
-  dataItem: DataItem
-}
-
-function DataItemComponent({ dataItem, ...props }: DataItemComponentInterface) {
-  let headerText, component
-  if (dataItem.type === "document_collection") {
-    headerText = "JSON data"
-    component = (<JSONTree data={dataItem.data} />)
-  } else if (dataItem.type === "table") {
-    headerText = "Tabular data"
-    component = (<MemoDataTable columns={dataItem.columns} data={dataItem.data} />)
-  }
-  return headerText && component
-    ? (
-      <div {...props}>
-        <p className="text-lg font-semibold text-blue-500">{headerText}</p>
-        {component}
-      </div>
-    ) : <></>
-}
 
 export interface QAFragmentProps {
   exampleQuestionGroups: ExampleQuestionGroup[]
@@ -45,17 +19,17 @@ export interface QAFragmentProps {
 export default function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
   const [question, setQuestion] = React.useState("")
   const [isQueryingQA, setIsQueryingQA] = React.useState(false)
-  const [qaData, setQaData] = React.useState<DataItem[] | null>(null)
-  const [chatAnswer, setChatAnswer] = React.useState<string | null>(null)
+  const [structuredData, setStructuredData] = React.useState<DataItem[] | undefined>(undefined)
+  const [chatAnswer, setChatAnswer] = React.useState<string | undefined>(undefined)
 
   const queryDataThenDisplay = async () => {
     setIsQueryingQA(true)
-    setQaData(null)
-    setChatAnswer(null)
+    setStructuredData(undefined)
+    setChatAnswer(undefined)
     try {
       const qaRes = await queryQa(question)
       setIsQueryingQA(false)
-      setQaData(qaRes.data)
+      setStructuredData(qaRes.data)
 
       const textStream = await queryChat(qaRes.request_id)
 
@@ -121,15 +95,22 @@ export default function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
         </Accordion>
       </section>
       <section className="max-w-3xl mb-12 w-full">
-        <NLPSearchForm onSubmit={handleNLPSearchFormSubmit} inputValue={question} onInputChange={e => setQuestion(e.target.value)} disabled={isQueryingQA} />
+        <NLPSearchForm
+          onSubmit={handleNLPSearchFormSubmit}
+          inputValue={question}
+          onInputChange={e => setQuestion(e.target.value)}
+          disabled={isQueryingQA}
+        />
       </section>
-      <section className="max-w-5xl mb-12 w-full flex flex-col space-y-4 justify-center">
+      <section className="mb-12 w-full flex flex-col space-y-4 justify-center">
         {isQueryingQA && (<ReloadIcon className="self-center mr-2 h-4 w-4 animate-spin" />)}
-        {qaData && qaData.map((item, idx) => <DataItemComponent key={idx} dataItem={item} />)}
-        {chatAnswer && (
-          <div className="w-full rounded-md border p-4">
-            <p className="text-xl font-semibold text-blue-500">Marie&apos;s response</p>
-            <ScrollArea className="h-96 w-full"><Markdown className="prose max-w-none prose-sm prose-slate">{chatAnswer}</Markdown></ScrollArea>
+        {(structuredData || chatAnswer) && (
+          <div className="flex justify-center">
+            <QAResponseDiv
+              structuredData={structuredData}
+              chatAnswer={chatAnswer}
+              className="p-4 w-full md:w-3/4 lg:w-2/4"
+            />
           </div>
         )}
       </section>
