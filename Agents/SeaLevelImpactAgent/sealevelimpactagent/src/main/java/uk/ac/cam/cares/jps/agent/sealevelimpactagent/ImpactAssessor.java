@@ -107,7 +107,7 @@ public class ImpactAssessor {
                                              "WITH slr AS (\n" +
                                              "    SELECT uuid, geom\n" +
                                              "    FROM sealevelprojections\n" +
-                                             "    WHERE uuid = 'feffeb88-4718-4152-8016-9099fedc5414'\n" +
+                                             "    WHERE uuid = '"+slr_uuid+"'\n" +
                                              ")\n" +
                                              "SELECT\n" +
                                              "    slr.uuid AS slr_uuid,\n" +
@@ -133,11 +133,11 @@ public class ImpactAssessor {
         if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, roadTable)) {
 
             try (Connection connection = remoteRDBStoreClient.getConnection()) {
-                String culturalsitesInsertSQL = "INSERT INTO slr_"+ roadTable +" (slr_uuid, "+ roadTable +"_uuid)\n" +
+                String culturalsitesInsertSQL = "INSERT INTO slr_"+ roadTable +" (slr_uuid, "+ roadTable +"_uuid , affectedlength)\n" +
                                                 "WITH slr AS (\n" +
                                                 "    SELECT uuid, geom\n" +
                                                 "    FROM sealevelprojections\n" +
-                                                "    WHERE uuid = 'feffeb88-4718-4152-8016-9099fedc5414'\n" +
+                                                "    WHERE uuid = '"+slr_uuid+"'\n" +
                                                 "    ORDER BY sealevelriseinmeters DESC\n" +
                                                 ")\n" +
                                                 "SELECT\n" +

@@ -144,6 +144,13 @@ public class SeaLevelImpactAgent extends JPSAgent {
                 LOGGER.info("Landplot failed to map: ", e);
             }
 
+            //Map roadnetwork at risk
+            try {
+                impactAssessor.mapRoadAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, osm_streetTable);
+            }catch (Exception e) {
+                LOGGER.info("OpenStreetMap failed to map: ", e);
+            }
+
             //Map culturalsites at risk
             try {
                 impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, monumentsTable);
