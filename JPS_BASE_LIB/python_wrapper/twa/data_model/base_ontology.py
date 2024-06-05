@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Set, Tuple, Union, TypeVar, ClassVar, Type
+from typing import Any, Dict, List, Set, Tuple, Union, TypeVar, ClassVar, Type, Optional
 from typing_extensions import Annotated
 from annotated_types import Len
 
@@ -534,8 +534,8 @@ class BaseClass(BaseModel, validate_assignment=True):
     """ > NOTE for all subclasses, one can just use `is_defined_by_ontology = MyOntology`,
         see [this discussion in Pydantic](https://github.com/pydantic/pydantic/issues/2061)"""
     object_lookup: ClassVar[Dict[str, BaseClass]] = None
-    rdfs_comment: str = Field(default=None)
-    rdfs_label: str = Field(default=None)
+    rdfs_comment: Optional[str] = Field(default=None)
+    rdfs_label: Optional[str] = Field(default=None)
     rdf_type: str = Field(default=None)
     instance_iri: str = Field(default=None)
     # format of the cache for all properties: {property_name: property_object}
