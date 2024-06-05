@@ -7,7 +7,7 @@ from rdflib import Graph, RDF, Literal, XSD
 from pydantic import Field
 from typing import ClassVar, Set
 
-from twa.data_model.base_ontology import BaseOntology, BaseClass, DataProperty, ObjectProperty
+from twa.data_model.base_ontology import BaseOntology, BaseClass, DataProperty, ObjectProperty, TransitiveProperty
 from twa.data_model.base_ontology import as_range
 from twa.data_model.base_ontology import KnowledgeGraph
 
@@ -100,6 +100,16 @@ class D(BaseClass):
 
 class E(D):
     pass
+
+
+class PartOf(TransitiveProperty):
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(Component)
+
+
+class Component(BaseClass):
+    is_defined_by_ontology = ExampleOntology
+    partOf: PartOf
 
 
 def init():
@@ -421,3 +431,63 @@ def test_push_to_kg_update(initialise_sparql_client):
     assert not sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_b.predicate_iri, b.instance_iri)
     assert not sparql_client.check_if_triple_exist(b.instance_iri, b.object_property_b_a.predicate_iri, a1.instance_iri)
     assert not sparql_client.check_if_triple_exist(b.instance_iri, b.object_property_b_a.predicate_iri, a2.instance_iri)
+
+
+def test_push_when_remote_changed(initialise_sparql_client):
+    a1, a2, a3, b, c, d = init()
+    sparql_client = initialise_sparql_client
+    c.push_to_kg(sparql_client, -1)
+    a1.push_to_kg(sparql_client, -1)
+    # now the remote should have connection c --> a2, a3, b, 'c'
+    # manually remove remote connection between c and a2, also add remote connection between c and a1
+    # this mimics the operation done by other agents
+    sparql_client.perform_update(
+        f"""
+        delete {{<{c.instance_iri}> <{c.object_property_c_a.predicate_iri}> <{a2.instance_iri}>}}
+        insert {{<{c.instance_iri}> <{c.object_property_c_a.predicate_iri}> <{a1.instance_iri}>}}
+        where {{}}
+        """
+    )
+    # assert that the previous operation was successful
+    assert sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a1.instance_iri)
+    assert not sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a2.instance_iri)
+    assert sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a3.instance_iri)
+
+    # now remove the connection between c and b locally
+    c.object_property_c_b.range.remove(b)
+    # push to kg again (pull first so that the cache are updated)
+    c.push_to_kg(sparql_client, -1, True)
+    # check that the triples in the KG are correct
+    # i.e. it reflects both manual changes to the remote, as well as the local changes from the python obje
+    assert sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a1.instance_iri)
+    assert not sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a2.instance_iri)
+    assert sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_a.predicate_iri, a3.instance_iri)
+    assert not sparql_client.check_if_triple_exist(c.instance_iri, c.object_property_c_b.predicate_iri, b.instance_iri)
+
+
+def test_transitive_property():
+    engine_piston = Component()
+    engine_valves = Component()
+    engine = Component(partOf=[engine_piston, engine_valves])
+    headlight_part = Component()
+    headlight = Component(partOf=headlight_part)
+    wheels = Component()
+    car = Component(partOf=[engine, headlight, wheels])
+    assert car.partOf.obtain_transitive_objects() == set(
+        [engine, headlight, wheels, headlight_part, engine_piston, engine_valves]
+    )
+
+
+def test_revert_local_changes(initialise_sparql_client):
+    a1, a2, a3, b, c, d = init()
+    sparql_client = initialise_sparql_client
+    d.push_to_kg(sparql_client, -1)
+    assert bool(d._latest_cache) # cache should not be empty
+    assert sparql_client.get_amount_of_triples() == 18
+    # there shouldn't be any connection between d and b
+    assert not bool(d.object_property_d_b.range)
+    # add connection between d and b, then revert the changes
+    d.object_property_d_b.range.add(b)
+    assert bool(d.object_property_d_b.range)
+    d.revert_local_changes()
+    assert not bool(d.object_property_d_b.range)
