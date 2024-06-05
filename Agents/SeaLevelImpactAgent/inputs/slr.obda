@@ -8,6 +8,7 @@ ic:     http://ontology.eil.utoronto.ca/icontact.owl#
 sch:    https://schema.org/
 dbo:    https://dbpedia.org/ontology/
 landplot: https://www.theworldavatar.com/kg/landplot/
+ost:    https://www.theworldavatar.com/kg/ontostreet/
 
 [MappingDeclaration] @collection [[
 mappingId	SLR - Heritage Tree
@@ -42,4 +43,9 @@ source		SELECT "slr_uuid", "populationatrisk" FROM "public"."slr_population"
 mappingId	SLR - Building
 target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :Building/{"bldg_mat_view_uuid"} .
 source		SELECT "slr_uuid", "bldg_mat_view_uuid" FROM "public"."slr_bldg_mat_view"
+
+mappingId	SLR - osm_road_mat_view
+target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact ost:{"osm_road_mat_view_uuid"} .
+            ost:{"osm_road_mat_view_uuid"} sea:hasAffectedLength {"affectedlength"}^^xsd:Double.
+source		SELECT "slr_uuid", "osm_road_mat_view_uuid", "affectedarea" FROM "public"."slr_osm_road_mat_view"
 ]]

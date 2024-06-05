@@ -20,7 +20,7 @@ public class ImpactAssessor {
      */
     public String getSeaLevelChangeUUID(RemoteRDBStoreClient remoteRDBStoreClient, String sspScenario, Integer projectionyear, String confidence, Integer quantile) throws SQLException {
 
-        String findSeaLevelChangeUUID_sql = "SELECT uuid FROM sealevelprojections WHERE \"ssp scenario\" = '"+sspScenario+"' AND confidence = '"+confidence+"' AND quantile = "+quantile+" AND projectionyear = "+projectionyear+"";
+        String findSeaLevelChangeUUID_sql = "SELECT uuid FROM sealevelprojections WHERE \"ssp_scenario\" = '"+sspScenario+"' AND confidence = '"+confidence+"' AND quantile = "+quantile+" AND projectionyear = "+projectionyear+"";
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             
@@ -69,7 +69,7 @@ public class ImpactAssessor {
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.buildingsMatViewName +"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.buildingsMatViewName +"_uuid VARCHAR);");
 
                 //Create table for road
-                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.osm_streetTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.osm_streetTable+"_uuid VARCHAR, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.osm_streetTable+"_uuid));");
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.osm_streetTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.osm_streetTable+"_uuid VARCHAR, affectedlength DOUBLE PRECISION, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.osm_streetTable+"_uuid));");
             }
     }
 
