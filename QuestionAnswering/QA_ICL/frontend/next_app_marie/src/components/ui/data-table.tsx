@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import {
   Column,
   Row,
@@ -34,8 +35,14 @@ function DataTableBase({
   data,
   ...props
 }: DataTableProps) {
-  const processedColumns = ["num"].concat(columns)
-  const processedData = data.map((datum, idx) => ({ num: idx + 1, ...datum }))
+  const processedColumns = React.useMemo(
+    () => ["num"].concat(columns),
+    [columns]
+  )
+  const processedData = React.useMemo(
+    () => data.map((datum, idx) => ({ num: idx + 1, ...datum })),
+    [data]
+  )
 
   const { paginated = false, bordered = false, scrollable = false, ...otherProps } = props
 
