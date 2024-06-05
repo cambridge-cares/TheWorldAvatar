@@ -15,7 +15,7 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 def initialise_triple_store():
     # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     blazegraph = DockerContainer(
-        'ghcr.io/cambridge-cares/blazegraph:1.1.0')
+        'ghcr.io/cambridge-cares/blazegraph:1.2.0-jsonld-SNAPSHOT')
     # the port is set as 8080 to match with the value set in the docker image
     blazegraph.with_exposed_ports(8080)
 
