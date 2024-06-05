@@ -291,7 +291,6 @@ class BaseProperty(BaseModel, validate_assignment=True):
     """
 
     is_defined_by_ontology: ClassVar[BaseOntology] = None
-    predicate_iri: str = Field(default=None)
     domain: ClassVar[Set] = None
     # setting default_factory to set is safe here, i.e. it won't be shared between instances
     # see https://docs.pydantic.dev/latest/concepts/models/#fields-with-non-hashable-default-values
@@ -321,12 +320,9 @@ class BaseProperty(BaseModel, validate_assignment=True):
     def __hash__(self) -> int:
         return hash(tuple([self.predicate_iri] + sorted([o.__hash__() for o in self.range])))
 
-    @model_validator(mode='after')
-    def set_predicate_iri(self):
-        # TODO make predicate_iri as a @property?
-        if not bool(self.predicate_iri):
-            self.predicate_iri = self.__class__.get_predicate_iri()
-        return self
+    @property
+    def predicate_iri(self):
+        return self.__class__.get_predicate_iri()
 
     @classmethod
     def get_predicate_iri(cls) -> str:
