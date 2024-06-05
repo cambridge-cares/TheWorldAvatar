@@ -152,13 +152,13 @@ public class UsageMatcher {
         // initialise usage table
         String initialiseUsageTable = "CREATE TABLE IF NOT EXISTS " + usageTable;
 
-        initialiseUsageTable += " (building_iri TEXT, propertyusage_iri TEXT, ontobuilt TEXT, usageshare FLOAT)";
+        initialiseUsageTable += " (building_iri TEXT, propertyusage_iri TEXT, ontobuilt TEXT, area DOUBLE PRECISION, usageshare FLOAT)";
 
         rdbStoreClient.executeUpdate(initialiseUsageTable);
 
         // insert usage data from OSM into usage table
-        String copyUsage = "INSERT INTO %s (building_iri, ontobuilt)\n" +
-                "SELECT o.building_iri, o.ontobuilt FROM %s o\n" +
+        String copyUsage = "INSERT INTO %s (building_iri, ontobuilt, area)\n" +
+                "SELECT o.building_iri, o.ontobuilt, o.area FROM %s o\n" +
                 "LEFT JOIN %s u on u.building_iri = o.building_iri AND u.ontobuilt = o.ontobuilt\n" +
                 "WHERE u.building_iri IS NULL AND u.ontobuilt IS NULL\n" +
                 "AND o.building_iri IS NOT NULL AND o.ontobuilt IS NOT NULL";
