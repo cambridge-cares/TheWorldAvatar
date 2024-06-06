@@ -1,0 +1,25 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+rdfs:	http://www.w3.org/2000/01/rdf-schema#
+:       https://www.theworldavatar.com/kg/
+sea:    https://www.theworldavatar.com/kg/ontosealevel/
+be:     https://www.theworldavatar.com/kg/ontobuiltenv/
+ic:     http://ontology.eil.utoronto.ca/icontact.owl#
+sch:    https://schema.org/
+dbo:    https://dbpedia.org/ontology/
+landplot: https://www.theworldavatar.com/kg/landplot/
+ost:    https://www.theworldavatar.com/kg/ontostreet/
+geo:    http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+mappingId	Sea Level Projections
+target		sea:SeaLevelChange/{uuid} a sea:SeaLevelChange ;
+                sea:hasValue "{sealevelriseinmeters}"^^xsd:double ;
+                sea:hasSSPScenario "{ssp_scenario}" ;
+                sea:hasProjectionYear "{projectionyear}"^^xsd:double ;
+                sea:hasBaselineYear "{projectionreferenceyear}"^^xsd:double ;
+                geo:hasLocation "{geom}"^^geo:wktLiteral ;
+                sea:hasPercentageQuantile "{quantile}"^^xsd:double ;
+                sea:hasConfidenceLevel "{confidence}"^^xsd:double .
+source		SELECT confidence, ssp_scenario, quantile, projectionreferenceyear, projectionyear, sealevelriseinmeters, uuid, ST_ASTEXT(geom) as geom  FROM sealevelprojections
+]]

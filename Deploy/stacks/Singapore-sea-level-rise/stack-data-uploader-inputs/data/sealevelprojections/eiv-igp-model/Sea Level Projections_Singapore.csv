@@ -1,4 +1,4 @@
-﻿confidence,ssp scenario,quantile,projectionreferenceyear,projectionyear,sealevelriseinmeters
+﻿confidence,ssp_scenario,quantile,projectionreferenceyear,projectionyear,sealevelriseinmeters
 medium,ssp119,5,2014,2020,0.018
 medium,ssp119,5,2014,2030,0.048
 medium,ssp119,5,2014,2040,0.066

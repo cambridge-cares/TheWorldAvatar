@@ -8,7 +8,11 @@
             "type": "tabular",
             "skip": false,
             "table": "sealevelprojections",
-            "subdirectory": "eiv-igp-model"
+            "subdirectory": "eiv-igp-model",
+            "sql": "@/inputs/data/sealevelprojections/eiv-igp-model/slrpolygons.sql"
         }
+    ],
+    "mappings": [
+        "sealevelprojections.obda"
     ]
 }

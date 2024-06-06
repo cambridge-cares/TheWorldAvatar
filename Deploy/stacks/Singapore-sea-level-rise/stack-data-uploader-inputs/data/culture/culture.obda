@@ -13,7 +13,7 @@ mappingId	Cultural - Heritage Tree
 target		:HeritageTree/{"uuid"} a sea:HeritageTree ;
                 dbo:scientificName {"scientificname"}^^xsd:string .
 source		SELECT "uuid", "scientificname"
-            FROM "public"."heritage"
+            FROM "public"."heritagetree"
 
 mappingId	Cultural - Heritage Tree Address
 target      :HeritageTree/{"uuid"} a sea:HeritageTree ;
@@ -24,7 +24,7 @@ target      :HeritageTree/{"uuid"} a sea:HeritageTree ;
                 ic:hasPostalCode {"addressstreetname"}^^xsd:string ;
                 ic:hasStreet {"addresspostalcode"}^^xsd:string .
 source		SELECT "uuid", "address_uuid", "addressunitnumber", "addressblockhousenumber", "addressstreetname", "addresspostalcode"
-            FROM "public"."heritage"
+            FROM "public"."heritagetree"
             WHERE "address_uuid" IS NOT NULL
 
 mappingId	Cultural - Historic Site
@@ -86,9 +86,9 @@ source		SELECT "uuid", "address_uuid", "addressunitnumber", "addressblockhousenu
 
 mappingId	Cultural - Tourist Attraction
 target		:TouristAttraction/{"uuid"} a sea:TouristAttraction ;
-                sch:name "pagetitle"^^xsd:string ;
-                rdfs:label "overview"^^xsd:string ;
-                rdfs:label "meta_description"^^xsd:string .
+                sch:name {"pagetitle"}^^xsd:string ;
+                rdfs:label {"overview"}^^xsd:string ;
+                rdfs:label {"meta_description"}^^xsd:string .
 source		SELECT "uuid", "pagetitle", "overview", "meta_description"
             FROM "public"."touristattraction"
 

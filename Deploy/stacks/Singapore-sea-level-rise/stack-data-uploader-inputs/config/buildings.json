@@ -2,7 +2,7 @@
   "name": "buildings",
   "database": "postgres",
   "workspace": "twa",
-  "skip": true,
+  "skip": false,
   "datasetDirectory": "buildings",
   "dataSubsets": [
     {

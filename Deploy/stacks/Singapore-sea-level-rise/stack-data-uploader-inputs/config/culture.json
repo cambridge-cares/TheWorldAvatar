@@ -6,9 +6,9 @@
     "datasetDirectory": "culture",
     "dataSubsets": [
         {
-            "name": "historicsites",
+            "name": "historicsite",
             "type": "vector",
-            "subdirectory": "historicsites",
+            "subdirectory": "historicsite",
             "skip": false,
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:4326",
@@ -16,9 +16,9 @@
             }
         },
         {
-            "name": "monuments",
+            "name": "monument",
             "type": "vector",
-            "subdirectory": "monuments",
+            "subdirectory": "monument",
             "skip": false,
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:4326",
@@ -26,9 +26,9 @@
             }
         },
         {
-            "name": "museums",
+            "name": "museum",
             "type": "vector",
-            "subdirectory": "museums",
+            "subdirectory": "museum",
             "skip": false,
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:4326",
@@ -36,9 +36,9 @@
             }
         },
         {
-            "name": "touristattractions",
+            "name": "touristattraction",
             "type": "vector",
-            "subdirectory": "touristattractions",
+            "subdirectory": "touristattraction",
             "skip": false,
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:4326",
@@ -46,9 +46,9 @@
             }
         },
         {
-            "name": "heritagetrees",
+            "name": "heritagetree",
             "type": "vector",
-            "subdirectory": "heritagetrees",
+            "subdirectory": "heritagetree",
             "skip": false,
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:4326",

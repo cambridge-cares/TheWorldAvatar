@@ -1,0 +1,25 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+rdfs:	http://www.w3.org/2000/01/rdf-schema#
+:       https://www.theworldavatar.com/kg/
+sea:    https://www.theworldavatar.com/kg/ontosealevel/
+be:     https://www.theworldavatar.com/kg/ontobuiltenv/
+ic:     http://ontology.eil.utoronto.ca/icontact.owl#
+sch:    https://schema.org/
+dbo:    https://dbpedia.org/ontology/
+landplot: https://www.theworldavatar.com/kg/landplot/
+ost:    https://www.theworldavatar.com/kg/ontostreet/
+geo:    http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+mappingId	OSM Road
+target		ost:RoadSegment/{osm_id} a ost:RoadSegment;
+                ost:hasLength "{total_length_m}"^^xsd:double;
+                ost:hasName "{name}";
+                ost:hasRoadType "{road_type}";
+                ost:isOneWay "{oneway}"^^xsd:boolean;
+                ost:hasMaxSpeedForward "{maxspeed_forward}"^^xsd:integer;
+                ost:hasMaxSpeedBackward "{maxspeed_backward}"^^xsd:integer;
+                geo:hasGeometry "{geom_comb}"^^geo:wktLiteral.
+source		SELECT osm_id, name, total_length_m, road_type, oneway, maxspeed_forward, maxspeed_backward, ST_ASTEXT(geom) as geom_comb FROM osm_road_mat_view
+]]
