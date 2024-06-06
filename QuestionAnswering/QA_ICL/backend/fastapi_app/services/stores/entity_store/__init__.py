@@ -74,7 +74,7 @@ class EntityStore:
         logger.info("IRIs that match surface form exactly: " + str(iris))
 
         if len(iris) >= k:
-            return iris[:k]
+            return iris
 
         encoded_query = self.embedder([surface_form])[0].astype(np.float32)
         knn_query = (
@@ -100,7 +100,7 @@ class EntityStore:
 
         iris.extend(new_iris)
 
-        return list(set(iris))[:k]
+        return list(set(iris))
 
     def link_fuzzy(self, surface_form: str, cls: str | None, k: int):
         """Performs fuzzy search over candidate surface forms.
@@ -114,7 +114,7 @@ class EntityStore:
         logger.info("IRIs that match surface form exactly: " + str(iris))
 
         if len(iris) >= k:
-            return iris[:k]
+            return iris
 
         cls_query = self._match_cls_query(cls) if cls else None
         escaped_words = [
@@ -151,7 +151,7 @@ class EntityStore:
 
             fz_dist += 1
 
-        return iris[:k]
+        return iris
 
     def link(
         self,
@@ -184,7 +184,7 @@ class EntityStore:
                 break
             iris.extend(link_func(text, cls, k))
 
-        return iris[:k]
+        return iris
 
     def lookup_label(self, iri: str):
         query = Query(

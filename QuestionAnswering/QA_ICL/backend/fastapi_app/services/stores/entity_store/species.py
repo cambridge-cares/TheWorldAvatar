@@ -2,7 +2,7 @@ from functools import cache
 from typing import Annotated, List, Optional
 
 from fastapi import Depends
-from services.entity_store.base import IEntityLinker
+from services.stores.entity_store.base import IEntityLinker
 from services.kg import KgClient, get_ontospecies_bgClient
 
 
