@@ -19,12 +19,6 @@ import ScenarioModal from 'ui/interaction/modal/scenario';
 import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
 import { getScenario } from 'state/map-feature-slice';
 
-import { ScenarioDimensionStep } from '../types/timeseries';
-import dynamic from 'next/dynamic';
-
-
-
-const DiscreteSlider = dynamic(() => import('../ui/interaction/controls/slider'), {ssr: false});
 // Type definition of incoming properties
 interface MapContainerProps {
   settings: string;
@@ -43,7 +37,6 @@ export default function MapContainer(props: MapContainerProps) {
   const [mapData, setMapData] = useState<DataStore>(null);
   const mapSettings: MapSettings = JSON.parse(props.settings);
   const selectedScenario = useSelector(getScenario);
-  const sliderValues: ScenarioDimensionStep[] = [{ "value": 1, "label": "2050/12" }, { "value":2, "label":"2051/01"}, { "value":3, "label":"2051/02"}, { "value":4, "label":"2051/03"}, { "value":5, "label":"2051/04"}, { "value":6, "label":"2051/05"}, { "value":7, "label":"2051/06"}, { "value":8, "label":"2051/07"}, { "value":9, "label":"2051/08"}, { "value":10, "label":"2051/09"}, { "value":11, "label":"2051/10"}, { "value":12, "label":"2051/11"}]
 
   // Retrieves data settings for specified scenario from the server, else, defaults to the local file
   useEffect(() => {
@@ -122,7 +115,6 @@ export default function MapContainer(props: MapContainerProps) {
         </div>
         }
         <div className={styles.lowerContainer} />
-        <DiscreteSlider values={sliderValues} />
       </div>
     </>
   )
