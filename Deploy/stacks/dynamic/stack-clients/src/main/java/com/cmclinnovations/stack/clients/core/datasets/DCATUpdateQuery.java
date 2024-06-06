@@ -2,7 +2,6 @@ package com.cmclinnovations.stack.clients.core.datasets;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.vocabulary.DCAT;
