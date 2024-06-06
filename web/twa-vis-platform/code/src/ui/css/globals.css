@@ -181,6 +181,7 @@ img {
     display: none !important;
 }
 
-.mapboxgl-ctrl-attrib-inner {
+.mapboxgl-ctrl-attrib-inner , .mapboxgl-ctrl-attrib-button {
     color: rgba(0,0,0,0.75);
+    background-color: var(--background-inverse-tertiary) !important;
 }

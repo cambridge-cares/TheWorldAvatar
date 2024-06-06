@@ -4,7 +4,7 @@
     min-width: 100px;
     min-height: 100px;
 
-background-color: --var(--background-inverse-primary);
+    background-color: --var(--background-inverse-primary);
 
     position: relative;
     top: 20px;
@@ -25,6 +25,16 @@ background-color: --var(--background-inverse-primary);
     flex-direction: row;
 }
 
+.floatingPanelControls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 5vh;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-tertiary);
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.35);
+}
+
 .headButton {
     flex-grow: 1;
     background-color: inherit;
@@ -36,12 +46,15 @@ background-color: --var(--background-inverse-primary);
     justify-content: center;
     align-items: center;
 }
+
 .headButton span {
     font-size: var(--icon-size);
 }
+
 .headButton.active {
     background-color: var(--background-tertiary);
 }
+
 .headButton:hover {
     background-color: var(--background-tertiary);
 }

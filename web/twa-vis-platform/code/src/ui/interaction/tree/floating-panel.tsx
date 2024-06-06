@@ -1,19 +1,22 @@
 import { Icon, Tooltip } from '@mui/material';
 import styles from './floating-panel.module.css';
 
+import { Map } from 'mapbox-gl';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Map } from 'mapbox-gl';
 
-import { getIndex, setIndex } from 'state/floating-panel-slice';
-import { getIri, getStack, getScenario, getProperties, getFeatures, MapFeaturePayload } from 'state/map-feature-slice';
 import { DataStore } from 'io/data/data-store';
+import { getIndex, setIndex } from 'state/floating-panel-slice';
+import { getFeatures, getIri, getProperties, getScenario, getStack, MapFeaturePayload } from 'state/map-feature-slice';
 import { MapLayerGroup } from 'types/map-layer';
-import { IconSettings, LegendSettings } from 'types/settings';
+import { DefaultSettings, IconSettings, LegendSettings } from 'types/settings';
 import { genFIAEndpoint, useFeatureInfoAgentService } from 'utils/data-services';
+import { ScenarioDimensionsData, ScenarioDimensionStep } from '../../../types/timeseries';
+import DiscreteSlider from '../controls/slider';
+import InfoTree from './info/info-tree';
 import LayerTree, { parseIntoTreeStucture } from './layer/layer-tree';
 import LegendTree from './legend/legend-tree';
-import InfoTree from './info/info-tree';
+import SettingsStore from '../../../io/config/settings';
 
 // Incoming parameters for component.
 interface FloatingPanelContainerProps {
@@ -44,7 +47,8 @@ export default function FloatingPanelContainer(
   const selectedStack = useSelector(getStack);
   const selectedScenario = useSelector(getScenario);
   const availableFeatures: MapFeaturePayload[] = useSelector(getFeatures);
-
+  //TODO fetch from api
+  const sliderValues: ScenarioDimensionStep[] = [{ "value": 1, "label": "2050/12" }, { "value": 2, "label": "2051/01" }, { "value": 3, "label": "2051/02" }, { "value": 4, "label": "2051/03" }, { "value": 5, "label": "2051/04" }, { "value": 6, "label": "2051/05" }, { "value": 7, "label": "2051/06" }, { "value": 8, "label": "2051/07" }, { "value": 9, "label": "2051/08" }, { "value": 10, "label": "2051/09" }, { "value": 11, "label": "2051/10" }, { "value": 12, "label": "2051/11" }]
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
   // Execute API call
@@ -54,9 +58,27 @@ export default function FloatingPanelContainer(
     selectedProperties
   );
 
+  // useEffect(() => {
+  //   const fetchScenarioDimensions = async (scenarioUrl: string) => {
+  //     if (selectedScenario) {
+  //       try {
+          
+  //         const response = await fetch(`${scenarioUrl}/getScenarioTimes/${selectedScenario}`);
+  //         const data = await response.json();
+  //         // Do something with the data
+  //       } catch (error) {
+  //         console.error('Error fetching times from CentralStackAgent/getScenarioTimes:', error);
+  //       }
+  //     }
+  //   };
+    
+  //   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  //   fetchScenarioDimensions(uiSettings.resources.scenario.url);
+  // }, [selectedScenario]); // Add dependencies in the dependency array
+
   useEffect(() => {
     parseIntoTreeStucture(props.dataStore, props.icons, setMapLayerGroups);
-  }, [])
+  }, [props.dataStore, props.icons])
 
   const clickAction = (index: number) => {
     dispatch(
@@ -155,7 +177,12 @@ export default function FloatingPanelContainer(
               }}
               features={availableFeatures}
             />}
+          <div className={styles.floatingPanelControls}>
+            <DiscreteSlider 
+            values={sliderValues} />
+          </div>
         </div>
+
       )}
     </div>
   );
