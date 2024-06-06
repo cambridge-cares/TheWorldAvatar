@@ -84,6 +84,22 @@ WHERE {{
     return [{"IRI": iri, **iri2data.get(iri, {})} for iri in iris]
 
 
+def get_label(kg_client: KgClient, iris: Sequence[str]):
+    query = """SELECT *
+WHERE {{
+    VALUES ?s {{ {values} }}
+    ?s rdfs:label ?Label .
+}}""".format(
+        values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
+    )
+
+    res = kg_client.querySelect(query)
+    _, bindings = flatten_sparql_select_response(res)
+
+    iri2data = {binding["s"]: {"Label": binding["Label"]} for binding in bindings}
+    return [{"IRI": iri, **iri2data.get(iri, {})} for iri in iris]
+
+
 @cache
 def get_ontospecies_nodeDataRetriever(
     bg_client: Annotated[KgClient, Depends(get_ontospecies_bgClient)]
@@ -93,5 +109,7 @@ def get_ontospecies_nodeDataRetriever(
         type2getter={
             "os:Species": get_species_unique_identifiers,
             "os:Property": get_ontospecies_property_data,
+            "os:ChemicalClass": get_label,
+            "os:Use": get_label,
         },
     )

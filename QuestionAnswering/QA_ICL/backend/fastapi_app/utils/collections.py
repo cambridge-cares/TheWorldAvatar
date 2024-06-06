@@ -43,7 +43,7 @@ def listofdict2dictoflist(lst: list[dict]):
         for k, v in obj.items():
             key2lst[k].append(v)
 
-    return key2lst
+    return {k: list(set(lst)) for k, lst in key2lst.items()}
 
 
 def deep_update(source: dict, destination: dict):
