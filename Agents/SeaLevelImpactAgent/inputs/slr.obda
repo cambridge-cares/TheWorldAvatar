@@ -12,40 +12,40 @@ ost:    https://www.theworldavatar.com/kg/ontostreet/
 
 [MappingDeclaration] @collection [[
 mappingId	SLR - Heritage Tree
-target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :HeritageTree/{"heritagetree_uuid"} .
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :HeritageTree/{"heritagetree_uuid"} .
 source		SELECT "slr_uuid", "heritagetree_uuid" FROM "public"."slr_heritagetree"
 
 mappingId	SLR - Historic Site
-target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :HistoricSite/{"historicsite_uuid"} .
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :HistoricSite/{"historicsite_uuid"} .
 source		SELECT "slr_uuid", "historicsite_uuid" FROM "public"."slr_historicsite"
 
 mappingId	SLR - Monument
-target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :Monument/{"monument_uuid"} .
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :Monument/{"monument_uuid"} .
 source		SELECT "slr_uuid", "monument_uuid" FROM "public"."slr_monument"
 
 mappingId	SLR - Museum
-target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :Museum/{"museum_uuid"} .
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :Museum/{"museum_uuid"} .
 source		SELECT "slr_uuid", "museum_uuid" FROM "public"."slr_museum"
 
 mappingId	SLR - TouristAttraction
-target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :TouristAttraction/{"touristattraction_uuid"} .
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :TouristAttraction/{"touristattraction_uuid"} .
 source		SELECT "slr_uuid", "touristattraction_uuid" FROM "public"."slr_touristattraction"
 
 mappingId	SLR - Landplot
-target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact landplot:{"landplot_uuid"} .
-            landplot:{"landplot_uuid"} sea:hasaffectedarea {"affectedarea"}^^xsd:Double.
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact landplot:{"landplot_uuid"} .
+            landplot:{"landplot_uuid"} sea:hasAffectedArea {"affectedarea"}^^xsd:Double.
 source		SELECT "slr_uuid", "landplot_uuid", "affectedarea" FROM "public"."slr_landplot"
 
 mappingId	SLR - Population
-target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact {"populationatrisk"}^^xsd:Integer.
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact {"populationatrisk"}^^xsd:Integer.
 source		SELECT "slr_uuid", "populationatrisk" FROM "public"."slr_population"
 
 mappingId	SLR - Building
-target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact :Building/{"bldg_mat_view_uuid"} .
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :Building/{"bldg_mat_view_uuid"} .
 source		SELECT "slr_uuid", "bldg_mat_view_uuid" FROM "public"."slr_bldg_mat_view"
 
 mappingId	SLR - osm_road_mat_view
-target		:SeaLevel/{"slr_uuid"} sea:hasPotentialImpact ost:{"osm_road_mat_view_uuid"} .
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact ost:RoadSegment/{"osm_road_mat_view_uuid"} .
             ost:{"osm_road_mat_view_uuid"} sea:hasAffectedLength {"affectedlength"}^^xsd:Double.
 source		SELECT "slr_uuid", "osm_road_mat_view_uuid", "affectedlength" FROM "public"."slr_osm_road_mat_view"
 ]]
