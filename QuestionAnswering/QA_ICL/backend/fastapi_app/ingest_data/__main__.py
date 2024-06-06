@@ -1,15 +1,15 @@
 import time
 
-from services.ingest import load_ingest_args
-import ingest.entities as entities
-import ingest.nlq2datareq_examples as nlq2datareq_examples
-import ingest.schema as schema
+from services.ingest import load_insert_then_index_args
+import ingest_data.entities as entities
+import ingest_data.nlq2datareq_examples as nlq2datareq_examples
+import ingest_data.schema as schema
 
 ATTEMPT_LIMIT = 5
 WAIT_INTERVAL = 15
 
 if __name__ == "__main__":
-    args = load_ingest_args()
+    args = load_insert_then_index_args()
     
     for i in range(ATTEMPT_LIMIT):
         print("Attempt num: " + str(i))

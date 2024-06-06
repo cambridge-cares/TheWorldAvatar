@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 import importlib.resources
 import math
 import os
-from typing import Callable, Generic, List, Literal, Tuple, Type, TypeVar
+from typing import Callable, Generic, Literal, Type, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
 from redis import Redis
@@ -13,7 +13,7 @@ from tqdm import tqdm
 from utils.itertools_recipes import batched
 
 
-class IngestArgs(BaseModel):
+class InsertThenIndexArgs(BaseModel):
     redis_host: str
     text_embedding_backend: Literal["triton", "openai"]
     text_embedding_url: str
@@ -21,7 +21,7 @@ class IngestArgs(BaseModel):
     invalidate_cache: bool
 
 
-def load_ingest_args():
+def load_insert_then_index_args():
     parser = ArgumentParser()
     parser.add_argument("--redis_host", required=True, type=str)
     parser.add_argument(
@@ -41,7 +41,7 @@ def load_ingest_args():
         help="Whether to invalidate on-disk cache of processed data if exists",
     )
     args = parser.parse_args()
-    return IngestArgs(
+    return InsertThenIndexArgs(
         redis_host=args.redis_host,
         text_embedding_backend=args.text_embedding_backend,
         text_embedding_url=args.text_embedding_url,
@@ -61,19 +61,19 @@ class DataIngester(Generic[UT, PT]):
         invalidate_cache: bool,
         unprocessed_type: Type[UT],
         processed_type: Type[PT],
-        process_func: Callable[[List[UT]], List[PT]],
+        process_func: Callable[[list[UT]], list[PT]],
         process_batchsize: int,
         redis_client: Redis,
         redis_key_prefix: str,
-        redis_preinsert_transform: Callable[[List[PT]], List[dict]],
+        redis_preinsert_transform: Callable[[list[PT]], list[dict]],
         redis_insert_batchsize: int,
         redis_index_name: str,
-        redis_ft_schema: Tuple[Field, ...],
+        redis_ft_schema: tuple[Field, ...],
     ):
         self.data_dir = importlib.resources.files("data").joinpath(dirname)
         self.invalidate_cache = invalidate_cache
-        self.adapter_list_ut = TypeAdapter(List[unprocessed_type])
-        self.adapter_list_pt = TypeAdapter(List[processed_type])
+        self.adapter_list_ut = TypeAdapter(list[unprocessed_type])
+        self.adapter_list_pt = TypeAdapter(list[processed_type])
         self.process_func = process_func
         self.process_batchsize = process_batchsize
         self.redis_client = redis_client
@@ -122,7 +122,7 @@ class DataIngester(Generic[UT, PT]):
                 batchsize=self.process_batchsize
             )
         )
-        processed_data: List[PT] = []
+        processed_data: list[PT] = []
         for batch in tqdm(
             batched(unprocessed_data, self.process_batchsize),
             total=math.ceil(len(unprocessed_data) / self.process_batchsize),
@@ -142,7 +142,7 @@ class DataIngester(Generic[UT, PT]):
 
         return processed_data
 
-    def insert_data(self, offset: int, data: List[PT]):
+    def insert_data(self, offset: int, data: list[PT]):
         print(
             "Inserting data into Redis with batch size {batchsize}...".format(
                 batchsize=self.redis_insert_batchsize

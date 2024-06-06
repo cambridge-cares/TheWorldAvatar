@@ -9,7 +9,7 @@ from redis import Redis
 from redis.commands.search.query import Query
 
 from model.nlq2datareq import (
-    EXAMPLES_INDEX_NAME,
+    NLQ2DATAREQ_EXAMPLES_INDEX_NAME,
     DataRequest,
     Nlq2DataReqExample,
 )
@@ -39,7 +39,7 @@ class Nlq2DataReqExampleStore:
             .return_field("$.data_req", as_field="data_req")
             .dialect(2)
         )
-        res = self.redis_client.ft(EXAMPLES_INDEX_NAME).search(
+        res = self.redis_client.ft(NLQ2DATAREQ_EXAMPLES_INDEX_NAME).search(
             knn_query, {"query_vector": encoded_nlq.tobytes()}
         )
 

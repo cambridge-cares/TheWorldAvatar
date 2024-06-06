@@ -6,7 +6,7 @@ from redis import Redis
 from redis.commands.search.field import VectorField
 
 from services.embed import IEmbedder, TritonEmbedder
-from services.ingest import DataIngester, IngestArgs, load_ingest_args
+from services.ingest import DataIngester, InsertThenIndexArgs, load_insert_then_index_args
 from services.redis import does_index_exist
 from model.rdf_schema import (
     RELATIONS_INDEX_NAME,
@@ -73,7 +73,7 @@ def make_relation_search_schema(vector_dim: int):
     )
 
 
-def main(args: IngestArgs):
+def main(args: InsertThenIndexArgs):
     redis_client = Redis(host=args.redis_host, decode_responses=True)
 
     if not args.drop_index and does_index_exist(
@@ -137,5 +137,5 @@ def main(args: IngestArgs):
 
 
 if __name__ == "__main__":
-    args = load_ingest_args()
+    args = load_insert_then_index_args()
     main(args)

@@ -3,19 +3,19 @@ from redis import Redis
 from redis.commands.search.field import VectorField
 
 from model.nlq2datareq import (
-    EXAMPLES_INDEX_NAME,
-    EXAMPLES_KEY_PREFIX,
+    NLQ2DATAREQ_EXAMPLES_INDEX_NAME,
+    NLQ2DATAREQ_EXAMPLES_KEY_PREFIX,
     Nlq2DataReqExample,
     Nlq2DataReqExampleProcessed,
 )
 from services.embed import IEmbedder, TritonEmbedder
-from services.ingest import DataIngester, IngestArgs, load_ingest_args
+from services.ingest import DataIngester, InsertThenIndexArgs, load_insert_then_index_args
 from services.redis import does_index_exist
 
 
-EXAMPLES_DIRNAME = "nlq2datareq_examples"
-EXAMPLES_PROCESS_BATCHSIZE = 512
-EXAMPLES_INSERT_BATCHSIZE = 512
+NLQ2DATAREQ_EXAMPLES_DIRNAME = "nlq2datareq_examples"
+NLQ2DATAREQ_EXAMPLES_PROCESS_BATCHSIZE = 512
+NLQ2DATAREQ_EXAMPLES_INSERT_BATCHSIZE = 512
 
 
 def process_examples(embedder: IEmbedder, examples: list[Nlq2DataReqExample]):
@@ -53,21 +53,21 @@ def make_example_search_schema(vector_dim: int):
     )
 
 
-def main(args: IngestArgs):
+def main(args: InsertThenIndexArgs):
     redis_client = Redis(host=args.redis_host, decode_responses=True)
 
     if not args.drop_index and does_index_exist(
-        redis_client=redis_client, index_name=EXAMPLES_INDEX_NAME
+        redis_client=redis_client, index_name=NLQ2DATAREQ_EXAMPLES_INDEX_NAME
     ):
         print(
             "Index {index_name} exists; examples have already been ingested.".format(
-                index_name=EXAMPLES_INDEX_NAME
+                index_name=NLQ2DATAREQ_EXAMPLES_INDEX_NAME
             )
         )
     else:
         print(
             "Index {index_name} does not exist.\n".format(
-                index_name=EXAMPLES_INDEX_NAME
+                index_name=NLQ2DATAREQ_EXAMPLES_INDEX_NAME
             )
         )
 
@@ -77,19 +77,19 @@ def main(args: IngestArgs):
         schema = make_example_search_schema(vector_dim=vector_dim)
 
         ingester = DataIngester(
-            dirname=EXAMPLES_DIRNAME,
+            dirname=NLQ2DATAREQ_EXAMPLES_DIRNAME,
             invalidate_cache=args.invalidate_cache,
             unprocessed_type=Nlq2DataReqExample,
             processed_type=Nlq2DataReqExampleProcessed,
             process_func=lambda examples: process_examples(
                 embedder=embedder, examples=examples
             ),
-            process_batchsize=EXAMPLES_PROCESS_BATCHSIZE,
+            process_batchsize=NLQ2DATAREQ_EXAMPLES_PROCESS_BATCHSIZE,
             redis_client=redis_client,
-            redis_key_prefix=EXAMPLES_KEY_PREFIX,
+            redis_key_prefix=NLQ2DATAREQ_EXAMPLES_KEY_PREFIX,
             redis_preinsert_transform=transform_examples_preinsert,
-            redis_insert_batchsize=EXAMPLES_INSERT_BATCHSIZE,
-            redis_index_name=EXAMPLES_INDEX_NAME,
+            redis_insert_batchsize=NLQ2DATAREQ_EXAMPLES_INSERT_BATCHSIZE,
+            redis_index_name=NLQ2DATAREQ_EXAMPLES_INDEX_NAME,
             redis_ft_schema=schema,
         )
         ingester.ingest()
@@ -97,5 +97,5 @@ def main(args: IngestArgs):
 
 
 if __name__ == "__main__":
-    args = load_ingest_args()
+    args = load_insert_then_index_args()
     main(args)

@@ -10,14 +10,14 @@ from redis import Redis
 from redis.commands.search.query import Query
 import regex
 
-from services.entity_store.zeolitic_material import (
+from utils.collections import FrozenDict
+from model.lexicon import ENTITIES_INDEX_NAME, ELConfig, ELConfigEntry
+from services.stores.entity_store.zeolitic_material import (
     ZeoliticMaterialLinker,
     get_zeoliticMaterial_linker,
 )
-from utils.collections import FrozenDict
 from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
-from model.lexicon import ENTITIES_INDEX_NAME, ELConfig, ELConfigEntry
 from .base import IEntityLinker
 from .ship import ShipLinker, get_ship_linker
 from .species import SpeciesStore, get_species_store
