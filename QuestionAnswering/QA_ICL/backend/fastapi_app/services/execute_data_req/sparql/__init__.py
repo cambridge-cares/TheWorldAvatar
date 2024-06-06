@@ -10,7 +10,7 @@ from model.qa import DataItem, DocumentCollection, TableData
 from services.kg import KgClient
 from utils.collections import FrozenDict
 from utils.json import deep_pd_json_normalize_list
-from utils.rdf import filter_remove_iris_from_list, flatten_sparql_select_response
+from utils.rdf import filter_deep_remove_iris_from_list, flatten_sparql_select_response
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
 from .kg import get_ns2kg
 from .transform_response import (
@@ -70,10 +70,8 @@ class SparqlDataReqExecutor:
         logger.info("Done")
 
         logger.info("Linearising documents into a table...")
-        flattened_docs = deep_pd_json_normalize_list(docs)
-        flattened_docs = filter_remove_iris_from_list(
-            flattened_docs, iri_prefixes=TWA_ABOX_PREFIXES
-        )
+        docs_no_iris = filter_deep_remove_iris_from_list(lst=docs, iri_prefixes=TWA_ABOX_PREFIXES)
+        flattened_docs = deep_pd_json_normalize_list(docs_no_iris)
         table_data = TableData.from_data(flattened_docs)
         logger.info("Done")
 

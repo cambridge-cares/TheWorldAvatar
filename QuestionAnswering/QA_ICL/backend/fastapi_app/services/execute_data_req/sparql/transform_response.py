@@ -31,6 +31,8 @@ class SparqlResponseTransformer:
         bindings: list[dict[str, str | float]],
         res_map: dict[str, SparqlNodeMappingConfig],
     ):
+        # TODO: perform aggregate before transform to reduce the complexity of 
+        # calling __hash__ on FrozenDict
         for var in vars:
             transform_config = res_map.get(var)
             if not transform_config:
