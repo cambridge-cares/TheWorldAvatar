@@ -28,53 +28,70 @@ export function QAResponseDiv({ qaResponse, chatAnswer, className, ...props }: Q
       {qaResponse && (
         <>
           <div>
-            <h2 className="text-xl font-semibold text-blue-500">Reasoning steps</h2>
+            <h2 className="text-xl font-semibold text-blue-500">Processing steps</h2>
             <Accordion type="multiple">
-              <AccordionItem value="schema_relations">
-                <AccordionTrigger>Relations retrieved from knowledge base with highest relevance</AccordionTrigger>
-                <AccordionContent>
-                  <DataTable
-                    columns={[{ value: "s", label: "Subject" }, { value: "p", label: "Predicate" }, { value: "o", label: "Object" }]}
-                    data={qaResponse.metadata.translation_context.schema_relations.map(obj => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, makePrefixedIRI(v)])))}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="examples">
-                <AccordionTrigger>Semantic parsing examples retrieved from database with highest relevance</AccordionTrigger>
-                <AccordionContent>
-                  <DataTable
-                    columns={[
-                      { value: "nlq", label: "Natural language query" },
-                      { value: "entity_bindings", label: "Entity recognition" },
-                      { value: "req_form", label: "Structured query" },
-                    ]}
-                    data={
-                      qaResponse.metadata.translation_context.examples.map(example => ({
-                        "nlq": example.nlq,
-                        "entity_bindings": {
-                          columns: [{ value: "var", label: "Variable" }, { value: "cls", label: "Class" }, { value: "values", label: "Values" }],
-                          data: Object.entries(example.data_req.entity_bindings).map(([k, v]) => ({
-                            var: k,
-                            cls: v.cls,
-                            values: v.values.flatMap(val => (val.text ? [val.text] : []).concat(Object.entries(val.identifier).map(([k, v]) => `${k}: ${v}`)))
-                          }))
-                        },
-                        "req_form": JSON.stringify(example.data_req.req_form)
-                      }))
-                    }
-                  />
+              <AccordionItem value="translation_context">
+                <AccordionTrigger>Translation context</AccordionTrigger>
+                <AccordionContent className="px-4">
+                  <Accordion type="multiple">
+                    <AccordionItem value="schema_relations">
+                      <AccordionTrigger>Relations retrieved from knowledge base with highest relevance</AccordionTrigger>
+                      <AccordionContent>
+                        <DataTable
+                          columns={[{ value: "s", label: "Subject" }, { value: "p", label: "Predicate" }, { value: "o", label: "Object" }]}
+                          data={qaResponse.metadata.translation_context.schema_relations.map(obj => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, makePrefixedIRI(v)])))}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="examples">
+                      <AccordionTrigger>Semantic parsing examples retrieved from database with highest relevance</AccordionTrigger>
+                      <AccordionContent>
+                        <JSONTree data={qaResponse.metadata.translation_context.examples} />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="prediction">
                 <AccordionTrigger>Predicted structured query</AccordionTrigger>
-                <AccordionContent>
-                  {JSON.stringify(qaResponse.metadata.data_request)}
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="variables">
-                <AccordionTrigger>Entity linking</AccordionTrigger>
-                <AccordionContent>
-                  {JSON.stringify(qaResponse.metadata.linked_variables)}
+                <AccordionContent className="px-4">
+                  <Accordion type="multiple">
+                    <AccordionItem value="entity_bindings">
+                      <AccordionTrigger>Entity recognition and linking</AccordionTrigger>
+                      <AccordionContent>
+                        <DataTable
+                          columns={[
+                            { value: "var", label: "Variable" },
+                            { value: "cls", label: "Class" },
+                            { value: "mention", label: "Mention" },
+                            { value: "linked_iris", label: "Linked IRIs" }
+                          ]}
+                          data={Object
+                            .entries(qaResponse.metadata.data_request.entity_bindings)
+                            .map(([varname, binding]) => ({
+                              var: varname,
+                              cls: binding.cls,
+                              mention: binding.values.flatMap(val => (val.text ? [val.text] : []).concat(Object.entries(val.identifier).map(([k, v]) => `${k}: ${v}`))),
+                              linked_iris: qaResponse.metadata.linked_variables[varname]
+                            }))
+                          }
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="data_req_form">
+                      <AccordionTrigger>Structured query form</AccordionTrigger>
+                      <AccordionContent className="px-6">
+                        {qaResponse.metadata.data_request.req_form.type === "sparql" ? (
+                          <>
+                            <h4 className="font-medium">Namespace</h4>
+                            <p className="mb-2">{qaResponse.metadata.data_request.req_form.namespace}</p>
+                            <h4 className="font-medium">SPARQL query</h4>
+                            <p className="font-mono whitespace-pre bg-slate-50 p-4">{qaResponse.metadata.data_request.req_form.query}</p>
+                          </>
+                        ) : (<></>)}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -97,7 +114,7 @@ export function QAResponseDiv({ qaResponse, chatAnswer, className, ...props }: Q
                     return (
                       (headerText && component) ? (
                         <AccordionItem key={idx} value={idx.toString()}>
-                          <AccordionTrigger className="text-lg font-semibold text-blue-500">{headerText}</AccordionTrigger>
+                          <AccordionTrigger>{headerText}</AccordionTrigger>
                           <AccordionContent className="py-2">
                             {component}
                           </AccordionContent>
