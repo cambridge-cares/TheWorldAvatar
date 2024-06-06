@@ -49,8 +49,6 @@ export interface WKTGeometryData {
 
 export type DataItem = DocumentCollection | TableData | ScatterPlotData | WKTGeometryData
 
-
-
 export interface QARequest {
   question: string
 }

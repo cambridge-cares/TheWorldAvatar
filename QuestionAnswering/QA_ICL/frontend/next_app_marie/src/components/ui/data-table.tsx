@@ -31,7 +31,7 @@ export interface DataTableColumn {
   label: string
 }
 
-export type DataTableCellValue = string | number | string[] | number[] | DataTableDataProps | undefined
+export type DataTableCellValue = undefined | string | number | string[] | number[] | DataTableDataProps | React.JSX.Element
 
 export interface DataTableRow {
   [key: string]: DataTableCellValue
@@ -80,14 +80,19 @@ function DataTableBase({
     },
     cell: ({ row }: { row: Row<DataTableRow | DataTableRowNumbered> }) => {
       const val = row.getValue(h.value) as DataTableCellValue;
-      if (!(val)) {
+      if (typeof val === "undefined") {
         return ""
+      } else if (typeof val === "string" || typeof val === "number") {
+        return val
       } else if (Array.isArray(val)) {
         return (<ul>{val.map((elem, idx) => <li key={idx}>{elem}</li>)}</ul>)
-      } else if (typeof val === "object") {
+      } else if ("columns" in val) {
+        // TODO: Check which typescript and @types/react versions support 
+        // type-narrowing with React.isValidElement instead of checking
+        // existence of a field in DataTableBaseProps
         return (<DataTableBase columns={val.columns} data={val.data} />)
       } else {
-        return val;
+        return val
       }
     }
   }));
