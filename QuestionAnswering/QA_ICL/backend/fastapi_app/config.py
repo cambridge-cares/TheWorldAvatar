@@ -78,16 +78,17 @@ class SingaporeEndpointsSettings(BaseModel):
 
 
 class AppSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     ga_measurement_id: str
     redis: RedisSettings
     text_embedding: TextEmbeddingSettings
     translator: OpenaiSettings
     chat: OpenaiSettings
+    qt_recog: OpenaiSettings
     location_iq: LocationIqSettings
     chemistry_endpoints: ChemistryEndpointsSettings
     singapore_endpoints: SingaporeEndpointsSettings
-
-    model_config = ConfigDict(frozen=True)
 
 
 def _load_yaml(filepath: str):

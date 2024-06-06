@@ -104,6 +104,7 @@ class TranslationContext(BaseModel):
 
 
 class QAResponseMetadata(BaseModel):
+    rewritten_question: str
     translation_context: TranslationContext
     data_request: DataRequest
     linked_variables: dict[str, list[str]]

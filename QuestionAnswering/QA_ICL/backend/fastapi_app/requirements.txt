@@ -6,6 +6,7 @@ SPARQLWrapper
 openai
 tritonclient[grpc]
 numpy
+pint
 jinja2
 pydantic-settings
 transformers
