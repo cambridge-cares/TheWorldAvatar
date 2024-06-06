@@ -8,10 +8,7 @@ from pydantic import TypeAdapter
 from config import AppSettings, get_app_settings
 from model.nlq2req import DataRequest
 from model.qa import TranslationContext
-from model.rdf_schema import RDFRelation
 from utils.rdf import try_make_prefixed_iri
-
-from services.example_store import Nlq2DataReqExample
 
 
 logger = logging.getLogger(__name__)
@@ -42,9 +39,7 @@ Your task is to translate the following question to an executable data request. 
         self.datareq_adapter = TypeAdapter(DataRequest)
 
     def translate(
-        self,
-        nlq: str,
-        translation_context: TranslationContext
+        self, nlq: str, translation_context: TranslationContext
     ) -> DataRequest:
         prompt = self.PROMPT_TEMPLATE.format(
             examples="\n".join(
