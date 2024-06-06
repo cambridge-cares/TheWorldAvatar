@@ -40,7 +40,7 @@ public class DatasetLoader {
     private DatasetLoader() {
     }
 
-    public static void uploadInputDatasets() {
+    public static void loadInputDatasets() {
 
         try (Stream<Path> files = Files.list(configPath)) {
             // Find all available datasets
@@ -68,7 +68,7 @@ public class DatasetLoader {
             // node. Throw an exception if the referenced Dataset doesn't exist.
             selectedDatasets.forEach(dataset -> addToGraph(allDatasets, graph, dataset));
 
-            graph.iterator().forEachRemaining(DatasetLoader::loadData);
+        graph.iterator().forEachRemaining(DatasetLoader::loadDataset);
 
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in dataset config file(s).", ex);
@@ -117,7 +117,7 @@ public class DatasetLoader {
         }
     }
 
-    public static void loadData(Dataset dataset) {
+    public static void loadDataset(Dataset dataset) {
         Path directory = dataset.getDirectory();
 
         if (!dataset.isSkip()) {

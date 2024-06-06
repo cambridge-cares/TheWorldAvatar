@@ -18,7 +18,7 @@ public class TempTestCalls {
 
     static void doStuff() {
 
-        DatasetLoader.uploadInputDatasets();
+        DatasetLoader.loadInputDatasets();
 
         GDALClient gdalClient = GDALClient.getInstance();
         PostGISClient postGISClient = PostGISClient.getInstance();

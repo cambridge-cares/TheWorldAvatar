@@ -9,7 +9,7 @@ import com.cmclinnovations.stack.clients.core.datasets.DatasetLoader;
 public class DataUploader {
     public static void main(String[] args) {
 
-        DatasetLoader.uploadInputDatasets();
+        DatasetLoader.loadInputDatasets();
 
     }
 }
