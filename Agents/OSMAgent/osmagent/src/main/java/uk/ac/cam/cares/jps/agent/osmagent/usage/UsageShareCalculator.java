@@ -28,58 +28,49 @@ public class UsageShareCalculator {
                 this.rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
         }
 
-        /**
-         * Assigns OntoBuiltEnv:PropertyUsage IRI and usage share for building IRIs in usageTable
-         * @param usageTable centralised table to store usage information
-         */
-        public void updateUsageShare(String usageTable) {
-                String add_uuid_ossp_Extension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
+        public void createUsageIRI(String usageTable) {
+                String createIRI = "UPDATE %s SET propertyusage_iri = ontobuilt || '_' || uuid_generate_v4()::text";
 
-                // assign usageshare and propertyusage_iri
-                String assignUsageShare =
-                        "UPDATE " + usageTable + " AS p\n" +
-                                "SET UsageShare = c.instances / c.total_instances::float,\n" +
-                                "    propertyusage_iri = c.ontobuilt || '_' || uuid_generate_v4()::text\n"
-                                +
-                                "FROM (\n" +
-                                "    SELECT building_iri,\n" +
-                                "           ontobuilt,\n" +
-                                "           COUNT(*) AS instances,\n" +
-                                "           SUM(COUNT(*)) OVER (PARTITION BY building_iri) AS total_instances\n"
-                                +
-                                "    FROM " + usageTable + " \n" +
-                                "    GROUP BY building_iri, ontobuilt\n" +
-                                ") AS c\n" +
-                                "WHERE p.building_iri = c.building_iri\n" +
-                                "  AND p.ontobuilt = c.ontobuilt;";
+                rdbStoreClient.executeUpdate(String.format(createIRI, usageTable));
 
-                // ensures that for the same building_iri with the same ontobuilt, propertyusage_iri is the same
-                String updatePropertyUsageStatement =
-                        "UPDATE " + usageTable + " AS p\n" +
-                                "SET propertyusage_iri = subquery.min_propertyusage_iri\n" +
-                                "FROM (\n" +
-                                "    SELECT p.building_iri, p.ontobuilt, MIN(propertyusage_iri) AS min_propertyusage_iri\n"
-                                +
-                                "    FROM " + usageTable + " AS p\n" +
-                                "    INNER JOIN (\n" +
-                                "        SELECT building_iri, ontobuilt\n" +
-                                "        FROM " + usageTable + " \n" +
-                                "            WHERE ontobuilt IS NOT NULL AND building_iri IS NOT NULL\n"
-                                +
-                                "    ) AS cd ON p.building_iri = cd.building_iri AND p.ontobuilt = cd.ontobuilt\n"
-                                +
-                                "    GROUP BY p.building_iri, p.ontobuilt\n" +
-                                "    HAVING COUNT(*) > 1\n" +
-                                ") AS subquery\n" +
-                                "WHERE p.building_iri = subquery.building_iri\n" +
-                                "    AND p.ontobuilt = subquery.ontobuilt;";
+                String consistentIRI = "WITH temp AS (SELECT building_iri, ontobuilt, propertyusage_iri AS consistent FROM %s GROUPY BY building_iri, ontobuilt)\n" +
+                        "UPDATE %s u SET propertyusage_iri = consistent FROM temp t WHERE u.building_iri = t.building_iri AND t.ontobuilt = u.ontobuilt";
 
-                // execute the SQL statement
-                rdbStoreClient.executeUpdate(add_uuid_ossp_Extension);
-                rdbStoreClient.executeUpdate(assignUsageShare);
-                rdbStoreClient.executeUpdate(updatePropertyUsageStatement);
-                System.out.println("UsageShare calculated and propertyUsage assigned.");
+                rdbStoreClient.executeUpdate(String.format(consistentIRI, usageTable));
+        }
 
+        public void usageShareCount(String view, String usageTable, String pointTable, String polygonTable) {
+                String sql = "CREATE MATERIALIZED VIEW %s AS\n" +
+                        "WITH counts AS (SELECT building_iri, ontobuilt, propertyusage_iri,  COUNT(*) AS c FROM %s GROUP BY building_iri, ontobuilt, propertyusage_iri),\n" +
+                        "total AS (SELECT building_iri, SUM(c) AS total FROM counts GROUP BY building_iri),\n" +
+                        "names AS (SELECT building_iri, ontobuilt, name FROM %s WHERE building_iri IS NOT NULL\n" +
+                        "UNION SELECT building_iri, ontobuilt, name FROM %s WHERE building_iri IS NOT NULL)\n" +
+                        "SELECT c.building_iri, c.ontobuilt, c.propertyusage_iri, (c.count::DOUBLE PRECISION/t.total) AS usageshare, n.name\n" +
+                        "FROM counts AS c\n" +
+                        "JOIN total AS t ON c.building_iri = t.building_iri\n" +
+                        "LEFT JOIN names AS n on c.building_iri = n.building_iri AND c.ontobuilt = n.ontobuilt";
+
+                rdbStoreClient.executeUpdate(String.format(sql, view, usageTable, pointTable, polygonTable, usageTable));
+        }
+
+
+        public void usageShareArea(String view, String usageTable) {
+                String sql = "CREATE MATERIALIZED VIEW %s AS\n" +
+                        "WITH counts AS (SELECT building_iri, ontobuilt, propetyusage_iri, COUNT(*) AS c,\n" +
+                        "SUM(CASE WHEN source = 'polygon' THEN area ELSE 0 END) AS area_sum FROM %s\n" +
+                        "GROUP BY building_iri, ontobuilt, propetyusage_iri),\n" +
+                        "total AS (SELECT building_iri, SUM(c) AS total_c, SUM(area_sum) AS total_area FROM counts GROUP BY building_iri),\n" +
+                        "names AS (SELECT building_iri, ontobuilt, name FROM %s WHERE building_iri IS NOT NULL\n" +
+                        "UNION SELECT building_iri, ontobuilt, name FROM %s WHERE building_iri IS NOT NULL)\n" +
+                        "SELECT c.building_iri, c.ontobuilt, c.propetyusage_iri, n.name, CASE\n" +
+                        "WHEN t.total_area = 0 THEN c.c/t.total_c\n" +
+                        "ELSE c.area_sum/t.total_area END AS usageshare\n" +
+                        "FROM counts AS c\n" +
+                        "JOIN total AS t\n" +
+                        "ON c.building_iri = t.building_iri\n" +
+                        "LEFT JOIN names AS n on c.building_iri = n.building_iri AND c.ontobuilt = n.ontobuilt";
+
+                rdbStoreClient.executeUpdate(String.format(sql, view, usageTable, usageTable));
         }
 
         public void addMaterializedView(String usageTable, String addressTable, String schema, String osmSchema) {
