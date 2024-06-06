@@ -1,39 +1,26 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
-import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DirectedAcyclicGraph;
-
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
-import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
-import com.cmclinnovations.stack.clients.utils.FileUtils;
-import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.cmclinnovations.stack.services.OntopService;
 import com.cmclinnovations.stack.services.ServiceManager;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
-import com.fasterxml.jackson.databind.InjectableValues;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DatasetLoader {
 
-    private static final ObjectMapper objectMapper = JsonHelper.getMapper();
-    private static final Path configPath = Path.of("/inputs/config");
 
     private static final ServiceManager serviceManager = new ServiceManager(false);
 
@@ -42,79 +29,20 @@ public class DatasetLoader {
 
     public static void loadInputDatasets() {
 
-        try (Stream<Path> files = Files.list(configPath)) {
-            // Find all available datasets
-            Map<String, Dataset> allDatasets = files.filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".json"))
-                    .map(DatasetLoader::readInputDataset)
-                    .collect(Collectors.toMap(Dataset::getName, dataset -> dataset));
+        Map<String, Dataset> allDatasets = DatasetReader.getAllDatasets();
 
-            Collection<Dataset> selectedDatasets;
+        Stream<Dataset> selectedDatasets = DatasetReader.getStackSpecificDatasets(allDatasets);
 
-            // Check to see if there is a Dataset with the same name as the Stack.
-            Dataset stackSpecificDataset = allDatasets.get(StackClient.getStackName());
-            if (null != stackSpecificDataset) {
-                // If so only load that one and its children
-                selectedDatasets = List.of(stackSpecificDataset);
-            } else {
-                // Otherwise load all of them
-                selectedDatasets = allDatasets.values();
-            }
+        uploadDatasets(selectedDatasets);
 
-            DirectedAcyclicGraph<Dataset, DefaultEdge> graph = new DirectedAcyclicGraph<>(
-                    DefaultEdge.class);
-
-            // Add an edge when one Dataset references another in its "externalDatasets"
-            // node. Throw an exception if the referenced Dataset doesn't exist.
-            selectedDatasets.forEach(dataset -> addToGraph(allDatasets, graph, dataset));
-
-        graph.iterator().forEachRemaining(DatasetLoader::loadDataset);
-
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read in dataset config file(s).", ex);
-        }
     }
 
-    // This ensures that datasets are loaded such that children are loaded before
-    // their parents so that things that can refer to multiple datasubsets, like
-    // OBDA mappings, can be specified in the parent config and are loaded in after
-    // all of the datasubsets have been loaded in.
-    private static void addToGraph(Map<String, Dataset> allDatasets, DirectedAcyclicGraph<Dataset, DefaultEdge> graph,
-            Dataset current) {
-        if (graph.addVertex(current)) {
-            current.getExternalDatasetNames().forEach(datasetName -> {
-                Dataset child = allDatasets.get(datasetName);
-                if (null == child) {
-                    throw new RuntimeException("Failed to find external dataset '"
-                            + datasetName + "' referenced in dataset '"
-                            + current.getName() + "'.");
-                }
-                addToGraph(allDatasets, graph, child);
-                graph.addEdge(child, current);
-                current.addExternalDataset(child);
-            });
-        }
+    public static void uploadDatasets(Collection<Dataset> selectedDatasets) {
+        selectedDatasets.forEach(DatasetLoader::loadDataset);
     }
 
-    private static void updateInjectableValues(Path configFile) {
-
-        InjectableValues.Std iv = new InjectableValues.Std();
-
-        iv.addValue(Namespace.PROPERTIES_FILE_DIRECTORY_KEY, configPath);
-
-        iv.addValue(Dataset.NAME_KEY, FileUtils.getFileNameWithoutExtension(configFile));
-
-        objectMapper.setInjectableValues(iv);
-    }
-
-    public static Dataset readInputDataset(Path configFile) {
-        try {
-            updateInjectableValues(configFile);
-
-            return objectMapper.readValue(configFile.toFile(), Dataset.class);
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read in dataset config file '" + configFile + "'.", ex);
-        }
+    public static void uploadDatasets(Stream<Dataset> selectedDatasets) {
+        selectedDatasets.forEach(DatasetLoader::loadDataset);
     }
 
     public static void loadDataset(Dataset dataset) {
