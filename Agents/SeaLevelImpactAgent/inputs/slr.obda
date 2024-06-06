@@ -1,5 +1,6 @@
 [PrefixDeclaration]
 xsd:    http://www.w3.org/2001/XMLSchema#
+twa:	https://www.theworldavatar.com/kg/
 rdfs:	http://www.w3.org/2000/01/rdf-schema#
 :       https://www.theworldavatar.com/kg/
 sea:    https://www.theworldavatar.com/kg/ontosealevel/
@@ -33,19 +34,19 @@ source		SELECT "slr_uuid", "touristattraction_uuid" FROM "public"."slr_touristat
 
 mappingId	SLR - Landplot
 target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact landplot:{"landplot_uuid"} .
-            landplot:{"landplot_uuid"} sea:hasAffectedArea {"affectedarea"}^^xsd:Double.
+            landplot:{"landplot_uuid"} sea:hasAffectedArea {"affectedarea"}^^xsd:double.
 source		SELECT "slr_uuid", "landplot_uuid", "affectedarea" FROM "public"."slr_landplot"
 
 mappingId	SLR - Population
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact {"populationatrisk"}^^xsd:Integer.
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact {"populationatrisk"}^^xsd:integer.
 source		SELECT "slr_uuid", "populationatrisk" FROM "public"."slr_population"
 
 mappingId	SLR - Building
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :Building/{"bldg_mat_view_uuid"} .
+target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact twa:Building/{"bldg_mat_view_uuid"} .
 source		SELECT "slr_uuid", "bldg_mat_view_uuid" FROM "public"."slr_bldg_mat_view"
 
 mappingId	SLR - osm_road_mat_view
 target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact ost:RoadSegment/{"osm_road_mat_view_uuid"} .
-            ost:{"osm_road_mat_view_uuid"} sea:hasAffectedLength {"affectedlength"}^^xsd:Double.
+            ost:RoadSegment/{"osm_road_mat_view_uuid"} sea:hasAffectedLength {"affectedlength"}^^xsd:double.
 source		SELECT "slr_uuid", "osm_road_mat_view_uuid", "affectedlength" FROM "public"."slr_osm_road_mat_view"
 ]]

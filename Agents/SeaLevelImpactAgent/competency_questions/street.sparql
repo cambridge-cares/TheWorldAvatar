@@ -1,11 +1,33 @@
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX oss: <http://opendata.caceres.es/def/ontosemanasanta#>
+PREFIX os: <http://www.w3.org/2000/10/swap/os#>
+PREFIX bld: <http://biglinkeddata.com/>
+PREFIX bl: <https://w3id.org/biolink/vocab/>
+PREFIX bot: <https://w3id.org/bot#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ost: <https://www.theworldavatar.com/kg/ontostreet/>
+PREFIX : <https://www.theworldavatar.com/kg/>
 PREFIX sea: <https://www.theworldavatar.com/kg/ontosealevel/>
-SELECT DISTINCT * WHERE {
-  ?sub a ost:RoadSegment.
-  ?sub sea:hasAffectedLength ?affectedLength.
-  ?sub ost:hasLength ?length.
+PREFIX be: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX ic: <http://ontology.eil.utoronto.ca/icontact.owl#>
+PREFIX sch: <https://schema.org/>
+PREFIX dbo: <https://dbpedia.org/ontology/>
+PREFIX ontoplot: <https://www.theworldavatar.com/kg/landplot/>
+PREFIX plot: <https://www.theworldavatar.com/kg/ontoplot/>
+PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
+PREFIX ost: <https://www.theworldavatar.com/kg/ontostreet/>
+
+SELECT DISTINCT ?s ?road ?affectedLength ?Length ?name ?type
+WHERE {?s a <https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange>.
+  ?s sea:hasSSPScenario "ssp585".
+  ?s sea:hasProjectionYear "2150"^^xsd:double .
+  ?s sea:hasConfidenceLevel "low" .
+  ?s sea:hasPercentageQuantile "95"^^xsd:double .
+  ?s sea:hasPotentialImpact ?road.
+  ?road a ost:RoadSegment.
+  ?road sea:hasAffectedLength ?affectedLength .
+  ?road ost:hasLength ?Length.
+  ?road ost:hasName ?name.
+  ?road ost:hasRoadType ?type.
 }
-ORDER BY DESC(?g)
-LIMIT 10
+ORDER BY DESC (?affectedLength) 
+LIMIT 1000
