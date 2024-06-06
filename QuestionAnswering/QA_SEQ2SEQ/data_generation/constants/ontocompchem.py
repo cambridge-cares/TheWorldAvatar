@@ -19,7 +19,7 @@ OCC_RESULT_LABELS = {
     "LUMOPlus2Energy": ["LUMO+2 energy"],
     "TotalEnergy": ["total energy"],
     "TotalEnthalpy": ["total enthalpy"],
-    "Frequencies": ["frequencies"],
+    "Frequencies": ["vibrational frequency"],
     "RotationalConstants": ["rotational constants"],
 }
 

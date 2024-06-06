@@ -10,8 +10,9 @@ class ModelArguments:
     )
     model_format: str = field(
         default="hf",
-        metadata={"help": "`hf` (Hugging Face), `ort` (ONNX Runtime)."},
+        metadata={"help": "`hf` (Hugging Face), `onnx`."},
     )
+
 
 @dataclass
 class DatasetArguments:
@@ -29,10 +30,7 @@ class DatasetArguments:
             "help": "Maximum target sequence length. Sequences will be right padded (and possibly truncated)."
         },
     )
-    domain: str = field(
-        default="multi",
-        metadata={"help": "`ontospecies`, `ontokin`, or `multi`"},
-    )
+    domain: Optional[str] = field(default=None)
 
 
 @dataclass

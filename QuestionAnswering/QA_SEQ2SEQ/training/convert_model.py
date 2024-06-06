@@ -49,7 +49,7 @@ def convert():
     parser = argparse.ArgumentParser()
     parser.add_argument("input_dir", type=str)
     parser.add_argument("output_dir", type=str)
-    parser.add_argument("--mode", choices=["to_onnx", "to_8bit"])
+    parser.add_argument("--mode", choices=["to_onnx", "to_8bit"], required=True)
     args = parser.parse_args()
 
     if args.mode == "to_onnx":

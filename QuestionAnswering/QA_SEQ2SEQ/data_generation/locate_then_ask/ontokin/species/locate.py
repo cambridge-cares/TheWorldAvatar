@@ -1,4 +1,5 @@
 import random
+
 from locate_then_ask.ontokin.entity_store import OKEntityStore
 from locate_then_ask.ontokin.model import OKSpecies
 from locate_then_ask.query_graph import QueryGraph
@@ -9,73 +10,40 @@ class OKSpeciesLocator:
         self.store = store
 
     def locate_entity_name(self, entity_iri: str):
-        entity = self.store.get(entity_iri)
-        assert isinstance(entity, OKSpecies)
-
+        entity = self.store.get_species(entity_iri)
         label = entity.label
 
         query_graph = QueryGraph()
-        query_graph.add_node(
-            "Species",
-            iri=entity_iri,
-            rdf_type="os:Species",
-            label=label,
-            template_node=True,
-            topic_entity=True,
-        )
+        query_graph.add_topic_node("Species", iri=entity_iri)
+        literal_node = query_graph.make_literal_node(value=entity.label)
+        query_graph.add_triple("Species", "skos:altLabel", literal_node)
 
         verbalization = "[{entity}]".format(entity=label)
 
         return query_graph, verbalization
 
-    def locate_concept_name(self, entity_iri: str):
-        query_graph = QueryGraph()
-        query_graph.add_node(
-            "Species",
-            iri=entity_iri,
-            rdf_type="os:Species",
-            topic_entity=True,
-        )
-        return query_graph, "the chemical species"
-
     def locate_concept_and_relation(self, entity_iri: str):
-        query_graph, verbalization = self.locate_concept_name(entity_iri)
-        entity = self.store.get(entity_iri)
-        assert isinstance(entity, OKSpecies)
+        query_graph = QueryGraph()
+        query_graph.add_topic_node("Species", iri=entity_iri)
 
+        entity = self.store.get_species(entity_iri)
         mechanism_iri = random.choice(entity.mechanism_iris)
-        mechanism = self.store.get(mechanism_iri)
+        mechanism = self.store.get_mechanism(mechanism_iri)
 
-        mechanism_node = "Mechanism"
-        literal_node = "Literal"
-
-        query_graph.add_nodes_from(
+        query_graph.add_node("Mechanism", iri=mechanism.iri)
+        doi_node = query_graph.make_literal_node(value=mechanism.doi)
+        query_graph.add_triples(
             [
-                (
-                    mechanism_node,
-                    dict(iri=mechanism.iri, rdf_type="okin:ReactionMechanism"),
-                ),
-                (
-                    literal_node,
-                    dict(label=mechanism.doi, template_node=True, literal=True),
-                ),
+                ("Species", "okin:belongsToPhase/^okin:hasGasPhase", "Mechanism"),
+                ("Mechanism", "okin:hasProvenance/op:hasDOI", doi_node),
             ]
         )
-        query_graph.add_edges_from(
-            [
-                (
-                    "Species",
-                    mechanism_node,
-                    dict(label="okin:belongsToPhase/^okin:hasGasPhase"),
+        
+        verbalization = "the chemical species that appears in the reaction mechanism {verb} in [{DOI}]".format(
+            verb=random.choice(
+                    ["found", "proposed", "outlined", "indicated", "shown"]
                 ),
-                (
-                    mechanism_node,
-                    literal_node,
-                    dict(label="okin:hasProvenance/op:hasDOI"),
-                ),
-            ]
+            DOI=mechanism.doi
         )
-
-        verbalization += " that appears in the reaction mechanism found in [{DOI}]".format(DOI=mechanism.doi)
 
         return query_graph, verbalization

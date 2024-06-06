@@ -13,7 +13,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Builddocker
 WORKDIR /root/BMSUpdateAgent
-RUN --mount=type=cache,target=/root/.m2/repository mvn clean package
+RUN --mount=type=cache,target=/root/.m2/repository mvn clean compile war:exploded
 
 #==================================================================================================
 
@@ -23,7 +23,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/BMSUpdateAgent/output/bms-update-agent##1.1.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/BMSUpdateAgent/target/bms-update-agent $CATALINA_HOME/webapps/bms-update-agent
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
