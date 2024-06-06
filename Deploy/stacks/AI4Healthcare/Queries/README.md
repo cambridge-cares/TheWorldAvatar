@@ -26,6 +26,9 @@ The `nearest_entity_query.sql` file constructs a 100-metre buffer around the dai
 **Nearest Entity Details Query:**<br/>
 The `nearest_entity_details_query.sql` file is an enhanced version of the Nearest Entity Details Query, providing the location, name, and address of each exposed food retailer.
 
+**Integral Exposure Query:**<br/>
+The `integral_exposure_query.sql` file uses a buffer zone approach. It creates a 100-meter buffer around an individual's location and checks how many retailers intersect with this buffer, effectively retrieving and counting retailers within proximity. It calculates the epoch by taking the difference between the `UTC TIME` of the next row and the `UTC TIME` of the current row, ordered in ascending sequence. Finally, it multiplies the number of retailers by the epoch to calculate the individual's exposure.
+
 ## Discussion ##
 All three queries—Distance, Point Buffer, and Line Buffer—assess areas within a 100-metre radius around each data point, effectively yielding the same exposure results. The primary difference lies in their execution times due to their varying computational demands. The Distance Query is the quickest, whereas the Point Buffer Query requires the most resources. Testing against a trajectory dataset of 365 data points and a food retailer dataset comprising 932 entries yielded the following execution times, indicating their performance.
 
