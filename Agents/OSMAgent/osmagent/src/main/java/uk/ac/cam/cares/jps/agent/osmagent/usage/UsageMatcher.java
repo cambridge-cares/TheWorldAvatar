@@ -13,6 +13,7 @@ import java.util.Map;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import uk.ac.cam.cares.jps.agent.osmagent.FileReader;
+import uk.ac.cam.cares.jps.agent.osmagent.OSMAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
@@ -144,7 +145,7 @@ public class UsageMatcher {
      * @param polygonTable table containing OSM data with the geometries being polygons
      * @param usageTable centralised table to store usage information
      */
-    public void copyFromOSM(String pointTable, String polygonTable, String schema, String usageTable, String addressTable) {
+    public void copyUsage(String pointTable, String polygonTable, String schema, String usageTable) {
         // initialise schema
         String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + schema;
         rdbStoreClient.executeUpdate(initialiseSchema);
@@ -152,19 +153,25 @@ public class UsageMatcher {
         // initialise usage table
         String initialiseUsageTable = "CREATE TABLE IF NOT EXISTS " + usageTable;
 
-        initialiseUsageTable += " (building_iri TEXT, propertyusage_iri TEXT, ontobuilt TEXT, area DOUBLE PRECISION, usageshare FLOAT)";
+        initialiseUsageTable += " (building_iri TEXT, propertyusage_iri TEXT, ontobuilt TEXT, area DOUBLE PRECISION, source TEXT)";
 
         rdbStoreClient.executeUpdate(initialiseUsageTable);
 
         // insert usage data from OSM into usage table
-        String copyUsage = "INSERT INTO %s (building_iri, ontobuilt, area)\n" +
-                "SELECT o.building_iri, o.ontobuilt, o.area FROM %s o\n" +
+        String copyUsage = "INSERT INTO %s (building_iri, ontobuilt, area, source)\n" +
+                "SELECT o.building_iri, o.ontobuilt, o.area, %s FROM %s o\n" +
                 "LEFT JOIN %s u on u.building_iri = o.building_iri AND u.ontobuilt = o.ontobuilt\n" +
                 "WHERE u.building_iri IS NULL AND u.ontobuilt IS NULL\n" +
                 "AND o.building_iri IS NOT NULL AND o.ontobuilt IS NOT NULL";
 
-        rdbStoreClient.executeUpdate(String.format(copyUsage, usageTable, pointTable, usageTable));
-        rdbStoreClient.executeUpdate(String.format(copyUsage, usageTable, polygonTable, usageTable));
+        rdbStoreClient.executeUpdate(String.format(copyUsage, usageTable, "\'osm_points\'", pointTable, usageTable));
+        rdbStoreClient.executeUpdate(String.format(copyUsage, usageTable, "\'osm_polygons\'", polygonTable, usageTable));
+    }
+
+    public void copyAddress(String pointTable, String polygonTable, String schema, String addressTable) {
+        // initialise schema
+        String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + schema;
+        rdbStoreClient.executeUpdate(initialiseSchema);
 
         // initialise address table
         String initialiseAddressTable = "CREATE TABLE IF NOT EXISTS " + addressTable;
