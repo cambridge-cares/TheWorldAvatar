@@ -26,19 +26,14 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 
-export interface DataTableColumn {
-  value: string
-  label: string
-}
-
-export type DataTableCellValue = undefined | string | number | string[] | number[] | DataTableDataProps | React.JSX.Element
+export type DataTableCellValue = null | undefined | string | number | string[] | number[] | DataTableDataProps | React.JSX.Element
 
 export interface DataTableRow {
   [key: string]: DataTableCellValue
 }
 
 export interface DataTableDataProps {
-  columns: DataTableColumn[]
+  columns: { value: string, label: string }[]
   data: DataTableRow[]
 }
 
@@ -80,7 +75,7 @@ function DataTableBase({
     },
     cell: ({ row }: { row: Row<DataTableRow | DataTableRowNumbered> }) => {
       const val = row.getValue(h.value) as DataTableCellValue;
-      if (typeof val === "undefined") {
+      if (!(val)) {
         return ""
       } else if (typeof val === "string" || typeof val === "number") {
         return val
