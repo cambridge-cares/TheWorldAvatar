@@ -8,19 +8,19 @@ from pydantic import TypeAdapter
 from redis import Redis
 from redis.commands.search.query import Query
 
-from services.embed import IEmbedder, get_embedder
-from model.nlq2req import (
+from model.nlq2datareq import (
     EXAMPLES_INDEX_NAME,
     DataRequest,
     Nlq2DataReqExample,
 )
+from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
 
 
 logger = logging.getLogger(__name__)
 
 
-class ExampleStore:
+class Nlq2DataReqExampleStore:
     def __init__(
         self,
         redis_client: Redis,
@@ -56,7 +56,7 @@ def get_example_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
 ):
-    return ExampleStore(
+    return Nlq2DataReqExampleStore(
         redis_client=redis_client,
         embedder=embedder,
     )

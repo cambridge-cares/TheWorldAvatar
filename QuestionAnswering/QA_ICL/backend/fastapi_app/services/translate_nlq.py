@@ -6,7 +6,7 @@ from openai import OpenAI
 from pydantic import TypeAdapter
 
 from config import AppSettings, get_app_settings
-from model.nlq2req import DataRequest
+from model.nlq2datareq import DataRequest
 from model.qa import TranslationContext
 from utils.rdf import try_make_prefixed_iri
 

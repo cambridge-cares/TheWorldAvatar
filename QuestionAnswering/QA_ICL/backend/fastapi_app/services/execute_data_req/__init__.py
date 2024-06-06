@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from model.nlq2req import (
+from model.nlq2datareq import (
     DataRequestForm,
     FuncDataReqForm,
     SparqlDataReqForm,
