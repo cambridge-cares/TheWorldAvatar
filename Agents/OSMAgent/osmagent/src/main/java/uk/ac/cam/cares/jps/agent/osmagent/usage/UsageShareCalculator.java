@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.osmagent.usage;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
+import java.util.UUID;
+
 /**
  * UsageShareCalculator contains 3 parts that run using SQL query
  * 1) assignUsageShare - For each building_iri, assign Propertyusage_iri,
@@ -40,7 +42,8 @@ public class UsageShareCalculator {
         }
 
         public void usageShareCount(String view, String usageTable, String pointTable, String polygonTable) {
-                String sql = "CREATE MATERIALIZED VIEW %s AS\n" +
+                String sql = "DROP MATERIALIZED VIEW IF EXISTS %s;\n" +
+                        "CREATE MATERIALIZED VIEW %s AS\n" +
                         "WITH counts AS (SELECT building_iri, ontobuilt, propertyusage_iri,  COUNT(*) AS c FROM %s GROUP BY building_iri, ontobuilt, propertyusage_iri),\n" +
                         "total AS (SELECT building_iri, SUM(c) AS total FROM counts GROUP BY building_iri),\n" +
                         "names AS (SELECT building_iri, ontobuilt, name FROM %s WHERE building_iri IS NOT NULL\n" +
@@ -48,14 +51,16 @@ public class UsageShareCalculator {
                         "SELECT c.building_iri, c.ontobuilt, c.propertyusage_iri, (c.count::DOUBLE PRECISION/t.total) AS usageshare, n.name\n" +
                         "FROM counts AS c\n" +
                         "JOIN total AS t ON c.building_iri = t.building_iri\n" +
-                        "LEFT JOIN names AS n on c.building_iri = n.building_iri AND c.ontobuilt = n.ontobuilt";
+                        "LEFT JOIN names AS n on c.building_iri = n.building_iri AND c.ontobuilt = n.ontobuilt;" +
+                        "CREATE INDEX usage_area_index ON %s (building_iri);";
 
-                rdbStoreClient.executeUpdate(String.format(sql, view, usageTable, pointTable, polygonTable, usageTable));
+                rdbStoreClient.executeUpdate(String.format(sql, view, view, usageTable, pointTable, polygonTable, view));
         }
 
 
-        public void usageShareArea(String view, String usageTable) {
-                String sql = "CREATE MATERIALIZED VIEW %s AS\n" +
+        public void usageShareArea(String view, String usageTable, String pointTable, String polygonTable) {
+                String sql = "DROP MATERIALIZED VIEW IF EXISTS %s;\n" +
+                        "CREATE MATERIALIZED VIEW %s AS\n" +
                         "WITH counts AS (SELECT building_iri, ontobuilt, propetyusage_iri, COUNT(*) AS c,\n" +
                         "SUM(CASE WHEN source = 'polygon' THEN area ELSE 0 END) AS area_sum FROM %s\n" +
                         "GROUP BY building_iri, ontobuilt, propetyusage_iri),\n" +
@@ -68,87 +73,37 @@ public class UsageShareCalculator {
                         "FROM counts AS c\n" +
                         "JOIN total AS t\n" +
                         "ON c.building_iri = t.building_iri\n" +
-                        "LEFT JOIN names AS n on c.building_iri = n.building_iri AND c.ontobuilt = n.ontobuilt";
+                        "LEFT JOIN names AS n on c.building_iri = n.building_iri AND c.ontobuilt = n.ontobuilt;" +
+                        "CREATE INDEX usage_area_index ON %s (building_iri);";
 
-                rdbStoreClient.executeUpdate(String.format(sql, view, usageTable, usageTable));
+                rdbStoreClient.executeUpdate(String.format(sql, view, view, usageTable, pointTable, polygonTable, usageTable, view));
         }
 
-        public void addMaterializedView(String usageTable, String addressTable, String schema, String osmSchema) {
-                String materializedView ="-- Drop the materialized view if it exists\n" +
-                        "DROP MATERIALIZED VIEW IF EXISTS "+schema+".buildinginfo_osm;\n" +
-                        "\n" +
-                        "-- Create a new materialized view named \"buildinginfo_osm\" in the \"buildinginfo\" schema\n" +
-                        "CREATE MATERIALIZED VIEW "+schema+".buildinginfo_osm AS\n" +
-                        "WITH cte AS (SELECT DISTINCT COALESCE(u.building_iri, a.building_iri) AS building_iri,\n" +
-                        "u.propertyusage_iri, u.ontobuilt, u.usageshare,\n" +
-                        "a.address_iri, a.country, a.city, a.street, a.house_number, a.postcode\n" +
-                        "FROM "+usageTable+" AS u\n" +
-                        "FULL OUTER JOIN "+addressTable+" AS a ON u.building_iri = a.building_iri)\n" +
-                        "\n" +
-                        "SELECT DISTINCT c.*, COALESCE(p.name, o.name) AS name\n" +
-                        "FROM cte AS c\n" +
-                        "LEFT JOIN "+osmSchema+".points AS p ON c.building_iri = p.building_iri\n" +
-                        "LEFT JOIN "+osmSchema+".polygons AS o ON c.building_iri = o.building_iri;";
-
-
+        public void addGeoserverView(String view, String usageView, String pointTable, String polygonTable) {
                 String materializedView_geoserver= "-- Drop the materialized view if it exists\n" +
-                        "DROP MATERIALIZED VIEW IF EXISTS "+schema+".buildingusage_geoserver;\n" +
-                        "\n" +
-                        "CREATE MATERIALIZED VIEW "+schema+".buildingusage_geoserver AS\n" +
-                        "WITH uuid_table AS (\n" +
-                        "    SELECT strval AS uuid, cityobject_id\n" +
-                        "    FROM citydb.cityobject_genericattrib\n" +
-                        "    WHERE attrname = 'uuid'\n" +
-                        "), iri_table AS (\n" +
-                        "    SELECT urival AS iri, cityobject_id\n" +
-                        "    FROM citydb.cityobject_genericattrib\n" +
-                        "    WHERE attrname = 'iri'\n" +
-                        "), usageTable AS (\n" +
-                        "    SELECT building_iri AS iri, propertyusage_iri, ontobuilt, usageshare\n" +
-                        "    FROM "+schema+".usage\n" +
-                        "), pointsTable AS (\n" +
-                        "    SELECT building_iri AS iri, name\n" +
-                        "    FROM "+osmSchema+".points\n" +
-                        "), polygonsTable AS (\n" +
-                        "    SELECT building_iri AS iri, name\n" +
-                        "    FROM "+osmSchema+".polygons\n" +
-                        ")\n" +
-                        "SELECT DISTINCT\n" +
-                        "    b.id AS building_id,\n" +
-                        "    CASE\n" +
-                        "        WHEN COALESCE(pointsTable.name, polygonsTable.name) IS NOT NULL\n" +
-                        "        THEN COALESCE(pointsTable.name, polygonsTable.name)\n" +
-                        "        ELSE CONCAT('Building ', uuid_table.cityobject_id)\n" +
-                        "    END AS name,\n" +
-                        "    COALESCE(measured_height, 100.0) AS building_height,\n" +
-                        "    public.ST_Transform(geometry, 4326) AS geom,\n" +
-                        "    uuid,\n" +
-                        "    iri_table.iri,\n" +
-                        "    propertyusage_iri,\n" +
-                        "    ontobuilt,\n" +
-                        "    usageshare\n" +
-                        "FROM\n" +
-                        "    citydb.building b\n" +
-                        "JOIN\n" +
-                        "    citydb.surface_geometry sg ON sg.root_id = b.lod0_footprint_id\n" +
-                        "JOIN\n" +
-                        "    uuid_table ON b.id = uuid_table.cityobject_id\n" +
-                        "JOIN\n" +
-                        "    iri_table ON b.id = iri_table.cityobject_id\n" +
-                        "LEFT JOIN\n" +
-                        "    pointsTable ON uuid_table.uuid = pointsTable.iri\n" +
-                        "LEFT JOIN\n" +
-                        "    polygonsTable ON uuid_table.uuid = polygonsTable.iri\n" +
-                        "LEFT JOIN\n" +
-                        "    usageTable ON uuid_table.uuid = usageTable.iri\n" +
-                        "WHERE\n" +
-                        "    sg.geometry IS NOT NULL\n" +
-                        "    AND COALESCE(measured_height, 100.0) != '0';\n" +
-                        "CREATE INDEX usage_index ON "+schema+".buildingusage_geoserver (ontobuilt);\n" + 
-                        "CREATE INDEX geometry_index ON "+schema+".buildingusage_geoserver USING GIST (geom);";
+                        "DROP MATERIALIZED VIEW IF EXISTS %s;\n" +
+                        "CREATE MATERIALIZED %s AS" +
+                        "WITH osm AS (SELECT building_iri, area, name FROM %s WHERE building IRI IS NOT NULL\n" +
+                        "UNION SELECT building_iri, area, name FROM %s WHERE building IRI IS NOT NULL),\n" +
+                        "names AS (SELECT o.building_iri, o.name FROM osm AS o JOIN (" +
+                        "SELECT building_iri,  MAX(COALESCE(area, 0))AS m FROM OSM GROUP BY building_iri) AS max\n" +
+                        "ON o.building_iri = max.building_iri AND COALESCE(o.area, 0) = max.m),\n" +
+                        "geometry AS (SELECT cga.strval AS uuid, public.ST_Collect(public.ST_Transform(sg.geometry, 4326)) AS geometry, AVG(b.measured_height) AS building_height\n" +
+                        "FROM citydb.building AS b" +
+                        "INNER JOIN citydb.cityobject_genericattrib AS cga ON b.id = cga.cityobject_id\n" +
+                        "INNER JOIN citydb.surface_geometry AS sg ON b.lod0_footprint_id = sg.parent_id\n" +
+                        "WHERE sg.geometry IS NOT NULL AND cga.attrname = \'uuid\'\n" +
+                        "GROUP BY cga.strval)\n" +
+                        "SELECT u.building_iri, u.ontobuilt, u.usageshare, n.name, g.geometry, g.building_height" +
+                        "FROM %s AS u\n" +
+                        "LEFT JOIN geometry AS g ON u.building_iri = g.uuid\n" +
+                        "LEFT JOIN names AS n ON u.building_iri = n.building_iri;\n" +
+                        "CREATE INDEX %s ON %s (ontobuilt);\n" +
+                        "CREATE INDEX %s ON %s USING GIST (geometry);";
 
+                String usage_index = "usage_index_" + UUID.randomUUID();
+                String geo_index = "geo_index_" + UUID.randomUUID();
 
-                rdbStoreClient.executeUpdate(materializedView);
-                rdbStoreClient.executeUpdate(materializedView_geoserver);
+                rdbStoreClient.executeUpdate(String.format(materializedView_geoserver, view, view, pointTable, polygonTable, usageView, usage_index, view, geo_index, view));
         }
 }
