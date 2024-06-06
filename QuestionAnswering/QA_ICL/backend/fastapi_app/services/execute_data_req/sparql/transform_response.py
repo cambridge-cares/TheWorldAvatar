@@ -4,7 +4,7 @@ from typing import Annotated, Sequence
 
 from fastapi import Depends
 
-from model.nlq2req import SparqlNodeMappingConfig
+from model.nlq2datareq import SparqlNodeMappingConfig
 from services.processs_response.augment_node import NodeDataRetriever
 from services.processs_response.ontocompchem import get_ontocompchem_nodeDataRetriever
 from services.processs_response.ontokin import get_ontokin_nodeDataRetriever

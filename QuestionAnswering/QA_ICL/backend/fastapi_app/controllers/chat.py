@@ -10,7 +10,7 @@ import tiktoken
 
 from config import AppSettings, get_app_settings
 from services.exceptions import QARequestArtifactNotFound
-from services.qa_artifact_store import QARequestArtifactStore, get_qaReq_artifactStore
+from services.stores.qa_artifact_store import QARequestArtifactStore, get_qaReq_artifactStore
 
 logger = logging.getLogger(__name__)
 

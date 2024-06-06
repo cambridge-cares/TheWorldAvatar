@@ -2,18 +2,18 @@ import numpy as np
 from redis import Redis
 from redis.commands.search.field import VectorField
 
-from services.embed import IEmbedder, TritonEmbedder
-from services.ingest import DataIngester, IngestArgs, load_ingest_args
-from services.redis import does_index_exist
-from model.nlq2req import (
+from model.nlq2datareq import (
     EXAMPLES_INDEX_NAME,
     EXAMPLES_KEY_PREFIX,
     Nlq2DataReqExample,
     Nlq2DataReqExampleProcessed,
 )
+from services.embed import IEmbedder, TritonEmbedder
+from services.ingest import DataIngester, IngestArgs, load_ingest_args
+from services.redis import does_index_exist
 
 
-EXAMPLES_DIRNAME = "examples"
+EXAMPLES_DIRNAME = "nlq2datareq_examples"
 EXAMPLES_PROCESS_BATCHSIZE = 512
 EXAMPLES_INSERT_BATCHSIZE = 512
 

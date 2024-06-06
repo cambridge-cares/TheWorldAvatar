@@ -9,13 +9,13 @@ from model.qa import (
     QAResponseMetadata,
     TranslationContext,
 )
-from services.entity_store import EntityStore, get_entity_store
-from services.example_store import (
-    ExampleStore,
+from services.stores.entity_store import EntityStore, get_entity_store
+from services.stores.nlq2datareq_example_store import (
+    Nlq2DataReqExampleStore,
     get_example_store,
 )
-from services.qa_artifact_store import QARequestArtifactStore, get_qaReq_artifactStore
-from services.schema_store import SchemaStore, get_schema_store
+from services.stores.qa_artifact_store import QARequestArtifactStore, get_qaReq_artifactStore
+from services.stores.schema_store import SchemaStore, get_schema_store
 from services.execute_data_req import DataReqExecutor, get_dataReq_executor
 from services.translate_nlq import Nlq2DataReqTranslator, get_nlq2datareq_translator
 
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 class DataSupporter:
     def __init__(
         self,
-        example_store: ExampleStore,
+        example_store: Nlq2DataReqExampleStore,
         schema_store: SchemaStore,
         translator: Nlq2DataReqTranslator,
         entity_store: EntityStore,
@@ -106,7 +106,7 @@ class DataSupporter:
 
 def get_data_supporter(
     schema_store: Annotated[SchemaStore, Depends(get_schema_store)],
-    example_store: Annotated[ExampleStore, Depends(get_example_store)],
+    example_store: Annotated[Nlq2DataReqExampleStore, Depends(get_example_store)],
     translator: Annotated[Nlq2DataReqTranslator, Depends(get_nlq2datareq_translator)],
     entity_store: Annotated[EntityStore, Depends(get_entity_store)],
     executor: Annotated[DataReqExecutor, Depends(get_dataReq_executor)],

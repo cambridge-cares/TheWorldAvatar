@@ -1,7 +1,8 @@
 from typing import Annotated, Sequence
 
 from fastapi import Depends
-from model.nlq2req import FuncDataReqForm
+
+from model.nlq2datareq import FuncDataReqForm
 from model.qa import DataItem
 from services.funcs.base import Name2Func
 from services.funcs.sg_building import SGBuildingFuncExecutor, get_sgBuilding_funcExec

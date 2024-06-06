@@ -5,9 +5,9 @@ from typing import Annotated
 from fastapi import Depends
 
 from constants.prefixes import PREFIX_NAME2URI, TWA_ABOX_PREFIXES
-from model.nlq2req import SparqlDataReqForm
-from services.kg import KgClient
+from model.nlq2datareq import SparqlDataReqForm
 from model.qa import DataItem, DocumentCollection, TableData
+from services.kg import KgClient
 from utils.collections import FrozenDict
 from utils.json import deep_pd_json_normalize_list
 from utils.rdf import filter_remove_iris_from_list, flatten_sparql_select_response
