@@ -1,50 +1,49 @@
-"use client"
+'use client'
 
-import * as React from "react"
+import * as React from 'react'
 
-import { cn } from "@/lib/utils";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { cn } from '@/lib/utils'
+import { MagnifyingGlassIcon, ReloadIcon } from '@radix-ui/react-icons'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
-
-export interface NLPSearchFormProps extends React.HTMLAttributes<HTMLFormElement> {
+export interface NLPSearchFormProps
+  extends React.FormHTMLAttributes<HTMLFormElement> {
   inputValue: string
   onInputChange: React.ChangeEventHandler<HTMLInputElement>
-  disabled: boolean
+  isProcessing: boolean
 }
 
-export function NLPSearchForm(
-  {
-    onSubmit,
-    inputValue,
-    onInputChange,
-    disabled,
-    className,
-    ...props
-  }: NLPSearchFormProps
-) {
-  return (
+const NLPSearchForm = React.forwardRef<HTMLFormElement, NLPSearchFormProps>(
+  ({ inputValue, onInputChange, isProcessing, className, ...props }, ref) => (
     <form
-      className={cn("flex justify-center items-center", className)}
-      onSubmit={onSubmit}
+      ref={ref}
+      className={cn('flex justify-center items-center', className)}
       {...props}
     >
       <Input
-        placeholder="Type your query..."
-        required className="mr-2"
+        placeholder='Type your query...'
+        required
+        className='mr-2'
         value={inputValue}
         onChange={onInputChange}
-        disabled={disabled}
+        disabled={isProcessing}
       />
       <Button
-        type="submit"
-        variant="outline"
-        size="icon"
-        disabled={disabled}
+        type='submit'
+        variant='outline'
+        size='icon'
+        disabled={isProcessing}
       >
-        <MagnifyingGlassIcon />
+        {isProcessing ? (
+          <ReloadIcon className='animate-spin' />
+        ) : (
+          <MagnifyingGlassIcon />
+        )}
       </Button>
     </form>
   )
-}
+)
+NLPSearchForm.displayName = 'NLPSearchForm'
+
+export { NLPSearchForm }
