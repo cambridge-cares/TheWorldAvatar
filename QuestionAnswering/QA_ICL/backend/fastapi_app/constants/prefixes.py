@@ -4,6 +4,8 @@ URI_SKOS = "http://www.w3.org/2004/02/skos/core#"
 
 URI_UNIT = "http://qudt.org/vocab/unit/"
 URI_OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/"
+URI_PT = "http://www.daml.org/2003/01/periodictable/PeriodicTable#"
+URI_GC = "http://purl.org/gc/"
 URI_BLDG = "http://www.opengis.net/citygml/building/2.0/"
 URI_GEO = "http://www.opengis.net/ont/geosparql#"
 URI_GEOF = "http://www.opengis.net/def/function/geosparql/"
@@ -37,6 +39,8 @@ PREFIX_NAME2URI = {
     "skos": URI_SKOS,
     "unit": URI_UNIT,
     "om": URI_OM,
+    "pt": URI_PT,
+    "gc": URI_GC,
     "bldg": URI_BLDG,
     "geo": URI_GEO,
     "geof": URI_GEOF,

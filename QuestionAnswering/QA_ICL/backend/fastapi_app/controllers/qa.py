@@ -16,8 +16,8 @@ from services.example_store import (
 )
 from services.qa_artifact_store import QARequestArtifactStore, get_qaReq_artifactStore
 from services.schema_store import SchemaStore, get_schema_store
-from .execute_data_req import DataReqExecutor, get_dataReq_executor
-from .translate import Nlq2DataReqTranslator, get_nlq2datareq_translator
+from services.execute_data_req import DataReqExecutor, get_dataReq_executor
+from services.translate_nlq import Nlq2DataReqTranslator, get_nlq2datareq_translator
 
 
 logger = logging.getLogger(__name__)

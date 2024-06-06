@@ -3,13 +3,11 @@ import logging
 from typing import Annotated
 
 from fastapi import Depends
-from redis import Redis
 
 from constants.prefixes import PREFIX_NAME2URI, TWA_ABOX_PREFIXES
 from model.nlq2req import SparqlDataReqForm
 from services.kg import KgClient
-from model.qa import DataItem, DocumentCollection, QARequestArtifact, TableData
-from services.qa_artifact_store import QARequestArtifactStore
+from model.qa import DataItem, DocumentCollection, TableData
 from utils.collections import FrozenDict
 from utils.json import deep_pd_json_normalize_list
 from utils.rdf import filter_remove_iris_from_list, flatten_sparql_select_response
