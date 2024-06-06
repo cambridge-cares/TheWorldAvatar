@@ -4,7 +4,7 @@ from redis.commands.search.field import TextField, VectorField, TagField
 import regex
 
 from services.ingest import DataIngester, IngestArgs, load_ingest_args
-from services.entity_store import get_cls2config
+from services.stores.entity_store import get_cls2config
 from services.embed import IEmbedder, TritonEmbedder
 from services.redis import does_index_exist
 from model.lexicon import (
