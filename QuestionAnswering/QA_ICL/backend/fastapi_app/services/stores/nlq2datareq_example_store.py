@@ -52,7 +52,7 @@ class Nlq2DataReqExampleStore:
 
 
 @cache
-def get_example_store(
+def get_nlq2datareq_exampleStore(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
 ):
