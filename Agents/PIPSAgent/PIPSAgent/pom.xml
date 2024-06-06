@@ -137,6 +137,18 @@
             <version>4.7.0</version>
         </dependency>
 
+        <!-- keycloak -->
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-authz-client</artifactId>
+            <version>21.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-core</artifactId>
+            <version>21.0.1</version>
+        </dependency>
+        
         <!-- Logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
