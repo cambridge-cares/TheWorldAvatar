@@ -1,5 +1,3 @@
-PREFIX oss: <http://opendata.caceres.es/def/ontosemanasanta#>
-PREFIX os: <http://www.w3.org/2000/10/swap/os#>
 PREFIX bld: <http://biglinkeddata.com/>
 PREFIX bl: <https://w3id.org/biolink/vocab/>
 PREFIX bot: <https://w3id.org/bot#>
@@ -14,24 +12,11 @@ PREFIX dbo: <https://dbpedia.org/ontology/>
 PREFIX ontoplot: <https://www.theworldavatar.com/kg/landplot/>
 PREFIX plot: <https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
-PREFIX ost: <https://www.theworldavatar.com/kg/ontostreet/>
-PREFIX zone:   <https://www.theworldavatar.com/kg/ontozoning/>
-PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
-SELECT DISTINCT ?landplot ?type ?areaValue ?affectedArea
+SELECT *
 WHERE {
-  ?s a sea:SeaLevelChange.
-  ?s sea:hasSSPScenario "ssp585".
-  ?s sea:hasProjectionYear "2150"^^xsd:double.
-  ?s sea:hasConfidenceLevel "low".
-  ?s sea:hasPercentageQuantile "95"^^xsd:double.
-  ?s sea:hasPotentialImpact ?landplot.
-  ?landplot a plot:Plot.
-  ?landplot zone:hasLandUseType ?type.
-  ?landplot plot:hasPlotArea ?area.
-  ?landplot sea:hasAffectedArea ?affectedArea. 
-  ?area om:hasValue ?areameasure.
-  ?areameasure om:hasNumericalValue ?areaValue.
+  	?building sea:hasPotentialImpact ?s.
+  	?s a bldg:Building.
+  	?s bldg:lod0FootPrint ?g.
 }
-ORDER BY DESC(?affectedArea)
-LIMIT 10
+LIMIT 5

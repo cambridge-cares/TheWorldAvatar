@@ -112,7 +112,7 @@ public class ImpactAssessor {
                                              "SELECT\n" +
                                              "    slr.uuid AS slr_uuid,\n" +
                                              "    lp.ogc_fid AS lp_uuid,\n" +
-                                             "    ROUND(ST_AREA(ST_TRANSFORM(ST_INTERSECTION(slr.geom, ST_MAKEVALID(lp.\"lod1Geometry\")), 3857))::numeric, 2) AS affectedarea\n" +
+                                             "ROUND(ST_AREA(ST_TRANSFORM(ST_INTERSECTION(slr.geom, ST_MAKEVALID(lp.\"lod1Geometry\")), 4326)::geography)::numeric, 2) AS affectedarea" +
                                              "FROM slr\n" +
                                              "JOIN landplot lp ON ST_INTERSECTS(slr.geom, lp.\"lod1Geometry\");";
 
