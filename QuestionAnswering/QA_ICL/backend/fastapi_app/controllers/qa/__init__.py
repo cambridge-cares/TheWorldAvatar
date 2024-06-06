@@ -51,7 +51,9 @@ class DataSupporter:
         examples = self.example_store.retrieve_examples(nlq=query, k=10)
         logger.info("Retrieved examples: " + str(examples))
 
-        translation_context = TranslationContext(examples=examples, schema_relations=schema)
+        translation_context = TranslationContext(
+            examples=examples, schema_relations=schema
+        )
         logger.info("Translating input question into data request...")
         # KIV: example permutation
         data_req = self.translator.translate(
@@ -63,13 +65,17 @@ class DataSupporter:
             "Performing entity linking for bindings: " + str(data_req.entity_bindings)
         )
         var2iris = {
-            var: [
-                iri
-                for val in binding.values
-                for iri in self.entity_store.link(
-                    cls=binding.cls, text=val.text, identifier=val.identifier
+            var: list(
+                set(
+                    [
+                        iri
+                        for val in binding.values
+                        for iri in self.entity_store.link(
+                            cls=binding.cls, text=val.text, identifier=val.identifier
+                        )
+                    ]
                 )
-            ]
+            )
             for var, binding in data_req.entity_bindings.items()
         }
         logger.info("Linked IRIs: " + str(var2iris))
