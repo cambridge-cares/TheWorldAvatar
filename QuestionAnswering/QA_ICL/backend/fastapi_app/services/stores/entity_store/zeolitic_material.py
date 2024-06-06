@@ -1,7 +1,7 @@
 from typing import Annotated, Optional
 
 from fastapi import Depends
-from services.entity_store.base import IEntityLinker
+from services.stores.entity_store.base import IEntityLinker
 from services.kg import KgClient, get_ontozeolite_bgClient
 
 

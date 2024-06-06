@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 from fastapi import Depends
 
 from services.kg import get_sgDispersion_bgClient
-from services.entity_store.base import IEntityLinker
+from services.stores.entity_store.base import IEntityLinker
 from services.kg import KgClient
 
 

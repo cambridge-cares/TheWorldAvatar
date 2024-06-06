@@ -35,7 +35,7 @@ Your task is to translate the following question to an executable data request. 
         openai_model: str,
     ):
         self.openai_client = OpenAI(base_url=openai_base_url, api_key=openai_api_key)
-        self.model = openai_model
+        self.openai_model = openai_model
         self.datareq_adapter = TypeAdapter(DataRequest)
 
     def translate(
@@ -62,7 +62,7 @@ Your task is to translate the following question to an executable data request. 
         logger.info("PROMPT:\n" + prompt)
 
         res = self.openai_client.chat.completions.create(
-            model=self.model,
+            model=self.openai_model,
             response_format={"type": "json_object"},
             messages=[
                 {"role": "system", "content": self.SYSTEM_MSG},
