@@ -7,7 +7,7 @@ from fastapi import Depends
 import shapely
 import shapely.wkt
 
-from services.entity_store import EntityStore, get_entity_store
+from services.stores.entity_store import EntityStore, get_entity_store
 from services.funcs.base import Name2Func
 from services.kg import KgClient, get_sg_ontopClient
 from model.qa import WKTGeometryData

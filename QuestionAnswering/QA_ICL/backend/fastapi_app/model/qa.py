@@ -3,7 +3,7 @@ from typing import Annotated, Literal, Sequence
 
 from pydantic import BaseModel, Field
 
-from model.nlq2req import (
+from model.nlq2datareq import (
     DataRequest,
     Nlq2DataReqExample,
 )

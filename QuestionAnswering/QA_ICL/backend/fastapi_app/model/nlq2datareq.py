@@ -1,9 +1,9 @@
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 
 
-EXAMPLES_KEY_PREFIX = "nlq2datareqExamples:"
-EXAMPLES_INDEX_NAME = "idx:nlq2datareqExamples_vss"
+NLQ2DATAREQ_EXAMPLES_KEY_PREFIX = "nlq2datareqExamples:"
+NLQ2DATAREQ_EXAMPLES_INDEX_NAME = "idx:nlq2datareqExamples_vss"
 
 
 class LexicalBindingValue(BaseModel):

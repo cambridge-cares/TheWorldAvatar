@@ -3,7 +3,7 @@ from redis import Redis
 from redis.commands.search.field import TextField, VectorField, TagField
 import regex
 
-from services.ingest import DataIngester, IngestArgs, load_ingest_args
+from services.ingest import DataIngester, InsertThenIndexArgs, load_insert_then_index_args
 from services.stores.entity_store import get_cls2config
 from services.embed import IEmbedder, TritonEmbedder
 from services.redis import does_index_exist
@@ -74,7 +74,7 @@ def make_entity_search_schema(vector_dim: int):
     )
 
 
-def main(args: IngestArgs):
+def main(args: InsertThenIndexArgs):
     redis_client = Redis(host=args.redis_host, decode_responses=True)
     if does_index_exist(redis_client=redis_client, index_name=ENTITIES_INDEX_NAME):
         print(
@@ -127,5 +127,5 @@ def main(args: IngestArgs):
 
 
 if __name__ == "__main__":
-    args = load_ingest_args()
+    args = load_insert_then_index_args()
     main(args)

@@ -7,7 +7,7 @@ import requests
 
 from services.geocoding.base import IGeocoder
 from services.geocoding.serial import get_serial_geocoder
-from services.entity_store import EntityStore, get_entity_store
+from services.stores.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient
 
 from services.funcs.base import Name2Func
