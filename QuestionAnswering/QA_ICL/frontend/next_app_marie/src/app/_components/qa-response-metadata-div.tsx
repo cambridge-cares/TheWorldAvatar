@@ -18,6 +18,15 @@ export function QAResponseMetadataDiv({ qaResponseMetadata, ...props }: QARespon
     <div {...props}>
       <h2 className="text-xl font-semibold text-blue-500">Processing steps</h2>
       <Accordion type="multiple">
+        {qaResponseMetadata.rewritten_question && (
+          <AccordionItem value="rewritten_question">
+            <AccordionTrigger>Rewritten input question</AccordionTrigger>
+            <AccordionContent>
+              <p>The input query has been rewritten into the following:</p>
+              <p>&quot;{qaResponseMetadata.rewritten_question}&quot;</p>
+            </AccordionContent>
+          </AccordionItem>
+        )}
         <AccordionItem value="translation_context">
           <AccordionTrigger>Translation context</AccordionTrigger>
           <AccordionContent className="px-4">

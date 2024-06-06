@@ -106,7 +106,7 @@ class DataSupporter:
         return QAResponse(
             request_id=id,
             metadata=QAResponseMetadata(
-                rewritten_question=rewritten_query,
+                rewritten_question=rewritten_query if rewritten_query != query else None,
                 translation_context=translation_context,
                 data_request=data_req,
                 linked_variables=var2iris,
