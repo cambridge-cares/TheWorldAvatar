@@ -1,9 +1,9 @@
 import time
 
 from services.ingest import load_ingest_args
-import ingest_entities
-import ingest_examples
-import ingest_schema
+import ingest.entities as entities
+import ingest.nlq2datareq_examples as nlq2datareq_examples
+import ingest.schema as schema
 
 ATTEMPT_LIMIT = 5
 WAIT_INTERVAL = 15
@@ -14,9 +14,9 @@ if __name__ == "__main__":
     for i in range(ATTEMPT_LIMIT):
         print("Attempt num: " + str(i))
         try:
-            ingest_entities.main(args)
-            ingest_examples.main(args)
-            ingest_schema.main(args)
+            entities.main(args)
+            nlq2datareq_examples.main(args)
+            schema.main(args)
             break
         except Exception as e:
             print(e)

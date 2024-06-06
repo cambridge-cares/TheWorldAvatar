@@ -1,6 +1,6 @@
 import pytest
 
-from services.stores.nlq2datareq_example_store import Nlq2DataReqExample, ExampleStore
+from services.stores.nlq2datareq_example_store import Nlq2DataReqExample, Nlq2DataReqExampleStore
 
 
 @pytest.fixture(scope="class")
@@ -35,13 +35,13 @@ def nlq2action_retriever(redis_client, embedder):
         ),
     ]
 
-    yield ExampleStore(
+    yield Nlq2DataReqExampleStore(
         redis_client=redis_client, embedder=embedder, examples=iter(examples)
     )
 
 
 class TestNlq2ActionRetriever:
-    def test_retrieveExamples(self, nlq2action_retriever: ExampleStore):
+    def test_retrieveExamples(self, nlq2action_retriever: Nlq2DataReqExampleStore):
         # Arrange
         nlq = "Identify residential plots with a maximum permitted GFA more than 700 square meters."
 
