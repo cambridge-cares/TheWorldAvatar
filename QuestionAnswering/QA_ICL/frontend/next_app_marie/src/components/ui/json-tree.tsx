@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import React from "react";
-import * as ReactJSONTree from "react-json-tree";
+import React from 'react'
+import * as ReactJSONTree from 'react-json-tree'
 
 const THEME = {
   scheme: 'rjv-default',
@@ -22,9 +22,11 @@ const THEME = {
   base0C: '#6c71c4',
   base0D: '#586e75',
   base0E: '#2aa198',
-  base0F: '#268bd2'
-};
+  base0F: '#268bd2',
+}
 
-export const JSONTree = ({ ...props }: React.ComponentProps<typeof ReactJSONTree.JSONTree>) => {
-  return (<ReactJSONTree.JSONTree theme={THEME} {...props} />)
+export const JSONTree = ({
+  ...props
+}: React.ComponentProps<typeof ReactJSONTree.JSONTree>) => {
+  return <ReactJSONTree.JSONTree theme={THEME} {...props} />
 }

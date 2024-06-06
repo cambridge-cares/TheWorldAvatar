@@ -1,17 +1,24 @@
 export interface DocumentCollection {
-  type: "document_collection"
+  type: 'document_collection'
   data: { [key: string]: any }[]
 }
 
-export type TableDataValue = undefined | null | string | number | string[] | number[] | TableDataBase
+export type TableDataValue =
+  | undefined
+  | null
+  | string
+  | number
+  | string[]
+  | number[]
+  | TableDataBase
 
 export interface TableDataBase {
-  columns: { value: string, label: string }[]
+  columns: { value: string; label: string }[]
   data: { [key: string]: TableDataValue }[]
 }
 
 export interface TableData extends TableDataBase {
-  type: "table"
+  type: 'table'
 }
 
 export interface TypedSeries {
@@ -26,19 +33,23 @@ export interface ScatterPlotTrace {
 }
 
 export interface ScatterPlotData {
-  type: "scatter_plot"
+  type: 'scatter_plot'
   title: string
   traces: ScatterPlotTrace[]
 }
 
 export interface WKTGeometryData {
-  type: "wkt_geometry"
-  srs: "crs84"
+  type: 'wkt_geometry'
+  srs: 'crs84'
   title?: string
   literal: string
 }
 
-export type DataItem = DocumentCollection | TableData | ScatterPlotData | WKTGeometryData
+export type DataItem =
+  | DocumentCollection
+  | TableData
+  | ScatterPlotData
+  | WKTGeometryData
 
 export interface QARequest {
   question: string
@@ -55,14 +66,14 @@ export interface LexicalEntityBinding {
 }
 
 export interface SparqlDataReqForm {
-  type: "sparql"
+  type: 'sparql'
   namespace: string
   query: string
-  res_map: { [key: string]: { pkey: boolean, cls?: string } }
+  res_map: { [key: string]: { pkey: boolean; cls?: string } }
 }
 
 export interface FuncDataReqForm {
-  type: "func"
+  type: 'func'
   name: string
 }
 
@@ -99,7 +110,7 @@ export interface QAResponseMetadata {
 
 export interface QAResponse {
   request_id: string
-  metadata: QAResponseMetadata,
+  metadata: QAResponseMetadata
   data: DataItem[]
 }
 
