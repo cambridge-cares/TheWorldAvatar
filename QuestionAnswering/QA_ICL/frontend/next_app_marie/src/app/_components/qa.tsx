@@ -23,7 +23,7 @@ export default function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
   const [isQueryingChat, setIsQueryingChat] = React.useState(false)
   const [chatAnswer, setChatAnswer] = React.useState<string | undefined>(undefined)
 
-  const queryDataThenDisplay = async () => {
+  const queryDataThenDisplay = async (question: string) => {
     setIsQueryingQA(true)
     setQaResponse(undefined)
     setChatAnswer(undefined)
@@ -72,12 +72,12 @@ export default function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
   const handleExampleQuestionClick = async (qn: string, e: React.MouseEvent<HTMLLIElement>) => {
     e.preventDefault()
     setQuestion(qn)
-    await queryDataThenDisplay()
+    await queryDataThenDisplay(qn)
   }
 
   const handleNLPSearchFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    await queryDataThenDisplay()
+    await queryDataThenDisplay(question)
   }
 
   return (

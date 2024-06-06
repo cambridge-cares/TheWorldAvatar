@@ -91,6 +91,7 @@ export interface TranslationContext {
 }
 
 export interface QAResponseMetadata {
+  rewritten_question?: string
   translation_context: TranslationContext
   data_request: DataRequest
   linked_variables: { [key: string]: string[] }
