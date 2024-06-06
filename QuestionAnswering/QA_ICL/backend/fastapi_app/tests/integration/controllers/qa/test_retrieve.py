@@ -1,6 +1,6 @@
 import pytest
 
-from services.example_store import Nlq2DataReqExample, ExampleStore
+from services.stores.nlq2datareq_example_store import Nlq2DataReqExample, ExampleStore
 
 
 @pytest.fixture(scope="class")
