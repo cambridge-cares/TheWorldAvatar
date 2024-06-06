@@ -3,20 +3,11 @@ export interface DocumentCollection {
   data: { [key: string]: any }[]
 }
 
-export interface TableDataColumn {
-  value: string
-  label: string
-}
-
-export type TableDataValue = string | number | string[] | number[] | TableDataBase | undefined
-
-export interface TableDataRow {
-  [key: string]: TableDataValue
-}
+export type TableDataValue = undefined | null | string | number | string[] | number[] | TableDataBase
 
 export interface TableDataBase {
-  columns: TableDataColumn[]
-  data: TableDataRow[]
+  columns: { value: string, label: string }[]
+  data: { [key: string]: TableDataValue }[]
 }
 
 export interface TableData extends TableDataBase {
@@ -63,16 +54,11 @@ export interface LexicalEntityBinding {
   values: LexicalBindingValue[]
 }
 
-export interface SparqlNodeMappingConfig {
-  pkey: boolean
-  cls?: string
-}
-
 export interface SparqlDataReqForm {
   type: "sparql"
   namespace: string
   query: string
-  res_map: { [key: string]: SparqlNodeMappingConfig }
+  res_map: { [key: string]: { pkey: boolean, cls?: string } }
 }
 
 export interface FuncDataReqForm {
