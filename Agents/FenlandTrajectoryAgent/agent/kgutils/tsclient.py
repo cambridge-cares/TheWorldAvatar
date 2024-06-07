@@ -113,7 +113,7 @@ class TSClient:
         This method instantiates a new time series and immediately adds data to it.
         
         Arguments:
-            dataIRI (str): IRI of instance with hasTimeSeries relationship
+            dataIRI (str): List of the IRI of instance with hasTimeSeries relationship
             times (list): List of times/dates
             values (list): List of actual values
             ts_type (Java class): Java class of time series values
@@ -121,8 +121,8 @@ class TSClient:
         """
 
         with self.connect() as conn:
-            self.tsclient.initTimeSeries([dataIRI], [ts_type], time_format, conn)
-            ts = TSClient.create_timeseries(times, [dataIRI], [values])
+            self.tsclient.initTimeSeries(dataIRI, ts_type, time_format, conn)
+            ts = TSClient.create_timeseries(times, dataIRI, values)
             self.tsclient.addTimeSeriesData(ts, conn)
         logger.info(f"Time series successfully initialised in KG and RDB for dataIRI: {dataIRI}")
 
