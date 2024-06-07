@@ -1,7 +1,11 @@
 import pyderivationagent
 
 class UpdateKG:
-    """Parent class for the folder."""
+    """Parent class for the folder. Provides the following methods:
+    - query_triple: Queries the KG based on provided triples in where clause (triple) and select statement(select_var).
+
+        
+        """
 
 
     def __init__(self, query_endpoint, update_endpoint, kg_user, kg_password):
@@ -15,10 +19,12 @@ class UpdateKG:
             kg_password         = kg_password
         )
     def query_triple(self, triple, select_var):
-        """query a specified triple or tripple patter, simple query without fancy stuff
+        """Queries the KG based on provided triples in where clause (triple) and select statement(select_var).
         Inputs: 
-        triple:     String in where clause.
-        select_var: String with return variables
+            - triple:     String in where clause.
+            - select_var: String with return variables
+        Outputs:
+
         """
         query_triple = f"""
         {self.prefix}
@@ -30,8 +36,6 @@ class UpdateKG:
         # query
         return self.sparql_client.performQuery(query_triple)
         
-
-         
     def find_all_connections(self, iri):
         """Query all incoming and outgoing connections to preserve them after they are deleted."""
         query_incoming = f"""
