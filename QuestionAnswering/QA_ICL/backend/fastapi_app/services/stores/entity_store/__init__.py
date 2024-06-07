@@ -10,21 +10,19 @@ from redis import Redis
 from redis.commands.search.query import Query
 import regex
 
-from services.stores.entity_store.reaction import ReactionLinker, get_reaction_linker
+from services.stores.entity_store.ontokin import ReactionLinker, get_reaction_linker
 from utils.collections import FrozenDict
 from model.lexicon import ENTITIES_INDEX_NAME, ELConfig, ELConfigEntry
-from services.stores.entity_store.zeolitic_material import (
-    ZeoliticMaterialLinker,
-    get_zeoliticMaterial_linker,
-)
 from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
 from .base import IEntityLinker
 from .ship import ShipLinker, get_ship_linker
-from .species import SpeciesLinker, get_species_linker
-from .zeolite_framework import (
+from .ontospecies import SpeciesLinker, get_species_linker
+from .ontozeolite import (
     ZeoliteFrameworkLinker,
+    ZeoliticMaterialLinker,
     get_zeoliteFramework_linker,
+    get_zeoliticMaterial_linker,
 )
 
 logger = logging.getLogger(__name__)
