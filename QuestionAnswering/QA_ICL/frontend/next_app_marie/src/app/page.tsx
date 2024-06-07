@@ -7,7 +7,7 @@ import { default as matter } from 'gray-matter'
 import { QAFragment } from './_components/qa'
 import { IntroSection } from './_components/intro-section'
 import { ExampleQuestionGroup } from './_components/example-question-accordion'
-import { AdditionalInfoSection } from './_components/additional-info'
+import { AdditionalInfoSection } from './_components/additional-info-section'
 
 const PATH_TO_RESOURCES = path.join(process.cwd(), 'resources')
 const PATH_TO_EXAMPLE_QUESTIONS = path.join(
