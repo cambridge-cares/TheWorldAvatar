@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 
 import * as React from 'react'
-import { default as matter } from 'gray-matter'
+import matter from 'gray-matter'
 
 import { QAFragment } from './_components/qa'
 import { IntroSection } from './_components/intro-section'
