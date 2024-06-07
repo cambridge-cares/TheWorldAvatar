@@ -80,7 +80,6 @@ class SingaporeEndpointsSettings(BaseModel):
 class AppSettings(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    ga_measurement_id: str
     redis: RedisSettings
     text_embedding: TextEmbeddingSettings
     translator: OpenaiSettings
@@ -121,12 +120,10 @@ def get_app_settings():
     )
 
     adapter = TypeAdapter(AppSettings)
-    return adapter.validate_python(config)
+    settings = adapter.validate_python(config)
 
-
-class FrontendName(Enum):
-    MARIE = "marie"
-    ZAHA = "zaha"
+    logger.info("Loaded settings:\n" + settings.model_dump_json(indent=2))
+    return settings
 
 
 @cache
