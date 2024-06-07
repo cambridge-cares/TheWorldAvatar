@@ -74,7 +74,7 @@ class SparqlDataReqExecutor:
         table_data = TableData.from_data(flattened_docs)
         logger.info("Done")
 
-        data_artifact = docs_collection
+        data_artifact = table_data
 
         return [docs_collection, table_data], data_artifact
 
