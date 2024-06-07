@@ -2,7 +2,6 @@ from collections import defaultdict
 from typing import Sequence
 
 from services.kg import KgClient
-from utils.rdf import flatten_sparql_select_response
 
 
 # TODO: ORM
@@ -19,8 +18,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2trange = {
         binding["ThermoModel"]: {
@@ -52,8 +50,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2polys = defaultdict(list)
     for binding in bindings:
@@ -96,8 +93,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data = {
         binding["TransportModel"]: {

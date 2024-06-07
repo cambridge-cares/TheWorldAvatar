@@ -20,10 +20,9 @@ WHERE {{
 }}""".format(
             formula=kwargs["formula"]
         )
-        return [
-            row["Material"].value
-            for row in self.bg_client.querySelect(query).results.bindings
-        ]
+
+        _, bindings = self.bg_client.querySelectThenFlatten(query)
+        return [row["Material"] for row in bindings]
 
 
 def get_zeoliticMaterial_linker(

@@ -6,7 +6,6 @@ from fastapi import Depends
 from constants.prefixes import URI_OCC
 from services.kg import KgClient, get_ontocompchem_bgClient
 from services.processs_response.augment_node import NodeDataRetriever
-from utils.rdf import flatten_sparql_select_response
 
 
 # TODO: ORM
@@ -29,8 +28,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data: defaultdict[str, list[dict]] = defaultdict(list)
     for binding in bindings:
@@ -61,8 +59,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2values: defaultdict[str, list] = defaultdict(list)
     iri2unit: dict[str, str] = dict()
@@ -84,8 +81,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data = {
         binding["CalculationResult"]: {
@@ -119,8 +115,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     type2iris: defaultdict[str, list[dict]] = defaultdict(list)
     for binding in bindings:

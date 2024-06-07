@@ -12,7 +12,6 @@ from services.funcs.base import Name2Func
 from services.kg import KgClient, get_sg_ontopClient
 from model.qa import WKTGeometryData
 from services.wkt import WKTTextSRS
-from utils.rdf import flatten_sparql_select_response
 
 
 logger = logging.getLogger(__name__)
@@ -51,8 +50,7 @@ SELECT * WHERE {{
                 filter_values=", ".join("<{iri}>".format(iri=iri) for iri in iris)
             )
 
-            res = self.ontop_client.querySelect(query)
-            _, bindings = flatten_sparql_select_response(res)
+            _, bindings =  self.ontop_client.querySelectThenFlatten(query)
 
             iri2wkts = defaultdict(list)
             for binding in bindings:

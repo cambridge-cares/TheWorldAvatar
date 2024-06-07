@@ -1,6 +1,5 @@
 from typing import Sequence
 from services.kg import KgClient
-from utils.rdf import flatten_sparql_select_response
 
 
 def get_mechanism_data(kg_client: KgClient, iris: Sequence[str]):
@@ -15,8 +14,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data = {
         binding["Mechanism"]: {"Provenance": binding["Provenance"]}

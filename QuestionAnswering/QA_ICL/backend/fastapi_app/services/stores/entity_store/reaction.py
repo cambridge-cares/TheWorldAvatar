@@ -5,7 +5,6 @@ from fastapi import Depends
 
 from services.kg import KgClient, get_ontokin_bgClient
 from services.stores.entity_store.base import IEntityLinker
-from utils.rdf import flatten_sparql_select_response
 
 
 class ReactionLinker(IEntityLinker):
@@ -24,8 +23,7 @@ SELECT * WHERE {{
             equation=kwargs["equation"]
         )
 
-        res = self.bg_client.querySelect(query)
-        _, bindings = flatten_sparql_select_response(res)
+        _, bindings  = self.bg_client.querySelectThenFlatten(query)
         return [binding["Reaction"] for binding in bindings]
 
 
