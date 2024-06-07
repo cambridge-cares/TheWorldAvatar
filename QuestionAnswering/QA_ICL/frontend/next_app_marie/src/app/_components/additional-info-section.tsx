@@ -9,27 +9,27 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import Markdown from 'react-markdown'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
-export type TBoxInfoAccordionProps = React.ComponentPropsWithoutRef<
-  typeof Accordion
-> & {
+export type TBoxInfoTabsProps = React.ComponentPropsWithoutRef<typeof Tabs> & {
   data: { heading: string; mdContent: string }[]
 }
 
-export const TBoxInfoAccordion = ({
-  data,
-  ...props
-}: TBoxInfoAccordionProps) => (
-  <Accordion {...props}>
-    {data.map(({ heading, mdContent }, i) => (
-      <AccordionItem key={i} value={i.toString()}>
-        <AccordionTrigger>{heading}</AccordionTrigger>
-        <AccordionContent className='px-6'>
-          <Markdown className='prose prose-sm max-w-none'>{mdContent}</Markdown>
-        </AccordionContent>
-      </AccordionItem>
+export const TBoxInfoTabs = ({ data, ...props }: TBoxInfoTabsProps) => (
+  <Tabs defaultValue='0' {...props}>
+    <TabsList className='inline-flex mb-2'>
+      {data.map(({ heading }, i) => (
+        <TabsTrigger key={i} value={i.toString()}>
+          {heading}
+        </TabsTrigger>
+      ))}
+    </TabsList>
+    {data.map(({ mdContent }, i) => (
+      <TabsContent key={i} value={i.toString()}>
+        <Markdown className='prose prose-sm max-w-none'>{mdContent}</Markdown>
+      </TabsContent>
     ))}
-  </Accordion>
+  </Tabs>
 )
 
 export interface AdditionalInfoProps extends React.HTMLAttributes<HTMLElement> {
@@ -47,7 +47,7 @@ export const AdditionalInfoSection = ({
       <AccordionItem value='tbox_info'>
         <AccordionTrigger>Information on Chemistry Ontologies</AccordionTrigger>
         <AccordionContent className='px-4'>
-          <TBoxInfoAccordion type='single' collapsible data={tboxInfoData} />
+          <TBoxInfoTabs data={tboxInfoData} />
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value='history_info'>

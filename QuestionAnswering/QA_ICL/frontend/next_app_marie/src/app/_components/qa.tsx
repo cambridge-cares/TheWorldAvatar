@@ -4,17 +4,11 @@ import * as React from 'react'
 
 import { QAResponse } from '@/lib/model'
 import { queryChat, queryQa } from '@/lib/api'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import { NLPSearchForm } from './nlp-search-form'
 import {
-  ExampleQuestionAccordion,
+  ExampleQuestionTabs,
   ExampleQuestionGroup,
-} from './example-question-accordion'
+} from './example-question-tabs'
 import { QAResponseDiv } from './qa-response-div'
 
 export interface QAFragmentProps {
@@ -104,19 +98,11 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
   return (
     <>
       <section className='w-full md:max-w-screen-sm lg:max-w-screen-md mb-8'>
-        <Accordion type='single' collapsible className='w-full'>
-          <AccordionItem value='0'>
-            <AccordionTrigger>Example Questions</AccordionTrigger>
-            <AccordionContent className='px-4'>
-              <ExampleQuestionAccordion
-                type='single'
-                collapsible
-                data={exampleQuestionGroups}
-                questionOnClick={handleExampleQuestionClick}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <h2 className='text-lg font-medium mb-2'>Example Questions</h2>
+        <ExampleQuestionTabs
+          data={exampleQuestionGroups}
+          questionOnClick={handleExampleQuestionClick}
+        />
       </section>
       <section className='w-full md:max-w-screen-sm lg:max-w-screen-md mb-12'>
         <NLPSearchForm
