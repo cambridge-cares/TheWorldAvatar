@@ -4,7 +4,6 @@ from typing import Annotated, Sequence
 from fastapi import Depends
 from services.kg import KgClient, get_ontospecies_bgClient
 from services.processs_response.augment_node import NodeDataRetriever
-from utils.rdf import flatten_sparql_select_response
 
 
 # TODO: ORM
@@ -33,8 +32,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data = {
         binding["Species"]: {k: binding.get(k) for k in ["Label", "IUPACName", "InChI"]}
@@ -67,8 +65,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data = {
         binding["Property"]: {
@@ -93,8 +90,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data = {binding["s"]: {"Label": binding["Label"]} for binding in bindings}
     return [{"IRI": iri, **iri2data.get(iri, {})} for iri in iris]

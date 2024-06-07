@@ -24,10 +24,9 @@ SELECT ?Species WHERE {{
                     pred_key=pred_key, id_value=kwargs[id_key]
                 )
 
-                iris = [
-                    row["Species"].value
-                    for row in self.bg_client.querySelect(query).results.bindings
-                ]
+                _, bindings = self.bg_client.querySelectThenFlatten(query)
+                iris = [row["Species"] for row in bindings]
+
                 if iris:
                     return iris
 
@@ -47,10 +46,8 @@ SELECT ?Species WHERE {{
             texts=" ".join('"{val}"'.format(val=text) for text in texts)
         )
 
-        return [
-            binding["Species"].value
-            for binding in self.bg_client.querySelect(query).results.bindings
-        ]
+        _, bindings = self.bg_client.querySelectThenFlatten(query)
+        return [row["Species"] for row in bindings]
 
 
 @cache

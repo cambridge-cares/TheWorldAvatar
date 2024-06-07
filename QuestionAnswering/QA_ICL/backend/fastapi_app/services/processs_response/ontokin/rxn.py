@@ -4,7 +4,6 @@ from typing import Optional, Sequence
 
 from constants.prefixes import URI_OKIN
 from services.kg import KgClient
-from utils.rdf import flatten_sparql_select_response
 
 
 # TODO: ORM
@@ -20,8 +19,7 @@ GROUP BY ?Reaction""".format(
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data = {
         binding["Reaction"]: {"Equation": binding["Equation"]} for binding in bindings
@@ -54,8 +52,7 @@ WHERE {{
         ),
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data: defaultdict[str, list[dict]] = defaultdict(list)
     for binding in bindings:
@@ -117,8 +114,7 @@ WHERE {{
         ),
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data: defaultdict[str, list[dict]] = defaultdict(list)
     for binding in bindings:
@@ -190,8 +186,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2troedata = {
         binding["TroeModel"]: {k: v for k, v in binding.items() if k != "TroeModel"}
@@ -253,8 +248,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    res = kg_client.querySelect(query)
-    _, bindings = flatten_sparql_select_response(res)
+    _, bindings  = kg_client.querySelectThenFlatten(query)
 
     type2iris: defaultdict[str, list] = defaultdict(list)
     for binding in bindings:

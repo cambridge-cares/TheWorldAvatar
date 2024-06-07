@@ -4,7 +4,6 @@ from typing import Annotated
 from fastapi import Depends
 
 from config import AppSettings, get_app_settings
-from utils.rdf import flatten_sparql_select_response
 from services.kg import KgClient, get_sgCarpark_bgClient
 
 
@@ -35,8 +34,7 @@ LIMIT 1""".format(
             lon=lon,
         )
 
-        bg_res = self.bg_client.querySelect(query)
-        return flatten_sparql_select_response(bg_res)
+        return self.bg_client.querySelectThenFlatten(query)
 
 
 def get_nearestCarpark_locator(

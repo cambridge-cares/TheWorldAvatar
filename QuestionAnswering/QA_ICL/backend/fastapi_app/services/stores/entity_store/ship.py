@@ -25,9 +25,9 @@ SELECT ?IRI WHERE {{
 }}""".format(
             MMSI=kwargs["mmsi"]
         )
-        res = self.bg_client.querySelect(query)
+        _, bindings  = self.bg_client.querySelectThenFlatten(query)
 
-        return [binding["IRI"].value for binding in res.results.bindings]
+        return [binding["IRI"] for binding in bindings]
 
 
 @cache

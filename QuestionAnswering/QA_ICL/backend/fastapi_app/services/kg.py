@@ -8,6 +8,7 @@ from fastapi import Depends
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 from config import AppSettings, get_app_settings
+from utils.rdf import flatten_sparql_select_response
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +63,9 @@ class KgClient:
         logger.info("Execution done")
         return self.res_adapter.validate_python(res)
 
+    def querySelectThenFlatten(self, query: str):
+        res = self.querySelectThenFlatten(query)
+        return flatten_sparql_select_response(res)
 
 @cache
 def get_ontospecies_bgClient(

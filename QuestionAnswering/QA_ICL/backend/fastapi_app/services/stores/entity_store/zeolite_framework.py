@@ -20,10 +20,9 @@ WHERE {{
 }}""".format(
             framework_code=kwargs["framework_code"]
         )
-        return [
-            row["Framework"].value
-            for row in self.bg_client.querySelect(query).results.bindings
-        ]
+
+        _, bindings = self.bg_client.querySelectThenFlatten(query)
+        return [row["Framework"] for row in bindings]
 
 
 def get_zeoliteFramework_linker(
