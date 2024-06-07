@@ -90,6 +90,7 @@ DataItem = Annotated[
 
 class QARequestArtifact(BaseModel):
     nlq: str
+    nlq_rewritten: str | None
     data_req: DataRequest
     data: object
 
