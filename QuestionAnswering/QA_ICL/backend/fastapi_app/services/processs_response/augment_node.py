@@ -20,17 +20,19 @@ class NodeDataRetriever:
         if not getter:
             return data
 
-        iri2idxes = defaultdict(list)
+        iri2idxes: defaultdict[str, list[str]] = defaultdict(list)
         for idx, iri in enumerate(iris):
             if not isinstance(iri, str):
                 continue
             iri2idxes[iri].append(idx)
 
-        str_iris = iri2idxes.keys()
-        iri2dataidx = {iri: i for i, iri in enumerate(str_iris)}
+        unique_iris = list(iri2idxes.keys())
+        iri2dataidx = {iri: i for i, iri in enumerate(unique_iris)}
         node_data = [
-            FrozenDict.from_dict(obj)
-            for obj in getter(kg_client=self.kg_client, iris=str_iris)
+            FrozenDict.from_dict({"IRI": iri, **obj})
+            for iri, obj in zip(
+                unique_iris, getter(kg_client=self.kg_client, iris=unique_iris)
+            )
         ]
 
         for iri, idxes in iri2idxes.items():

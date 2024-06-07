@@ -1,5 +1,4 @@
 from constants.prefixes import PREFIX_NAME2URI
-from services.kg import SparqlSelectResponse
 
 
 def extract_name(iri: str):
@@ -17,14 +16,6 @@ def try_make_prefixed_iri(iri: str):
                 prefix=prefix_name, name=iri[len(prefix_uri) :]
             )
     return iri
-
-
-def flatten_sparql_select_response(res: SparqlSelectResponse):
-    vars = list(res.head.vars)
-    bindings = [
-        {k: v.value for k, v in binding.items()} for binding in res.results.bindings
-    ]
-    return vars, bindings
 
 
 def filter_deep_remove_iris(
