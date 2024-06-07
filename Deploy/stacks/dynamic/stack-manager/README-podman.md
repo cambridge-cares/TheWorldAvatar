@@ -2,6 +2,8 @@
 
 It is assumed that the reader is familiar with [how to operate the stack using Docker](./README.md). Using [podman](https://podman.io/) is largely similar, and this readme addresses only points where differences arise.
 
+Success has been reported with podman v4.6.1 on Rocky v8.9 and v9.3, podman v4.9.3 on Ubuntu v24.04, and podman v4.9.4-rhel on Rocky 8.9. Running the stack with any podman version <4 is known not to work on any tested platform.
+
 ## Installing podman
 
 If you have admin access to your host machine and need to install podman yourself, please follow the instructions [here](https://podman.io/docs/installation).
