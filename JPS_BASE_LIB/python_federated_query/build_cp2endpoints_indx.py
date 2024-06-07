@@ -61,7 +61,7 @@ class BuildKGIndex:
                 # print(f"Class: {class_uri}, Property: {property_uri}")
                 
                 # Check if class_uri and property_uri are not empty
-                if not class_uri or not property_uri:
+                if (not class_uri) or (not property_uri):
                     continue
                 
                 # Check if class_uri already exists in cp_index
@@ -145,5 +145,6 @@ if __name__ == "__main__":
     print(f"Start processing endpoint: {endpoint_url}")
     kgs.start_processing(endpoint_url)
   
-  kgs.save_concept2property_invindex('C:/Users/printer_admin/Downloads/KGs/cp_ep_invindex.json')
-  print("Completed.")
+  saved_datafile='C:/Users/printer_admin/Downloads/KGs/cp_ep_invindex.json'
+  kgs.save_concept2property_invindex(saved_datafile)
+  print(f"Completed and saved in {saved_datafile}.")
