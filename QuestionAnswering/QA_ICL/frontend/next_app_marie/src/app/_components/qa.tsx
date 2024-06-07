@@ -103,7 +103,7 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
 
   return (
     <>
-      <section className='max-w-3xl w-full'>
+      <section className='w-full md:max-w-screen-sm lg:max-w-screen-md'>
         <Accordion type='single' collapsible className='w-full mb-8'>
           <AccordionItem value='0'>
             <AccordionTrigger>Example Questions</AccordionTrigger>
@@ -118,7 +118,7 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
           </AccordionItem>
         </Accordion>
       </section>
-      <section className='max-w-3xl mb-12 w-full'>
+      <section className='w-full md:max-w-screen-sm lg:max-w-screen-md mb-12'>
         <NLPSearchForm
           ref={nlpFormRef}
           onSubmit={handleNLPSearchFormSubmit}
@@ -127,15 +127,13 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
           isProcessing={isProcessing}
         />
       </section>
-      <section className='mb-12 w-full flex flex-col space-y-4 justify-center'>
+      <section className='w-full md:max-w-screen-md lg:max-w-screen-lg mb-12'>
         {(qaResponse || chatAnswer) && (
-          <div className='flex justify-center'>
-            <QAResponseDiv
-              qaResponse={qaResponse}
-              chatAnswer={chatAnswer}
-              className='p-4 w-full md:w-3/4 lg:w-2/4'
-            />
-          </div>
+          <QAResponseDiv
+            qaResponse={qaResponse}
+            chatAnswer={chatAnswer}
+            className='w-full'
+          />
         )}
       </section>
     </>
