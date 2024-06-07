@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from config import FrontendName, get_frontend_name
+from config import get_frontend_name
 from controllers.html import (
     PageMetadata,
     QADomainSampleQuestions,
@@ -23,7 +23,7 @@ router = APIRouter()
 @router.get("/", response_class=HTMLResponse)
 async def home(
     request: Request,
-    frontend_name: Annotated[FrontendName, Depends(get_frontend_name)],
+    frontend_name: Annotated[str, Depends(get_frontend_name)],
     metadata: Annotated[PageMetadata, Depends(get_metadata)],
     sample_questions: Annotated[
         List[QADomainSampleQuestions], Depends(get_sample_questions)
@@ -34,7 +34,7 @@ async def home(
         "qa.html",
         dict(
             request=request,
-            name=frontend_name.value,
+            name=frontend_name,
             ga_measurement_id=os.getenv("GA_MEASUREMENT_ID"),
             qa_domains=[
                 dict(value=datum.qa_domain, label=datum.label)

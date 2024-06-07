@@ -1,4 +1,3 @@
-ga_measurement_id: ""
 redis:
   host: localhost
 text_embedding:
