@@ -36,6 +36,8 @@ def deep_pd_json_normalize(obj):
 
 
 def deep_pd_json_normalize_dict(doc: dict):
+    if not doc:
+        return {}
     return (
         pd.json_normalize({k: deep_pd_json_normalize(v) for k, v in doc.items()})
         .replace({np.nan: None})
