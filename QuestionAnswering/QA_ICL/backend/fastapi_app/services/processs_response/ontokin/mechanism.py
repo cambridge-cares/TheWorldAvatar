@@ -20,4 +20,4 @@ WHERE {{
         binding["Mechanism"]: {"Provenance": binding["Provenance"]}
         for binding in bindings
     }
-    return [{"IRI": iri, **iri2data.get(iri, {})} for iri in iris]
+    return [iri2data.get(iri, {}) for iri in iris]

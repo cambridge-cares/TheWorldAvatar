@@ -42,7 +42,7 @@ WHERE {{
         iri: {k: v for k, v in data.items() if v} for iri, data in iri2data.items()
     }
 
-    return [{"IRI": iri, **iri2data.get(iri, {})} for iri in iris]
+    return [iri2data.get(iri, {}) for iri in iris]
 
 
 def get_ontospecies_property_data(kg_client: KgClient, iris: Sequence[str]):
@@ -78,7 +78,7 @@ WHERE {{
         iri: {k: v for k, v in data.items() if v} for iri, data in iri2data.items()
     }
 
-    return [{"IRI": iri, **iri2data.get(iri, {})} for iri in iris]
+    return [iri2data.get(iri, {}) for iri in iris]
 
 
 def get_label(kg_client: KgClient, iris: Sequence[str]):
@@ -93,7 +93,7 @@ WHERE {{
     _, bindings  = kg_client.querySelectThenFlatten(query)
 
     iri2data = {binding["s"]: {"Label": binding["Label"]} for binding in bindings}
-    return [{"IRI": iri, **iri2data.get(iri, {})} for iri in iris]
+    return [iri2data.get(iri, {}) for iri in iris]
 
 
 @cache

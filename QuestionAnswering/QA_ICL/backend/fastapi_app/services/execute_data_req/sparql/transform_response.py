@@ -9,6 +9,7 @@ from services.processs_response.augment_node import NodeDataRetriever
 from services.processs_response.ontocompchem import get_ontocompchem_nodeDataRetriever
 from services.processs_response.ontokin import get_ontokin_nodeDataRetriever
 from services.processs_response.ontospecies import get_ontospecies_nodeDataRetriever
+from services.processs_response.ontozeolite import get_ontozeolite_nodeDataRetriever
 from utils.collections import listofdict2dictoflist
 
 
@@ -31,7 +32,7 @@ class SparqlResponseTransformer:
         bindings: list[dict[str, str | float]],
         res_map: dict[str, SparqlNodeMappingConfig],
     ):
-        # TODO: perform aggregate before transform to reduce the complexity of 
+        # TODO: perform aggregate before transform to reduce the complexity of
         # calling __hash__ on FrozenDict
         for var in vars:
             transform_config = res_map.get(var)
@@ -78,7 +79,15 @@ def get_sparqlRes_transformer(
     ontocompchem_retriever: Annotated[
         NodeDataRetriever, Depends(get_ontocompchem_nodeDataRetriever)
     ],
+    ontozeolite_retriever: Annotated[
+        NodeDataRetriever, Depends(get_ontozeolite_nodeDataRetriever)
+    ],
 ):
     return SparqlResponseTransformer(
-        retrievers=(ontospecies_retriever, ontokin_retriever, ontocompchem_retriever)
+        retrievers=(
+            ontospecies_retriever,
+            ontokin_retriever,
+            ontocompchem_retriever,
+            ontozeolite_retriever,
+        )
     )
