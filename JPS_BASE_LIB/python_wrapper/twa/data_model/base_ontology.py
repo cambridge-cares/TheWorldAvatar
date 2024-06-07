@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Set, Tuple, Union, TypeVar, ClassVar, Type, Optional
+from typing import Any, Dict, List, Set, Tuple, Union, TypeVar, ClassVar, Type, Optional, ForwardRef
 from typing_extensions import Annotated
 from annotated_types import Len
 
-from pydantic import BaseModel, Field, PrivateAttr, model_validator
+from pydantic import BaseModel, Field, PrivateAttr
 from pydantic_core import PydanticUndefined
 import rdflib
 from rdflib import Graph, URIRef, Literal, BNode
@@ -153,6 +153,7 @@ class BaseOntology(BaseModel):
         data_property_lookup: A dictionary of DataProperty classes with their predicate IRI as keys
         rdfs_comment: The comment of the ontology
         owl_versionInfo: The version of the ontology
+        forward_refs: A dictionary of set of BaseClass classes with their forward referenced BaseProperty
     """
     base_url: ClassVar[str] = TWA_BASE_URL
     namespace: ClassVar[str] = None
@@ -161,11 +162,41 @@ class BaseOntology(BaseModel):
     data_property_lookup: ClassVar[Dict[str, DataProperty]] = None
     rdfs_comment: ClassVar[str] = None
     owl_versionInfo: ClassVar[str] = None
+    forward_refs: ClassVar[Dict[str, Set[Type[BaseClass]]]] = None
 
     @classmethod
     def get_namespace_iri(cls) -> str:
         """ This method is used to retrieve the namespace IRI of the ontology. """
         return construct_namespace_iri(cls.base_url, cls.namespace)
+
+    @classmethod
+    def postpone_property_domain(cls, forward_ref_property: str, cls_as_domain: Type[BaseClass]):
+        """
+        This method is used to record the object/data properties that are forward referenced,
+        whose registration as domain is therefore postponed.
+
+        Args:
+            forward_ref_property (str): The name of the forward referenced object/data property
+            cls_as_domain (Type[BaseClass]): The class to be added as the domain of the object/data property
+        """
+        if cls.forward_refs is None:
+            cls.forward_refs = {}
+        if forward_ref_property not in cls.forward_refs:
+            cls.forward_refs[forward_ref_property] = set()
+        cls.forward_refs[forward_ref_property].add(cls_as_domain)
+
+    @classmethod
+    def retrieve_postponed_property_domain(cls, property_name):
+        """
+        This method is used to retrieve the classes whose registration as domain of the object/data property
+        is postponed.
+
+        Args:
+            property_name (str): The name of the forward referenced object/data property
+        """
+        if cls.forward_refs is None:
+            return set()
+        return cls.forward_refs.pop(property_name, set())
 
     @classmethod
     def register_class(cls, ontolgy_class: BaseClass):
@@ -540,14 +571,19 @@ class BaseClass(BaseModel, validate_assignment=True):
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
+        # ensure that the cls already has field is_defined_by_ontology
+        if cls.is_defined_by_ontology is None:
+            raise AttributeError(f"Did you forget to specify `is_defined_by_ontology` for your class {cls}?")
+
         # set the domain of all object/data properties
         for f, field_info in cls.model_fields.items():
             if BaseProperty.is_inherited(field_info.annotation):
                 field_info.annotation.add_to_domain(cls)
+            elif isinstance(field_info.annotation, ForwardRef):
+                # if the field is ForwardRef, then postpone the adding of domain
+                cls.is_defined_by_ontology.postpone_property_domain(field_info.annotation.__forward_arg__, cls)
 
         # register the class to the ontology
-        if cls.is_defined_by_ontology is None:
-            raise AttributeError(f"Did you forget to specify `is_defined_by_ontology` for your class {cls}?")
         cls.is_defined_by_ontology.register_class(cls)
 
     def __init__(self, **data) -> None:
@@ -579,6 +615,15 @@ class BaseClass(BaseModel, validate_assignment=True):
                         # as the actual validation will be done by checking the cardinality of the property
                         # the default initialisation of the range is an empty set
                         data[f] = field_info.annotation(range=set())
+            elif isinstance(field_info.annotation, ForwardRef):
+                # this means the object/data property is not resolved yet
+                # pydantic will re-build the model in super().__init__(**data)
+                # therefore we need to get it ready in format of dictionary to avoid validation error
+                if f in data:
+                    if not BaseProperty.is_inherited(type(data[f])):
+                        data[f] = {'range': data[f]}
+                else:
+                    data[f] = {'range': {}}
 
         super().__init__(**data)
 
@@ -1155,8 +1200,16 @@ class ObjectProperty(BaseProperty):
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
+        # ensure that the cls already has field is_defined_by_ontology
         if cls.is_defined_by_ontology is None:
             raise AttributeError(f"Did you forget to specify `is_defined_by_ontology` for your object property {cls}?")
+
+        # add the postponed domains
+        to_add_as_domain = cls.is_defined_by_ontology.retrieve_postponed_property_domain(cls.__name__)
+        for c in to_add_as_domain:
+            cls.add_to_domain(c)
+
+        # register the class to the ontology
         cls.is_defined_by_ontology.register_object_property(cls)
 
     def _collect_diff(
@@ -1331,8 +1384,16 @@ class DataProperty(BaseProperty):
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
+        # ensure that the cls already has field is_defined_by_ontology
         if cls.is_defined_by_ontology is None:
             raise AttributeError(f"Did you forget to specify `is_defined_by_ontology` for your data property {cls}?")
+
+        # add the postponed domains
+        to_add_as_domain = cls.is_defined_by_ontology.retrieve_postponed_property_domain(cls.__name__)
+        for c in to_add_as_domain:
+            cls.add_to_domain(c)
+
+        # register the class to the ontology
         cls.is_defined_by_ontology.register_data_property(cls)
 
     def collect_range_diff_to_graph(
