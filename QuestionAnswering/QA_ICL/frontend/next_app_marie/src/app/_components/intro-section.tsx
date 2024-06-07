@@ -26,8 +26,10 @@ export const IntroSection = async ({
     <div className='grid place-items-center'>
       <Image src={imgSrc} alt={imgAlt} width={175} height={250} priority />
     </div>
-    <div className='w-full content-center space-y-2 md:col-span-2 lg:col-span-3 prose max-w-none prose-sm prose-slate prose-h1:text-3xl prose-h1:font-semibold prose-h1:text-blue-500 prose-h1:m-0'>
-      <Markdown>{introTextMd}</Markdown>
+    <div className='w-full content-center space-y-2 md:col-span-2 lg:col-span-3'>
+      <Markdown className='prose max-w-none prose-sm prose-slate prose-h1:text-3xl prose-h1:font-semibold prose-h1:text-blue-500 prose-h1:m-0'>
+        {introTextMd}
+      </Markdown>
     </div>
   </section>
 )
