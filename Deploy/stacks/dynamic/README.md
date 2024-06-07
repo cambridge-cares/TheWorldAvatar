@@ -5,7 +5,6 @@
 The Stack Manager is a tool for configuring, spinning up, and connecting containers.
 More details of the Stack Manager and instructions for using it can be found [here](./stack-manager/README.md).
 
-
 ## [The Stack Data Uploader](./stack-data-uploader)
 
 The Stack Data Uploader is a tool for uploading data into a stack and making it avaliable through variable formats and interfaces.
