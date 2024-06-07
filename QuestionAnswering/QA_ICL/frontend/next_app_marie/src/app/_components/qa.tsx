@@ -103,8 +103,8 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
 
   return (
     <>
-      <section className='w-full md:max-w-screen-sm lg:max-w-screen-md'>
-        <Accordion type='single' collapsible className='w-full mb-8'>
+      <section className='w-full md:max-w-screen-sm lg:max-w-screen-md mb-8'>
+        <Accordion type='single' collapsible className='w-full'>
           <AccordionItem value='0'>
             <AccordionTrigger>Example Questions</AccordionTrigger>
             <AccordionContent className='px-4'>

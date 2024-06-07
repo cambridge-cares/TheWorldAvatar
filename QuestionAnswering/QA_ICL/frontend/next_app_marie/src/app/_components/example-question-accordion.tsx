@@ -24,31 +24,29 @@ export type ExampleQuestionAccordionProps = React.ComponentPropsWithoutRef<
   ) => void
 }
 
-export function ExampleQuestionAccordion({
+export const ExampleQuestionAccordion = ({
   data,
   questionOnClick,
   ...props
-}: ExampleQuestionAccordionProps) {
-  return (
-    <Accordion {...props}>
-      {data.map((grp, idx) => (
-        <AccordionItem key={idx} value={idx.toString()}>
-          <AccordionTrigger>{grp.heading}</AccordionTrigger>
-          <AccordionContent className='px-8'>
-            <ul className='list-disc list-outside'>
-              {grp.questions.map((qn, i) => (
-                <li
-                  key={i}
-                  onClick={e => questionOnClick(qn, e)}
-                  className='hover:underline hover:cursor-pointer'
-                >
-                  {qn}
-                </li>
-              ))}
-            </ul>
-          </AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
-  )
-}
+}: ExampleQuestionAccordionProps) => (
+  <Accordion {...props}>
+    {data.map((grp, idx) => (
+      <AccordionItem key={idx} value={idx.toString()}>
+        <AccordionTrigger>{grp.heading}</AccordionTrigger>
+        <AccordionContent className='px-8'>
+          <ul className='list-disc list-outside'>
+            {grp.questions.map((qn, i) => (
+              <li
+                key={i}
+                onClick={e => questionOnClick(qn, e)}
+                className='hover:underline hover:cursor-pointer'
+              >
+                {qn}
+              </li>
+            ))}
+          </ul>
+        </AccordionContent>
+      </AccordionItem>
+    ))}
+  </Accordion>
+)
