@@ -10,14 +10,24 @@ from redis import Redis
 from redis.commands.search.query import Query
 import regex
 
-from services.stores.entity_store.ontokin import ReactionLinker, get_reaction_linker
+from services.stores.entity_store.ontokin import (
+    MechanismLinker,
+    ReactionLinker,
+    get_mechanism_linker,
+    get_reaction_linker,
+)
 from utils.collections import FrozenDict
 from model.lexicon import ENTITIES_INDEX_NAME, ELConfig, ELConfigEntry
 from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
 from .base import IEntityLinker
 from .ship import ShipLinker, get_ship_linker
-from .ontospecies import SpeciesLinker, get_species_linker
+from .ontospecies import (
+    ElementLinker,
+    SpeciesLinker,
+    get_element_linker,
+    get_species_linker,
+)
 from .ontozeolite import (
     ZeoliteFrameworkLinker,
     ZeoliticMaterialLinker,
@@ -219,6 +229,8 @@ def get_cls2config():
 def get_cls2linker(
     ship_linker: Annotated[ShipLinker, Depends(get_ship_linker)],
     species_linker: Annotated[SpeciesLinker, Depends(get_species_linker)],
+    element_linker: Annotated[ElementLinker, Depends(get_element_linker)],
+    mechanism_linker: Annotated[MechanismLinker, Depends(get_mechanism_linker)],
     reaction_linker: Annotated[ReactionLinker, Depends(get_reaction_linker)],
     zeolite_framework_linker: Annotated[
         ZeoliteFrameworkLinker, Depends(get_zeoliteFramework_linker)
@@ -231,6 +243,8 @@ def get_cls2linker(
         {
             "Ship": ship_linker,
             "os:Species": species_linker,
+            "pt:Element": element_linker,
+            "okin:ReactionMechanism": mechanism_linker,
             "ocape:ChemicalReaction": reaction_linker,
             "zeo:ZeoliteFramework": zeolite_framework_linker,
             "zeo:ZeoliticMaterial": zeolitic_material_linker,

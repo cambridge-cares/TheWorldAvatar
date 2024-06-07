@@ -17,7 +17,8 @@ class SpeciesLinker(IEntityLinker):
             if id_key in kwargs:
                 query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
-SELECT ?Species WHERE {{
+SELECT ?Species
+WHERE {{
     ?Species a os:Species .
     ?Species os:has{pred_key}/os:value "{id_value}"
 }}""".format(
@@ -55,3 +56,31 @@ def get_species_linker(
     bg_client: Annotated[KgClient, Depends(get_ontospecies_bgClient)]
 ):
     return SpeciesLinker(bg_client=bg_client)
+
+
+class ElementLinker(IEntityLinker):
+    def __init__(self, bg_client: KgClient):
+        self.bg_client = bg_client
+
+    def link(self, text: str | None, **kwargs):
+        if "symbol" not in kwargs:
+            return []
+
+        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        
+SELECT DISTINCT *
+WHERE {{
+    ?Element os:hasElementSymbol/os:value "{symbol}"
+}}""".format(
+            symbol=kwargs["symbol"]
+        )
+
+        _, bindings = self.bg_client.querySelectThenFlatten(query)
+        return [binding["Element"] for binding in bindings]
+
+
+@cache
+def get_element_linker(
+    bg_client: Annotated[KgClient, Depends(get_ontospecies_bgClient)]
+):
+    return ElementLinker(bg_client=bg_client)
