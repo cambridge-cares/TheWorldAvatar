@@ -52,7 +52,11 @@ class ChatController:
 
     @classmethod
     def make_context_input_query(cls, question: str):
-        return """### Input question:\n""" + question
+        return "### Input question:\n" + question
+
+    @classmethod
+    def make_context_rewritten_query(cls, question: str):
+        return "### Rewritten question:\n" + question
 
     @classmethod
     def make_context_data_req(cls, data_req):
@@ -67,13 +71,19 @@ class ChatController:
     @classmethod
     def make_user_input(
         cls,
-        question: str,
+        input_question: str,
+        rewritten_question: str | None,
         data,
         data_req=None,
         is_data_truncated: bool = False,
     ):
         parts = [
-            cls.make_context_input_query(question),
+            cls.make_context_input_query(input_question),
+            (
+                cls.make_context_rewritten_query(rewritten_question)
+                if rewritten_question and input_question != rewritten_question
+                else None
+            ),
             cls.make_context_data_req(data_req) if data_req else None,
             cls.make_context_structured_answer(data, is_data_truncated),
         ]
@@ -113,16 +123,29 @@ Given the context information, please answer the query. For readability, please 
             raise QARequestArtifactNotFound()
 
         msg = self.make_user_input(
-            question=artifact.nlq, data_req=artifact.data_req, data=artifact.data
+            input_question=artifact.nlq,
+            rewritten_question=artifact.nlq_rewritten,
+            data_req=artifact.data_req,
+            data=artifact.data,
         )
 
         if self._count_tokens(msg) > self.token_limit:
             # exclude data_req from LLM prompt
-            msg = self.make_user_input(question=artifact.nlq, data=artifact.data)
+            msg = self.make_user_input(
+                input_question=artifact.nlq,
+                rewritten_question=artifact.nlq_rewritten,
+                data=artifact.data,
+            )
 
         if self._count_tokens(msg) > self.token_limit:
             if (
-                self._count_tokens(self.make_user_input(question=artifact.nlq, data=""))
+                self._count_tokens(
+                    self.make_user_input(
+                        input_question=artifact.nlq,
+                        rewritten_question=artifact.nlq_rewritten,
+                        data="",
+                    )
+                )
                 > self.token_limit
             ):
                 raise Exception("Token limit is too low!!")
@@ -139,7 +162,8 @@ Given the context information, please answer the query. For readability, please 
                 high=len(msg),
                 fn=lambda idx: self._count_tokens(
                     self.make_user_input(
-                        question=artifact.nlq,
+                        input_question=artifact.nlq,
+                        rewritten_question=artifact.nlq_rewritten,
                         data=serialized_data[:idx],
                         is_data_truncated=True,
                     )
@@ -147,7 +171,8 @@ Given the context information, please answer the query. For readability, please 
                 target=self.token_limit,
             )
             msg = self.make_user_input(
-                question=artifact.nlq,
+                input_question=artifact.nlq,
+                rewritten_question=artifact.nlq_rewritten,
                 data=serialized_data[:truncate_idx],
                 is_data_truncated=True,
             )

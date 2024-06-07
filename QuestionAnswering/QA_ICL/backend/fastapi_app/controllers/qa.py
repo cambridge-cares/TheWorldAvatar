@@ -58,7 +58,9 @@ class DataSupporter:
         logger.info("Retrieved schema items: " + str(schema))
 
         logger.info("Retrieving examples...")
-        examples = self.nlq2datareq_example_store.retrieve_examples(nlq=rewritten_query, k=10)
+        examples = self.nlq2datareq_example_store.retrieve_examples(
+            nlq=rewritten_query, k=10
+        )
         logger.info("Retrieved examples: " + str(examples))
 
         translation_context = TranslationContext(
@@ -82,7 +84,7 @@ class DataSupporter:
                         for val in binding.values
                         for iri in self.entity_store.link(
                             cls=binding.cls, text=val.text, identifier=val.identifier
-                        ) # TODO: handle when no IRIs are returned
+                        )  # TODO: handle when no IRIs are returned
                     ]
                 )
             )
@@ -100,13 +102,20 @@ class DataSupporter:
 
         logger.info("Saving QA request artifact...")
         id = self.artifact_store.save(
-            QARequestArtifact(nlq=query, data_req=data_req, data=data_artifact)
+            QARequestArtifact(
+                nlq=query,
+                nlq_rewritten=rewritten_query if rewritten_query != query else None,
+                data_req=data_req,
+                data=data_artifact,
+            )
         )
 
         return QAResponse(
             request_id=id,
             metadata=QAResponseMetadata(
-                rewritten_question=rewritten_query if rewritten_query != query else None,
+                rewritten_question=(
+                    rewritten_query if rewritten_query != query else None
+                ),
                 translation_context=translation_context,
                 data_request=data_req,
                 linked_variables=var2iris,
