@@ -10,7 +10,10 @@ import tiktoken
 
 from config import AppSettings, get_app_settings
 from services.exceptions import QARequestArtifactNotFound
-from services.stores.qa_artifact_store import QARequestArtifactStore, get_qaReq_artifactStore
+from services.stores.qa_artifact_store import (
+    QARequestArtifactStore,
+    get_qaReq_artifactStore,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +43,42 @@ def binary_search(low: int, high: int, fn: Callable[[int], int], target: int):
 
 
 class ChatController:
+    SYSTEM_PROMPT = """You are a helpful assistant that provides concise answers to user queries.
+
+- Always ground your response with the provided data
+- Always format your response using markdown syntax and do not render tables
+- If only a partial view of the data is provided due to its sheer size, please suggest user to refer to the structured data shown above
+- If the provided data do not contain information needed, acknowledge the missing information and respond to the query to the best of your knowledge"""
+
+    @classmethod
+    def make_context_input_query(cls, question: str):
+        return """### Input question:\n""" + question
+
+    @classmethod
+    def make_context_data_req(cls, data_req):
+        return "### Semantically parsed query:\n{}".format(data_req)
+
+    @classmethod
+    def make_context_structured_answer(cls, data, is_data_truncated: bool = False):
+        return "### Query execution results{truncate}:\n{data}".format(
+            truncate=" (partial)" if is_data_truncated else "", data=data
+        )
+
+    @classmethod
+    def make_user_input(
+        cls,
+        question: str,
+        data,
+        data_req=None,
+        is_data_truncated: bool = False,
+    ):
+        parts = [
+            cls.make_context_input_query(question),
+            cls.make_context_data_req(data_req) if data_req else None,
+            cls.make_context_structured_answer(data, is_data_truncated),
+        ]
+        return "\n\n".join([x for x in parts if x])
+
     PROMPT_TEMPLATE = """### Input question:
 {question}
 
@@ -73,17 +112,17 @@ Given the context information, please answer the query. For readability, please 
         if not artifact:
             raise QARequestArtifactNotFound()
 
-        msg = self.PROMPT_TEMPLATE.format(
+        msg = self.make_user_input(
             question=artifact.nlq, data_req=artifact.data_req, data=artifact.data
         )
 
         if self._count_tokens(msg) > self.token_limit:
+            # exclude data_req from LLM prompt
+            msg = self.make_user_input(question=artifact.nlq, data=artifact.data)
+
+        if self._count_tokens(msg) > self.token_limit:
             if (
-                self._count_tokens(
-                    self.PROMPT_TEMPLATE.format(
-                        question=artifact.nlq, data_req=artifact.data_req, data=""
-                    )
-                )
+                self._count_tokens(self.make_user_input(question=artifact.nlq, data=""))
                 > self.token_limit
             ):
                 raise Exception("Token limit is too low!!")
@@ -99,23 +138,24 @@ Given the context information, please answer the query. For readability, please 
                 low=0,
                 high=len(msg),
                 fn=lambda idx: self._count_tokens(
-                    self.PROMPT_TEMPLATE.format(
+                    self.make_user_input(
                         question=artifact.nlq,
-                        data_req=artifact.data_req,
                         data=serialized_data[:idx],
+                        is_data_truncated=True,
                     )
                 ),
                 target=self.token_limit,
             )
-            msg = self.PROMPT_TEMPLATE.format(
+            msg = self.make_user_input(
                 question=artifact.nlq,
-                data_req=artifact.data_req,
                 data=serialized_data[:truncate_idx],
+                is_data_truncated=True,
             )
 
         return self.openai_client.chat.completions.create(
             model=self.model,
             messages=[
+                {"role": "system", "content": self.SYSTEM_PROMPT},
                 {
                     "role": "user",
                     "content": msg,
