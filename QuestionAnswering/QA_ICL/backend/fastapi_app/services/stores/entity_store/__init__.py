@@ -1,5 +1,6 @@
 from functools import cache
 from importlib.resources import files
+import itertools
 import logging
 from typing import Annotated
 
@@ -185,13 +186,13 @@ class EntityStore:
         link_func = (
             self.link_fuzzy if config.strategy == "fuzzy" else self.link_semantic
         )
-        texts = [text] + list(identifier.values())
+        texts = [x for x in itertools.chain([text], identifier.values()) if x]
 
         iris: list[str] = []
         for text in texts:
             if len(iris) >= k:
                 break
-            iris.extend(link_func(text, cls, k))
+            iris.extend(link_func(surface_form=text, cls=cls, k=k))
 
         return iris
 

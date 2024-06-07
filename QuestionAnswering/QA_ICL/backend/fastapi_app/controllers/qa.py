@@ -82,7 +82,7 @@ class DataSupporter:
                         for val in binding.values
                         for iri in self.entity_store.link(
                             cls=binding.cls, text=val.text, identifier=val.identifier
-                        )
+                        ) # TODO: handle when no IRIs are returned
                     ]
                 )
             )
