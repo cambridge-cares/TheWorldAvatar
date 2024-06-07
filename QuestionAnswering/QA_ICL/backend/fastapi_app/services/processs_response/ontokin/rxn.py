@@ -26,7 +26,7 @@ GROUP BY ?Reaction""".format(
     iri2data = {
         binding["Reaction"]: {"Equation": binding["Equation"]} for binding in bindings
     }
-    return [iri2data.get(iri, {}) for iri in iris]
+    return [{"IRI": iri, **iri2data.get(iri, {})} for iri in iris]
 
 
 def _get_arrhenius_models(
