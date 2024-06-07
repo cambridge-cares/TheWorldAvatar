@@ -1,5 +1,5 @@
 ---
-key: ontokin
+key: 1
 title: OntoKin
 ---
 

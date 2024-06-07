@@ -1,5 +1,5 @@
 ---
-key: ontocompchem
+key: 2
 title: OntoCompChem
 ---
 
