@@ -5,7 +5,7 @@ from typing import Annotated, List
 from fastapi import Depends
 from pydantic import BaseModel, TypeAdapter
 
-from config import FrontendName, get_frontend_name
+from config import get_frontend_name
 
 
 class PageMetadata(BaseModel):
@@ -26,16 +26,16 @@ class QADomainSampleQuestions(BaseModel):
 
 
 @cache
-def get_metadata(frontend_name: Annotated[FrontendName, Depends(get_frontend_name)]):
+def get_metadata(frontend_name: Annotated[str, Depends(get_frontend_name)]):
     return PageMetadata.model_validate_json(
-        files("resources." + frontend_name.value).joinpath("metadata.json").read_text()
+        files("resources." + frontend_name).joinpath("metadata.json").read_text()
     )
 
 
 @cache
-def get_sample_questions(frontend_name: Annotated[FrontendName, Depends(get_frontend_name)]):
+def get_sample_questions(frontend_name: Annotated[str, Depends(get_frontend_name)]):
     return TypeAdapter(List[QADomainSampleQuestions]).validate_json(
-        files("resources." + frontend_name.value)
+        files("resources." + frontend_name)
         .joinpath("sample_questions.json")
         .read_text()
     )

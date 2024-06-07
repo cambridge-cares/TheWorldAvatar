@@ -13,8 +13,8 @@ services:
     build:
       context: fastapi_app
     container_name: fastapi_app
-    env_file:
-      - fastapi-variables.env
+    environment:
+      - APP_ENV=prod
     volumes:
       - type: bind
         source: fastapi_app/data
