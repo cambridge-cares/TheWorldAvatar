@@ -7,119 +7,6 @@
 # required SPARQL queries/updates
 
 from agent.datamodel.iris import *
-'''
-from agent.kgutils.stackclients import PostGISClient
-###--- --- --- --- --- URLs to ontology .owl files --- --- --- --- ---###
-TBOX_URL_FUELPOVERTY = 'http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl'
-TBOX_URL_GASGRID = 'http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl'
-TBOX_URL_CLIMATE = 'http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl'
-TBOX_URL_GASCOMPONENT = 'http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl'
-TBOX_URL_GASSYSTEM = 'http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl'
-
-ABOX_URL = 'not found???'
-
-GAS = "http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#"
-COMP = "http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#"
-COMPA = "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/"
-CLIMB =  "http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#"
-OFP = "http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl#"
-OFPT = "http://www.theworldavatar.com/kb/ontofuelpoverty/abox/"
-CLIMA =  "http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/"
-
-###--- --- --- --- --- Common Base URLs --- --- --- --- ---###
-
-# External ontologies
-RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-RDFS = "http://www.w3.org/2000/01/rdf-schema#"
-XSD = "http://www.w3.org/2001/XMLSchema#"
-GEO = "http://www.opengis.net/ont/geosparql#"
-OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/"
-OWL = "http://www.w3.org/2002/07/owl#"
-
-# ONS related
-ONS_ID = "http://statistics.data.gov.uk/id/statistical-geography/"
-ONS_DEF = "http://statistics.data.gov.uk/def/statistical-geography#"
-ONS_DEF_STAT= ONS_DEF + "Statistical-Geography"
-# CoMo / CARES ontologies
-TS = "https://www.theworldavatar.com/kg/ontotimeseries/"
-
-###--- --- --- --- --- URLs to ontologies --- --- --- --- ---###
-
-# OntoGasgrid
-COMP_HASCONSUMED = COMP + 'hasConsumed'
-COMP_HASUSED = COMP + 'hasUsed'
-COMP_ELEC = COMP + "Electricity"
-COMP_HAS_STARTUTC = COMP + "hasStartUTC"
-COMP_HAS_ENDUTC = COMP + "hasEndUTC"
-COMP_OFFTAKENGAS = COMP + "OfftakenGas"
-
-GAS_ELEC = GAS + "ElecMeters"
-GAS_GASMETER = GAS + "GasMeters"
-GAS_HAS_ELECMETERS = GAS + "hasElecMeters"
-GAS_HAS_CONSUM_ELECMETERS = GAS + "hasConsumingElecMeters"
-GAS_HAVE_GASMETERS = GAS + "hasGasMeters"
-GAS_HAVE_CONSUM_GASMETERS = GAS +"hasConsumingGasMeters"
-GAS_HAVE_NONCONSUM_GASMETERS = GAS +"hasNonConsumingGasMeters"
-
-# Ontofuelpoverty
-OFP_HASHOUSEHOLD = OFP + 'hasHouseholds'
-OFP_FUELPOOR = OFP + 'fuelpoorhouseholds'
-OFP_NUMBEROFHOUSEHOLD = OFP + 'numberofhouseholds'
-OFP_VALIDFROM = OFP + "validFrom"
-OFP_VALIDTO = OFP + "validTo"
-
-# OntoClimate
-CLIMB_HASMEASURE = CLIMB + "hasClimateMeasurement"
-CLIMB_HASVAR = CLIMB + "hasClimateVariable"
-CLIMB_CLIMATEMEASUREMENT = CLIMB + "ClimateMeasurement"
-CLIMB_CLIMBVARIABLE = CLIMB + "ClimateVariable"
-
-# OntoTimeSeries
-TS_TIMESERIES = TS + "TimeSeries"
-TS_HAS_TIMESERIES = TS + "hasTimeSeries"
-TS_HAS_TIME_UNIT = TS + "hasTimeUnit"
-TS_HAS_RDB = TS + "hasRDB"
-
-# Ontology of units of measure
-OM_QUANTITY = OM + "Quantity"
-OM_ENERGY = OM + "Energy"
-OM_MEASURE = OM + "Measure"
-OM_UNIT = OM + "Unit"
-OM_TEMPERATURE = OM + "Temperature"
-
-OM_HAS_VALUE = OM + "hasValue"
-OM_HAS_NUMERICALVALUE = OM +"hasNumericalValue"
-OM_HAS_UNIT = OM + "hasUnit"
-OM_HAS_PHENO = OM + "hasPhenomenon"
-
-OM_SYMBOL = OM + "symbol"
-OM_DEGREE_C = OM + "degreeCelsius"
-OM_HECTO_PASCAL = OM + "hectopascal"
-OM_PERCENT = OM + "percent"
-OM_METRE = OM + "metre"
-OM_MPH = OM + "mile-StatutePerHour"
-OM_DEGREE = OM + "degree"
-OM_UNITLESS = OM + "one"
-OM_KW = OM + "kilowattHour"
-
-# Data types
-RDF_TYPE = RDF + "type"
-RDFS_COMMENT = RDFS + "comment"
-RDFS_LABEL = RDFS + "label"
-XSD_STRING = XSD + "string"
-XSD_FLOAT = XSD + "float"
-XSD_DATETIME = XSD + "dateTime"
-
-# GeoSPARQL
-GEO_FEATURE = GEO + "Feature"
-GEO_GEOMETRY = GEO + 'Geometry'
-GEO_HAS_GEOMETRY = GEO + "hasGeometry"
-GEO_ASWKT = GEO + "asWKT"
-
-# OWL
-OWL_VERSION = OWL + "versionInfo"
-OWL_SAMEAS = OWL + "sameAs"
-'''
 
 def electricity_update_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,cons,met_uuid,meters) -> str:
     '''
@@ -290,4 +177,32 @@ def climate_temperature_query_template(region):
     return triples
 
 # triple = climate_temperature_query_template('E01000001')
-# print(triple)
+def month_num(month_str):
+      '''
+      Converts a string of month name to that month's number 
+      Starting at 0
+      '''
+      months = {'January':0,'February':1,'March':2,'April':3,'May':4,'June':5,'July':6,'August':7,'September':8,'October':9,'November':10,'December':11}
+      month_ends = {'January':31,'February':28,'March':31,'April':30,'May':31,'June':30,'July':30,'August':31,'September':30,'October':29,'November':30,'December':31}
+      month = months[month_str]
+      month_end = month_ends[month_str]
+      return month, month_end
+
+# clim_vars = ['tasmin','tas','tasmax']
+# months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+
+# from datetime import datetime
+# import uuid
+# for month_it in range(len(months)):
+#     for var in range(3):
+#         month_str = str(month_it+1)
+#         _, month_end = month_num(months[month_it])
+#         startUTC = datetime.strptime('2020-'+month_str+'-01T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
+#         endUTC = datetime.strptime('2020-'+month_str+'-'+str(month_end)+'T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
+#         LSOA_code = 'E01000001'
+#         meas_uuid = CLIMA + 'ClimateMeasurement_' + str(uuid.uuid4())
+#         clim_var = CLIMA + str(clim_vars[var])
+#         temp_uuid = CLIMA + 'Temperature_' + str(uuid.uuid4())
+#         val_uuid = CLIMA + 'Value_' + str(uuid.uuid4())
+#         triple = climate_temperature_update_template(LSOA_code,meas_uuid,clim_var,startUTC,endUTC,temp_uuid,val_uuid,10)
+#         print(triple)
