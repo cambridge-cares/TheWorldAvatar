@@ -12,16 +12,21 @@ import { setIri, setStack } from 'state/map-feature-slice';
 // type definition for incoming properties
 interface AttributeRootProps {
   attribute: AttributeGroup;
+  scrollRef: React.MutableRefObject<HTMLDivElement>;
+  setScrollPosition: React.Dispatch<React.SetStateAction<number>>
 }
 
 interface AttributeNodeProps {
   group: AttributeGroup;
   depth: number;
+  scrollRef: React.MutableRefObject<HTMLDivElement>;
+  setScrollPosition: React.Dispatch<React.SetStateAction<number>>
 }
 
 interface AttributeTextNodeProps {
   attributes: Attribute[];
   depth: number;
+  
 }
 
 /**
@@ -43,6 +48,8 @@ export default function AttributeRoot(props: Readonly<AttributeRootProps>) {
             group={subGroup}
             depth={0}
             key={subGroup.name + "_" + 0}
+            scrollRef={props.scrollRef}
+            setScrollPosition={props.setScrollPosition}
           />)
       })}
     </>
@@ -64,16 +71,19 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
   const spacing: string = depth * 0.5 + "rem";
   // State for managing collapse and expansion
   const [isCollapsed, setIsCollapsed] = useState<boolean>(group.isCollapsed);
-  const collapsedIcon: string = isCollapsed ? "keyboard_arrow_down" : "keyboard_arrow_up";
+  const collapsedIcon: string = isCollapsed ? "keyboard_arrow_right" : "keyboard_arrow_down";
   const displayIcon: string = group.subQueryIri ? "/images/defaults/icons/fia-logo.svg" : collapsedIcon;
 
   const toggleExpansion = () => {
     if (group.subQueryIri) {
+      props.setScrollPosition(props.scrollRef.current.scrollTop);
+
       dispatch(setHasExistingData(true));
       dispatch(setIri(group.subQueryIri));
       // Only update the selected stack if it is required for the subquery
       if (group.subQueryStack) {
         dispatch(setStack(group.subQueryStack));
+        setIsCollapsed(isCollapsed)
       }
     }
     else {
@@ -114,6 +124,8 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
             group={subGroup}
             depth={depth + 1}
             key={subGroup.name + "_" + (depth + 1)}
+            scrollRef={props.scrollRef}
+            setScrollPosition={props.setScrollPosition}
           />)
         })} </>
       )}

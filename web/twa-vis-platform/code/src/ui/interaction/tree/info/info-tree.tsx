@@ -1,6 +1,6 @@
 import styles from './info-tree.module.css';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { TimeSeriesGroup } from 'types/timeseries';
@@ -37,12 +37,36 @@ interface InfoTreeProps {
 export default function InfoTree(props: Readonly<InfoTreeProps>) {
   const dispatch = useDispatch();
 
+  const scrollRef = useRef<HTMLDivElement>();
+  const [scrollPosition, setScrollPosition] = useState<number>(0);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo(scrollPosition, 0);
+    }
+  }, [scrollPosition]);
+
+
   // A function that renders the required contents for this panel
   const renderPanelContents: () => React.ReactElement = () => {
-    // Render loading spinner if it is still fetching data
-    if (props.isFetching || props.isUpdating) {
-      return <div className={styles.spinner}></div>;
+
+
+    // content content shown in floating panel as long as some feature has been clicked at least once
+    const content = 
+    (<div>
+      <AttributeRoot attribute={props.attributes}
+        scrollRef={scrollRef}
+        setScrollPosition={setScrollPosition} />
+    </div>)
+
+    // Render only the loading spinner if it is initially fetching data
+    if (props.isFetching && !props.attributes) {
+      return (<div className={styles.spinnerContainer}>
+        <div className={`${styles.spinner} ${styles.fetching}`}></div>
+      </div>)
     }
+
+    // TODO show some kind of animation when subquerying 
 
     // If there are multiple features clicked, activate feature selector to choose only one
     if (props.features.length > 1) {
@@ -53,7 +77,9 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
     }
     // If active tab is 0, render the Metadata Tree
     if (props.attributes && props.activeTab.index === 0) {
-      return <AttributeRoot attribute={props.attributes} />;
+      return <div>
+        {content}
+      </div>
     }
 
     if (props.timeSeries && props.activeTab.index > 0) {
@@ -62,15 +88,15 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
       );
     }
     // Placeholder text when there are no initial data or selected feature
-    return <p>Click to fetch feature information.</p>;
+    return <div className={styles.initialContent}>Select a feature on the map to explore its information in detail.</div>;
   }
 
-  return (
-    <div className={styles.infoPanelContainer}>
-      <div className={styles.infoHeadSection}>
-        <h2>Feature Information</h2>
+  function renderInfoTreeHeader(props: Readonly<InfoTreeProps>) {
+
+    if (props.attributes) {
+      return <div className={styles.infoHeadSection}>
         {// Display the tabs only if there are both meta and time
-          !props.isFetching && props.attributes && props.timeSeries && (
+          props.attributes && props.timeSeries && (
             <InfoTabs
               tabs={{
                 hasAttributes: !!props.attributes,
@@ -79,10 +105,15 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
               activeTab={{
                 index: props.activeTab.index,
                 setActiveTab: props.activeTab.setActiveTab,
-              }}
-            />)}
-      </div>
-      <div className={styles.infoSection}>
+              }} />)}
+      </div>;
+    }
+  }
+
+  return (
+    <div className={styles.infoPanelContainer}>
+      {renderInfoTreeHeader(props)}
+      <div ref={scrollRef} className={styles.infoSection}>
         {renderPanelContents()}
       </div>
     </div>

@@ -1,20 +1,22 @@
+.initialContent {
+  padding: 1rem
+}
+
 .infoPanelContainer {
   width: 100%;
   height: inherit;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
 }
 
 .infoHeadSection {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.5rem;
-}
-
-.infoHeadSection h2 {
-  font-size: var(--font-size-h2);
+  padding: 0.5rem;
+  border-style: solid;
+  border-color: var(--border-secondary);
+  border-width: 0px 0px .12rem 0px;
 }
 
 .tab-container {
@@ -22,12 +24,12 @@
   height: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .tab {
   padding: 0.1rem;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  box-shadow: rgba(148, 148, 172, 0.2) 0px 7px 29px 0px;
   border-width: 0.1rem 0.1rem 0.2rem;
   border-style: solid;
   border-color: transparent;
@@ -39,10 +41,7 @@
 }
 
 .active {
-  border-top-color: var(--text-color-secondary);
-  border-left-color: var(--text-color-secondary);
-  border-right-color: var(--text-color-secondary);
-  border-bottom-color: var(--text-color-links);
+  border-color: var(--text-color-secondary);
   background-color: var(--background-secondary);
 }
 
@@ -54,13 +53,8 @@
 .infoSection {
   width: 100%;
   box-sizing: border-box;
-  flex-grow: 1; /* Allow sections to adjust their height if needed */
-  padding: 0 0.5rem 1rem;
-  overflow-y: auto; /* Enable vertical scrolling for the info section */
-}
-
-.treeEntry {
-  margin: 0.2rem 0 0.4rem;
+  flex-grow: 1;
+  overflow-y: auto;
 }
 
 /* Header for Tree Entry Styling */
@@ -70,8 +64,9 @@
   border-style: solid;
   color: var(--text-color-primary) !important;
   border-color: var(--border-primary);
-  border-width: 0px 0px 0.05rem 0px;
+  border-width: 0.05rem;
   transition: background-color 0.3s ease;
+  align-items: center;
 }
 
 .treeEntrySubHeader:hover {
@@ -79,6 +74,7 @@
 }
 
 .treeEntrySubHeaderName {
+  padding: 0.25rem;
   color: var(--text-color-primary);
   font-size: var(--font-size-secondary-text);
 }
@@ -89,7 +85,7 @@
   flex-direction: row;
   flex-wrap: wrap;
   overflow-wrap: break-word;
-  margin: 0.2rem 0;
+  margin: 0.4rem 0;
   border-style: solid;
   border-color: var(--border-primary);
   border-width: 0px 0px 0.05rem 0px;
@@ -118,6 +114,12 @@ Loading
   }
 }
 
+.spinnerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
@@ -125,8 +127,15 @@ Loading
   width: 40px;
   height: 40px;
   animation: spin 2s linear infinite;
+  z-index: 1;
+  margin: 0.5rem;
+}
+
+.fetching {
+  position: relative;
+  overflow: hidden;
+}
+
+.updating {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
 }
