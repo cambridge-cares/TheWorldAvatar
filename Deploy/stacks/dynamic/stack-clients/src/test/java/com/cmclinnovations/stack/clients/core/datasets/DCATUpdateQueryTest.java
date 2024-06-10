@@ -188,7 +188,7 @@ class DCATUpdateQueryTest {
 
     @SuppressWarnings("null")
     @Test
-    void testAddDataSubset() throws JsonMappingException, JsonProcessingException {
+    void testAddDataSubset() {
         writeBlazegraphConfig();
         ObjectMapper mapper = JsonHelper.getMapper();
         Assertions.assertAll(() -> {
@@ -223,7 +223,7 @@ class DCATUpdateQueryTest {
 
     @SuppressWarnings("null")
     @Test
-    void testAddDataSubsetSkipping() throws JsonMappingException, JsonProcessingException {
+    void testAddDataSubsetSkipping() {
         writeBlazegraphConfig();
         ObjectMapper mapper = JsonHelper.getMapper();
         Assertions.assertAll(() -> {
