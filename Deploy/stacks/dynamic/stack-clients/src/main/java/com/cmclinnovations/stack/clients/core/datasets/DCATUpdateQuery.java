@@ -80,6 +80,19 @@ final class DCATUpdateQuery {
                 Expressions.bind(Expressions.coalesce(existingIssuedVar, currentTime), issuedVar));
     }
 
+    private void removeDataset(Dataset dataset) {
+        Variable existingPVar = createVar(datasetVar, "_p");
+        Variable existingOVar = createVar(datasetVar, "_o");
+
+        query.delete(datasetVar.has(existingPVar, existingOVar));
+        query.where(GraphPatterns.and(
+                // "rdfType" and "name" define the dataset
+                datasetVar.isA(dataset.getRdfType())
+                        .andHas(DCTERMS.TITLE, dataset.getName())
+                        .andHas(existingPVar, existingOVar)
+                        .optional()));
+    }
+
     private int externalDatasetCount = 0;
 
     private void addExternalDataset(String externalDatasetName) {
@@ -162,6 +175,18 @@ final class DCATUpdateQuery {
 
         // Find existing links to data subsets
         query.where(datasetVar.has(DCAT.DATASET, oldDataSubsetVar).optional());
+    }
+
+    private void removeExistingDataSubsets() {
+        Variable existingDataSubsetVar = SparqlBuilder.var("dataSubset_existing");
+        Variable existingPVar = createVar(existingDataSubsetVar, "p");
+        Variable existingOVar = createVar(existingDataSubsetVar, "o");
+
+        query.delete(existingDataSubsetVar.has(existingPVar, existingOVar));
+        query.where(existingDataSubsetVar.isA(DCAT.DATASET)
+                .andHas(existingPVar, existingOVar)
+                .and(datasetVar.has(DCAT.HAS_DATASET, existingDataSubsetVar))
+                .optional());
     }
 
     private void addBlazegraphServer(Dataset dataset) {
@@ -260,6 +285,19 @@ final class DCATUpdateQuery {
         query.where(oldServiceVar.has(DCAT.SERVES_DATASET, datasetVar).optional());
     }
 
+    private void removeExistingServices() {
+        Variable existingServiceVar = SparqlBuilder.var("service_existing");
+        Variable existingPVar = createVar(existingServiceVar, "p");
+        Variable existingOVar = createVar(existingServiceVar, "o");
+
+        query.delete(existingServiceVar.has(existingPVar, existingOVar));
+        query.where(
+                // Look for existing instance of services
+                existingServiceVar.has(DCAT.SERVES_DATASET, datasetVar)
+                        .andHas(existingPVar, existingOVar)
+                        .optional());
+    }
+
     public String getUpdateQuery(Dataset dataset) {
 
         addDataset(dataset);
@@ -280,6 +318,19 @@ final class DCATUpdateQuery {
         addGeoServerServer(dataset);
 
         addOntopServer(dataset);
+
+        return getQuery();
+    }
+
+    public String getDeleteQuery(Dataset dataset) {
+
+        removeDataset(dataset);
+
+        removeExistingExternalDatasetLinks();
+
+        removeExistingDataSubsets();
+
+        removeExistingServices();
 
         return getQuery();
     }

@@ -37,7 +37,6 @@ import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.BlazegraphContainer;
 import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -273,6 +272,50 @@ class DCATUpdateQueryTest {
         });
     }
 
+    @SuppressWarnings("null")
+    @Test
+    void testRemovingDataset() {
+        writeBlazegraphConfig();
+        ObjectMapper mapper = JsonHelper.getMapper();
+
+        Dataset dataset1;
+        Dataset dataset2;
+        try {
+            dataset1 = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                    .withDatasetDirectory("test1")
+                    .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                    .withDataSubsets(List.of(mapper.readValue(
+                            "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy nice TBox.\",\"subdirectory\":\"tbox\"}",
+                            TBoxCSV.class)))
+                    .build();
+
+            dataset2 = new DatasetBuilder("testDataset2").withDescription("Dataset for testing2")
+                    .withDatasetDirectory("test2")
+                    .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                    .withDataSubsets(List.of(mapper.readValue(
+                            "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy bad TBox.\",\"subdirectory\":\"tbox\"}",
+                            TBoxCSV.class)))
+                    .build();
+
+            Assertions.assertAll(() -> {
+                buildAndRunDelete(dataset1);
+            }, () -> {
+                buildAndRunQuery(dataset1);
+            }, () -> {
+                buildAndRunDelete(dataset1);
+            }, () -> {
+                buildAndRunQuery(dataset1);
+            }, () -> {
+                buildAndRunQuery(dataset2);
+            }, () -> {
+                buildAndRunDelete(dataset1);
+            });
+
+        } catch (JsonProcessingException e) {
+            Assertions.fail(e);
+        }
+    }
+
     private void writeBlazegraphConfig() {
         DockerClient dockerClient = DockerClient.getInstance();
         dockerClient.writeEndpointConfig(
@@ -301,6 +344,13 @@ class DCATUpdateQueryTest {
         checkResults();
     }
 
+    private void buildAndRunDelete(Dataset dataset) {
+
+        runDelete(dataset);
+
+        checkResults();
+    }
+
     private void checkResults() {
         Model results = remoteStoreClient.executeConstruct(BlazegraphContainer.CONSTRUCT_ALL_QUERY);
 
@@ -318,6 +368,13 @@ class DCATUpdateQueryTest {
     private void runUpdate(Dataset dataset) {
         DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
         String query = dcatUpdateQuery.getUpdateQuery(dataset);
+
+        remoteStoreClient.executeUpdate(query);
+    }
+
+    private void runDelete(Dataset dataset) {
+        DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
+        String query = dcatUpdateQuery.getDeleteQuery(dataset);
 
         remoteStoreClient.executeUpdate(query);
     }
