@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 import uuid
 
-from rdflib import Graph, RDF, Literal, XSD
+from rdflib import Graph, URIRef, RDF, Literal, XSD
 from typing import ClassVar, ForwardRef
 
 from twa.data_model.base_ontology import BaseOntology, BaseClass, DataProperty, ObjectProperty, TransitiveProperty
@@ -563,3 +563,71 @@ def test_forward_refs_data_property(clz, prop, arg):
         assert len(o.fProp.range) == 1
         assert next(iter(o.fProp.range)) == 'x'
     assert clz.model_fields['fProp'].annotation == prop
+
+
+# NOTE below we define classes for testing circular graph pattern
+class Circ1(BaseClass):
+    is_defined_by_ontology = ExampleOntology
+    c1c2: C1C2
+
+
+class C1C2(ObjectProperty):
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(Circ2)
+
+
+class Circ2(BaseClass):
+    is_defined_by_ontology = ExampleOntology
+    c2c1: C2C1
+
+
+class C2C1(ObjectProperty):
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(Circ1)
+
+
+def test_pull_circular_graph_pattern(initialise_sparql_client):
+    # prepare data
+    g = Graph()
+    iri_circ_1 = f'https://{str(uuid.uuid4())}'
+    iri_circ_2 = f'https://{str(uuid.uuid4())}'
+    g.add((URIRef(iri_circ_1), RDF.type, URIRef(Circ1.get_rdf_type())))
+    g.add((URIRef(iri_circ_1), URIRef(C1C2.get_predicate_iri()), URIRef(iri_circ_2)))
+    g.add((URIRef(iri_circ_2), RDF.type, URIRef(Circ2.get_rdf_type())))
+    g.add((URIRef(iri_circ_2), URIRef(C2C1.get_predicate_iri()), URIRef(iri_circ_1)))
+    sparql_client = initialise_sparql_client
+    sparql_client.upload_graph(g)
+    # assert that circ1/circ2 doesn't exist in python
+    assert KnowledgeGraph.get_object_from_lookup(iri_circ_1) is None
+    assert KnowledgeGraph.get_object_from_lookup(iri_circ_2) is None
+    # pull circ2 from knowledge graph
+    circ2 = Circ2.pull_from_kg(
+        [iri_circ_2],
+        sparql_client,
+        -1
+    )[0]
+    # check that circ1 should be pulled as an object
+    # but its object property c1c2 should only stored iri of circ2 as string
+    assert len(circ2.c2c1.range) == 1
+    circ1 = next(iter(circ2.c2c1.range))
+    assert circ1.instance_iri == iri_circ_1
+    assert len(circ1.c1c2.range) == 1
+    assert next(iter(circ1.c1c2.range)) == circ2.instance_iri
+    assert isinstance(next(iter(circ1.c1c2.range)), str)
+
+
+def test_push_circular_graph_pattern(initialise_sparql_client):
+    KnowledgeGraph.clear_object_lookup()
+    sparql_client = initialise_sparql_client
+    # create objects in python
+    circ1 = Circ1()
+    circ2 = Circ2(c2c1=circ1)
+    circ1.c1c2.range.add(circ2.instance_iri)
+    # push to triple store
+    circ2.push_to_kg(sparql_client, -1)
+    # check that the triples are instantiated correctly
+    assert sparql_client.get_amount_of_triples() == 4
+    assert sparql_client.check_if_triple_exist(circ1.instance_iri, RDF.type.toPython(), Circ1.get_rdf_type())
+    assert sparql_client.check_if_triple_exist(circ1.instance_iri, C1C2.get_predicate_iri(), circ2.instance_iri)
+    assert sparql_client.check_if_triple_exist(circ2.instance_iri, RDF.type.toPython(), Circ2.get_rdf_type())
+    assert sparql_client.check_if_triple_exist(circ2.instance_iri, C2C1.get_predicate_iri(), circ1.instance_iri)
