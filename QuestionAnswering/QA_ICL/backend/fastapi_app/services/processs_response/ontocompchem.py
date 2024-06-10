@@ -6,6 +6,7 @@ from fastapi import Depends
 from constants.prefixes import URI_OCC
 from services.kg import KgClient, get_ontocompchem_bgClient
 from services.processs_response.augment_node import NodeDataRetriever
+from utils.rdf import try_make_prefixed_iri
 
 
 # TODO: ORM
@@ -28,7 +29,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    _, bindings  = kg_client.querySelectThenFlatten(query)
+    _, bindings = kg_client.querySelectThenFlatten(query)
 
     iri2data: defaultdict[str, list[dict]] = defaultdict(list)
     for binding in bindings:
@@ -59,7 +60,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    _, bindings  = kg_client.querySelectThenFlatten(query)
+    _, bindings = kg_client.querySelectThenFlatten(query)
 
     iri2values: defaultdict[str, list] = defaultdict(list)
     iri2unit: dict[str, str] = dict()
@@ -81,7 +82,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    _, bindings  = kg_client.querySelectThenFlatten(query)
+    _, bindings = kg_client.querySelectThenFlatten(query)
 
     iri2data = {
         binding["CalculationResult"]: {
@@ -115,7 +116,7 @@ WHERE {{
         values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
     )
 
-    _, bindings  = kg_client.querySelectThenFlatten(query)
+    _, bindings = kg_client.querySelectThenFlatten(query)
 
     type2iris: defaultdict[str, list[dict]] = defaultdict(list)
     for binding in bindings:
@@ -126,7 +127,12 @@ WHERE {{
         data = CALCULATION_RESULT_TYPE_TO_GETTER[type](
             kg_client=kg_client, iris=same_type_iris
         )
-        iri2data.update({iri: datum for iri, datum in zip(same_type_iris, data)})
+        iri2data.update(
+            {
+                iri: {"Type": try_make_prefixed_iri(type), **datum}
+                for iri, datum in zip(same_type_iris, data)
+            }
+        )
 
     return [iri2data.get(iri, {}) for iri in iris]
 
