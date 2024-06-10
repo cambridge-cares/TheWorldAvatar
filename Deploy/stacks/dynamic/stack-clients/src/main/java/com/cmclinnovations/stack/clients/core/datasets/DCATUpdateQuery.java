@@ -202,9 +202,9 @@ final class DCATUpdateQuery {
 
             // Remove all existing triples that have this service as the subject
             Variable existingServiceVar = createVar(serviceVar, "existing");
-            query.delete(existingServiceVar
-                    .has(createVar(serviceVar, "p"),
-                            createVar(serviceVar, "o")));
+            Variable existingPVar = createVar(existingServiceVar, "p");
+            Variable existingOVar = createVar(existingServiceVar, "o");
+            query.delete(existingServiceVar.has(existingPVar, existingOVar));
 
             // Insert common triples
             TriplePattern serviceTriples = serviceVar.isA(type)
@@ -228,8 +228,7 @@ final class DCATUpdateQuery {
                     existingServiceVar.isA(type)
                             .andHas(DCTERMS.TITLE, title)
                             .andHas(DCAT.SERVES_DATASET, datasetVar)
-                            .andHas(createVar(serviceVar, "p"),
-                                    createVar(serviceVar, "o")))
+                            .andHas(existingPVar, existingOVar))
                     .optional());
 
             // Create new IRI for this service if not already present
