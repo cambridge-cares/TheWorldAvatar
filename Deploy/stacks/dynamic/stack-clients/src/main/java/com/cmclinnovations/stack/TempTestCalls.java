@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.core.datasets.DatasetLoader;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.GDALTranslateOptions;
@@ -18,14 +19,15 @@ public class TempTestCalls {
 
     static void doStuff() {
 
-        DatasetLoader.loadInputDatasets();
+        DatasetLoader.loadInputDatasets(StackClient.STACK_CONFIG_DIR, StackClient.getStackName());
 
         GDALClient gdalClient = GDALClient.getInstance();
         PostGISClient postGISClient = PostGISClient.getInstance();
 
         String rasterDatabase = "rasters";
         postGISClient.createDatabase(rasterDatabase);
-        gdalClient.uploadRasterFilesToPostGIS(rasterDatabase, PostGISClient.DEFAULT_SCHEMA_NAME, "elevation", "/inputs/data/rasters",
+        gdalClient.uploadRasterFilesToPostGIS(rasterDatabase, PostGISClient.DEFAULT_SCHEMA_NAME, "elevation",
+                "/inputs/data/rasters",
                 new GDALTranslateOptions(), new MultidimSettings(), false);
         String databaseName = "test_database";
         String filePath = "/inputs/data/031WAF112.json";

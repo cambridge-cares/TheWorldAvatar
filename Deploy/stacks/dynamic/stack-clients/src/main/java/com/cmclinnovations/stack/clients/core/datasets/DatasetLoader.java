@@ -4,7 +4,6 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
@@ -21,27 +20,26 @@ import com.cmclinnovations.stack.services.config.ServiceConfig;
 
 public class DatasetLoader {
 
-
     private static final ServiceManager serviceManager = new ServiceManager(false);
 
     private DatasetLoader() {
     }
 
-    public static void loadInputDatasets() {
+    public static void loadInputDatasets(Path configPath, String selectedDatasetName) {
 
-        Map<String, Dataset> allDatasets = DatasetReader.getAllDatasets();
+        List<Dataset> allDatasets = DatasetReader.getAllDatasets(configPath);
 
-        Stream<Dataset> selectedDatasets = DatasetReader.getStackSpecificDatasets(allDatasets);
+        Stream<Dataset> selectedDatasets = DatasetReader.getStackSpecificDatasets(allDatasets, selectedDatasetName);
 
-        uploadDatasets(selectedDatasets);
+        loadDatasets(selectedDatasets);
 
     }
 
-    public static void uploadDatasets(Collection<Dataset> selectedDatasets) {
+    public static void loadDatasets(Collection<Dataset> selectedDatasets) {
         selectedDatasets.forEach(DatasetLoader::loadDataset);
     }
 
-    public static void uploadDatasets(Stream<Dataset> selectedDatasets) {
+    public static void loadDatasets(Stream<Dataset> selectedDatasets) {
         selectedDatasets.forEach(DatasetLoader::loadDataset);
     }
 
