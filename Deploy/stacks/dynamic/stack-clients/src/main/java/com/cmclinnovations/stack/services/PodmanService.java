@@ -161,6 +161,11 @@ public class PodmanService extends DockerService {
         }
     }
 
+    @Override
+    void removeService(ContainerService service) {
+        removePod(service);
+    }
+
     private void removePod(ContainerService service) {
         Optional<ListPodsReport> pod = getPod(service);
 

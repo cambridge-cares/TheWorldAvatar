@@ -309,6 +309,10 @@ public class DockerService extends AbstractService
         }
     }
 
+    void removeService(ContainerService service) {
+        removeSwarmService(service);
+    }
+
     private void removeSwarmService(ContainerService service) {
         Optional<Service> swarmService = getSwarmService(service);
 
@@ -329,7 +333,9 @@ public class DockerService extends AbstractService
                 .withRestartPolicy(new ServiceRestartPolicy()
                         .withCondition(ServiceRestartCondition.ON_FAILURE)
                         .withMaxAttempts(3l))
-                .withNetworks(List.of(new NetworkAttachmentConfig().withTarget(network.getId())));
+                .withNetworks(List.of(new NetworkAttachmentConfig()
+                        .withTarget(network.getId())
+                        .withAliases(List.of(service.getName()))));
         ContainerSpec containerSpec = service.getContainerSpec()
                 .withLabels(StackClient.getStackNameLabelMap())
                 .withHostname(service.getName());
