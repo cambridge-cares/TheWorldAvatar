@@ -1,4 +1,4 @@
---- podman_compose.py	2024-01-16 --- a/podman_compose.py	2024-01-16 10:28:58.751849447 +0000
+--- a/podman_compose.py	2024-01-16 10:28:58.751849447 +0000
 +++ b/podman_compose.py	2023-12-01 12:42:23.000000000 +0000
 @@ -463,25 +463,14 @@
      # podman-create commands, albiet we can only support a 1:1 mapping
