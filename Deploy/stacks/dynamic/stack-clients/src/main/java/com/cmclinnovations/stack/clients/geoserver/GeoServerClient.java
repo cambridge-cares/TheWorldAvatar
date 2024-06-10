@@ -96,7 +96,7 @@ public class GeoServerClient extends ContainerClient implements ClientWithEndpoi
         }
     }
 
-    public void deleteWorkspace(String workspaceName) {
+    public void removeWorkspace(String workspaceName) {
         if (!manager.getReader().existsWorkspace(workspaceName)) {
             logger.info("GeoServer workspace '{}' does not exists and cannot be deleted.", workspaceName);
         } else {
