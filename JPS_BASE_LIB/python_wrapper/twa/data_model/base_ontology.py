@@ -11,7 +11,7 @@ from rdflib import Graph, URIRef, Literal, BNode
 from rdflib.namespace import RDF, RDFS, OWL, XSD, DC
 
 from datetime import datetime
-
+import warnings
 import hashlib
 import base64
 import copy
@@ -447,7 +447,10 @@ class BaseProperty(BaseModel, validate_assignment=True):
         for i in range(1, idx):
             g.add((URIRef(property_iri), RDFS.subPropertyOf, URIRef(cls.__mro__[i].get_predicate_iri())))
         # add domain
-        if len(cls.domain) > 1:
+        if cls.domain is None:
+            # it is possible that a property is defined without specifying its domain, so we only print a warning
+            warnings.warn(f'Warning: property {cls} has no domain to be added, i.e. it is not used by any classes!')
+        elif len(cls.domain) > 1:
             # union of class as domain
             bn = BNode()
             bn_union = BNode()
