@@ -296,11 +296,12 @@ class DCATUpdateQueryTest {
 
     private void buildAndRunQuery(Dataset dataset) {
 
-        DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
-        String query = dcatUpdateQuery.getQueryStringForCataloging(dataset);
+        runUpdate(dataset);
 
-        remoteStoreClient.executeUpdate(query);
+        checkResults();
+    }
 
+    private void checkResults() {
         Model results = remoteStoreClient.executeConstruct(BlazegraphContainer.CONSTRUCT_ALL_QUERY);
 
         checkExpectedFile(results);
@@ -312,7 +313,13 @@ class DCATUpdateQueryTest {
             writeTurtleToFile(results);
             return getMessage("has different statements.", expectedResults, actualResults);
         });
+    }
 
+    private void runUpdate(Dataset dataset) {
+        DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
+        String query = dcatUpdateQuery.getUpdateQuery(dataset);
+
+        remoteStoreClient.executeUpdate(query);
     }
 
     private String getMessage(String message, Model expected, Model actual) {

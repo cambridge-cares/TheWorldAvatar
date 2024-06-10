@@ -108,7 +108,7 @@ public class DatasetLoader {
 
             // record added datasets in the default kb namespace
             BlazegraphClient.getInstance().getRemoteStoreClient("kb")
-                    .executeUpdate(new DCATUpdateQuery().getQueryStringForCataloging(dataset));
+                    .executeUpdate(new DCATUpdateQuery().getUpdateQuery(dataset));
         }
     }
 

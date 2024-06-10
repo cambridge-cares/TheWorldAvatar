@@ -260,7 +260,7 @@ final class DCATUpdateQuery {
         query.where(oldServiceVar.has(DCAT.SERVES_DATASET, datasetVar).optional());
     }
 
-    public String getQueryStringForCataloging(Dataset dataset) {
+    public String getUpdateQuery(Dataset dataset) {
 
         addDataset(dataset);
 
