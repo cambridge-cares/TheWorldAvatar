@@ -4,8 +4,7 @@ import pytest
 import uuid
 
 from rdflib import Graph, RDF, Literal, XSD
-from pydantic import Field
-from typing import ClassVar, Set
+from typing import ClassVar, ForwardRef
 
 from twa.data_model.base_ontology import BaseOntology, BaseClass, DataProperty, ObjectProperty, TransitiveProperty
 from twa.data_model.base_ontology import as_range
@@ -491,3 +490,76 @@ def test_revert_local_changes(initialise_sparql_client):
     assert bool(d.object_property_d_b.range)
     d.revert_local_changes()
     assert not bool(d.object_property_d_b.range)
+
+
+# NOTE below we create classes for test_forward_refs_object_property and test_forward_refs_data_property
+# NOTE classes are defined before the object/data properties to test the ForwardRef
+class F(BaseClass):
+    is_defined_by_ontology = ExampleOntology
+    fg: Fg
+
+class Fg(ObjectProperty):
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(G)
+
+
+class G(BaseClass):
+    is_defined_by_ontology = ExampleOntology
+
+
+class FProp(DataProperty):
+    is_defined_by_ontology = ExampleOntology
+    range: as_range(str, 0, 1)
+
+
+from pydantic import create_model
+F1 = create_model('F1', fProp=(ForwardRef('F1Prop'), ...), __base__=F)
+F2 = create_model('F2', fProp=(ForwardRef('F2Prop'), ...), __base__=F)
+F3 = create_model('F3', fProp=(ForwardRef('F3Prop'), ...), __base__=F)
+
+F1Prop = create_model('F1Prop', __base__=FProp)
+F2Prop = create_model('F2Prop', __base__=FProp)
+F3Prop = create_model('F3Prop', __base__=FProp)
+
+
+def test_forward_refs_object_property():
+    # this test exist to cover the case where classes are defined before the definition of object properties
+    # where F.model_fields.items() would appear like:
+    # ```dict_items([('fg', FieldInfo(annotation=ForwardRef('Fg'), required=True)), ...])```
+    # if `ForwardRef('Fg')` is not properly handled, this will cause the validation error when executing ```F()```:
+    # ```
+    # E       pydantic_core._pydantic_core.ValidationError: 1 validation error for F
+    # E       fg
+    # E         Input should be a valid dictionary or instance of Fg [type=model_type, input_value=G(rdfs_comment=None, rdfs...401f-9f5b-009a499b9685'), input_type=G]
+    # E           For further information visit https://errors.pydantic.dev/2.6/v/model_type
+    # ```
+    assert F.model_fields['fg'].annotation == ForwardRef('Fg')
+    F(fg=G())
+    assert F.model_fields['fg'].annotation == Fg
+
+
+@pytest.mark.parametrize("clz,prop,arg", [
+    (F1, F1Prop, None),
+    (F2, F2Prop, 'x'),
+    (F3, F3Prop, F3Prop(range='x')),
+])
+def test_forward_refs_data_property(clz, prop, arg):
+    # this test exist to cover the case where classes are defined before the definition of data properties
+    # where F1.model_fields.items() would appear like:
+    # ```dict_items([('fProp', FieldInfo(annotation=ForwardRef('F1Prop'), required=True)), ...])```
+    # if `ForwardRef('F1Prop')` is not properly handled, this will cause the validation error when executing ```F1(fProp='x')```:
+    # ```
+    # E       pydantic_core._pydantic_core.ValidationError: 1 validation error for F1
+    # E       fProp
+    # E         Input should be a valid dictionary or instance of F1Prop [type=model_type, input_value='x', input_type=str]
+    # E           For further information visit https://errors.pydantic.dev/2.6/v/model_type
+    # ```
+    assert clz.model_fields['fProp'].annotation == ForwardRef(prop.__name__)
+    if arg is None:
+        o = clz()
+        assert len(o.fProp.range) == 0
+    else:
+        o = clz(fProp=arg)
+        assert len(o.fProp.range) == 1
+        assert next(iter(o.fProp.range)) == 'x'
+    assert clz.model_fields['fProp'].annotation == prop
