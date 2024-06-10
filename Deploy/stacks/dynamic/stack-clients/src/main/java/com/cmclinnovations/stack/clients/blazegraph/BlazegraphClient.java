@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.util.BasicAuthentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.bigdata.rdf.sail.webapp.client.HttpClientConfigurator;
 import com.bigdata.rdf.sail.webapp.client.HttpException;
@@ -25,6 +27,8 @@ import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class BlazegraphClient extends ContainerClient implements ClientWithEndpoint {
+
+    private static final Logger logger = LoggerFactory.getLogger(BlazegraphClient.class);
 
     private static final Pattern SERVICE_IRI_PATTERN = Pattern.compile("SERVICE\\s*<ontop>",
             Pattern.CASE_INSENSITIVE);
@@ -54,6 +58,14 @@ public class BlazegraphClient extends ContainerClient implements ClientWithEndpo
     }
 
     public void createNamespace(String namespace, Properties properties) {
+        sendCommandToBlazegraph(namespace, new CreateRepositoryCmd(namespace, properties));
+    }
+
+    public void removeNamespace(String namespace) {
+        sendCommandToBlazegraph(namespace, new RemoveRepositoryCmd(namespace));
+    }
+
+    private void sendCommandToBlazegraph(String namespace, BaseCmd command) {
         String serviceUrl = blazegraphEndpoint.getServiceUrl();
 
         RuntimeException firstException = null;
@@ -66,33 +78,96 @@ public class BlazegraphClient extends ContainerClient implements ClientWithEndpo
                 httpClient.getAuthenticationStore()
                         .addAuthentication(new BasicAuthentication(new URI(serviceUrl), "Blazegraph",
                                 blazegraphEndpoint.getUsername(), blazegraphEndpoint.getPassword()));
-            } catch (URISyntaxException | RuntimeException ex) {
-                if (ex instanceof URISyntaxException) {
-                    firstException = new RuntimeException(
-                            "The Blazegraph service URL '" + serviceUrl + "' is not a valid URI.", ex);
-                } else if (ex instanceof RuntimeException) {
-                    firstException = (RuntimeException) ex;
-                }
+            } catch (URISyntaxException ex) {
+                firstException = new RuntimeException(
+                        "The Blazegraph service URL '" + serviceUrl + "' is not a valid URI.", ex);
+            } catch (RuntimeException ex) {
+                firstException = ex;
+            }
 
+            if (null != firstException) {
                 closeHttpClient(httpClient, firstException,
-                        "Failed to stop httpClient after failing to set authentication before creating new namespace '"
-                                + namespace + "' at endpoint '" + serviceUrl + "'.");
+                        generateMessage(namespace, command, serviceUrl,
+                                "stop httpClient after failing to set authentication when trying to "));
             }
         }
 
         try (RemoteRepositoryManager manager = new RemoteRepositoryManager(serviceUrl, httpClient, null)) {
-            manager.createRepository(namespace, properties);
-        } catch (Exception ex) {
-            if ((ex instanceof HttpException) && (409 == ((HttpException) ex).getStatusCode())) {
-                // Namespace already exists error
-            } else {
-                firstException = new RuntimeException(
-                        "Failed to create new namespace '" + namespace + "' at endpoint '" + serviceUrl + "'.", ex);
+            try {
+                command.execute(manager);
+            } catch (HttpException ex) {
+                switch (ex.getStatusCode()) {
+                    case 409: // Namespace already exists error
+                        logger.warn("Namespace '{}' already exists.", namespace);
+                        break;
+                    case 404: // Namespace does not exist error
+                        logger.warn("Namespace '{}' does not exist.", namespace);
+                        break;
+                    default:
+                        throw ex;
+                }
             }
+        } catch (Exception ex) {
+            firstException = new RuntimeException(
+                    generateMessage(namespace, command, serviceUrl, ""),
+                    ex);
         } finally {
             closeHttpClient(httpClient, firstException,
-                    "Failed to stop httpClient after trying to create new namespace '" + namespace
-                            + "' at endpoint '" + serviceUrl + "'.");
+                    generateMessage(namespace, command, serviceUrl, "stop httpClient after trying to "));
+        }
+    }
+
+    private String generateMessage(String namespace, BaseCmd command, String serviceUrl, String subissue) {
+        return "Failed to " + subissue + command.getText() + " namespace '" + namespace + "' at endpoint '" + serviceUrl
+                + "'.";
+    }
+
+    private abstract static class BaseCmd {
+
+        private final String namespace;
+        private final String text;
+
+        BaseCmd(String namespace, String text) {
+            this.namespace = namespace;
+            this.text = text;
+        }
+
+        String getNamespace() {
+            return namespace;
+        }
+
+        String getText() {
+            return text;
+        }
+
+        abstract void execute(RemoteRepositoryManager manager) throws Exception;
+
+    }
+
+    private static class CreateRepositoryCmd extends BaseCmd {
+
+        private final Properties properties;
+
+        CreateRepositoryCmd(String namespace, Properties properties) {
+            super(namespace, "create new");
+            this.properties = properties;
+        }
+
+        void execute(RemoteRepositoryManager manager) throws Exception {
+            manager.createRepository(getNamespace(), properties);
+
+        }
+    }
+
+    private static class RemoveRepositoryCmd extends BaseCmd {
+
+        RemoveRepositoryCmd(String namespace) {
+            super(namespace, "remove");
+        }
+
+        void execute(RemoteRepositoryManager manager) throws Exception {
+            manager.deleteRepository(getNamespace());
+
         }
     }
 
@@ -150,6 +225,7 @@ public class BlazegraphClient extends ContainerClient implements ClientWithEndpo
     public String filterQuery(String query) {
         return filterQuery(query, readEndpointConfig("ontop", OntopEndpointConfig.class).getUrl());
     }
+
     public String filterQuery(String query, String ontopEndpoint) {
         Matcher matcher = SERVICE_IRI_PATTERN.matcher(query);
         if (matcher.find()) {

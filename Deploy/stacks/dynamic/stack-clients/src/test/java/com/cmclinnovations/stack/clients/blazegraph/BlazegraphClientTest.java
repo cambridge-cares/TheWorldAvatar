@@ -89,6 +89,27 @@ class BlazegraphClientTest {
     }
 
     @Test
+    void testRemoveNamespace() {
+        String namespace = "tempNamespace";
+        blazegraphClient.createNamespace(namespace);
+        RemoteStoreClient remoteStoreClient = blazegraphClient.getRemoteStoreClient(namespace);
+        int expectedBaseCount = 187;
+        assertTripleCount(remoteStoreClient, expectedBaseCount);
+        blazegraphClient.removeNamespace(namespace);
+        Assertions.assertThrows(JPSRuntimeException.class,
+                () -> remoteStoreClient.execute(COUNT_QUERY));
+    }
+
+    @Test
+    void testRemoveNonExistantNamespace() {
+        String namespace = "nonExistantNamespace";
+        RemoteStoreClient remoteStoreClient = blazegraphClient.getRemoteStoreClient(namespace);
+        blazegraphClient.removeNamespace(namespace);
+        Assertions.assertThrows(JPSRuntimeException.class,
+                () -> remoteStoreClient.execute(COUNT_QUERY));
+    }
+
+    @Test
     void testUploadRDFFiles() {
         String namespace = "fileNamespace";
         blazegraphClient.createNamespace(namespace);
