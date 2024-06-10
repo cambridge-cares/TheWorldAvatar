@@ -618,12 +618,12 @@ class BaseClass(BaseModel, validate_assignment=True):
             elif isinstance(field_info.annotation, ForwardRef):
                 # this means the object/data property is not resolved yet
                 # pydantic will re-build the model in super().__init__(**data)
-                # therefore we need to get it ready in format of dictionary to avoid validation error
+                # therefore we need to get it ready in format of dictionary {'range': ...} to avoid validation error
                 if f in data:
                     if not BaseProperty.is_inherited(type(data[f])):
                         data[f] = {'range': data[f]}
                 else:
-                    data[f] = {'range': {}}
+                    data[f] = {'range': set()}
 
         super().__init__(**data)
 
