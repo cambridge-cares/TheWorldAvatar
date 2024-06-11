@@ -14,7 +14,6 @@ import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import javax.servlet.annotation.WebServlet;
 import java.nio.file.Path;
 
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,8 +47,8 @@ public class OSMAgent extends JPSAgent {
     public static final String AREA_SUFFIX = "_area";
     public static final String USAGE_COUNT = USAGE_TABLE + COUNT_SUFFIX;
     public static final String USAGE_AREA = USAGE_TABLE + AREA_SUFFIX;
-    public static final String GEO_VIEW_COUNT = "usage_geoserver" + COUNT_SUFFIX;
-    public static final String GEO_VIEW_AREA = "usage_geoserver" + AREA_SUFFIX;
+    public static final String GEO_VIEW_COUNT = DATA_SCHEMA + ".usage_geoserver" + COUNT_SUFFIX;
+    public static final String GEO_VIEW_AREA = DATA_SCHEMA + ".usage_geoserver" + AREA_SUFFIX;
 
     public static final String KEY_BOUND = "bound_wkt";
     public static final String KEY_BOUND_SRID = "bound_srid";
@@ -153,6 +152,14 @@ public class OSMAgent extends JPSAgent {
             virtualArea.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
             geoArea.setVirtualTable(virtualArea);
             geoServerClient.createPostGISLayer(workspaceName, dbName, "building_usage_area" ,geoArea);
+
+            try {
+                OntopClient ontopClient = OntopClient.getInstance();
+                ontopClient.updateOBDA(obdaFile);
+            }
+            catch (Exception e) {
+                System.out.println("Could not retrieve building_usage.obda file.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
