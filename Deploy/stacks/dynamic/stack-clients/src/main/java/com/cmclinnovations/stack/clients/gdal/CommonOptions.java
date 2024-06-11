@@ -16,6 +16,7 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 class CommonOptions<T extends CommonOptions<T>> {
+    private final String command;
 
     private String sridIn = null;
     private String sridOut = null;
@@ -27,7 +28,8 @@ class CommonOptions<T extends CommonOptions<T>> {
     @JsonProperty
     private final Map<String, List<String>> otherOptions = new HashMap<>();
 
-    protected CommonOptions() {
+    protected CommonOptions(String command) {
+        this.command = command;
     }
 
     public String getSridIn() {
@@ -75,7 +77,8 @@ class CommonOptions<T extends CommonOptions<T>> {
         inputDatasetOpenOptions.put("AUTODETECT_TYPE", "YES");
         inputDatasetOpenOptions.put("EMPTY_STRING_AS_NULL", "YES");
 
-        List<String> allArgs = new ArrayList<>(args.length);
+        List<String> allArgs = new ArrayList<>(2 * args.length);
+        allArgs.add(command);
         Collections.addAll(allArgs, args);
 
         handleSRIDs(allArgs);

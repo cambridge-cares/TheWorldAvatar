@@ -8,6 +8,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GDALTranslateOptions extends CommonOptions<GDALTranslateOptions> {
 
+    public GDALTranslateOptions() {
+        super("gdal_translate");
+    }
+
     @JsonProperty
     private final Map<String, String> creationOptions = new HashMap<>();
 

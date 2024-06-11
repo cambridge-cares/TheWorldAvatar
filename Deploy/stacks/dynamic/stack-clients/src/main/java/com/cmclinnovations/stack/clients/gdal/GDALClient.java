@@ -159,7 +159,7 @@ public class GDALClient extends ContainerClient {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
-        String execId = createComplexCommand(containerId, options.appendToArgs(layerName, "ogr2ogr",
+        String execId = createComplexCommand(containerId, options.appendToArgs(layerName,
                 "-f", "PostgreSQL",
                 computePGSQLSourceString(database),
                 filePath,
@@ -519,7 +519,7 @@ public class GDALClient extends ContainerClient {
             String postgresOutputPath, GDALTranslateOptions options) {
 
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        String execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
+        String execId = createComplexCommand(gdalContainerId, options.appendToArgs(
                 "-if", inputFormat,
                 // https://gdal.org/drivers/raster/cog.html#raster-cog
                 "-of", "COG",

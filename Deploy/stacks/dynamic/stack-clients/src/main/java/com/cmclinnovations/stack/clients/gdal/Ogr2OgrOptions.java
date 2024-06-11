@@ -15,6 +15,10 @@ public class Ogr2OgrOptions extends CommonOptions<Ogr2OgrOptions> {
     @JsonProperty
     private final Map<String, String> outputDatasetOpenOptions = new HashMap<>();
 
+    public Ogr2OgrOptions() {
+        super("ogr2ogr");
+    }
+
     public Ogr2OgrOptions addDatasetCreationOption(String name, String value) {
         datasetCreationOptions.put(name, value);
         return this;
