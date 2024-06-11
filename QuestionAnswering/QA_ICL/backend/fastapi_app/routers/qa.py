@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.post("/", response_model=QAResponse)
-def qa(
+async def qa(
     req: QARequest,
     data_supporter: Annotated[DataSupporter, Depends(get_data_supporter)],
 ):

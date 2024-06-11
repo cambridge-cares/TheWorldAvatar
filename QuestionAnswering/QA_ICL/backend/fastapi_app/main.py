@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from routers import qa, html, chat
+from routers import mol_vis, qa, html, chat
 
 app = FastAPI()
 
@@ -18,3 +18,4 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(html.router)
 app.include_router(chat.router, prefix="/chat")
 app.include_router(qa.router, prefix="/qa")
+app.include_router(mol_vis.router, prefix="/mol-vis")
