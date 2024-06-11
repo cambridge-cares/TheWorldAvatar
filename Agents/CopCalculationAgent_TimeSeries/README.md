@@ -1,5 +1,14 @@
 ## Description
-This `COP Calculation` agent is designed to calculate the Coefficient of Performance (COP) of the heat pump based on a given temperature with several assumptions, and instantiated in the [The World Avatar] KG according to the [OntoRegionalAnalysis] ontology. Details can be found in the [home page] of this agent. The required data comprimise the temperature data of the Lower Super Output Area (LSOA) in the UK which can be calculated and instantiated by the [LSOAInputAgent]. This data is updated annually. 
+This `COP Calculation` agent is designed to calculate the Coefficient of Performance (COP) of the heat pump based on a given temperature with several assumptions, and instantiated in the [The World Avatar] KG according to the [OntoRegionalAnalysis] ontology. Calculation details can be found in the [home page] of this agent. The required data comprimise the temperature data of the Lower Super Output Area (LSOA) in the UK which can be calculated and instantiated by the [LSOAInputAgent]. This data is updated annually. 
+
+### Use the agent
+The COP Calculation Agent is intended to use the `sychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `temperature`, `heat pump efficiency`, `hot side temperature`.) and automatically updates associated `COP`  instances in the KG. As the agent adopts the `pyderivationagent`, it serves HTTP requests to handle synchronous derivations.
+
+After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like http://localhost:5150/
+
+This agent should be implemented with other agents using Derived Information Framework. You may refer to the following graph to find what is the role of this agent in these calculations:
+
+![Agent framework](https://i.imgur.com/vSBvBoJ.jpeg)
 
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. It is recommended to use `VS Code` to develop/deploy the agent. Hence, a few of the details below are VS Code specific.
 
@@ -26,15 +35,14 @@ HOTSIDE_TEMPERATURE            # Assume the temperature of the hot side of the h
 
 ### How to deploy this agent on stack
 Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
-### Use the agent
-The COP Calculation Agent is intended to use the `sychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `temperature`, `heat pump efficiency`, `hot side temperature`.) and automatically updates associated `COP`  instances in the KG. As the agent adopts the `pyderivationagent`, it serves HTTP requests to handle synchronous derivations.
 
-After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like http://localhost:5150/
-
-Details about how to use the agent please see the [home page] of this agent
 
 ## Upper level instances instatiation
-If you started from an empty namespace, or have not instantiate upper level instances such as `country` or `assumption`, the result would not be able to be associated with them. Therefore it is required to run the [upper_level_ontology_update.py](./copcalculationagent/upper_level_ontology_update.py), simply run this command in the powershell terminal:
+If you started from an empty namespace, or have not instantiate upper level instances such as `country` or `assumption`, the result would not be able to be associated with them. 
+
+Please check if you have created a namespace in the blazegraph, and entered the correct environmental variables in the [agent.env.example](./agent.env.example). 
+
+Afterwards, run the [upper_level_ontology_update.py](./copcalculationagent/upper_level_ontology_update.py), simply run this command in the powershell terminal:
 ```bash
 py ./copcalculationagent/upper_level_ontology_update.py
 ```
@@ -46,11 +54,11 @@ py ./copcalculationagent/markup.py
 ```
 
 &nbsp;
-# Authors #
+# Authors 
 Jieyang Xu (jx309@cam.ac.uk), May 2023
 <!-- Links -->
 [markup.py]:./copcalculationagent/markup.py
-[home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/CopCalculationAgent/index.html
+[home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/CopCalculationAgent_TimeSeries/index.html
 [LSOAInputAgent]:https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
