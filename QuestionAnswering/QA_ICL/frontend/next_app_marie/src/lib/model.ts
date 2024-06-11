@@ -21,6 +21,18 @@ export interface TableData extends TableDataBase {
   type: 'table'
 }
 
+export interface ChemStructData {
+  type: 'xyz' | 'cif'
+  iri: string
+  label: string
+  data: string
+}
+
+export interface ChemStructCollection {
+  type: 'chem_struct_collection'
+  data: ChemStructData[]
+}
+
 export interface TypedSeries {
   data: any[]
   type: string
@@ -48,6 +60,7 @@ export interface WKTGeometryData {
 export type DataItem =
   | DocumentCollection
   | TableData
+  | ChemStructCollection
   | ScatterPlotData
   | WKTGeometryData
 

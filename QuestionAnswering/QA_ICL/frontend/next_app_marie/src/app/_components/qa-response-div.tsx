@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/accordion'
 import { DataTable } from '@/components/ui/data-table'
 import { JSONTree } from '@/components/ui/json-tree'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { MolViewer } from '@/components/ui/mol-viewer'
 
 export interface QAResponseMetadataDivProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -162,9 +164,6 @@ export const QAResponseDataDiv = ({
     <h2 className='text-xl font-semibold text-blue-500'>Retrieved data</h2>
     <Accordion type='multiple'>
       {qaResponseData
-        .filter(
-          item => item.type === 'document_collection' || item.type === 'table'
-        )
         .map((item, idx) => {
           let headerText, component
           if (item.type === 'document_collection') {
@@ -173,6 +172,32 @@ export const QAResponseDataDiv = ({
           } else if (item.type === 'table') {
             headerText = 'Tabular data'
             component = <DataTable columns={item.columns} data={item.data} />
+          } else if (item.type === 'chem_struct_collection') {
+            headerText = "Chemical structure visualisations"
+            component = (
+              <Tabs
+                orientation='vertical'
+                defaultValue='0'
+                className='grid lg:grid-cols-4 gap-4'
+              >
+                <div>
+                  <TabsList className='flex lg:flex-col space-y-1'>
+                    {item.data.map(({ label }, i) => (
+                      <TabsTrigger key={i} value={i.toString()}>
+                        {label}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </div>
+                <div className='lg:col-span-3'>
+                  {item.data.map(({ type, data }, i) => (
+                    <TabsContent key={i} value={i.toString()}>
+                      <MolViewer type={type} data={data}  />
+                    </TabsContent>
+                  ))}
+                </div>
+              </Tabs>
+            )
           }
           return headerText && component ? (
             <AccordionItem key={idx} value={idx.toString()}>
