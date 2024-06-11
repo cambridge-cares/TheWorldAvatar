@@ -194,7 +194,7 @@ public class GDALClient extends ContainerClient {
     }
 
     public void uploadRasterFilesToPostGIS(String database, String schema, String layerName,
-            String dirPath, GDALTranslateOptions gdalOptions, MultidimSettings mdimSettings, boolean append) {
+            String dirPath, GDALOptions<?> gdalOptions, MultidimSettings mdimSettings, boolean append) {
 
         String gdalContainerId = getContainerId(GDAL);
         String postGISContainerId = getContainerId(POSTGIS);
@@ -248,7 +248,7 @@ public class GDALClient extends ContainerClient {
                 GeoServerClient.getInstance().addProjectionsToGeoserver(geoserverContainerID, wktString, srid);
             } catch (NullPointerException ex) {
                 throw new RuntimeException(
-                        "Custom CRS not specified, add \"sridOut\": \"<AUTH>:<123456>\" to gdalTranslateOptions", ex);
+                        "Custom CRS not specified, add \"sridOut\": \"<AUTH>:<123456>\" to GDAL...Options node.", ex);
             }
         }
     }
@@ -433,7 +433,7 @@ public class GDALClient extends ContainerClient {
     }
 
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
-            String layerName, TempDir tempDir, GDALTranslateOptions options, MultidimSettings mdimSettings) {
+            String layerName, TempDir tempDir, GDALOptions<?> options, MultidimSettings mdimSettings) {
 
         Multimap<String, String> foundRasterFiles = findGeoFiles(gdalContainerId, tempDir.toString());
         Set<Path> createdDirectories = new HashSet<>();
@@ -462,7 +462,7 @@ public class GDALClient extends ContainerClient {
 
     private Collection<String> processFile(String gdalContainerId, String inputFormat, String filePath,
             String databaseName, String schemaName, String layerName, TempDir tempDir,
-            GDALTranslateOptions options, MultidimSettings mdimSettings, Set<Path> createdDirectories) {
+            GDALOptions<?> options, MultidimSettings mdimSettings, Set<Path> createdDirectories) {
 
         String postgresOutputPath;
         String geotiffsOutputPath = generateOutFilePath(tempDir.toString(), databaseName, schemaName, layerName,
@@ -516,7 +516,7 @@ public class GDALClient extends ContainerClient {
     }
 
     private List<String> generateGeoTiffRaster(String gdalContainerId, String inputFormat, String filePath,
-            String postgresOutputPath, GDALTranslateOptions options) {
+            String postgresOutputPath, GDALOptions<?> options) {
 
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         String execId = createComplexCommand(gdalContainerId, options.appendToArgs(
