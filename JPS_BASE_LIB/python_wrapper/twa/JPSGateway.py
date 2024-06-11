@@ -2,6 +2,7 @@ from py4j.java_gateway import JavaGateway, java_import, launch_gateway ,GatewayP
 from os import path
 from twa.resRegistry.resManager import resReg
 import textwrap
+import threading
 
 def _processLGkwargs(className, **LGkwargs):
     """
@@ -123,7 +124,32 @@ def _addConJGParams(port, proc, auth_token, JGkwargs):
     JGkwargs.update({'java_process':proc, 'gateway_parameters':GatewayParameters(**gateway_parameters)})
     return JGkwargs
 
-class JPSGateway:
+
+class JPSGatewaySingletonMeta(type):
+    """
+    A Singleton metaclass that ensures only one instance of the class is created.
+    """
+    # see https://stackabuse.com/creating-a-singleton-in-python/
+    # the reason why we didn't use the simpliest way of overwriting __new__ is due to custom argument in __init__
+    # which throws exception `TypeError: object.__new__() takes exactly one argument (the type to instantiate)`
+    # see for more information:
+    # https://stackoverflow.com/questions/59217884/new-method-giving-error-object-new-takes-exactly-one-argument-the-typ
+    _instances = {}
+    _lock: threading.Lock = threading.Lock()
+
+    def __call__(cls, *args, **kwargs):
+        """
+        Control the creation of the instance. If an instance already exists, return it.
+        Otherwise, create a new instance, store it, and return it.
+        """
+        with cls._lock:
+            if cls not in cls._instances:
+                instance = super().__call__(*args, **kwargs)
+                cls._instances[cls] = instance
+        return cls._instances[cls]
+
+
+class JPSGateway(metaclass=JPSGatewaySingletonMeta):
     """
     Wrapper class of the py4j JavaGateway class for managing
     Python-Java communication.
@@ -142,7 +168,10 @@ class JPSGateway:
         dictionary storing user provided JavaGateway parameters
     _launchGatewayUserParams : dict, private
         dictionary storing user provided launch_gateway parameters
+    _initialised : bool, private
+        flag inticating if the instance is already initialised
     """
+
     def __init__(self, resName=None, jarPath=None, **JGkwargs):
         """
         JPSGateway constructor class
@@ -180,22 +209,28 @@ class JPSGateway:
             same time does not work. The arguments are mutually
             exclusive
         """
-        self.resName = resName
-        self.jarPath = jarPath
-        if self.jarPath is None:
-            self.jarPath = resReg.getResMainFilePath(resName)
+        if not hasattr(self, '_initialised'):
+            # ensures __init__ runs only once
+            self._initialised = True
+            self.resName = resName
+            self.jarPath = jarPath
+            if self.jarPath is None:
+                self.jarPath = resReg.getResMainFilePath(resName)
 
-        try:
-            if not path.isfile(self.jarPath):
+            try:
+                if not path.isfile(self.jarPath):
+                    print('Error: Resource jarpath is invalid.')
+                    raise FileNotFoundError
+            except TypeError:
                 print('Error: Resource jarpath is invalid.')
                 raise FileNotFoundError
-        except TypeError:
-            print('Error: Resource jarpath is invalid.')
-            raise FileNotFoundError
-        self.gateway = None
-        self._gatewayUserParams = _processJGkwargs(**JGkwargs)
-        self._launchGatewayUserParams = None
-        self._isStarted = False
+            self.gateway = None
+            self._gatewayUserParams = _processJGkwargs(**JGkwargs)
+            self._launchGatewayUserParams = None
+            self._isStarted = False
+            print(f'Info: Initializing JPSGateway with resName={resName}, jarPath={jarPath}')
+        else:
+            print(f'Info: Gateway already initialised. Any JavaGateway created ({self.gateway}) will be reused.')
 
     def launchGateway(self, **LGkwargs):
         """

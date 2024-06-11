@@ -1,14 +1,55 @@
 import random
 import uuid
 import pytest
+from twa.JPSGateway import JPSGatewaySingletonMeta
 from twa.resources import JpsBaseLib
 from py4j.java_gateway import GatewayParameters
 from os import path
 import json
 
-def test_JGLGkwargs():
+@pytest.fixture(autouse=True)
+def reset_singleton():
+    """
+    Fixture to reset the singleton instance before each test.
+    """
+    JPSGatewaySingletonMeta._instances = {}
+
+def test_gateway_singleton():
+    # create the first gateway
+    gateway1 = JpsBaseLib()
+    gateway1.launchGateway()
+    gateway1_view = gateway1.createModuleView()
+    gateway1.importPackages(gateway1_view, "uk.ac.cam.cares.jps.base.query.*")
+    gateway1.importPackages(gateway1_view, "uk.ac.cam.cares.jps.base.timeseries.*")
+    id1 = id(gateway1.gateway)
+
+    # create the second gateway
+    gateway2 = JpsBaseLib()
+    gateway2.launchGateway()
+    gateway2_view = gateway2.createModuleView()
+    gateway2.importPackages(gateway2_view, "uk.ac.cam.cares.jps.base.query.*")
+    gateway2.importPackages(gateway2_view, "uk.ac.cam.cares.jps.base.timeseries.*")
+
+    # gateway2 should be reusing the Java gateway object of the gateway1
+    assert gateway1 is gateway2
+    assert gateway1.gateway is gateway2.gateway
+    assert gateway1.gateway._gateway_client is gateway2.gateway._gateway_client
+    assert gateway1_view._gateway_client is gateway2_view._gateway_client
+    assert gateway1.createModuleView()._gateway_client is gateway1_view._gateway_client
+
+    # create the timeseries client in gateway1 using the objects from gateway2 should work
+    endpoint = 'https://placeholder'
+    gateway1_view.TimeSeriesClient(
+        gateway2_view.RemoteStoreClient(endpoint, endpoint),
+        gateway2_view.java.time.Instant.now().getClass()
+    )
+
+    # shutdown gateway
+    gateway1.shutdown()
+
+def test_JGLGkwargs_1():
     # ===============================================================================================
-    # sub test 1 - checks most important params, except enable_auth = True, as it does not work with the
+    # test 1 - checks most important params, except enable_auth = True, as it does not work with the
     #              eager_load = True option
     # JGkwargs
     eager_load = True   # py4j default is False, tested if can be changed to True
@@ -20,7 +61,7 @@ def test_JGLGkwargs():
     jarpath = 'dummyPath' # tested if correctly removed from the LGkwargs
     port = 49154 # tested if correctly set by the launch_gateway call
 
-    # instantiate jsp gatway object using the JGkwargs values defined above
+    # instantiate jps gateway object using the JGkwargs values defined above
     jpsGW = JpsBaseLib(**{'eager_load': eager_load,
                         'java_process': 1,
                         'auto_convert': auto_convert,
@@ -66,8 +107,10 @@ def test_JGLGkwargs():
     assert py4jGWparams.eager_load == eager_load
 
     jpsGW.shutdown()
+
+def test_JGLGkwargs_2():
     # ===============================================================================================
-    # sub test 2  - checks the enable_auth = True option
+    # test 2  - checks the enable_auth = True option (see test_JGLGkwargs_1)
     # LGkwargs
     enable_auth = True  # py4j default is False, tested if can be changed to True
     jpsGW = JpsBaseLib()
