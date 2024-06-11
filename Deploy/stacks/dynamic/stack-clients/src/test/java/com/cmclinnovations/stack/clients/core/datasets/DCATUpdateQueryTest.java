@@ -27,11 +27,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.testcontainers.junit.jupiter.Container;
 
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.core.datasets.DatasetBuilder.Service;
-import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.BlazegraphContainer;
@@ -317,23 +317,20 @@ class DCATUpdateQueryTest {
     }
 
     private void writeBlazegraphConfig() {
-        DockerClient dockerClient = DockerClient.getInstance();
-        dockerClient.writeEndpointConfig(
+        BlazegraphClient.getInstance().writeEndpointConfig(
                 new BlazegraphEndpointConfig("blazegraph", "blazegraph",
                         "8080",
                         BlazegraphContainer.USERNAME, BlazegraphContainer.PASSWORD));
     }
 
     private void writePostGISConfig() {
-        DockerClient dockerClient = DockerClient.getInstance();
-        dockerClient.writeEndpointConfig(
+        BlazegraphClient.getInstance().writeEndpointConfig(
                 new PostGISEndpointConfig("postgis", "test-postgis", "1234",
                         "user", "passwordFile"));
     }
 
     private void writeOntopConfig(String name) {
-        DockerClient dockerClient = DockerClient.getInstance();
-        dockerClient.writeEndpointConfig(
+        BlazegraphClient.getInstance().writeEndpointConfig(
                 new OntopEndpointConfig(name, StackClient.prependStackName(name).replace('_', '-'), "5678"));
     }
 

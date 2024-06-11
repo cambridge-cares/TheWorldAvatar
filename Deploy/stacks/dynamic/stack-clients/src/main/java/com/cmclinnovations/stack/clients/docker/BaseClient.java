@@ -29,7 +29,7 @@ abstract class BaseClient {
         }
     }
 
-    public final <E extends @Nonnull EndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public <E extends @Nonnull EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         String endpointName = endpointConfig.getName();
         Path configFilePath = configsDir.resolve(endpointName);
         if (!Files.exists(configFilePath)) {

@@ -19,7 +19,6 @@ import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
-import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
@@ -33,7 +32,7 @@ import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncode
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 
-public class GeoServerClient extends ContainerClient implements ClientWithEndpoint {
+public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
 
     private static final Logger logger = LoggerFactory.getLogger(GeoServerClient.class);
     private final GeoServerRESTManager manager;
@@ -60,8 +59,9 @@ public class GeoServerClient extends ContainerClient implements ClientWithEndpoi
     }
 
     public GeoServerClient(URL restURL, String username, String password) {
+        super(EndpointNames.GEOSERVER, RESTEndpointConfig.class);
         if (null == restURL || null == username || null == password) {
-            RESTEndpointConfig geoserverEndpointConfig = getEndpoint();
+            RESTEndpointConfig geoserverEndpointConfig = getEndpointConfig();
             if (null == restURL) {
                 restURL = geoserverEndpointConfig.getUrl();
             }
@@ -76,11 +76,6 @@ public class GeoServerClient extends ContainerClient implements ClientWithEndpoi
         manager = new GeoServerRESTManager(restURL, username, password);
 
         postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
-    }
-
-    @Override
-    public RESTEndpointConfig getEndpoint() {
-        return readEndpointConfig(EndpointNames.GEOSERVER, RESTEndpointConfig.class);
     }
 
     public void createWorkspace(String workspaceName) {

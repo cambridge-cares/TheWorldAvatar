@@ -79,7 +79,7 @@ class BlazegraphClientTest {
 
     @Test
     void testGetEndpoint() {
-        BlazegraphEndpointConfig endpoint = blazegraphClient.getEndpoint();
+        BlazegraphEndpointConfig endpoint = blazegraphClient.getEndpointConfig();
         Assertions.assertEquals(blazegraph.getURL(), endpoint.getUrl("kb"));
     }
 

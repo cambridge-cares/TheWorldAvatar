@@ -5,8 +5,8 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.utility.DockerImageName;
 
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
-import com.cmclinnovations.stack.clients.docker.DockerClient;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -57,8 +57,7 @@ public class BlazegraphContainer extends GenericContainer<BlazegraphContainer> {
     }
 
     public void writeBlazegraphConfig() {
-        DockerClient dockerClient = DockerClient.getInstance();
-        dockerClient.writeEndpointConfig(
+        BlazegraphClient.getInstance().writeEndpointConfig(
                 new BlazegraphEndpointConfig("blazegraph",
                         getHost(), getFirstMappedPort().toString(),
                         authenticated ? BlazegraphContainer.USERNAME : null,

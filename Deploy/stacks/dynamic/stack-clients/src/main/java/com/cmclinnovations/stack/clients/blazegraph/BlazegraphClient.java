@@ -21,12 +21,11 @@ import com.bigdata.rdf.sail.webapp.client.HttpException;
 import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
-import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-public class BlazegraphClient extends ContainerClient implements ClientWithEndpoint {
+public class BlazegraphClient extends ClientWithEndpoint<BlazegraphEndpointConfig> {
 
     private static final Logger logger = LoggerFactory.getLogger(BlazegraphClient.class);
 
@@ -42,15 +41,8 @@ public class BlazegraphClient extends ContainerClient implements ClientWithEndpo
         return instance;
     }
 
-    private final BlazegraphEndpointConfig blazegraphEndpoint;
-
     private BlazegraphClient() {
-        blazegraphEndpoint = readEndpointConfig(EndpointNames.BLAZEGRAPH, BlazegraphEndpointConfig.class);
-    }
-
-    @Override
-    public BlazegraphEndpointConfig getEndpoint() {
-        return blazegraphEndpoint;
+        super(EndpointNames.BLAZEGRAPH, BlazegraphEndpointConfig.class);
     }
 
     public void createNamespace(String namespace) {
@@ -66,18 +58,19 @@ public class BlazegraphClient extends ContainerClient implements ClientWithEndpo
     }
 
     private void sendCommandToBlazegraph(String namespace, BaseCmd command) {
-        String serviceUrl = blazegraphEndpoint.getServiceUrl();
+        BlazegraphEndpointConfig endpointConfig = getEndpointConfig();
+        String serviceUrl = endpointConfig.getServiceUrl();
 
         RuntimeException firstException = null;
         HttpClient httpClient = null;
-        if (!blazegraphEndpoint.getPassword().isEmpty()) {
+        if (!endpointConfig.getPassword().isEmpty()) {
             // If authentication is enabled then create an HttpClient explicitly and add the
             // authentication details to its AuthenticationStore.
             try {
                 httpClient = HttpClientConfigurator.getInstance().newInstance();
                 httpClient.getAuthenticationStore()
                         .addAuthentication(new BasicAuthentication(new URI(serviceUrl), "Blazegraph",
-                                blazegraphEndpoint.getUsername(), blazegraphEndpoint.getPassword()));
+                                endpointConfig.getUsername(), endpointConfig.getPassword()));
             } catch (URISyntaxException ex) {
                 firstException = new RuntimeException(
                         "The Blazegraph service URL '" + serviceUrl + "' is not a valid URI.", ex);
@@ -208,10 +201,11 @@ public class BlazegraphClient extends ContainerClient implements ClientWithEndpo
     }
 
     public RemoteStoreClient getRemoteStoreClient(String namespace) {
-        String url = blazegraphEndpoint.getUrl(namespace);
+        BlazegraphEndpointConfig endpointConfig = getEndpointConfig();
+        String url = endpointConfig.getUrl(namespace);
         return new RemoteStoreClient(url, url,
-                blazegraphEndpoint.getUsername(),
-                blazegraphEndpoint.getPassword());
+                endpointConfig.getUsername(),
+                endpointConfig.getPassword());
     }
 
     /**

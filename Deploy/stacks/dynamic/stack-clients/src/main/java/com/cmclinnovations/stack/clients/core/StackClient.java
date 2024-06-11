@@ -120,7 +120,7 @@ public final class StackClient {
 
         PostGISClient postgisClient = PostGISClient.getInstance();
         postgisClient.createDatabase(database);
-        PostGISEndpointConfig postgisConfig = postgisClient.getEndpoint();
+        PostGISEndpointConfig postgisConfig = postgisClient.getEndpointConfig();
 
         return new TimeSeriesClient<>(remoteStoreClient, timeClass,
                 postgisConfig.getJdbcURL(database), postgisConfig.getUsername(), postgisConfig.getPassword());
