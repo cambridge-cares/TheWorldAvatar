@@ -222,7 +222,7 @@ public class RouteSegmentization {
     try (Connection connection = remoteRDBStoreClient.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 // Use a ResultSet to query for the table's existence
-                ResultSet resultSet = statement.executeQuery("SELECT 1 FROM routing_ways_segment");
+                statement.executeQuery("SELECT 1 FROM routing_ways_segment"); 
                 // If the query is successful, the table exists
                 return true;
             }

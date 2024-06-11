@@ -1,9 +1,5 @@
 package uk.ac.cam.cares.jps.agent.isochroneagent;
 
-import javax.servlet.annotation.WebServlet;
-import javax.ws.rs.BadRequestException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,16 +8,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.servlet.annotation.WebServlet;
+import javax.ws.rs.BadRequestException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
+
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 @WebServlet(urlPatterns = "/update")
 
@@ -30,7 +34,7 @@ public class IsochroneAgent extends JPSAgent {
     private static String isochroneFunction = null; 
     private static int timeThreshold; 
     private static int timeInterval; 
-    private static final String PROPETIES_PATH = "/inputs/config.properties";
+    private static final String PROPERTIES_PATH = "/inputs/config.properties";
     private static final Path obdaFile = Path.of("/inputs/isochrone.obda");
     private final String FUNCTION_KEY = "function";
     private final String TIMETHRESHOLD_KEY = "timethreshold";
@@ -72,14 +76,14 @@ public class IsochroneAgent extends JPSAgent {
      * Read configuration settings from config.properties
      */
     public void readConfig() {
-        try (InputStream input = FileReader.getStream(PROPETIES_PATH)) {
+        try (InputStream input = FileReader.getStream(PROPERTIES_PATH)) {
             Properties prop = new Properties();
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
             this.segmentization_length = Double.parseDouble(prop.getProperty("segmentization_length"));
             this.kgEndpoint = prop.getProperty("kgEndpoint");
 
-            this.populationTables = prop.getProperty("populationTables");
+            IsochroneAgent.populationTables = prop.getProperty("populationTables");
             // Split the string using the comma as the delimiter
             String[] tableNames = populationTables.split("\\s*,\\s*");
             this.populationTableList = new ArrayList<String>(Arrays.asList(tableNames));
@@ -112,9 +116,9 @@ public class IsochroneAgent extends JPSAgent {
             throw new JPSRuntimeException("Unable to validate request sent to the agent.");
         }
 
-        this.isochroneFunction = requestParams.getString(FUNCTION_KEY);
-        this.timeThreshold = requestParams.getInt(TIMETHRESHOLD_KEY);
-        this.timeInterval = requestParams.getInt(TIMEINTERVAL_KEY);
+        IsochroneAgent.isochroneFunction = requestParams.getString(FUNCTION_KEY);
+        IsochroneAgent.timeThreshold = requestParams.getInt(TIMETHRESHOLD_KEY);
+        IsochroneAgent.timeInterval = requestParams.getInt(TIMEINTERVAL_KEY);
         LOGGER.info("Successfully set timeThreshold to " + timeThreshold);
         LOGGER.info("Successfully set timeInterval to " + timeInterval);
         LOGGER.info("Successfully set isochroneFunction to " + isochroneFunction);
@@ -152,7 +156,6 @@ public class IsochroneAgent extends JPSAgent {
             // Create a table to store nearest_node
             routeSegmentization.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
-
             // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap)
             IsochroneGenerator isochroneGenerator = new IsochroneGenerator();
             isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap);
@@ -170,7 +173,6 @@ public class IsochroneAgent extends JPSAgent {
             String schema = "public";
             geoServerClient.createWorkspace(workspaceName);
 
-            
             UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
             GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
             virtualTable.setSql("SELECT minute, transportmode, transportmode_iri, poi_type, CONCAT('https://www.theworldavatar.com/kg/ontoisochrone/',iri) as iri, CONCAT(transportmode,' (', poi_type,')') as name, roadcondition, roadcondition_iri, geometry_iri, "+populationTables+", ST_Force2D(geom) as geom FROM isochrone_aggregated");
@@ -191,8 +193,6 @@ public class IsochroneAgent extends JPSAgent {
                 geoServerVectorSettingsUnreachable.setVirtualTable(virtualTableUnreachable);
             geoServerClient.createPostGISDataStore(workspaceName,"unreachable" , dbName, schema);
             geoServerClient.createPostGISLayer(workspaceName, dbName,"unreachable" ,geoServerVectorSettingsUnreachable);
-
-
             }
 
             //Upload Isochrone Ontop mapping

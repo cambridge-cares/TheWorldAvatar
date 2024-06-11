@@ -18,6 +18,7 @@ public class FileReader {
 
     /**
      * Read input files
+     * 
      * @param path
      * @return
      * @throws FileNotFoundException
@@ -26,13 +27,14 @@ public class FileReader {
         return new FileInputStream(path);
     }
 
-
     /**
-     * Read Point of Interest (POI) files from directory and parse into Map, allows multiple SPARQL files.
+     * Read Point of Interest (POI) files from directory and parse into Map, allows
+     * multiple SPARQL files.
+     * 
      * @param POI_PATH Path for directory containing POI SPARQL queries
      * @return
      */
-    public static Map readPOIsparql(Path POI_PATH) {
+    public static Map<String, String> readPOIsparql(Path POI_PATH) {
         try (Stream<Path> files = Files.list(POI_PATH)) {
             // Find all available SPARQL files
             Map<String, String> sparqlFiles = files
@@ -57,16 +59,18 @@ public class FileReader {
             });
             return sparqlFiles;
         } catch (IOException ex) {
-            throw new RuntimeException("Failed to read files from the directory.", ex);
+            throw new RuntimeException("Failed to read SPARQL files from" + POI_PATH, ex);
         }
     }
 
     /**
-     * Read EDGESTABLE SQL files from directory and parse into Map, allows multiple .SQL files.
+     * Read EDGESTABLE SQL files from directory and parse into Map, allows multiple
+     * .SQL files.
+     * 
      * @param EDGESTABLESQL_PATH Path for directory containing .SQL
      * @return
      */
-    public static Map readEdgesTableSQL(Path EDGESTABLESQL_PATH) {
+    public static Map<String, String> readEdgesTableSQL(Path EDGESTABLESQL_PATH) {
         try (Stream<Path> files = Files.list(EDGESTABLESQL_PATH)) {
             // Find all available EdgesTableSQL files
             Map<String, String> edgesTableSQLFiles = files
@@ -92,23 +96,26 @@ public class FileReader {
 
             return edgesTableSQLFiles;
         } catch (IOException ex) {
-            throw new RuntimeException("Failed to read files from the directory.", ex);
+            throw new RuntimeException("Failed to read SQL files from" + EDGESTABLESQL_PATH, ex);
         }
     }
 
-    /** Retrieve POI locations from knowledge graph by executing the input SPARQL queries.
+    /**
+     * Retrieve POI locations from knowledge graph by executing the input SPARQL
+     * queries.
+     * 
      * @param storeClient
      * @param POImap
      * @return
      */
-    public static JSONArray getPOILocation(RemoteStoreClient storeClient, Map<String, String> POImap)
-    {            
+    public static JSONArray getPOILocation(RemoteStoreClient storeClient, Map<String, String> POImap) {
         JSONArray cumulativePOI = new JSONArray();
         for (Map.Entry<String, String> entry : POImap.entrySet()) {
             String value = entry.getValue();
             JSONArray POI = storeClient.executeQuery(value);
 
-            // Iterate through the POIs in this iteration and add them to the cumulative array
+            // Iterate through the POIs in this iteration and add them to the cumulative
+            // array
             for (int i = 0; i < POI.length(); i++) {
                 cumulativePOI.put(POI.get(i));
             }
