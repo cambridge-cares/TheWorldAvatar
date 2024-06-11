@@ -24,7 +24,6 @@ class UpdateKG:
             - triple:     String in where clause.
             - select_var: String with return variables
         Outputs:
-
         """
         query_triple = f"""
         {self.prefix}
@@ -38,26 +37,16 @@ class UpdateKG:
         
     def find_all_connections(self, iri):
         """Query all incoming and outgoing connections to preserve them after they are deleted."""
-        query_incoming = f"""
-        {self.prefix}
-        SELECT ?subject_incoming ?predicate_incoming
-        WHERE {{
-        ?subject_incoming    ?predicate_incoming <{iri}> 	    .
-            }}
-        """
-        query_outgoing = f"""
-        {self.prefix}
-        SELECT ?predicate_outgoing ?object_outgoing
-        WHERE {{
-        <{iri}>  	?predicate_outgoing	    ?object_outgoing	    .
-        FILTER (!isLiteral(?object_outgoing))
-        }}
-        """
-        # query
-        incoming_iris   = self.sparql_client.performQuery(query_incoming)
-        outgoing_iris   = self.sparql_client.performQuery(query_outgoing)
-        print(f"The IRI: {iri} is has outgoing connections to {outgoing_iris} and incoming connections {incoming_iris}")
-        return incoming_iris, outgoing_iris
+        # incoming connections
+        where_incoming          = f"?subject_incoming       ?predicate_incoming <{iri}> 	    ."
+        select_incoming         =  "?subject_incoming       ?predicate_incoming"
+        query_incoming          = self.query_triple(where_incoming, select_incoming)
+        # outgoing connections
+        where_outgoing          = f"""<{iri}>  	?predicate_outgoing	    ?object_outgoing	.
+                                    FILTER (!isLiteral(?object_outgoing))"""
+        select_outgoing         = "?predicate_outgoing ?object_outgoing"
+        query_outgoing          = self.query_triple(where_outgoing, select_outgoing)
+        return query_incoming, query_outgoing
     
     def delete_connections(self, iri):
         "Delete all connections to the input IRI."
@@ -112,27 +101,30 @@ class UpdateKG:
                                     MINUS {{ ?s ?p ?instance }}
                                     MINUS {{ ?instance ?p ?o }}"""
     def delete_overhead(self, iris, dic_string):
-        
-            for j, iri in enumerate(iris):
-                subjectx                = iri[f"{dic_string}"]
-                incoming, outgoing      = self.find_all_connections(subjectx)
-                # save the IR of the first GBU-IRI
-                if j == 0:
-                        print("-------------------------\n")
-                        new_subject        = subjectx
-                        print(print(new_subject))
-                        print("-------------------------\n")
-                # all other GBU-IRIs are redundant -> delete existing tripples and reconect with the first IRI
-                else:
-                    print(subjectx)
-                    # reconnect incoming to the i==0
-                    for k, am_inconnection in enumerate(incoming):
-                        self.generate_triple(am_inconnection["subject_incoming"],am_inconnection["predicate_incoming"], new_subject, literal=False)
-                    for l, am_outconnection in enumerate(outgoing):
-                        self.generate_triple(new_subject, am_outconnection["predicate_outgoing"], am_outconnection["object_outgoing"], literal=False)
-                        # delete all outgoing and incoming triples
-                    self.delete_connections(subjectx)
-                    
+        for j, iri in enumerate(iris):
+            subjectx                = iri[f"{dic_string}"]
+            # save the IR of the first GBU-IRI
+            if j == 0:
+                print("-------------------------\n")
+                new_subject        = iri[f"{dic_string}"]
+                print(new_subject)
+                print("-------------------------\n")
+            # all other GBU-IRIs are redundant -> delete existing tripples and reconect with the first IRI
+            else:
+                self.reconnect_delete(iri[f"{dic_string}"], new_subject)
+
+    def reconnect_delete(self, iri, connect_to):
+        """Delete all incoming and outgoing triples to iri and generate new tripples from/to connect_to"""
+        incoming, outgoing              = self.find_all_connections(iri)
+        print(iri)
+        # reconnect incoming to the i==0
+        for k, am_inconnection in enumerate(incoming):
+            self.generate_triple(am_inconnection["subject_incoming"],am_inconnection["predicate_incoming"], connect_to, literal=False)
+        for l, am_outconnection in enumerate(outgoing):
+            self.generate_triple(connect_to, am_outconnection["predicate_outgoing"], am_outconnection["object_outgoing"], literal=False)
+            # delete all outgoing and incoming triples
+        self.delete_connections(iri)
+        return
 
 
 def main():
