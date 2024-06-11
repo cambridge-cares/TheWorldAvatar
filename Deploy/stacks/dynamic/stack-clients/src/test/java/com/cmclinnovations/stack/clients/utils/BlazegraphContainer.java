@@ -27,6 +27,7 @@ public class BlazegraphContainer extends GenericContainer<BlazegraphContainer> {
         super(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"));
         withExposedPorts(8080);
         waitingFor(Wait.forHttp(BLAZEGRAPH_URL_PATH));
+        start();
     }
 
     public BlazegraphContainer withAuthentication() {

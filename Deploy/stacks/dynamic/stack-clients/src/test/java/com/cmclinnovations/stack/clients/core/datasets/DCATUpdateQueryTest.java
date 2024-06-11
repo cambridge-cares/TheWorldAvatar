@@ -46,14 +46,9 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 class DCATUpdateQueryTest {
 
     @Container
-    private final BlazegraphContainer blazegraph = new BlazegraphContainer();
+    private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
 
-    private final RemoteStoreClient remoteStoreClient;
-
-    DCATUpdateQueryTest() {
-        blazegraph.start();
-        remoteStoreClient = blazegraph.getRemoteStoreClient();
-    }
+    private static final RemoteStoreClient remoteStoreClient = blazegraph.getRemoteStoreClient();
 
     private String testName;
     private Map<String, Integer> fileIndecies = new HashMap<>();

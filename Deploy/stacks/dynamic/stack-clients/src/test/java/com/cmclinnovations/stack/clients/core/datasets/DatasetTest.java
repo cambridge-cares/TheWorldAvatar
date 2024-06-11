@@ -4,9 +4,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.testcontainers.junit.jupiter.Container;
 
 import com.cmclinnovations.stack.clients.utils.BlazegraphContainer;
@@ -14,25 +12,10 @@ import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class DatasetTest {
 
     @Container
-    private BlazegraphContainer blazegraph;
-
-    private RemoteStoreClient remoteStoreClient;
-
-    void initialise() {
-        if (null == blazegraph) {
-            blazegraph = new BlazegraphContainer();
-            blazegraph.start();
-        }
-        if (null == remoteStoreClient) {
-            remoteStoreClient = blazegraph.getRemoteStoreClient();
-        }
-    }
+    private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
 
     @Test
     void testDeserialisingInjected() {
@@ -94,5 +77,5 @@ class DatasetTest {
         mapper.setInjectableValues(iv);
         return mapper;
     }
- 
+
 }

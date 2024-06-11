@@ -27,15 +27,10 @@ class BlazegraphClientTest {
     @Container
     private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
 
-    private final BlazegraphClient blazegraphClient;
+    private static final BlazegraphClient blazegraphClient = BlazegraphClient.getInstance();;
 
-    BlazegraphClientTest() {
-        if (!blazegraph.isRunning()) {
-            blazegraph.start();
-        }
-
+    static {
         blazegraph.writeBlazegraphConfig();
-        blazegraphClient = BlazegraphClient.getInstance();
     }
 
     @Test
