@@ -14,6 +14,11 @@ COPY tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 # the war file before tomcat is started.
 COPY blazegraph_war /tmp/blazegraph
 
+# Retrieve a newer version of the Apache Commons IO library to fix a bug with inserting JSON-LD files.
+ADD https://repo1.maven.org/maven2/commons-io/commons-io/2.16.1/commons-io-2.16.1.jar /tmp/blazegraph/WEB-INF/lib/
+# Delete the old version
+RUN zip -d /usr/local/tomcat/webapps/blazegraph.war WEB-INF/lib/commons-io-2.1.jar
+
 # Copy in script and set it as the entry point
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
