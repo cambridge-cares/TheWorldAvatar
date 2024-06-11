@@ -13,9 +13,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonInclude(Include.NON_EMPTY)
 class CommonOptions<T extends CommonOptions<T>> {
+
+    @JsonIgnore
     private final String command;
 
     private String sridIn = null;
