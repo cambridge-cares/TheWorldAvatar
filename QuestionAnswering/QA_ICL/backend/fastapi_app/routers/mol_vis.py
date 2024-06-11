@@ -3,7 +3,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Response
 
-from controllers.mol_vis import CIFManager, XYZManager, get_cif_manager, get_xyz_manager
+from services.mol_vis.cif import CIFManager, get_cif_manager
+from services.mol_vis.xyz import XYZManager, get_xyz_manager
 
 
 logger = logging.getLogger(__name__)
