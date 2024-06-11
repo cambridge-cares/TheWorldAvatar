@@ -32,7 +32,9 @@ import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.core.datasets.DatasetBuilder.Service;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.BlazegraphContainer;
 import com.cmclinnovations.stack.clients.utils.JsonHelper;
@@ -324,13 +326,13 @@ class DCATUpdateQueryTest {
     }
 
     private void writePostGISConfig() {
-        BlazegraphClient.getInstance().writeEndpointConfig(
+        PostGISClient.getInstance().writeEndpointConfig(
                 new PostGISEndpointConfig("postgis", "test-postgis", "1234",
                         "user", "passwordFile"));
     }
 
     private void writeOntopConfig(String name) {
-        BlazegraphClient.getInstance().writeEndpointConfig(
+        OntopClient.getInstance().writeEndpointConfig(
                 new OntopEndpointConfig(name, StackClient.prependStackName(name).replace('_', '-'), "5678"));
     }
 
