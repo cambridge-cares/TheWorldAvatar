@@ -47,7 +47,7 @@ def check_region(sparql_client):
     '''
     res = sparql_client.performQuery(query_string)
     if not res:
-        print(f'No existed country iri, created {country_iri}')
+        print(f'No region_iri found -- Have you instantiated regions previously?')
         raise IndexError('No region_iri found -- Have you instantiated regions previously?')
     else: 
         region_list = []

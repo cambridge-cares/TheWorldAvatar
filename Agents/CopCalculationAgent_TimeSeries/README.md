@@ -32,7 +32,6 @@ HEATPUMP_EFFICIENCY            # Assume a efficiency of the heat pump
 HOTSIDE_TEMPERATURE            # Assume the temperature of the hot side of the heatpump. In the unit of Kelvin 
 ```
 
-
 ### How to deploy this agent on stack
 Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
 

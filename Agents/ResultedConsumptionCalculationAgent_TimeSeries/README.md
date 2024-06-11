@@ -3,6 +3,8 @@ This `Resulted (Energy) Consumption Calculation` agent is designed to calculate 
 
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. It is recommended to use `VS Code` to develop/deploy the agent. Hence, a few of the details below are VS Code specific.
 
+
+
 This agent uses Derived Infomation Framework, details provided below:
 
 ### Required datasets
@@ -14,6 +16,16 @@ Electricity consumption: # Available in the Ontop, a consumption csv file and co
 
 Gas consumption: # Available in the Ontop, a consumption csv file and config file, along with ontop.obda mapping file should be provided to enable the SPARQL query searching in the ontop. TODO: Details to be followed
 ```
+
+### Use the agent
+The Resulted Consumption Calculation Agent is intended to use the `Asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `COP`, `Electricity consumption`, `Gas Consumption`,`Boiler Efficiency`,`Proportion of Heating`,`Heat Pump Uptake`,`Energy Consumption Profile`.) and automatically updates associated `Resulted Energy Consumption`  instances in the KG. As the agent adopts the `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
+
+After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://localhost:5200/`
+
+This agent should be implemented with other agents using Derived Information Framework. You may refer to the following graph to find what is the role of this agent in these calculations:
+
+![Agent framework](https://i.imgur.com/vSBvBoJ.jpeg)
+
 ### Agent Setup
 
 Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file). For details on the [Derivation Agent configuration] please refer to the official documentation.
@@ -42,18 +54,17 @@ YEAR                          # The year of the index, will be used to instantia
 ### How to deploy this agent on stack
 Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
 
-### Use the agent
-The Resulted Consumption Calculation Agent is intended to use the `Asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `COP`, `Electricity consumption`, `Gas Consumption`,`Boiler Efficiency`,`Proportion of Heating`,`Heat Pump Uptake`,`Energy Consumption Profile`.) and automatically updates associated `Resulted Energy Consumption`  instances in the KG. As the agent adopts the `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
-
-After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://localhost:5200/`
-
 ## Asynchronous derivation operation
 Once the Agent is deployed, it periodically (defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI`) and acts based on the status associated with that derivation. Although the [Derivation Agent] suggests the use of `.env` files to specify environment variables for agent configurations, this approach does not work properly with Docker stacks, i.e. `docker stack deploy`. Hence, the agent configuration is moved into the [docker compose file] instead.
 
 Details about how to use the agent please see the [home page] of this agent
 
 ## Upper level instances instatiation
-If you started from an empty namespace, or have not instantiate upper level instances such as `country` or `assumption`, the result would not be able to be associated with them. Therefore it is required to run the [upper_level_ontology_update.py](./resultedconsumptioncalculationagent/upper_level_ontology_update.py), simply run this command in the powershell terminal:
+If you started from an empty namespace, or have not instantiate upper level instances such as `country` or `assumption`, the result would not be able to be associated with them. 
+
+Please check if you have created a namespace in the blazegraph, and entered the correct environmental variables in the [agent.env.example](./agent.env.example). 
+
+Afterwards, run the [upper_level_ontology_update.py](./copcalculationagent/upper_level_ontology_update.py), simply run this command in the powershell terminal:
 
 ```bash
 py ./resultedconsumptioncalculationagent/upper_level_ontology_update.py
