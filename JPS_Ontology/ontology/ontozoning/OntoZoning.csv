@@ -336,5 +336,5 @@ WelfareHome,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozon
 WorkersDormitory,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Workers Dormitory
 WorkersQuarters,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Workers Quarters
 hasPlot,Object Property,,,Zone,https://www.theworldavatar.com/kg/ontoplot/Plot,,A relationship that indicates the plots that are within the boundaries of the specified zone.,https://www.theworldavatar.com/kg/ontozoning/,has plot
-hasLandUseType,Object Property,,,Plot,LandUseType,,A relationship indicating the plot and its associated land use type. This association may be established by the relevant competent authority.,https://www.theworldavatar.com/kg/ontozoning/,has land use type
+hasLandUseType,Object Property,,,https://www.theworldavatar.com/kg/ontoplot/Plot,LandUseType,,A relationship indicating the plot and its associated land use type. This association may be established by the relevant competent authority.,https://www.theworldavatar.com/kg/ontozoning/,has land use type
 subcategoryOf,Object Property,,,LandUse,LandUse,,,https://www.theworldavatar.com/kg/ontozoning/,subcategory of

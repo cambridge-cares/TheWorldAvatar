@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+
 import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
@@ -151,7 +153,7 @@ public class ContainerService extends AbstractService {
         return dockerClient.configExists(configName);
     }
 
-    private <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    private <E extends @Nonnull EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         dockerClient.writeEndpointConfig(endpointConfig);
     }
 
