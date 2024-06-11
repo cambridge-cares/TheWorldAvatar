@@ -19,6 +19,7 @@ class TableDataColumn(BaseModel):
     value: str
     label: str
 
+
 class TableDataBase(BaseModel):
     columns: list[TableDataColumn]
     data: Sequence[
@@ -55,6 +56,18 @@ class TableData(TableDataBase):
         return cls(**super().from_data(data).model_dump())
 
 
+class ChemicalStructureData(BaseModel):
+    type: Literal["xyz", "cif"]
+    iri: str
+    label: str
+    data: str
+
+
+class ChemicalStructureCollection(BaseModel):
+    type: Literal["chem_struct_collection"] = "chem_struct_collection"
+    data: list[ChemicalStructureData]
+
+
 class TypedSeries(BaseModel):
     data: list
     type: str
@@ -83,7 +96,11 @@ class WKTGeometryData(BaseModel):
 
 
 DataItem = Annotated[
-    DocumentCollection | TableData | ScatterPlotData | WKTGeometryData,
+    DocumentCollection
+    | TableData
+    | ChemicalStructureCollection
+    | ScatterPlotData
+    | WKTGeometryData,
     Field(discriminator="type"),
 ]
 
