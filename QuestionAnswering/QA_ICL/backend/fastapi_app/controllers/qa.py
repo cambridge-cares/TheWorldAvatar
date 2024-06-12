@@ -5,7 +5,6 @@ from typing import Annotated
 from fastapi import Depends
 
 from model.qa import (
-    ChemicalStructureCollection,
     ChemicalStructureData,
     QARequestArtifact,
     QAResponse,
@@ -92,93 +91,33 @@ class DataSupporter:
         logger.info(
             "Performing entity linking for bindings: " + str(data_req.entity_bindings)
         )
+        var2cls = data_req.var2cls or dict()
         var2iris = {
             var: list(
                 set(
                     [
                         iri
-                        for val in binding.values
+                        for val in values
                         for iri in self.entity_store.link(
-                            cls=binding.cls, text=val.text, identifier=val.identifier
+                            cls=data_req.var2cls and data_req.var2cls.get(var),
+                            text=val if isinstance(val, str) else None,
+                            identifier=val if isinstance(val, dict) else dict(),
                         )  # TODO: handle when no IRIs are returned
                     ]
                 )
             )
-            for var, binding in data_req.entity_bindings.items()
+            for var, values in data_req.entity_bindings.items()
         }
         logger.info("Linked IRIs: " + str(var2iris))
 
-        logger.info(
-            "Retrieving visualisation data for os:Species, zeo:ZeoliteFramework, and zeo:ZeoliticMaterial..."
-        )
-        species_vars = [
-            var
-            for var, binding in data_req.entity_bindings.items()
-            if binding.cls == "os:Species"
-        ]
-        iri_xyz_pairs = [
-            (iri, self.xyz_manager.get(iri))
-            for var in species_vars
-            for iri in var2iris.get(var, [])
-        ]
-        # TODO: Use ORM to access species label
-        species_node_data = self.ontospecies_node_data_retriever.retrieve(
-            "os:Species", iris=[iri for iri, _ in iri_xyz_pairs]
-        )
-        chem_struct_data = [
-            ChemicalStructureData(
-                type="xyz", label=node_datum.get("Label", ""), iri=iri, data=xyz
-            )
-            for (iri, xyz), node_datum in zip(iri_xyz_pairs, species_node_data)
-            if xyz
-        ]
-
-        zeolite_vars = [
-            var
-            for var, binding in data_req.entity_bindings.items()
-            if binding in ["zeo:ZeoliteFramework", "zeo:ZeoliticMaterial"]
-        ]
-        iri_cif_pairs = [
-            (iri, self.cif_manager.get(iri))
-            for var in zeolite_vars
-            for iri in var2iris.get(var, [])
-        ]
-        # TODO: Use ORM to access zeolite codes and formulae
-        zeoframework_node_data = self.ontozeolite_node_data_retriever.retrieve(
-            "zeo:ZeoliteFramework", iris=[iri for iri, _ in iri_cif_pairs]
-        )
-        zeomaterial_node_data = self.ontozeolite_node_data_retriever.retrieve(
-            "zeo:ZeoliticMaterial", iris=[iri for iri, _ in iri_cif_pairs]
-        )
-        zeo_node_data = [
-            fw if fw else mtr
-            for fw, mtr in zip(zeoframework_node_data, zeomaterial_node_data)
-        ]
-        chem_struct_data.extend(
-            ChemicalStructureData(
-                type="cif",
-                iri=iri,
-                label=node_datum.get(
-                    "FrameworkCode", node_datum.get("ChemicalFormula", "")
-                ),
-                data=cif,
-            )
-            for (iri, cif), node_datum in zip(iri_cif_pairs, zeo_node_data)
-            if cif
-        )
-        chem_struct_collection = ChemicalStructureCollection(data=chem_struct_data)
-        logger.info("Done")
-
         logger.info("Executing data request...")
         data, data_artifact = self.executor.exec(
+            var2cls=data_req.var2cls,
             entity_bindings=var2iris,
             const_bindings=data_req.const_bindings,
             req_form=data_req.req_form,
         )
         logger.info("Done")
-
-        if chem_struct_collection:
-            data.insert(0, chem_struct_collection)
 
         logger.info("Saving QA request artifact...")
         id = self.artifact_store.save(
@@ -189,6 +128,82 @@ class DataSupporter:
                 data=data_artifact,
             )
         )
+
+        logger.info("Retrieving visualisation data")
+        species_vars = [
+            var
+            for var in data_req.visualise
+            if data_req.var2cls.get(var) == "os:Species"
+        ]
+        species_iris = [iri for var in species_vars for iri in var2iris.get(var, [])]
+        species_iris = list(set(species_iris))
+        xyzs = [self.xyz_manager.get(iri) for iri in species_iris]
+        # TODO: Use ORM to access species label
+        species_node_data = self.ontospecies_node_data_retriever.retrieve(
+            "os:Species", iris=species_iris
+        )
+        chem_struct_data = [
+            ChemicalStructureData(
+                type="xyz", label=node_datum.get("Label", ""), iri=iri, data=xyz
+            )
+            for iri, xyz, node_datum in zip(species_iris, xyzs, species_node_data)
+            if xyz
+        ]
+
+        zeoframework_vars = [
+            var
+            for var in data_req.visualise
+            if data_req.var2cls.get(var) == "zeo:ZeoliteFramework"
+        ]
+        zeoframework_iris = [
+            iri for var in zeoframework_vars for iri in var2iris.get(var, [])
+        ]
+        zeoframework_iris = list(set(zeoframework_iris))
+        zeoframework_cifs = [self.cif_manager.get(iri) for iri in zeoframework_iris]
+        # TODO: Use ORM to access zeolite codes and formulae
+        zeoframework_node_data = self.ontozeolite_node_data_retriever.retrieve(
+            "zeo:ZeoliteFramework", iris=zeoframework_iris
+        )
+        chem_struct_data.extend(
+            ChemicalStructureData(
+                type="cif",
+                iri=iri,
+                label=node_datum.get("FrameworkCode"),
+                data=cif,
+            )
+            for iri, cif, node_datum in zip(
+                zeoframework_iris, zeoframework_cifs, zeoframework_node_data
+            )
+            if cif
+        )
+
+        zeomaterial_vars = [
+            var
+            for var in data_req.visualise
+            if data_req.var2cls.get(var) == "zeo:ZeoliticMaterial"
+        ]
+        zeomaterial_iris = [
+            iri for var in zeomaterial_vars for iri in var2iris.get(var, [])
+        ]
+        zeomaterial_iris = list(set(zeomaterial_iris))
+        zeomaterial_cifs = [self.cif_manager.get(iri) for iri in zeomaterial_iris]
+        # TODO: Use ORM to access zeolite codes and formulae
+        zeomaterial_node_data = self.ontozeolite_node_data_retriever.retrieve(
+            "zeo:ZeoliticMaterial", iris=zeomaterial_iris
+        )
+        chem_struct_data.extend(
+            ChemicalStructureData(
+                type="cif",
+                iri=iri,
+                label=node_datum.get("ChemicalFormula"),
+                data=cif,
+            )
+            for iri, cif, node_datum in zip(
+                zeomaterial_iris, zeomaterial_cifs, zeomaterial_node_data
+            )
+            if cif
+        )
+        logger.info("Done")
 
         return QAResponse(
             request_id=id,
@@ -201,6 +216,7 @@ class DataSupporter:
                 linked_variables=var2iris,
             ),
             data=data,
+            visualisation=chem_struct_data,
         )
 
 

@@ -63,11 +63,6 @@ class ChemicalStructureData(BaseModel):
     data: str
 
 
-class ChemicalStructureCollection(BaseModel):
-    type: Literal["chem_struct_collection"] = "chem_struct_collection"
-    data: list[ChemicalStructureData]
-
-
 class TypedSeries(BaseModel):
     data: list
     type: str
@@ -96,11 +91,7 @@ class WKTGeometryData(BaseModel):
 
 
 DataItem = Annotated[
-    DocumentCollection
-    | TableData
-    | ChemicalStructureCollection
-    | ScatterPlotData
-    | WKTGeometryData,
+    DocumentCollection | TableData | ScatterPlotData | WKTGeometryData,
     Field(discriminator="type"),
 ]
 
@@ -132,3 +123,4 @@ class QAResponse(BaseModel):
     request_id: str
     metadata: QAResponseMetadata
     data: list[DataItem]
+    visualisation: list[ChemicalStructureData]

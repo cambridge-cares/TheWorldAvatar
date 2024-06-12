@@ -6,26 +6,11 @@ NLQ2DATAREQ_EXAMPLES_KEY_PREFIX = "nlq2datareqExamples:"
 NLQ2DATAREQ_EXAMPLES_INDEX_NAME = "idx:nlq2datareqExamples_vss"
 
 
-class LexicalBindingValue(BaseModel):
-    text: str | None = None
-    identifier: dict[str, str] = dict()
-
-
-class LexicalEntityBinding(BaseModel):
-    cls: str
-    values: list[LexicalBindingValue]
-
-
-class SparqlNodeMappingConfig(BaseModel):
-    pkey: bool = False
-    cls: str | None = None
-
-
 class SparqlDataReqForm(BaseModel):
     type: Literal["sparql"] = "sparql"
     namespace: str
     query: str
-    res_map: dict[str, SparqlNodeMappingConfig]
+    pkeys: list[str]
 
 
 class FuncDataReqForm(BaseModel):
@@ -39,9 +24,11 @@ DataRequestForm = Annotated[
 
 
 class DataRequest(BaseModel):
-    entity_bindings: dict[str, LexicalEntityBinding] = dict()
+    var2cls: dict[str, str] = dict()
+    entity_bindings: dict[str, list[str | dict[str, str]]] = dict()
     const_bindings: dict[str, object] = dict()
-    req_form: DataRequestForm
+    req_form: DataRequestForm | None = None
+    visualise: list[str] = list()
 
 
 class Nlq2DataReqExample(BaseModel):

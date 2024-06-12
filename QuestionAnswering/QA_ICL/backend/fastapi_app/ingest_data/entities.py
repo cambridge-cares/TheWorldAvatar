@@ -6,7 +6,7 @@ import regex
 from services.ingest import DataIngester, InsertThenIndexArgs, load_insert_then_index_args
 from services.stores.entity_store import get_cls2config
 from services.embed import IEmbedder, TritonEmbedder
-from services.redis import does_index_exist
+from services.redis import get_index_existence
 from model.lexicon import (
     ENTITIES_INDEX_NAME,
     ENTITIES_KEY_PREFIX,
@@ -76,7 +76,7 @@ def make_entity_search_schema(vector_dim: int):
 
 def main(args: InsertThenIndexArgs):
     redis_client = Redis(host=args.redis_host, decode_responses=True)
-    if does_index_exist(redis_client=redis_client, index_name=ENTITIES_INDEX_NAME):
+    if get_index_existence(redis_client=redis_client, index_name=ENTITIES_INDEX_NAME):
         print(
             "Index {index_name} exists; entities have already been ingested".format(
                 index_name=ENTITIES_INDEX_NAME
