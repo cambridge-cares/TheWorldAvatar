@@ -35,12 +35,23 @@ get_executables(){
                     fi
 
                     # Patch podman-compose
+                    # NB One could use the patch command with suitable arguments, e.g.:
+                    # patch -u -N $filename -i ...
+                    # The -N argument ensures the patch is applied only in forward direction,
+                    # i.e. reverse or re-application will be ignored, which makes it idempotent!
+                    # However, the patch command is not necessarily installed on all systems,
+                    # and we cannot assume that we have sufficient privileges to install it.
+                    # We therefore use git apply.
                     patch_executable=("git" "apply")
                     if command -v "${patch_executable[@]}" &> /dev/null; then
                         sitepackage_path=$(python3 -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')
-                        filename="$sitepackage_path/podman_compose.py"
-                        # NB The -N argument ensures the patch is applied only in forward direction, i.e. reverse or re-application will be ignored. This makes it idempotent!
-                        "${patch_executable[@]}" --directory="$sitepackage_path/" "${SCRIPTS_DIR}/podman/podman_compose_v$desired_version.patch" > /dev/null 2>&1 || true
+                        # NB git apply is fussy about where it is being applied, and its
+                        # directory argument apparently only takes paths relative to the root
+                        # folder of the git repository, so as a work-around we temporarily
+                        # switch into the site-packages folder.
+                        pushd "$sitepackage_path/" > /dev/null
+                        "${patch_executable[@]}" "${SCRIPTS_DIR}/podman/podman_compose_v$desired_version.patch" > /dev/null 2>&1 || true
+                        popd > /dev/null
                     else
                         echo "ERROR: '${patch_executable[*]}' command not found. Please install it."
                         exit 1
