@@ -35,10 +35,7 @@ export class DataParser {
             })
         } else {
     
-        if (this.sliderHandler && this.sliderHandler.scenarioDimensionsData) {
-            rawJson = DataGroup.handleDimensions(rawJson, this.sliderHandler.scenarioDimensionsData, value)
-        }
-
+      
         this.recurse(rawJson, null, null, 0);
         }
         console.info("Data definition loading complete.");
