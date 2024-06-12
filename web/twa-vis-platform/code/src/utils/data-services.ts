@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 
-import { useFetchDataQuery } from 'state/api/fia-api';
+import { useFetchDataQuery, useFetchDimensionsQuery } from 'state/api/fia-api';
 import { getHasExistingData, setHasExistingData } from 'state/floating-panel-slice';
 import { JsonObject } from 'types/json';
 import { Attribute, AttributeGroup } from 'types/attribute';
-import { TimeSeriesGroup, TimeSeries } from 'types/timeseries';
+import { TimeSeriesGroup, TimeSeries, ScenarioDimensionsData } from 'types/timeseries';
 import { useDispatch, useSelector } from 'react-redux';
 
 const rootKey: string = "meta";
@@ -23,11 +23,32 @@ const stackKey: string = "stack";
  * @param {string} stack The stack endpoint associated with the target feature.
  * @param {string} scenario The current scenario ID (if any).
  */
-export function genFIAEndpoint(iri: string, stack: string, scenario: string): string {
-  if (scenario) {
+export function generateFIAEndpoint(iri: string, stack: string, scenario: string): string {
+  if (scenario && stack && iri) {
     return `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenario}?iri=${encodeURIComponent(iri)}`;
   }
   return `${stack}/feature-info-agent/get?iri=${encodeURIComponent(iri)}`;
+}
+
+export function ScenarioDimensionsEndpoint(stack: string, scenario: string): string {
+  return `${stack}/getScenarioTimes/${scenario}`;
+}
+
+export const useScenarioDimensionsService = (stack: string, scenario: string): { scenarioDimensions: ScenarioDimensionsData; isDimensionsFetching: boolean} => {
+  const { data, isFetching } = useFetchDimensionsQuery(ScenarioDimensionsEndpoint(stack, scenario));
+
+  const [scenarioDimensions, setScenarioDimensions] = useState<ScenarioDimensionsData>({});
+  const isDimensionsFetching = isFetching;
+  useEffect(() => {
+    if (!isFetching) {
+      // If there is any data retrieved, set that first
+      if (data) {
+        setScenarioDimensions(data);
+      }
+    }
+  }, [data, isFetching]);
+
+  return { scenarioDimensions, isDimensionsFetching };
 }
 
 /**
@@ -38,9 +59,8 @@ export function genFIAEndpoint(iri: string, stack: string, scenario: string): st
  * @param {string} selectedIri The selected IRI.
  * @param {object} featureProperties The selected feature's inherent properties, which is used as a fallback.
  * 
- * @returns {{ queriedData: object | null, isFetching: boolean }} - An object containing the queried data and the fetching status.
  */
-export const useFeatureInfoAgentService = (endpoint: string, selectedIri: string, featureProperties: object) => {
+export const useFeatureInfoAgentService = (endpoint: string, selectedIri: string, featureProperties: object): { attributes: AttributeGroup; timeSeries: TimeSeriesGroup; isFetching: boolean, isUpdating: boolean } => {
   const dispatch = useDispatch();
   const { data, isFetching } = useFetchDataQuery(endpoint);
 
@@ -68,7 +88,7 @@ export const useFeatureInfoAgentService = (endpoint: string, selectedIri: string
         setQueriedData(builtInData);
       }
     }
-  }, [isFetching]);
+  }, [data, featureProperties, isFetching]);
 
   useEffect(() => {
     setIsUpdating(true);
@@ -76,7 +96,7 @@ export const useFeatureInfoAgentService = (endpoint: string, selectedIri: string
       let latestAttributes: AttributeGroup;
       if (hasExistingData) {
         latestAttributes = recurseUpdateAttributeGroup(attributes, selectedIri, queriedData);
-        dispatch(setHasExistingData(false));
+        dispatch(setHasExistingData(true));
       } else {
         latestAttributes = recurseParseAttributeGroup(queriedData, rootKey);
       }
@@ -161,15 +181,16 @@ function recurseParseAttributeGroup(data: JsonObject, currentNode: string): Attr
   // Display order will follow the indicated order if a display_order property is passed. Else, it will follow the random order returned by the agent.
   const filterValues: string[] = [collapseKey, valueKey, unitKey];
   const displayOrder: string[] = Array.isArray(currentDataObject[displayOrderKey]) ?
-    currentDataObject[displayOrderKey].map(item => JSON.stringify(item).replaceAll("\"", "")) : // Convert JSON array to string array without quotes
+    currentDataObject[displayOrderKey].map(item => JSON.stringify(item).replaceAll("\"", "")).filter(displayOrderKey => keys.includes(displayOrderKey)) : // Convert JSON array to string array without quotes
     keys.filter(key => !filterValues.includes(key)); // Filter out these values
 
   // Note that the elements will be pushed according to the display order and do not require further processing according to this order
   displayOrder.map((currentVal) => {
+
     const currentValue: JsonObject = currentDataObject[currentVal] as JsonObject;
     // Parses the attribute for nested values and units
     // Javascript falsy checks returns true for 0. But we wish to accept 0 too
-    if (currentValue[valueKey] || currentValue[valueKey] === 0) {
+    if (Object.hasOwn(currentValue, valueKey) && (currentValue[valueKey] || currentValue[valueKey] === 0)) {
       const unit: string = currentValue[unitKey] ? currentValue[unitKey].toString() : "";
       attributes.push(parseAttribute(currentVal, currentValue[valueKey].toString(), unit))
     } else {

@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { JsonObject } from 'types/json';
+import { ScenarioDimensionsData } from '../../types/timeseries';
 
 /**
  * Define a service that fetches supporting data for a given feature based on its IRI, stack endpoint, and a specified scenario ID.
@@ -14,8 +15,11 @@ export const featureInfoAgentApi = createApi({
     fetchData: builder.query<JsonObject, string>({
       query: (url) => `${url}`,
     }),
+    fetchDimensions: builder.query<ScenarioDimensionsData, string>({
+      query: (url) => `${url}`,
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are auto-generated based on the defined endpoints
-export const { useFetchDataQuery } = featureInfoAgentApi;
+export const { useFetchDataQuery, useFetchDimensionsQuery } = featureInfoAgentApi;
