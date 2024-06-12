@@ -9,14 +9,13 @@ import { DataStore } from 'io/data/data-store';
 import { getIndex, setIndex } from 'state/floating-panel-slice';
 import { getFeatures, getIri, getProperties, getScenario, getStack, MapFeaturePayload } from 'state/map-feature-slice';
 import { MapLayerGroup } from 'types/map-layer';
-import { DefaultSettings, IconSettings, LegendSettings } from 'types/settings';
-import { genFIAEndpoint, useFeatureInfoAgentService } from 'utils/data-services';
-import { ScenarioDimensionsData, ScenarioDimensionStep } from '../../../types/timeseries';
-import DiscreteSlider from '../controls/slider';
+import { IconSettings, LegendSettings } from 'types/settings';
+import { generateFIAEndpoint, useFeatureInfoAgentService, useScenarioDimensionsService } from 'utils/data-services';
+import DimensionSlider from '../controls/slider';
 import InfoTree from './info/info-tree';
 import LayerTree, { parseIntoTreeStucture } from './layer/layer-tree';
 import LegendTree from './legend/legend-tree';
-import SettingsStore from '../../../io/config/settings';
+import { ScenarioDimensionsData } from '../../../types/timeseries';
 
 // Incoming parameters for component.
 interface FloatingPanelContainerProps {
@@ -24,6 +23,8 @@ interface FloatingPanelContainerProps {
   dataStore: DataStore;
   icons: IconSettings;
   legend: LegendSettings;
+  scenarioDimensions: ScenarioDimensionsData;
+  isDimensionsFetching: boolean; 
   hideInfo?: boolean;
 }
 
@@ -48,33 +49,11 @@ export default function FloatingPanelContainer(
   const selectedScenario = useSelector(getScenario);
   const availableFeatures: MapFeaturePayload[] = useSelector(getFeatures);
   //TODO fetch from api
-  const sliderValues: ScenarioDimensionStep[] = [{ "value": 1, "label": "2050/12" }, { "value": 2, "label": "2051/01" }, { "value": 3, "label": "2051/02" }, { "value": 4, "label": "2051/03" }, { "value": 5, "label": "2051/04" }, { "value": 6, "label": "2051/05" }, { "value": 7, "label": "2051/06" }, { "value": 8, "label": "2051/07" }, { "value": 9, "label": "2051/08" }, { "value": 10, "label": "2051/09" }, { "value": 11, "label": "2051/10" }, { "value": 12, "label": "2051/11" }]
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
   // Execute API call
-  const { attributes, timeSeries, isFetching, isUpdating } = useFeatureInfoAgentService(
-    genFIAEndpoint(selectedIri, selectedStack, selectedScenario),
-    selectedIri,
-    selectedProperties
-  );
+  const { attributes, timeSeries, isFetching, isUpdating } = useFeatureInfoAgentService(generateFIAEndpoint(selectedIri, selectedStack, selectedScenario), selectedIri, selectedProperties)
 
-  // useEffect(() => {
-  //   const fetchScenarioDimensions = async (scenarioUrl: string) => {
-  //     if (selectedScenario) {
-  //       try {
-          
-  //         const response = await fetch(`${scenarioUrl}/getScenarioTimes/${selectedScenario}`);
-  //         const data = await response.json();
-  //         // Do something with the data
-  //       } catch (error) {
-  //         console.error('Error fetching times from CentralStackAgent/getScenarioTimes:', error);
-  //       }
-  //     }
-  //   };
-    
-  //   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
-  //   fetchScenarioDimensions(uiSettings.resources.scenario.url);
-  // }, [selectedScenario]); // Add dependencies in the dependency array
 
   useEffect(() => {
     parseIntoTreeStucture(props.dataStore, props.icons, setMapLayerGroups);
@@ -141,14 +120,16 @@ export default function FloatingPanelContainer(
         )}
 
         {/* Toggle visibility button */}
-        <button onClick={() => setIsPanelVisible(!isPanelVisible)}>
+        <button
+          className={styles.expandButton}
+          onClick={() => setIsPanelVisible(!isPanelVisible)}>
           <Tooltip
             title={isPanelVisible ? "Collapse Panel" : "Expand Panel"}
             enterDelay={500}
             leaveDelay={200}
           >
             <Icon className="material-symbols-outlined">
-              {isPanelVisible ? "arrow_drop_up" : "arrow_drop_down"}
+              {isPanelVisible ? "keyboard_arrow_down" : "keyboard_arrow_up"}
             </Icon>
           </Tooltip>
         </button>
@@ -156,31 +137,36 @@ export default function FloatingPanelContainer(
 
       {/* Conditionally render the panel's body */}
       {isPanelVisible && (
-        <div className={styles.floatingPanelBody}>
-          {mapLayerGroups.length > 0 && activeIndex === 0 && <LayerTree
-            map={props.map}
-            dataStore={props.dataStore}
-            icons={props.icons}
-            mapGroups={mapLayerGroups}
-            setMapGroups={setMapLayerGroups}
-          />}
-          {activeIndex === 1 && <LegendTree settings={props.legend} />}
-          {activeIndex === 2 &&
-            <InfoTree
-              attributes={attributes}
-              timeSeries={timeSeries}
-              isFetching={isFetching}
-              isUpdating={isUpdating}
-              activeTab={{
-                index: activeInfoTab,
-                setActiveTab: setActiveInfoTab,
-              }}
-              features={availableFeatures}
+        <div>
+          <div className={styles.floatingPanelBody}>
+            {mapLayerGroups.length > 0 && activeIndex === 0 && <LayerTree
+              map={props.map}
+              dataStore={props.dataStore}
+              icons={props.icons}
+              mapGroups={mapLayerGroups}
+              setMapGroups={setMapLayerGroups}
             />}
-          <div className={styles.floatingPanelControls}>
-            <DiscreteSlider 
-            values={sliderValues} />
+            {activeIndex === 1 && <LegendTree settings={props.legend} />}
+            {activeIndex === 2 &&
+              <InfoTree
+                attributes={attributes}
+                timeSeries={timeSeries}
+                isFetching={isFetching}
+                isUpdating={isUpdating}
+                activeTab={{
+                  index: activeInfoTab,
+                  setActiveTab: setActiveInfoTab,
+                }}
+                features={availableFeatures}
+              />}
           </div>
+
+          {!props.isDimensionsFetching && props.scenarioDimensions && (
+            <div className={styles.floatingPanelControls}>
+              <DimensionSlider
+                data={props.scenarioDimensions} />
+            </div>)}
+
         </div>
 
       )}

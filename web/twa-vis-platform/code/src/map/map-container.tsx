@@ -3,21 +3,22 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './map-container.module.css';
 
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Map } from 'mapbox-gl';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { MapSettings } from 'types/settings';
-import { ScenarioDefinition } from 'types/scenario';
 import { DataStore } from 'io/data/data-store';
-import { parseMapDataSettings } from 'utils/client-utils';
 import MapEventManager from 'map/map-event-manager';
 import { addData } from 'map/map-helper';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
-import Ribbon from 'ui/interaction/ribbon/ribbon';
-import ScenarioModal from 'ui/interaction/modal/scenario';
-import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
 import { getScenario } from 'state/map-feature-slice';
+import { ScenarioDefinition } from 'types/scenario';
+import { MapSettings } from 'types/settings';
+import ScenarioModal from 'ui/interaction/modal/scenario';
+import Ribbon from 'ui/interaction/ribbon/ribbon';
+import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
+import { parseMapDataSettings } from 'utils/client-utils';
+import { useScenarioDimensionsService } from '../utils/data-services';
 
 // Type definition of incoming properties
 interface MapContainerProps {
@@ -33,23 +34,28 @@ export default function MapContainer(props: MapContainerProps) {
   const dispatch = useDispatch();
   const [map, setMap] = useState<Map>(null);
   const [mapEventManager, setMapEventManager] = useState<MapEventManager>(null);
+  const [currentScenario, setCurrentScenario] = useState<ScenarioDefinition>(null);
   const [showDialog, setShowDialog] = useState<boolean>(!!props.scenarios);
   const [mapData, setMapData] = useState<DataStore>(null);
   const mapSettings: MapSettings = JSON.parse(props.settings);
   const selectedScenario = useSelector(getScenario);
+  const { scenarioDimensions, isDimensionsFetching } = useScenarioDimensionsService(currentScenario?.url, selectedScenario);
+
 
   // Retrieves data settings for specified scenario from the server, else, defaults to the local file
   useEffect(() => {
     setMapData(null); // Always reset data when traversing states
     if (selectedScenario) {
       // Await the new definitions from the server
-      const currentScenario: ScenarioDefinition = props.scenarios.find((scenario) => scenario.id === selectedScenario);
-      fetch(`${currentScenario.url}/getDataJson/${selectedScenario}?dataset=${currentScenario.dataset}`)
+      const reqScenario: ScenarioDefinition = props.scenarios.find((scenario) => scenario.id === selectedScenario);
+      setCurrentScenario(reqScenario);
+      fetch(`${reqScenario.url}/getDataJson/${selectedScenario}?dataset=${reqScenario.dataset}`)
         .then((res) => res.json())
         .then((data) => {
           const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, "1");
           setMapData(parseMapDataSettings(JSON.parse(dataString), mapSettings?.type));
         });
+
     } else {
       setMapData(parseMapDataSettings(JSON.parse(props.data), mapSettings?.type));
     }
@@ -105,13 +111,13 @@ export default function MapContainer(props: MapContainerProps) {
           map={map}
           startingIndex={0}
           mapSettings={mapSettings}
-          hasScenario={!!selectedScenario}
           toggleScenarioSelection={setShowDialog}
+          hasScenario={!!selectedScenario}
         />
 
         {/* Map information panel */}
         {!showDialog && mapData && <div className={styles.upperContainer}>
-          <FloatingPanelContainer map={map} dataStore={mapData} icons={mapSettings.icons} legend={mapSettings.legend} />
+          <FloatingPanelContainer map={map} dataStore={mapData} icons={mapSettings.icons} legend={mapSettings.legend} scenarioDimensions={scenarioDimensions} isDimensionsFetching={isDimensionsFetching }/>
         </div>
         }
         <div className={styles.lowerContainer} />
