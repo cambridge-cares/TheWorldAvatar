@@ -38,6 +38,26 @@ def check_country(sparql_client):
     
     return country_iri
 
+def check_region(sparql_client):
+    # check if there is country exist
+    query_string = f'''
+    SELECT ?region
+    {{
+    ?region <{RDF_TYPE}> <{ONS_DEF_STAT}>.
+    }}
+    '''
+    res = sparql_client.performQuery(query_string)
+    if not res:
+        print(f'No region_iri found -- Have you instantiated regions previously?')
+        raise IndexError('No region_iri found -- Have you instantiated regions previously?')
+    else: 
+        region_list = []
+        for i in range(res):
+            res_temp = res[i]
+            region_list.append(str(res_temp["region"]))
+    
+    return region_list
+
 def update_country(sparql_client, country_iri):
      query_string = f'''
      INSERT DATA {{
@@ -219,11 +239,7 @@ def initialize_assumptions(sparql_client):
 
 def update_regions_within_country(sparql_client):
     
-    # A source file 'LSOA_codes_IRIs.csv' file is needed to get all the IRI for regions
-    data = pd.read_csv('LSOA_codes_IRIs.csv')
-
-    # Access the data in the DataFrame
-    LSOA_codes = data['LSOA code'].tolist()
+    LSOA_codes = check_region(sparql_client)
 
     country_iri = check_country(sparql_client)
 
@@ -332,12 +348,7 @@ def initialize_indecies(sparql_client):
 
 def ontop_data_backup(sparql_client: PySparqlClient):
     
-    # A source file 'LSOA_codes_IRIs.csv' file is needed to get all the IRI for regions
-    data = pd.read_csv('LSOA_codes_IRIs.csv')
-
-    # Access the data in the DataFrame
-    LSOA_codes = data['LSOA code'].tolist()
-    
+    LSOA_codes = check_region(sparql_client)
 
     # Split the queries into Batches
     # Perform SPARQL update query in chunks to avoid heap size/memory issues

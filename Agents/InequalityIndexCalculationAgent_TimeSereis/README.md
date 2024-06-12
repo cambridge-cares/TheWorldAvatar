@@ -1,6 +1,15 @@
 ## Description
 This `Utility Cost Calculation` agent is designed to calculate the electricity and gas cost based on [resulted energy consumptions], with electricity and gas unit cost, and instantiated in the [The World Avatar] KG according to the [OntoCAPE] and [OntoRegionalAnalysis] ontology. Details can be found in the [home page] of this agent. 
 
+### Use the agent
+The Utility Cost Calculation Agent is intended to use the `Asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `Resulted Electricity consumption`, `Resulted Gas Consumption`,`Electricity Unit Cost`,`Gas Unit Cost`) and automatically updates associated `Utility Cost`  instances in the KG. As the agent adopts the `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
+
+After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://localhost:5300/`
+
+This agent should be implemented with other agents using Derived Information Framework. You may refer to the following graph to find what is the role of this agent in these calculations:
+
+![Agent framework](https://i.imgur.com/vSBvBoJ.jpeg)
+
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. It is recommended to use `VS Code` to develop/deploy the agent. Hence, a few of the details below are VS Code specific.
 
 This agent uses Derived Infomation Framework, details provided below:
@@ -32,11 +41,6 @@ YEAR                          # The year of the index, will be used to instantia
 ### How to deploy this agent on stack
 Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
 
-### Use the agent
-The Utility Cost Calculation Agent is intended to use the `Asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `Resulted Electricity consumption`, `Resulted Gas Consumption`,`Electricity Unit Cost`,`Gas Unit Cost`) and automatically updates associated `Utility Cost`  instances in the KG. As the agent adopts the `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
-
-After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://localhost:5300/`
-
 ## Asynchronous derivation operation
 Once the Agent is deployed, it periodically (defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI`) and acts based on the status associated with that derivation. Although the [Derivation Agent] suggests the use of `.env` files to specify environment variables for agent configurations, this approach does not work properly with Docker stacks, i.e. `docker stack deploy`. Hence, the agent configuration is moved into the [docker compose file] instead.
 
@@ -53,7 +57,13 @@ py ./inequalityindexcalculationagent/upper_level_ontology_update.py
 For the Agent to detect outdated information, a proper mark up of the relevant derivation inputs (i.e. *pure* inputs) is required. (Please note, that another pre-requisite for detecting derivation inputs is the registration of the agent in the KG, i.e. `REGISTER_AGENT=true` in the [docker compose file].) The [markup.py] example from the `pyderivationagent` package shall be used to mark up derivation inputs within the KG (for illustration purposes only), simply run this command in the powershell terminal:
 ```bash
 py ./inequalityindexcalculationagent/markup.py
+
 ```
+
+## Python scripts 
+The `./python_scripts` was provided as a shortcut to calculate the inequality in one go, in a self-contained folder consisted by a series of python scripts without the use of knowledge graph. The scripts also provide code to produce figures in **[Preprint 323](https://como.ceb.cam.ac.uk/preprints/323/): Impact of heat pumps and future energy prices on regional inequalities.**
+
+Details can be refered to the individual [README.md](./python_scripts/README.md).
 
 &nbsp;
 # Authors #
