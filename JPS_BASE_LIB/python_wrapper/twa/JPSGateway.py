@@ -171,6 +171,8 @@ class JPSGateway(metaclass=JPSGatewaySingletonMeta):
     _initialised : bool, private
         flag inticating if the instance is already initialised
     """
+    # Class-level lock for the launchGateway method
+    _launch_lock = threading.Lock()
 
     def __init__(self, resName=None, jarPath=None, **JGkwargs):
         """
@@ -248,60 +250,61 @@ class JPSGateway(metaclass=JPSGatewaySingletonMeta):
             be changed and will be skipped if provided
         """
 
-        if not self._isStarted:
-            LGkwargs = _processLGkwargs(self.__class__.__name__, **LGkwargs)
-            self._launchGatewayUserParams = LGkwargs
+        with self._launch_lock:
+            if not self._isStarted:
+                LGkwargs = _processLGkwargs(self.__class__.__name__, **LGkwargs)
+                self._launchGatewayUserParams = LGkwargs
 
-            # this launches the java process
-            # Note that this calls an internal py4j launch_gateway function which is
-            # different from the launch_gateway function described in py4j web documentation.
-            # The py4j function described in py4j web documentation is a JavaGateway classmethod
-            # which in turn calls the function below. It is a bit confusing as the two functions have
-            # the same name. The difference between the two is that the launch_gateway classmethod
-            # launches the java process and then creates a JavaGateway object connected to it, the
-            # problem is that this function call does not accept any user JavaGateway constructor
-            # arguments. The non classmethod call on the other hand only launches the java process
-            # without creating the JavaGateway instance. The JavaGateway instance can be then created
-            # at a later stage with user defined parameters plus the parameters returned from the
-            # launch_gateway method call that `connect` the running java process and the JavaGateway.
-            # You can see that below, where the non classmethod launch_gateway is called and its
-            # outputs are passed to the JavaGateway constructor.
-            try:
-                _ret = launch_gateway(jarpath=self.jarPath, **LGkwargs)
-            except TypeError as e:
-                print(textwrap.dedent("""
-                    Error: The launch_gateway method called with invalid argument(s).
-                           Please see the py4j documentation at:
-                               https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.launch_gateway
-                           to see the list of supported arguments."""))
-                raise e
-            except FileNotFoundError as e:
-                print(textwrap.dedent("""
-                    Error: Could not launch the resource gateway. Make sure that:
-                            1 - the resource jarPath is correct
-                            2 - java runtime environment 7+ is installed
-                            3 - java runtime environment 7+ is correctly added to the system path"""))
-                raise e
+                # this launches the java process
+                # Note that this calls an internal py4j launch_gateway function which is
+                # different from the launch_gateway function described in py4j web documentation.
+                # The py4j function described in py4j web documentation is a JavaGateway classmethod
+                # which in turn calls the function below. It is a bit confusing as the two functions have
+                # the same name. The difference between the two is that the launch_gateway classmethod
+                # launches the java process and then creates a JavaGateway object connected to it, the
+                # problem is that this function call does not accept any user JavaGateway constructor
+                # arguments. The non classmethod call on the other hand only launches the java process
+                # without creating the JavaGateway instance. The JavaGateway instance can be then created
+                # at a later stage with user defined parameters plus the parameters returned from the
+                # launch_gateway method call that `connect` the running java process and the JavaGateway.
+                # You can see that below, where the non classmethod launch_gateway is called and its
+                # outputs are passed to the JavaGateway constructor.
+                try:
+                    _ret = launch_gateway(jarpath=self.jarPath, **LGkwargs)
+                except TypeError as e:
+                    print(textwrap.dedent("""
+                        Error: The launch_gateway method called with invalid argument(s).
+                            Please see the py4j documentation at:
+                                https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.launch_gateway
+                            to see the list of supported arguments."""))
+                    raise e
+                except FileNotFoundError as e:
+                    print(textwrap.dedent("""
+                        Error: Could not launch the resource gateway. Make sure that:
+                                1 - the resource jarPath is correct
+                                2 - java runtime environment 7+ is installed
+                                3 - java runtime environment 7+ is correctly added to the system path"""))
+                    raise e
 
-            if LGkwargs['enable_auth']:
-                _port, _auth_token, proc = _ret
+                if LGkwargs['enable_auth']:
+                    _port, _auth_token, proc = _ret
+                else:
+                    _port, proc, _auth_token = _ret + (None, )
+
+                self._gatewayUserParams = _addConJGParams(_port, proc, _auth_token, self._gatewayUserParams)
+                # this creates the JavaGateway object connected to the launched java process above
+                try:
+                    self.gateway = JavaGateway(**self._gatewayUserParams)
+                except TypeError as e:
+                    print(textwrap.dedent("""
+                        Error: The JavaGateway constructor method called with invalid argument(s).
+                            Please see the py4j documentation at:
+                                https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.JavaGateway
+                            to see the list of supported arguments."""))
+
+                self._isStarted = True
             else:
-                _port, proc, _auth_token = _ret + (None, )
-
-            self._gatewayUserParams = _addConJGParams(_port, proc, _auth_token, self._gatewayUserParams)
-            # this creates the JavaGateway object connected to the launched java process above
-            try:
-                self.gateway = JavaGateway(**self._gatewayUserParams)
-            except TypeError as e:
-                print(textwrap.dedent("""
-                    Error: The JavaGateway constructor method called with invalid argument(s).
-                           Please see the py4j documentation at:
-                               https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.JavaGateway
-                           to see the list of supported arguments."""))
-
-            self._isStarted = True
-        else:
-            print("Info: JavaGateway already started.")
+                print("Info: JavaGateway already started.")
 
     def shutdown(self):
         """

@@ -6,6 +6,7 @@ from twa.resources import JpsBaseLib
 from py4j.java_gateway import GatewayParameters
 from os import path
 import json
+import threading
 
 @pytest.fixture(autouse=True)
 def reset_singleton():
@@ -46,6 +47,42 @@ def test_gateway_singleton():
 
     # shutdown gateway
     gateway1.shutdown()
+
+def test_gateway_singleton_threading():
+    # test the JPSGateway singleton with multiple threads to ensure only one instance is created.
+    def create_singleton(ids: list, lock):
+        # this function is to be run by each thread to create a JpsBaseLib instance,
+        # launch its gateway, and store the ID of its gateway client
+        #   ids (list): A shared list to store the IDs of gateway clients
+        #   lock (threading.Lock): A lock to ensure thread-safe operations on the shared list.
+
+        s = JpsBaseLib()
+        s.launchGateway()
+
+        # acquire the lock to ensure thread-safe operation on the shared list
+        with lock:
+            ids.append(id(s.createModuleView()._gateway_client))
+
+    ids = [] # shared list to store the IDs of gateway clients
+    lock = threading.Lock() # lock to ensure thread-safe operations on the shared list
+    num_thread = 10 # number of threads to create
+
+    # create multiple threads
+    threads = [threading.Thread(target=create_singleton, args=(ids, lock)) for _ in range(num_thread)]
+
+    # start all threads
+    for thread in threads:
+        thread.start()
+
+    # wait for all threads to finish
+    for thread in threads:
+        thread.join()
+
+    # check the gateway objects are created correctly
+    # all operations should be successful
+    assert len(ids) == num_thread
+    # only one distinct instance of gateway object should have ever been created
+    assert len(set(ids)) == 1
 
 def test_JGLGkwargs_1():
     # ===============================================================================================
