@@ -53,11 +53,11 @@ public class AssetExistenceChecker {
         
         Variable PersonIRIVar = SparqlBuilder.var("personIRI");
         Variable personNameIRI = SparqlBuilder.var("personNameIRI");
-        Variable deviceOwnerLiteral = SparqlBuilder.var("assignedTo");
+
         query.where(PersonIRIVar.isA(Person));
         query.where(personNameIRI.isA(PersonName));
         query.where(PersonIRIVar.has(hasName, personNameIRI));
-        query.where(personNameIRI.has(RDFS.LABEL, deviceOwnerLiteral));
+        query.where(personNameIRI.has(RDFS.LABEL, Rdf.literalOf(name)));
 
         JSONArray reqResult = storeClientAsset.executeQuery(query.getQueryString());
         switch (reqResult.length()) {
