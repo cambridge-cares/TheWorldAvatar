@@ -3,11 +3,9 @@ import matplotlib.pyplot as plt
 
 class LoadKGIndex:
     def __init__(self):
-        self.filecount=0
-        self.triplecount=0
         self.inverted_index = {}
-        self.class_names=[]
-        self.class_files=[]
+        self.key_names=[]
+        self.key_endpoints=[]
     
     def load_inverted_index(self, file_path):
         with open(file_path, 'r') as f:
@@ -17,43 +15,43 @@ class LoadKGIndex:
     def get_inverted_index(self):
         return self.inverted_index
     
-    def search_concept(self, class_name):
-        if class_name in self.inverted_index:
-            return self.inverted_index[class_name]
+    def search_concept(self, key_name):
+        if key_name in self.inverted_index:
+            return self.inverted_index[key_name]
         else:
             return None
 
     def analyse(self):
-        for class_name, files in self.inverted_index.items():
-            self.class_names.append(self.get_substring_from_last(class_name))
-            self.class_files.append(len(files))
+        for key_name, endpoints in self.inverted_index.items():
+            self.key_names.append(self.get_substring_from_last(key_name))
+            self.key_endpoints.append(len(endpoints))
             
     def get_substring_from_last(self,string):
         return string.rsplit('/', 1)[-1].rsplit('#', 1)[-1]
     
     def print_key_value_stats(self):
-        class_count = 0
-        file_count = 0
-        avg_files_per_class = 0.0
+        key_count = 0
+        endpoint_count = 0
+        avg_endpoints_per_key = 0.0
         
-        print(f"Total number of class-property key: {len(self.class_names)}")  
-        for i in range(len(self.class_names)):
-            file_count += self.class_files[i]
-            class_count += 1
-            print(f"{self.class_names[i]} : {self.class_files[i]}")          
+        print(f"Total number of keys: {len(self.key_names)}")  
+        for i in range(len(self.key_names)):
+            endpoint_count += self.key_endpoints[i]
+            key_count += 1
+            print(f"{self.key_names[i]} : {self.key_endpoints[i]}")          
         
-        avg_files_per_class = file_count/class_count
-        print(f"Total class:{class_count}; Average files per class: {avg_files_per_class}")
+        avg_endpoints_per_key = endpoint_count/key_count
+        print(f"Total keys:{key_count}; Average endpoints per key: {avg_endpoints_per_key}")
         
     def bar_plt(self):
         # Create bar chart
         plt.figure(figsize=(8, 6))
-        plt.bar(self.class_names, self.class_files, color='skyblue')
+        plt.bar(self.key_names, self.key_endpoints, color='skyblue')
 
         # Add title and labels
-        plt.title('Class file distribution')
-        plt.xlabel('Class')
-        plt.ylabel('File Frequency')
+        plt.title('Key-to-endpoints distribution')
+        plt.xlabel('Key')
+        plt.ylabel('Key Frequency')
 
         # Show plot
         plt.xticks(rotation=45)
@@ -63,7 +61,7 @@ class LoadKGIndex:
 # usage
 if __name__ == "__main__":
     #index_file = "C:/Users/printer_admin/Downloads/KGs/ontokin/inverted_index_170.json"
-    index_file = "C:/Users/printer_admin/Downloads/KGs/inverted_index.json"
+    index_file = "C:/Users/printer_admin/Downloads/KGs/p2e_invindex.json"
     kgs = LoadKGIndex()
   
     index=kgs.load_inverted_index(index_file)
