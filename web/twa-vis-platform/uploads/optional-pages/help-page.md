@@ -5,7 +5,7 @@ slug: help
 
 <link rel="stylesheet" href="https://fonts.google.com/icons?icon.set=Material+Icons">
 
-<h1><img src="/images/defaults/icons/twa.svg" width="60" height="60">&nbsp;Help Center</h1>
+<h1><img src="/images/defaults/icons/twa.svg" width="60" height="60">&nbsp;Help Centre</h1>
 
 ## Getting Started
 
