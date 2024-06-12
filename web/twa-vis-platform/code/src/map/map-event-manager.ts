@@ -73,11 +73,15 @@ export default class MapEventManager {
       // Access the first feature under the mouse pointer
       const feature = map.queryRenderedFeatures(e.point)[0];
       const name = feature?.properties.name ?? null;
+      const description = feature?.properties.description ?? null;
       const lngLat: mapboxgl.LngLat = e.lngLat;
       // If there is a name, add the tool tip with the name to the map
-      if (name != null) {
-        toolTip?.setLngLat(lngLat).setHTML(name).addTo(map);
+      if (name) {
+        let html: string = `<h1>${name}</h1>`;
+        if (description) { html += `<i>${description}</i>`}
+        toolTip?.setLngLat(lngLat).setHTML(html).addTo(map);
       }
+
     });
 
     // Removes the tool tip once the mouse pointer is outside the map container
