@@ -12,7 +12,7 @@ import { formatAppUrl } from 'utils/client-utils';
  * @param {LayerSource} dataStore Store containing parsed LayerSource instances.
  */
 export function addAllSources(map: Map, dataStore: DataStore) {
-    const sourceArray: DataSource[] = dataStore?.getSourceList();
+    const sourceArray: LayerSource[] = dataStore?.getSourceList();
     sourceArray.forEach((source) => addSource(map, source));
     console.log("Added all registered sources to the map object.");
 }
