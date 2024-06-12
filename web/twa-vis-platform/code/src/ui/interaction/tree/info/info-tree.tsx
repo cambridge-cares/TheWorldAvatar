@@ -106,7 +106,7 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
                 index: props.activeTab.index,
                 setActiveTab: props.activeTab.setActiveTab,
               }} />)}
-      </div>;
+      </div>
     }
   }
 

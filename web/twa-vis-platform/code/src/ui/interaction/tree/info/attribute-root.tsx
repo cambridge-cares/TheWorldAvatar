@@ -83,8 +83,8 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
       // Only update the selected stack if it is required for the subquery
       if (group.subQueryStack) {
         dispatch(setStack(group.subQueryStack));
-        setIsCollapsed(isCollapsed)
-      }
+        }
+      setIsCollapsed(!isCollapsed)
     }
     else {
       setIsCollapsed(!isCollapsed);
