@@ -34,7 +34,7 @@ export default function LegendTree(props: Readonly<LegendTreeProps>) {
 
 function LegendTreeNode(props: Readonly<LegendTreeNodeProps>) {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
-  const collapsedIcon: string = isCollapsed ? "keyboard_arrow_down" : "keyboard_arrow_up";
+  const collapsedIcon: string = isCollapsed ? "keyboard_arrow_right" : "keyboard_arrow_down";
   const toggleExpansion = () => {
     setIsCollapsed(!isCollapsed);
   };
