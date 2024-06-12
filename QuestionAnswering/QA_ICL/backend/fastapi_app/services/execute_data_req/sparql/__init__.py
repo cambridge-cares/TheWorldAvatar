@@ -43,6 +43,7 @@ class SparqlDataReqExecutor:
 
     def exec(
         self,
+        var2cls: dict[str, str],
         entity_bindings: dict[str, list[str]],
         const_bindings: dict[str, object],
         req_form: SparqlDataReqForm,
@@ -63,7 +64,7 @@ class SparqlDataReqExecutor:
 
         logger.info("Transforming SPARQL response to documents...")
         docs = self.response_processor.transform(
-            vars=vars, bindings=bindings, res_map=req_form.res_map
+            var2cls=var2cls, vars=vars, bindings=bindings, pkeys=req_form.pkeys
         )
         docs_collection = DocumentCollection(data=docs)
         logger.info("Done")

@@ -45,7 +45,10 @@ Your task is to translate the following question to an executable data request. 
             examples="\n".join(
                 '"{input}" => {output}'.format(
                     input=example.nlq,
-                    output=example.data_req.model_dump_json(),
+                    output=example.data_req.model_dump_json(
+                        exclude_unset=True,
+                        exclude_none=True,
+                    ),
                 )
                 for example in translation_context.examples
             ),

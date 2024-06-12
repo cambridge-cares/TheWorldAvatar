@@ -137,7 +137,13 @@ class DataIngester(Generic[UT, PT]):
         if dirpath:
             os.makedirs(dirpath, exist_ok=True)
         with open(str(path), "wb") as f:
-            f.write(self.adapter_list_pt.dump_json(processed_data))
+            f.write(
+                self.adapter_list_pt.dump_json(
+                    processed_data,
+                    exclude_unset=True,
+                    exclude_none=True,
+                )
+            )
         print("Done saving to disk.")
 
         return processed_data

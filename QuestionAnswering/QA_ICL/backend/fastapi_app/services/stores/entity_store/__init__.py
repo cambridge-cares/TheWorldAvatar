@@ -165,7 +165,7 @@ class EntityStore:
 
     def link(
         self,
-        cls: str,
+        cls: str | None,
         text: str | None,
         identifier: dict[str, str] = dict(),
         k: int | None = None,

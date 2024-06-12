@@ -22,6 +22,7 @@ class DataReqExecutor:
 
     def exec(
         self,
+        var2cls: dict[str, str],
         entity_bindings: dict[str, list[str]],
         const_bindings: dict[str, object],
         req_form: DataRequestForm,
@@ -31,9 +32,10 @@ class DataReqExecutor:
         elif isinstance(req_form, FuncDataReqForm):
             exec_func = self.func_executor.exec
         else:
-            raise ValueError("Unsupported: " + str(req_form))
+            exec_func = lambda _: ([], None)
 
         return exec_func(
+            var2cls=var2cls,
             entity_bindings=entity_bindings,
             const_bindings=const_bindings,
             req_form=req_form,

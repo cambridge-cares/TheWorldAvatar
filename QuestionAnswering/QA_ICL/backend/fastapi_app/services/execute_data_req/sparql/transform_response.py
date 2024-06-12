@@ -4,7 +4,6 @@ from typing import Annotated, Sequence
 
 from fastapi import Depends
 
-from model.nlq2datareq import SparqlNodeMappingConfig
 from services.processs_response.augment_node import NodeDataRetriever
 from services.processs_response.ontocompchem import get_ontocompchem_nodeDataRetriever
 from services.processs_response.ontokin import get_ontokin_nodeDataRetriever
@@ -28,30 +27,30 @@ class SparqlResponseTransformer:
 
     def transform(
         self,
+        var2cls: dict[str, str],
         vars: list[str],
         bindings: list[dict[str, str | float]],
-        res_map: dict[str, SparqlNodeMappingConfig],
+        pkeys: list[str],
     ):
         # TODO: perform aggregate before transform to reduce the complexity of
         # calling __hash__ on FrozenDict
         for var in vars:
-            transform_config = res_map.get(var)
-            if not transform_config:
+            cls = var2cls.get(var)
+            if not cls:
                 continue
 
-            node_data_retriever = self.type2retriever.get(transform_config.cls)
+            node_data_retriever = self.type2retriever.get(cls)
             if not node_data_retriever:
                 continue
 
             retrieved_data = node_data_retriever.retrieve(
-                type=transform_config.cls,
+                type=cls,
                 iris=[binding.get(var) for binding in bindings],
             )
             for binding, datum in zip(bindings, retrieved_data):
                 binding[var] = datum
 
-        pkeys = [var for var, config in res_map.items() if config.pkey]
-        non_pkeys = [var for var, config in res_map.items() if not config.pkey]
+        non_pkeys = [var for var in vars if var not in pkeys]
 
         pkeys2data: defaultdict[str, list[dict]] = defaultdict(list)
         for binding in bindings:

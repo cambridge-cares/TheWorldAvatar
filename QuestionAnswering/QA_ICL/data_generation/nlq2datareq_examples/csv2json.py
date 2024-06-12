@@ -16,12 +16,11 @@ def parse_json_if_not_na(obj):
 
 
 def csvrow2jsonobj(row: pd.Series):
+    clses = parse_json_if_not_na(row["var2cls"])
     entity_bindings = parse_json_if_not_na(row["entity_bindings"])
     const_bindings = parse_json_if_not_na(row["const_bindings"])
 
     if row["target"] == "sparql":
-        res_map = parse_json_if_not_na(row["sparql_res_map"])
-
         req_form = {
             "type": "sparql",
             **{
@@ -29,7 +28,7 @@ def csvrow2jsonobj(row: pd.Series):
                 for k, v in {
                     "namespace": row["sparql_namespace"],
                     "query": row["sparql_query"],
-                    "res_map": res_map,
+                    "pkeys": parse_json_if_not_na(row["sparql_pkeys"]),
                 }.items()
                 if v
             },
@@ -40,14 +39,16 @@ def csvrow2jsonobj(row: pd.Series):
             "name": row["func_name"],
         }
     else:
-        raise ValueError(f'Unexpected target: {row["target"]}')
+        req_form = None
 
     data_req = {
         k: v
         for k, v in {
+            "var2cls": clses,
             "entity_bindings": entity_bindings,
             "const_bindings": const_bindings,
             "req_form": req_form,
+            "visualise": parse_json_if_not_na(row.get("visualise")),
         }.items()
         if v
     }
