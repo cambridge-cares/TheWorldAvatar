@@ -47,6 +47,20 @@
     align-items: center;
 }
 
+.expandButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-color-primary) !important;
+    background-color: var(--background-tertiary);
+    border: 1px 1px 1px 1px solid var(--border-tertiary);
+    border-left: 1px solid var(--border-tertiary);
+}
+
+.expandButton:hover
+{background-color: var(--background-secondary);
+box-shadow: 1px rgba(0, 0, 0, 0.35);}
+
 .headButton span {
     font-size: var(--icon-size);
 }
@@ -60,11 +74,14 @@
 }
 
 .floatingPanelBody {
-    margin-top: 2vh;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
     background-color: var(--background-tertiary);
     border: 1px solid var(--border-secondary);
     box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.35);
-    height: 60vh;
+    height: fit-content;
+    max-height: 60vh;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
@@ -76,6 +93,7 @@
 .treeHeader {
     display: flex;
     flex-direction: row;
+    align-items: center;
     width: 100%;
     border-style: solid;
     border-color: var(--border-tertiary);
@@ -90,4 +108,5 @@
 .treeHeaderName {
     width: 100%;
     font-size: var(--font-size-primary-text);
+    padding: 0.5rem
 }
