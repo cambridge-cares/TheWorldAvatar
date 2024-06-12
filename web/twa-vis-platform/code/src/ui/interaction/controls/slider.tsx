@@ -1,10 +1,11 @@
-import styles from './slider.module.css';
 import Slider from '@mui/material/Slider';
 import * as React from 'react';
-import { ScenarioDimensionStep } from 'types/timeseries';
+import { ScenarioDimensionsData, ScenarioDimensionStep } from 'types/timeseries';
+import styles from './slider.module.css';
+// import { useDispatch, useSelector } from 'react-redux';
 
-interface DiscreteSliderProps {
-    values: ScenarioDimensionStep[];
+interface DimensionSliderProps {
+    data: ScenarioDimensionsData;
 }
 
 function valuetext(value: number, values: ScenarioDimensionStep[]) {
@@ -24,13 +25,18 @@ function handleChange(
     console.log('slider moved to index', singleValue, 'with label:', label);
 }
 
-export default function DiscreteSlider({ values }: DiscreteSliderProps) {
-    const min = values[0].value;
-    const max = values[values.length - 1].value;
+export default function DimensionSlider({ data }: DimensionSliderProps) {
+    const values = Object.values(data).flat();
+    const min = values[0]?.value;
+    const max = values[values.length - 1]?.value;
     const middle = Math.round((min + max) / 2);
+
+    // const dispatch = useDispatch();
+    // const sliderValue = useSelector(state => state.sliderValue);
 
     return (
         <div className={styles.sliderContainer}>
+            {/* <span>{Object.keys(data).flat()}</span> ---TODO slider label if we want later */}
             <Slider
                 className={styles.discreteSlider}
                 aria-label="Time"
