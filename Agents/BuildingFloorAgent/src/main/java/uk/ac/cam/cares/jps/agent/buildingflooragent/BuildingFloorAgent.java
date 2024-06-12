@@ -19,10 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet(urlPatterns = {"/floors", "/floorswithodba"})
-public class BuildingFloorAgent extends JPSAgent{
-    
-    
+@WebServlet(urlPatterns = { "/floors", "/floorswithodba" })
+public class BuildingFloorAgent extends JPSAgent {
+
     private EndpointConfig endpointConfig = new EndpointConfig();
 
     private String dbName;
@@ -34,12 +33,12 @@ public class BuildingFloorAgent extends JPSAgent{
     private String osmPoint;
     private String osmPolygon;
     private String ontopUrl;
-    
+
     public synchronized void init() {
         this.dbName = endpointConfig.getDbName();
         this.dbUrl = endpointConfig.getDbUrl(dbName);
         this.dbUser = endpointConfig.getDbUser();
-        this.dbPassword = endpointConfig.getDbPassword();       
+        this.dbPassword = endpointConfig.getDbPassword();
         this.floorsCsv = endpointConfig.getFilepath();
         this.osmSchema = endpointConfig.getOSMSchema();
         this.osmPoint = endpointConfig.getOSMPoints();
@@ -56,15 +55,17 @@ public class BuildingFloorAgent extends JPSAgent{
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
         try {
-            
-            //integrate floors data: 1. query osm address 2. match address from HDB csv 3. store floors data
-            IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint, osmPolygon, ontopUrl);
+
+            // integrate floors data: 1. query osm address 2. match address from HDB csv 3.
+            // store floors data
+            IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint,
+                    osmPolygon, ontopUrl);
             integrateFloors.addFloorCatColumn();
             integrateFloors.matchAddress(floorsCsv);
             integrateFloors.importFloorDate();
-    
-            //Upload Ontop mapping
-            if (requestParams.getString("requestUrl").contains("withodba")){
+
+            // Upload Ontop mapping
+            if (requestParams.getString("requestUrl").contains("withodba")) {
                 try {
                     String odbaFile = "/resources/buildingfloor.odba";
                     Path odbaPath = Paths.get(odbaFile);
@@ -73,7 +74,7 @@ public class BuildingFloorAgent extends JPSAgent{
                 } catch (Exception e) {
                     System.out.println("Could not retrieve buildingfloor .obda file.");
                 }
-            }           
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,5 +83,5 @@ public class BuildingFloorAgent extends JPSAgent{
 
         return requestParams;
     }
-    
+
 }
