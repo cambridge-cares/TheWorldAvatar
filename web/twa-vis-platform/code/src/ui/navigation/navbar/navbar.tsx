@@ -49,7 +49,6 @@ export default function Navbar(props: Readonly<NavbarProps>) {
 
   return (
     <div id="navbar" className={styles.navbar}>
-
       {/* Render navbar logo if set */}
       {props.navbarLogo != null &&
         <AppLink url={Routes.HOME}>
@@ -61,38 +60,37 @@ export default function Navbar(props: Readonly<NavbarProps>) {
         </AppLink>
       }
 
-      {/* Fill horizontal space */}
-      <div className={styles.spacer} />
-
       {/* Render each component as required */}
-      {props.showLanding &&
-        <NavbarComponent
-          name="LANDING"
-          tooltip="Return to landing page."
-          icon="home"
-          url={Routes.HOME} />
-      }
-      {props.showMap &&
-        <NavbarComponent
-          name="MAP"
-          tooltip="Geospatial view."
-          icon="public"
-          url={Routes.MAP} />
-      }
-      {props.showDash &&
-        <NavbarComponent
-          name="DASH"
-          tooltip="Analytics view."
-          icon="monitoring"
-          url={Routes.DASHBOARD} />
-      }
-      {props.showHelp &&
-        <NavbarComponent
-          name="HELP"
-          tooltip="Open help page."
-          icon="help"
-          url={Routes.HELP} />
-      }
+      <div className="navbarElements">
+        {props.showLanding &&
+          <NavbarComponent
+            name="LANDING"
+            tooltip="Return to landing page."
+            icon="home"
+            url={Routes.HOME} />
+        }
+        {props.showMap &&
+          <NavbarComponent
+            name="MAP"
+            tooltip="Geospatial view."
+            icon="public"
+            url={Routes.MAP} />
+        }
+        {props.showDash &&
+          <NavbarComponent
+            name="DASH"
+            tooltip="Analytics view."
+            icon="monitoring"
+            url={Routes.DASHBOARD} />
+        }
+        {props.showHelp &&
+          <NavbarComponent
+            name="HELP"
+            tooltip="Open help page."
+            icon="help"
+            url={Routes.HELP} />
+        }
+      </div>
     </div>
   );
 }
