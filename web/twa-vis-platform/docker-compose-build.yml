@@ -1,0 +1,12 @@
+services:
+  twa-vf:
+    build:
+      context: .
+  
+  major-version:
+    extends: twa-vf
+    image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}${EXTRA}
+  
+  latest-version:
+    extends: twa-vf
+    image: ghcr.io/cambridge-cares/twa-vf:latest${EXTRA}
