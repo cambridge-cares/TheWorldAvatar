@@ -62,7 +62,7 @@ public class BuildingFloorAgent extends JPSAgent {
                     osmPolygon, ontopUrl);
             integrateFloors.addFloorCatColumn();
             integrateFloors.matchAddress(floorsCsv);
-            integrateFloors.importFloorDate();
+            integrateFloors.importFloorData();
 
             // Upload Ontop mapping
             if (requestParams.getString("requestUrl").contains("withodba")) {

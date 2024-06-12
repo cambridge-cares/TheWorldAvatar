@@ -139,7 +139,7 @@ public class IntegrateFloors {
         }
     }
 
-    public void importFloorDate() {
+    public void importFloorData() {
         String catString = null;
         String floorSQLQuery = "SELECT storeys_above_ground, storeys_above_ground_cat, building.id, cg.strval " +
                 "FROM citydb.building, citydb.cityobject_genericattrib cg " +
@@ -151,7 +151,7 @@ public class IntegrateFloors {
                 while (floorsResults.next()) {
                     floors = floorsResults.getInt("storeys_above_ground");
                     catString = floorsResults.getString("storeys_above_ground_cat");
-                    String buildingIri = floorsResults.getString("strval"); 
+                    String buildingIri = floorsResults.getString("strval");
                     if (!catString.equals(("A")) && floors > 0) {
                         if (floors == 0 || catString.equals("C") || catString == null) {// get osm floor
                             floors = queryOSMFloor(buildingIri);
