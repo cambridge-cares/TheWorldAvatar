@@ -28,11 +28,6 @@ export interface ChemStructData {
   data: string
 }
 
-export interface ChemStructCollection {
-  type: 'chem_struct_collection'
-  data: ChemStructData[]
-}
-
 export interface TypedSeries {
   data: any[]
   type: string
@@ -60,7 +55,6 @@ export interface WKTGeometryData {
 export type DataItem =
   | DocumentCollection
   | TableData
-  | ChemStructCollection
   | ScatterPlotData
   | WKTGeometryData
 
@@ -68,21 +62,11 @@ export interface QARequest {
   question: string
 }
 
-export interface LexicalBindingValue {
-  text?: string
-  identifier: { [key: string]: string }
-}
-
-export interface LexicalEntityBinding {
-  cls: string
-  values: LexicalBindingValue[]
-}
-
 export interface SparqlDataReqForm {
   type: 'sparql'
   namespace: string
   query: string
-  res_map: { [key: string]: { pkey: boolean; cls?: string } }
+  pkeys: string[]
 }
 
 export interface FuncDataReqForm {
@@ -93,9 +77,11 @@ export interface FuncDataReqForm {
 export type DataRequestForm = SparqlDataReqForm | FuncDataReqForm
 
 export interface DataRequest {
-  entity_bindings: { [key: string]: LexicalEntityBinding }
+  var2cls: { [key: string]: string }
+  entity_bindings: { [key: string]: (string | { [key: string]: string })[] }
   const_bindings: { [key: string]: any }
   req_form: DataRequestForm
+  visualise: string[]
 }
 
 export interface Nlq2DataReqExample {
@@ -125,6 +111,7 @@ export interface QAResponse {
   request_id: string
   metadata: QAResponseMetadata
   data: DataItem[]
+  visualisation: ChemStructData[]
 }
 
 export interface ChatRequest {

@@ -110,15 +110,13 @@ export const QAResponseMetadataDiv = ({
                   ]}
                   data={Object.entries(
                     qaResponseMetadata.data_request.entity_bindings
-                  ).map(([varname, binding]) => ({
+                  ).map(([varname, values]) => ({
                     var: varname,
-                    cls: binding.cls,
-                    mention: binding.values.flatMap(val =>
-                      (val.text ? [val.text] : []).concat(
-                        Object.entries(val.identifier).map(
-                          ([k, v]) => `${k}: ${v}`
-                        )
-                      )
+                    cls: qaResponseMetadata.data_request.var2cls[varname],
+                    mention: values.map(val =>
+                      typeof val === "string" ? val : Object.entries(val).map(
+                        ([k, v]) => `${k}: ${v}`
+                      ).join("\n")
                     ),
                     linked_iris: qaResponseMetadata.linked_variables[varname],
                   }))}
@@ -172,32 +170,6 @@ export const QAResponseDataDiv = ({
           } else if (item.type === 'table') {
             headerText = 'Tabular data'
             component = <DataTable columns={item.columns} data={item.data} />
-          } else if (item.type === 'chem_struct_collection') {
-            headerText = "Chemical structure visualisations"
-            component = (
-              <Tabs
-                orientation='vertical'
-                defaultValue='0'
-                className='grid lg:grid-cols-4 gap-4'
-              >
-                <div>
-                  <TabsList className='flex lg:flex-col space-y-1'>
-                    {item.data.map(({ label }, i) => (
-                      <TabsTrigger key={i} value={i.toString()}>
-                        {label}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </div>
-                <div className='lg:col-span-3'>
-                  {item.data.map(({ type, data }, i) => (
-                    <TabsContent key={i} value={i.toString()}>
-                      <MolViewer type={type} data={data}  />
-                    </TabsContent>
-                  ))}
-                </div>
-              </Tabs>
-            )
           }
           return headerText && component ? (
             <AccordionItem key={idx} value={idx.toString()}>
@@ -235,6 +207,30 @@ export function QAResponseDiv({
       {qaResponse && (
         <>
           <QAResponseMetadataDiv qaResponseMetadata={qaResponse.metadata} />
+          <div>
+            <h2 className='text-xl font-semibold text-blue-500 mb-2'>Chemical Structure Visualisation</h2>
+            <Tabs
+              defaultValue='0'
+              className='grid lg:grid-cols-4 gap-4'
+            >
+              <div>
+                <TabsList className='flex lg:flex-col space-y-1'>
+                  {qaResponse.visualisation.map(({ label }, i) => (
+                    <TabsTrigger key={i} value={i.toString()}>
+                      {label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </div>
+              <div className='lg:col-span-3'>
+                {qaResponse.visualisation.map(({ type, data }, i) => (
+                  <TabsContent key={i} value={i.toString()}>
+                    <MolViewer type={type} data={data} />
+                  </TabsContent>
+                ))}
+              </div>
+            </Tabs>
+          </div>
           <QAResponseDataDiv qaResponseData={qaResponse.data} />
         </>
       )}
