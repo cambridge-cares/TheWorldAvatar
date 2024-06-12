@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Raster extends GeoServerDataSubset {
 
-    @JsonProperty("GDALOptions")
+    @JsonProperty
     GDALOptions<?> gdalOptions = new GDALTranslateOptions();
 
     @JsonProperty
@@ -37,12 +37,12 @@ public class Raster extends GeoServerDataSubset {
                         geoServerSettings, mdimSettings);
     }
 
-    @JsonProperty("GDALTranslateOptions")
+    @JsonProperty("gdalTranslateOptions")
     void setGDALTranslateOptions(GDALTranslateOptions gdalTranslateOptions) {
         gdalOptions = gdalTranslateOptions;
     }
 
-    @JsonProperty("GDALWarpOptions")
+    @JsonProperty("gdalWarpOptions")
     void setGDALWarpOptions(GDALWarpOptions gDALWarpOptions) {
         gdalOptions = gDALWarpOptions;
     }

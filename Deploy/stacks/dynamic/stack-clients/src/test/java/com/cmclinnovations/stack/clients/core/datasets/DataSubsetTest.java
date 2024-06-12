@@ -25,9 +25,9 @@ class DataSubsetTest {
     private static Stream<Arguments> getArgsForRasterTests() {
         return Stream.of(
                 Arguments.of("{'type':'Raster','name':'elevation'}", new GDALTranslateOptions()),
-                Arguments.of("{'type':'Raster','name':'elevation', 'GDALTranslateOptions':{}}",
+                Arguments.of("{'type':'Raster','name':'elevation', 'gdalTranslateOptions':{}}",
                         new GDALTranslateOptions()),
-                Arguments.of("{'type':'Raster','name':'elevation', 'GDALWarpOptions':{}}", new GDALWarpOptions()));
+                Arguments.of("{'type':'Raster','name':'elevation', 'gdalWarpOptions':{}}", new GDALWarpOptions()));
     }
 
     @ParameterizedTest
