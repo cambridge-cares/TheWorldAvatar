@@ -28,7 +28,7 @@ When executing the task to instantiate the number of floors from other data sour
 
 1. Number of floors from a specified csv file
 
-An example of the [HDBPropertyInformation.csv](https://github.com/cambridge-cares/TheWorldAvatar/blob/1a91bcfbcabf75b1e5a727c9944c017e9f5d42f3/Agents/BuildingFloorAgent/src/main/resources/HDBPropertyInformation.csv) file is the HDB properties data from [Data.gov.sg](https://beta.data.gov.sg/collections/150/datasets/d_17f5382f26140b1fdae0ba2ef6239d2f/view). The csv file must contain the `blk_no`, `street`, and `max_floor_lvl` columns for this task to perform successfully. 
+An example of the [HDBPropertyInformation.csv](https://www.dropbox.com/scl/fi/3pgkir5zfcbhq8dliv1kr/HDBPropertyInformation.csv?rlkey=5lmb49cjqgvyrx7rcxtos1l41&dl=0) file is the HDB properties data from [Data.gov.sg](https://beta.data.gov.sg/collections/150/datasets/d_17f5382f26140b1fdae0ba2ef6239d2f/view). The csv file must contain the `blk_no`, `street`, and `max_floor_lvl` columns for this task to perform successfully. 
 
 The csv file path and database name should be specified as environment variables in the `buildingfloor.json` file. See below for an example:
 ```
