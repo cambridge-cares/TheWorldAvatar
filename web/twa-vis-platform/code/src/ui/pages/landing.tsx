@@ -74,8 +74,8 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
                     />
                 )}
                 <DefaultPageThumbnail
-                    title="Help Center"
-                    description="Get help for this web platform"
+                    title="Help Centre"
+                    description="Help for the CReDo app"
                     icon="/images/defaults/icons/twa.svg"
                     redirectUrl={Routes.HELP}
                 />
