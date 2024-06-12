@@ -1,5 +1,5 @@
 from typing import Annotated, Literal
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from model.orm.base import HasIRI, HasLabel, HasProvenance, HasValueHasUnit
 
@@ -12,7 +12,7 @@ class OkinReaction(HasIRI):
     Equation: str
 
 
-class OkinArrheniusModelBase:
+class OkinArrheniusModelBase(BaseModel):
     ActivationEnergy: HasValueHasUnit
     ArrheniusFactor: HasValueHasUnit
     TemperatureExponent: float
@@ -68,7 +68,7 @@ OkinKineticModel = Annotated[
 ]
 
 
-class OkinPolynomial:
+class OkinPolynomial(BaseModel):
     Tmin: HasValueHasUnit
     Tmax: HasValueHasUnit
     A1: float
