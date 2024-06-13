@@ -25,7 +25,7 @@ public class EndpointConfig {
         this.ontopUrl = ontopEndpointConfig.getUrl();
     }
 
-    public String getDbUrl(String dbName) {
+    public String getDbUrl() {
         return this.postGISEndpointConfig.getJdbcURL(dbName);
     }
 

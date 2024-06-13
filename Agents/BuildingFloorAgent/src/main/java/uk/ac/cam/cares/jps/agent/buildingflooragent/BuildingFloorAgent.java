@@ -21,31 +21,15 @@ import com.cmclinnovations.stack.clients.ontop.OntopClient;
 @WebServlet(urlPatterns = { "/floors", "/floorswithodba" })
 public class BuildingFloorAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BuildingFloorAgent.class);
-    private EndpointConfig endpointConfig = new EndpointConfig();
+    private EndpointConfig endpointConfig;
 
-    private String dbName;
-    private String dbUrl;
-    private String dbUser;
-    private String dbPassword;
-    public String floorsCsv;
-    private String osmSchema;
-    private String osmPoint;
-    private String osmPolygon;
-    private String ontopUrl;
     private RemoteRDBStoreClient postgisClient;
 
     @Override
     public synchronized void init() {
-        this.dbName = endpointConfig.getDbName();
-        this.dbUrl = endpointConfig.getDbUrl(dbName);
-        this.dbUser = endpointConfig.getDbUser();
-        this.dbPassword = endpointConfig.getDbPassword();
-        this.floorsCsv = endpointConfig.getFilepath();
-        this.osmSchema = endpointConfig.getOSMSchema();
-        this.osmPoint = endpointConfig.getOSMPoints();
-        this.osmPolygon = endpointConfig.getOSMPolygons();
-        this.ontopUrl = endpointConfig.getOntopUrl();
-        postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
+        endpointConfig = new EndpointConfig();
+        postgisClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(), endpointConfig.getDbUser(),
+                endpointConfig.getDbPassword());
     }
 
     @Override
@@ -55,10 +39,9 @@ public class BuildingFloorAgent extends JPSAgent {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-
         // integrate floors data: 1. query osm address 2. match address from HDB csv 3.
         // store floors data
-        IntegrateFloors integrateFloors = new IntegrateFloors(ontopUrl);
+        IntegrateFloors integrateFloors = new IntegrateFloors(endpointConfig.getOntopUrl());
 
         try (Connection conn = postgisClient.getConnection()) {
             LOGGER.info("Querying OSM building data");
@@ -66,7 +49,7 @@ public class BuildingFloorAgent extends JPSAgent {
             integrateFloors.addFloorCatColumn(conn);
 
             LOGGER.info("Updating floor data based on CSV input");
-            integrateFloors.matchAddress(floorsCsv, conn);
+            integrateFloors.matchAddress(endpointConfig.getFilepath(), conn);
 
             LOGGER.info("Updating floor data based on OSM and rough estimate");
             integrateFloors.importFloorData(conn);
