@@ -173,6 +173,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
         virtualTable.addVirtualTableParameter("speediri",speedIRI,".*");
         virtualTable.addVirtualTableParameter("altitudeiri",altitudeIRI,".*");
         virtualTable.addVirtualTableParameter("bearingiri",bearingIRI,".*");
+        virtualTable.addVirtualTableParameter("date", "", "^\\d{4,}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{2,}\\+\\d{2}$");
         geoServerVectorSettings.setVirtualTable(virtualTable);
         geoServerClient.createPostGISDataStore(workspaceName,"trajectoryPoint" , dbName, schema);
         geoServerClient.createPostGISLayer(workspaceName, dbName,"trajectoryPoint" ,geoServerVectorSettings);
