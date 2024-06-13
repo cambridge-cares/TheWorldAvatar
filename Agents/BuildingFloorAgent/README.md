@@ -58,13 +58,13 @@ Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. Th
 ### 2.5 Running the Agent
 The agent is reachable at two endpoints:
 1) `/floors`: integrate number of floor to citydb
-2) `/floorswithodba`: integrate number of floor and upload odba
+2) `/floorswithobda`: integrate number of floor and upload odba
 
 No request parameters is needed.
 
 To run the agent, run the following cURL command:
 ```
 curl -X POST localhost:3838/buildingflooragent/floors
-curl -X POST localhost:3838/buildingflooragent/floorswithodba
+curl -X POST localhost:3838/buildingflooragent/floorswithobda
 ```
 

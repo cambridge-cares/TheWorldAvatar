@@ -18,7 +18,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
-@WebServlet(urlPatterns = { "/floors", "/floorswithodba" })
+@WebServlet(urlPatterns = { "/floors", "/floorswithobda" })
 public class BuildingFloorAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BuildingFloorAgent.class);
     private EndpointConfig endpointConfig;
@@ -57,7 +57,7 @@ public class BuildingFloorAgent extends JPSAgent {
         }
 
         // Upload Ontop mapping
-        if (requestParams.getString("requestUrl").contains("withodba")) {
+        if (requestParams.getString("requestUrl").contains("withobda")) {
             Path obdaPath;
             try {
                 obdaPath = new ClassPathResource("buildingfloor.obda").getFile().toPath();
