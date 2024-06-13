@@ -165,7 +165,9 @@ public class TrajectoryQueryAgent extends JPSAgent {
                 "timeseries.altitude AS altitude,\n" +
                 "timeseries.geom AS geom,\n" +
                 "timeseries.bearing AS bearing\n" +
-                "FROM public.getLocationTable('%pointiri%','%speediri%','%altitudeiri%','%bearingiri%') as timeseries");
+                "FROM public.getLocationTable('%pointiri%','%speediri%','%altitudeiri%','%bearingiri%') as timeseries\n" +
+                "WHERE\n" +
+                "time > '%date%'::TIMESTAMPTZ AND time < '%date%'::TIMESTAMPTZ + INTERVAL '23 hours 59 minutes 59 seconds 999 milliseconds'\n");
         virtualTable.setEscapeSql(true);
         virtualTable.setName("trajectoryPointVirtualTable");
         virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
@@ -199,6 +201,8 @@ public class TrajectoryQueryAgent extends JPSAgent {
                 "    AVG(bearing) AS bearing\n" +
                 "FROM\n" +
                 "    numbered_points\n" +
+                "WHERE\n" +
+                "time > '%date%'::TIMESTAMPTZ AND time < '%date%'::TIMESTAMPTZ + INTERVAL '23 hours 59 minutes 59 seconds 999 milliseconds'\n" +
                 "GROUP BY\n" +
                 "    geom, next_geom");
         virtualTableLine.setEscapeSql(true);
@@ -208,6 +212,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
         virtualTableLine.addVirtualTableParameter("speediri",speedIRI,".*");
         virtualTableLine.addVirtualTableParameter("altitudeiri",altitudeIRI,".*");
         virtualTableLine.addVirtualTableParameter("bearingiri",bearingIRI,".*");
+        virtualTableLine.addVirtualTableParameter("date", "0001-01-01 00:00:00.000+00", "^\\d{4,}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{2,}\\+\\d{2}$");
         geoServerVectorLineSettings.setVirtualTable(virtualTableLine);
         geoServerClient.createPostGISDataStore(workspaceName,"trajectoryLine" , dbName, schema);
         geoServerClient.createPostGISLayer(workspaceName, dbName,"trajectoryLine" ,geoServerVectorLineSettings);
