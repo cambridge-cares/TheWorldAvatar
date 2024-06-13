@@ -20,6 +20,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.apache.log4j.Logger;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +35,7 @@ import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;
 import uk.ac.cam.cares.jps.timeline.viewmodel.ConnectionViewModel;
+import uk.ac.cam.cares.jps.timeline.viewmodel.NormalBottomSheetViewModel;
 import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
 import uk.ac.cam.cares.jps.timeline.viewmodel.UserPhoneViewModel;
 import uk.ac.cam.cares.jps.timelinemap.R;
@@ -39,6 +48,7 @@ public class BottomSheetManager {
     private final TrajectoryViewModel trajectoryViewModel;
     private final ConnectionViewModel connectionViewModel;
     private final UserPhoneViewModel userPhoneViewModel;
+    private final NormalBottomSheetViewModel normalBottomSheetViewModel;
 
     private Logger LOGGER = Logger.getLogger(BottomSheetManager.class);
 
@@ -57,6 +67,7 @@ public class BottomSheetManager {
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
         connectionViewModel = new ViewModelProvider(fragment).get(ConnectionViewModel.class);
         userPhoneViewModel = new ViewModelProvider(fragment).get(UserPhoneViewModel.class);
+        normalBottomSheetViewModel = new ViewModelProvider(fragment).get(NormalBottomSheetViewModel.class);
 
         lifecycleOwner = fragment.getViewLifecycleOwner();
         context = fragment.requireContext();
@@ -74,7 +85,7 @@ public class BottomSheetManager {
         connectionViewModel.getHasConnection().observe(lifecycleOwner, hasConnection -> {
             if (hasConnection) {
                 setBottomSheet(normalBottomSheet);
-                trajectoryViewModel.getTrajectory();
+                trajectoryViewModel.getTrajectory(convertDateFormat(normalBottomSheetViewModel.selectedDate.getValue()));
             } else {
                 errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.CONNECTION_ERROR);
                 setAndExtendBottomSheet(errorBottomSheet);
@@ -85,6 +96,11 @@ public class BottomSheetManager {
 
     private void initNormalBottomSheet() {
         normalBottomSheet = new NormalBottomSheet(context);
+
+        normalBottomSheetViewModel.selectedDate.observe(lifecycleOwner, selectedDate -> {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMMM dd, yyyy");
+            ((TextView) normalBottomSheet.getBottomSheet().findViewById(R.id.date_tv)).setText(selectedDate.format(formatter));
+        });
 
         trajectoryViewModel.isFetchingTrajecjtory.observe(lifecycleOwner, isFetching -> {
             if (isFetching) {
@@ -158,6 +174,11 @@ public class BottomSheetManager {
                 bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_SETTLING) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
         }
+    }
+
+    private String convertDateFormat(LocalDate date) {
+        ZonedDateTime convertedDateStart = date.atStartOfDay(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
+        return convertedDateStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSx"));
     }
 
 

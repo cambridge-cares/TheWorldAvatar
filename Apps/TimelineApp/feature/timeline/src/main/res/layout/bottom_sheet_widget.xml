@@ -35,7 +35,8 @@
             android:layout_marginStart="@dimen/component_margin_small"
             android:text="Mon, March 14, 2024"
             android:textAlignment="center"
-            android:textAppearance="?attr/textAppearanceHeadline6" />
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:id="@+id/date_tv"/>
 
         <ImageButton
             android:layout_width="wrap_content"

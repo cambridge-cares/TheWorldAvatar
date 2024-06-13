@@ -29,24 +29,24 @@ public class TrajectoryNetworkSource {
         this.context = context;
     }
 
-    public void getTrajectory(String userId, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper) {
+    public void getTrajectory(String userId, String date, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         String createLayerUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryqueryagent_createlayer))
                 .addQueryParameter("userID", userId)
                 .build().toString();
         LOGGER.info(createLayerUri);
 
-        StringRequest createLayerRequest = buildCreateLayerRequest(onSuccessUpper, onFailureUpper, createLayerUri);
+        StringRequest createLayerRequest = buildCreateLayerRequest(onSuccessUpper, onFailureUpper, createLayerUri, date);
         requestQueue.add(createLayerRequest);
     }
 
     @NonNull
-    private StringRequest buildCreateLayerRequest(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, String createLayerUri) {
+    private StringRequest buildCreateLayerRequest(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, String createLayerUri, String date) {
         Response.Listener<String> onCreateLayerSuccess = s -> {
             try {
                 JSONObject rawResponse = new JSONObject(s);
 
-                StringRequest getTrajectoryRequest = buildGetTrajectoryRequest(onSuccessUpper, onFailureUpper, rawResponse);
+                StringRequest getTrajectoryRequest = buildGetTrajectoryRequest(onSuccessUpper, onFailureUpper, rawResponse, date);
                 if (getTrajectoryRequest != null) {
                     requestQueue.add(getTrajectoryRequest);
                 }
@@ -58,7 +58,7 @@ public class TrajectoryNetworkSource {
         return new StringRequest(createLayerUri, onCreateLayerSuccess, onFailureUpper);
     }
 
-    private StringRequest buildGetTrajectoryRequest(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse) throws JSONException {
+    private StringRequest buildGetTrajectoryRequest(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse, String date) throws JSONException {
         if (!rawResponse.has("message")) {
             throw new RuntimeException("Not able to handle the agent response. Please check the backend");
         }
@@ -87,8 +87,8 @@ public class TrajectoryNetworkSource {
                 .addQueryParameter("typeName", "twa:trajectoryLine")
                 .addQueryParameter("outputFormat", "application/json")
                 .addQueryParameter("viewparams", String.format(Locale.ENGLISH,
-                        "pointiri:%s;speediri:%s;altitudeiri:%s;bearingiri:%s;",
-                        pointIRI, speedIRI, altitudeIRI, bearingIRI))
+                        "pointiri:%s;speediri:%s;altitudeiri:%s;bearingiri:%s;date:%s;",
+                        pointIRI, speedIRI, altitudeIRI, bearingIRI, date))
                 .build().toString();
 
         Response.Listener<String> onGetTrajectorySuccess = s1 -> {

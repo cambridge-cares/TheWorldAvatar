@@ -21,11 +21,11 @@ public class TrajectoryRepository {
         this.context = context;
     }
 
-    public void getTrajectory(RepositoryCallback<String> callback) {
+    public void getTrajectory(String date, RepositoryCallback<String> callback) {
         loginRepository.getUserInfo(new RepositoryCallback<>() {
             @Override
             public void onSuccess(User result) {
-                trajectoryNetworkSource.getTrajectory(result.getId(),
+                trajectoryNetworkSource.getTrajectory(result.getId(), date,
                         callback::onSuccess,
                         volleyError -> {
                             if (volleyError.getMessage() != null &&

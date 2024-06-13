@@ -26,10 +26,10 @@ public class TrajectoryViewModel extends ViewModel {
         this.trajectoryRepository = routeRepository;
     }
 
-    public void getTrajectory() {
+    public void getTrajectory(String date) {
         _isFetchingTrajectory.setValue(true);
 
-        trajectoryRepository.getTrajectory(new RepositoryCallback<>() {
+        trajectoryRepository.getTrajectory(date, new RepositoryCallback<>() {
             @Override
             public void onSuccess(String result) {
                 _trajectory.postValue(result);
