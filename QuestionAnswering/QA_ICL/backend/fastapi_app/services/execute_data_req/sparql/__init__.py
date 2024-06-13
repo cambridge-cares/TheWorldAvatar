@@ -8,7 +8,6 @@ from constants.prefixes import PREFIX_NAME2URI, TWA_ABOX_PREFIXES
 from model.nlq2datareq import SparqlDataReqForm
 from model.qa import DataItem, DocumentCollection, TableData
 from services.sparql import SparqlClient
-from utils.collections import FrozenDict
 from utils.json import deep_pd_json_normalize_list
 from utils.rdf import filter_deep_remove_iris_from_list
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
@@ -86,7 +85,7 @@ class SparqlDataReqExecutor:
 
 @cache
 def get_sparqlReq_executor(
-    ns2endpoint: Annotated[FrozenDict[str, str], Depends(get_ns2endpoint)],
+    ns2endpoint: Annotated[dict[str, str], Depends(get_ns2endpoint)],
     query_processor: Annotated[
         SparqlQueryProcessor, Depends(get_sparqlQuery_processor)
     ],

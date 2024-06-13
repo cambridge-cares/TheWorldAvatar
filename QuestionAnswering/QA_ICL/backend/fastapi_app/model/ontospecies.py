@@ -11,11 +11,13 @@ class OntospeciesHasValueHasUnit(RDFEntity):
 
 class OntospeciesProperty(RDFEntity):
     value: str | float = RDFField(path=ONTOSPECIES.value)
-    unit: str | None = RDFField(path=ONTOSPECIES.unit)
+    unit: str | None = RDFField(default=None, path=ONTOSPECIES.unit)
     reference_state: OntospeciesHasValueHasUnit | None = RDFField(
-        path=ONTOSPECIES.hasReferenceState
+        default=None, path=ONTOSPECIES.hasReferenceState
     )
-    provenance: str | None = RDFField(path=ONTOSPECIES.hasProvenance / RDFS.label)
+    provenance: str | None = RDFField(
+        default=None, path=ONTOSPECIES.hasProvenance / RDFS.label
+    )
 
 
 class GcAtom(RDFEntity):
@@ -34,5 +36,7 @@ class OntospeciesHasLabel(RDFEntity):
 
 class OntospeciesSpecies(RDFEntity):
     label: str = RDFField(path=RDFS.label)
-    IUPAC_name: OntospeciesIdentifier | None = RDFField(path=ONTOSPECIES.hasIUPACName)
+    IUPAC_name: OntospeciesIdentifier | None = RDFField(
+        default=None, path=ONTOSPECIES.hasIUPACName
+    )
     InChI: OntospeciesIdentifier = RDFField(path=ONTOSPECIES.hasInChI)

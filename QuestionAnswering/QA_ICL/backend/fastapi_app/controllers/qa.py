@@ -13,9 +13,14 @@ from model.qa import (
 )
 from services.mol_vis.cif import CIFManager, get_cif_manager
 from services.mol_vis.xyz import XYZManager, get_xyz_manager
-from services.processs_response.augment_node import NodeDataRetriever
-from services.processs_response.ontospecies import get_ontospecies_nodeDataRetriever
-from services.processs_response.ontozeolite import get_ontozeolite_nodeDataRetriever
+from services.rdf_stores.ontospecies import (
+    OntospeciesRDFStore,
+    get_ontospecies_rdfStore,
+)
+from services.rdf_stores.ontozeolite import (
+    OntozeoliteRDFStore,
+    get_ontozeolite_rdfStore,
+)
 from services.rewrite_nlq import NlqRewriter, get_nlq_rewriter
 from services.stores.entity_store import EntityStore, get_entity_store
 from services.stores.nlq2datareq_example_store import (
@@ -46,8 +51,8 @@ class DataSupporter:
         artifact_store: QARequestArtifactStore,
         xyz_manager: XYZManager,
         cif_manager: CIFManager,
-        ontospecies_node_data_retriever: NodeDataRetriever,
-        ontozeolite_node_data_retriever: NodeDataRetriever,
+        ontospecies_rdf_store: OntospeciesRDFStore,
+        ontozeolite_rdf_store: OntozeoliteRDFStore,
     ):
         self.nlq_rewriter = nlq_rewriter
         self.nlq2datareq_example_store = nlq2datareq_example_store
@@ -58,8 +63,8 @@ class DataSupporter:
         self.artifact_store = artifact_store
         self.xyz_manager = xyz_manager
         self.cif_manager = cif_manager
-        self.ontospecies_node_data_retriever = ontospecies_node_data_retriever
-        self.ontozeolite_node_data_retriever = ontozeolite_node_data_retriever
+        self.ontospecies_rdf_store = ontospecies_rdf_store
+        self.ontozeolite_rdf_store = ontozeolite_rdf_store
 
     def query(self, query: str):
         logger.info("Input query: " + query)
@@ -91,7 +96,7 @@ class DataSupporter:
         logger.info(
             "Performing entity linking for bindings: " + str(data_req.entity_bindings)
         )
-        var2cls = data_req.var2cls or dict()
+        var2cls = data_req.var2cls or None
         var2iris = {
             var: list(
                 set(
@@ -99,7 +104,7 @@ class DataSupporter:
                         iri
                         for val in values
                         for iri in self.entity_store.link(
-                            cls=data_req.var2cls and data_req.var2cls.get(var),
+                            cls=var2cls and var2cls.get(var),
                             text=val if isinstance(val, str) else None,
                             identifier=val if isinstance(val, dict) else dict(),
                         )  # TODO: handle when no IRIs are returned
@@ -138,15 +143,12 @@ class DataSupporter:
         species_iris = [iri for var in species_vars for iri in var2iris.get(var, [])]
         species_iris = list(set(species_iris))
         xyzs = [self.xyz_manager.get(iri) for iri in species_iris]
-        # TODO: Use ORM to access species label
-        species_node_data = self.ontospecies_node_data_retriever.retrieve(
-            "os:Species", iris=species_iris
-        )
+        species_models = self.ontospecies_rdf_store.get_species(species_iris)
         chem_struct_data = [
             ChemicalStructureData(
-                type="xyz", label=node_datum.get("Label", ""), iri=iri, data=xyz
+                type="xyz", label=species_model.label, iri=iri, data=xyz
             )
-            for iri, xyz, node_datum in zip(species_iris, xyzs, species_node_data)
+            for iri, xyz, species_model in zip(species_iris, xyzs, species_models)
             if xyz
         ]
 
@@ -160,19 +162,18 @@ class DataSupporter:
         ]
         zeoframework_iris = list(set(zeoframework_iris))
         zeoframework_cifs = [self.cif_manager.get(iri) for iri in zeoframework_iris]
-        # TODO: Use ORM to access zeolite codes and formulae
-        zeoframework_node_data = self.ontozeolite_node_data_retriever.retrieve(
-            "zeo:ZeoliteFramework", iris=zeoframework_iris
+        zeoframework_models = self.ontozeolite_rdf_store.get_zeolite_frameworks(
+            zeoframework_iris
         )
         chem_struct_data.extend(
             ChemicalStructureData(
                 type="cif",
                 iri=iri,
-                label=node_datum.get("FrameworkCode"),
+                label=model.framework_code,
                 data=cif,
             )
-            for iri, cif, node_datum in zip(
-                zeoframework_iris, zeoframework_cifs, zeoframework_node_data
+            for iri, cif, model in zip(
+                zeoframework_iris, zeoframework_cifs, zeoframework_models
             )
             if cif
         )
@@ -187,19 +188,18 @@ class DataSupporter:
         ]
         zeomaterial_iris = list(set(zeomaterial_iris))
         zeomaterial_cifs = [self.cif_manager.get(iri) for iri in zeomaterial_iris]
-        # TODO: Use ORM to access zeolite codes and formulae
-        zeomaterial_node_data = self.ontozeolite_node_data_retriever.retrieve(
-            "zeo:ZeoliticMaterial", iris=zeomaterial_iris
+        zeomaterial_models = self.ontozeolite_rdf_store.get_zeolitic_materials(
+            zeomaterial_iris
         )
         chem_struct_data.extend(
             ChemicalStructureData(
                 type="cif",
                 iri=iri,
-                label=node_datum.get("ChemicalFormula"),
+                label=model.chemical_formula,
                 data=cif,
             )
-            for iri, cif, node_datum in zip(
-                zeomaterial_iris, zeomaterial_cifs, zeomaterial_node_data
+            for iri, cif, model in zip(
+                zeomaterial_iris, zeomaterial_cifs, zeomaterial_models
             )
             if cif
         )
@@ -233,11 +233,11 @@ def get_data_supporter(
     artifact_store: Annotated[QARequestArtifactStore, Depends(get_qaReq_artifactStore)],
     xyz_manager: Annotated[XYZManager, Depends(get_xyz_manager)],
     cif_manager: Annotated[CIFManager, Depends(get_cif_manager)],
-    ontospecies_node_data_retriever: Annotated[
-        NodeDataRetriever, Depends(get_ontospecies_nodeDataRetriever)
+    ontospecies_rdf_store: Annotated[
+        OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
     ],
-    ontozeolite_node_data_retriever: Annotated[
-        NodeDataRetriever, Depends(get_ontozeolite_nodeDataRetriever)
+    ontozeolite_rdf_store: Annotated[
+        OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
     ],
 ):
     return DataSupporter(
@@ -250,6 +250,6 @@ def get_data_supporter(
         artifact_store=artifact_store,
         xyz_manager=xyz_manager,
         cif_manager=cif_manager,
-        ontospecies_node_data_retriever=ontospecies_node_data_retriever,
-        ontozeolite_node_data_retriever=ontozeolite_node_data_retriever,
+        ontospecies_rdf_store=ontospecies_rdf_store,
+        ontozeolite_rdf_store=ontozeolite_rdf_store,
     )

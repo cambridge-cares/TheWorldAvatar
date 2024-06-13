@@ -31,6 +31,9 @@ class RDFStore:
         self.sparql_client = SparqlClient(endpoint)
 
     def getMany(self, T: type[T], iris: Sequence[str]):
+        if not iris:
+            return []
+
         unique_iris = list(set(iris))
 
         query = """SELECT *

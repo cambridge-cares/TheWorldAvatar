@@ -25,7 +25,7 @@ class DataReqExecutor:
         var2cls: dict[str, str],
         entity_bindings: dict[str, list[str]],
         const_bindings: dict[str, object],
-        req_form: DataRequestForm,
+        req_form: DataRequestForm | None,
     ):
         if isinstance(req_form, SparqlDataReqForm):
             exec_func = self.sparql_executor.exec

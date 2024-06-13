@@ -27,7 +27,10 @@ class TableDataBase(BaseModel):
     ]
 
     @classmethod
-    def from_data(cls, data: Sequence[dict[str, object]]):
+    def from_data(
+        cls,
+        data: Sequence[dict[str, object]],
+    ):
         cols: list[TableDataColumn] = []
         cols_set = set()
         for datum in data:
@@ -44,7 +47,7 @@ class TableDataBase(BaseModel):
                 ):
                     new_kv[k] = cls.from_data(v)
             datum.update(new_kv)
-
+            
         return cls(columns=cols, data=data)
 
 
