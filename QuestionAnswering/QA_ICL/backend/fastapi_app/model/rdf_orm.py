@@ -17,6 +17,8 @@ setattr(
 
 
 class RDFEntity(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     IRI: str
 
     @classmethod

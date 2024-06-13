@@ -6,6 +6,16 @@ from constants.namespace import ONTOKIN, ONTOPROVENANCE
 from model.rdf_orm import RDFEntity, RDFField
 
 
+class OntokinMechanism(RDFEntity):
+    provenance: str = Field(
+        path=ONTOKIN.hasProvenance / (ONTOPROVENANCE.hasDOI | ONTOPROVENANCE.hasURL)
+    )
+
+
+class OntokinReaction(RDFEntity):
+    equation: str = Field(path=ONTOKIN.hasEquation)
+
+
 class OntokinHasValueHasUnit(RDFEntity):
     value: float = RDFField(path=ONTOKIN.value)
     unit: str = RDFField(path=ONTOKIN.unit)
@@ -111,14 +121,3 @@ OntokinKineticModel = Annotated[
     | OntokinTroeModel,
     Field(discriminator="type"),
 ]
-
-
-class OntokinReaction(RDFEntity):
-    equation: str = Field(path=ONTOKIN.hasEquation)
-
-
-class OntokinMechanism(RDFEntity):
-    provenance: str = Field(
-        path=ONTOKIN.hasProvenance / (ONTOPROVENANCE.hasDOI | ONTOPROVENANCE.hasURL)
-    )
-    reaction: list[OntokinReaction] = Field(path=ONTOKIN.hasReaction)

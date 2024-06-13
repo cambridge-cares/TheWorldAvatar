@@ -4,8 +4,6 @@ from typing import Annotated, Any, Dict, List
 
 from fastapi import Depends
 
-from services.sparql import SparqlClient
-from utils.collections import FrozenDict
 from .endpoints import get_ns2endpoint
 
 
@@ -13,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class SparqlQueryProcessor:
-    def __init__(self, ns2uri: Dict[str, str] = dict()):
-        self.ns2uri = ns2uri
+    def __init__(self, ns2endpoint: Dict[str, str] = dict()):
+        self.ns2endpoint = ns2endpoint
 
     def inject_service_endpoint(self, sparql: str):
         idx = 0
@@ -40,12 +38,14 @@ class SparqlQueryProcessor:
 
             logger.info("Found namespace: " + ns)
 
-            if ns in self.ns2uri:
-                logger.info("Namespace URI: " + self.ns2uri[ns])
+            if ns in self.ns2endpoint:
+                logger.info("Namespace URI: " + self.ns2endpoint[ns])
                 sparql = "{before}<{uri}>{after}".format(
-                    before=sparql[:start], uri=self.ns2uri[ns], after=sparql[end + 1 :]
+                    before=sparql[:start],
+                    uri=self.ns2endpoint[ns],
+                    after=sparql[end + 1 :],
                 )
-                idx = start + len(self.ns2uri[ns]) + 1
+                idx = start + len(self.ns2endpoint[ns]) + 1
             else:
                 logger.info("Namespace URI not found")
                 idx = end + 1
@@ -96,8 +96,6 @@ class SparqlQueryProcessor:
 
 @cache
 def get_sparqlQuery_processor(
-    ns2kg: Annotated[FrozenDict[str, SparqlClient], Depends(get_ns2endpoint)],
+    ns2endpoint: Annotated[dict[str, str], Depends(get_ns2endpoint)],
 ):
-    return SparqlQueryProcessor(
-        ns2uri={ns: kg.sparql.endpoint for ns, kg in ns2kg.items()},
-    )
+    return SparqlQueryProcessor(ns2endpoint=ns2endpoint)

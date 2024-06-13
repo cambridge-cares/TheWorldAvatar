@@ -3,26 +3,32 @@ from functools import cache
 from typing import Annotated, Sequence
 
 from fastapi import Depends
+from pydantic import BaseModel
 
-from services.processs_response.augment_node import NodeDataRetriever
-from services.processs_response.ontocompchem import get_ontocompchem_nodeDataRetriever
-from services.processs_response.ontokin import get_ontokin_nodeDataRetriever
-from services.processs_response.ontospecies import get_ontospecies_nodeDataRetriever
-from services.processs_response.ontozeolite import get_ontozeolite_nodeDataRetriever
-from utils.collections import listofdict2dictoflist
+from services.rdf_stores.base import Cls2GetterRDFStore
+from services.rdf_stores.ontocompchem import (
+    OntocompchemRDFStore,
+    get_ontocompchem_rdfStore,
+)
+from services.rdf_stores.ontokin import OntokinRDFStore, get_ontokin_rdfStore
+from services.rdf_stores.ontospecies import (
+    OntospeciesRDFStore,
+    get_ontospecies_rdfStore,
+)
+from services.rdf_stores.ontozeolite import (
+    OntozeoliteRDFStore,
+    get_ontozeolite_rdfStore,
+)
+from utils.collections import FrozenDict, listofdict2dictoflist
 
 
 class SparqlResponseTransformer:
-    WKT_LITERAL_PREFIX = "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> "
-
     def __init__(
         self,
-        retrievers: Sequence[NodeDataRetriever],
+        stores: Sequence[Cls2GetterRDFStore],
     ):
-        self.type2retriever = {
-            type: retriever
-            for retriever in retrievers
-            for type in retriever.type2getter
+        self.cls2getter = {
+            cls: getter for store in stores for cls, getter in store.cls2getter.items()
         }
 
     def transform(
@@ -33,60 +39,56 @@ class SparqlResponseTransformer:
         pkeys: list[str],
     ):
         # TODO: perform aggregate before transform to reduce the complexity of
-        # calling __hash__ on FrozenDict
+        # calling __hash__ on frozendict
         for var in vars:
             cls = var2cls.get(var)
             if not cls:
                 continue
 
-            node_data_retriever = self.type2retriever.get(cls)
-            if not node_data_retriever:
+            data_getter = self.cls2getter.get(cls)
+            if not data_getter:
                 continue
 
-            retrieved_data = node_data_retriever.retrieve(
-                type=cls,
-                iris=[binding.get(var) for binding in bindings],
+            retrieved_data = data_getter(
+                iris=[binding.get(var) for binding in bindings]
             )
             for binding, datum in zip(bindings, retrieved_data):
-                binding[var] = datum
+                binding[var] = (
+                    FrozenDict.from_dict(datum.model_dump())
+                    if isinstance(datum, BaseModel)
+                    else datum
+                )
 
         non_pkeys = [var for var in vars if var not in pkeys]
 
-        pkeys2data: defaultdict[str, list[dict]] = defaultdict(list)
+        pkeyvals2data: defaultdict[tuple, list] = defaultdict(list)
         for binding in bindings:
-            pkeys2data[tuple(binding.get(k) for k in pkeys)].append(
-                {k: binding.get(k) for k in non_pkeys}
-            )
+            pkeyvals = tuple(binding.get(k) for k in pkeys)
+            datum = {k: binding.get(k) for k in non_pkeys}
+            pkeyvals2data[pkeyvals].append(datum)
 
         return [
             {
-                **{pkey: val for pkey, val in zip(pkeys, pkeyvalues)},
+                **{pkey: val for pkey, val in zip(pkeys, pkeyvals)},
                 **listofdict2dictoflist(data),
             }
-            for pkeyvalues, data in pkeys2data.items()
+            for pkeyvals, data in pkeyvals2data.items()
         ]
 
 
 @cache
 def get_sparqlRes_transformer(
-    ontospecies_retriever: Annotated[
-        NodeDataRetriever, Depends(get_ontospecies_nodeDataRetriever)
+    ontospecies_store: Annotated[
+        OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
     ],
-    ontokin_retriever: Annotated[
-        NodeDataRetriever, Depends(get_ontokin_nodeDataRetriever)
+    ontokin_store: Annotated[OntokinRDFStore, Depends(get_ontokin_rdfStore)],
+    ontocompchem_store: Annotated[
+        OntocompchemRDFStore, Depends(get_ontocompchem_rdfStore)
     ],
-    ontocompchem_retriever: Annotated[
-        NodeDataRetriever, Depends(get_ontocompchem_nodeDataRetriever)
-    ],
-    ontozeolite_retriever: Annotated[
-        NodeDataRetriever, Depends(get_ontozeolite_nodeDataRetriever)
+    ontozeolite_store: Annotated[
+        OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
     ],
 ):
     return SparqlResponseTransformer(
-        retrievers=(
-            ontospecies_retriever,
-            ontokin_retriever,
-            ontocompchem_retriever,
-            ontozeolite_retriever,
-        )
+        stores=(ontospecies_store, ontokin_store, ontocompchem_store, ontozeolite_store)
     )

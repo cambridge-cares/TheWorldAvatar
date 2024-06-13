@@ -257,8 +257,8 @@ def get_cls2linker(
 def get_entity_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
-    cls2config: Annotated[FrozenDict[str, ELConfig], Depends(get_cls2config)],
-    cls2linker: Annotated[FrozenDict[str, IEntityLinker], Depends(get_cls2linker)],
+    cls2config: Annotated[dict[str, ELConfig], Depends(get_cls2config)],
+    cls2linker: Annotated[dict[str, IEntityLinker], Depends(get_cls2linker)],
 ):
     return EntityStore(
         redis_client=redis_client,
