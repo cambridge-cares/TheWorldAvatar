@@ -48,7 +48,7 @@ export default function DimensionSlider({ data }: DimensionSliderProps) {
                 marks
                 min={min}
                 max={max}
-                onChangeCommitted={(event, value) => handleChange(event, value, values)}
+                onChangeCommitted={(event: React.SyntheticEvent | Event, value: number | number[]) => handleChange(event, value, values)}
             />
         </div>
     );
