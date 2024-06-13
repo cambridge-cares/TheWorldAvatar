@@ -5,17 +5,14 @@ public class OSMBuilding {
     private String buildingIri;
     private String buildingUsage;
     private String street;
-    private String unit;
-    private String postcode;
     private boolean hasAddress;
     private boolean hasUsage;
     private String streetNumber;
+    private FloorCategory floorCat;
+    private int floors;
 
     public OSMBuilding(String buildingIri) {
         this.buildingIri = buildingIri;
-    }
-
-    public OSMBuilding() {
     }
 
     public void setAddress(String streetNumber, String street) {
@@ -48,14 +45,6 @@ public class OSMBuilding {
         return this.street;
     }
 
-    public String getPostcode() {
-        return this.postcode;
-    }
-
-    public String getUnit() {
-        return this.unit;
-    }
-
     public void setBuildingIri(String buildingIri) {
         this.buildingIri = buildingIri;
     }
@@ -69,11 +58,23 @@ public class OSMBuilding {
         this.street = street;
     }
 
-    public void setPostcode(String postcode) {
-        this.postcode = postcode;
+    public void setFloorCategory(FloorCategory floorCat) {
+        this.floorCat = floorCat;
     }
 
-    public void seUnit(String unit) {
-        this.unit = unit;
+    public FloorCategory getFloorCategory() {
+        return floorCat;
+    }
+
+    public void setFloors(int floors) {
+        this.floors = floors;
+    }
+
+    public int getFloors() {
+        return floors;
+    }
+
+    enum FloorCategory {
+        A, B, C
     }
 }

@@ -110,7 +110,7 @@ public class IntegrateFloors {
     /* INPUT: data file location */
     /* floors data store in citydb.building.storeys_above_ground */
     /**********************************************/
-    void matchAddress(String floorsCsv, Connection conn) {
+    void matchAddress(String floorsCsv) {
         MatchService matchService = new MatchService();
         List<Document> preDoc = new ArrayList<>();
 
@@ -148,14 +148,14 @@ public class IntegrateFloors {
 
             Map<String, List<Match<Document>>> resultPoint = matchService.applyMatchByDocId(matchDoc, preDoc);
 
-            String pointIri = null;
+            String matchedBuildingIri = null;
             String matched = null;
             String matchedWith = null;
             for (Map.Entry<String, List<Match<Document>>> entry : resultPoint.entrySet()) {
                 for (Match<Document> match : entry.getValue()) {
                     if (match.getScore().getResult() > pointScore && match.getScore().getResult() > 0.6) {
                         pointScore = match.getScore().getResult();
-                        pointIri = match.getMatchedWith().getKey();
+                        matchedBuildingIri = match.getMatchedWith().getKey();
                         matched = match.getData().toString();
                         matchedWith = match.getMatchedWith().toString();
                     }
@@ -164,44 +164,49 @@ public class IntegrateFloors {
 
             // store floors data based on building iri from osm agent
             Integer floors = hdbFloors.get(i).getFloors();
-            String catString = "A";
-            String buildingiri = null;
             if (pointScore != 0) {
                 LOGGER.debug("Point score = {}. {} matched with {}", pointScore, matched, matchedWith);
-                buildingiri = pointIri;
-            }
-
-            if (buildingiri != null) {
-                updateFloors(floors, catString, buildingiri, conn);
+                OSMBuilding matchedBuilding = iriToBuildingMap.get(matchedBuildingIri);
+                matchedBuilding.setFloorCategory(OSMBuilding.FloorCategory.A);
+                matchedBuilding.setFloors(floors);
+                // updateFloors(floors, "A", matchedBuildingIri, conn);
             }
         }
     }
 
     public void importFloorData(Connection conn) {
-        String floorSQLQuery = "SELECT storeys_above_ground, storeys_above_ground_cat, building.id, cg.strval " +
+        // building_iri here is not the full IRI, just the last bit
+        String buildingIriPrefix = "https://www.theworldavatar.com/kg/Building/";
+        String floorSQLQuery = "SELECT storeys_above_ground, building.id, cg.strval " +
                 "FROM citydb.building, citydb.cityobject_genericattrib cg " +
                 "WHERE building.id = cg.cityobject_id AND cg.attrname = 'uuid'";
 
         try (Statement stmt = conn.createStatement()) {
             ResultSet floorsResults = stmt.executeQuery(floorSQLQuery);
             while (floorsResults.next()) {
-                String catString = floorsResults.getString("storeys_above_ground_cat");
                 int floors = floorsResults.getInt("storeys_above_ground");
-                String buildingIri = floorsResults.getString("strval");
+                String buildingUuid = floorsResults.getString("strval");
+                String buildingIri = buildingIriPrefix + buildingUuid;
+                iriToBuildingMap.computeIfAbsent(buildingIri, OSMBuilding::new);
+                OSMBuilding building = iriToBuildingMap.get(buildingIri);
 
-                if ((catString == null || catString.equals("C")) && floors == 0) {
-                    // osm option if previously not matched, or upgrade from C
-                    floors = queryOSMFloor(buildingIri, conn);
-                    if (floors > 0) {
-                        catString = "B";
-                        updateFloors(floors, catString, buildingIri, conn);
+                if (floors == 0) {
+                    // osm option if previously not matched
+                    floors = queryOSMFloor(buildingUuid, conn);
+                    if (building.getFloorCategory() == null && floors > 0) {
+                        iriToBuildingMap.computeIfAbsent(buildingIri, OSMBuilding::new);
+                        building.setFloorCategory(OSMBuilding.FloorCategory.B);
+                        building.setFloors(floors);
+                        // updateFloors(floors, "B", buildingUuid, conn);
                     }
                 }
 
                 if (floors == 0) {
                     floors = estimateFloors(buildingIri, conn);
-                    catString = "C";
-                    updateFloors(floors, catString, buildingIri, conn);
+                    // updateFloors(floors, "C", buildingUuid, conn);
+                    iriToBuildingMap.computeIfAbsent(buildingIri, OSMBuilding::new);
+                    building.setFloorCategory(OSMBuilding.FloorCategory.C);
+                    building.setFloors(floors);
                 }
             }
         } catch (SQLException e) {
@@ -262,7 +267,7 @@ public class IntegrateFloors {
 
         String heightQuery = "SELECT measured_height" +
                 " FROM citydb.building, citydb.cityobject_genericattrib cg " +
-                "WHERE building.id = cg.cityobject_id AND cg.attrname = 'uuid' AND cg.urival = '" + buildingIri
+                "WHERE building.id = cg.cityobject_id AND cg.attrname = 'iri' AND cg.urival = '" + buildingIri
                 + "'";
         try (Statement stmt = conn.createStatement()) {
             ResultSet heightResults = stmt.executeQuery(heightQuery);

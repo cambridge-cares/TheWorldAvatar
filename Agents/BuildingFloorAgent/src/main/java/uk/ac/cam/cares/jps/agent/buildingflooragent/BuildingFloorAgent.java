@@ -46,10 +46,9 @@ public class BuildingFloorAgent extends JPSAgent {
         try (Connection conn = postgisClient.getConnection()) {
             LOGGER.info("Querying OSM building data");
             integrateFloors.setOSMBuildings();
-            integrateFloors.addFloorCatColumn(conn);
 
             LOGGER.info("Updating floor data based on CSV input");
-            integrateFloors.matchAddress(endpointConfig.getFilepath(), conn);
+            integrateFloors.matchAddress(endpointConfig.getFilepath());
 
             LOGGER.info("Updating floor data based on OSM and rough estimate");
             integrateFloors.importFloorData(conn);
