@@ -6,18 +6,15 @@ import { ScenarioDefinition } from 'types/scenario';
 import { DefaultSettings } from 'types/settings';
 
 async function getScenarios(scenarioUrl: string): Promise<ScenarioDefinition[]> {
-  let url: string = scenarioUrl;
-  if (scenarioUrl) {
-    url += "/getScenarios";
-    // Fetch data from external API
-    const res = await fetch(url);
-    if (!res.ok) {
-      // This will activate the closest `error.js` Error Boundary
-      throw new Error('Failed to fetch data')
-    }
-    return res.json();
+  const url: string = scenarioUrl + "/getScenarios";
+  let response;
+  try {
+    response = await fetch(url);
+  } catch (error) {
+    console.error(`Failed to fetch scnarios from URL specified in 'ui-settings': ${scenarioUrl}\n`, error);
+    return;
   }
-  return null; // Returns null without a scenario url
+  return response.json();
 }
 
 /**
@@ -29,13 +26,18 @@ export default async function VisualisationPage() {
   let scenarios: ScenarioDefinition[];
   // When scenarios are available, retrieve their definitions on the server side
   if (uiSettings.resources?.scenario) {
-    scenarios = await getScenarios(uiSettings.resources.scenario.url);
-    scenarios = scenarios.map((scenario) => ({
-      ...scenario,
-      url: uiSettings.resources.scenario.url,
-      dataset: uiSettings.resources.scenario.data,
-    }))
+    try {
+      scenarios = await getScenarios(uiSettings.resources.scenario.url);
+      scenarios = scenarios.map((scenario) => ({
+        ...scenario,
+        url: uiSettings.resources.scenario.url,
+        dataset: uiSettings.resources.scenario.data,
+      }))
+    } catch (error) {
+      console.error(`Error populating scenarios container`, error)
+    }
   }
+
   SettingsStore.readMapSettings();
   await SettingsStore.readMapDataSettings();
 
