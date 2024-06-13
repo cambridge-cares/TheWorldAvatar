@@ -4,7 +4,7 @@
         "Name": "nginx",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "nginx:1.19.6",
+                "Image": "docker.io/nginx:1.19.6",
                 "Mounts": [
                     {
                         "Type": "volume",
