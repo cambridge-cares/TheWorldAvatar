@@ -4,9 +4,9 @@ from typing import Annotated, Any, Dict, List
 
 from fastapi import Depends
 
-from services.kg import KgClient
+from services.sparql import SparqlClient
 from utils.collections import FrozenDict
-from .kg import get_ns2kg
+from .endpoints import get_ns2endpoint
 
 
 logger = logging.getLogger(__name__)
@@ -96,7 +96,7 @@ class SparqlQueryProcessor:
 
 @cache
 def get_sparqlQuery_processor(
-    ns2kg: Annotated[FrozenDict[str, KgClient], Depends(get_ns2kg)],
+    ns2kg: Annotated[FrozenDict[str, SparqlClient], Depends(get_ns2endpoint)],
 ):
     return SparqlQueryProcessor(
         ns2uri={ns: kg.sparql.endpoint for ns, kg in ns2kg.items()},

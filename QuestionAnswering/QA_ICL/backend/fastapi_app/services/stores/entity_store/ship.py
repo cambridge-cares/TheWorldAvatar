@@ -3,13 +3,13 @@ from typing import Annotated, Optional
 
 from fastapi import Depends
 
-from services.kg import get_sgDispersion_bgClient
+from services.sparql import get_sgDispersion_endpoint
 from services.stores.entity_store.base import IEntityLinker
-from services.kg import KgClient
+from services.sparql import SparqlClient
 
 
 class ShipLinker(IEntityLinker):
-    def __init__(self, bg_client: KgClient):
+    def __init__(self, bg_client: SparqlClient):
         self.bg_client = bg_client
 
     def link(self, text: Optional[str], **kwargs):
@@ -31,5 +31,5 @@ SELECT ?IRI WHERE {{
 
 
 @cache
-def get_ship_linker(bg_client: Annotated[KgClient, Depends(get_sgDispersion_bgClient)]):
+def get_ship_linker(bg_client: Annotated[SparqlClient, Depends(get_sgDispersion_endpoint)]):
     return ShipLinker(bg_client=bg_client)

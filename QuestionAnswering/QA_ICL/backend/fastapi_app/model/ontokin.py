@@ -1,11 +1,9 @@
-from __future__ import annotations
-from enum import Enum
 from typing import Annotated, Literal
 from pydantic import Field
-from rdflib import RDF, RDFS
+from rdflib import RDFS
 
 from constants.namespace import ONTOKIN, ONTOPROVENANCE
-from rdf_orm import RDFEntity, RDFField
+from model.rdf_orm import RDFEntity, RDFField
 
 
 class OntokinHasValueHasUnit(RDFEntity):

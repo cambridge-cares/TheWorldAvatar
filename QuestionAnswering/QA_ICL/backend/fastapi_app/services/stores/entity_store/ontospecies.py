@@ -3,14 +3,14 @@ from typing import Annotated
 
 from fastapi import Depends
 from services.stores.entity_store.base import IEntityLinker
-from services.kg import KgClient, get_ontospecies_bgClient
+from services.sparql import SparqlClient, get_ontospecies_endpoint
 
 
 class SpeciesLinker(IEntityLinker):
     IDKEY2PREDKEY = {"inchi": "InChI", "smiles": "SMILES", "iupac_name": "IUPACName"}
 
-    def __init__(self, bg_client: KgClient):
-        self.bg_client = bg_client
+    def __init__(self, ontospecies_endpoint: str):
+        self.sparql_client = SparqlClient(ontospecies_endpoint)
 
     def link(self, text: str | None, **kwargs) -> list[str]:
         for id_key, pred_key in self.IDKEY2PREDKEY.items():
@@ -25,7 +25,7 @@ WHERE {{
                     pred_key=pred_key, id_value=kwargs[id_key]
                 )
 
-                _, bindings = self.bg_client.querySelectThenFlatten(query)
+                _, bindings = self.sparql_client.querySelectThenFlatten(query)
                 iris = [row["Species"] for row in bindings]
 
                 if iris:
@@ -47,19 +47,17 @@ SELECT ?Species WHERE {{
             texts=" ".join('"{val}"'.format(val=text) for text in texts)
         )
 
-        _, bindings = self.bg_client.querySelectThenFlatten(query)
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [row["Species"] for row in bindings]
 
 
 @cache
-def get_species_linker(
-    bg_client: Annotated[KgClient, Depends(get_ontospecies_bgClient)]
-):
-    return SpeciesLinker(bg_client=bg_client)
+def get_species_linker(endpoint: Annotated[str, Depends(get_ontospecies_endpoint)]):
+    return SpeciesLinker(ontospecies_endpoint=endpoint)
 
 
 class ElementLinker(IEntityLinker):
-    def __init__(self, bg_client: KgClient):
+    def __init__(self, bg_client: SparqlClient):
         self.bg_client = bg_client
 
     def link(self, text: str | None, **kwargs):
@@ -81,6 +79,6 @@ WHERE {{
 
 @cache
 def get_element_linker(
-    bg_client: Annotated[KgClient, Depends(get_ontospecies_bgClient)]
+    bg_client: Annotated[SparqlClient, Depends(get_ontospecies_endpoint)]
 ):
     return ElementLinker(bg_client=bg_client)

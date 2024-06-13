@@ -1,4 +1,3 @@
-from functools import cache
 from types import NoneType, UnionType
 from typing import (
     Any,
@@ -7,49 +6,13 @@ from typing import (
     get_origin,
     get_args,
 )
-from typing_extensions import TypedDict
 from collections import defaultdict
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
+from pydantic import TypeAdapter
 from pydantic.fields import FieldInfo
-from rdflib import URIRef
-from rdflib.paths import Path
-from SPARQLWrapper import POST, SPARQLWrapper, JSON
 
-
-class RDFFieldMetadata(TypedDict):
-    path: URIRef | Path
-
-
-setattr(
-    RDFFieldMetadata, "__pydantic_config__", ConfigDict(arbitrary_types_allowed=True)
-)
-
-
-class RDFEntity(BaseModel):
-    IRI: str
-
-    @classmethod
-    @cache
-    def get_rdf_fields(cls):
-        adapter = TypeAdapter(RDFFieldMetadata)
-        fields: dict[str, tuple[FieldInfo, RDFFieldMetadata]] = dict()
-        for field, info in cls.model_fields.items():
-            if field == "IRI":
-                continue
-            try:
-                rdf_metadata = adapter.validate_python(info.json_schema_extra)
-            except:
-                continue
-            fields[field] = (info, rdf_metadata)
-        return fields
-
-
-def RDFField(
-    path: URIRef | Path,
-    **kwargs,
-):
-    return Field(**kwargs, json_schema_extra=RDFFieldMetadata(path=path))
+from model.rdf_orm import RDFEntity
+from services.sparql import SparqlClient
 
 
 T = TypeVar("T", bound=RDFEntity)
@@ -65,10 +28,7 @@ def unpack_optional_type(annotation: type[Any]):
 
 class RDFStore:
     def __init__(self, endpoint: str):
-        client = SPARQLWrapper(endpoint)
-        client.setMethod(POST)
-        client.setReturnFormat(JSON)
-        self.client = client
+        self.sparql_client = SparqlClient(endpoint)
 
     def getMany(self, T: type[T], iris: Sequence[str]):
         unique_iris = list(set(iris))
@@ -90,9 +50,7 @@ WHERE {{
             ),
         )
 
-        self.client.setQuery(query)
-        bindings = self.client.queryAndConvert()["results"]["bindings"]
-        bindings = [{k: v["value"] for k, v in binding.items()} for binding in bindings]
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
         field2iri2values: dict[str, defaultdict[str, list[str]]] = defaultdict(
             lambda: defaultdict(list)
         )

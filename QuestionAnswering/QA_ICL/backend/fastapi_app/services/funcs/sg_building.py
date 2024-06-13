@@ -9,7 +9,7 @@ import shapely.wkt
 
 from services.stores.entity_store import EntityStore, get_entity_store
 from services.funcs.base import Name2Func
-from services.kg import KgClient, get_sg_ontopClient
+from services.sparql import SparqlClient, get_sgOntop_endpoint
 from model.qa import WKTGeometryData
 from services.wkt import WKTTextSRS
 
@@ -18,9 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 class SGBuildingFuncExecutor(Name2Func):
-    def __init__(self, entity_store: EntityStore, ontop_client: KgClient):
+    def __init__(self, entity_store: EntityStore, ontop_endpoint: SparqlClient):
         self.entity_store = entity_store
-        self.ontop_client = ontop_client
+        self.ontop_client = SparqlClient(ontop_endpoint)
 
     def get_name2func(
         self,
@@ -85,6 +85,6 @@ SELECT * WHERE {{
 @cache
 def get_sgBuilding_funcExec(
     entity_store: Annotated[EntityStore, Depends(get_entity_store)],
-    ontop_client: Annotated[KgClient, Depends(get_sg_ontopClient)],
+    ontop_endpoint: Annotated[str, Depends(get_sgOntop_endpoint)],
 ):
-    return SGBuildingFuncExecutor(entity_store=entity_store, ontop_client=ontop_client)
+    return SGBuildingFuncExecutor(entity_store=entity_store, ontop_endpoint=ontop_endpoint)

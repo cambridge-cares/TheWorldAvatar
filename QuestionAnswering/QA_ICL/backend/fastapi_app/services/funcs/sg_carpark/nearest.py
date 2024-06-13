@@ -1,15 +1,14 @@
-import os
 from typing import Annotated
 
 from fastapi import Depends
 
 from config import AppSettings, get_app_settings
-from services.kg import KgClient, get_sgCarpark_bgClient
+from services.sparql import SparqlClient, get_sgCarpark_endpoint
 
 
 class NearestCarparkLocator:
-    def __init__(self, bg_client: KgClient, endpoint_singapore_ontop_internal: str):
-        self.bg_client = bg_client
+    def __init__(self, carpark_endpoint: str, endpoint_singapore_ontop_internal: str):
+        self.sparql_client = SparqlClient(carpark_endpoint)
         self.endpoint_singapore_ontop_internal = endpoint_singapore_ontop_internal
 
     def locate(self, lat: str, lon: str):
@@ -34,14 +33,14 @@ LIMIT 1""".format(
             lon=lon,
         )
 
-        return self.bg_client.querySelectThenFlatten(query)
+        return self.sparql_client.querySelectThenFlatten(query)
 
 
 def get_nearestCarpark_locator(
-    bg_client: Annotated[KgClient, Depends(get_sgCarpark_bgClient)],
+    endpoint: Annotated[str, Depends(get_sgCarpark_endpoint)],
     settings: Annotated[AppSettings, Depends(get_app_settings)],
 ):
     return NearestCarparkLocator(
-        bg_client=bg_client,
+        carpark_endpoint=endpoint,
         endpoint_singapore_ontop_internal=settings.singapore_endpoints.ontop_internal,
     )

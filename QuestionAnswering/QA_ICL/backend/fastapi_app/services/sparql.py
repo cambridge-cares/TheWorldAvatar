@@ -39,7 +39,7 @@ class SparqlSelectResponse(BaseModel):
     results: SparqlSelectResponseResults
 
 
-class KgClient:
+class SparqlClient:
     def __init__(
         self, endpoint: str, user: Optional[str] = None, password: Optional[str] = None
     ):
@@ -75,53 +75,53 @@ class KgClient:
 
 
 @cache
-def get_ontospecies_bgClient(
+def get_ontospecies_endpoint(
     settings: Annotated[AppSettings, Depends(get_app_settings)]
 ):
-    return KgClient(settings.chemistry_endpoints.ontospecies)
+    return settings.chemistry_endpoints.ontospecies
 
 
 @cache
-def get_ontokin_bgClient(settings: Annotated[AppSettings, Depends(get_app_settings)]):
-    return KgClient(settings.chemistry_endpoints.ontokin)
+def get_ontokin_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
+    return settings.chemistry_endpoints.ontokin
 
 
 @cache
-def get_ontocompchem_bgClient(
+def get_ontocompchem_endpoint(
     settings: Annotated[AppSettings, Depends(get_app_settings)]
 ):
-    return KgClient(settings.chemistry_endpoints.ontocompchem)
+    return settings.chemistry_endpoints.ontocompchem
 
 
 @cache
-def get_ontozeolite_bgClient(
+def get_ontozeolite_endpoint(
     settings: Annotated[AppSettings, Depends(get_app_settings)]
 ):
-    return KgClient(settings.chemistry_endpoints.ontozeolite)
+    return settings.chemistry_endpoints.ontozeolite
 
 
 @cache
-def get_sg_ontopClient(settings: Annotated[AppSettings, Depends(get_app_settings)]):
-    return KgClient(settings.singapore_endpoints.ontop)
+def get_sgOntop_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
+    return settings.singapore_endpoints.ontop
 
 
 @cache
-def get_sgPlot_bgClient(settings: Annotated[AppSettings, Depends(get_app_settings)]):
-    return KgClient(settings.singapore_endpoints.plot)
+def get_sgPlot_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
+    return settings.singapore_endpoints.plot
 
 
 @cache
-def get_sgCompany_bgClient(settings: Annotated[AppSettings, Depends(get_app_settings)]):
-    return KgClient(settings.singapore_endpoints.company)
+def get_sgCompany_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
+    return settings.singapore_endpoints.company
 
 
 @cache
-def get_sgDispersion_bgClient(
+def get_sgDispersion_endpoint(
     settings: Annotated[AppSettings, Depends(get_app_settings)]
 ):
-    return KgClient(settings.singapore_endpoints.dispersion)
+    return settings.singapore_endpoints.dispersion
 
 
 @cache
-def get_sgCarpark_bgClient(settings: Annotated[AppSettings, Depends(get_app_settings)]):
-    return KgClient(settings.singapore_endpoints.carpark)
+def get_sgCarpark_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
+    return settings.singapore_endpoints.carpark
