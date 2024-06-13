@@ -97,9 +97,18 @@ public class BottomSheetManager {
     private void initNormalBottomSheet() {
         normalBottomSheet = new NormalBottomSheet(context);
 
+        normalBottomSheet.getBottomSheet().findViewById(R.id.date_left_bt).setOnClickListener(view -> {
+            normalBottomSheetViewModel.setToLastDate();
+        });
+
+        normalBottomSheet.getBottomSheet().findViewById(R.id.date_right_bt).setOnClickListener(view -> {
+            normalBottomSheetViewModel.setToNextDate();
+        });
+
         normalBottomSheetViewModel.selectedDate.observe(lifecycleOwner, selectedDate -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMMM dd, yyyy");
             ((TextView) normalBottomSheet.getBottomSheet().findViewById(R.id.date_tv)).setText(selectedDate.format(formatter));
+            connectionViewModel.checkNetworkConnection();
         });
 
         trajectoryViewModel.isFetchingTrajecjtory.observe(lifecycleOwner, isFetching -> {

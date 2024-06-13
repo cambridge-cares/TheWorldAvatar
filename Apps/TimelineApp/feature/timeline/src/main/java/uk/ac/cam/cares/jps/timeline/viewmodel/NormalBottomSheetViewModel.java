@@ -12,5 +12,15 @@ public class NormalBottomSheetViewModel extends ViewModel {
 
     public LiveData<LocalDate> selectedDate = _selectedDate;
 
+    public void setToLastDate() {
+        _selectedDate.setValue(_selectedDate.getValue().minusDays(1));
+    }
 
+    public void setToNextDate() {
+        _selectedDate.setValue(_selectedDate.getValue().plusDays(1));
+    }
+
+    public void setDate() {
+
+    }
 }
