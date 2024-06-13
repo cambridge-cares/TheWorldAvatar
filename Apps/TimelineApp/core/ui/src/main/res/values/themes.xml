@@ -31,6 +31,7 @@
         <item name="toolbarStyle">@style/Widget.TWA.ToolBar</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.TWA.BottomSheet</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.TWA.MaterialAlertDialog</item>
+        <item name="materialCalendarTheme">@style/ThemeOverlay.TWA.MaterialCalendar</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -41,6 +42,10 @@
     </style>
 
     <style name="ThemeOverlay.TWA.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorSurfaceContainerHigh">?attr/colorSurfaceVariant</item>
+    </style>
+    
+    <style name="ThemeOverlay.TWA.MaterialCalendar" parent="ThemeOverlay.Material3.MaterialCalendar">
         <item name="colorSurfaceContainerHigh">?attr/colorSurfaceVariant</item>
     </style>
 </resources>
