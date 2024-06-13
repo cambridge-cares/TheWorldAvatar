@@ -20,7 +20,7 @@ public class NormalBottomSheetViewModel extends ViewModel {
         _selectedDate.setValue(_selectedDate.getValue().plusDays(1));
     }
 
-    public void setDate() {
-
+    public void setDate(LocalDate date) {
+        _selectedDate.setValue(date);
     }
 }

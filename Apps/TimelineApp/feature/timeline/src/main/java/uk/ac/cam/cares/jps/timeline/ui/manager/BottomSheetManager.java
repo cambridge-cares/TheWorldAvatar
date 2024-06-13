@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.timeline.ui.manager;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-import android.accounts.AccountsException;
 import android.content.Context;
 import android.net.Uri;
 import android.view.View;
@@ -10,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -17,15 +17,13 @@ import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.datepicker.MaterialDatePicker;
 
 import org.apache.log4j.Logger;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -52,7 +50,8 @@ public class BottomSheetManager {
 
     private Logger LOGGER = Logger.getLogger(BottomSheetManager.class);
 
-    private BottomSheet bottomSheet;
+    private MaterialDatePicker<Long> datePicker;
+    private FragmentManager fragmentManager;
     private final BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
     private final LinearLayoutCompat bottomSheetContainer;
 
@@ -72,6 +71,13 @@ public class BottomSheetManager {
         lifecycleOwner = fragment.getViewLifecycleOwner();
         context = fragment.requireContext();
         navController = NavHostFragment.findNavController(fragment);
+
+        datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(R.string.select_date)
+                .build();
+        datePicker.addOnPositiveButtonClickListener(o -> normalBottomSheetViewModel.setDate(Instant.ofEpochMilli(o).atZone(ZoneId.of("UTC")).toLocalDate()));
+
+        fragmentManager = fragment.getParentFragmentManager();
 
         this.bottomSheetContainer = bottomSheetContainer;
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer);
@@ -97,13 +103,11 @@ public class BottomSheetManager {
     private void initNormalBottomSheet() {
         normalBottomSheet = new NormalBottomSheet(context);
 
-        normalBottomSheet.getBottomSheet().findViewById(R.id.date_left_bt).setOnClickListener(view -> {
-            normalBottomSheetViewModel.setToLastDate();
-        });
+        normalBottomSheet.getBottomSheet().findViewById(R.id.date_left_bt).setOnClickListener(view -> normalBottomSheetViewModel.setToLastDate());
 
-        normalBottomSheet.getBottomSheet().findViewById(R.id.date_right_bt).setOnClickListener(view -> {
-            normalBottomSheetViewModel.setToNextDate();
-        });
+        normalBottomSheet.getBottomSheet().findViewById(R.id.date_right_bt).setOnClickListener(view -> normalBottomSheetViewModel.setToNextDate());
+
+        normalBottomSheet.getBottomSheet().findViewById(R.id.date_picker_layout).setOnClickListener(view -> datePicker.show(fragmentManager, "date_picker"));
 
         normalBottomSheetViewModel.selectedDate.observe(lifecycleOwner, selectedDate -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMMM dd, yyyy");
@@ -172,8 +176,6 @@ public class BottomSheetManager {
     private void setBottomSheet(BottomSheet bottomSheet) {
         bottomSheetContainer.removeAllViews();
         bottomSheetContainer.addView(bottomSheet.getBottomSheet(), MATCH_PARENT, MATCH_PARENT);
-
-        this.bottomSheet = bottomSheet;
     }
 
     private void setAndExtendBottomSheet(BottomSheet bottomSheet) {

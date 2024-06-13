@@ -28,23 +28,33 @@
             android:background="@drawable/baseline_keyboard_arrow_left_24"
             android:contentDescription="@string/last_date_button" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/component_margin_small"
-            android:text="Mon, March 14, 2024"
-            android:textAlignment="center"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            android:id="@+id/date_tv"/>
+            android:id="@+id/date_picker_layout"
+            android:background="@drawable/ripple"
+            android:clickable="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/component_margin_small"
+                android:text="Mon, March 14, 2024"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:id="@+id/date_tv"/>
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginEnd="@dimen/component_margin_small"
-            android:background="@drawable/baseline_arrow_drop_down_24"
-            android:contentDescription="@string/date_picker_button" />
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/component_margin_small"
+                android:background="@drawable/baseline_arrow_drop_down_24"
+                android:contentDescription="@string/date_picker_button"
+                />
+        </LinearLayout>
+
 
         <ImageButton
             android:id="@+id/date_right_bt"
