@@ -1,9 +1,16 @@
 from functools import cache
 from types import NoneType, UnionType
-from typing import Any, Sequence, TypeVar, TypedDict, get_origin, get_args
+from typing import (
+    Any,
+    Sequence,
+    TypeVar,
+    get_origin,
+    get_args,
+)
+from typing_extensions import TypedDict
 from collections import defaultdict
 
-from pydantic import BaseModel, Field, TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 from pydantic.fields import FieldInfo
 from rdflib import URIRef
 from rdflib.paths import Path
@@ -14,17 +21,28 @@ class RDFFieldMetadata(TypedDict):
     path: URIRef | Path
 
 
+setattr(
+    RDFFieldMetadata, "__pydantic_config__", ConfigDict(arbitrary_types_allowed=True)
+)
+
+
 class RDFEntity(BaseModel):
     IRI: str
 
     @classmethod
     @cache
-    def get_rdf_fields(self):
-        return {
-            k: (v, RDFFieldMetadata(v.json_schema_extra))
-            for k, v in self.model_fields.items()
-            if k != "IRI"
-        }
+    def get_rdf_fields(cls):
+        adapter = TypeAdapter(RDFFieldMetadata)
+        fields: dict[str, tuple[FieldInfo, RDFFieldMetadata]] = dict()
+        for field, info in cls.model_fields.items():
+            if field == "IRI":
+                continue
+            try:
+                rdf_metadata = adapter.validate_python(info.json_schema_extra)
+            except:
+                continue
+            fields[field] = (info, rdf_metadata)
+        return fields
 
 
 def RDFField(
@@ -35,22 +53,6 @@ def RDFField(
 
 
 T = TypeVar("T", bound=RDFEntity)
-
-
-def issubclass_of_rdf_entity(annotation: type[Any]):
-    if get_origin(annotation) is UnionType:
-        args = get_args(annotation)
-        try:
-            return any(
-                issubclass(arg, RDFEntity) for arg in args if arg is not NoneType
-            )
-        except:
-            return False
-    else:
-        try:
-            return issubclass(annotation, RDFEntity)
-        except:
-            return False
 
 
 def unpack_optional_type(annotation: type[Any]):
@@ -144,7 +146,4 @@ WHERE {{
         return [iri2model.get(iri) for iri in iris]
 
     def getOne(self, T: type[T], iri: str):
-        models = self.getMany(T, [iri])
-        if models:
-            return models[0]
-        return None
+        return self.getMany(T, [iri])[0]
