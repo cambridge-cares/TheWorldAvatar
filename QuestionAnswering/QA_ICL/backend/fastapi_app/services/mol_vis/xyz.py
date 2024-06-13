@@ -1,4 +1,3 @@
-
 from functools import cache, lru_cache
 from typing import Annotated
 
@@ -6,12 +5,12 @@ from fastapi import Depends
 from pydantic import TypeAdapter
 
 from model.mol_vis import MoleculeGeometry
-from services.kg import KgClient, get_ontospecies_bgClient
+from services.sparql import SparqlClient, get_ontospecies_endpoint
 
 
 class XYZManager:
-    def __init__(self, bg_client: KgClient):
-        self.bg_client = bg_client
+    def __init__(self, ontospecies_endpoint: str):
+        self.sparql_client = SparqlClient(ontospecies_endpoint)
         self.geom_adapter = TypeAdapter(MoleculeGeometry)
 
     @lru_cache(maxsize=128)
@@ -29,7 +28,7 @@ WHERE {{
         os:hasZCoordinate/os:value ?z
     ] .
 }}"""
-        _, bindings = self.bg_client.querySelectThenFlatten(query)
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
 
         if not bindings:
             return None
@@ -41,5 +40,5 @@ WHERE {{
 
 
 @cache
-def get_xyz_manager(bg_client: Annotated[KgClient, Depends(get_ontospecies_bgClient)]):
-    return XYZManager(bg_client=bg_client)
+def get_xyz_manager(endpoint: Annotated[SparqlClient, Depends(get_ontospecies_endpoint)]):
+    return XYZManager(ontospecies_endpoint=endpoint)

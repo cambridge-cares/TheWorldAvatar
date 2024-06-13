@@ -1,7 +1,7 @@
 from rdflib.namespace import RDFS
 
 from constants.namespace import ONTOSPECIES
-from rdf_orm import RDFEntity, RDFField
+from model.rdf_orm import RDFEntity, RDFField
 
 
 class OntospeciesHasValueHasUnit(RDFEntity):

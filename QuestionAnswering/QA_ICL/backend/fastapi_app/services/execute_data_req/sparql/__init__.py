@@ -7,12 +7,12 @@ from fastapi import Depends
 from constants.prefixes import PREFIX_NAME2URI, TWA_ABOX_PREFIXES
 from model.nlq2datareq import SparqlDataReqForm
 from model.qa import DataItem, DocumentCollection, TableData
-from services.kg import KgClient
+from services.sparql import SparqlClient
 from utils.collections import FrozenDict
 from utils.json import deep_pd_json_normalize_list
 from utils.rdf import filter_deep_remove_iris_from_list
 from .process_query import SparqlQueryProcessor, get_sparqlQuery_processor
-from .kg import get_ns2kg
+from .endpoints import get_ns2endpoint
 from .transform_response import (
     SparqlResponseTransformer,
     get_sparqlRes_transformer,
@@ -33,11 +33,11 @@ class SparqlDataReqExecutor:
 
     def __init__(
         self,
-        ns2kg: dict[str, KgClient],
+        ns2endpoint: dict[str, str],
         query_processor: SparqlQueryProcessor,
         response_processor: SparqlResponseTransformer,
     ):
-        self.ns2kg = ns2kg
+        self.ns2kg = {ns: SparqlClient(endpoint) for ns, endpoint in ns2endpoint.items()}
         self.query_processor = query_processor
         self.response_processor = response_processor
 
@@ -60,7 +60,9 @@ class SparqlDataReqExecutor:
         logger.info(
             "Executing query at: " + self.ns2kg[req_form.namespace].sparql.endpoint
         )
-        vars, bindings = self.ns2kg[req_form.namespace].querySelectThenFlatten(prefixed_query)
+        vars, bindings = self.ns2kg[req_form.namespace].querySelectThenFlatten(
+            prefixed_query
+        )
 
         logger.info("Transforming SPARQL response to documents...")
         docs = self.response_processor.transform(
@@ -70,7 +72,9 @@ class SparqlDataReqExecutor:
         logger.info("Done")
 
         logger.info("Linearising documents into a table...")
-        docs_no_iris = filter_deep_remove_iris_from_list(lst=docs, iri_prefixes=TWA_ABOX_PREFIXES)
+        docs_no_iris = filter_deep_remove_iris_from_list(
+            lst=docs, iri_prefixes=TWA_ABOX_PREFIXES
+        )
         flattened_docs = deep_pd_json_normalize_list(docs_no_iris)
         table_data = TableData.from_data(flattened_docs)
         logger.info("Done")
@@ -82,7 +86,7 @@ class SparqlDataReqExecutor:
 
 @cache
 def get_sparqlReq_executor(
-    ns2kg: Annotated[FrozenDict[str, KgClient], Depends(get_ns2kg)],
+    ns2endpoint: Annotated[FrozenDict[str, str], Depends(get_ns2endpoint)],
     query_processor: Annotated[
         SparqlQueryProcessor, Depends(get_sparqlQuery_processor)
     ],
@@ -91,7 +95,7 @@ def get_sparqlReq_executor(
     ],
 ):
     return SparqlDataReqExecutor(
-        ns2kg=ns2kg,
+        ns2endpoint=ns2endpoint,
         query_processor=query_processor,
         response_processor=response_processor,
     )

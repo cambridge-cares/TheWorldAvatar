@@ -5,14 +5,14 @@ from fastapi import Depends
 from pydantic import TypeAdapter
 
 from model.mol_vis import AtomFracCoords, CrystalInfo, UnitCellParams
-from services.kg import KgClient, get_ontozeolite_bgClient
+from services.sparql import SparqlClient, get_ontozeolite_endpoint
 
 
 class CIFManager:
     ATOM_SITE_LABEL_MAPPINGS = {"T": "Si", "Hfix": "H", "HO": "O"}
 
-    def __init__(self, bg_client: KgClient):
-        self.bg_client = bg_client
+    def __init__(self, ontozeolite_endpoint: str):
+        self.sparql_client = SparqlClient(ontozeolite_endpoint)
         self.unit_cell_adapter = TypeAdapter(UnitCellParams)
         self.atoms_adapter = TypeAdapter(list[AtomFracCoords])
 
@@ -52,7 +52,7 @@ WHERE {{
         ]
     ] .
 }}"""
-        _, bindings = self.bg_client.querySelectThenFlatten(query)
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
         if not bindings:
             return None
 
@@ -81,7 +81,7 @@ WHERE {{
         ?AtomSite ocr:hasAtomSiteLabel ?symbol .
     }}
 }}"""
-        _, bindings = self.bg_client.querySelectThenFlatten(query)
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
         atoms = self.atoms_adapter.validate_python(bindings)
         for atom in atoms:
             atom.symbol = self._process_atom_site_label(atom.symbol)
@@ -91,5 +91,5 @@ WHERE {{
 
 
 @cache
-def get_cif_manager(bg_client: Annotated[KgClient, Depends(get_ontozeolite_bgClient)]):
-    return CIFManager(bg_client=bg_client)
+def get_cif_manager(endpoint: Annotated[str, Depends(get_ontozeolite_endpoint)]):
+    return CIFManager(ontozeolite_endpoint=endpoint)
