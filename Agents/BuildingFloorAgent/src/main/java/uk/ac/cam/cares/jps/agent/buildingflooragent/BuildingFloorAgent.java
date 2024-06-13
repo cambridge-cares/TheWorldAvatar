@@ -1,27 +1,26 @@
 package uk.ac.cam.cares.jps.agent.buildingflooragent;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import com.cmclinnovations.stack.clients.ontop.OntopClient;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
-import java.io.FileReader;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.JSONArray;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+import org.springframework.core.io.ClassPathResource;
+
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 @WebServlet(urlPatterns = { "/floors", "/floorswithodba" })
 public class BuildingFloorAgent extends JPSAgent {
-
+    private static final Logger LOGGER = LogManager.getLogger(BuildingFloorAgent.class);
     private EndpointConfig endpointConfig = new EndpointConfig();
 
     private String dbName;
@@ -33,7 +32,9 @@ public class BuildingFloorAgent extends JPSAgent {
     private String osmPoint;
     private String osmPolygon;
     private String ontopUrl;
+    private RemoteRDBStoreClient postgisClient;
 
+    @Override
     public synchronized void init() {
         this.dbName = endpointConfig.getDbName();
         this.dbUrl = endpointConfig.getDbUrl(dbName);
@@ -44,6 +45,7 @@ public class BuildingFloorAgent extends JPSAgent {
         this.osmPoint = endpointConfig.getOSMPoints();
         this.osmPolygon = endpointConfig.getOSMPolygons();
         this.ontopUrl = endpointConfig.getOntopUrl();
+        postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
     }
 
     @Override
@@ -54,34 +56,36 @@ public class BuildingFloorAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
-        try {
+        // integrate floors data: 1. query osm address 2. match address from HDB csv 3.
+        // store floors data
+        IntegrateFloors integrateFloors = new IntegrateFloors(ontopUrl);
 
-            // integrate floors data: 1. query osm address 2. match address from HDB csv 3.
-            // store floors data
-            IntegrateFloors integrateFloors = new IntegrateFloors(dbUrl, dbUser, dbPassword, osmSchema, osmPoint,
-                    osmPolygon, ontopUrl);
-            integrateFloors.addFloorCatColumn();
-            integrateFloors.matchAddress(floorsCsv);
-            integrateFloors.importFloorData();
+        try (Connection conn = postgisClient.getConnection()) {
+            LOGGER.info("Querying OSM building data");
+            integrateFloors.setOSMBuildings();
+            integrateFloors.addFloorCatColumn(conn);
 
-            // Upload Ontop mapping
-            if (requestParams.getString("requestUrl").contains("withodba")) {
-                try {
-                    String odbaFile = "/resources/buildingfloor.odba";
-                    Path odbaPath = Paths.get(odbaFile);
-                    OntopClient ontopClient = OntopClient.getInstance();
-                    ontopClient.updateOBDA(odbaPath);
-                } catch (Exception e) {
-                    System.out.println("Could not retrieve buildingfloor .obda file.");
-                }
+            LOGGER.info("Updating floor data based on CSV input");
+            integrateFloors.matchAddress(floorsCsv, conn);
+
+            LOGGER.info("Updating floor data based on OSM and rough estimate");
+            integrateFloors.importFloorData(conn);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Upload Ontop mapping
+        if (requestParams.getString("requestUrl").contains("withodba")) {
+            Path obdaPath;
+            try {
+                obdaPath = new ClassPathResource("buildingfloor.obda").getFile().toPath();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
+            OntopClient ontopClient = OntopClient.getInstance();
+            ontopClient.updateOBDA(obdaPath);
         }
 
         return requestParams;
     }
-
 }
