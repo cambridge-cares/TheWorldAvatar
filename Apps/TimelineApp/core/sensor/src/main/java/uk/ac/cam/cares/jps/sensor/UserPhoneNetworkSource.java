@@ -44,7 +44,9 @@ public class UserPhoneNetworkSource {
 
             requestQueue.add(request);
         } catch (JSONException e) {
+            LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
+//            errorListener.onErrorResponse(new VolleyError(e.getMessage()));
         }
 
     }

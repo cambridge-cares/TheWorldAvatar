@@ -34,6 +34,7 @@ public class TrajectoryViewModel extends ViewModel {
             public void onSuccess(String result) {
                 _trajectory.postValue(result);
                 _isFetchingTrajectory.postValue(false);
+                _trajectoryError.postValue(null);
             }
 
             @Override

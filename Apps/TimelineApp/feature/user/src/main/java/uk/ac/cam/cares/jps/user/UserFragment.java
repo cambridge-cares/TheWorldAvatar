@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import org.apache.log4j.Logger;
@@ -30,6 +29,11 @@ public class UserFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        accountViewModel.shouldShowSessionExpired.observe(getViewLifecycleOwner(), hasExpired -> {
+            if (hasExpired) {
+                accountViewModel.getSessionExpiredDialog(this).show();
+            }
+        });
 
         binding = FragmentUserPageBinding.inflate(inflater);
         binding.setLifecycleOwner(this);

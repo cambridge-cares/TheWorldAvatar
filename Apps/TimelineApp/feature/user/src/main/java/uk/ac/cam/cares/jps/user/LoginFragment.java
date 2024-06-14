@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.databinding.FragmentLoginBinding;
+import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.LoginViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
@@ -40,8 +41,9 @@ public class LoginFragment extends Fragment {
     private static final Logger LOGGER = LogManager.getLogger(LoginFragment.class);
 
     private FragmentLoginBinding binding;
-    private LoginViewModel viewModel;
+    private LoginViewModel loginViewModel;
     private SensorViewModel sensorViewModel;
+    private AccountViewModel accountViewModel;
 
     private ActivityResultLauncher<Intent> authorizationLauncher;
 
@@ -50,7 +52,7 @@ public class LoginFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         BasicConfigurator.configure();
         binding = FragmentLoginBinding.inflate(inflater);
-        viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             private boolean doubleBackToExitPressedOnce;
@@ -76,15 +78,15 @@ public class LoginFragment extends Fragment {
                         Toast.makeText(requireContext(), R.string.login_canceled, Toast.LENGTH_SHORT).show();
                     } else {
                         showLoading();
-                        viewModel.processAuthorizationResponse(result.getData());
+                        loginViewModel.processAuthorizationResponse(result.getData());
                     }
                 }
         );
 
-        viewModel.getHasLogin().observe(getViewLifecycleOwner(), hasLogin -> {
+        loginViewModel.getHasLogin().observe(getViewLifecycleOwner(), hasLogin -> {
             hideLoading();
             if (hasLogin) {
-                initSensorViewModel();
+                initLoginDependentViewModel();
                 sensorViewModel.registerPhoneToUser();
 
                 NavDeepLinkRequest request = NavDeepLinkRequest.Builder
@@ -96,8 +98,8 @@ public class LoginFragment extends Fragment {
 
 //        viewModel.getToastErrorMessage().observe(getViewLifecycleOwner(), errorMsgId -> Toast.makeText(requireContext(), errorMsgId, Toast.LENGTH_SHORT).show());
 
-        binding.signInOrUpButton.setOnClickListener(bt -> viewModel.doAuth());
-        viewModel.getLoginIntent().observe(getViewLifecycleOwner(), intent -> {
+        binding.signInOrUpButton.setOnClickListener(bt -> loginViewModel.doAuth());
+        loginViewModel.getLoginIntent().observe(getViewLifecycleOwner(), intent -> {
             if (intent != null) {
                 authorizationLauncher.launch(intent);
             }
@@ -113,19 +115,19 @@ public class LoginFragment extends Fragment {
         }
 
 
-        viewModel.initAuth();
+        loginViewModel.initAuth();
         return binding.getRoot();
     }
 
-    private void initSensorViewModel() {
-        // SensorViewModel can only be init after login
+    private void initLoginDependentViewModel() {
+        // SensorViewModel and AccountViewModel can only be init after login
         sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
+        accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
 
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasAccountError -> {
-            NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                    .fromUri(Uri.parse(requireContext().getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
-                    .build();
-            NavHostFragment.findNavController(this).navigate(request);
+            if (hasAccountError) {
+                accountViewModel.getSessionExpiredDialog(this).show();
+            }
         });
     }
 

@@ -1,10 +1,10 @@
 package uk.ac.cam.cares.jps.login;
 
-import static uk.ac.cam.cares.jps.login.LoginErrorMessage.CONNECTION_ERROR;
-import static uk.ac.cam.cares.jps.login.LoginErrorMessage.LOGIN_FAILURE;
-import static uk.ac.cam.cares.jps.login.LoginErrorMessage.NO_UER_INFO_RETRIEVED;
-import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SKEW_SYSTEM_CLOCK;
-import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SESSION_EXPIRED;
+import static uk.ac.cam.cares.jps.login.AccountException.CONNECTION_ERROR;
+import static uk.ac.cam.cares.jps.login.AccountException.LOGIN_FAILURE;
+import static uk.ac.cam.cares.jps.login.AccountException.NO_UER_INFO_RETRIEVED;
+import static uk.ac.cam.cares.jps.login.AccountException.SKEW_SYSTEM_CLOCK;
+import static uk.ac.cam.cares.jps.login.AccountException.SESSION_EXPIRED;
 
 import android.content.Context;
 import android.content.Intent;
@@ -72,7 +72,7 @@ public class LoginSource {
         public void onFetchConfigurationCompleted(@Nullable AuthorizationServiceConfiguration config, @Nullable AuthorizationException ex) {
             if (config == null) {
                 LOGGER.error("Failed to retrieve discovery document", ex);
-                callback.onFailure(new Throwable(CONNECTION_ERROR));
+                callback.onFailure(new AccountException(CONNECTION_ERROR));
                 return;
             }
 
@@ -219,12 +219,12 @@ public class LoginSource {
                         authException.getCause().getMessage().matches("Issued at time is more than \\d+ minutes before or after the current time") &&
                         authException.code == 9) {
                     // ID Token expired
-                    repositoryCallback.onFailure(new Throwable(SKEW_SYSTEM_CLOCK));
+                    repositoryCallback.onFailure(new AccountException(SKEW_SYSTEM_CLOCK));
                     return;
                 }
 
                 // other reasons
-                repositoryCallback.onFailure(new Throwable(LOGIN_FAILURE));
+                repositoryCallback.onFailure(new AccountException(LOGIN_FAILURE));
             } else {
                 repositoryCallback.onSuccess(true);
             }
@@ -259,7 +259,7 @@ public class LoginSource {
         AuthState.AuthStateAction getUserInfoAction = (accessToken, idToken, ex) -> {
             if (ex != null) {
                 LOGGER.warn("Failed to refresh access token. Reauthorization is needed.");
-                callback.onFailure(new Throwable(SESSION_EXPIRED));
+                callback.onFailure(new AccountException(SESSION_EXPIRED));
             }
 
             String userInfoEndpoint = getUserInfoEndPoint();
@@ -277,7 +277,7 @@ public class LoginSource {
                     },
                     error -> {
                         LOGGER.warn(NO_UER_INFO_RETRIEVED);
-                        callback.onFailure(new Throwable(NO_UER_INFO_RETRIEVED));
+                        callback.onFailure(new AccountException(NO_UER_INFO_RETRIEVED));
                     }) {
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<>();

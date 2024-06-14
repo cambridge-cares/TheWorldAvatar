@@ -1,12 +1,10 @@
 package uk.ac.cam.cares.jps.user;
 
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,9 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -31,6 +27,7 @@ import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.databinding.FragmentSensorSettingBinding;
+import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
 @AndroidEntryPoint
@@ -38,6 +35,7 @@ public class SensorSettingFragment extends Fragment {
 
     private FragmentSensorSettingBinding binding;
     private SensorViewModel sensorViewModel;
+    private AccountViewModel accountViewModel;
     private Map<Permission.PermissionType, Permission> permissionsMap = new HashMap<>();
     private List<Permission.PermissionType> criticalPermissionType = Arrays.asList(Permission.PermissionType.LOCATION_FINE, Permission.PermissionType.AUDIO);
 
@@ -46,15 +44,12 @@ public class SensorSettingFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentSensorSettingBinding.inflate(inflater);
         sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
+        accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasAccountError -> {
             if (!hasAccountError) {
                 return;
             }
-
-            NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                    .fromUri(Uri.parse(requireContext().getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
-                    .build();
-            NavHostFragment.findNavController(this).navigate(request);
+            accountViewModel.getSessionExpiredDialog(this).show();
         });
         initPermissions();
 

@@ -1,13 +1,16 @@
 package uk.ac.cam.cares.jps.sensor;
 
-import uk.ac.cam.cares.jps.login.AccountException;
 import uk.ac.cam.cares.jps.login.LoginRepository;
-import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.login.User;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 public class SensorCollectionStateManagerRepository {
     LoginRepository loginRepository;
     SensorCollectionStateManager sensorCollectionStateManager;
+
+    private interface FunctionRunWithSensorCollectionState<E> {
+        E get() throws SensorCollectionStateException;
+    }
 
     public SensorCollectionStateManagerRepository(
             SensorCollectionStateManager sensorCollectionStateManager,
@@ -16,7 +19,7 @@ public class SensorCollectionStateManagerRepository {
         this.sensorCollectionStateManager = sensorCollectionStateManager;
     }
 
-    private void checkOrInitSensorCollectionStateManagerWithLoginInfo() {
+    private <T> void checkOrInitSensorCollectionStateManagerWithLoginInfo(RepositoryCallback<T> callback, FunctionRunWithSensorCollectionState<T> function) {
         if (sensorCollectionStateManager.getSensorCollectionState() != null) {
             return;
         }
@@ -25,41 +28,31 @@ public class SensorCollectionStateManagerRepository {
             @Override
             public void onSuccess(User result) {
                 sensorCollectionStateManager.initSensorCollectionState(result.getId());
+                try {
+                    callback.onSuccess(function.get());
+                } catch (SensorCollectionStateException e) {
+                    callback.onFailure(e);
+                }
             }
 
             @Override
             public void onFailure(Throwable error) {
-                // todo
+                callback.onFailure(error);
             }
         });
 
     }
 
     public void getUserId(RepositoryCallback<String> callback) {
-        try {
-            checkOrInitSensorCollectionStateManagerWithLoginInfo();
-            callback.onSuccess(sensorCollectionStateManager.getUserId());
-        } catch (AccountException e) {
-            callback.onFailure(e);
-        }
+        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, (FunctionRunWithSensorCollectionState<String>) () -> sensorCollectionStateManager.getUserId());
     }
 
     public void getDeviceId(RepositoryCallback<String> callback) {
-        try {
-            checkOrInitSensorCollectionStateManagerWithLoginInfo();
-            callback.onSuccess(sensorCollectionStateManager.getDeviceId());
-        } catch (AccountException e) {
-            callback.onFailure(e);
-        }
+        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, (FunctionRunWithSensorCollectionState<String>) () -> sensorCollectionStateManager.getDeviceId());
     }
 
     public void getRecordingStatus(RepositoryCallback<Boolean> callback) {
-        try {
-            checkOrInitSensorCollectionStateManagerWithLoginInfo();
-            callback.onSuccess(sensorCollectionStateManager.getRecordingState());
-        } catch (AccountException e) {
-            callback.onFailure(e);
-        }
+        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, (FunctionRunWithSensorCollectionState<Boolean>) () -> sensorCollectionStateManager.getRecordingState());
     }
 
     public void setRecordingState(boolean isRecording) {

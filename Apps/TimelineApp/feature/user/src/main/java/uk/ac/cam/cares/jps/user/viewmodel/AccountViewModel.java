@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.user.viewmodel;
 
-import static uk.ac.cam.cares.jps.login.LoginErrorMessage.NO_UER_INFO_RETRIEVED;
-import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SESSION_EXPIRED;
+import static uk.ac.cam.cares.jps.login.AccountException.NO_UER_INFO_RETRIEVED;
+import static uk.ac.cam.cares.jps.login.AccountException.SESSION_EXPIRED;
 
 import android.content.Intent;
 
@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.apache.log4j.Logger;
 
@@ -76,6 +78,10 @@ public class AccountViewModel extends ViewModel {
 
     public void logout() {
         logoutLauncher.launch(loginRepository.getLogOutIntent());
+    }
+
+    public MaterialAlertDialogBuilder getSessionExpiredDialog(Fragment fragment) {
+        return loginRepository.getSessionExpiredDialog(fragment);
     }
 
 }

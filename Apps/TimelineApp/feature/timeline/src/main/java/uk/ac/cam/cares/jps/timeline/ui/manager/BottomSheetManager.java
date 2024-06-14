@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.timeline.ui.manager;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.View;
 import android.widget.TextView;
 
@@ -13,11 +12,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.apache.log4j.Logger;
 
@@ -29,6 +28,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.ac.cam.cares.jps.login.AccountException;
+import uk.ac.cam.cares.jps.sensor.SensorCollectionStateException;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;
@@ -61,6 +62,7 @@ public class BottomSheetManager {
 
     private NormalBottomSheet normalBottomSheet;
     private ErrorBottomSheet errorBottomSheet;
+    private final MaterialAlertDialogBuilder sessionExpiredDialog;
 
     public BottomSheetManager(Fragment fragment, LinearLayoutCompat bottomSheetContainer) {
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
@@ -78,6 +80,7 @@ public class BottomSheetManager {
         datePicker.addOnPositiveButtonClickListener(o -> normalBottomSheetViewModel.setDate(Instant.ofEpochMilli(o).atZone(ZoneId.of("UTC")).toLocalDate()));
 
         fragmentManager = fragment.getParentFragmentManager();
+        sessionExpiredDialog = userPhoneViewModel.getSessionExpiredDialog(fragment);
 
         this.bottomSheetContainer = bottomSheetContainer;
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer);
@@ -148,23 +151,27 @@ public class BottomSheetManager {
 
         errorBottomSheet = new ErrorBottomSheet(context, errorHandler);
 
-        userPhoneViewModel.getHasAccountError().observe(lifecycleOwner, hasAccountError -> {
-            if (hasAccountError) {
-                // todo: login again?
-                NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                        .fromUri(Uri.parse(context.getString(uk.ac.cam.cares.jps.utils.R.string.login_fragment_link)))
-                        .build();
-                navController.navigate(request);
-            } else {
-                // retry getting trajectory
-                LOGGER.info("Phone register, retrying to get trajectory");
-                connectionViewModel.checkNetworkConnection();
+        userPhoneViewModel.getError().observe(lifecycleOwner, error -> {
+            if (error == null) {
+                return;
+            }
+
+            if (error instanceof AccountException) {
+                // session expired
+                sessionExpiredDialog.show();
+            } else if (error instanceof SensorCollectionStateException) {
+                // retry getting user id, device id and registration
+                errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR);
             }
         });
 
         trajectoryViewModel.trajectoryError.observe(lifecycleOwner, error -> {
-            if (error.getMessage() != null &&
-                    error.getMessage().equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user))) {
+            if (error == null) {
+                return;
+            }
+
+            if (error instanceof AccountException) {
+                // retry register phone to user
                 errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR);
             } else {
                 errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.TRAJECTORY_ERROR);

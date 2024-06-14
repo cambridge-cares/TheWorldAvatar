@@ -1,8 +1,8 @@
 package uk.ac.cam.cares.jps.user.viewmodel;
 
-import static uk.ac.cam.cares.jps.login.LoginErrorMessage.CONNECTION_ERROR;
-import static uk.ac.cam.cares.jps.login.LoginErrorMessage.LOGIN_FAILURE;
-import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SKEW_SYSTEM_CLOCK;
+import static uk.ac.cam.cares.jps.login.AccountException.CONNECTION_ERROR;
+import static uk.ac.cam.cares.jps.login.AccountException.LOGIN_FAILURE;
+import static uk.ac.cam.cares.jps.login.AccountException.SKEW_SYSTEM_CLOCK;
 
 import android.content.Intent;
 

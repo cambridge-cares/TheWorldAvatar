@@ -44,6 +44,7 @@ public class SensorCollectionStateManager {
         }
 
         String deviceId = UUID.randomUUID().toString();
+//        String deviceId = "cf827094-3e1b-48a8-b130-737be4dcce59";
         boolean recordingState = false;
         // todo: check this sync block
         sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState));
@@ -79,9 +80,9 @@ public class SensorCollectionStateManager {
         }
     }
 
-    public boolean getRecordingState() throws AccountException {
+    public boolean getRecordingState() throws SensorCollectionStateException {
         if (sensorCollectionState.get() == null) {
-            throw new AccountException("SensorCollectionState is null. Need to reinitialize with userId.");
+            throw new SensorCollectionStateException("SensorCollectionState is null. Need to reinitialize with userId.");
         }
 
         return sensorCollectionState.get().getRecordingState();
@@ -97,17 +98,17 @@ public class SensorCollectionStateManager {
                 .apply();
     }
 
-    public String getDeviceId() throws AccountException {
+    public String getDeviceId() throws SensorCollectionStateException {
         if (sensorCollectionState.get() == null) {
-            throw new AccountException("SensorCollectionState is null. Need to reinitialize with userId.");
+            throw new SensorCollectionStateException("SensorCollectionState is null. Need to reinitialize with userId.");
         }
 
         return sensorCollectionState.get().getDeviceId();
     }
 
-    public String getUserId() throws AccountException {
+    public String getUserId() throws SensorCollectionStateException {
         if (sensorCollectionState.get() == null) {
-            throw new AccountException("SensorCollectionState is null. Need to reinitialize with userId.");
+            throw new SensorCollectionStateException("SensorCollectionState is null. Need to reinitialize with userId.");
         }
 
         return sensorCollectionState.get().getUserId();

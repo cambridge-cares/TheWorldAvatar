@@ -16,4 +16,5 @@ dependencies {
     implementation project(path: ':core:ui')
     implementation project(path: ':core:model')
     implementation project(path: ':core:sensor')
+    implementation project(path: ':core:login')
 }

@@ -26,7 +26,7 @@ public class UserPhoneRepository {
                         userPhoneNetworkSource.registerAppToUser(userId,
                                 deviceId,
                                 (Response.Listener<Boolean>) aBoolean -> callback.onSuccess(true),
-                                callback::onFailure);
+                                callback::onFailure); // onFailure is not triggered
                     }
 
                     @Override

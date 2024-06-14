@@ -46,6 +46,11 @@ public class AccountSettingFragment extends Fragment {
                 Toast.makeText(requireContext(), uk.ac.cam.cares.jps.loginmodule.R.string.cancel_logout, Toast.LENGTH_SHORT).show();
             }
         });
+        accountViewModel.shouldShowSessionExpired.observe(getViewLifecycleOwner(), hasExpired -> {
+            if (hasExpired) {
+                accountViewModel.getSessionExpiredDialog(this).show();
+            }
+        });
 
         binding = FragmentAccountSettingBinding.inflate(inflater);
         binding.setLifecycleOwner(this);
