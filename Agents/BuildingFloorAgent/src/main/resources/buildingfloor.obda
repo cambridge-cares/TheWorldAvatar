@@ -11,5 +11,5 @@ target		twa:Building/{building_uuid} env:hasNumberOfFloors twa:NumberOfFloors/{b
             twa:NumberOfFloors/{building_uuid} a env:FloorCat{floor_category} ;
             env:hasValue {num_floors} .
             
-source      SELECT * FROM building_floors.building_floors
+source      SELECT * FROM gfa_floors.floors
 ]]
