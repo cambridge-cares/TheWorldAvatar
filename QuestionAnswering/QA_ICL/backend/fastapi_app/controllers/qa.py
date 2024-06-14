@@ -24,7 +24,7 @@ from services.stores.qa_artifact_store import (
 from services.stores.schema_store import SchemaStore, get_schema_store
 from services.execute_data_req import DataReqExecutor, get_dataReq_executor
 from services.translate_nlq import Nlq2DataReqTranslator, get_nlq2datareq_translator
-from services.vis_data_store import VisualisationDataStore, get_visData_store
+from services.mol_vis.vis_data_store import VisualisationDataStore, get_visData_store
 
 
 logger = logging.getLogger(__name__)

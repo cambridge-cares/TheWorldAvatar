@@ -1,4 +1,5 @@
-from functools import cache, lru_cache
+from collections import defaultdict
+from functools import cache
 from typing import Annotated
 
 from fastapi import Depends
@@ -13,21 +14,24 @@ class CIFManager:
 
     def __init__(self, ontozeolite_endpoint: str):
         self.sparql_client = SparqlClient(ontozeolite_endpoint)
-        self.unit_cell_adapter = TypeAdapter(UnitCellParams)
         self.atoms_adapter = TypeAdapter(list[AtomFracCoords])
 
     def _process_atom_site_label(self, label: str):
         label = "".join(c for c in label if c.isalpha())
         return self.ATOM_SITE_LABEL_MAPPINGS.get(label, label)
 
-    @lru_cache(maxsize=128)
-    def get(self, iri: str):
-        query = f"""PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+    def get(self, iris: list[str]):
+        if not iris:
+            return [None for _ in iris]
+
+        unique_iris = list(set(iris))
+
+        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
 
-SELECT ?name ?a ?b ?c ?alpha ?beta ?gamma
+SELECT ?zeo ?name ?a ?b ?c ?alpha ?beta ?gamma
 WHERE {{
-    VALUES ?zeo {{ <{iri}> }}
+    VALUES ?zeo {{ {iris} }}
     ?zeo zeo:hasFrameworkCode|zeo:hasChemicalFormula ?name .
     ?zeo ocr:hasCrystalInformation/ocr:hasUnitCell [
         ocr:hasUnitCellLengths/ocr:hasVectorComponent [
@@ -51,21 +55,23 @@ WHERE {{
             ocr:hasComponentValue ?gamma
         ]
     ] .
-}}"""
+}}""".format(
+            iris=" ".join(f"<{iri}>" for iri in unique_iris)
+        )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        if not bindings:
-            return None
 
-        binding = bindings[0]
-        name = binding["name"]
-        unit_cell_params = self.unit_cell_adapter.validate_python(binding)
+        iri2name = {binding["zeo"]: binding["name"] for binding in bindings}
+        iri2unitcell = {
+            binding["zeo"]: UnitCellParams.model_validate(binding)
+            for binding in bindings
+        }
 
-        query = f"""PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
 
 SELECT ?x ?y ?z ?symbol
 WHERE {{
-    VALUES ?zeo {{ <{iri}> }}
+    VALUES ?zeo {{ {iris} }}
     ?zeo ocr:hasCrystalInformation/ocr:hasAtomicStructure/ocr:hasAtomSite ?AtomSite .
     ?AtomSite ocr:hasFractionalPosition/ocr:hasVectorComponent [
         ocr:hasComponentLabel "x" ; 
@@ -80,14 +86,35 @@ WHERE {{
     OPTIONAL {{
         ?AtomSite ocr:hasAtomSiteLabel ?symbol .
     }}
-}}"""
+}}""".format(
+            iris=" ".join(f"<{iri}>" for iri in unique_iris)
+        )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        atoms = self.atoms_adapter.validate_python(bindings)
-        for atom in atoms:
-            atom.symbol = self._process_atom_site_label(atom.symbol)
 
-        crystal_info = CrystalInfo(name=name, unit_cell=unit_cell_params, atoms=atoms)
-        return crystal_info.to_cif_str()
+        iri2atoms = defaultdict(list)
+        for binding in bindings:
+            atom = AtomFracCoords.model_validate(binding)
+            atom.symbol = self._process_atom_site_label(atom.symbol)
+            iri2atoms[binding["zeo"]].append(atom)
+
+        def make_cif(data: dict):
+            try:
+                return CrystalInfo.model_validate(data).to_cif_str()
+            except:
+                return None
+
+        iri2cif = {
+            iri: make_cif(
+                {
+                    "name": iri2name.get(iri),
+                    "unit_cell": iri2unitcell.get(iri),
+                    "atoms": iri2atoms[iri],
+                }
+            )
+            for iri in unique_iris
+        }
+
+        return [iri2cif.get(iri) for iri in iris]
 
 
 @cache
