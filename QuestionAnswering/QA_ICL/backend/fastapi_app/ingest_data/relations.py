@@ -6,7 +6,11 @@ from redis import Redis
 from redis.commands.search.field import VectorField
 
 from services.embed import IEmbedder, TritonEmbedder
-from services.ingest import DataIngester, InsertThenIndexArgs, load_insert_then_index_args
+from services.ingest import (
+    DataIngester,
+    InsertThenIndexArgs,
+    load_insert_then_index_args,
+)
 from services.redis import get_index_existence
 from model.rdf_schema import (
     RELATIONS_INDEX_NAME,
@@ -75,24 +79,27 @@ def make_relation_search_schema(vector_dim: int):
 
 def main(args: InsertThenIndexArgs):
     redis_client = Redis(host=args.redis_host, decode_responses=True)
-
-    if not args.drop_index and get_index_existence(
+    does_index_exist = get_index_existence(
         redis_client=redis_client, index_name=RELATIONS_INDEX_NAME
-    ):
+    )
+
+    if args.drop_index:
+        if does_index_exist:
+            print(
+                "Index {index_name} exists but will be recreated.\n".format(
+                    index_name=RELATIONS_INDEX_NAME
+                )
+            )
+            redis_client.ft(RELATIONS_INDEX_NAME).dropindex(
+                delete_documents=True
+            )
+    elif does_index_exist:
         print(
-            "Index {index_name} exists; schema descriptions have already been ingested.".format(
+            "Index {index_name} exists; graph relations have already been ingested.".format(
                 index_name=RELATIONS_INDEX_NAME
             )
         )
         return
-
-    if args.drop_index:
-        print(
-            "Index {index_name} exists but will be recreated.\n".format(
-                index_name=RELATIONS_INDEX_NAME
-            )
-        )
-        redis_client.ft(RELATIONS_INDEX_NAME).dropindex(delete_documents=True)
     else:
         print(
             "Index {index_name} does not exist.\n".format(

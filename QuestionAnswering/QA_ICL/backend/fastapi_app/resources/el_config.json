@@ -7,6 +7,13 @@
         }
     },
     {
+        "cls": "os:ElementClassification",
+        "el_config": {
+            "strategy": "fuzzy",
+            "k": 1
+        }
+    },
+    {
         "cls": "os:ChemicalClass",
         "el_config": {
             "strategy": "semantic",
