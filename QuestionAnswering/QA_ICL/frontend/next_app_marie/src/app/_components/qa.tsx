@@ -23,54 +23,26 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
   const [qaResponse, setQaResponse] = React.useState<QAResponse | undefined>(
     undefined
   )
-  const [chatAnswer, setChatAnswer] = React.useState<string | undefined>(
-    undefined
-  )
+  const [chatAbortController, setChatAbortController] = React.useState<
+    AbortController | undefined
+  >(undefined)
+  const [chatStream, setChatStream] = React.useState<
+    ReadableStreamDefaultReader<string> | undefined
+  >(undefined)
 
   const queryDataThenDisplay = async (question: string) => {
     setIsProcessing(true)
     setQaResponse(undefined)
-    setChatAnswer(undefined)
+    setChatAbortController(undefined)
+    setChatStream(undefined)
     try {
       const qaRes = await queryQa(question)
       setQaResponse(qaRes)
 
-      const textStream = await queryChat(qaRes.request_id)
-
-      const pump = ({
-        done,
-        value,
-      }: {
-        done: boolean
-        value?: string
-      }): Promise<void> => {
-        if (done) {
-          return Promise.resolve()
-        }
-
-        // TODO: Use TransformerStream to do the parsing in API call code
-        if (value) {
-          value.split('\n').forEach(line => {
-            const trimmedLine = line.trim()
-            if (trimmedLine.startsWith('data: ')) {
-              const msg = trimmedLine.substring('data: '.length)
-              try {
-                const dataChunk = JSON.parse(msg)
-                const content = dataChunk['content']
-                if (typeof content === 'string') {
-                  setChatAnswer(oldValue => (oldValue || '') + content)
-                }
-              } catch (err) {
-                console.log(
-                  'Unexpected data received from server: '.concat(msg)
-                )
-              }
-            }
-          })
-        }
-        return textStream.read().then(pump)
-      }
-      await textStream.read().then(pump)
+      const [abortController, textStreamPromise] = queryChat(qaRes.request_id)
+      setChatAbortController(abortController)
+      const textStream = await textStreamPromise
+      setChatStream(textStream)
     } catch (err) {
     } finally {
       setIsProcessing(false)
@@ -114,10 +86,11 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
         />
       </section>
       <section className='w-full md:max-w-screen-md lg:max-w-screen-lg mb-12'>
-        {(qaResponse || chatAnswer) && (
+        {(qaResponse || chatStream) && (
           <QAResponseDiv
             qaResponse={qaResponse}
-            chatAnswer={chatAnswer}
+            chatAbortController={chatAbortController}
+            chatStream={chatStream}
             className='w-full'
           />
         )}
