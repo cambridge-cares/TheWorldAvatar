@@ -25,7 +25,10 @@ def initialise_triple_store():
     with blazegraph as container:
         # It ensures that the requested Blazegraph Docker service is ready to accept SPARQL query/update
         service_available = False
-        while not service_available:
+        # timeout in 30 s
+        timeout = 30
+        start_time = time.time()
+        while not service_available and (time.time() - start_time) < timeout:
             try:
                 # Retrieve SPARQL endpoint
                 endpoint = get_endpoint(container)
@@ -34,6 +37,9 @@ def initialise_triple_store():
                     service_available = True
             except (requests.exceptions.ConnectionError, TypeError):
                 time.sleep(3)
+
+        if not service_available:
+            raise RuntimeError("Blazegraph service did not become available within the timeout period")
 
         yield endpoint
 
@@ -44,7 +50,6 @@ def initialise_triple_store():
 @pytest.fixture(scope="function")
 def initialise_sparql_client(initialise_triple_store):
     sparql_endpoint = initialise_triple_store
-    # sparql_endpoint = 'http://localhost:48082/blazegraph/namespace/pydantic/sparql'
     sparql_client = PySparqlClient(sparql_endpoint, sparql_endpoint)
     sparql_client.perform_update('delete where { ?s ?p ?o }')
     yield sparql_client
