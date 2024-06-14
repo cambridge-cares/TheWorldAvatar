@@ -34,7 +34,7 @@ export default async function VisualisationPage() {
         dataset: uiSettings.resources.scenario.data,
       }))
     } catch (error) {
-      console.error(`Error populating scenarios container`, error)
+      console.error(`Error populating scenarios selector`, error)
     }
   }
 
