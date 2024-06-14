@@ -10,9 +10,6 @@ class ProcessSparql:
   
   def __init__(self):
     self.triplecount=0
-    self.class_index = {}
-    self.graph = Graph()
-    
         
   def run_sparql_json(self,base_url, namespace, sparql_query):
     # Construct the full URL to the Blazegraph namespace
@@ -58,7 +55,7 @@ class ProcessSparql:
 if __name__ == "__main__":
   # Define the Blazegraph server's base url
   base_url = "http://localhost:8080/blazegraph"
-  namespace = "namespace_1"
+  namespace = "namespace_all"
   # sparql_query = """
   #   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
   #   PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -83,17 +80,19 @@ if __name__ == "__main__":
   sparql_query="""
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#>
+    PREFIX OntoKin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    
-    SELECT ?class
+
+    SELECT ?identifier ?atomicMass ?atomicMassUnits
     WHERE {
-        ?subject a ?class .
-        FILTER (
-            isIRI(?class) &&
-            ?class != owl:Ontology &&
-            ?class != owl:Class &&
-            ?class != owl:NamedIndividual
-            )
+        ?element1 rdf:type pt:Element .
+        BIND(STRAFTER(STR(?element1), "#") AS ?identifier)
+        ?element2 rdf:type OntoKin:Element .
+        ?element2 rdfs:label ?identifier1 .
+        ?element2 OntoKin:hasAtomicMass ?atomicMass .
+        ?element2 OntoKin:hasAtomicMassUnits ?atomicMassUnits .
+        FILTER(?identifier = ?identifier1)
     }
     """
     
@@ -116,6 +115,8 @@ if __name__ == "__main__":
         triples.append(atuple)
       
     progress_bar.close()
+    
+  print(len(triples))
   for i in range(len(triples)):
     atuple=triples[i]
     for j in range(len(atuple)):
