@@ -32,7 +32,7 @@ class DataReqExecutor:
         elif isinstance(req_form, FuncDataReqForm):
             exec_func = self.func_executor.exec
         else:
-            exec_func = lambda _: ([], None)
+            exec_func = lambda *args, **kwargs: ([], None)
 
         return exec_func(
             var2cls=var2cls,
