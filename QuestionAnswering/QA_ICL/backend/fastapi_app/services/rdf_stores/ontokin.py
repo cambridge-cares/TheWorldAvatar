@@ -22,6 +22,15 @@ from services.sparql import SparqlClient, get_ontokin_endpoint
 
 
 class OntokinRDFStore(Cls2GetterRDFStore):
+    KINETIC_MODEL_URI2CLS = {
+        ONTOKIN.ArrheniusModel: OntokinArrheniusModel,
+        ONTOKIN.PDepArrheniusModel: OntokinPDepArrheniusModel,
+        ONTOKIN.MultiArrheniusModel: OntokinMultiArrheniusModel,
+        ONTOKIN.ThreeBodyReactionModel: OntokinThreeBodyReactionModel,
+        ONTOKIN.LindemannModel: OntokinLindemannModel,
+        ONTOKIN.TroeModel: OntokinTroeModel,
+    }
+
     def __init__(self, ontokin_endpoint: str):
         self.rdf_store = RDFStore(ontokin_endpoint)
         self.sparql_client = SparqlClient(ontokin_endpoint)
@@ -57,20 +66,8 @@ WHERE {{
 
         iri2model: dict[str, OntokinKineticModel] = dict()
         for type, same_type_iris in type2iris.items():
-            type = URIRef(type)
-            if type == ONTOKIN.ArrheniusModel:
-                model_cls = OntokinArrheniusModel
-            elif type == ONTOKIN.PDepArrheniusModel:
-                model_cls = OntokinPDepArrheniusModel
-            elif type == ONTOKIN.MultiArrheniusModel:
-                model_cls = OntokinMultiArrheniusModel
-            elif type == ONTOKIN.ThreeBodyReactionModel:
-                model_cls = OntokinThreeBodyReactionModel
-            elif type == ONTOKIN.LindemannModel:
-                model_cls = OntokinLindemannModel
-            elif type == ONTOKIN.TroeModel:
-                model_cls = OntokinTroeModel
-            else:
+            model_cls = self.KINETIC_MODEL_URI2CLS.get(URIRef(type))
+            if not model_cls:
                 continue
             models = self.rdf_store.getMany(model_cls, iris=same_type_iris)
             iri2model.update({iri: model for iri, model in zip(same_type_iris, models)})
