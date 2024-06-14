@@ -12,7 +12,8 @@ const nextConfig = {
 	assetPrefix: process.env.BASE_PATH ?? "",
 	env: {
 		BASE_PATH: process.env.BASE_PATH ?? "",
-	}
+	},
+	compiler: { removeConsole: false },
 };
 
 module.exports = nextConfig;
