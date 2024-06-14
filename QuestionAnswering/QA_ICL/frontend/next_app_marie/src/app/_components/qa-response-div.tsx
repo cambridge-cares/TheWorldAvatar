@@ -160,7 +160,7 @@ export const QAResponseDataDiv = ({
 }: QAResponseDataDivProps) => (
   <div {...props}>
     <h2 className='text-xl font-semibold text-blue-500'>Retrieved data</h2>
-    <Accordion type='multiple'>
+    <Accordion type='multiple' defaultValue={qaResponseData.map((_, idx) => idx.toString())}>
       {qaResponseData
         .map((item, idx) => {
           let headerText, component
@@ -199,7 +199,7 @@ export function QAResponseDiv({
   const chatRef = React.useRef<null | HTMLDivElement>(null)
 
   React.useEffect(() => {
-    chatRef.current?.scrollIntoView()
+    chatRef.current?.scrollIntoView(false)
   }, [chatAnswer])
 
   return (
