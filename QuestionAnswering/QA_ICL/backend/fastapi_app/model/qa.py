@@ -7,7 +7,7 @@ from model.nlq2datareq import (
     DataRequest,
     Nlq2DataReqExample,
 )
-from model.rdf_schema import RDFRelation
+from model.rdf_schema import RDFProperty
 
 
 class DocumentCollection(BaseModel):
@@ -23,7 +23,7 @@ class TableDataColumn(BaseModel):
 class TableDataBase(BaseModel):
     columns: list[TableDataColumn]
     data: Sequence[
-        dict[str, str | float | Sequence[str] | Sequence[float] | TableDataBase | None]
+        dict[str, str | float | list[str] | list[float] | TableDataBase | None]
     ]
 
     @classmethod
@@ -42,12 +42,11 @@ class TableDataBase(BaseModel):
         for datum in data:
             new_kv: dict[str, cls] = dict()
             for k, v in datum.items():
-                if isinstance(v, Sequence) and all(
+                if (isinstance(v, list) or isinstance(v, tuple)) and all(
                     isinstance(elem, dict) for elem in v
                 ):
                     new_kv[k] = cls.from_data(v)
             datum.update(new_kv)
-            
         return cls(columns=cols, data=data)
 
 
@@ -112,7 +111,7 @@ class QARequest(BaseModel):
 
 class TranslationContext(BaseModel):
     examples: list[Nlq2DataReqExample]
-    schema_relations: list[RDFRelation]
+    properties: list[RDFProperty]
 
 
 class QAResponseMetadata(BaseModel):

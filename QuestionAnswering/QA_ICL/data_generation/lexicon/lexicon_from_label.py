@@ -4,13 +4,6 @@ import os
 
 from SPARQLWrapper import JSON, SPARQLWrapper
 
-def extract_name(iri: str):
-    if "#" in iri:
-        iri = iri.rsplit("#", maxsplit=1)[-1]
-    if "/" in iri:
-        iri = iri.rsplit("/", maxsplit=1)[-1]
-    return iri
-
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -19,6 +12,11 @@ if __name__ == "__main__":
         "--base_class",
         required=True,
         help="IRI of base class of classes to retrieve labels for",
+    )
+    parser.add_argument(
+        "--cls_tag",
+        required=True,
+        help="Value of class tag that will be added to each retrieve entity",
     )
     parser.add_argument(
         "--populate_surface_forms",
@@ -45,7 +43,7 @@ if __name__ == "__main__":
         if args.populate_surface_forms:
             return {
                 "iri": row["s"]["value"],
-                "clsname": extract_name(args.base_class),
+                "cls": args.cls_tag,
                 "label": row["label"]["value"],
                 "surface_forms": [row["label"]["value"]],
             }

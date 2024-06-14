@@ -4,6 +4,7 @@ from typing import Annotated, Sequence
 from fastapi import Depends
 
 from model.ontospecies import (
+    GcAtom,
     OntospeciesHasLabel,
     OntospeciesIdentifier,
     OntospeciesProperty,
@@ -23,6 +24,7 @@ class OntospeciesRDFStore(Cls2GetterRDFStore):
     def cls2getter(self):
         return {
             "pt:Element": self.get_elements,
+            "gc:Atom": self.get_atoms,
             "os:Species": self.get_species,
             "os:Property": self.get_properties,
             "os:Identifier": self.get_identifiers,
@@ -32,6 +34,9 @@ class OntospeciesRDFStore(Cls2GetterRDFStore):
 
     def get_elements(self, iris: Sequence[str]):
         return self.rdf_store.getMany(PeriodictableElement, iris)
+
+    def get_atoms(self, iris: Sequence[str]):
+        return self.rdf_store.getMany(GcAtom, iris)
 
     def get_species(self, iris: Sequence[str]):
         return self.rdf_store.getMany(OntospeciesSpecies, iris)

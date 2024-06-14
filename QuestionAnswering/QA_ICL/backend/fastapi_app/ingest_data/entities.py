@@ -76,54 +76,68 @@ def make_entity_search_schema(vector_dim: int):
 
 def main(args: InsertThenIndexArgs):
     redis_client = Redis(host=args.redis_host, decode_responses=True)
-    if get_index_existence(redis_client=redis_client, index_name=ENTITIES_INDEX_NAME):
+    does_index_exist = get_index_existence(
+        redis_client=redis_client, index_name=ENTITIES_INDEX_NAME
+    )
+
+    if args.drop_index:
+        if does_index_exist:
+            print(
+                "Index {index_name} exists but will be recreated.\n".format(
+                    index_name=ENTITIES_INDEX_NAME
+                )
+            )
+            redis_client.ft(ENTITIES_INDEX_NAME).dropindex(
+                delete_documents=True
+            )
+    elif does_index_exist:
         print(
-            "Index {index_name} exists; entities have already been ingested".format(
+            "Index {index_name} exists; entity lexicons have already been ingested.".format(
                 index_name=ENTITIES_INDEX_NAME
             )
         )
+        return
     else:
         print(
-            "Index {index_name} does not exist. Initiating ingestion...".format(
+            "Index {index_name} does not exist.\n".format(
                 index_name=ENTITIES_INDEX_NAME
             )
         )
 
-        embedder = TritonEmbedder(url=args.text_embedding_url)
+    embedder = TritonEmbedder(url=args.text_embedding_url)
+    cls2config = get_cls2config()
 
-        cls2config = get_cls2config()
-
-        def process_func(data: list[LexiconEntry]):
-            el_config = cls2config.get(data[0].cls)
-            make_embedding = (
-                True if el_config and el_config.strategy == "semantic" else False
-            )
-            return process_lexicon(
-                embedder=embedder,
-                make_embedding=make_embedding,
-                data=data,
-            )
-
-        vector_dim = len(embedder(["warmup"])[0])
-        print("Vector dimension: ", vector_dim)
-        schema = make_entity_search_schema(vector_dim=vector_dim)
-
-        ingester = DataIngester(
-            dirname=ENTITIES_DIRNAME,
-            invalidate_cache=args.invalidate_cache,
-            unprocessed_type=LexiconEntry,
-            processed_type=LexiconEntryProcessed,
-            process_func=process_func,
-            process_batchsize=ENTITIES_PROCESS_BATCHSIZE,
-            redis_client=redis_client,
-            redis_key_prefix=ENTITIES_KEY_PREFIX,
-            redis_preinsert_transform=lexicon_preinsert_transform,
-            redis_insert_batchsize=ENTITIES_INSERT_BATCHSIZE,
-            redis_index_name=ENTITIES_INDEX_NAME,
-            redis_ft_schema=schema,
+    def process_func(data: list[LexiconEntry]):
+        el_config = cls2config.get(data[0].cls)
+        make_embedding = (
+            True if el_config and el_config.strategy == "semantic" else False
         )
-        ingester.ingest()
-        print("Ingestion complete.")
+        return process_lexicon(
+            embedder=embedder,
+            make_embedding=make_embedding,
+            data=data,
+        )
+
+    vector_dim = len(embedder(["warmup"])[0])
+    print("Vector dimension: ", vector_dim)
+    schema = make_entity_search_schema(vector_dim=vector_dim)
+
+    ingester = DataIngester(
+        dirname=ENTITIES_DIRNAME,
+        invalidate_cache=args.invalidate_cache,
+        unprocessed_type=LexiconEntry,
+        processed_type=LexiconEntryProcessed,
+        process_func=process_func,
+        process_batchsize=ENTITIES_PROCESS_BATCHSIZE,
+        redis_client=redis_client,
+        redis_key_prefix=ENTITIES_KEY_PREFIX,
+        redis_preinsert_transform=lexicon_preinsert_transform,
+        redis_insert_batchsize=ENTITIES_INSERT_BATCHSIZE,
+        redis_index_name=ENTITIES_INDEX_NAME,
+        redis_ft_schema=schema,
+    )
+    ingester.ingest()
+    print("Ingestion complete.")
 
 
 if __name__ == "__main__":

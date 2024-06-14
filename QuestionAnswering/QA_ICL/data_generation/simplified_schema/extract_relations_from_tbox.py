@@ -33,7 +33,8 @@ if __name__ == "__main__":
         ]
 
     def get_relations_from_head(stype: URIRef):
-        query = f"""SELECT DISTINCT ?p ?o  WHERE {{ 
+        query = f"""SELECT DISTINCT ?p ?o 
+WHERE {{ 
     VALUES ?s {{ {stype.n3()} }}
     {{
         ?s rdfs:subClassOf* ?superclass .

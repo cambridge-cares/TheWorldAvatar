@@ -1,6 +1,6 @@
 from rdflib.namespace import RDFS
 
-from constants.namespace import ONTOSPECIES
+from constants.namespace import GC, ONTOSPECIES
 from model.rdf_orm import RDFEntity, RDFField
 
 
@@ -11,12 +11,10 @@ class PeriodictableElement(RDFEntity):
 
 class OntospeciesHasValueHasUnit(RDFEntity):
     value: str = RDFField(path=ONTOSPECIES.value)
-    unit: str = RDFField(path=ONTOSPECIES.unit / RDFS.label)
+    unit: str | None = RDFField(default=None, path=ONTOSPECIES.unit / RDFS.label)
 
 
-class OntospeciesProperty(RDFEntity):
-    value: str | float = RDFField(path=ONTOSPECIES.value)
-    unit: str | None = RDFField(default=None, path=ONTOSPECIES.unit)
+class OntospeciesProperty(OntospeciesHasValueHasUnit):
     reference_state: OntospeciesHasValueHasUnit | None = RDFField(
         default=None, path=ONTOSPECIES.hasReferenceState
     )
@@ -26,9 +24,10 @@ class OntospeciesProperty(RDFEntity):
 
 
 class GcAtom(RDFEntity):
-    x: float = RDFField(path=ONTOSPECIES.hasXCoordinate / ONTOSPECIES.value)
-    y: float = RDFField(path=ONTOSPECIES.hasYCoordinate / ONTOSPECIES.value)
-    z: float = RDFField(path=ONTOSPECIES.hasZCoordinate / ONTOSPECIES.value)
+    element: PeriodictableElement = RDFField(path=GC.isElement)
+    x: OntospeciesHasValueHasUnit = RDFField(path=ONTOSPECIES.hasXCoordinate)
+    y: OntospeciesHasValueHasUnit = RDFField(path=ONTOSPECIES.hasYCoordinate)
+    z: OntospeciesHasValueHasUnit = RDFField(path=ONTOSPECIES.hasZCoordinate)
 
 
 class OntospeciesIdentifier(RDFEntity):

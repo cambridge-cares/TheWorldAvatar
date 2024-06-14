@@ -1,4 +1,5 @@
 from functools import cache
+import json
 import logging
 from typing import Annotated
 from fastapi import Depends
@@ -16,8 +17,8 @@ logger = logging.getLogger(__name__)
 
 class Nlq2DataReqTranslator:
     SYSTEM_MSG = "You are a SPARQL expert designed to output JSON."
-    PROMPT_TEMPLATE = """### RDF schema:
-{schema}
+    PROMPT_TEMPLATE = """### Data and object properties:
+{properties}
 
 ### Examples of translating natural language questions to executable data requests:
 {examples}
@@ -52,13 +53,16 @@ Your task is to translate the following question to an executable data request. 
                 )
                 for example in translation_context.examples
             ),
-            schema="\n".join(
-                "({s})-[{p}]->({o})".format(
-                    s=try_make_prefixed_iri(rel.s),
-                    p=try_make_prefixed_iri(rel.p),
-                    o=try_make_prefixed_iri(rel.o),
-                )
-                for rel in translation_context.schema_relations
+            properties=json.dumps(
+                [
+                    {
+                        "IRI": try_make_prefixed_iri(prop.iri),
+                        "label": prop.label,
+                        "comment": prop.comment,
+                    }
+                    for prop in translation_context.properties
+                ],
+                indent=2,
             ),
             question=nlq,
         )
@@ -74,6 +78,10 @@ Your task is to translate the following question to an executable data request. 
             temperature=0,
         )
         logger.info("LLM's response: " + str(res))
+
+        if not res.choices[0].message.content:
+            # TODO: handle empty response from OpenAI
+            raise Exception()
 
         return self.datareq_adapter.validate_json(res.choices[0].message.content)
 

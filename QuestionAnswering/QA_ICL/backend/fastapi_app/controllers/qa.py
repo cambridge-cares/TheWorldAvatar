@@ -73,9 +73,9 @@ class DataSupporter:
         rewritten_query = self.nlq_rewriter.rewrite(question=query)
         logger.info("Rewritten query: " + rewritten_query)
 
-        logger.info("Retrieving schema items...")
-        schema = self.schema_store.retrieve_relations(nlq=rewritten_query, k=10)
-        logger.info("Retrieved schema items: " + str(schema))
+        logger.info("Retrieving data and object properties...")
+        properties = self.schema_store.retrieve_properties(nlq=rewritten_query, k=10)
+        logger.info("Retrieved data and object properties: " + str(properties))
 
         logger.info("Retrieving examples...")
         examples = self.nlq2datareq_example_store.retrieve_examples(
@@ -84,7 +84,7 @@ class DataSupporter:
         logger.info("Retrieved examples: " + str(examples))
 
         translation_context = TranslationContext(
-            examples=examples, schema_relations=schema
+            examples=examples, properties=properties
         )
         logger.info("Translating input question into data request...")
         # KIV: example permutation
