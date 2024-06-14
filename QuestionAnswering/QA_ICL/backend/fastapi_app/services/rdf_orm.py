@@ -32,7 +32,8 @@ class RDFStore:
 
     def getMany(self, T: type[T], iris: Sequence[str]):
         if not iris:
-            return []
+            empty_lst: list[T | None] = []
+            return empty_lst
 
         unique_iris = list(set(iris))
 
