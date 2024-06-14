@@ -2,9 +2,5 @@ version: "3.8"
 
 services:
   gfaagent:
-    image: ghcr.io/cambridge-cares/gfaagent:1.2.0-SNAPSHOT
+    image: gfaagent:2.0-hotfix-building-floor-SNAPSHOT
     build: .
-    ports:
-      - "10104:8080"
-    volumes:
-      - ./src/main/resources:/resources

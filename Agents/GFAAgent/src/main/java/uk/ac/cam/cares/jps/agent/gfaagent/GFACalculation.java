@@ -3,54 +3,52 @@ package uk.ac.cam.cares.jps.agent.gfaagent;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.jena.vocabulary.AS;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
 public class GFACalculation {
+    private RemoteStoreClient ontopClient;
 
-    private final String dbUrl;
-    private final String user;
-    private final String password;
-
-    private RemoteRDBStoreClient postgisClient;
-
-    public GFACalculation (String postgisDb, String postgisUser, String postgisPassword){
-        this.dbUrl = postgisDb;
-        this.user = postgisUser;
-        this.password = postgisPassword;
-
-        this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
+    public GFACalculation(String ontopUrl) {
+        ontopClient = new RemoteStoreClient(ontopUrl);
     }
-    
+
     /******************************************** */
     /* Calculate GFA and store in citydb.cityobject_genericattrib */
-    /**********************************************/ 
+    /**********************************************/
 
-    public void calculationGFA(){
-        String gfaSQL = "INSERT INTO citydb.cityobject_genericattrib (attrname, realval, cityobject_id)\n" +
-        "SELECT DISTINCT ON (attrname, cityobject_id) *\n" +
-            "FROM  (\n" +
-            "SELECT 'GFA',\n" +
-            "(CASE WHEN building.storeys_above_ground IS NOT NULL THEN (public.ST_Area(surface_geometry.geometry)*building.storeys_above_ground)\n" +
-                "ELSE (building.measured_height/3.2*public.ST_Area(surface_geometry.geometry)) END) AS realval, building.id\n" +
-            "FROM citydb.building, citydb.surface_geometry\n" +
-            "WHERE building.lod0_footprint_id = surface_geometry.parent_id\n" +
-            ") AS cg(attrname, realval, cityobject_id)\n" +
-        "ON CONFLICT (attrname, cityobject_id) DO UPDATE SET realval= cityobject_genericattrib.realval;";
+    public void calculationGFA(Connection conn) {
+        Map<String, Integer> iriToFloorMap = getIriToFloorMap();
 
-        try (Connection srcConn = postgisClient.getConnection()) {
-            try (Statement stmt = srcConn.createStatement()) {
-                stmt.executeUpdate(gfaSQL);
-            }
-        }catch (SQLException e) {
-            throw new JPSRuntimeException("Error connecting to source database: " + e);
-        }  
+        iriToFloorMap.entrySet().forEach(entry -> {
+            String buildingIri = entry.getKey();
+            int floor = entry.getValue();
+            GFAPostGISClient.addGFAData(buildingIri, floor, conn);
+        });
     }
 
-   
+    Map<String, Integer> getIriToFloorMap() {
+        Map<String, Integer> iriToFloorMap = new HashMap<>();
+        String query = """
+                PREFIX env: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+                SELECT ?building ?floor
+                WHERE {
+                  ?building env:hasNumberOfFloors/env:hasValue ?floor .
+                }
+                """;
 
-   
+        JSONArray queryResult = ontopClient.executeQuery(query);
+        for (int i = 0; i < queryResult.length(); i++) {
+            String building = queryResult.getJSONObject(i).getString("building");
+            int floor = queryResult.getJSONObject(i).getInt("floor");
+            iriToFloorMap.put(building, floor);
+        }
+
+        return iriToFloorMap;
+    }
+
 }
