@@ -31,11 +31,11 @@ class VisualisationDataStore:
 
     def get(self, cls: str, iris: list[str]):
         if cls == "os:Species":
-            vis_data = [self.xyz_manager.get(iri) for iri in iris]
+            vis_data = self.xyz_manager.get(iris)
             models = self.ontospecies_store.get_species(iris)
             labels = [model.label if model else None for model in models]
         elif cls in ["zeo:ZeoliteFramework", "zeo:ZeoliteMaterial"]:
-            vis_data = [self.cif_manager.get(iri) for iri in iris]
+            vis_data = self.cif_manager.get(iris)
             if cls == "zeo:ZeoliteFramework":
                 models = self.ontozeolite_store.get_zeolite_frameworks(iris)
                 labels = [model.framework_code if model else None for model in models]
