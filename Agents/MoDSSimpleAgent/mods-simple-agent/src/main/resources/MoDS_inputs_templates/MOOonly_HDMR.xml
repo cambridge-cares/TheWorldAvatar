@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mods
+    xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd"
+    xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <algorithms>
+        <algorithm name="Initial" display_name="HIDDEN">
+            <details>
+                <detail name="algorithm_type">Initial</detail>
+                <detail name="optimisable_param_subtypes"></detail>
+                <detail name="response_param_subtypes"></detail>
+                <detail name="global">false</detail>
+            </details>
+        </algorithm>
+        <algorithm name="GenSurrogateAlg" display_name="Surrogate model">
+            <details>
+                <detail name="algorithm_type">Surrogate</detail>
+                <detail name="global">false</detail>
+                <detail name="surrogate_type">HDMR</detail>
+                <detail name="fit_to_coded_responses">false</detail>
+                <detail name="order">6</detail>
+                <detail name="HDMRorder">2</detail>
+                <detail name="r_squared_tol">0.99999</detail>
+                <detail name="previous_algorithm">Initial</detail>
+            </details>
+        </algorithm>
+        <algorithm name="MOOAlg" display_name="Model [Optimised]">
+            <details>
+                <detail name="model_name">GenSurrogateAlg</detail>
+                <detail name="output_by_case">false</detail>
+                <detail name="output_values">true</detail>
+                <detail name="constrained">true</detail>
+                <detail name="pymoo:save_history">false</detail>
+                <detail name="pymoo:seed">0</detail>
+                <detail name="pymoo:verbose">false</detail>
+                <detail name="pymoo:eliminate_duplicates">true</detail>
+                <detail name="pymoo:min_infeas_pop_size">0</detail>
+                <detail name="pymoo:n_offsprings">10</detail>
+                <detail name="pymoo:pop_size">30</detail>
+                <detail name="pymoo:ref_dirs:name">energy</detail>
+                <detail name="pymoo:ref_dirs:n_points">50</detail>
+                <detail name="previous_algorithm">Initial</detail>
+                <detail name="pymoo:algorithm_type">unsga3</detail>
+                <detail name="algorithm_type">PyMOO</detail>
+            </details>
+        </algorithm>
+    </algorithms>
+    <models></models>
+    <cases></cases>
+    <files></files>
+    <parameters></parameters>
+</mods>
