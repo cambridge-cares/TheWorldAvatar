@@ -8,6 +8,7 @@ from model.ontospecies import (
     OntospeciesIdentifier,
     OntospeciesProperty,
     OntospeciesSpecies,
+    PeriodictableElement,
 )
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2GetterRDFStore
@@ -21,12 +22,16 @@ class OntospeciesRDFStore(Cls2GetterRDFStore):
     @property
     def cls2getter(self):
         return {
+            "pt:Element": self.get_elements,
             "os:Species": self.get_species,
             "os:Property": self.get_properties,
             "os:Identifier": self.get_identifiers,
             "os:ChemicalClass": self.get_has_label_models,
             "os:Use": self.get_has_label_models,
         }
+
+    def get_elements(self, iris: Sequence[str]):
+        return self.rdf_store.getMany(PeriodictableElement, iris)
 
     def get_species(self, iris: Sequence[str]):
         return self.rdf_store.getMany(OntospeciesSpecies, iris)

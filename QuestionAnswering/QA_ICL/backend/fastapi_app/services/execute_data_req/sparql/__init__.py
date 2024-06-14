@@ -4,7 +4,8 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from constants.prefixes import PREFIX_NAME2URI, TWA_ABOX_PREFIXES
+from constants.namespace import PREFIX2URI
+from constants.prefixes import TWA_ABOX_PREFIXES
 from model.nlq2datareq import SparqlDataReqForm
 from model.qa import DataItem, DocumentCollection, TableData
 from services.sparql import SparqlClient
@@ -25,7 +26,7 @@ class SparqlDataReqExecutor:
     PREFIXES = (
         "\n".join(
             "PREFIX {name}: <{uri}>".format(name=name, uri=uri)
-            for name, uri in PREFIX_NAME2URI.items()
+            for name, uri in PREFIX2URI.items()
         )
         + "\n"
     )
@@ -36,7 +37,9 @@ class SparqlDataReqExecutor:
         query_processor: SparqlQueryProcessor,
         response_processor: SparqlResponseTransformer,
     ):
-        self.ns2kg = {ns: SparqlClient(endpoint) for ns, endpoint in ns2endpoint.items()}
+        self.ns2kg = {
+            ns: SparqlClient(endpoint) for ns, endpoint in ns2endpoint.items()
+        }
         self.query_processor = query_processor
         self.response_processor = response_processor
 

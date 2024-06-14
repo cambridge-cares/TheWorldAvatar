@@ -1,7 +1,6 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import Field
-from rdflib import Literal
 from constants.namespace import ONTOCOMPCHEM, ONTOSPECIES
 from model.ontospecies import GcAtom
 from model.rdf_orm import RDFEntity, RDFField
