@@ -12,8 +12,8 @@ To begin with, you can define the ontology that hosts all concepts and relations
 ```python
 # Import relevant packages
 from __future__ import annotations
-from twa import BaseOntology, BaseClass, ObjectProperty, DataProperty, as_range
-from twa import TWA_BASE_URL
+from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DataProperty, as_range
+from twa.data_model.iris import TWA_BASE_URL
 from typing import ClassVar
 from pydantic import Field
 

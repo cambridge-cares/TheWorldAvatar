@@ -39,7 +39,7 @@ blazegraph = client.containers.run(
 #############################
 # Instantiate sparql client #
 #############################
-from twa import PySparqlClient
+from twa.kg_operations import PySparqlClient
 
 # Define the SPARQL endpoint URL for the Blazegraph instance
 sparql_endpoint = 'http://localhost:9999/blazegraph/namespace/kb/sparql'
@@ -81,8 +81,8 @@ print(results)
 #########################
 # Create a new ontology #
 #########################
-from twa import BaseOntology, BaseClass, TransitiveProperty, ObjectProperty, DataProperty, as_range
-from twa import TWA_BASE_URL
+from twa.data_model.base_ontology import BaseOntology, BaseClass, TransitiveProperty, ObjectProperty, DataProperty, as_range
+from twa.data_model.iris import TWA_BASE_URL
 from typing import ClassVar
 
 # Define a minimal agent ontology
