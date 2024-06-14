@@ -1,6 +1,10 @@
 import { ChatRequest, QARequest, QAResponse } from './model'
 
-function postJson<ReqT>(url: string | URL, json_body: ReqT) {
+function postJson<ReqT>(
+  url: string | URL,
+  json_body: ReqT,
+  init?: Omit<RequestInit, 'method' | 'headers' | 'body'>
+) {
   return fetch(url, {
     method: 'POST',
     headers: {
@@ -8,6 +12,7 @@ function postJson<ReqT>(url: string | URL, json_body: ReqT) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(json_body),
+    ...init,
   }).then(res => {
     if (!res.ok) {
       throw new Error(res.statusText)
@@ -26,11 +31,21 @@ export function queryQa(question: string) {
   )
 }
 
-export function queryChat(qa_request_id: string) {
-  return postJson<ChatRequest>(CHAT_ENDPOINT, { qa_request_id }).then(res => {
-    if (res.body === null) {
-      throw new Error('Null response body')
-    }
-    return res.body.pipeThrough(new TextDecoderStream()).getReader()
-  })
+export function queryChat(
+  qa_request_id: string
+): [AbortController, Promise<ReadableStreamDefaultReader<string>>] {
+  const abortController = new AbortController()
+  return [
+    abortController,
+    postJson<ChatRequest>(
+      CHAT_ENDPOINT,
+      { qa_request_id },
+      { signal: abortController.signal }
+    ).then(res => {
+      if (res.body === null) {
+        throw new Error('Null response body')
+      }
+      return res.body.pipeThrough(new TextDecoderStream()).getReader()
+    }),
+  ]
 }

@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { cn } from "@/lib/utils"
-import * as React from "react"
+import { cn } from '@/lib/utils'
+import * as React from 'react'
 export interface MolViewerProps extends React.HTMLAttributes<HTMLDivElement> {
-  type: "xyz" | "cif"
+  type: 'xyz' | 'cif'
   data: string
 }
 
@@ -12,9 +12,9 @@ export function MolViewer({ type, data, className, ...props }: MolViewerProps) {
 
   React.useEffect(() => {
     async function mountViewer() {
-      if ((ref.current !== null)) {
+      if (ref.current !== null) {
         // @ts-ignore
-        const $3Dmol = (await import('3dmol/build/3Dmol.js'))
+        const $3Dmol = await import('3dmol/build/3Dmol.js')
         console.log($3Dmol)
         const viewer = $3Dmol.createViewer(ref.current, {})
         console.log(viewer)
@@ -29,6 +29,10 @@ export function MolViewer({ type, data, className, ...props }: MolViewerProps) {
   }, [type, data])
 
   return (
-    <div ref={ref} {...props} className={cn('w-full h-96 relative', className)} />
+    <div
+      ref={ref}
+      {...props}
+      className={cn('w-full h-96 relative', className)}
+    />
   )
 }

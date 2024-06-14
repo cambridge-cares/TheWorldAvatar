@@ -16,6 +16,7 @@ import { DataTable } from '@/components/ui/data-table'
 import { JSONTree } from '@/components/ui/json-tree'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MolViewer } from '@/components/ui/mol-viewer'
+import { StopIcon } from '@radix-ui/react-icons'
 
 export interface QAResponseMetadataDivProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -114,9 +115,11 @@ export const QAResponseMetadataDiv = ({
                     var: varname,
                     cls: qaResponseMetadata.data_request.var2cls[varname],
                     mention: values.map(val =>
-                      typeof val === "string" ? val : Object.entries(val).map(
-                        ([k, v]) => `${k}: ${v}`
-                      ).join("\n")
+                      typeof val === 'string'
+                        ? val
+                        : Object.entries(val)
+                            .map(([k, v]) => `${k}: ${v}`)
+                            .join('\n')
                     ),
                     linked_iris: qaResponseMetadata.linked_variables[varname],
                   }))}
@@ -160,26 +163,28 @@ export const QAResponseDataDiv = ({
 }: QAResponseDataDivProps) => (
   <div {...props}>
     <h2 className='text-xl font-semibold text-blue-500'>Retrieved data</h2>
-    <Accordion type='multiple' defaultValue={qaResponseData.map((_, idx) => idx.toString())}>
-      {qaResponseData
-        .map((item, idx) => {
-          let headerText, component
-          if (item.type === 'document_collection') {
-            headerText = 'JSON data'
-            component = <JSONTree data={item.data} />
-          } else if (item.type === 'table') {
-            headerText = 'Tabular data'
-            component = <DataTable columns={item.columns} data={item.data} />
-          }
-          return headerText && component ? (
-            <AccordionItem key={idx} value={idx.toString()}>
-              <AccordionTrigger>{headerText}</AccordionTrigger>
-              <AccordionContent className='py-2'>{component}</AccordionContent>
-            </AccordionItem>
-          ) : (
-            <></>
-          )
-        })}
+    <Accordion
+      type='multiple'
+      defaultValue={qaResponseData.map((_, idx) => idx.toString())}
+    >
+      {qaResponseData.map((item, idx) => {
+        let headerText, component
+        if (item.type === 'document_collection') {
+          headerText = 'JSON data'
+          component = <JSONTree data={item.data} />
+        } else if (item.type === 'table') {
+          headerText = 'Tabular data'
+          component = <DataTable columns={item.columns} data={item.data} />
+        }
+        return headerText && component ? (
+          <AccordionItem key={idx} value={idx.toString()}>
+            <AccordionTrigger>{headerText}</AccordionTrigger>
+            <AccordionContent className='py-2'>{component}</AccordionContent>
+          </AccordionItem>
+        ) : (
+          <></>
+        )
+      })}
     </Accordion>
   </div>
 )
@@ -187,20 +192,79 @@ export const QAResponseDataDiv = ({
 export interface QAResponseDivProps
   extends React.HTMLAttributes<HTMLDivElement> {
   qaResponse?: QAResponse
-  chatAnswer?: string
+  chatAbortController?: AbortController
+  chatStream?: ReadableStreamDefaultReader<string>
 }
 
 export function QAResponseDiv({
   qaResponse,
-  chatAnswer,
+  chatAbortController,
+  chatStream,
   className,
   ...props
 }: QAResponseDivProps) {
   const chatRef = React.useRef<null | HTMLDivElement>(null)
+  const [isGeneratingChat, setIsGeneratingChat] = React.useState<boolean>(false)
+  const [chatAnswer, setChatAnswer] = React.useState<string | undefined>(
+    undefined
+  )
+
+  React.useEffect(() => {
+    if (!chatStream) return
+
+    const pump = ({
+      done,
+      value,
+    }: {
+      done: boolean
+      value?: string
+    }): Promise<void> => {
+      if (done) {
+        return Promise.resolve()
+      }
+
+      // TODO: Use TransformerStream to do the parsing in API call code
+      if (value) {
+        value.split('\n').forEach(line => {
+          const trimmedLine = line.trim()
+          if (trimmedLine.startsWith('data: ')) {
+            const msg = trimmedLine.substring('data: '.length)
+            try {
+              const dataChunk = JSON.parse(msg)
+              const content = dataChunk['content']
+              if (typeof content === 'string') {
+                setChatAnswer(oldValue => (oldValue || '') + content)
+              }
+            } catch (err) {
+              console.log('Unexpected data received from server: '.concat(msg))
+            }
+          }
+        })
+      }
+      return chatStream.read().then(pump)
+    }
+
+    const readStream = async () => {
+      setIsGeneratingChat(true)
+      try {
+        await chatStream.read().then(pump)
+      } catch (err) {
+      } finally {
+        setIsGeneratingChat(false)
+      }
+    }
+
+    readStream()
+  }, [chatStream])
 
   React.useEffect(() => {
     chatRef.current?.scrollIntoView(false)
   }, [chatAnswer])
+
+  const handleAbort = () => {
+    chatAbortController?.abort()
+    setIsGeneratingChat(false)
+  }
 
   return (
     <div className={cn('flex flex-col space-y-6', className)} {...props}>
@@ -208,11 +272,10 @@ export function QAResponseDiv({
         <>
           <QAResponseMetadataDiv qaResponseMetadata={qaResponse.metadata} />
           <div>
-            <h2 className='text-xl font-semibold text-blue-500 mb-2'>Chemical Structure Visualisation</h2>
-            <Tabs
-              defaultValue='0'
-              className='grid lg:grid-cols-4 gap-4'
-            >
+            <h2 className='text-xl font-semibold text-blue-500 mb-2'>
+              Chemical Structure Visualisation
+            </h2>
+            <Tabs defaultValue='0' className='grid lg:grid-cols-4 gap-4'>
               <div>
                 <TabsList className='flex lg:flex-col space-y-1'>
                   {qaResponse.visualisation.map(({ label }, i) => (
@@ -242,6 +305,15 @@ export function QAResponseDiv({
           <Markdown className='prose max-w-none prose-sm prose-slate'>
             {chatAnswer}
           </Markdown>
+          {isGeneratingChat && (
+            <div
+              onClick={handleAbort}
+              className='mb-4 flex items-center justify-center space-x-2 hover:cursor-pointer'
+            >
+              <StopIcon className='h-4 w-4' />
+              <p>Stop generating</p>
+            </div>
+          )}
         </div>
       )}
     </div>
