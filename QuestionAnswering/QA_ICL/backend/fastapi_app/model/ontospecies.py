@@ -4,6 +4,11 @@ from constants.namespace import ONTOSPECIES
 from model.rdf_orm import RDFEntity, RDFField
 
 
+class PeriodictableElement(RDFEntity):
+    symbol: str = RDFField(path=ONTOSPECIES.hasElementSymbol / ONTOSPECIES.value)
+    name: str = RDFField(path=ONTOSPECIES.hasElementName / ONTOSPECIES.value)
+
+
 class OntospeciesHasValueHasUnit(RDFEntity):
     value: str = RDFField(path=ONTOSPECIES.value)
     unit: str = RDFField(path=ONTOSPECIES.unit / RDFS.label)

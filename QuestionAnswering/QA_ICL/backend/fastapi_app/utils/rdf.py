@@ -1,4 +1,4 @@
-from constants.prefixes import PREFIX_NAME2URI
+from constants.namespace import PREFIX2URI
 
 
 def extract_name(iri: str):
@@ -10,11 +10,9 @@ def extract_name(iri: str):
 
 
 def try_make_prefixed_iri(iri: str):
-    for prefix_name, prefix_uri in PREFIX_NAME2URI.items():
-        if iri.startswith(prefix_uri):
-            return "{prefix}:{name}".format(
-                prefix=prefix_name, name=iri[len(prefix_uri) :]
-            )
+    for prefix, uri in PREFIX2URI.items():
+        if iri.startswith(uri):
+            return "{prefix}:{name}".format(prefix=prefix, name=iri[len(uri) :])
     return iri
 
 
