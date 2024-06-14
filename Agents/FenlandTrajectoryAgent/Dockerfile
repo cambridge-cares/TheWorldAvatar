@@ -33,9 +33,6 @@ ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 RUN python -m pip install --upgrade pip
 RUN pip install -e .
 # Installation of agentlogging currently suspended due to performance issues
-# COPY requirements.txt .
-# RUN pip install -r requirements.txt
-
 # Install StackClients twa resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
     jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar

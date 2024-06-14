@@ -63,12 +63,12 @@ def process_gps_csv_file(csv_file):
                 'Longitude': df.get('LONGITUDE', []).tolist(),
             },
             'units': {
-                'Speed': 'km/h',
-                'Distance': 'M',
-                'Height': 'M',
-                'Heading': None,
-                'Latitude': None,
-                'Longitude': None
+                'Speed': 'kilometer per hour',
+                'Distance': 'meter',
+                'Height': 'meter',
+                'Heading': 'degree',
+                'Latitude': 'degree',
+                'Longitude': 'degree'
             }
         }
     except Exception as e:
@@ -130,22 +130,8 @@ def instantiate_gps_data(gps_object, kg_client, ts_client, double_class):
         logger.debug(f"Time Format: {time_format} - Type: {type(time_format)}")
 
 
-    #     # Iterate over each dataIRI and corresponding values, make sure the dataIRI is str, while the rest argument is list
-    #     for dataIRI, value in zip(dataIRIs, values_list):
-    #         logger.info(f"Initializing time series for dataIRI: {dataIRI}")
-    #         logger.info(f"Initializing time series for Times: {times}")
-    #         logger.info(f"Initializing time series for Values: {value}")
-    #         logger.info(f"Initializing time series for ts_type(dataClass): {ts_type}")
-    #         logger.info(f"Initializing time series for time_format(timeUnit): {time_format}")
-    #     ######### Core function for instantiation #######
-    #         ts_client.init_timeseries(dataIRI=dataIRI, times=times, values=value, ts_type=ts_type, time_format=time_format)
-    #     #ts_client.init_timeseries(dataIRI=dataIRIs, times=times, values=values_list, ts_type=ts_type, time_format=time_format)
-    #     #ts_client.init_timeseries(dataIRI=dataIRI, times=times, values=values, ts_type=ts_type, time_format=FORMAT)
-    #     logger.info(f"Data for {gps_object['object']} successfully instantiated.")
-    # except Exception as e:
-    #     logger.error(f"Error instantiating data for {gps_object['object']}: {e}")
-    #     raise
-         # Logging to ensure dataIRI and values_list are lists of the same length
+
+        # Logging to ensure dataIRI and values_list are lists of the same length
         logger.info(f"Initializing time series for DataIRIs: {dataIRIs}")
         logger.info(f"Initializing time series for Times: {times}")
         logger.info(f"Initializing time series for Values: {values_list}")
