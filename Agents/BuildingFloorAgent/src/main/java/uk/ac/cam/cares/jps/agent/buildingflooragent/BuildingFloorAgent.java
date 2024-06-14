@@ -18,7 +18,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
-@WebServlet(urlPatterns = { "/floors", "/floorswithobda" })
+@WebServlet(urlPatterns = { "/" })
 public class BuildingFloorAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BuildingFloorAgent.class);
     private EndpointConfig endpointConfig;
@@ -44,29 +44,32 @@ public class BuildingFloorAgent extends JPSAgent {
         IntegrateFloors integrateFloors = new IntegrateFloors(endpointConfig.getOntopUrl());
 
         try (Connection conn = postgisClient.getConnection()) {
+            LOGGER.info("Initialising schema to store results");
+            FloorPostGISClient.createSchema(conn);
+            FloorPostGISClient.createTable(conn);
+
             LOGGER.info("Querying OSM building data");
             integrateFloors.setOSMBuildings();
 
             LOGGER.info("Updating floor data based on CSV input");
-            integrateFloors.matchAddress(endpointConfig.getFilepath());
+            integrateFloors.matchAddress(endpointConfig.getFilepath(), conn);
 
             LOGGER.info("Updating floor data based on OSM and rough estimate");
             integrateFloors.importFloorData(conn);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         // Upload Ontop mapping
-        if (requestParams.getString("requestUrl").contains("withobda")) {
-            Path obdaPath;
-            try {
-                obdaPath = new ClassPathResource("buildingfloor.obda").getFile().toPath();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            OntopClient ontopClient = OntopClient.getInstance();
-            ontopClient.updateOBDA(obdaPath);
+        Path obdaPath;
+        try {
+            obdaPath = new ClassPathResource("buildingfloor.obda").getFile().toPath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        OntopClient ontopClient = OntopClient.getInstance();
+        ontopClient.updateOBDA(obdaPath);
 
         return requestParams;
     }

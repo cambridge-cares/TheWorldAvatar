@@ -110,7 +110,7 @@ public class IntegrateFloors {
     /* INPUT: data file location */
     /* floors data store in citydb.building.storeys_above_ground */
     /**********************************************/
-    void matchAddress(String floorsCsv) {
+    void matchAddress(String floorsCsv, Connection conn) {
         MatchService matchService = new MatchService();
         List<Document> preDoc = new ArrayList<>();
 
@@ -126,7 +126,6 @@ public class IntegrateFloors {
         });
 
         // get data from csv
-
         List<FloorsCsv> hdbFloors;
         try {
             hdbFloors = new CsvToBeanBuilder<FloorsCsv>(new FileReader(floorsCsv)).withType(FloorsCsv.class).build()
@@ -163,13 +162,16 @@ public class IntegrateFloors {
             }
 
             // store floors data based on building iri from osm agent
-            Integer floors = hdbFloors.get(i).getFloors();
+
             if (pointScore != 0) {
+                int floors = hdbFloors.get(i).getFloors();
                 LOGGER.debug("Point score = {}. {} matched with {}", pointScore, matched, matchedWith);
                 OSMBuilding matchedBuilding = iriToBuildingMap.get(matchedBuildingIri);
                 matchedBuilding.setFloorCategory(OSMBuilding.FloorCategory.A);
                 matchedBuilding.setFloors(floors);
-                // updateFloors(floors, "A", matchedBuildingIri, conn);
+
+                String buildingUuid = extractUuid(matchedBuildingIri);
+                FloorPostGISClient.insertData(buildingUuid, "A", floors, conn);
             }
         }
     }
@@ -197,16 +199,17 @@ public class IntegrateFloors {
                         iriToBuildingMap.computeIfAbsent(buildingIri, OSMBuilding::new);
                         building.setFloorCategory(OSMBuilding.FloorCategory.B);
                         building.setFloors(floors);
-                        // updateFloors(floors, "B", buildingUuid, conn);
+                        FloorPostGISClient.insertData(buildingUuid, "B", floors, conn);
                     }
                 }
 
                 if (floors == 0) {
                     floors = estimateFloors(buildingIri, conn);
-                    // updateFloors(floors, "C", buildingUuid, conn);
                     iriToBuildingMap.computeIfAbsent(buildingIri, OSMBuilding::new);
                     building.setFloorCategory(OSMBuilding.FloorCategory.C);
                     building.setFloors(floors);
+
+                    FloorPostGISClient.insertData(buildingUuid, "C", floors, conn);
                 }
             }
         } catch (SQLException e) {
@@ -230,27 +233,6 @@ public class IntegrateFloors {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
         return floors;
-    }
-
-    public void updateFloors(Integer floors, String catString, String buildingIri, Connection conn) {
-        try (Statement stmt = conn.createStatement()) {
-            String buildingSQLUpdate;
-            if (isValidURL(buildingIri)) {
-                buildingSQLUpdate = "UPDATE citydb.building b SET storeys_above_ground = " + floors +
-                        ", storeys_above_ground_cat = '" + catString +
-                        "' FROM citydb.cityobject_genericattrib cg\n" +
-                        "WHERE b.id = cg.cityobject_id AND cg.urival = '" + buildingIri + "';";
-            } else {
-                buildingSQLUpdate = "UPDATE citydb.building b SET storeys_above_ground = " + floors +
-                        ", storeys_above_ground_cat = '" + catString +
-                        "' FROM citydb.cityobject_genericattrib cg\n" +
-                        "WHERE b.id = cg.cityobject_id AND cg.strval = '" + buildingIri + "';";
-            }
-
-            stmt.executeUpdate(buildingSQLUpdate);
-        } catch (SQLException e) {
-            throw new JPSRuntimeException("Error connecting to source database: " + e);
-        }
     }
 
     /********************************************************* */
@@ -302,6 +284,24 @@ public class IntegrateFloors {
             return true;
         } catch (MalformedURLException | URISyntaxException e) {
             return false;
+        }
+    }
+
+    String extractUuid(String buildingIri) {
+        try {
+            // Create a URL object
+            URL url = new URL(buildingIri);
+
+            // Get the path of the URL
+            String path = url.getPath();
+
+            // Split the path by '/'
+            String[] pathSegments = path.split("/");
+
+            // The UUID is the last segment of the path
+            return pathSegments[pathSegments.length - 1];
+        } catch (Exception e) {
+            throw new RuntimeException("Error extracting uuid from building IRI", e);
         }
     }
 }
