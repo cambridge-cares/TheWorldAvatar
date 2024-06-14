@@ -79,7 +79,8 @@ class LoadKGIndex:
 # usage
 if __name__ == "__main__":
     #index_file = "C:/Users/printer_admin/Downloads/KGs/ontokin/cp_index_170.json"
-    index_file = "C:/Users/printer_admin/Downloads/KGs/cp_invindex.json"
+    #index_file = "C:/Users/printer_admin/Downloads/KGs/cp_ep_invindex.json"
+    index_file = "C:/Users/printer_admin/Downloads/KGs/cpinv.indx"
     kgs = LoadKGIndex()
   
     index=kgs.load_cp_index(index_file)
