@@ -33,3 +33,25 @@ singapore_endpoints:
   carpark_internal: http://sg-blazegraph:8080/blazegraph/namespace/carpark/sparql
   feature_info_agent: http://174.138.23.221:3838/feature-info-agent/get
   pollutant_concentration: http://174.138.23.221:3838/dispersion-interactor/GetPollutantConcentrations
+entity_linking:
+  - cls: pt:Element
+    strategy: fuzzy
+    k: 1
+  - cls: os:ElementClassification
+    strategy: fuzzy
+    k: 1
+  - cls: os:ChemicalClass
+    strategy: semantic
+    k: 3
+  - cls: os:Use
+    strategy: "semantic",
+    k: 3
+  - cls: LandUseType
+    strategy: semantic
+    k: 5
+  - cls: Ship
+    strategy": fuzzy
+semantic_parsing:
+  context_augmentation:
+    example_num: 10
+    relation_num: 10

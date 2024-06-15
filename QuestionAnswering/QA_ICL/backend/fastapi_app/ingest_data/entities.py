@@ -3,8 +3,13 @@ from redis import Redis
 from redis.commands.search.field import TextField, VectorField, TagField
 import regex
 
-from services.ingest import DataIngester, InsertThenIndexArgs, load_insert_then_index_args
-from services.stores.entity_store import get_cls2config
+from config import get_app_settings
+from services.ingest import (
+    DataIngester,
+    InsertThenIndexArgs,
+    load_insert_then_index_args,
+)
+from services.stores.entity_store import get_el_configs
 from services.embed import IEmbedder, TritonEmbedder
 from services.redis import get_index_existence
 from model.lexicon import (
@@ -87,9 +92,7 @@ def main(args: InsertThenIndexArgs):
                     index_name=ENTITIES_INDEX_NAME
                 )
             )
-            redis_client.ft(ENTITIES_INDEX_NAME).dropindex(
-                delete_documents=True
-            )
+            redis_client.ft(ENTITIES_INDEX_NAME).dropindex(delete_documents=True)
     elif does_index_exist:
         print(
             "Index {index_name} exists; entity lexicons have already been ingested.".format(
@@ -105,7 +108,8 @@ def main(args: InsertThenIndexArgs):
         )
 
     embedder = TritonEmbedder(url=args.text_embedding_url)
-    cls2config = get_cls2config()
+    el_configs = get_app_settings().entity_linking
+    cls2config = {config.cls: config for config in el_configs}
 
     def process_func(data: list[LexiconEntry]):
         el_config = cls2config.get(data[0].cls)
