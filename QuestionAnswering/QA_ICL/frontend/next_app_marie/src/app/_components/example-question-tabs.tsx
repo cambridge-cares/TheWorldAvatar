@@ -14,6 +14,7 @@ export type ExampleQuestionTabsProps = React.ComponentPropsWithoutRef<
   typeof Tabs
 > & {
   data: ExampleQuestionGroup[]
+  disabled: boolean
   questionOnClick: (
     question: string,
     event: React.MouseEvent<HTMLLIElement>
@@ -23,6 +24,7 @@ export type ExampleQuestionTabsProps = React.ComponentPropsWithoutRef<
 export const ExampleQuestionTabs = ({
   data,
   questionOnClick,
+  disabled,
   className,
   ...props
 }: ExampleQuestionTabsProps) => (
@@ -48,8 +50,8 @@ export const ExampleQuestionTabs = ({
             {questions.map((qn, i) => (
               <li
                 key={i}
-                onClick={e => questionOnClick(qn, e)}
-                className='hover:underline hover:cursor-pointer'
+                onClick={e => { if (disabled) return; questionOnClick(qn, e) }}
+                className={disabled ? "" : 'hover:underline hover:cursor-pointer'}
               >
                 {qn}
               </li>

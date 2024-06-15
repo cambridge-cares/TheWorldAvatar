@@ -31,6 +31,8 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
   >(undefined)
 
   const queryDataThenDisplay = async (question: string) => {
+    if (isProcessing) return
+
     setIsProcessing(true)
     setQaResponse(undefined)
     setChatAbortController(undefined)
@@ -73,6 +75,7 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
         <h2 className='text-lg font-medium mb-2'>Example Questions</h2>
         <ExampleQuestionTabs
           data={exampleQuestionGroups}
+          disabled={isProcessing}
           questionOnClick={handleExampleQuestionClick}
         />
       </section>
