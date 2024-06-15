@@ -1,1 +1,3 @@
 types-regex
+types-requests
+types-PyYAML

@@ -11,6 +11,7 @@ from redis import Redis
 from redis.commands.search.query import Query
 import regex
 
+from config import AppSettings, EntityLinkingConfig, get_app_settings
 from services.stores.entity_store.ontokin import (
     MechanismLinker,
     ReactionLinker,
@@ -44,12 +45,12 @@ class EntityStore:
         self,
         redis_client: Redis,
         embedder: IEmbedder,
-        cls2elconfig: dict[str, ELConfig],
+        el_configs: list[EntityLinkingConfig],
         cls2linker: dict[str, IEntityLinker],
     ):
         self.redis_client = redis_client
         self.embedder = embedder
-        self.cls2elconfig = cls2elconfig
+        self.cls2elconfig = {config.cls: config for config in el_configs}
         self.cls2linker = cls2linker
 
     def _match_cls_query(self, cls: str):
@@ -179,7 +180,11 @@ class EntityStore:
             if iris:
                 return iris
 
-        config = self.cls2elconfig.get(cls, ELConfig()) if cls else ELConfig()
+        config = (
+            self.cls2elconfig[cls]
+            if cls in self.cls2elconfig
+            else EntityLinkingConfig()
+        )
         logger.info("Linking strategy: " + str(config))
 
         k = k if k else config.k
@@ -217,13 +222,8 @@ class EntityStore:
         return res.docs[0].cls if len(res.docs) > 0 else None
 
 
-@cache
-def get_cls2config():
-    adapter = TypeAdapter(tuple[ELConfigEntry, ...])
-    config = adapter.validate_json(
-        files("resources").joinpath("el_config.json").read_text()
-    )
-    return FrozenDict.from_dict({entry.cls: entry.el_config for entry in config})
+def get_el_configs(app_settings: Annotated[AppSettings, Depends(get_app_settings)]):
+    return app_settings.entity_linking
 
 
 @cache
@@ -257,12 +257,12 @@ def get_cls2linker(
 def get_entity_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
-    cls2config: Annotated[dict[str, ELConfig], Depends(get_cls2config)],
+    el_configs: Annotated[list[EntityLinkingConfig], Depends(get_el_configs)],
     cls2linker: Annotated[dict[str, IEntityLinker], Depends(get_cls2linker)],
 ):
     return EntityStore(
         redis_client=redis_client,
         embedder=embedder,
-        cls2elconfig=cls2config,
+        el_configs=el_configs,
         cls2linker=cls2linker,
     )

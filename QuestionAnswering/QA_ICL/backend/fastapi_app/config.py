@@ -77,6 +77,21 @@ class SingaporeEndpointsSettings(BaseModel):
     pollutant_concentration: str
 
 
+class EntityLinkingConfig(BaseModel):
+    cls: str | None = None
+    strategy: Literal["fuzzy", "semantic"] = "fuzzy"
+    k: int = 3
+
+
+class ContextAugmentationSettings(BaseModel):
+    example_num: int
+    relation_num: int
+
+
+class SemanticParsingSettings(BaseModel):
+    context_augmentation: ContextAugmentationSettings
+
+
 class AppSettings(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -88,6 +103,8 @@ class AppSettings(BaseModel):
     location_iq: LocationIqSettings
     chemistry_endpoints: ChemistryEndpointsSettings
     singapore_endpoints: SingaporeEndpointsSettings
+    entity_linking: list[EntityLinkingConfig]
+    semantic_parsing: SemanticParsingSettings
 
 
 def _load_yaml(filepath: str):
