@@ -50,18 +50,17 @@ export const QAResponseMetadataDiv = ({
               <AccordionContent>
                 <DataTable
                   columns={[
-                    { value: 's', label: 'Subject' },
-                    { value: 'p', label: 'Predicate' },
-                    { value: 'o', label: 'Object' },
+                    { value: 'iri', label: 'IRI' },
+                    { value: 'label', label: 'Label' },
+                    { value: 'comment', label: 'Comment' },
                   ]}
-                  data={qaResponseMetadata.translation_context.schema_relations.map(
+                  data={qaResponseMetadata.translation_context.properties.map(
                     obj =>
-                      Object.fromEntries(
-                        Object.entries(obj).map(([k, v]) => [
-                          k,
-                          makePrefixedIRI(v),
-                        ])
-                      )
+                    ({
+                      iri: makePrefixedIRI(obj.iri),
+                      label: obj.label,
+                      comment: obj.comment
+                    })
                   )}
                 />
               </AccordionContent>
@@ -75,12 +74,16 @@ export const QAResponseMetadataDiv = ({
                 <DataTable
                   columns={[
                     { value: 'nlq', label: 'Natural language question' },
+                    { value: 'var2cls', label: 'Class assignment' },
                     { value: 'entity_bindings', label: 'Entity bindings' },
                     { value: 'req_form', label: 'Structured query form' },
                   ]}
                   data={qaResponseMetadata.translation_context.examples.map(
                     example => ({
                       nlq: example.nlq,
+                      var2cls: (
+                        <JSONTree data={example.data_req.var2cls} />
+                      ),
                       entity_bindings: (
                         <JSONTree data={example.data_req.entity_bindings} />
                       ),
@@ -97,6 +100,16 @@ export const QAResponseMetadataDiv = ({
         <AccordionTrigger>Predicted structured query</AccordionTrigger>
         <AccordionContent className='px-4'>
           <Accordion type='multiple'>
+            <AccordionItem value='class_assignment'>
+              <AccordionTrigger>Class assignment</AccordionTrigger>
+              <AccordionContent>
+                <DataTable columns={[
+                  { value: 'var', label: 'Variable' },
+                  { value: 'cls', label: 'Class' }
+                ]}
+                  data={Object.entries(qaResponseMetadata.data_request.var2cls).map(([varname, cls]) => ({ var: varname, cls }))} />
+              </AccordionContent>
+            </AccordionItem>
             <AccordionItem value='entity_bindings'>
               <AccordionTrigger>
                 Entity recognition and linking
@@ -118,33 +131,37 @@ export const QAResponseMetadataDiv = ({
                       typeof val === 'string'
                         ? val
                         : Object.entries(val)
-                            .map(([k, v]) => `${k}: ${v}`)
-                            .join('\n')
+                          .map(([k, v]) => `${k}: ${v}`)
+                          .join('\n')
                     ),
                     linked_iris: qaResponseMetadata.linked_variables[varname],
                   }))}
                 />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value='data_req_form'>
-              <AccordionTrigger>Structured query form</AccordionTrigger>
-              <AccordionContent className='px-6'>
-                {qaResponseMetadata.data_request.req_form.type === 'sparql' ? (
-                  <>
-                    <h4 className='font-medium'>Namespace</h4>
-                    <p className='mb-2'>
-                      {qaResponseMetadata.data_request.req_form.namespace}
-                    </p>
-                    <h4 className='font-medium'>SPARQL query</h4>
-                    <p className='font-mono whitespace-pre bg-slate-50 p-4'>
-                      {qaResponseMetadata.data_request.req_form.query}
-                    </p>
-                  </>
-                ) : (
-                  <></>
-                )}
-              </AccordionContent>
-            </AccordionItem>
+            {
+              qaResponseMetadata.data_request.req_form && (
+                <AccordionItem value='data_req_form'>
+                  <AccordionTrigger>Structured query form</AccordionTrigger>
+                  <AccordionContent className='px-6'>
+                    {qaResponseMetadata.data_request.req_form.type === 'sparql' ? (
+                      <>
+                        <h4 className='font-medium'>Namespace</h4>
+                        <p className='mb-2'>
+                          {qaResponseMetadata.data_request.req_form.namespace}
+                        </p>
+                        <h4 className='font-medium'>SPARQL query</h4>
+                        <p className='font-mono whitespace-pre bg-slate-50 p-4'>
+                          {qaResponseMetadata.data_request.req_form.query}
+                        </p>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              )
+            }
           </Accordion>
         </AccordionContent>
       </AccordionItem>
@@ -171,7 +188,7 @@ export const QAResponseDataDiv = ({
         let headerText, component
         if (item.type === 'document_collection') {
           headerText = 'JSON data'
-          component = <JSONTree data={item.data} />
+          component = <JSONTree data={item.data} shouldExpandNodeInitially={() => false} />
         } else if (item.type === 'table') {
           headerText = 'Tabular data'
           component = <DataTable columns={item.columns} data={item.data} />
@@ -271,29 +288,31 @@ export function QAResponseDiv({
       {qaResponse && (
         <>
           <QAResponseMetadataDiv qaResponseMetadata={qaResponse.metadata} />
-          <div>
-            <h2 className='text-xl font-semibold text-blue-500 mb-2'>
-              Chemical Structure Visualisation
-            </h2>
-            <Tabs defaultValue='0' className='grid lg:grid-cols-4 gap-4'>
-              <div>
-                <TabsList className='flex lg:flex-col space-y-1'>
-                  {qaResponse.visualisation.map(({ label }, i) => (
-                    <TabsTrigger key={i} value={i.toString()}>
-                      {label}
-                    </TabsTrigger>
+          {(qaResponse.visualisation.length > 0) && (
+            <div>
+              <h2 className='text-xl font-semibold text-blue-500 mb-2'>
+                Chemical Structure Visualisation
+              </h2>
+              <Tabs defaultValue='0' className='grid lg:grid-cols-4 gap-4'>
+                <div>
+                  <TabsList className='flex lg:flex-col space-y-1'>
+                    {qaResponse.visualisation.map(({ label }, i) => (
+                      <TabsTrigger key={i} value={i.toString()}>
+                        {label}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </div>
+                <div className='lg:col-span-3'>
+                  {qaResponse.visualisation.map(({ type, data }, i) => (
+                    <TabsContent key={i} value={i.toString()}>
+                      <MolViewer type={type} data={data} />
+                    </TabsContent>
                   ))}
-                </TabsList>
-              </div>
-              <div className='lg:col-span-3'>
-                {qaResponse.visualisation.map(({ type, data }, i) => (
-                  <TabsContent key={i} value={i.toString()}>
-                    <MolViewer type={type} data={data} />
-                  </TabsContent>
-                ))}
-              </div>
-            </Tabs>
-          </div>
+                </div>
+              </Tabs>
+            </div>
+          )}
           <QAResponseDataDiv qaResponseData={qaResponse.data} />
         </>
       )}

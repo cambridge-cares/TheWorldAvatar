@@ -19,7 +19,7 @@ export function MolViewer({ type, data, className, ...props }: MolViewerProps) {
         const viewer = $3Dmol.createViewer(ref.current, {})
         console.log(viewer)
         viewer.addModel(data, type)
-        viewer.setStyle({}, { stick: {}, sphere: { scale: 0.3 } })
+        viewer.setStyle({}, { stick: { radius: 0.1 }, sphere: { scale: 0.2 } })
         viewer.zoomTo()
         viewer.render()
         viewer.zoom(1.2, 1000)

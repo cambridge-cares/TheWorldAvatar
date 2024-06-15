@@ -80,7 +80,7 @@ export interface DataRequest {
   var2cls: { [key: string]: string }
   entity_bindings: { [key: string]: (string | { [key: string]: string })[] }
   const_bindings: { [key: string]: any }
-  req_form: DataRequestForm
+  req_form?: DataRequestForm
   visualise: string[]
 }
 
@@ -89,15 +89,15 @@ export interface Nlq2DataReqExample {
   data_req: DataRequest
 }
 
-export interface RDFRelation {
-  s: string
-  p: string
-  o: string
+export interface RDFProperty {
+  iri: string
+  label?: string
+  comment?: string
 }
 
 export interface TranslationContext {
   examples: Nlq2DataReqExample[]
-  schema_relations: RDFRelation[]
+  properties: RDFProperty[]
 }
 
 export interface QAResponseMetadata {
