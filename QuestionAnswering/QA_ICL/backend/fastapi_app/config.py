@@ -78,17 +78,23 @@ class SingaporeEndpointsSettings(BaseModel):
 
 
 class EntityLinkingConfig(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     cls: str | None = None
     strategy: Literal["fuzzy", "semantic"] = "fuzzy"
     k: int = 3
 
 
 class ContextAugmentationSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     example_num: int
     relation_num: int
 
 
 class SemanticParsingSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    
     context_augmentation: ContextAugmentationSettings
 
 
@@ -103,7 +109,7 @@ class AppSettings(BaseModel):
     location_iq: LocationIqSettings
     chemistry_endpoints: ChemistryEndpointsSettings
     singapore_endpoints: SingaporeEndpointsSettings
-    entity_linking: list[EntityLinkingConfig]
+    entity_linking: tuple[EntityLinkingConfig, ...]
     semantic_parsing: SemanticParsingSettings
 
 
