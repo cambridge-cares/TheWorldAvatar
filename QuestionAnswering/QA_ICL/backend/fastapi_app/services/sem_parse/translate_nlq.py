@@ -15,7 +15,7 @@ from utils.rdf import try_make_prefixed_iri
 logger = logging.getLogger(__name__)
 
 
-class Nlq2DataReqTranslator:
+class Nlq2DataReqLLMCaller:
     SYSTEM_MSG = "You are a SPARQL expert designed to output JSON."
     PROMPT_TEMPLATE = """### Data and object properties:
 {properties}
@@ -39,7 +39,7 @@ Your task is to translate the following question to an executable data request. 
         self.openai_model = openai_model
         self.datareq_adapter = TypeAdapter(DataRequest)
 
-    def translate(
+    def forward(
         self, nlq: str, translation_context: TranslationContext
     ) -> DataRequest:
         prompt = self.PROMPT_TEMPLATE.format(
@@ -87,10 +87,10 @@ Your task is to translate the following question to an executable data request. 
 
 
 @cache
-def get_nlq2datareq_translator(
+def get_nlq2datareq_llmCaller(
     settings: Annotated[AppSettings, Depends(get_app_settings)]
 ):
-    return Nlq2DataReqTranslator(
+    return Nlq2DataReqLLMCaller(
         openai_base_url=settings.translator.base_url,
         openai_api_key=settings.translator.api_key,
         openai_model=settings.translator.model,

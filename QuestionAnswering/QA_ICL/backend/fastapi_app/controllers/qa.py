@@ -9,11 +9,11 @@ from model.qa import (
     QAResponse,
     QAResponseMetadata,
 )
-from services.rewrite_nlq import NlqRewriter, get_nlq_rewriter
 from services.sem_parse.retrieve_context import (
     Nlq2DataReqContextRetriever,
     get_nlq2datareq_contextRetriever,
 )
+from services.sem_parse.rewrite_nlq import NlqRewriter, get_nlq_rewriter
 from services.stores.entity_store import EntityStore, get_entity_store
 from services.stores.qa_artifact_store import (
     QARequestArtifactStore,
@@ -21,8 +21,8 @@ from services.stores.qa_artifact_store import (
 )
 from services.execute_data_req import DataReqExecutor, get_dataReq_executor
 from services.sem_parse.translate_nlq import (
-    Nlq2DataReqTranslator,
-    get_nlq2datareq_translator,
+    Nlq2DataReqLLMCaller,
+    get_nlq2datareq_llmCaller,
 )
 from services.mol_vis.vis_data_store import VisualisationDataStore, get_visData_store
 
@@ -35,7 +35,7 @@ class DataSupporter:
         self,
         nlq_rewriter: NlqRewriter,
         context_retriever: Nlq2DataReqContextRetriever,
-        translator: Nlq2DataReqTranslator,
+        llm_caller: Nlq2DataReqLLMCaller,
         entity_store: EntityStore,
         executor: DataReqExecutor,
         artifact_store: QARequestArtifactStore,
@@ -43,7 +43,7 @@ class DataSupporter:
     ):
         self.nlq_rewriter = nlq_rewriter
         self.context_retriever = context_retriever
-        self.translator = translator
+        self.llm_caller = llm_caller
         self.entity_store = entity_store
         self.executor = executor
         self.artifact_store = artifact_store
@@ -61,7 +61,7 @@ class DataSupporter:
         logger.info("Translation context: " + str(translation_context))
 
         logger.info("Translating input question into data request...")
-        data_req = self.translator.translate(
+        data_req = self.llm_caller.forward(
             nlq=rewritten_query, translation_context=translation_context
         )
         logger.info("Predicted data request: " + str(data_req))
@@ -139,7 +139,7 @@ def get_data_supporter(
     context_retriever: Annotated[
         Nlq2DataReqContextRetriever, Depends(get_nlq2datareq_contextRetriever)
     ],
-    translator: Annotated[Nlq2DataReqTranslator, Depends(get_nlq2datareq_translator)],
+    llm_caller: Annotated[Nlq2DataReqLLMCaller, Depends(get_nlq2datareq_llmCaller)],
     entity_store: Annotated[EntityStore, Depends(get_entity_store)],
     executor: Annotated[DataReqExecutor, Depends(get_dataReq_executor)],
     artifact_store: Annotated[QARequestArtifactStore, Depends(get_qaReq_artifactStore)],
@@ -148,7 +148,7 @@ def get_data_supporter(
     return DataSupporter(
         nlq_rewriter=nlq_rewriter,
         context_retriever=context_retriever,
-        translator=translator,
+        llm_caller=llm_caller,
         entity_store=entity_store,
         executor=executor,
         artifact_store=artifact_store,
