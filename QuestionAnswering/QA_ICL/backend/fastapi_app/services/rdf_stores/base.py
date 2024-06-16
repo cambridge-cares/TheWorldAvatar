@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Protocol, Sequence
+from typing import Protocol
 
 from model.rdf_orm import RDFEntity
 
 
 class RDFEntityGetter(Protocol):
-    def __call__(self, iris: Sequence[str]) -> list[RDFEntity | None]: ...
+    def __call__(self, iris: list[str] | tuple[str]) -> list[RDFEntity | None]: ...
 
 
 class Cls2GetterRDFStore(ABC):

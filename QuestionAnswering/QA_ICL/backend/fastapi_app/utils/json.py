@@ -1,4 +1,3 @@
-from typing import Sequence
 import numpy as np
 import pandas as pd
 
@@ -45,7 +44,7 @@ def deep_pd_json_normalize_dict(doc: dict):
     )
 
 
-def deep_pd_json_normalize_list(lst: Sequence):
+def deep_pd_json_normalize_list(lst: list | tuple):
     lst = [deep_pd_json_normalize(x) for x in lst]
     if all(isinstance(x, dict) for x in lst):
         return pd.json_normalize(lst).replace({np.nan: None}).to_dict("records")
