@@ -5,7 +5,6 @@ from typing import Annotated
 from fastapi import Depends
 
 from model.qa import (
-    ChemicalStructureData,
     QARequestArtifact,
     QAResponse,
     QAResponseMetadata,
@@ -107,18 +106,16 @@ class DataSupporter:
                 data=data_artifact,
             )
         )
+        logger.info("Done")
 
-        logger.info("Retrieving visualisation data")
-        chem_struct_data: list[ChemicalStructureData] = []
-        for cls in ["os:Species", "zeo:ZeoliteFramework", "zeo:ZeoliticMaterial"]:
-            vars = [
-                var for var in data_req.visualise if data_req.var2cls.get(var) == cls
-            ]
-            iris = [iri for var in vars for iri in var2iris.get(var, [])]
-            iris = list(set(iris))
-            chem_struct_data.extend(
-                (x for x in self.vis_data_store.get(cls, iris) if x)
-            )
+        logger.info("Retrieving visualisation data...")
+        clses = [
+            data_req.var2cls.get(var)
+            for var in data_req.visualise
+            for _ in var2iris.get(var, [])
+        ]
+        iris = [iri for var in data_req.visualise for iri in var2iris.get(var, [])]
+        chem_struct_data = self.vis_data_store.get(cls=clses, iris=iris)
         logger.info("Done")
 
         return QAResponse(
