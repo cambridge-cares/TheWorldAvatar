@@ -44,7 +44,7 @@ entity_linking:
     strategy: semantic
     k: 3
   - cls: os:Use
-    strategy: "semantic",
+    strategy: "semantic"
     k: 3
   - cls: LandUseType
     strategy: semantic
