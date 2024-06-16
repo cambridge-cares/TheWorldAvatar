@@ -1,3 +1,4 @@
+from collections import defaultdict
 from functools import cache
 from typing import Annotated
 
@@ -29,7 +30,22 @@ class VisualisationDataStore:
         self.ontospecies_store = ontospecies_store
         self.ontozeolite_store = ontozeolite_store
 
-    def get(self, cls: str, iris: list[str]):
+    def get(self, cls: str | list[str | None], iris: list[str]):
+        if isinstance(cls, str):
+            return self._get(cls, iris)
+
+        cls2iris: defaultdict[str, list[str]] = defaultdict(list)
+        for c, iri in zip(cls, iris):
+            cls2iris[c].append(iri)
+
+        iri2datum: dict[str, ChemicalStructureData | None] = dict()
+        for c, same_type_iris in cls2iris.items():
+            data = self._get(cls=c, iris=same_type_iris)
+            iri2datum.update({iri: datum for iri, datum in zip(same_type_iris, data)})
+
+        return [iri2datum.get(iri) for iri in iris]
+
+    def _get(self, cls: str, iris: list[str]):
         if cls == "os:Species":
             vis_data = self.xyz_manager.get(iris)
             models = self.ontospecies_store.get_species(iris)
