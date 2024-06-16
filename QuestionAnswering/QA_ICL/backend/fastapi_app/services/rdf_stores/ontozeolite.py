@@ -19,10 +19,10 @@ class OntozeoliteRDFStore(Cls2GetterRDFStore):
             "zeo:ZeoliticMaterial": self.get_zeolitic_materials,
         }
 
-    def get_zeolite_frameworks(self, iris: Sequence[str]):
+    def get_zeolite_frameworks(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(OntozeoliteZeoliteFramework, iris)
 
-    def get_zeolitic_materials(self, iris: Sequence[str]):
+    def get_zeolitic_materials(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(OntozeoliteZeoliticMaterial, iris)
 
 

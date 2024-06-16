@@ -38,20 +38,20 @@ class OntokinPolynomial(RDFEntity):
 class OntokinThermoModel(RDFEntity):
     Tmin: OntokinHasValueHasUnit = RDFField(path=ONTOKIN.hasTmin)
     Tmax: OntokinHasValueHasUnit = RDFField(path=ONTOKIN.hasTmax)
-    polynomials: list[OntokinHasValueHasUnit] = RDFField(path=ONTOKIN.hasPolynomial)
+    polynomials: list[OntokinPolynomial] = RDFField(path=ONTOKIN.hasPolynomial)
 
 
 class OntokinTransportModel(RDFEntity):
     dipole_moment: OntokinHasValueHasUnit = RDFField(path=ONTOKIN.hasDipoleMoment)
-    LJ_collision_diamater: OntokinHasValueHasUnit | None = RDFField(
-        path=ONTOKIN.hasLJCollisionDiamater
+    LJ_collision_diameter: OntokinHasValueHasUnit | None = RDFField(
+        path=ONTOKIN.hasLJCollisionDiameter
     )
     LJ_potential_well_depth: OntokinHasValueHasUnit = RDFField(
         path=ONTOKIN.hasLJPotentialWellDepth
     )
     polarizability: OntokinHasValueHasUnit = RDFField(path=ONTOKIN.hasPolarizability)
-    rotational_relaxation_collision_number: OntokinHasValueHasUnit = RDFField(
-        path=ONTOKIN.hasRotationalRelaxationCollisionNumber
+    rotational_relaxation_collision_number: int = RDFField(
+        path=ONTOKIN.hasRotationalRelaxationCollisionNumber / ONTOKIN.value
     )
     shape_index: int = RDFField(path=ONTOKIN.hasShapeIndex / ONTOKIN.value)
 

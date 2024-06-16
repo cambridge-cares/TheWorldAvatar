@@ -1,6 +1,6 @@
 from collections import defaultdict
 from functools import cache
-from typing import Annotated, Sequence
+from typing import Annotated
 
 from fastapi import Depends
 from rdflib import URIRef
@@ -57,7 +57,7 @@ class OntocompchemRDFStore(Cls2GetterRDFStore):
             "occ:CalculationResult": self.get_calculation_results,
         }
 
-    def get_calculation_results(self, iris: Sequence[str]):
+    def get_calculation_results(self, iris: list[str] | tuple[str]):
         query = """SELECT * 
 WHERE {{
     VALUES ?iri {{ {iris} }}

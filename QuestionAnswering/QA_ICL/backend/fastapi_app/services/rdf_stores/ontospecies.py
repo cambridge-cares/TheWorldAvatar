@@ -1,5 +1,5 @@
 from functools import cache
-from typing import Annotated, Sequence
+from typing import Annotated
 
 from fastapi import Depends
 
@@ -32,22 +32,22 @@ class OntospeciesRDFStore(Cls2GetterRDFStore):
             "os:Use": self.get_has_label_models,
         }
 
-    def get_elements(self, iris: Sequence[str]):
+    def get_elements(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(PeriodictableElement, iris)
 
-    def get_atoms(self, iris: Sequence[str]):
+    def get_atoms(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(GcAtom, iris)
 
-    def get_species(self, iris: Sequence[str]):
+    def get_species(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(OntospeciesSpecies, iris)
 
-    def get_properties(self, iris: Sequence[str]):
+    def get_properties(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(OntospeciesProperty, iris)
 
-    def get_identifiers(self, iris: Sequence[str]):
+    def get_identifiers(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(OntospeciesIdentifier, iris)
 
-    def get_has_label_models(self, iris: Sequence[str]):
+    def get_has_label_models(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(OntospeciesHasLabel, iris)
 
 

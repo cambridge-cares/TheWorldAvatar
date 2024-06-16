@@ -1,6 +1,6 @@
 from collections import defaultdict
 from functools import cache
-from typing import Annotated, Sequence
+from typing import Annotated
 
 from fastapi import Depends
 from rdflib import URIRef
@@ -13,7 +13,9 @@ from model.ontokin import (
     OntokinMultiArrheniusModel,
     OntokinPDepArrheniusModel,
     OntokinReaction,
+    OntokinThermoModel,
     OntokinThreeBodyReactionModel,
+    OntokinTransportModel,
     OntokinTroeModel,
 )
 from services.rdf_orm import RDFStore
@@ -41,15 +43,17 @@ class OntokinRDFStore(Cls2GetterRDFStore):
             "okin:ReactionMechanism": self.get_mechanisms,
             "ocape:ChemicalReaction": self.get_reactions,
             "okin:KineticModel": self.get_kinetic_models,
+            "okin:ThermoModel": self.get_thermo_models,
+            "okin:TransportModel": self.get_transport_models
         }
 
-    def get_mechanisms(self, iris: Sequence[str]):
+    def get_mechanisms(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(OntokinMechanism, iris)
 
-    def get_reactions(self, iris: Sequence[str]):
+    def get_reactions(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(OntokinReaction, iris)
 
-    def get_kinetic_models(self, iris: Sequence[str]):
+    def get_kinetic_models(self, iris: list[str] | tuple[str]):
         query = """SELECT * 
 WHERE {{
     VALUES ?KineticModel {{ {values} }}
@@ -73,6 +77,12 @@ WHERE {{
             iri2model.update({iri: model for iri, model in zip(same_type_iris, models)})
 
         return [iri2model.get(iri) for iri in iris]
+
+    def get_thermo_models(self, iris: list[str] | tuple[str]):
+        return self.rdf_store.getMany(OntokinThermoModel, iris)
+
+    def get_transport_models(self, iris: list[str] | tuple[str]):
+        return self.rdf_store.getMany(OntokinTransportModel, iris)
 
 
 @cache

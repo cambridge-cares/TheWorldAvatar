@@ -22,7 +22,7 @@ class TableDataColumn(BaseModel):
 
 class TableDataBase(BaseModel):
     columns: list[TableDataColumn]
-    data: Sequence[
+    data: list[
         dict[str, str | float | list[str] | list[float] | TableDataBase | None]
     ]
 

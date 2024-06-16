@@ -1,7 +1,6 @@
 from types import NoneType, UnionType
 from typing import (
     Any,
-    Sequence,
     TypeVar,
     get_origin,
     get_args,
@@ -30,7 +29,7 @@ class RDFStore:
     def __init__(self, endpoint: str):
         self.sparql_client = SparqlClient(endpoint)
 
-    def getMany(self, T: type[T], iris: Sequence[str]):
+    def getMany(self, T: type[T], iris: list[str] | tuple[str]):
         if not iris:
             empty_lst: list[T | None] = []
             return empty_lst
