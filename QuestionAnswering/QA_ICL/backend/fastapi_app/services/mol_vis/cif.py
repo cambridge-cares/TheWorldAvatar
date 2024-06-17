@@ -24,7 +24,7 @@ class CIFManager:
         if not iris:
             return [None for _ in iris]
 
-        unique_iris = list(set(iris))
+        unique_iris = set(iris)
 
         query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>

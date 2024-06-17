@@ -1,3 +1,4 @@
+from collections import defaultdict
 from functools import cache
 import logging
 from typing import Annotated
@@ -5,6 +6,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from model.qa import (
+    ChemicalStructureData,
     QARequestArtifact,
     QAResponse,
     QAResponseMetadata,
@@ -94,7 +96,7 @@ class DataSupporter:
             entity_bindings=var2iris,
             const_bindings=data_req.const_bindings,
             req_form=data_req.req_form,
-            vis_vars=data_req.visualise
+            vis_vars=data_req.visualise,
         )
         logger.info("Done")
 
@@ -110,14 +112,6 @@ class DataSupporter:
         logger.info("Done")
 
         logger.info("Retrieving visualisation data...")
-        for var in data_req.visualise:
-            if var not in var2iris:
-                continue
-            if var not in vis_var2iris:
-                vis_var2iris[var] = var2iris[var]
-            else:
-                vis_var2iris[var].extend(var2iris[var])
-
         clses = [
             data_req.var2cls.get(var)
             for var in data_req.visualise
@@ -125,12 +119,15 @@ class DataSupporter:
         ]
         iris = [iri for var in data_req.visualise for iri in vis_var2iris.get(var, [])]
         chem_struct_data = self.vis_data_store.get(cls=clses, iris=iris)
-        
-        iri2var = {iri: var for var, iris in var2iris.items() for iri in iris}
-        vis_var2structs = {
-            var: [datum for iri, datum in zip(iris, chem_struct_data) if datum and iri2var.get(iri) == var]
-            for var in data_req.visualise
-        }
+
+        iri2var = {iri: var for var, iris in vis_var2iris.items() for iri in iris}
+        vis_var2structs: defaultdict[str, list[ChemicalStructureData]] = defaultdict(
+            list
+        )
+        for iri, datum in zip(iris, chem_struct_data):
+            if iri not in iri2var or not datum:
+                continue
+            vis_var2structs[iri2var[iri]].append(datum)
         logger.info("Done")
 
         return QAResponse(
