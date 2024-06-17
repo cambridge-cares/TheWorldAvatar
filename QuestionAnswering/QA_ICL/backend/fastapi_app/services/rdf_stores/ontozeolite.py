@@ -1,8 +1,8 @@
 from functools import cache
-from typing import Annotated, Sequence
+from typing import Annotated
 
 from fastapi import Depends
-from model.ontozeolite import OntozeoliteZeoliteFramework, OntozeoliteZeoliticMaterial
+from model.kg.ontozeolite import OntozeoliteZeoliteFramework, OntozeoliteZeoliticMaterial
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2GetterRDFStore
 from services.sparql import get_ontozeolite_endpoint

@@ -6,7 +6,8 @@ from fastapi import Depends
 from rdflib import URIRef
 
 from constants.namespace import ONTOCOMPCHEM
-from model.ontocompchem import (
+from model.kg.ontocompchem import (
+    OntocompchemCalculationResult,
     OntocompchemFrequencies,
     OntocompchemHOMOEnergy,
     OntocompchemHOMOMinus1Energy,
@@ -23,13 +24,14 @@ from model.ontocompchem import (
     OntocompchemTotalGibbsFreeEnergy,
     OntocompchemZeroPointEnergy,
 )
+from model.rdf_orm import RDFEntity
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2GetterRDFStore
 from services.sparql import SparqlClient, get_ontocompchem_endpoint
 
 
 class OntocompchemRDFStore(Cls2GetterRDFStore):
-    URI2CLS = {
+    URI2CLS: dict[URIRef, type[OntocompchemCalculationResult]] = {
         ONTOCOMPCHEM.OptimizedGeometry: OntocompchemOptimizedGeometry,
         ONTOCOMPCHEM.RotationalConstants: OntocompchemRotationalConstants,
         ONTOCOMPCHEM.Frequencies: OntocompchemFrequencies,
@@ -58,6 +60,10 @@ class OntocompchemRDFStore(Cls2GetterRDFStore):
         }
 
     def get_calculation_results(self, iris: list[str] | tuple[str]):
+        if not iris:
+            lst: list[OntocompchemCalculationResult | None] = []
+            return lst 
+
         query = """SELECT * 
 WHERE {{
     VALUES ?iri {{ {iris} }}
@@ -71,15 +77,16 @@ WHERE {{
         for binding in bindings:
             type2iris[binding["type"]].append(binding["iri"])
 
-        iri2model = dict()
+        iri2model: dict[str, OntocompchemCalculationResult] = dict()
         for type, same_type_iris in type2iris.items():
             type = URIRef(type)
             model_cls = self.URI2CLS.get(type)
             if model_cls is None:
                 continue
             models = self.rdf_store.getMany(model_cls, iris=same_type_iris)
-            iri2model.update({iri: model for iri, model in zip(same_type_iris, models)})
+            iri2model.update({iri: model for iri, model in zip(same_type_iris, models) if model})
 
+        return [iri2model.get(iri) for iri in iris]
 
 @cache
 def get_ontocompchem_rdfStore(

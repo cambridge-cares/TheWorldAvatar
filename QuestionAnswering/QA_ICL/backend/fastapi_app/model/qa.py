@@ -22,9 +22,7 @@ class TableDataColumn(BaseModel):
 
 class TableDataBase(BaseModel):
     columns: list[TableDataColumn]
-    data: list[
-        dict[str, str | float | list[str] | list[float] | TableDataBase | None]
-    ]
+    data: list[dict[str, str | float | list[str] | list[float] | TableDataBase | None]]
 
     @classmethod
     def from_data(
@@ -40,7 +38,7 @@ class TableDataBase(BaseModel):
                     cols_set.add(k)
 
         for datum in data:
-            new_kv: dict[str, cls] = dict()
+            new_kv: dict[str, TableDataBase] = dict()
             for k, v in datum.items():
                 if (isinstance(v, list) or isinstance(v, tuple)) and all(
                     isinstance(elem, dict) for elem in v
@@ -125,4 +123,4 @@ class QAResponse(BaseModel):
     request_id: str
     metadata: QAResponseMetadata
     data: list[DataItem]
-    visualisation: list[ChemicalStructureData]
+    visualisation: dict[str, list[ChemicalStructureData]]

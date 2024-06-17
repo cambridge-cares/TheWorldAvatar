@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from model.ontospecies import (
+from model.kg.ontospecies import (
     GcAtom,
     OntospeciesHasLabel,
     OntospeciesIdentifier,

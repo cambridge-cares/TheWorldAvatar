@@ -26,10 +26,12 @@ class FuncDataReqExecutor:
         entity_bindings: dict[str, list[str]],
         const_bindings: dict[str, object],
         req_form: FuncDataReqForm,
-    ) -> tuple[list[DataItem], object]:
+        vis_vars: list[str]
+    ):
         data = self.name2func[req_form.name](**entity_bindings, **const_bindings)
         artifact = data
-        return data, artifact
+        vis_var2iris: dict[str, list[str]] = dict()
+        return data, artifact, vis_var2iris
 
 
 def get_funcReq_executor(

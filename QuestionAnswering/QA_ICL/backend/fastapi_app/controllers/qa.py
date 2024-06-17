@@ -89,11 +89,12 @@ class DataSupporter:
         logger.info("Linked IRIs: " + str(var2iris))
 
         logger.info("Executing data request...")
-        data, data_artifact = self.executor.exec(
+        data, data_artifact, vis_var2iris = self.executor.exec(
             var2cls=data_req.var2cls,
             entity_bindings=var2iris,
             const_bindings=data_req.const_bindings,
             req_form=data_req.req_form,
+            vis_vars=data_req.visualise
         )
         logger.info("Done")
 
@@ -109,13 +110,27 @@ class DataSupporter:
         logger.info("Done")
 
         logger.info("Retrieving visualisation data...")
+        for var in data_req.visualise:
+            if var not in var2iris:
+                continue
+            if var not in vis_var2iris:
+                vis_var2iris[var] = var2iris[var]
+            else:
+                vis_var2iris[var].extend(var2iris[var])
+
         clses = [
             data_req.var2cls.get(var)
             for var in data_req.visualise
-            for _ in var2iris.get(var, [])
+            for _ in vis_var2iris.get(var, [])
         ]
-        iris = [iri for var in data_req.visualise for iri in var2iris.get(var, [])]
+        iris = [iri for var in data_req.visualise for iri in vis_var2iris.get(var, [])]
         chem_struct_data = self.vis_data_store.get(cls=clses, iris=iris)
+        
+        iri2var = {iri: var for var, iris in var2iris.items() for iri in iris}
+        vis_var2structs = {
+            var: [datum for iri, datum in zip(iris, chem_struct_data) if datum and iri2var.get(iri) == var]
+            for var in data_req.visualise
+        }
         logger.info("Done")
 
         return QAResponse(
@@ -129,7 +144,7 @@ class DataSupporter:
                 linked_variables=var2iris,
             ),
             data=data,
-            visualisation=chem_struct_data,
+            visualisation=vis_var2structs,
         )
 
 

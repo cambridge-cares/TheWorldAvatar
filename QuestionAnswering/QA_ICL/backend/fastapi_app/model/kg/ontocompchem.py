@@ -2,7 +2,7 @@ from typing import Annotated, Literal
 
 from pydantic import Field
 from constants.namespace import ONTOCOMPCHEM, ONTOSPECIES
-from model.ontospecies import GcAtom
+from model.kg.ontospecies import GcAtom
 from model.rdf_orm import RDFEntity, RDFField
 
 
