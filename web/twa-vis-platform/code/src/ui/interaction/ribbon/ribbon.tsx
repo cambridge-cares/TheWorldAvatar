@@ -74,7 +74,6 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
   if (isRibbonToggled) {
     return (
       <div className={styles.ribbonContainer}>
-
         <Box className={styles.ribbon}>
           <Box>
             <Tabs
@@ -143,19 +142,19 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                   set3DTerrain(state, props.map);
                 }}
               />
-                <RibbonComponentToggle
-                  icon="/images/defaults/icons/maximise.svg"
-                  text="Full Screen"
-                  tooltip="Toggle fullscreen mode."
-                  initialState={false}
-                  action={state => {
-                    if (state) {
-                      openFullscreen();
-                    } else {
-                      closeFullscreen();
-                    }
-                  }}
-                />
+              <RibbonComponentToggle
+                icon="/images/defaults/icons/maximise.svg"
+                text="Full Screen"
+                tooltip="Toggle fullscreen mode."
+                initialState={false}
+                action={state => {
+                  if (state) {
+                    openFullscreen();
+                  } else {
+                    closeFullscreen();
+                  }
+                }}
+              />
               <Divider orientation="vertical" flexItem />
               {props.hasScenario &&
                 <RibbonComponentToggle
