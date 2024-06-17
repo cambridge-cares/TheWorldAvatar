@@ -162,7 +162,7 @@ class EntityStore:
 
             fz_dist += 1
 
-        return iris
+        return list(set(iris))
 
     def link(
         self,

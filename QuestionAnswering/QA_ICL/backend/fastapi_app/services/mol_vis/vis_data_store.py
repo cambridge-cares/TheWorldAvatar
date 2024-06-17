@@ -49,7 +49,14 @@ class VisualisationDataStore:
         if cls == "os:Species":
             vis_data = self.xyz_manager.get(iris)
             models = self.ontospecies_store.get_species(iris)
-            labels = [model.label if model else None for model in models]
+            labels = [
+                (
+                    "{} ({})".format(model.label, model.IUPAC_name.value)
+                    if model.IUPAC_name
+                    else model.label if model else None
+                )
+                for model in models
+            ]
         elif cls in ["zeo:ZeoliteFramework", "zeo:ZeoliteMaterial"]:
             vis_data = self.cif_manager.get(iris)
             if cls == "zeo:ZeoliteFramework":

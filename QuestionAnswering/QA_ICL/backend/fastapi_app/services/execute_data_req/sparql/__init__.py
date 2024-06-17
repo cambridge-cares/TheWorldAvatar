@@ -67,7 +67,12 @@ class SparqlDataReqExecutor:
             prefixed_query
         )
         vis_var2iris = {
-            var: [binding[var] for binding in bindings if var in binding]
+            var: list(
+                set(
+                    entity_bindings.get(var, [])
+                    + [binding[var] for binding in bindings if var in binding]
+                )
+            )
             for var in vis_vars
         }
 

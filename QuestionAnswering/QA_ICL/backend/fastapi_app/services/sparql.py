@@ -1,5 +1,4 @@
 from functools import cache
-import logging
 from typing import Annotated, Dict, List, Literal, Optional
 
 
@@ -9,17 +8,15 @@ from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 from config import AppSettings, get_app_settings
 
-logger = logging.getLogger(__name__)
-
 
 class SparqlSelectResponseHead(BaseModel):
-    model_config = ConfigDict(froze=True)
+    model_config = ConfigDict(frozen=True)
 
     vars: List[str]
 
 
 class SparqlSelectResponseBindingValue(BaseModel):
-    model_config = ConfigDict(froze=True)
+    model_config = ConfigDict(frozen=True)
 
     datatype: Optional[str] = None
     type: Literal["uri", "literal"]
@@ -27,13 +24,13 @@ class SparqlSelectResponseBindingValue(BaseModel):
 
 
 class SparqlSelectResponseResults(BaseModel):
-    model_config = ConfigDict(froze=True)
+    model_config = ConfigDict(frozen=True)
 
     bindings: List[Dict[str, SparqlSelectResponseBindingValue]]
 
 
 class SparqlSelectResponse(BaseModel):
-    model_config = ConfigDict(froze=True)
+    model_config = ConfigDict(frozen=True)
 
     head: SparqlSelectResponseHead
     results: SparqlSelectResponseResults
@@ -52,14 +49,8 @@ class SparqlClient:
         self.res_adapter = TypeAdapter(SparqlSelectResponse)
 
     def querySelect(self, query: str):
-        logger.info(
-            "Executing the following SPARQL query at {endpoint}:\n{query}".format(
-                endpoint=self.sparql.endpoint, query=query
-            )
-        )
         self.sparql.setQuery(query)
         res = self.sparql.queryAndConvert()
-        logger.info("Execution done")
         return self.res_adapter.validate_python(res)
 
     def flatten_select_response(self, res: SparqlSelectResponse):

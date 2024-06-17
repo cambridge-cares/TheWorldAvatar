@@ -34,14 +34,12 @@ class RDFStore:
             empty_lst: list[T | None] = []
             return empty_lst
 
-        unique_iris = list(set(iris))
-
         query = """SELECT *
 WHERE {{
     VALUES ?iri {{ {iris} }}
     {triples}
 }}""".format(
-            iris=" ".join("<{iri}>".format(iri=iri) for iri in unique_iris),
+            iris=" ".join("<{iri}>".format(iri=iri) for iri in set(iris)),
             triples=" UNION ".join(
                 """{{
     BIND ( "{field}" as ?field )

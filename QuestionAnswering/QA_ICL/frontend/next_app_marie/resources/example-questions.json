@@ -3,53 +3,62 @@
     "heading": "Chemical Species Properties",
     "questions": [
       "What is the charge of benzene?",
-      "How many hydrogen bond acceptors does H2O have and what is its boiling point?",
-      "Could you provide the number of defined atom stereocenters of trinitrotoluenes?",
-      "Can you provide information about the chemical classes attributed to InChI=1S/C3H9NO/c1-3(5)2-4/h3,5H,2,4H2,1H3?",
-      "What are the applications of 2-amino-4-sulfanyl-butanoic acid?",
-      "Show the IUPAC name of CH2O2",
-      "Find all species with boiling point above 0°C",
-      "What are the chemical species having molecular weight around 150 g/mol?",
-      "Provide a roster of chemical species used as pH regulators",
-      "Find alcohol solvents with a boiling point between 100°C and 120°C"
+      "How many hydrogen bonds can an ethylene glycol molecule accept and donate?",
+      "What chemical classifications does caffeine fall under?",
+      "Find all uses of 3-amino-2-propanol",
+      "Show me all species with molecular formula C6H8O6",
+      "What are some compounds with molecular weight around 150 g/mol?",
+      "What are some applications of alkanes?",
+      "Find all chemical species that are alicyclic and aliphatic",
+      "What are solubilities in water of various amino acids?",
+      "List all alcohol solvents with a boiling point between 100°C and 120°C",
+      "Show me the 3D structure of reduced coenzyme M"
     ]
   },
   {
     "heading": "Gas-Phase Reaction Mechanisms",
     "questions": [
-      "List all mechanisms that involve O, H, and AR",
-      "What are the reactions involved in the mechanism outlined by www.osti.gov/servlets/purl/90098-26Ev73/webviewable/ ?",
-      "What are reactions in which O2 is a reactant and [OH] is a product?",
-      "What are the rate constant parameters of reactions that consume H2?",
-      "Please compare the rate constant parameters of the reaction H2 + OH = H2O + H across all mechanisms it appears in",
-      "Compare thermodynamic models of O2 across all the mechanisms in which it appears",
+      "List all mechanisms available",
+      "Find mechanisms that include the reactions H + OH + M = H2O + M and HO2 + H = O + H2O",
+      "List all mechanisms that involve oxygen and argon",
+      "List all reactions involved in the mechanism linked to www.osti.gov/servlets/purl/90098-26Ev73/webviewable/",
+      "List all the reactions that consume H2O2 in the mechanism https://doi.org/10.1002/kin.20026",
+      "What are the reactions in which H2 reacts to form OH radical?",
+      "Please compare the rate constant parameters of the reaction H2 + OH = H2O + H across all mechanisms it appears in.",
+      "What is the kinetic model of the chemical reaction H2O2 + OH = HO2 + H2O involved in the mechanism www.osti.gov/servlets/purl/90098-26Ev73/webviewable/?",
+      "List all the reactions that consume H2O2 in the mechanism by https://doi.org/10.1002/kin.20026",
+      "For the chemical species that appear in the reaction mechanism found in https://doi.org/10.1016/j.combustflame.2007.10.024, what is their thermodynamic model",
+      "Compare transport models of O2 across all the mechanisms in which it appears",
       "Compare thermodynamic models of species classified as organic radical across all the mechanisms in which it appears"
     ]
   },
   {
     "heading": "Quantum Chemistry Computations",
     "questions": [
-      "What is the optimized geometry of O2 at the UB3LYP level of theory?",
-      "Can you provide the molecular structure of H2 calculated using RB3LYP level of theory?",
-      "Compare zero-point energy when using CC-pVTZ vs CC-pVQZ basis set for Ar",
-      "What is the calculated energy of H2O, specify the basis set?",
-      "Can you provide the HOMO and LUMO energies for N2 at the RB3LYP level?",
-      "What are the rotational constants for H2O at the RB3LYP level?",
-      "What is the energy of O2 at the UB3LYP level of theory?"
+      "Compare zero-point energy of Ar calculated using CC-pVTZ vs CC-pVQZ basis set",
+      "What are the LUMO and HOMO energies of H calculated at UB3LYP level of theory?",
+      "What are the rotational constants for H2O calculated at the RB3LYP level and CC-pVDZ basis set?"      
     ]
   },
   {
     "heading": "Zeolites",
     "questions": [
-      "What are the zeolites with specific accessible area between 1000 and 1200?",
+      "List all zeolitic materials that fall under the framework code AEN",
+      "What is the reference zeolite for DOH?",
+      "What is the zeolite framework of |(Quin)|[Si34O68]?",
       "What is the unit cell information of zeolite ABW?",
-      "what's the tile information of zeolite MOZ?",
+      "What is the tile information of zeolite |(DMA)24)4|[Ga24Ge72O192]?",
+      "What is the topological density of zeolite SFN?",
+      "What are the ring sizes of zeolitic material with the formula |(NH4)4|[Be4P4O16]?",
+      "Find zeolitic materials with triclinic lattice system",
+      "Show me all zeolites with accessible area per cell greater than 500 Å² and occupiable volume per cell less than 200 Å³.",
       "Give me a list of all guest species that have been recorded for zeolite framework FAU",
       "What are zeolitic materials that take Na+ as a guest species?",
       "Show me zeolite frameworks incorporating tetraethylammonium",
-      "Find zeolites with components Ta and N",
+      "Find zeolitic materials with components Ta and N",
       "Find zeolite frameworks built by Al and Si only",
-      "Show me the species incorporated by zeolites made of Al and P elements"
+      "Show me the species incorporated by zeolites made of Al and P elements",
+      "Find me the provenance of zeolitic material |(EDA)2(H)4|[Mg4P4O16]"
     ]
   }
 ]

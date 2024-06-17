@@ -5,20 +5,8 @@ from typing import Annotated, Sequence
 from fastapi import Depends
 from pydantic import BaseModel
 
+from services.rdf_stores import get_rdfStores
 from services.rdf_stores.base import Cls2GetterRDFStore
-from services.rdf_stores.ontocompchem import (
-    OntocompchemRDFStore,
-    get_ontocompchem_rdfStore,
-)
-from services.rdf_stores.ontokin import OntokinRDFStore, get_ontokin_rdfStore
-from services.rdf_stores.ontospecies import (
-    OntospeciesRDFStore,
-    get_ontospecies_rdfStore,
-)
-from services.rdf_stores.ontozeolite import (
-    OntozeoliteRDFStore,
-    get_ontozeolite_rdfStore,
-)
 from utils.collections import FrozenDict, listofdict2dictoflist
 
 
@@ -54,7 +42,7 @@ class SparqlResponseTransformer:
             )
             for binding, datum in zip(bindings, retrieved_data):
                 binding[var] = (
-                    FrozenDict.from_dict(datum.model_dump())
+                    FrozenDict.from_dict(datum.model_dump(exclude_none=True))
                     if isinstance(datum, BaseModel)
                     else datum
                 )
@@ -78,17 +66,6 @@ class SparqlResponseTransformer:
 
 @cache
 def get_sparqlRes_transformer(
-    ontospecies_store: Annotated[
-        OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
-    ],
-    ontokin_store: Annotated[OntokinRDFStore, Depends(get_ontokin_rdfStore)],
-    ontocompchem_store: Annotated[
-        OntocompchemRDFStore, Depends(get_ontocompchem_rdfStore)
-    ],
-    ontozeolite_store: Annotated[
-        OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
-    ],
+    stores: Annotated[tuple[Cls2GetterRDFStore, ...], Depends(get_rdfStores)]
 ):
-    return SparqlResponseTransformer(
-        stores=(ontospecies_store, ontokin_store, ontocompchem_store, ontozeolite_store)
-    )
+    return SparqlResponseTransformer(stores=stores)
