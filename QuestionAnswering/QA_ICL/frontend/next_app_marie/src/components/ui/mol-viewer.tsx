@@ -5,9 +5,20 @@ import * as React from 'react'
 export interface MolViewerProps extends React.HTMLAttributes<HTMLDivElement> {
   type: 'xyz' | 'cif'
   data: string
+  backgroundColor?: string
 }
 
-export function MolViewer({ type, data, className, ...props }: MolViewerProps) {
+export function MolViewer({
+  type,
+  data,
+  className,
+  backgroundColor,
+  ...props
+}: MolViewerProps) {
+  const backgroundColorComputed = React.useMemo(
+    () => backgroundColor || '#f1f5f9',
+    [backgroundColor]
+  )
   const ref = React.useRef<null | HTMLDivElement>(null)
 
   React.useEffect(() => {
@@ -15,9 +26,9 @@ export function MolViewer({ type, data, className, ...props }: MolViewerProps) {
       if (ref.current !== null) {
         // @ts-ignore
         const $3Dmol = await import('3dmol/build/3Dmol.js')
-        console.log($3Dmol)
-        const viewer = $3Dmol.createViewer(ref.current, {})
-        console.log(viewer)
+        const viewer = $3Dmol.createViewer(ref.current, {
+          backgroundColor: backgroundColorComputed,
+        })
         viewer.addModel(data, type)
         viewer.setStyle({}, { stick: { radius: 0.1 }, sphere: { scale: 0.2 } })
         viewer.zoomTo()
@@ -26,7 +37,7 @@ export function MolViewer({ type, data, className, ...props }: MolViewerProps) {
       }
     }
     mountViewer()
-  }, [type, data])
+  }, [backgroundColorComputed, type, data])
 
   return (
     <div

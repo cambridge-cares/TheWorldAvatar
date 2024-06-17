@@ -111,7 +111,7 @@ export interface QAResponse {
   request_id: string
   metadata: QAResponseMetadata
   data: DataItem[]
-  visualisation: ChemStructData[]
+  visualisation: { [key: string]: ChemStructData[] }
 }
 
 export interface ChatRequest {

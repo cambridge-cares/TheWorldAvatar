@@ -5,6 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function isObjectEmtpy(obj: object) {
+  for (const i in obj) return false
+  return true
+}
+
 const URI2PREFIXNAME = {
   'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#': 'os',
   'http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#': 'okin',

@@ -30,7 +30,7 @@ class VisualisationDataStore:
         self.ontospecies_store = ontospecies_store
         self.ontozeolite_store = ontozeolite_store
 
-    def get(self, cls: str | list[str | None], iris: list[str]):
+    def get(self, cls: str | None | list[str | None], iris: list[str]):
         if isinstance(cls, str):
             return self._get(cls, iris)
 

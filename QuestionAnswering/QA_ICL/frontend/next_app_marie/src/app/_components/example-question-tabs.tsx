@@ -50,8 +50,13 @@ export const ExampleQuestionTabs = ({
             {questions.map((qn, i) => (
               <li
                 key={i}
-                onClick={e => { if (disabled) return; questionOnClick(qn, e) }}
-                className={disabled ? "" : 'hover:underline hover:cursor-pointer'}
+                onClick={e => {
+                  if (disabled) return
+                  questionOnClick(qn, e)
+                }}
+                className={
+                  disabled ? '' : 'hover:underline hover:cursor-pointer'
+                }
               >
                 {qn}
               </li>

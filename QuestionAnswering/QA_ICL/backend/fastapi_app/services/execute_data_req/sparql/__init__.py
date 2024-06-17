@@ -49,7 +49,8 @@ class SparqlDataReqExecutor:
         entity_bindings: dict[str, list[str]],
         const_bindings: dict[str, object],
         req_form: SparqlDataReqForm,
-    ) -> tuple[list[DataItem], object]:
+        vis_vars: list[str],
+    ):
         logger.info("Unprocessed query:\n" + req_form.query)
         query = self.query_processor.process(
             sparql=req_form.query,
@@ -65,6 +66,10 @@ class SparqlDataReqExecutor:
         vars, bindings = self.ns2kg[req_form.namespace].querySelectThenFlatten(
             prefixed_query
         )
+        vis_var2iris = {
+            var: [binding[var] for binding in bindings if var in binding]
+            for var in vis_vars
+        }
 
         logger.info("Transforming SPARQL response to documents...")
         docs = self.response_processor.transform(
@@ -82,8 +87,8 @@ class SparqlDataReqExecutor:
         logger.info("Done")
 
         data_artifact = table_data
-
-        return [docs_collection, table_data], data_artifact
+        support_data: list[DataItem] = [docs_collection, table_data]
+        return support_data, data_artifact, vis_var2iris
 
 
 @cache

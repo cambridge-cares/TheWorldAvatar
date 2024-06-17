@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import Depends
 from rdflib import URIRef
 from constants.namespace import ONTOKIN
-from model.ontokin import (
+from model.kg.ontokin import (
     OntokinArrheniusModel,
     OntokinKineticModel,
     OntokinLindemannModel,
@@ -24,7 +24,7 @@ from services.sparql import SparqlClient, get_ontokin_endpoint
 
 
 class OntokinRDFStore(Cls2GetterRDFStore):
-    KINETIC_MODEL_URI2CLS = {
+    KINETIC_MODEL_URI2CLS: dict[URIRef, type[OntokinKineticModel]] = {
         ONTOKIN.ArrheniusModel: OntokinArrheniusModel,
         ONTOKIN.PDepArrheniusModel: OntokinPDepArrheniusModel,
         ONTOKIN.MultiArrheniusModel: OntokinMultiArrheniusModel,
@@ -44,7 +44,7 @@ class OntokinRDFStore(Cls2GetterRDFStore):
             "ocape:ChemicalReaction": self.get_reactions,
             "okin:KineticModel": self.get_kinetic_models,
             "okin:ThermoModel": self.get_thermo_models,
-            "okin:TransportModel": self.get_transport_models
+            "okin:TransportModel": self.get_transport_models,
         }
 
     def get_mechanisms(self, iris: list[str] | tuple[str]):
@@ -54,6 +54,10 @@ class OntokinRDFStore(Cls2GetterRDFStore):
         return self.rdf_store.getMany(OntokinReaction, iris)
 
     def get_kinetic_models(self, iris: list[str] | tuple[str]):
+        if not iris:
+            lst: list[OntokinKineticModel | None] = []
+            return lst
+
         query = """SELECT * 
 WHERE {{
     VALUES ?KineticModel {{ {values} }}
@@ -61,7 +65,6 @@ WHERE {{
 }}""".format(
             values=" ".join("<{iri}>".format(iri=iri) for iri in iris)
         )
-
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
 
         type2iris: defaultdict[str, list[str]] = defaultdict(list)
@@ -74,7 +77,9 @@ WHERE {{
             if not model_cls:
                 continue
             models = self.rdf_store.getMany(model_cls, iris=same_type_iris)
-            iri2model.update({iri: model for iri, model in zip(same_type_iris, models)})
+            iri2model.update(
+                {iri: model for iri, model in zip(same_type_iris, models) if model}
+            )
 
         return [iri2model.get(iri) for iri in iris]
 

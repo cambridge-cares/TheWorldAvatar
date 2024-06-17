@@ -8,9 +8,23 @@ from model.nlq2datareq import (
     FuncDataReqForm,
     SparqlDataReqForm,
 )
+from model.qa import DataItem
 
 from .func import FuncDataReqExecutor, get_funcReq_executor
 from .sparql import SparqlDataReqExecutor, get_sparqlReq_executor
+
+
+def _fallback_exec(
+    var2cls: dict[str, str],
+    entity_bindings: dict[str, list[str]],
+    const_bindings: dict[str, object],
+    req_form: SparqlDataReqForm,
+    vis_vars: list[str],
+):
+    data: list[DataItem] = []
+    artifact = None
+    vis_var2iris: dict[str, list[str]] = dict()
+    return data, artifact, vis_var2iris
 
 
 class DataReqExecutor:
@@ -26,19 +40,21 @@ class DataReqExecutor:
         entity_bindings: dict[str, list[str]],
         const_bindings: dict[str, object],
         req_form: DataRequestForm | None,
+        vis_vars: list[str],
     ):
         if isinstance(req_form, SparqlDataReqForm):
             exec_func = self.sparql_executor.exec
         elif isinstance(req_form, FuncDataReqForm):
             exec_func = self.func_executor.exec
         else:
-            exec_func = lambda *args, **kwargs: ([], None)
+            exec_func = _fallback_exec
 
         return exec_func(
             var2cls=var2cls,
             entity_bindings=entity_bindings,
             const_bindings=const_bindings,
             req_form=req_form,
+            vis_vars=vis_vars,
         )
 
 
