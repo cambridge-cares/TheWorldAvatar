@@ -1,29 +1,37 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ScenarioDimensionStep } from 'types/timeseries';
+import { ReduxState } from 'app/store';
+// import { ScenarioDimensionStep } from 'types/timeseries';
 
 interface DimensionSliderState {
-    value: number;
-    values: ScenarioDimensionStep[];
+    value: number | number[];
+    // values: ScenarioDimensionStep[];
 }
 
 const initialState: DimensionSliderState = {
     value: 0,
-    values: [],
+    // values: [],
 };
 
 const dimensionSliderSlice = createSlice({
     name: 'dimensionSlider',
     initialState,
     reducers: {
-        setValue: (state, action: PayloadAction<number>) => {
-            state.value = action.payload;
-        },
-        setValues: (state, action: PayloadAction<ScenarioDimensionStep[]>) => {
-            state.values = action.payload;
-        },
+        setValue: (state, action: PayloadAction<number| number[]>) => {
+            if (Array.isArray(action.payload)) {
+                state.value = action.payload;
+            } else {
+                state.value = [action.payload];
+            }
+        }
+        // ,
+        // setValues: (state, action: PayloadAction<ScenarioDimensionStep[]>) => {
+        //     state.values = action.payload;
+        // },
     },
 });
 
-export const { setValue, setValues } = dimensionSliderSlice.actions;
+export const { setValue } = dimensionSliderSlice.actions;
+
+export const selectCount = (state: ReduxState) => state.dimensionSlider.value
 
 export default dimensionSliderSlice.reducer;
