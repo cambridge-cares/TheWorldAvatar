@@ -6,6 +6,6 @@ twa:    https://www.theworldavatar.com/kg/
 
 [MappingDeclaration] @collection [[
 mappingId	gfa
-target		twa:Building/{building_iri} env:hasGFA {gfa} .
+target		twa:Building/{building_uuid} env:hasGFA {gfa} .
 source      SELECT * FROM gfa_floors.gfa
 ]]
