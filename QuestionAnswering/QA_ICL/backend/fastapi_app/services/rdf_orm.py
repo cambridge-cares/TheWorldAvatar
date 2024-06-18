@@ -65,7 +65,7 @@ WHERE {{
                 iri2values = field2iri2values[field]
                 if issubclass(t, RDFEntity):
                     flattened = [v for values in iri2values.values() for v in values]
-                    models = self.getMany(t, flattened)
+                    models = [x for x in self.getMany(t, flattened) if x]
                     count = 0
                     out: dict[str, list[RDFEntity]] = dict()
                     for iri, iri2values in iri2values.items():
@@ -92,7 +92,9 @@ WHERE {{
             for field, (info, _) in T.get_rdf_fields().items()
         }
 
-        iri2field2data = defaultdict(dict)
+        iri2field2data: defaultdict[
+            str, dict[str, RDFEntity | str | list[RDFEntity] | list[str]]
+        ] = defaultdict(dict)
         for field, iri2data in field2iri2data.items():
             for iri, data in iri2data.items():
                 iri2field2data[iri][field] = data

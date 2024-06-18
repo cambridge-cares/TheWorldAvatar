@@ -10,16 +10,14 @@ class ZeoliteFrameworkLinker(IEntityLinker):
         self.sparql_client = SparqlClient(ontozeolite_endpoint)
 
     def link(self, text: Optional[str], **kwargs):
-        if "framework_code" not in kwargs:
+        if "code" not in kwargs:
             return []
 
-        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        query = f"""PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 SELECT ?Framework
 WHERE {{
-    ?Framework zeo:hasFrameworkCode "{framework_code}" .
-}}""".format(
-            framework_code=kwargs["framework_code"]
-        )
+    ?Framework zeo:hasFrameworkCode "{kwargs["code"]}" .
+}}"""
 
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [row["Framework"] for row in bindings]
