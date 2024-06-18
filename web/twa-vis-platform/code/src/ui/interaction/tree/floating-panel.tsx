@@ -10,7 +10,7 @@ import { getIndex, setIndex } from 'state/floating-panel-slice';
 import { getFeatures, getIri, getProperties, getScenario, getStack, MapFeaturePayload } from 'state/map-feature-slice';
 import { MapLayerGroup } from 'types/map-layer';
 import { IconSettings, LegendSettings } from 'types/settings';
-import { generateFIAEndpoint, useFeatureInfoAgentService, useScenarioDimensionsService } from 'utils/data-services';
+import { generateFIAEndpoint, useFeatureInfoAgentService } from 'utils/data-services';
 import DimensionSlider from '../controls/slider';
 import InfoTree from './info/info-tree';
 import LayerTree, { parseIntoTreeStucture } from './layer/layer-tree';
@@ -53,7 +53,8 @@ export default function FloatingPanelContainer(
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
   // Execute API call
   const { attributes, timeSeries, isFetching, isUpdating } = useFeatureInfoAgentService(generateFIAEndpoint(selectedIri, selectedStack, selectedScenario), selectedIri, selectedProperties)
-
+  // check if scenario dimensions passed down from parent component has multiple dimensions
+  const hasMultipleDimensions = Object.values(props.scenarioDimensions).some(array => array.length > 1);
 
   useEffect(() => {
     parseIntoTreeStucture(props.dataStore, props.icons, setMapLayerGroups);
@@ -161,7 +162,7 @@ export default function FloatingPanelContainer(
               />}
           </div>
 
-          {!props.isDimensionsFetching && props.scenarioDimensions && (
+          {!props.isDimensionsFetching && props.scenarioDimensions && hasMultipleDimensions && (
             <div className={styles.floatingPanelControls}>
               <DimensionSlider
                 data={props.scenarioDimensions} />
