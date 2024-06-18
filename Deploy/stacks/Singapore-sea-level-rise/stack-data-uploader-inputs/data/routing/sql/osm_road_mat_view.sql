@@ -4,7 +4,7 @@ SELECT
 w.osm_id,
 w.name, 
 ROUND(CAST(SUM(w.length_m) AS numeric), 2) AS total_length_m,
-c.tag_value AS road_type, 
+INITCAP(c.tag_value) AS road_type, 
 w.oneway, 
 w.maxspeed_forward, 
 w.maxspeed_backward, 

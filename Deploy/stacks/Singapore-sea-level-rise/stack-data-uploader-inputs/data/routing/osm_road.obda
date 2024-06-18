@@ -10,16 +10,18 @@ dbo:    https://dbpedia.org/ontology/
 landplot: https://www.theworldavatar.com/kg/landplot/
 ost:    https://www.theworldavatar.com/kg/ontostreet/
 geo:    http://www.opengis.net/ont/geosparql#
+osm: https://w3id.org/openstreetmap/terms#
+openstreetmap: https://www.openstreetmap.org/
 
 [MappingDeclaration] @collection [[
 mappingId	OSM Road
-target		ost:RoadSegment/{osm_id} a ost:RoadSegment;
-                ost:hasLength "{total_length_m}"^^xsd:double;
-                ost:hasName "{name}";
-                ost:hasRoadType "{road_type}";
-                ost:isOneWay "{oneway}"^^xsd:boolean;
-                ost:hasMaxSpeedForward "{maxspeed_forward}"^^xsd:integer;
-                ost:hasMaxSpeedBackward "{maxspeed_backward}"^^xsd:integer;
+target		openstreetmap:way/{osm_id} a osm:Way ;
+                a osm:{road_type} ;
+                a geo:Feature ;
+                osm:hasLength "{total_length_m}";
+                osm:name "{name}";
+                osm:onewayvalue "{oneway}"; 
+                osm:maxspeed "{maxspeed_forward}";
                 geo:hasGeometry "{geom_comb}"^^geo:wktLiteral.
 source		SELECT osm_id, name, total_length_m, road_type, oneway, maxspeed_forward, maxspeed_backward, ST_ASTEXT(geom) as geom_comb FROM osm_road_mat_view
 ]]
