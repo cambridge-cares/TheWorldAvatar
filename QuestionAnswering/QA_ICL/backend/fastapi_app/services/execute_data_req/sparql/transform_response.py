@@ -47,12 +47,14 @@ class SparqlResponseTransformer:
                     else datum
                 )
 
+        pkeys = set(pkeys)
+        pkeys = [var for var in vars if var in pkeys]
         non_pkeys = [var for var in vars if var not in pkeys]
 
         pkeyvals2data: defaultdict[tuple, list] = defaultdict(list)
         for binding in bindings:
-            pkeyvals = tuple(binding.get(k) for k in pkeys)
-            datum = {k: binding.get(k) for k in non_pkeys}
+            pkeyvals = tuple(binding[k] for k in pkeys if k in binding)
+            datum = {k: binding[k] for k in non_pkeys if k in binding}
             pkeyvals2data[pkeyvals].append(datum)
 
         return [

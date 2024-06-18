@@ -50,7 +50,7 @@ class OntokinTransportModel(RDFEntity):
         path=ONTOKIN.hasLJPotentialWellDepth
     )
     polarizability: OntokinHasValueHasUnit = RDFField(path=ONTOKIN.hasPolarizability)
-    rotational_relaxation_collision_number: int = RDFField(
+    rotational_relaxation_collision_number: float = RDFField(
         path=ONTOKIN.hasRotationalRelaxationCollisionNumber / ONTOKIN.value
     )
     shape_index: int = RDFField(path=ONTOKIN.hasShapeIndex / ONTOKIN.value)

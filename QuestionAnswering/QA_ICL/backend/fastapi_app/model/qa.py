@@ -53,7 +53,8 @@ class TableData(TableDataBase):
 
     @classmethod
     def from_data(cls, data: Sequence[dict[str, object]]):
-        return cls(**super().from_data(data).model_dump())
+        base = super().from_data(data)
+        return cls(columns=base.columns, data=base.data)
 
 
 class ChemicalStructureData(BaseModel):
