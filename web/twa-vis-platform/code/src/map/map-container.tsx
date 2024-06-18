@@ -19,6 +19,7 @@ import Ribbon from 'ui/interaction/ribbon/ribbon';
 import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
 import { parseMapDataSettings } from 'utils/client-utils';
 import { useScenarioDimensionsService } from '../utils/data-services';
+import { ReduxState } from '../app/store';
 
 // Type definition of incoming properties
 interface MapContainerProps {
@@ -40,6 +41,20 @@ export default function MapContainer(props: MapContainerProps) {
   const mapSettings: MapSettings = JSON.parse(props.settings);
   const selectedScenario = useSelector(getScenario);
   const { scenarioDimensions, isDimensionsFetching } = useScenarioDimensionsService(currentScenario?.url, selectedScenario);
+  const dimensionSliderValue = useSelector((state: ReduxState) => state.dimensionSlider.value);
+
+
+  useEffect(() => {
+    if (mapData && currentScenario && selectedScenario) {
+      console.log('dataset URL', `${currentScenario.url}/getDataJson/${selectedScenario}?dataset=${currentScenario.dataset}`);
+      fetch(`${currentScenario.url}/getDataJson/${selectedScenario}?dataset=${currentScenario.dataset}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, dimensionSliderValue.toString());
+          setMapData(parseMapDataSettings(JSON.parse(dataString), mapSettings?.type));
+        });
+    }
+  }, [dimensionSliderValue]);
 
 
   // Retrieves data settings for specified scenario from the server, else, defaults to the local file
@@ -117,7 +132,7 @@ export default function MapContainer(props: MapContainerProps) {
 
         {/* Map information panel */}
         {!showDialog && mapData && <div className={styles.upperContainer}>
-          <FloatingPanelContainer map={map} dataStore={mapData} icons={mapSettings.icons} legend={mapSettings.legend} scenarioDimensions={scenarioDimensions} isDimensionsFetching={isDimensionsFetching }/>
+          <FloatingPanelContainer map={map} dataStore={mapData} icons={mapSettings.icons} legend={mapSettings.legend} scenarioDimensions={scenarioDimensions} isDimensionsFetching={isDimensionsFetching} />
         </div>
         }
         <div className={styles.lowerContainer} />
