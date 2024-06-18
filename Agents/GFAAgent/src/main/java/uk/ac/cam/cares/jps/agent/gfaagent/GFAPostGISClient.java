@@ -29,8 +29,10 @@ public class GFAPostGISClient {
     private static final String GFA_TABLE_NAME = "gfa";
     private static final String COST_TABLE_NAME = "cost";
     private static final Table<Record> GFA_TABLE = DSL.table(DSL.name(SCHEMA_NAME, GFA_TABLE_NAME));
+    private static final Table<Record> COST_TABLE = DSL.table(DSL.name(SCHEMA_NAME, COST_TABLE_NAME));
     private static final Field<String> BUILDING_UUID_COLUMN = DSL.field(DSL.name("building_uuid"), String.class);
     private static final Field<Double> GFA_COLUMN = DSL.field(DSL.name("gfa"), Double.class);
+    private static final Field<Double> COST_COLUMN = DSL.field(DSL.name("cost"), Double.class);
 
     private GFAPostGISClient() {
         throw new IllegalStateException("GFAPostGISClient");
@@ -86,6 +88,22 @@ public class GFAPostGISClient {
             LOGGER.warn("Area for building {} is zero", buildingUuid);
         }
         return area;
+    }
+
+    static void createCostTable(Connection conn) {
+        DSLContext context = DSL.using(conn, DIALECT);
+        try (CreateTableColumnStep step = context.createTableIfNotExists(COST_TABLE)) {
+            step.column(BUILDING_UUID_COLUMN).column(COST_COLUMN).execute();
+        }
+        context.createUniqueIndex().on(COST_TABLE, BUILDING_UUID_COLUMN).execute();
+    }
+
+    static void addCostData(String buildingIri, double cost, Connection conn) {
+        String buildingUuid = extractUuid(buildingIri);
+
+        DSLContext context = DSL.using(conn, DIALECT);
+        context.insertInto(COST_TABLE).columns(BUILDING_UUID_COLUMN, COST_COLUMN).values(buildingUuid, cost)
+                .onConflictDoNothing().execute();
     }
 
     static String extractUuid(String buildingIri) {
