@@ -42,20 +42,23 @@ _cell_angle_beta    {self.beta}
 _cell_angle_gamma   {self.gamma}"""
 
 
-class AtomFracCoords(BaseModel):
+class AtomSite(BaseModel):
+    label: str
     symbol: str
-    x: float
-    y: float
-    z: float
+    fract_x: float
+    fract_y: float
+    fract_z: float
 
     def __str__(self):
-        return f"{self.symbol} {self.x} {self.y} {self.z}"
+        return (
+            f"{self.label} {self.symbol} {self.fract_x} {self.fract_y} {self.fract_z}"
+        )
 
 
 class CrystalInfo(BaseModel):
     name: str
     unit_cell: UnitCellParams
-    atoms: list[AtomFracCoords]
+    atoms: list[AtomSite]
 
     def to_cif_str(self):
         return """data_{name}
@@ -69,10 +72,11 @@ class CrystalInfo(BaseModel):
 {unit_cell_params}
 
 loop_
-    _atom_site_type_symbol
-    _atom_site_fract_x
-    _atom_site_fract_y
-    _atom_site_fract_z
+  _atom_site_label
+  _atom_site_type_symbol
+  _atom_site_fract_x
+  _atom_site_fract_y
+  _atom_site_fract_z
 {atoms}""".format(
             name=self.name,
             unit_cell_params=self.unit_cell,

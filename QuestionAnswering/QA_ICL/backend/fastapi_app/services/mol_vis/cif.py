@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import Depends
 from pydantic import TypeAdapter
 
-from model.mol_vis import AtomFracCoords, CrystalInfo, UnitCellParams
+from model.mol_vis import AtomSite, CrystalInfo, UnitCellParams
 from services.sparql import SparqlClient, get_ontozeolite_endpoint
 
 
@@ -14,9 +14,9 @@ class CIFManager:
 
     def __init__(self, ontozeolite_endpoint: str):
         self.sparql_client = SparqlClient(ontozeolite_endpoint)
-        self.atoms_adapter = TypeAdapter(list[AtomFracCoords])
+        self.atoms_adapter = TypeAdapter(list[AtomSite])
 
-    def _process_atom_site_label(self, label: str):
+    def _atom_site_label2symbol(self, label: str):
         label = "".join(c for c in label if c.isalpha())
         return self.ATOM_SITE_LABEL_MAPPINGS.get(label, label)
 
@@ -69,22 +69,22 @@ WHERE {{
         query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
 
-SELECT ?x ?y ?z ?symbol
+SELECT ?zeo ?fract_x ?fract_y ?fract_z ?label
 WHERE {{
     VALUES ?zeo {{ {iris} }}
     ?zeo ocr:hasCrystalInformation/ocr:hasAtomicStructure/ocr:hasAtomSite ?AtomSite .
     ?AtomSite ocr:hasFractionalPosition/ocr:hasVectorComponent [
         ocr:hasComponentLabel "x" ; 
-        ocr:hasComponentValue ?x
+        ocr:hasComponentValue ?fract_x
     ], [
         ocr:hasComponentLabel "y" ; 
-        ocr:hasComponentValue ?y
+        ocr:hasComponentValue ?fract_y
     ], [
         ocr:hasComponentLabel "z" ; 
-        ocr:hasComponentValue ?z
+        ocr:hasComponentValue ?fract_z
     ] .
     OPTIONAL {{
-        ?AtomSite ocr:hasAtomSiteLabel ?symbol .
+        ?AtomSite ocr:hasAtomSiteLabel ?label .
     }}
 }}""".format(
             iris=" ".join(f"<{iri}>" for iri in unique_iris)
@@ -93,9 +93,8 @@ WHERE {{
 
         iri2atoms = defaultdict(list)
         for binding in bindings:
-            atom = AtomFracCoords.model_validate(binding)
-            atom.symbol = self._process_atom_site_label(atom.symbol)
-            iri2atoms[binding["zeo"]].append(atom)
+            binding["symbol"] = self._atom_site_label2symbol(binding["label"])
+            iri2atoms[binding["zeo"]].append(AtomSite.model_validate(binding))
 
         def make_cif(data: dict):
             try:
