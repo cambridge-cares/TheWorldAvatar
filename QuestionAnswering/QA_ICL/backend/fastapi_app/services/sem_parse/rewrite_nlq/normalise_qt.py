@@ -27,6 +27,8 @@ Your task is to perform recognition and annotation of physical quantities for th
 ### Text:
 {text}"""
 
+    TARGET_UNIT = {"molar_mass": "g/mol", "molecular_weight": "g/mol"}
+
     def __init__(
         self,
         qt_recog_example_store: QtRecogExampleStore,
@@ -41,8 +43,8 @@ Your task is to perform recognition and annotation of physical quantities for th
 
     def normalise_qt(self, type: str, value: float, unit: str):
         qt = self.ureg.Quantity(value, unit)
-        if type == "molar_mass":
-            qt = qt.to("g/mol")
+        if type in self.TARGET_UNIT:
+            qt = qt.to(self.TARGET_UNIT[type])
         else:
             qt = qt.to_base_units()
         return qt.magnitude, str(qt.units)
