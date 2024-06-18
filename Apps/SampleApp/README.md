@@ -65,6 +65,9 @@ The diagram below depicts the overall workflow of the app within the UI - Data l
         app --> fh
         fh --> fp
         fh --> ft
+        fh --> cui
+        fp --> cui
+        ft --> cui
       }
 
       state Data {
