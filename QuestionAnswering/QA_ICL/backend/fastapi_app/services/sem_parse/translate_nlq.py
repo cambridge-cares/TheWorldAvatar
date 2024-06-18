@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class Nlq2DataReqLLMCaller:
-    SYSTEM_MSG = "You are a SPARQL expert designed to output JSON."
     PROMPT_TEMPLATE = """### Data and object properties:
 {properties}
 
@@ -72,7 +71,6 @@ Your task is to translate the following question to an executable data request. 
             model=self.openai_model,
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": self.SYSTEM_MSG},
                 {"role": "user", "content": prompt},
             ],
             temperature=0,
