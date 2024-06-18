@@ -12,8 +12,21 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests', 'tests.*']),
-    install_requires=['py4j==0.10.9.1','docopt','concurrent_log_handler', 'pydantic', 'rdflib==7.0.0', 'requests'],
-    include_package_data= True,
+    install_requires=[
+        'py4j==0.10.9.1',
+        'docopt',
+        'concurrent_log_handler',
+        'pydantic',
+        'rdflib==7.0.0',
+        'requests',
+        'flask',
+        'gunicorn==20.0.4',
+        'Flask-APScheduler',
+        'python-dotenv',
+        'yagmail',
+        'Werkzeug',
+    ],
+    include_package_data=True,
     entry_points={
         'console_scripts': [
             'jpsrm = twa.resRegistry.resManager:start',

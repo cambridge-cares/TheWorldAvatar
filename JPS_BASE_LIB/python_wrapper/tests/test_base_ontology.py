@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 import uuid
+import os
 
 from rdflib import Graph, URIRef, RDF, Literal, XSD
 from typing import ClassVar, ForwardRef
@@ -141,7 +142,9 @@ def test_retrieve_cardinality():
 
 def test_export_to_owl():
     # TODO add more tests to the exported file
-    ExampleOntology.export_to_owl('example_ontology.ttl')
+    fpath = f'example_ontology_{uuid.uuid4()}.ttl'
+    ExampleOntology.export_to_owl(fpath)
+    os.remove(fpath)
 
 
 def test_register_and_clear():
