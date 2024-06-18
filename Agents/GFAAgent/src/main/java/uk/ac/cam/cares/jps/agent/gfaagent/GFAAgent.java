@@ -88,13 +88,4 @@ public class GFAAgent extends HttpServlet {
             ontopClient.updateOBDA(obdaPath);
         }
     }
-
-    public void uploadODBA(Path obdaFile) {
-        try {
-            OntopClient ontopClient = OntopClient.getInstance();
-            ontopClient.updateOBDA(obdaFile);
-        } catch (Exception e) {
-            System.out.println("Could not retrieve isochrone .obda file.");
-        }
-    }
 }
