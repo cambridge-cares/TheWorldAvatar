@@ -22,11 +22,11 @@ In facilitating the single activity paradigm, fragments are implemented as views
 
 The application is structured as modules that can be injected for various purposes to ensure consistency, reusability, and maintainability. At the top level, common build configurations are available in the `<root>/common.gradle` and `<root>/ui.gradle` files, and three modules are available:
 
-- `app`: Serves as the main entry point into the application, starting a single single activity and integrating functionality from the other two modules
+- `app`: Serves as the main entry point into the application, starting a single  activity and integrating functionality from the other two modules
 - `core`: Contains foundational components and utilities that are shared across the entire application. Primarily contains data layer components and some reusable UI components
-  - `data`: Provides data management functionalities, including data sources, repositories, and data access logic. It typically calls the network module to execute data retrieval.
+  - `data`: Provides data management functionalities, including data repositories and persisting data states shared acrosss modules. It typically calls the network module to execute data retrieval.
   - `model`: Defines the data models and entities used throughout the application.
-  - `network`: Handles network operations, such as API requests and responses.
+  - `network`: Handles network operations, such as API requests and responses. It corresponds to the data source in the app architecture.
   - `ui`: Contains reusable UI components, themes, and styles that are used across multiple features.
   - `utils`: Houses utility classes and helper functions that provide common functionalities across the application.
 - `feature`: Encapsulate specific features or user-facing functionalities of our application, which typically is implemented as a fragment for user interactions. Views and view models are typically added here.
@@ -36,7 +36,7 @@ Each module directory will have the following files:
 - `src`
   - `main`
     - `java/sub.package.names.any.thing.goes`: Contains code
-    - `res`: Contains various resources for designing the UI, such as layout XML files, drawable images, string values, colors, dimensions, and more.
+    - `res`: Contains various resources for designing the UI, such as layout XML files, drawable images, string values, colors, dimensions, navigation map and more.
     - `AndroidManifest.xml`: Describes essential information about the app to the Android system such as package name, permissions, services, and more
   - `test/java/sub.package.names.any.thing.goes`: Contains unit tests
   - `androidTest/java/sub.package.names.any.thing.goes`: Contains instrumented tests
@@ -45,7 +45,7 @@ Each module directory will have the following files:
 
 ### 1.3 Workflow
 
-The diagram below depicts the overall workflow of the app within the UI - Data layers. When the app is initialised, the `HomeFragment` will be shown first. Users can then select button to move between the fragments. Do note that the diagram does not illustrate the code dependencies accurately and is mainly to explain the logic flow. But readers can find the detailed internal dependency graph within each module's `build.gradle` file to understand how each module is connected to each other.
+The diagram below depicts the overall workflow of the app within the UI - Data layers. When the app is initialised, the `HomeFragment` will be shown first. Users can then select button to move between the fragments. Do note that the diagram does not illustrate the code dependencies accurately and is mainly to explain the logic flow. But readers can find the detailed internal dependency graph in [core module](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Apps/SampleApp/core) and each module's `build.gradle` file to understand how each module is connected to each other.
 
 ```mermaid
     stateDiagram-v2
@@ -65,9 +65,6 @@ The diagram below depicts the overall workflow of the app within the UI - Data l
         app --> fh
         fh --> fp
         fh --> ft
-        fh --> cui
-        fp --> cui
-        ft --> cui
       }
 
       state Data {
