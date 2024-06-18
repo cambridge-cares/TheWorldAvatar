@@ -24,7 +24,6 @@ from model.kg.ontocompchem import (
     OntocompchemTotalGibbsFreeEnergy,
     OntocompchemZeroPointEnergy,
 )
-from model.rdf_orm import RDFEntity
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2GetterRDFStore
 from services.sparql import SparqlClient, get_ontocompchem_endpoint

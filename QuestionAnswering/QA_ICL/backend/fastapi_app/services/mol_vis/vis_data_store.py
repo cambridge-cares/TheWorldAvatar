@@ -47,6 +47,7 @@ class VisualisationDataStore:
 
     def _get(self, cls: str, iris: list[str]):
         if cls == "os:Species":
+            type = "xyz"
             vis_data = self.xyz_manager.get(iris)
             models = self.ontospecies_store.get_species(iris)
             labels = [
@@ -58,6 +59,7 @@ class VisualisationDataStore:
                 for model in models
             ]
         elif cls in ["zeo:ZeoliteFramework", "zeo:ZeoliteMaterial"]:
+            type = "cif"
             vis_data = self.cif_manager.get(iris)
             if cls == "zeo:ZeoliteFramework":
                 models = self.ontozeolite_store.get_zeolite_frameworks(iris)
@@ -66,13 +68,14 @@ class VisualisationDataStore:
                 models = self.ontozeolite_store.get_zeolitic_materials(iris)
                 labels = [model.chemical_formula if model else None for model in models]
         else:
+            type = None
             vis_data = [None for _ in iris]
             labels = [None for _ in iris]
 
         return [
             (
-                ChemicalStructureData(type="xyz", label=label, iri=iri, data=vis_datum)
-                if vis_datum
+                ChemicalStructureData(type=type, label=label, iri=iri, data=vis_datum)
+                if vis_datum and type
                 else None
             )
             for iri, vis_datum, label in zip(iris, vis_data, labels)
