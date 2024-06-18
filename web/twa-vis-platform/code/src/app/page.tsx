@@ -42,6 +42,7 @@ export default function App() {
     return (<LandingPage
       hasMap={uiSettings.modules.map}
       hasDashboard={uiSettings.modules.dashboard}
+      hasAcknowledgements={uiSettings.modules.acknowledgements}
     />);
   } else {
     redirect(PathNames.MAP);

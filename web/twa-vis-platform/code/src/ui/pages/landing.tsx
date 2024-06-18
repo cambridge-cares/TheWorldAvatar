@@ -23,6 +23,7 @@ const markdowner = markdownit({
 interface LandingPageProps {
     hasMap: boolean,
     hasDashboard: boolean,
+    hasAcknowledgements?: boolean
 }
 
 /**
@@ -59,7 +60,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
                 {thumbnails}
                 {props.hasMap && (
                     <DefaultPageThumbnail
-                        title="Explore"
+                        title="Map"
                         description="Discover geospatial relationships in our environment"
                         icon="/images/defaults/icons/map.svg"
                         redirectUrl={Routes.MAP}
@@ -71,6 +72,14 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
                         description="Discover trends and insights at a glance"
                         icon="/images/defaults/icons/dash.svg"
                         redirectUrl={Routes.DASHBOARD}
+                    />
+                )}
+                {props.hasAcknowledgements && (
+                    <DefaultPageThumbnail
+                        title="Acknowledgements"
+                        description="Discover the CReDo partners and contributors"
+                        icon="/images/defaults/icons/glossary.svg"
+                        redirectUrl={Routes.ACKNOWLEDGEMENTS}
                     />
                 )}
                 <DefaultPageThumbnail
