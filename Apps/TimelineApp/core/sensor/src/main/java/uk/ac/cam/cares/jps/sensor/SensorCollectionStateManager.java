@@ -17,8 +17,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-import uk.ac.cam.cares.jps.login.AccountException;
-
 public class SensorCollectionStateManager {
     private static final String DEVICE_ID_KEY = "device_id";
     private static final String USER_ID_KEY = "user_id";
@@ -44,7 +42,6 @@ public class SensorCollectionStateManager {
         }
 
         String deviceId = UUID.randomUUID().toString();
-//        String deviceId = "cf827094-3e1b-48a8-b130-737be4dcce59";
         boolean recordingState = false;
         // todo: check this sync block
         sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState));

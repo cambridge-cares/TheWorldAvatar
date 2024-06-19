@@ -21,6 +21,11 @@ public class SensorCollectionStateManagerRepository {
 
     private <T> void checkOrInitSensorCollectionStateManagerWithLoginInfo(RepositoryCallback<T> callback, FunctionRunWithSensorCollectionState<T> function) {
         if (sensorCollectionStateManager.getSensorCollectionState() != null) {
+            try {
+                callback.onSuccess(function.get());
+            } catch (SensorCollectionStateException e) {
+                callback.onFailure(e);
+            }
             return;
         }
 
