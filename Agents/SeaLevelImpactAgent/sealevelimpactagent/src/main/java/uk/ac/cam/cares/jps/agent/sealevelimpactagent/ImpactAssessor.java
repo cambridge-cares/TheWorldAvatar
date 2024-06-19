@@ -20,7 +20,7 @@ public class ImpactAssessor {
      */
     public String getSeaLevelChangeUUID(RemoteRDBStoreClient remoteRDBStoreClient, String sspScenario, Integer projectionyear, String confidence, Integer quantile) throws SQLException {
 
-        String findSeaLevelChangeUUID_sql = "SELECT uuid FROM sealevelprojections WHERE \"ssp_scenario\" = '"+sspScenario+"' AND confidence = '"+confidence+"' AND quantile = "+quantile+" AND projectionyear = "+projectionyear+"";
+        String findSeaLevelChangeUUID_sql = "SELECT uuid FROM sealevelprojections WHERE \"ssp_scenario\" = '"+sspScenario+"' AND LOWER(confidence) = LOWER('"+confidence+"') AND quantile = "+quantile+" AND projectionyear = "+projectionyear+"";
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             
