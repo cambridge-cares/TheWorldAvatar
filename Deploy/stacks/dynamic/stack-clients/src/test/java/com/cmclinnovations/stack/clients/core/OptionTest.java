@@ -23,6 +23,8 @@ class OptionTest {
 
     static Stream<? extends Arguments> getArgs() {
         return Stream.of(
+                Arguments.of("\"\"", "empty", List.of()),
+                Arguments.of("{}", "emptyObject", List.of()),
                 Arguments.of("[]", "emptyArray", List.of()),
                 Arguments.of("\"A\"", "scalar", List.of("A")),
                 Arguments.of("[\"A\"]", "arrayScalar", List.of("A")),
@@ -51,7 +53,7 @@ class OptionTest {
 
     @Test
     void arrayOfOptions() {
-        String json = "[[],\"A\", [\"A\"],[\"A\",\"B\",\"C\"]]";
+        String json = "[\"\",{},[],\"A\", [\"A\"],[\"A\",\"B\",\"C\"]]";
 
         parseAndCompareList(() -> mapper.readValue(json, new TypeReference<List<Option>>() {
         }));
@@ -72,6 +74,8 @@ class OptionTest {
                 .assertDoesNotThrow(supplier).stream().map(Option::getOptionList).collect(Collectors.toList());
 
         List<List<? extends Object>> expected = List.of(
+                List.of(),
+                List.of(),
                 List.of(),
                 List.of("A"),
                 List.of("A"),
