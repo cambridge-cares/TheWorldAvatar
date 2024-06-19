@@ -5,13 +5,15 @@ import pandas as pd
 
 
 def csvrow2jsonobj(row: pd.Series):
-    return {
-        "text": row["text"],
-        "prediction": {
+    if pd.isna(row["template"]) or pd.isna(row["quantities"]):
+        prediction = None
+    else:
+        prediction = {
             "template": row["template"],
-            "quantities": json.loads(row["quantities"])
+            "quantities": json.loads(row["quantities"]),
         }
-    }
+    return {"text": row["text"], "prediction": prediction}
+
 
 if __name__ == "__main__":
     parser = ArgumentParser()
