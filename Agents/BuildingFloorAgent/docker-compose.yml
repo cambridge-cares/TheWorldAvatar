@@ -3,7 +3,6 @@ version: "3.8"
 services:
   buildingflooragent:
     image: buildingflooragent:2.0.0-hotfix-building-floor-SNAPSHOT
-    container_name: buildingflooragent
     build:
       context: .
       target: agent
