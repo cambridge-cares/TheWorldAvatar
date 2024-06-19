@@ -12,7 +12,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "../../../../../../Agents/BuildingFloorAgent/src/main/resources",
+                        "Source": "../../../buildingfloordata",
                         "Target": "/resources"
                     }
                 ],
