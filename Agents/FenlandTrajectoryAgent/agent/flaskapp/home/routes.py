@@ -88,17 +88,17 @@ def home():
             }
             
             function loadAndPreprocess() {
-                sendPostRequest('/gpstasks/fenlandtrajectoryagent/load_and_preprocess', {"file_path": "/app/agent/raw_data/gps_target_folder"});
+                sendPostRequest('load_and_preprocess', {"file_path": "/app/agent/raw_data/gps_target_folder"});
             }
 
             function processAndInstantiate() {
-                sendPostRequest('/gpstasks/fenlandtrajectoryagent/process_and_instantiate', {"file_path": "/app/agent/raw_data/gps_target_folder"});
+                sendPostRequest('process_and_instantiate', {"file_path": "/app/agent/raw_data/gps_target_folder"});
             }
 
             function createLayer() {
                 var tableName = prompt("Enter the table name for the new layer:");
                 if (tableName) {
-                    sendPostRequest('/gpstasks/fenlandtrajectoryagent/layer_generator', {"table_name": tableName});
+                    sendPostRequest('layer_generator', {"table_name": tableName});
                 }
             }
         </script>

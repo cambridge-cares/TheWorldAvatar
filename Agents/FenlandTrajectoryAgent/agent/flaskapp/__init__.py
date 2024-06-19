@@ -18,8 +18,8 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     # Register blueprints for application components
-    app.register_blueprint(gps_instantiation_bp, url_prefix='/gpstasks')
-    app.register_blueprint(gps_bp, url_prefix='/')
+    app.register_blueprint(gps_instantiation_bp, url_prefix='')
+    app.register_blueprint(gps_bp, url_prefix='')
 
     # Perform initial setup actions within the app context
     with app.app_context():

@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 gps_instantiation_bp = Blueprint('gps_instantiation_bp', __name__)
 
 # Define the route for instantiating GPS data
-@gps_instantiation_bp.route('/fenlandtrajectoryagent/load_and_preprocess', methods=['POST'])
+@gps_instantiation_bp.route('/load_and_preprocess', methods=['POST'])
 def load_and_preprocess():
     try:
         file_path = request.json.get('file_path')
@@ -55,7 +55,7 @@ def load_and_preprocess():
         logger.error(f"Error in load_and_preprocess: {str(e)}")
         return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
 
-@gps_instantiation_bp.route('/fenlandtrajectoryagent/process_and_instantiate', methods=['POST'])
+@gps_instantiation_bp.route('/process_and_instantiate', methods=['POST'])
 def process_and_instantiate():
     try:
         file_path = request.json.get('file_path')
@@ -79,8 +79,8 @@ def process_and_instantiate():
                 continue
 
             try:
-                kg_client, ts_client, double_class = gdi.setup_clients()
-                gdi.instantiate_gps_data(gps_object, kg_client, ts_client, double_class)
+                kg_client, ts_client, double_class, point_class = gdi.setup_clients()
+                gdi.instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_class)
                 results.append({"file": csv_file, "status": "success"})
             except Exception as e:
                 logger.error(f"Error instantiating data for file {csv_file}: {e}")
@@ -100,7 +100,7 @@ def process_and_instantiate():
         logger.error(f"Error in process_and_instantiate: {str(e)}")
         return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
 
-@gps_instantiation_bp.route('/fenlandtrajectoryagent/layer_generator', methods=['POST'])
+@gps_instantiation_bp.route('/layer_generator', methods=['POST'])
 def create_layer():
     data = request.get_json()
     table_name = data.get('table_name')
