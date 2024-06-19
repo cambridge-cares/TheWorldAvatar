@@ -1,5 +1,5 @@
 
-POST http://localhost:3840/fenland-trajectory-agent/gpstasks/fenlandtrajectoryagent/load_and_preprocess
+POST http://localhost:3840/fenland-trajectory-agent/load_and_preprocess
 Content-Type: application/json
 
 {
