@@ -115,7 +115,7 @@ public class CostCalculation {
             ontoBuiltEnvMapping = new CsvToBeanBuilder<OntoBuiltEnvMapping>(new InputStreamReader(is))
                     .withType(OntoBuiltEnvMapping.class).build().parse();
         } catch (IOException e) {
-            throw new RuntimeException("Error reading ais_cost.csv", e);
+            throw new RuntimeException("Error reading ais_ontobuiltenv_mapping.csv", e);
         }
 
         ontoBuiltEnvMapping.stream().forEach(row -> {
