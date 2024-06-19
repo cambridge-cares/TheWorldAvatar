@@ -584,7 +584,7 @@ The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair argument
 
 Several non-driver specific options are also available.
 These can be set as key-array-valued pairs within an `"otherOptions"` object.
-This allows for multiple values per option (`["value1", "value2"]`) but requires that single values are still placed within an array  (`["value"]`) and valueless flags are paired with an empty array (`[]`).
+This allows for multiple values per option in an array (`"--option": ["value1", "value2"]`); single values either within an array  (`"--option": ["value"]`) or as a string (`"--option": "value"`); and valueless flags are paired with an empty string (`"--option": ""`), array (`"--option": []`), or object (`"--option": {}`).
 A list of possible options can be found on the [raster common options][raster-common] and [gdal_translate options][gdal-translate] pages.
 
 ##### `"mdimSettings"`

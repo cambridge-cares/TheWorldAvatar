@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.cmclinnovations.stack.clients.core.Option;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -32,7 +33,7 @@ class CommonOptions<T extends CommonOptions<T>> {
     @JsonProperty
     private final Map<String, String> envVars = new HashMap<>();
     @JsonProperty
-    private final Map<String, List<String>> otherOptions = new HashMap<>();
+    private final Map<String, Option> otherOptions = new HashMap<>();
 
     protected CommonOptions(String command) {
         this.command = command;
@@ -62,7 +63,7 @@ class CommonOptions<T extends CommonOptions<T>> {
     }
 
     public T addOtherOption(String option, String... values) {
-        otherOptions.put(option, Arrays.asList(values));
+        otherOptions.put(option, new Option(values));
         return (T) this;
     }
 
@@ -93,7 +94,7 @@ class CommonOptions<T extends CommonOptions<T>> {
 
         otherOptions.forEach((option, values) -> {
             allArgs.add(option);
-            values.stream()
+            values.getOptionList().stream()
                     .map(value -> value.startsWith("@") ? handleFileArg(option, value) : value)
                     .collect(Collectors.toCollection(() -> allArgs));
         });
