@@ -49,3 +49,11 @@ Procedure for pairing via WIFI:
 3) Enable Wireless Debugging in the Developer Settings, along with permissions to install apps on your physical device. However, this option is only valid for devices with at least Android 11. It will be difficult to update devices without official updates to Android 11. If the device cannot be updated, please use USB debugging instead. 
 4) Within the terminal in the Android Studio IDE, run `adb pair ip-address:port`. It will prompt for the pairing code displayed on your phone. Do note that you should input the debugging IP address, not the phone’s IP address. 
 5) Once paired, run `adb connect ip-address`. This phone’s IP address is different from the debugging IP address used in the previous step.
+
+# 3 Resources
+This repository also hosts reusable resources that can be used in any TWA Android application. 
+
+- [Modules](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Apps/Modules)
+    - Contains the shared modules that can be imported individually into new projects.
+- [Shared Files]()
+    - Contains reusable configuration files and UI components that can help standardize and streamline the setup of new projects.
