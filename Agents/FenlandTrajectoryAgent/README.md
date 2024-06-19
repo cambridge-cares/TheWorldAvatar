@@ -1,8 +1,8 @@
 # 1. Description
 
-The `Fenland Trajectory Agent` is a specialized tool for batch instantiation of structured time-series GPS trajectory data. This agent is capable of receiving HTTP POST requests or CURL commands to load GPS trajectory files, which it subsequently instantiates into triples before uploading them into knowledge graphs.
+The `Fenland Trajectory Agent` is a specialized tool for batch instantiation of structured time-series GPS trajectory data. This agent is capable of receiving HTTP POST requests or CURL commands to load GPS trajectory files, which it subsequently instantiates into triples before uploading them into the knowledge graphss.
 
-Presently, the agent focuses on data from the Fenland Study to analyze the interaction between GPS trajectories and environmental features within the context of a digital twin. Example data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample_gps_data.csv. By default, the data instantiated from the Fenland Study using this agent encompasses Speed, Height, Distance, Heading, Latitude, and Longitude. This method is also applicable to other categories of time-series structured data in Febland Study by replacing or adding the relevant column names. The information instantiated into the knowledge graph adheres to the Ontology of Devices [OntoDevice] in [TheWorldAvatar] project. The instantiation process is executed based on the [TimeSeriesClient]. This agent is implemented as a Docker container, designed for deployment within a stack managed by the [Stack Manager]
+Presently, the agent focuses on data from the Fenland Study to analyze the interaction between GPS trajectories and environmental features within the context of a digital twin. Example data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample_gps_data.csv. By default, the data instantiated from the Fenland Study using this agent encompasses Speed, Height, Distance, Heading, Latitude, and Longitude. This method is also applicable to other categories of time-series structured data in Fenland Study by replacing or adding the relevant column names. The information instantiated into the knowledge graph adheres to the Ontology of Devices [OntoDevice] in [TheWorldAvatar] project. The instantiation process is executed based on the [TimeSeriesClient]. This agent is implemented as a Docker container, designed for deployment within a stack managed by the [Stack Manager]
 
 
 # 2. Agent Setup
@@ -10,7 +10,7 @@ Presently, the agent focuses on data from the Fenland Study to analyze the inter
 This section specifies the minimum requirements to build and deploy the Docker image of this agent.
 
 ## 2.1 Environment Variables
-Before building and deploying the Docker image, several key properties is demanded to be set in the [docker compose file] (further details and defaults are provided in the file):
+Before building and deploying the Docker image, several key properties need to be set in the [docker compose file] (further details and defaults are provided in the file):
 
 ```bash
 #--- Deployment specific parameters ---#
@@ -95,15 +95,7 @@ The files for example http request are displayed at [SendHTTP] folder.
 - Post request to instantiate all GPS trajectory data to KG
 > ./gpstasks/fenlandtrajectoryagent/process_and_instantiate
 
-Additionally, services above can be triggered using [CURL commands] from a bash terminal. This method provides a straightforward and scriptable way to interact with the agent. An example CURL command used to load the GPS trajectory files is displayed as follows. In this example, the stack is assumed at port 3840
-
-```
-curl -X POST http://localhost:3840/fenland-trajectory-agent/gpstasks/fenlandtrajectoryagent/load_and_preprocess \
-     -H "Content-Type: application/json" \
-     -d '{"file_path":"/app/agent/raw_data/gps_target_folder"}'
-
-```
-
+Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. This method provides a straightforward and scriptable way to interact with the agent. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. In this example, the stack is assumed at port 3840.
 
 
 &nbsp;
@@ -152,6 +144,7 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [FenlandTrajectoryAgent.json]: ./stack-manager-input-config-service/
 [stack manager configuration service directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
 [stack manager configuration directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/
-[CURL commands]: ./example-requests/curl
+[CURL commands folder]: ./example-requests/curl
 [SendHTTP]: ./example-requests/SendHTTTP/
+
 
