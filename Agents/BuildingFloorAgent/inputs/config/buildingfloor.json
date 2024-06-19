@@ -3,7 +3,7 @@
         "Name": "buildingflooragent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/buildingflooragent:1.0.0-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/buildingflooragent:2.0.0-hotfix-building-floor-SNAPSHOT",
                 "Env": [
                     "STACK_NAME=${STACK_NAME}",
                     "DATABASE=postgres",
@@ -11,7 +11,7 @@
                     "osmPoints=points",
                     "osmPolygons=polygons",
                     "floors_csv=/resources/HDBPropertyInformation.csv"
-                  ],
+                ],
                 "Mounts": [
                     {
                         "Type": "bind",
@@ -46,8 +46,8 @@
     },
     "endpoints": {
         "osmagent": {
-          "url": "http://localhost:8080/buildingflooragent/",
-          "externalPath": "/buildingflooragent/"
+            "url": "http://localhost:8080/buildingflooragent/",
+            "externalPath": "/buildingflooragent/"
         }
     }
 }

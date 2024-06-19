@@ -3,7 +3,7 @@
         "Name": "buildingflooragent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "buildingflooragent:2.0.0-hotfix-building-floor-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/buildingflooragent:2.0.0-hotfix-building-floor-SNAPSHOT",
                 "Env": [
                     "STACK_NAME=${STACK_NAME}",
                     "DATABASE=postgres",
