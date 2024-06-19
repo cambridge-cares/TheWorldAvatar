@@ -1,5 +1,5 @@
 import os
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
@@ -26,7 +26,7 @@ async def home(
     frontend_name: Annotated[str, Depends(get_frontend_name)],
     metadata: Annotated[PageMetadata, Depends(get_metadata)],
     sample_questions: Annotated[
-        List[QADomainSampleQuestions], Depends(get_sample_questions)
+        list[QADomainSampleQuestions], Depends(get_sample_questions)
     ],
 ):
 

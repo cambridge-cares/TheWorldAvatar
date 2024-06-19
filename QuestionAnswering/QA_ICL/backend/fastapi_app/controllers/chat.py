@@ -1,7 +1,7 @@
 from functools import cache
 import json
 import logging
-from typing import Annotated, Callable, Optional
+from typing import Annotated, Callable
 
 from fastapi import Depends
 from openai import OpenAI, Stream
@@ -103,8 +103,8 @@ Given the context information, please answer the query. For readability, please 
     def __init__(
         self,
         qa_req_artifact_store: QARequestArtifactStore,
-        openai_base_url: Optional[str],
-        openai_api_key: Optional[str],
+        openai_base_url: str | None,
+        openai_api_key: str | None,
         openai_model: str,
         token_limit: int = 16000,
     ):

@@ -1,6 +1,6 @@
 from functools import cache
 import os
-from typing import Generic, List, Optional, Type, TypeVar
+from typing import Generic, Type, TypeVar
 from pydantic import BaseModel
 
 from services.requests import request_get_obj
@@ -11,17 +11,17 @@ EntityMetaT = TypeVar("EntityMetaT", bound=BaseModel)
 
 class FeatureInfoTimeItem(BaseModel):
     id: str
-    data: List[str]
+    data: list[str]
     timeClass: str
-    time: List[str]
-    valuesClass: List[str]
-    values: List[List[float]]
-    units: List[str]
+    time: list[str]
+    valuesClass: list[str]
+    values: list[list[float]]
+    units: list[str]
 
 
 class FeatureInfoResponse(BaseModel, Generic[EntityMetaT]):
     meta: EntityMetaT
-    time: Optional[List[FeatureInfoTimeItem]] = None
+    time: list[FeatureInfoTimeItem] | None = None
 
 
 class FeatureInfoClient(Generic[EntityMetaT]):
