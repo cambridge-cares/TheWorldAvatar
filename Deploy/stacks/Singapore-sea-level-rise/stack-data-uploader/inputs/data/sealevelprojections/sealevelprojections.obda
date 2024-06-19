@@ -2,24 +2,34 @@
 xsd:    http://www.w3.org/2001/XMLSchema#
 rdfs:	http://www.w3.org/2000/01/rdf-schema#
 :       https://www.theworldavatar.com/kg/
-sea:    https://www.theworldavatar.com/kg/ontosealevel/
-be:     https://www.theworldavatar.com/kg/ontobuiltenv/
-ic:     http://ontology.eil.utoronto.ca/icontact.owl#
-sch:    https://schema.org/
-dbo:    https://dbpedia.org/ontology/
-landplot: https://www.theworldavatar.com/kg/landplot/
-ost:    https://www.theworldavatar.com/kg/ontostreet/
+ontosl:    https://www.theworldavatar.com/kg/ontosealevel/
 geo:    http://www.opengis.net/ont/geosparql#
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+
 
 [MappingDeclaration] @collection [[
 mappingId	Sea Level Projections
-target		sea:SeaLevelChange/{uuid} a sea:SeaLevelChange ;
-                sea:hasValue "{sealevelriseinmeters}"^^xsd:double ;
-                sea:hasSSPScenario "{ssp_scenario}" ;
-                sea:hasProjectionYear "{projectionyear}"^^xsd:double ;
-                sea:hasBaselineYear "{projectionreferenceyear}"^^xsd:double ;
-                geo:hasLocation "{geom}"^^geo:wktLiteral ;
-                sea:hasPercentageQuantile "{quantile}"^^xsd:double ;
-                sea:hasConfidenceLevel "{confidence}"^^xsd:double .
-source		SELECT confidence, ssp_scenario, quantile, projectionreferenceyear, projectionyear, sealevelriseinmeters, uuid, ST_ASTEXT(geom) as geom  FROM sealevelprojections
+target		ontosl:SeaLevelChange/{uuid} a ontosl:SeaLevelChange ;
+                a geo:Geometry ;
+                ontosl:hasSSP ontosl:SharedSocioeconomicPathway{ssp}_{uuid};
+                ontosl:hasRCP ontosl:RepresentativeConcentrationPathway{rcp}_{uuid};
+                ontosl:hasChange ontosl:sealevelrise_{uuid} ;
+                ontosl:hasProjectionYear {projectionyear} ;
+                ontosl:hasBaselineYear {projectionreferenceyear} ;
+                geo:asWKT "{geom}"^^geo:wktLiteral ;
+                ontosl:hasPercentageQuantile {quantile} ;
+                ontosl:hasConfidenceLevel ontosl:{confidence}Confidence_{uuid} .
+            ontosl:sealevelrise_{uuid} a om:Height ; 
+                om:hasValue ontosl:sealevelrise_measure_{uuid}. 
+            ontosl:sealevelrise_measure_{uuid} om:hasUnit om:Metre;
+                om:hasNumericalValue {sealevelriseinmeters}.
+            ontosl:{confidence}Confidence_{uuid} a ontosl:{confidence}Confidence.
+            ontosl:SharedSocioeconomicPathway{ssp}_{uuid} a ontosl:SharedSocioeconomicPathway{ssp}.
+            ontosl:RepresentativeConcentrationPathway{rcp}_{uuid} a ontosl:RepresentativeConcentrationPathway{rcp};
+                ontosl:hasRadioactiveForcingValues ontosl:RadioactiveForcing_{uuid}.
+            ontosl:RadioactiveForcing_{uuid} a om:Irradiance;
+                 om:hasValue ontosl:RadioactiveForcingMeasure_{uuid}.
+            ontosl:RadioactiveForcingMeasure_{uuid} om:hasUnit om:wattPerSquareMetre;
+                om:hasNumericalValue {rcp_num}.
+source		SELECT confidence, ssp, rcp, rcp / 10 AS rcp_num, quantile, projectionreferenceyear, projectionyear, sealevelriseinmeters, uuid, ST_ASTEXT(geom) as geom  FROM sealevelprojections
 ]]
