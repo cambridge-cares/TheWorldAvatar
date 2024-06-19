@@ -68,7 +68,11 @@ public class GFAAgent extends HttpServlet {
         } else if (req.getServletPath().contentEquals(COST_PATH)) {
             LOGGER.info("Received POST request to calculate building cost");
             CostCalculation costCalculation = new CostCalculation(ontopUrl);
+
+            LOGGER.info("Querying buildings info");
             costCalculation.setBuildings();
+
+            LOGGER.info("Calculating costs");
             costCalculation.calculateCost();
 
             try (Connection conn = remoteRDBStoreClient.getConnection()) {
@@ -86,6 +90,7 @@ public class GFAAgent extends HttpServlet {
             }
             OntopClient ontopClient = OntopClient.getInstance();
             ontopClient.updateOBDA(obdaPath);
+            LOGGER.info("Uploaded obda file");
         }
     }
 }

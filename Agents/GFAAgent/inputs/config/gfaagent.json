@@ -3,20 +3,10 @@
         "Name": "gfaagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/gfaagent:1.2.0",
+                "Image": "ghcr.io/cambridge-cares/gfaagent:2.0-hotfix-building-floor-SNAPSHOT",
                 "Env": [
                     "STACK_NAME=${STACK_NAME}",
-                    "DATABASE=postgres",
-                    "osmSchema=osm",
-                    "osmPoints=points",
-                    "osmPolygons=polygons"
-                ],
-                "Mounts": [
-                    {
-                        "Type": "bind",
-                        "Source": "../../../../../../Agents/GFAAgent/src/main/resources",
-                        "Target": "/resources"
-                    }
+                    "DATABASE=postgres"
                 ],
                 "Configs": [
                     {
