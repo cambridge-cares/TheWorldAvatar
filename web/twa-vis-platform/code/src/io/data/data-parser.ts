@@ -1,5 +1,5 @@
 import { JsonArray, JsonObject } from 'types/json';
-import { ScenarioDimensionsData } from '../../types/timeseries';
+import { ScenarioDimensionsData } from 'types/timeseries';
 import { DataGroup } from './data-group';
 import { DataLayer } from './data-layer';
 import { LayerSource } from './layer-source';

@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { JsonObject } from 'types/json';
-import { ScenarioDimensionsData } from '../../types/timeseries';
+import { ScenarioDimensionsData } from 'types/timeseries';
 
 /**
  * Define a service that fetches supporting data for a given feature based on its IRI, stack endpoint, and a specified scenario ID.

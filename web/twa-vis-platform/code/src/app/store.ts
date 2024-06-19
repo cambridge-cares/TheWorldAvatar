@@ -5,7 +5,7 @@ import ribbonComponentReducer from 'state/ribbon-component-slice';
 import floatingPanelReducer from 'state/floating-panel-slice';
 import mapFeatureReducer from 'state/map-feature-slice';
 import { featureInfoAgentApi } from 'state/api/fia-api';
-import dimensionSliderSlice from '../state/dimension-slider-slice';
+import dimensionSliderSlice from 'state/dimension-slider-slice';
 
 // Initialise and export store
 export const reduxStore = configureStore({

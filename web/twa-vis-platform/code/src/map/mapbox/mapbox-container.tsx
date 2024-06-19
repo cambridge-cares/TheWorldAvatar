@@ -8,7 +8,7 @@ import React, { useEffect, useRef } from 'react';
 
 import MapEventManager from 'map/map-event-manager';
 import { MapSettings } from 'types/settings';
-import { getCurrentImageryOption, getDefaultCameraPosition } from '../map-helper';
+import { getCurrentImageryOption, getDefaultCameraPosition } from 'map/map-helper';
 
 // Type definition of incoming properties
 interface MapProperties {

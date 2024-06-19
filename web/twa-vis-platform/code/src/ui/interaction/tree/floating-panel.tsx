@@ -11,11 +11,11 @@ import { getFeatures, getIri, getProperties, getScenario, getStack, MapFeaturePa
 import { MapLayerGroup } from 'types/map-layer';
 import { IconSettings, LegendSettings } from 'types/settings';
 import { generateFIAEndpoint, useFeatureInfoAgentService } from 'utils/data-services';
-import DimensionSlider from '../controls/slider';
+import DimensionSlider from 'ui/interaction/controls/slider';
 import InfoTree from './info/info-tree';
 import LayerTree, { parseIntoTreeStucture } from './layer/layer-tree';
 import LegendTree from './legend/legend-tree';
-import { ScenarioDimensionsData } from '../../../types/timeseries';
+import { ScenarioDimensionsData } from 'types/timeseries';
 
 // Incoming parameters for component.
 interface FloatingPanelContainerProps {
