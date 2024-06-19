@@ -1,0 +1,148 @@
+package uk.ac.cam.cares.jps.agent.pips;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+@WebServlet(urlPatterns = {"/status", "/retrieve"})
+public class PIPSUserAgent extends JPSAgent {
+
+    /**
+     * Logger for reporting info/errors.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(PIPSUserAgent.class);
+
+    /**
+     * Logging / error messages
+     */
+    private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
+    private static final String UNAUTHORIZED_ERROR_MSG = "Missing or invalid credentials!";
+
+    /**
+     * Variables
+     */
+    private static final String JSON_ERROR_KEY = "Error";
+    private static final String JSON_RESULT_KEY = "Result";
+    private static final String TOKEN_KEY = "access_token";
+    private static final String REFRESH_TOKEN_KEY = "refresh_token";
+    private boolean valid = false;
+    private String requestingPartyToken;
+    private String refreshToken;
+
+    KeycloakConnector keycloakConnector;
+
+    
+    /**
+     * Servlet init.
+     *
+     * @throws ServletException
+     */
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        LOGGER.debug("This is a debug message.");
+        LOGGER.info("This is an info message.");
+        LOGGER.warn("This is a warn message.");
+        LOGGER.error("This is an error message.");
+        LOGGER.fatal("This is a fatal message.");
+        valid = true;
+        requestingPartyToken = null;
+        refreshToken = null;
+        keycloakConnector  = new KeycloakConnector();
+    }
+
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+        JSONObject jsonMessage = new JSONObject();
+        LOGGER.info("Passing request to PIPS User Agent..");
+        String route = requestParams.get("requestUrl").toString();
+        route = route.substring(route.lastIndexOf("/") + 1);
+        switch (route) {
+            case "status":
+            jsonMessage = statusRoute();
+            break;
+            case "retrieve":
+            String username = System.getenv("USERNAME");
+            String password = System.getenv("PASSWORD");
+                try {
+                    jsonMessage = retrieveRoute(username, password);
+                } catch (JSONException e) {
+                    throw new JPSRuntimeException(e.toString());
+                } catch (IOException e) {
+                    throw new JPSRuntimeException(e.toString());
+                }
+            break;
+            default:
+                LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
+                jsonMessage.put(JSON_ERROR_KEY, UNDEFINED_ROUTE_ERROR_MSG + route);
+        }
+        return jsonMessage;
+    }
+
+    /**
+     * Handle GET /status route and return the status of the agent.
+     *
+     * @return Status of the agent
+     */
+    private JSONObject statusRoute() {
+        JSONObject message = new JSONObject();
+        LOGGER.info("Detected request to get agent status...");
+        if (valid) {
+            message.put(JSON_RESULT_KEY, "Agent is ready to receive requests.");
+        } else {
+            message.put(JSON_ERROR_KEY, "Agent could not be initialised! Please check logs for more information.");
+        }
+        return message;
+    }
+
+
+    /**
+     * Handle GET /retrieve route and return the retrieved results.
+     *
+     * @return results of /retrieve route
+     * @throws IOException 
+     * @throws JSONException 
+     */
+    private JSONObject retrieveRoute(String username, String password) throws JSONException, IOException {
+        JSONObject message = new JSONObject();
+        //request for Token if token is null
+        if (requestingPartyToken == null & refreshToken == null) {
+            JSONObject response = keycloakConnector.getTokens("password");
+            requestingPartyToken = response.getString(TOKEN_KEY);
+            refreshToken = response.getString(REFRESH_TOKEN_KEY);
+        }
+
+        // send access token to pips-agent
+        PIPSAgentAPIConnector pipsAgentAPIConnector = new PIPSAgentAPIConnector();
+        JSONObject response = pipsAgentAPIConnector.getTimeSeries(requestingPartyToken);
+        // if valid
+        if (!response.getString("message").contains("Token is invalid")) {
+            message = response;
+            //check whether response contain authorized or unauthorized
+        } else {
+            // if invalid
+            Boolean refreshTokenStatus = keycloakConnector.checkTokenStatus(refreshToken);
+
+            if (refreshTokenStatus) {
+                response = keycloakConnector.refreshToken(refreshToken);
+                requestingPartyToken = response.getString(TOKEN_KEY);
+                refreshToken = response.getString(REFRESH_TOKEN_KEY);
+                response = pipsAgentAPIConnector.getTimeSeries(requestingPartyToken);
+            }
+
+            message = response;
+        }
+        
+        return message;
+    }
+}
