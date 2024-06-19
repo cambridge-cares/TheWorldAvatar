@@ -62,6 +62,7 @@ public class BuildingFloorAgent extends JPSAgent {
         }
 
         // Upload Ontop mapping
+        LOGGER.info("Uploading ontop mapping");
         Path obdaPath;
         try {
             obdaPath = new ClassPathResource("buildingfloor.obda").getFile().toPath();
@@ -70,6 +71,8 @@ public class BuildingFloorAgent extends JPSAgent {
         }
         OntopClient ontopClient = OntopClient.getInstance();
         ontopClient.updateOBDA(obdaPath);
+
+        LOGGER.info("Uploaded mapping");
 
         return requestParams;
     }
