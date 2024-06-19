@@ -7,9 +7,6 @@
                 "Env": [
                     "STACK_NAME=${STACK_NAME}",
                     "DATABASE=postgres",
-                    "osmSchema=osm",
-                    "osmPoints=points",
-                    "osmPolygons=polygons",
                     "floors_csv=/resources/HDBPropertyInformation.csv"
                 ],
                 "Mounts": [
