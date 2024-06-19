@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.GenericRepository;
-import uk.ac.cam.cares.jps.data.RepositoryCallback;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.model.Todo;
 import uk.ac.cam.cares.jps.model.TodoWithUser;
 import uk.ac.cam.cares.jps.model.User;

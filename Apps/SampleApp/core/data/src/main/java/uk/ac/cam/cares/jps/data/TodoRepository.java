@@ -6,6 +6,7 @@ import uk.ac.cam.cares.jps.model.Todo;
 import uk.ac.cam.cares.jps.model.TodoWithUser;
 import uk.ac.cam.cares.jps.model.User;
 import uk.ac.cam.cares.jps.network.NetworkSource;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 /**
  * The TodoRepository class acts as a bridge between the ViewModel and the data sources

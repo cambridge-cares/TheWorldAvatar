@@ -4,7 +4,7 @@ The Data Module corresponds to the repository level in the App Architecture.
 
 The `di/` package is for dependency injection handled by Dagger Hilt. Effectively, repository dependencies that manage the data are injected and stored as singleton instances. This allows them to persist data throughout the application's entire lifecycle.
 
-The `RepositoryCallback` interface serves as the bridge between the ViewModel and the Repository, so that any network responses within the Data Layer are properly passed to the UI layer for further handling.
+The `RepositoryCallback` interface serves as the bridge between the ViewModel and the Repository, so that any network responses within the Data Layer are properly passed to the UI layer for further handling. It is moved to utils because repositories in other individual modules may depend on this to send data in between UI layer and data layer as well.
 
 - The interface is implemented in the ViewModel within the `feature` module and passed to the repository.
 - It defines what the ViewModel should do when the repository receives results or errors from the network.

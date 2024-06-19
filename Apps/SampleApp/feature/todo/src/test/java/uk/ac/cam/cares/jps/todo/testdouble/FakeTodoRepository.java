@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.todo.testdouble;
 
 import uk.ac.cam.cares.jps.data.GenericRepository;
-import uk.ac.cam.cares.jps.data.RepositoryCallback;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.model.Todo;
 import uk.ac.cam.cares.jps.model.TodoWithUser;
 import uk.ac.cam.cares.jps.model.User;

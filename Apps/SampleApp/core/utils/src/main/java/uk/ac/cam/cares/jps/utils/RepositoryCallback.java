@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.data;
+package uk.ac.cam.cares.jps.utils;
 
 /**
  * Interface for callbacks used by repositories to handle data retrieval results.
