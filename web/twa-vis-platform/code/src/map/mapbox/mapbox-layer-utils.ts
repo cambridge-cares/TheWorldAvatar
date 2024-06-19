@@ -5,7 +5,7 @@ import { DataStore } from 'io/data/data-store';
 import { Interactions } from 'io/config/interactions';
 import { JsonObject } from 'types/json';
 import { ImageryOption, ImagerySettings } from 'types/settings';
-import { getCurrentImageryOption } from '../map-helper';
+import { getCurrentImageryOption } from 'map/map-helper';
 /**
  * Given a DataStore instance housing parsed DataLayer instances,
  * this function adds them all to the Mapbox map instance.

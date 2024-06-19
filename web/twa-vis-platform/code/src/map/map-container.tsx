@@ -7,6 +7,7 @@ import { Map } from 'mapbox-gl';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { ReduxState } from 'app/store';
 import { DataStore } from 'io/data/data-store';
 import MapEventManager from 'map/map-event-manager';
 import { addData } from 'map/map-helper';
@@ -18,11 +19,11 @@ import ScenarioModal from 'ui/interaction/modal/scenario';
 import Ribbon from 'ui/interaction/ribbon/ribbon';
 import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
 import { parseMapDataSettings } from 'utils/client-utils';
-import { useScenarioDimensionsService } from '../utils/data-services';
-import { ReduxState } from '../app/store';
+import { useScenarioDimensionsService } from 'utils/data-services';
 
 // Type definition of incoming properties
 interface MapContainerProps {
+  scenarioURL: string;
   settings: string;
   data: string;
   scenarios: ScenarioDefinition[]
@@ -99,6 +100,7 @@ export default function MapContainer(props: MapContainerProps) {
       {/* On initial start up or user request, scenario dialog will be shown if scenarios are required */}
       {showDialog &&
         <ScenarioModal
+          scenarioURL={props.scenarioURL}
           scenarios={props.scenarios}
           show={showDialog}
           setShowState={setShowDialog}
