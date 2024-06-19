@@ -97,7 +97,11 @@ class OntocrystalUnitCell(RDFEntity):
 class OntocrystalTileFace(RDFEntity):
     face_code: str | None = RDFField(default=None, path=ONTOCRYSTAL.hasFaceCode)
     edge_num: int = RDFField(path=ONTOCRYSTAL.hasNumberOfEdges)
-    num: int = RDFField(path=~ONTOCRYSTAL.isNumberOfTileFaces / ONTOCRYSTAL.hasValue)
+
+
+class OntocrystalTileFaceNumber(RDFEntity):
+    value: int = RDFField(path=ONTOCRYSTAL.hasValue)
+    tile_face: OntocrystalTileFace = RDFField(path=ONTOCRYSTAL.isNumberOfTileFaces)
 
 
 class OntocrystalTile(RDFEntity):
@@ -106,10 +110,16 @@ class OntocrystalTile(RDFEntity):
     vertex_num: int = RDFField(path=ONTOCRYSTAL.hasNumberOfVertices)
     tile_code: str = RDFField(path=ONTOCRYSTAL.hasTileCode)
     signature: str = RDFField(path=ONTOCRYSTAL.hasTileSignature)
-    tile_face: list[OntocrystalTileFace] = RDFField(path=ONTOCRYSTAL.hasTileFace)
-    num: int = RDFField(path=~ONTOCRYSTAL.isNumberOfTiles / ONTOCRYSTAL.hasValue)
+    tile_face_number: list[OntocrystalTileFaceNumber] = RDFField(
+        path=ONTOCRYSTAL.hasTileFaceNumber
+    )
+
+
+class OntocrystalTileNumber(RDFEntity):
+    value: int = RDFField(path=ONTOCRYSTAL.hasValue)
+    tile: OntocrystalTile = RDFField(path=ONTOCRYSTAL.isNumberOfTiles)
 
 
 class OntocrystalTiledStructure(RDFEntity):
     signature: str = RDFField(path=ONTOCRYSTAL.hasTileSignature)
-    tile: list[OntocrystalTile] = RDFField(path=ONTOCRYSTAL.hasTile)
+    tile_num: list[OntocrystalTileNumber] = RDFField(path=ONTOCRYSTAL.hasTileNumber)
