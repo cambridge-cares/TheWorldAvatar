@@ -3,8 +3,9 @@ import * as React from 'react';
 import { ScenarioDimensionsData, ScenarioDimensionStep } from 'types/timeseries';
 import styles from './slider.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { setValue } from '../../../state/dimension-slider-slice';
+import { setValue } from 'state/dimension-slider-slice';
 import { ReduxState } from 'app/store';
+import { useEffect, useState } from 'react';
 
 interface DimensionSliderProps {
     data: ScenarioDimensionsData;
@@ -23,8 +24,18 @@ export default function DimensionSlider({ data }: DimensionSliderProps) {
     const middle = Math.round((min + max) / 2);
     const dispatch = useDispatch();
     const dimensionSliderValue = useSelector((state: ReduxState) => state.dimensionSlider.value);
+    const [tempValue, setTempValue] = useState(dimensionSliderValue);
+    
+    // TODO Debug purposes only, remove later
+    useEffect(() => {
+        console.log(`${Object.keys(data).flat()} Redux stored value is ${dimensionSliderValue}`);
+    }, [data, dimensionSliderValue]);
 
-    const handleChange = (
+    const handleChange = (event : React.SyntheticEvent | Event, newValue: number | number[]) => {
+        setTempValue(newValue);
+    };
+
+    const handleChangeCommitted = (
         event: React.SyntheticEvent | Event,
         value: number | number[],
         values: ScenarioDimensionStep[]
@@ -35,16 +46,18 @@ export default function DimensionSlider({ data }: DimensionSliderProps) {
         const label = selectedStep ? selectedStep.label : 'Unknown';
 
         dispatch(setValue(value));
-        console.log(`${Object.keys(data).flat()} slider moved to index ${firstValue} with label: ${label}. Redux stored value is ${dimensionSliderValue}`);
+        console.log(`${Object.keys(data).flat()} slider moved to index ${firstValue} with label: ${label}. Previous value from Redux value is ${dimensionSliderValue}`);
     }
 
     return (
         <div className={styles.sliderContainer}>
             {/* <span>{Object.keys(data).flat()}</span> ---TODO slider label if we want later */}
             <Slider
+                key={`slider-${Object.keys(data).flat()}`}
                 className={styles.discreteSlider}
                 aria-label="Time"
                 defaultValue={middle}
+                value={tempValue}
                 valueLabelFormat={(value: number) => valuetext(value, values)}
                 valueLabelDisplay="auto"
                 shiftStep={1}
@@ -52,7 +65,8 @@ export default function DimensionSlider({ data }: DimensionSliderProps) {
                 marks
                 min={min}
                 max={max}
-                onChangeCommitted={(event: React.SyntheticEvent | Event, value: number | number[]) => handleChange(event, value, values)}
+                onChange={handleChange}
+                onChangeCommitted={(event: React.SyntheticEvent | Event, value: number | number[]) => handleChangeCommitted(event, value, values)}
             />
         </div>
     );
