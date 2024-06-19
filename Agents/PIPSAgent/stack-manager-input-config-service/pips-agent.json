@@ -4,6 +4,10 @@
     "TaskTemplate": {
       "ContainerSpec": {
         "Image": "pips-agent:1.0.0",
+        "Env": [
+          "CLIENT_ID=<client ID>",
+          "KEYCLOAK_REALM_PATH=<keycloak endpoint>"
+				],
         "Configs": [
           {
               "ConfigName": "postgis"

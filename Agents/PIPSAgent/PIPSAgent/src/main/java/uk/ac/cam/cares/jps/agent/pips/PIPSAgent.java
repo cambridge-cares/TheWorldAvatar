@@ -1,31 +1,19 @@
 package uk.ac.cam.cares.jps.agent.pips;
 
 import org.json.JSONObject;
-import org.keycloak.authorization.client.AuthzClient;
-import org.keycloak.authorization.client.representation.TokenIntrospectionResponse;
-import org.keycloak.representations.idm.authorization.AuthorizationRequest;
-import org.keycloak.representations.idm.authorization.AuthorizationResponse;
-import org.keycloak.representations.idm.authorization.Permission;
-import org.keycloak.representations.idm.authorization.ResourceRepresentation;
-
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.util.Base64;
-import java.util.Set;
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * Class with a main method that is the entry point of the compiled war and puts all components together to retrieve
- * data from the API and write it into the database.
- * @author GMMajal
- */
 @WebServlet(urlPatterns = {"/status"})
 public class PIPSAgent extends JPSAgent {
 
@@ -45,7 +33,7 @@ public class PIPSAgent extends JPSAgent {
      */
     private static final String JSON_ERROR_KEY = "Error";
     private static final String JSON_RESULT_KEY = "Result";
-
+    private static final String CLIENT_ID = System.getenv("CLIENT_ID");
     private boolean valid = false;
     
     /**
@@ -77,24 +65,14 @@ public class PIPSAgent extends JPSAgent {
             case "timeseries":
             // Get the Authorization header
             String authHeader = request.getHeader("Authorization");
-            String username = null;
-            String password = null;
-            if (authHeader != null && authHeader.startsWith("Basic ")) {
-                // Extract and decode the base64 encoded credentials
-                String base64Credentials = authHeader.substring("Basic".length()).trim();
-                String credentials = new String(Base64.getDecoder().decode(base64Credentials));
-                        
-                // credentials format: "username:password"
-                final String[] values = credentials.split(":", 2);
-                        
-                if (values.length == 2) {
-                    username = values[0];
-                    password = values[1];
-                    LOGGER.info("The username is " + username + " and the password is " + password);
-                } else {
-                    LOGGER.info("Invalid");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring("Bearer".length()).trim();
+                try {
+                    jsonMessage = timeseriesRoute(token);
+                } catch (IOException e) {
+                    throw new JPSRuntimeException(e);
                 }
-                jsonMessage = timeseriesRoute(username, password);
+                
             } else {
                 jsonMessage.put(JSON_ERROR_KEY, UNAUTHORIZED_ERROR_MSG);
             }
@@ -127,29 +105,34 @@ public class PIPSAgent extends JPSAgent {
      * Handle GET /timeseries route and return the status of the agent.
      *
      * @return timeseries of the agent
+     * @throws IOException 
      */
-    private JSONObject timeseriesRoute(String username, String password) {
-        String token = null;
+    private JSONObject timeseriesRoute(String token) throws IOException {
+        LOGGER.info("Detected request to get timeseries ...");
+        LOGGER.info("Checking validity of client...");
         JSONObject message = new JSONObject();
-        AuthzClient authzClient = AuthzClient.create();
-        AuthorizationRequest request = new AuthorizationRequest();
-        request.addPermission("testing-resource");
-        AuthorizationResponse response = authzClient.authorization(username, password).authorize(request);
-        token = response.getToken();
-
-        // introspect the token
-        TokenIntrospectionResponse requestingPartyToken = authzClient.protection().introspectRequestingPartyToken(token);
-
-        System.out.println("Token status is: " + requestingPartyToken.getActive());
-        System.out.println("Permissions granted by the server: ");
-
-        for (Permission granted : requestingPartyToken.getPermissions()) {
-            LOGGER.info("Detected request to get timeseries ...");
-            if (valid) {
-                message.put(JSON_RESULT_KEY, "Agent is ready to retrieve timeseries.");
-            } else {
-                message.put(JSON_ERROR_KEY, "Agent could not be initialised! Please check logs for more information.");
+        KeycloakConnector keycloakConnector = new KeycloakConnector();
+        try {
+            message = keycloakConnector.checkAuthorizationViaUMA(token);
+        } catch (HttpResponseException e) {
+            LOGGER.info("The status code is " + e.getStatusCode());
+            LOGGER.info("The reason phrase is " + e.getReasonPhrase());
+            if (e.getStatusCode() == 403) {
+                if (e.getReasonPhrase().contains("Invalid bearer token")) {
+                    message = new JSONObject();
+                    message.put("message", "invalid token");
+                } else if (e.getReasonPhrase().contains("not_authorized")) {
+                    //send not authorized message
+                    message = new JSONObject();
+                    message.put("message", "unauthorized");
+                }
             }
+        }
+        
+        if (message.has("access_token") && message.getString("access_token").length() > 1) {
+            // query for timeseries data from postgreSQL
+            message = new JSONObject();
+            message.put("message", "Authorized");
         }
         return message;
     }

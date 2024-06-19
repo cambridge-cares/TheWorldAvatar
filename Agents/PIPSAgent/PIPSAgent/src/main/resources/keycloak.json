@@ -1,8 +1,0 @@
-{
-  "realm": "<REALM-NAME>",
-  "auth-server-url": "http://<STACK-NAME>-keycloak:8080/keycloak/",
-  "resource": "<CLIENT-NAME>",
-  "credentials": {
-    "secret": "<CLIENT-SECRET>"
-  }
-}
