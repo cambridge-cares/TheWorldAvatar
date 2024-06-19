@@ -12,9 +12,9 @@ export const PathNames: {
 export const Routes: {
   [key: string]: string;
 } = {
-  HOME: "/" + PathNames.HOME,
-  MAP: "/" + PathNames.MAP,
-  DASHBOARD: "/" + PathNames.DASHBOARD,
-  HELP: "/" + PathNames.HELP,
-  ACKNOWLEDGEMENTS: "/" + PathNames.ACKNOWLEDGEMENTS,
+  HOME: PathNames.HOME,
+  MAP: PathNames.MAP,
+  DASHBOARD: PathNames.DASHBOARD,
+  HELP: PathNames.HELP,
+  ACKNOWLEDGEMENTS: PathNames.ACKNOWLEDGEMENTS,
 };
