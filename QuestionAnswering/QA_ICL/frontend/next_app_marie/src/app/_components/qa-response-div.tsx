@@ -231,7 +231,10 @@ export function QAResponseVisualisationDiv({
             <ToggleGroup
               type='single'
               defaultValue={curVar}
-              onValueChange={val => setCurVar(val)}
+              onValueChange={val => {
+                setCurIri(undefined)
+                setCurVar(val)
+              }}
               className='flex justify-start'
             >
               {Object.keys(visData).map((varname, i) => (
