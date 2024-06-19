@@ -54,7 +54,7 @@ class VisualisationDataStore:
                 (
                     "{} ({})".format(model.label, model.IUPAC_name.value)
                     if model.IUPAC_name
-                    else model.label if model else None
+                    else model.label if model else ""
                 )
                 for model in models
             ]
@@ -63,14 +63,14 @@ class VisualisationDataStore:
             vis_data = self.cif_manager.get(iris)
             if cls == "zeo:ZeoliteFramework":
                 models = self.ontozeolite_store.get_zeolite_frameworks(iris)
-                labels = [model.code if model else None for model in models]
+                labels = [model.code if model else "" for model in models]
             else:
                 models = self.ontozeolite_store.get_zeolitic_materials(iris)
-                labels = [model.chemical_formula if model else None for model in models]
+                labels = [model.chemical_formula if model else "" for model in models]
         else:
             type = None
             vis_data = [None for _ in iris]
-            labels = [None for _ in iris]
+            labels = ["" for _ in iris]
 
         return [
             (

@@ -18,16 +18,33 @@ logger = logging.getLogger(__name__)
 
 
 class QtNormaliser:
-    QT_RECOG_PROMPT_TEMPLATE = """### Examples of recognition and annotation of physical quantities in natural language texts:
+    QT_RECOG_SYSTEM_PROMPT = """You are a helpful assistant who detects magnitudes and units of physical quantities in natural language texts.
+- Please ignore physical quantities with no units.
+- Your response is exactly a single JSON object, or `null` if no physical quantities are present."""
+
+    QT_RECOG_USER_PROMPT_TEMPLATE = """### Input-output examples:
 {examples}
 
-### Instruction: 
-Your task is to perform recognition and annotation of physical quantities for the following text. Please do not provide any explanation and respond with a single JSON object exactly.
-
-### Text:
+### Input:
 {text}"""
 
-    TARGET_UNIT = {"molar_mass": "g/mol", "molecular_weight": "g/mol"}
+    # https://github.com/hgrecco/pint/blob/master/pint/default_en.txt
+    TARGET_UNIT = {
+        # ontospecies
+        "molar_mass": "g/mol",
+        "molecular_weight": "g/mol",
+        # ontozeolite
+        "accessible_area_per_cell": "angstrom^2",
+        "accessible_area_per_gram": "angstrom^2/g",
+        "accessible_volume_per_cell": "angstrom^3",
+        "zeolite_density": "g/cm^3",
+        "framework_density": "nm^-3",
+        "occupiable_area_per_cell": "angstrom^2",
+        "occupiable_area_per_gram": "angstrom^2/g",
+        "occupiable_volume_per_cell": "angstrom^3",
+        "specific_accessible_area": "m^2/cm^3",
+        "specific_occupiable_area": "m^2/cm^3",
+    }
 
     def __init__(
         self,
@@ -47,13 +64,18 @@ Your task is to perform recognition and annotation of physical quantities for th
             qt = qt.to(self.TARGET_UNIT[type])
         else:
             qt = qt.to_base_units()
-        return qt.magnitude, str(qt.units)
+        return f"{qt:~P}"
 
     def normalise(self, text: str):
-        prompt = self.QT_RECOG_PROMPT_TEMPLATE.format(
+        prompt = self.QT_RECOG_USER_PROMPT_TEMPLATE.format(
             examples="\n".join(
                 '"{input}" => {output}'.format(
-                    input=example.text, output=example.prediction.model_dump_json()
+                    input=example.text,
+                    output=(
+                        example.prediction.model_dump_json()
+                        if example.prediction
+                        else "null"
+                    ),
                 )
                 for example in self.qt_recog_example_store.retrieve()
             ),
@@ -65,22 +87,21 @@ Your task is to perform recognition and annotation of physical quantities for th
             model=self.openai_model,
             response_format={"type": "json_object"},
             messages=[
+                {"role": "system", "content": self.QT_RECOG_SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
             temperature=0,
         )
         logger.info("LLM's response: " + str(res))
 
-        pred = QtRecogPrediction.model_validate_json(res.choices[0].message.content)
+        content = res.choices[0].message.content
+        if not content or content == "null":
+            return text
+
+        pred = QtRecogPrediction.model_validate_json(content)
         return pred.template.format(
             *(
-                (
-                    "{} {}".format(
-                        *self.normalise_qt(type=qt.type, value=qt.value, unit=qt.unit)
-                    )
-                    if qt.unit
-                    else qt.value
-                )
+                self.normalise_qt(type=qt.type, value=qt.value, unit=qt.unit)
                 for qt in pred.quantities
             )
         )

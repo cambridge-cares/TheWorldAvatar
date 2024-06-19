@@ -19,7 +19,9 @@ class OntocrystalVectorComponent(RDFEntity):
 
 class OntocrystalMeasureVector(RDFEntity):
     unit: str = RDFField(path=OM2.hasUnit)
-    vector_component: list[OntocrystalVectorComponent] = RDFField(path=ONTOCRYSTAL.hasVectorComponent)
+    vector_component: list[OntocrystalVectorComponent] = RDFField(
+        path=ONTOCRYSTAL.hasVectorComponent
+    )
 
 
 class OntocrystalMatrixComponent(RDFEntity):
@@ -93,7 +95,7 @@ class OntocrystalUnitCell(RDFEntity):
 
 
 class OntocrystalTileFace(RDFEntity):
-    face_code: str = RDFField(path=ONTOCRYSTAL.hasFaceCode)
+    face_code: str | None = RDFField(default=None, path=ONTOCRYSTAL.hasFaceCode)
     edge_num: int = RDFField(path=ONTOCRYSTAL.hasNumberOfEdges)
     num: int = RDFField(path=~ONTOCRYSTAL.isNumberOfTileFaces / ONTOCRYSTAL.hasValue)
 
@@ -110,4 +112,4 @@ class OntocrystalTile(RDFEntity):
 
 class OntocrystalTiledStructure(RDFEntity):
     signature: str = RDFField(path=ONTOCRYSTAL.hasTileSignature)
-    tile: list[OntocrystalTile]
+    tile: list[OntocrystalTile] = RDFField(path=ONTOCRYSTAL.hasTile)

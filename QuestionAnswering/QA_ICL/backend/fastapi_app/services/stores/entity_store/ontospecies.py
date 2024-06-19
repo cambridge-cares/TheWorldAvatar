@@ -57,8 +57,8 @@ def get_species_linker(endpoint: Annotated[str, Depends(get_ontospecies_endpoint
 
 
 class ElementLinker(IEntityLinker):
-    def __init__(self, bg_client: SparqlClient):
-        self.bg_client = bg_client
+    def __init__(self, ontospecies_endpoint: str):
+        self.sparql_client = SparqlClient(ontospecies_endpoint)
 
     def link(self, text: str | None, **kwargs):
         if "symbol" not in kwargs:
@@ -73,12 +73,12 @@ WHERE {{
             symbol=kwargs["symbol"]
         )
 
-        _, bindings = self.bg_client.querySelectThenFlatten(query)
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [binding["Element"] for binding in bindings]
 
 
 @cache
 def get_element_linker(
-    bg_client: Annotated[SparqlClient, Depends(get_ontospecies_endpoint)]
+    ontospecies_endpoint: Annotated[str, Depends(get_ontospecies_endpoint)]
 ):
-    return ElementLinker(bg_client=bg_client)
+    return ElementLinker(ontospecies_endpoint=ontospecies_endpoint)

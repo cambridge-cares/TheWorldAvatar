@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class AtomGeometry(BaseModel):
+class XYZAtom(BaseModel):
     symbol: str
     x: float
     y: float
@@ -11,9 +11,9 @@ class AtomGeometry(BaseModel):
         return f"{self.symbol} {self.x} {self.y} {self.z}"
 
 
-class MoleculeGeometry(BaseModel):
+class XYZ(BaseModel):
     comment: str
-    atoms: list[AtomGeometry]
+    atoms: list[XYZAtom]
 
     def to_xyz_str(self):
         return """{number_of_atoms}
@@ -25,7 +25,7 @@ class MoleculeGeometry(BaseModel):
         )
 
 
-class UnitCellParams(BaseModel):
+class CIFUnitCell(BaseModel):
     a: float
     b: float
     c: float
@@ -42,7 +42,7 @@ _cell_angle_beta    {self.beta}
 _cell_angle_gamma   {self.gamma}"""
 
 
-class AtomSite(BaseModel):
+class CIFAtomSite(BaseModel):
     label: str
     symbol: str
     fract_x: float
@@ -55,10 +55,10 @@ class AtomSite(BaseModel):
         )
 
 
-class CrystalInfo(BaseModel):
+class CIF(BaseModel):
     name: str
-    unit_cell: UnitCellParams
-    atoms: list[AtomSite]
+    unit_cell: CIFUnitCell
+    atoms: list[CIFAtomSite] = Field(..., min_items=1)
 
     def to_cif_str(self):
         return """data_{name}

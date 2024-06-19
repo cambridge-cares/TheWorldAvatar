@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import Depends
 from pydantic import TypeAdapter
 
-from model.mol_vis import AtomSite, CrystalInfo, UnitCellParams
+from model.mol_vis import CIFAtomSite, CIF, CIFUnitCell
 from services.sparql import SparqlClient, get_ontozeolite_endpoint
 
 
@@ -14,15 +14,16 @@ class CIFManager:
 
     def __init__(self, ontozeolite_endpoint: str):
         self.sparql_client = SparqlClient(ontozeolite_endpoint)
-        self.atoms_adapter = TypeAdapter(list[AtomSite])
+        self.atoms_adapter = TypeAdapter(list[CIFAtomSite])
 
     def _atom_site_label2symbol(self, label: str):
         label = "".join(c for c in label if c.isalpha())
         return self.ATOM_SITE_LABEL_MAPPINGS.get(label, label)
 
     def get(self, iris: list[str]):
+        none_lst: list[str | None] = [None for _ in iris]
         if not iris:
-            return [None for _ in iris]
+            return none_lst
 
         unique_iris = set(iris)
 
@@ -62,7 +63,7 @@ WHERE {{
 
         iri2name = {binding["zeo"]: binding["name"] for binding in bindings}
         iri2unitcell = {
-            binding["zeo"]: UnitCellParams.model_validate(binding)
+            binding["zeo"]: CIFUnitCell.model_validate(binding)
             for binding in bindings
         }
 
@@ -94,11 +95,11 @@ WHERE {{
         iri2atoms = defaultdict(list)
         for binding in bindings:
             binding["symbol"] = self._atom_site_label2symbol(binding["label"])
-            iri2atoms[binding["zeo"]].append(AtomSite.model_validate(binding))
+            iri2atoms[binding["zeo"]].append(CIFAtomSite.model_validate(binding))
 
         def make_cif(data: dict):
             try:
-                return CrystalInfo.model_validate(data).to_cif_str()
+                return CIF.model_validate(data).to_cif_str()
             except:
                 return None
 
