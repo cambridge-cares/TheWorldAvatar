@@ -1,6 +1,7 @@
 [PrefixDeclaration]
 xsd:    http://www.w3.org/2001/XMLSchema#
 twa:	https://www.theworldavatar.com/kg/
+:	    https://www.theworldavatar.com/kg/
 rdfs:	http://www.w3.org/2000/01/rdf-schema#
 be:     https://www.theworldavatar.com/kg/ontobuiltenv/
 ic:     http://ontology.eil.utoronto.ca/icontact.owl#
@@ -57,7 +58,7 @@ mappingId	SLR - osm_road_mat_view
 target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact openstreetmap:way/{"osm_road_mat_view_uuid"} .
             openstreetmap:way/{"osm_road_mat_view_uuid"} a ontosl:ImpactedSite.
             openstreetmap:way/{"osm_road_mat_view_uuid"} ontosl:hasAffectedLength ontosl:affectedlength_{"osm_road_mat_view_uuid"}.
-            ontosl:affectedlength_{"osm_road_mat_view_uuid"} a om:Length. 
+            ontosl:affectedlength_{"osm_road_mat_view_uuid"} a om:Length; 
                 om:hasValue twa:measure_affectedlength_{"osm_road_mat_view_uuid"}.
             twa:measure_affectedlength_{"osm_road_mat_view_uuid"} a om:Measure; 
                 om:hasUnit om:metre;
