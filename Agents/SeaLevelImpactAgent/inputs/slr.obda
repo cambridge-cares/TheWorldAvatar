@@ -2,51 +2,65 @@
 xsd:    http://www.w3.org/2001/XMLSchema#
 twa:	https://www.theworldavatar.com/kg/
 rdfs:	http://www.w3.org/2000/01/rdf-schema#
-:       https://www.theworldavatar.com/kg/
-sea:    https://www.theworldavatar.com/kg/ontosealevel/
 be:     https://www.theworldavatar.com/kg/ontobuiltenv/
 ic:     http://ontology.eil.utoronto.ca/icontact.owl#
 sch:    https://schema.org/
 dbo:    https://dbpedia.org/ontology/
 landplot: https://www.theworldavatar.com/kg/landplot/
-ost:    https://www.theworldavatar.com/kg/ontostreet/
+ontosl:    https://www.theworldavatar.com/kg/ontosealevel/
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+osm: https://w3id.org/openstreetmap/terms#
+openstreetmap: https://www.openstreetmap.org/
 
 [MappingDeclaration] @collection [[
 mappingId	SLR - Heritage Tree
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :HeritageTree/{"heritagetree_uuid"} .
+target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact :HeritageTree/{"heritagetree_uuid"} .
+            :HeritageTree/{"heritagetree_uuid"} a ontosl:ImpactedSite. 
 source		SELECT "slr_uuid", "heritagetree_uuid" FROM "public"."slr_heritagetree"
 
 mappingId	SLR - Historic Site
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :HistoricSite/{"historicsite_uuid"} .
+target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact :HistoricSite/{"historicsite_uuid"} .
+            :HistoricSite/{"historicsite_uuid"} a ontosl:ImpactedSite.
 source		SELECT "slr_uuid", "historicsite_uuid" FROM "public"."slr_historicsite"
 
 mappingId	SLR - Monument
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :Monument/{"monument_uuid"} .
+target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact :Monument/{"monument_uuid"} .
+            :Monument/{"monument_uuid"} a ontosl:ImpactedSite.
 source		SELECT "slr_uuid", "monument_uuid" FROM "public"."slr_monument"
 
 mappingId	SLR - Museum
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :Museum/{"museum_uuid"} .
+target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact :Museum/{"museum_uuid"} .
+            :Museum/{"museum_uuid"} a ontosl:ImpactedSite.
 source		SELECT "slr_uuid", "museum_uuid" FROM "public"."slr_museum"
 
 mappingId	SLR - TouristAttraction
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact :TouristAttraction/{"touristattraction_uuid"} .
+target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact :TouristAttraction/{"touristattraction_uuid"} .
+            :TouristAttraction/{"touristattraction_uuid"} a ontosl:ImpactedSite.
 source		SELECT "slr_uuid", "touristattraction_uuid" FROM "public"."slr_touristattraction"
 
 mappingId	SLR - Landplot
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact landplot:{"landplot_uuid"} .
-            landplot:{"landplot_uuid"} sea:hasAffectedArea {"affectedarea"}^^xsd:double.
+target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact landplot:{"landplot_uuid"} .
+            landplot:{"landplot_uuid"} a ontosl:ImpactedSite.
+            landplot:{"landplot_uuid"} ontosl:hasAffectedArea {"affectedarea"}.
 source		SELECT "slr_uuid", "landplot_uuid", "affectedarea" FROM "public"."slr_landplot"
 
 mappingId	SLR - Population
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact {"populationatrisk"}^^xsd:integer.
+target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPopulationAtRisk {"populationatrisk"}.
 source		SELECT "slr_uuid", "populationatrisk" FROM "public"."slr_population"
 
 mappingId	SLR - Building
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact twa:Building/{"bldg_mat_view_uuid"} .
+target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact twa:Building/{"bldg_mat_view_uuid"} .
+            twa:Building/{"bldg_mat_view_uuid"} a ontosl:ImpactedSite.
 source		SELECT "slr_uuid", "bldg_mat_view_uuid" FROM "public"."slr_bldg_mat_view"
 
 mappingId	SLR - osm_road_mat_view
-target		sea:SeaLevelChange/{"slr_uuid"} sea:hasPotentialImpact ost:RoadSegment/{"osm_road_mat_view_uuid"} .
-            ost:RoadSegment/{"osm_road_mat_view_uuid"} sea:hasAffectedLength {"affectedlength"}^^xsd:double.
+target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact openstreetmap:way/{"osm_road_mat_view_uuid"} .
+            openstreetmap:way/{"osm_road_mat_view_uuid"} a ontosl:ImpactedSite.
+            openstreetmap:way/{"osm_road_mat_view_uuid"} ontosl:hasAffectedLength ontosl:affectedlength_{"osm_road_mat_view_uuid"}.
+            ontosl:affectedlength_{"osm_road_mat_view_uuid"} a om:Length; 
+                om:hasValue twa:measure_affectedlength_{"osm_road_mat_view_uuid"}.
+            twa:measure_affectedlength_{"osm_road_mat_view_uuid"} a om:Measure; 
+                om:hasUnit om:metre;
+                om:hasNumericalValue {"affectedlength"}.
 source		SELECT "slr_uuid", "osm_road_mat_view_uuid", "affectedlength" FROM "public"."slr_osm_road_mat_view"
 ]]
