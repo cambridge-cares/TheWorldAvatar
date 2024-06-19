@@ -7,9 +7,8 @@ twa:    https://www.theworldavatar.com/kg/
 
 [MappingDeclaration] @collection [[
 mappingId	cost
-target		twa:Building/{building_iri} env:hasEstimatedConstructionCost om:Cost/{building_iri}.
-            om:Cost/{building_iri} om:hasValue om:Measure/{building_iri}
-            om:Measure/{building_iri} om:hasNumericalValue {cost}^^xsd:float .
-            
+target		twa:Building/{building_uuid} env:hasEstimatedConstructionCost om:Cost/{building_uuid} .
+            om:Cost/{building_uuid} om:hasValue om:Measure/{building_uuid} .
+            om:Measure/{building_uuid} om:hasNumericalValue {cost} .
 source     SELECT * FROM gfa_floors.cost
 ]]
