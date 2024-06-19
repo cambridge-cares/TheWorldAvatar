@@ -104,7 +104,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
           {activeIndex == 0 &&
             <RibbonPanel>
               <RibbonComponentCombo
-                icon="/images/defaults/icons/imagery.svg"
+                icon="./images/defaults/icons/imagery.svg"
                 text="Map Style"
                 tooltip="Change map imagery"
                 options={imageryNames}
@@ -115,7 +115,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                 }}
               />
               <RibbonComponentCombo
-                icon="/images/defaults/icons/camera.svg"
+                icon="./images/defaults/icons/camera.svg"
                 text="Reset"
                 tooltip="Reset camera to default position."
                 options={cameraNames}
@@ -134,7 +134,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                 }}
               />
               <RibbonComponentToggle
-                icon="/images/defaults/icons/terrain.svg"
+                icon="./images/defaults/icons/terrain.svg"
                 text="3D Terrain"
                 tooltip="Toggle 3D terrain."
                 initialState={false}
@@ -143,7 +143,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                 }}
               />
               <RibbonComponentToggle
-                icon="/images/defaults/icons/maximise.svg"
+                icon="./images/defaults/icons/maximise.svg"
                 text="Full Screen"
                 tooltip="Toggle fullscreen mode."
                 initialState={false}

@@ -62,7 +62,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
                     <DefaultPageThumbnail
                         title="Map"
                         description="Discover geospatial relationships in our environment"
-                        icon="/images/defaults/icons/map.svg"
+                        icon="./images/defaults/icons/map.svg"
                         redirectUrl={Routes.MAP}
                     />
                 )}
@@ -70,7 +70,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
                     <DefaultPageThumbnail
                         title="Analyse"
                         description="Discover trends and insights at a glance"
-                        icon="/images/defaults/icons/dash.svg"
+                        icon="./images/defaults/icons/dash.svg"
                         redirectUrl={Routes.DASHBOARD}
                     />
                 )}
@@ -78,14 +78,14 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
                     <DefaultPageThumbnail
                         title="Acknowledgements"
                         description="Discover the CReDo partners and contributors"
-                        icon="/images/defaults/icons/glossary.svg"
+                        icon="./images/defaults/icons/glossary.svg"
                         redirectUrl={Routes.ACKNOWLEDGEMENTS}
                     />
                 )}
                 <DefaultPageThumbnail
                     title="Help Centre"
                     description="Help for the CReDo app"
-                    icon="/images/defaults/icons/twa.svg"
+                    icon="./images/defaults/icons/twa.svg"
                     redirectUrl={Routes.HELP}
                 />
             </div>

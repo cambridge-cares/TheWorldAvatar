@@ -46,8 +46,8 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 ```json
 {
   "branding": {
-    "logo": "/images/whatever.svg", // Custom branding logo
-    "navbarLogo": "/images/defaults/navbar-logo.svg" // Custom logo for the navbar (should be 5:1 aspect ratio)
+    "logo": "./images/whatever.svg", // Custom branding logo
+    "navbarLogo": "./images/defaults/navbar-logo.svg" // Custom logo for the navbar (should be 5:1 aspect ratio)
   },
   "modules": {
     "landing": true, // Should the landing page be enabled
@@ -97,12 +97,12 @@ Icons on the map are shown by default in the layer tree. Additional legend items
       // Group one, item one
       "Active": {
         "type": "symbol",
-        "icon": "/images/active.svg"
+        "icon": "./images/active.svg"
       },
       // Group one, item two
       "Inactive": {
         "type": "symbol",
-        "icon": "/images/inactive.jpg"
+        "icon": "./images/inactive.jpg"
       },
       // Group one, item three
       "Unknown": {
@@ -196,7 +196,7 @@ Below is an example of the contents for a valid `map-settings.json` file for Map
   },
   "icons": {
     // Mappings for the icon name that will be called in code and its corresponding url
-    "info": "/images/defaults/icons/info.svg"
+    "info": "./images/defaults/icons/info.svg"
   }
 }
 ```

@@ -35,7 +35,7 @@ interface PageThumbnailTemplateProps {
  * @param {OptionalPage} page Markdown page content.
  */
 export function MarkdownPageThumbnail({ page }: Readonly<MarkdownPageThumbnailProps>) {
-  const thumbnail = page.thumbnail ?? "/images/defaults/icons/info.svg";
+  const thumbnail = page.thumbnail ?? "./images/defaults/icons/info.svg";
   const url = `/posts/${page.slug}`;
 
   return (

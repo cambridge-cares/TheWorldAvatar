@@ -132,7 +132,7 @@ export default class OptionalPages {
 function formatMarkdownImages(markdownContent: string): string {
     const prefix: string = process.env.BASE_PATH || "/";
     // Append base path if available
-    // Formats either <img src="/images/... or <img src="images/...
+    // Formats either <img src="./images/... or <img src="images/...
     // Exclude any initial img elements starting with http 
     return markdownContent.replace(/(<img\s+src=")(?!https?:\/\/)(\/)?([^"]+")/g, `$1${prefix}$3`);
 }

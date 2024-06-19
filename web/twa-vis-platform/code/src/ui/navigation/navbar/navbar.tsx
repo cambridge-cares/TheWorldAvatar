@@ -2,15 +2,14 @@
 
 import styles from './navbar.module.css';
 
-import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { Routes } from 'io/config/routes';
 import { selectItem } from 'state/context-menu-slice';
-import { navbarItem } from 'ui/interaction/context-menu/context-menu';
-import AppLink from 'ui/navigation/link/link';
-import NavbarComponent from './navbar-component';
 import IconComponent from 'ui/graphic/icon/icon';
+import { navbarItem } from 'ui/interaction/context-menu/context-menu';
+import NavbarComponent from './navbar-component';
+import Link from 'next/link';
 
 // Type definition for navbar properties
 interface NavbarProps {
@@ -51,13 +50,13 @@ export default function Navbar(props: Readonly<NavbarProps>) {
     <div id="navbar" className={styles.navbar}>
       {/* Render navbar logo if set */}
       {props.navbarLogo != null &&
-        <AppLink url={Routes.HOME}>
+        <Link href={Routes.HOME}>
           <div className="navbarLogo">
             <IconComponent
               icon={props.navbarLogo}
             />
           </div>
-        </AppLink>
+        </Link>
       }
 
       {/* Render each component as required */}
@@ -91,6 +90,10 @@ export default function Navbar(props: Readonly<NavbarProps>) {
             url={Routes.HELP} />
         }
       </div>
+
+      {/* <KeycloakSession>
+
+      </KeycloakSession> */}
     </div>
   );
 }
