@@ -2,8 +2,6 @@ package uk.ac.cam.cares.jps.data;
 
 import static org.junit.Assert.assertEquals;
 
-import android.util.Pair;
-
 import com.android.volley.VolleyError;
 
 import org.junit.Before;
@@ -11,9 +9,8 @@ import org.junit.Test;
 
 import uk.ac.cam.cares.jps.data.testdouble.FakeTodoNetworkSource;
 import uk.ac.cam.cares.jps.data.testdouble.FakeUserNetworkSource;
-import uk.ac.cam.cares.jps.model.Todo;
 import uk.ac.cam.cares.jps.model.TodoWithUser;
-import uk.ac.cam.cares.jps.model.User;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 public class TodoRepositoryTest {
     private static TodoRepository todoRepository;
@@ -30,14 +27,14 @@ public class TodoRepositoryTest {
         todoRepository.getInfo("7", new RepositoryCallback<>() {
             @Override
             public void onSuccess(TodoWithUser result) {
-                assertEquals(TODO_NETWORK_SOURCE.getId(), result.getId());
-                assertEquals(TODO_NETWORK_SOURCE.getUserId(), result.getUserId());
-                assertEquals(TODO_NETWORK_SOURCE.getTitle(), result.getTitle());
-                assertEquals(TODO_NETWORK_SOURCE.getCompleted(), result.getCompleted());
-                assertEquals(USER_NETWORK_SOURCE.getId(), result.getId());
-                assertEquals(USER_NETWORK_SOURCE.getName(), result.getName());
-                assertEquals(USER_NETWORK_SOURCE.getUserName(), result.getUsername());
-                assertEquals(USER_NETWORK_SOURCE.getEmail(), result.getEmail());
+                assertEquals(TODO_NETWORK_SOURCE.getId(), result.todo().getId());
+                assertEquals(TODO_NETWORK_SOURCE.getUserId(), result.todo().getUserId());
+                assertEquals(TODO_NETWORK_SOURCE.getTitle(), result.todo().getTitle());
+                assertEquals(TODO_NETWORK_SOURCE.getCompleted(), result.todo().getCompleted());
+                assertEquals(USER_NETWORK_SOURCE.getId(), result.user().getId());
+                assertEquals(USER_NETWORK_SOURCE.getName(), result.user().getName());
+                assertEquals(USER_NETWORK_SOURCE.getUserName(), result.user().getUsername());
+                assertEquals(USER_NETWORK_SOURCE.getEmail(), result.user().getEmail());
             }
 
             @Override
