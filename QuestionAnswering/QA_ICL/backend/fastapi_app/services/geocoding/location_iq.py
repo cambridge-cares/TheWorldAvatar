@@ -1,6 +1,5 @@
 from functools import cache
 import os
-from typing import List, Optional, Tuple
 
 from pydantic import BaseModel, Field, TypeAdapter
 import requests
@@ -12,25 +11,25 @@ from services.geocoding.base import Place, IGeocoder
 class LocationIQGecodingResponse(BaseModel):
     place_id: str
     licence: str
-    osm_type: Optional[str] = None
-    osm_id: Optional[str] = None
+    osm_type: str | None = None
+    osm_id: str | None = None
     lat: str
     lon: str
     display_name: str
-    cls: Optional[str] = Field(default=None, alias="class")
-    type: Optional[str] = None
-    importance: Optional[float] = None
-    address: Optional[dict] = None
-    boundingbox: Tuple[str, str, str, str]
-    namedetails: Optional[dict] = None
-    extratags: Optional[dict] = None
-    geojson: Optional[dict] = None
-    geokml: Optional[str] = None
-    svg: Optional[str] = None
-    geotext: Optional[str] = None
-    icon: Optional[str] = None
-    matchquality: Optional[dict] = None
-    postaladdress: Optional[str] = None
+    cls: str | None = Field(default=None, alias="class")
+    type: str | None = None
+    importance: float | None = None
+    address: dict | None = None
+    boundingbox: tuple[str, str, str, str]
+    namedetails: dict | None = None
+    extratags: dict | None = None
+    geojson: dict | None = None
+    geokml: str | None = None
+    svg: str | None = None
+    geotext: str | None = None
+    icon: str | None = None
+    matchquality: dict | None = None
+    postaladdress: str | None = None
 
 
 class LocationIQGeocoder(IGeocoder):
@@ -38,7 +37,7 @@ class LocationIQGeocoder(IGeocoder):
 
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self.geocode_res_adapter = TypeAdapter(List[LocationIQGecodingResponse])
+        self.geocode_res_adapter = TypeAdapter(list[LocationIQGecodingResponse])
 
     def search(self, location: str):
         query_params = {"key": self.api_key, "q": location, "format": "json"}

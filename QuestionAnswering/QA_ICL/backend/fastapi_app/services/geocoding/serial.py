@@ -1,6 +1,6 @@
 from functools import cache
 import logging
-from typing import Annotated, Tuple
+from typing import Annotated
 
 from fastapi import Depends
 from .base import IGeocoder
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class SerialGeocoder(IGeocoder):
-    def __init__(self, geocoders: Tuple[IGeocoder, ...]):
+    def __init__(self, geocoders: tuple[IGeocoder, ...]):
         self.geocoders = geocoders
 
     def search(self, location: str):

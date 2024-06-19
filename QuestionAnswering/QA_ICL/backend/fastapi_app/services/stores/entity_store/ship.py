@@ -1,5 +1,5 @@
 from functools import cache
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import Depends
 
@@ -12,7 +12,7 @@ class ShipLinker(IEntityLinker):
     def __init__(self, bg_client: SparqlClient):
         self.bg_client = bg_client
 
-    def link(self, text: Optional[str], **kwargs):
+    def link(self, text: str | None, **kwargs):
         if "mmsi" not in kwargs:
             return []
 

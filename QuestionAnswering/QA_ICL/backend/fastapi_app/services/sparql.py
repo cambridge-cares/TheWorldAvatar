@@ -1,5 +1,5 @@
 from functools import cache
-from typing import Annotated, Dict, List, Literal, Optional
+from typing import Annotated, Literal
 
 
 from SPARQLWrapper import SPARQLWrapper, POST, JSON
@@ -12,13 +12,13 @@ from config import AppSettings, get_app_settings
 class SparqlSelectResponseHead(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    vars: List[str]
+    vars: list[str]
 
 
 class SparqlSelectResponseBindingValue(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    datatype: Optional[str] = None
+    datatype: str | None = None
     type: Literal["uri", "literal"]
     value: str
 
@@ -26,7 +26,7 @@ class SparqlSelectResponseBindingValue(BaseModel):
 class SparqlSelectResponseResults(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    bindings: List[Dict[str, SparqlSelectResponseBindingValue]]
+    bindings: list[dict[str, SparqlSelectResponseBindingValue]]
 
 
 class SparqlSelectResponse(BaseModel):
@@ -38,7 +38,7 @@ class SparqlSelectResponse(BaseModel):
 
 class SparqlClient:
     def __init__(
-        self, endpoint: str, user: Optional[str] = None, password: Optional[str] = None
+        self, endpoint: str, user: str | None = None, password: str | None = None
     ):
         sparql = SPARQLWrapper(endpoint)
         sparql.setReturnFormat(JSON)

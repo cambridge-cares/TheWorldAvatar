@@ -1,6 +1,6 @@
 from functools import cache
 from importlib.resources import files
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import Depends
 from pydantic import BaseModel, TypeAdapter
@@ -16,13 +16,13 @@ class PageMetadata(BaseModel):
 class DataDomainSampleQuestions(BaseModel):
     data_domain: str
     label: str
-    questions: List[str]
+    questions: list[str]
 
 
 class QADomainSampleQuestions(BaseModel):
     qa_domain: str
     label: str
-    subdomains: List[DataDomainSampleQuestions]
+    subdomains: list[DataDomainSampleQuestions]
 
 
 @cache
@@ -34,7 +34,7 @@ def get_metadata(frontend_name: Annotated[str, Depends(get_frontend_name)]):
 
 @cache
 def get_sample_questions(frontend_name: Annotated[str, Depends(get_frontend_name)]):
-    return TypeAdapter(List[QADomainSampleQuestions]).validate_json(
+    return TypeAdapter(list[QADomainSampleQuestions]).validate_json(
         files("resources." + frontend_name)
         .joinpath("sample_questions.json")
         .read_text()

@@ -1,6 +1,6 @@
 from functools import cache
 import logging
-from typing import Annotated, Any, Dict, List
+from typing import Annotated, Any
 
 from fastapi import Depends
 
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class SparqlQueryProcessor:
-    def __init__(self, ns2endpoint: Dict[str, str] = dict()):
+    def __init__(self, ns2endpoint: dict[str, str] = dict()):
         self.ns2endpoint = ns2endpoint
 
     def inject_service_endpoint(self, sparql: str):
@@ -55,8 +55,8 @@ class SparqlQueryProcessor:
     def inject_bindings(
         self,
         sparql: str,
-        entity_bindings: Dict[str, List[str]],
-        const_bindings: Dict[str, Any],
+        entity_bindings: dict[str, list[str]],
+        const_bindings: dict[str, Any],
     ):
         values_clauses = [
             "VALUES ?{var} {{ {iris} }}".format(
@@ -81,8 +81,8 @@ class SparqlQueryProcessor:
     def process(
         self,
         sparql: str,
-        entity_bindings: Dict[str, List[str]],
-        const_bindings: Dict[str, Any],
+        entity_bindings: dict[str, list[str]],
+        const_bindings: dict[str, Any],
     ):
         logger.info("Processing SPARQL query...")
 

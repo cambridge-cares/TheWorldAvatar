@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import Depends
 from services.stores.entity_store.base import IEntityLinker
@@ -9,7 +9,7 @@ class ZeoliteFrameworkLinker(IEntityLinker):
     def __init__(self, ontozeolite_endpoint: str):
         self.sparql_client = SparqlClient(ontozeolite_endpoint)
 
-    def link(self, text: Optional[str], **kwargs):
+    def link(self, text: str | None, **kwargs):
         if "code" not in kwargs:
             return []
 
@@ -33,7 +33,7 @@ class ZeoliticMaterialLinker(IEntityLinker):
     def __init__(self, ontozeolite_endpoint: str):
         self.sparql_client = SparqlClient(ontozeolite_endpoint)
 
-    def link(self, text: Optional[str], **kwargs):
+    def link(self, text: str | None, **kwargs):
         if "formula" not in kwargs:
             return []
 

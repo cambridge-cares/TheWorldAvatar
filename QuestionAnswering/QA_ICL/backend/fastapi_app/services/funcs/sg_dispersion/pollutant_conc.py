@@ -1,5 +1,5 @@
 from functools import cache
-from typing import Annotated, List
+from typing import Annotated
 from fastapi import Depends
 from pydantic import BaseModel, Field
 
@@ -8,13 +8,13 @@ from services.requests import request_get_obj
 
 
 class PollutantConcResponse(BaseModel):
-    time: List[str]
-    uHC: List[float]
-    NOx: List[float]
-    SO2: List[float]
-    PM25: List[float] = Field(..., alias="PM2.5")
-    PM10: List[float]
-    CO: List[float]
+    time: list[str]
+    uHC: list[float]
+    NOx: list[float]
+    SO2: list[float]
+    PM25: list[float] = Field(..., alias="PM2.5")
+    PM10: list[float]
+    CO: list[float]
 
 
 class PollutantConcClient:

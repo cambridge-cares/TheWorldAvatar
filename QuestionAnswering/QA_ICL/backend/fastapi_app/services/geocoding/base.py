@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -12,5 +11,4 @@ class Place(BaseModel):
 
 class IGeocoder(ABC):
     @abstractmethod
-    def search(self, location: str) -> Optional[Place]:
-        pass
+    def search(self, location: str) -> Place | None: ...

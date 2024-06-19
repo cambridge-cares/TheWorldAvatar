@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import cache
-from typing import Annotated, List, Literal, Optional
+from typing import Annotated, Literal
 
 from fastapi import Depends
 import numpy as np
@@ -16,16 +16,16 @@ from config import AppSettings, get_app_settings
 class IEmbedder(ABC):
     @abstractmethod
     def __call__(
-        self, documents: List[str]
-    ) -> Annotated[npt.NDArray[np.float_], Literal["N", "D"]]:
+        self, documents: list[str]
+    ) -> Annotated[npt.NDArray[np.float64], Literal["N", "D"]]:
         pass
 
 
 class OpenAIEmbedder(IEmbedder):
     def __init__(
         self,
-        base_url: Optional[str] = None,
-        api_key: Optional[str] = None,
+        base_url: str | None = None,
+        api_key: str | None = None,
         model: str = "text-embedding-3-small",
         chunk_size: int = 1000,
         **kwargs
@@ -34,7 +34,7 @@ class OpenAIEmbedder(IEmbedder):
         self.model = model
         self.chunk_size = chunk_size
 
-    def __call__(self, documents: List[str]):
+    def __call__(self, documents: list[str]):
         # TODO: handle when `documents` or `queries` is an empty Lists
         # TODO: pack each chunk to the limit
         return np.array(
@@ -62,7 +62,7 @@ class TritonEmbedder(IEmbedder):
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_model)
         self.batch_size = batch_size
 
-    def __call__(self, documents: List[str]):
+    def __call__(self, documents: list[str]):
         arrs = []
         for i in range(0, len(documents), self.batch_size):
             batch = documents[i : i + self.batch_size]
