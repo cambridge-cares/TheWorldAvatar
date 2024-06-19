@@ -55,5 +55,5 @@ This repository also hosts reusable resources that can be used in any TWA Androi
 
 - [Modules](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Apps/Modules)
     - Contains the shared modules that can be imported individually into new projects.
-- [Shared Files]()
+- [Shared Files](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Apps/SharedFiles)
     - Contains reusable configuration files and UI components that can help standardize and streamline the setup of new projects.
