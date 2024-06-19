@@ -1,6 +1,6 @@
 # Login Module
 
-This module contains two parts core and feature. It integrates [AppAuth for Android](https://github.com/openid/AppAuth-Android) to communicate with OAuth2.0 and OpenId Connect providers (eg. Keycloak) for authentication.
+This module contains two parts: core and feature. It integrates [AppAuth for Android](https://github.com/openid/AppAuth-Android) to turn the app to an OAuth2.0 and OpenId Connect client and communicate with authentication provider (eg. Keycloak) for authentication.
 
 ## Setup
 
