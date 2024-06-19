@@ -4,12 +4,11 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import './mapbox.css';
 
 import mapboxgl, { Map } from 'mapbox-gl';
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
+import MapEventManager from 'map/map-event-manager';
 import { MapSettings } from 'types/settings';
 import { getCurrentImageryOption, getDefaultCameraPosition } from '../map-helper';
-import { formatAppUrl } from 'utils/client-utils';
-import MapEventManager from 'map/map-event-manager';
 
 // Type definition of incoming properties
 interface MapProperties {
@@ -45,7 +44,7 @@ export default function MapboxMapComponent(props: MapProperties) {
   const initialiseMap = async () => {
     props.currentMap?.remove();
 
-    const response = await fetch(formatAppUrl("/api/map/settings"), {
+    const response = await fetch(("./api/map/settings"), {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });

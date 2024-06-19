@@ -1,8 +1,7 @@
-import { AnySourceData, CanvasSourceRaw, GeoJSONSourceRaw, ImageSourceRaw, Map, RasterSource, VectorSource, VideoSourceRaw } from 'mapbox-gl';
-import { LayerSource } from 'io/data/layer-source';
 import { DataStore } from 'io/data/data-store';
+import { LayerSource } from 'io/data/layer-source';
+import { AnySourceData, CanvasSourceRaw, GeoJSONSourceRaw, ImageSourceRaw, Map, RasterSource, VectorSource, VideoSourceRaw } from 'mapbox-gl';
 import { JsonObject } from 'types/json';
-import { formatAppUrl } from 'utils/client-utils';
 
 /**
  * Given a DataStore instance housing parsed LayerSource instances,
@@ -37,10 +36,6 @@ export function addSource(map: Map, source: LayerSource) {
     delete options["metaFiles"];
     delete options["timeseriesFiles"];
 
-    // Ensure data have been formatted for the app
-    if (options["data"]) {
-        options["data"] = formatAppUrl(options["data"] as string);
-    }
     // Add attributions if missing
     options["attribution"] = options["attribution"] ?? "CMCL";
     options["attribution"] = `Powered by <a style="text-color:rgba(0,0,0,.5)" href="https://theworldavatar.io/" target = "_blank" title = "TWA" aria - label="TheWorldAvatar">The World Avatar&#8482;</a> | <a href="https://cmcl.io/" target = "_blank" title = "CMCL" aria - label="CMCL">${options["attribution"]} </a>`;

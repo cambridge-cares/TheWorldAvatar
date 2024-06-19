@@ -8,23 +8,11 @@ import { DataStore } from 'io/data/data-store';
 import { MapFeaturePayload, clearFeatures, setIri, setProperties, setStack } from 'state/map-feature-slice';
 import { JsonObject } from "types/json";
 
-/**
- * Format any internal app url path. Append a base path prefix if set.
- */
-export function formatAppUrl(url: string): string {
-    // Only append a base path if there is a relative path
-    if (url.startsWith("/")) {
-        // Append the base path prefix if there is a base environment
-        const appUrl: string = `${process.env.BASE_PATH || "/"}${url}`;
-        // Replace any double slashes with a single slash
-        return appUrl.replace(/\/\//g, "/");
-    }
-    return url;
-}
 
 /**
  * Open full screen mode.
  */
+
 export function openFullscreen() {
     const elem = document?.documentElement;
     if (elem?.requestFullscreen) {

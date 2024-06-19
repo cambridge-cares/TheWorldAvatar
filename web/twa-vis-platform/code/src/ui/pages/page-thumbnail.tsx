@@ -6,8 +6,8 @@ import React from 'react';
 import { Tooltip } from '@mui/material';
 
 import { OptionalPage } from 'io/config/optional-pages';
-import AppLink from 'ui/navigation/link/link';
 import AppImage from 'ui/graphic/image/image';
+import Link from 'next/link';
 
 // Interface for incoming parameters
 interface MarkdownPageThumbnailProps {
@@ -92,7 +92,7 @@ const ForwardedPageThumbnailTemplate = React.forwardRef<HTMLDivElement, Readonly
   function ForwardedPageThumbnailTemplate({ header, description, icon, redirectUrl, ...rest }, ref): React.ReactElement {
     const imageDescription = "Thumbnail icon for the '" + header + "' page.";
     return (
-      <AppLink url={redirectUrl} className={styles.container}>
+      <Link href={redirectUrl} className={styles.container}>
         <AppImage url={icon} height={50} width={50} alt={imageDescription} classes={styles.thumbnail} />
         <div ref={ref} {...rest} className={styles.content}>
           <div className={styles.title}>
@@ -102,6 +102,6 @@ const ForwardedPageThumbnailTemplate = React.forwardRef<HTMLDivElement, Readonly
             {description}
           </div>
         </div>
-      </AppLink>
+      </Link>
     );
   });
