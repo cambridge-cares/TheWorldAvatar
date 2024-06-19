@@ -41,11 +41,9 @@ class SparqlResponseTransformer:
                 iris=[binding.get(var) for binding in bindings]
             )
             for binding, datum in zip(bindings, retrieved_data):
-                binding[var] = (
-                    FrozenDict.from_dict(datum.model_dump(exclude_none=True))
-                    if isinstance(datum, BaseModel)
-                    else datum
-                )
+                if not datum:
+                    continue
+                binding[var] = FrozenDict.from_dict(datum.model_dump(exclude_none=True))
 
         pkeys = set(pkeys)
         pkeys = [var for var in vars if var in pkeys]

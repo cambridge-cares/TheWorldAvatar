@@ -10,7 +10,7 @@ from requests import HTTPError
 from constants.periodictable import ATOMIC_NUMBER_TO_SYMBOL
 from model.pubchem import PubChemPUGResponse
 from services.requests import request_get_obj
-from model.mol_vis import MoleculeGeometry
+from model.mol_vis import XYZ
 from services.sparql import SparqlClient, get_ontospecies_endpoint
 from utils.itertools_recipes import batched
 
@@ -44,8 +44,9 @@ class XYZManager:
         return self.get_from_pubchem(iris)
 
     def get_from_pubchem(self, iris: list[str]):
+        none_lst: list[str | None] = [None for _ in iris]
         if not iris:
-            return [None for _ in iris]
+            return none_lst
 
         query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
@@ -60,7 +61,7 @@ WHERE {{
 
         iri2cid = {binding["Species"]: int(binding["CID"]) for binding in bindings}
         if not iri2cid:
-            return [None for _ in iris]
+            return none_lst
 
         unique_cids = set(iri2cid.values()) - self.cids_no_xyz
 
@@ -133,7 +134,7 @@ WHERE {{
                     pass
 
             batch_cid2xyz = {
-                cid: MoleculeGeometry.model_validate(
+                cid: XYZ.model_validate(
                     {"atoms": atoms, "comment": "Generated from PubChem"}
                 ).to_xyz_str()
                 for cid, atoms in cid2atoms.items()
@@ -170,7 +171,7 @@ WHERE {{
 
         iri2binding = {binding["Species"]: binding for binding in bindings}
         iri2geom = {
-            iri: MoleculeGeometry.model_validate(
+            iri: XYZ.model_validate(
                 {"atoms": binding, "comment": "Generated from SPARQL query"}
             )
             for iri, binding in iri2binding.items()
