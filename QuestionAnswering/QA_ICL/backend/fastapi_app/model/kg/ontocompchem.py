@@ -1,16 +1,14 @@
 from typing import Annotated, Literal
 
 from pydantic import Field
-from constants.namespace import ONTOCOMPCHEM, ONTOSPECIES
+from constants.namespace import ONTOCOMPCHEM
 from model.kg.ontospecies import GcAtom
 from model.rdf_orm import RDFEntity, RDFField
 
 
 class OntocompchemOptimizedGeometry(RDFEntity):
     type: Literal["Optimized geometry"] = "Optimized geometry"
-    atom: list[GcAtom] = RDFField(
-        path=~ONTOSPECIES.fromGeometry / ~ONTOSPECIES.hasXCoordinate
-    )
+    atom: list[GcAtom]
 
 
 class OntocompchemRotationalConstants(RDFEntity):
