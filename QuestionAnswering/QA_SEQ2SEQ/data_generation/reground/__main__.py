@@ -43,32 +43,39 @@ def remove_brackets(text: str):
     return text
 
 
+def purge_span_tags(text: str):
+    return text.replace("<span>", "").replace("</span>", "")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--filepath_examples", type=str)
     parser.add_argument("--filepath_paraphrases", type=str)
     parser.add_argument("--domain", type=str)
+    parser.add_argument("--reground", action="store_true")
     args = parser.parse_args()
 
     df = pd.read_csv(args.filepath_paraphrases, index_col="id")
     df["paraphrases"] = (
         df["paraphrases"]
         .apply(ast.literal_eval)
-        .apply(lambda lst: [replace_entity_tags(x) for x in lst])
+        .apply(lambda lst: [purge_span_tags(x) for x in lst])
     )
 
     with open(args.filepath_examples, "r") as f:
         data = json.load(f, object_hook=as_enum)
 
-    # if args.domain == "ontokin":
-    #     regrounder = OKRegrounder()
-    # elif args.domain == "ontocompchem":
-    #     regrounder = OCCRegrounder()
-    # elif args.domain in ["ontospecies", "ontobuiltenv"]:
-    #     regrounder = IdentityRegrounder()
-    # else:
-    #     raise ValueError("Unexpected domain: " + args.domain)
-    regrounder = IdentityRegrounder()
+    if args.reground:
+        if args.domain == "ontokin":
+            regrounder = OKRegrounder()
+        elif args.domain == "ontocompchem":
+            regrounder = OCCRegrounder()
+        elif args.domain in ["ontospecies", "ontobuiltenv"]:
+            regrounder = IdentityRegrounder()
+        else:
+            raise ValueError("Unexpected domain: " + args.domain)
+    else:
+        regrounder = IdentityRegrounder()
 
     out = []
     for datum in data:
@@ -77,23 +84,27 @@ if __name__ == "__main__":
         parapharses = df.loc[datum["id"]]["paraphrases"]
         random.shuffle(parapharses)
 
-        paraphrases_for_regrounding = parapharses[:2]
-        parapharses_notfor_regrounding = parapharses[2:]
+        paraphrases_og, parapharses_reground = parapharses[:2], parapharses[2:]
 
-        pairs = regrounder.reground(
-            query_graph=query_graph,
-            query_sparql=query_sparql,
-            paraphrases=paraphrases_for_regrounding,
+        pairs = []
+
+        if random.random() > 0.75:
+            pairs.append((query_sparql, purge_span_tags(datum["verbalization"])))
+        pairs.extend([(query_sparql, p) for p in parapharses])
+        pairs.extend(
+            regrounder.reground(
+                query_graph=query_graph,
+                query_sparql=query_sparql,
+                paraphrases=parapharses_reground,
+            )
         )
-        pairs.append((query_sparql, datum["verbalization"]))
-        pairs.extend([(query_sparql, p) for p in parapharses_notfor_regrounding])
 
         out.extend(
             [
                 dict(
                     id="{id}_{num}".format(id=datum["id"], num=i),
                     domain=args.domain,
-                    question=remove_brackets(nlq),
+                    question=nlq,
                     query=dict(sparql=sparql),
                 )
                 for i, (sparql, nlq) in enumerate(pairs)

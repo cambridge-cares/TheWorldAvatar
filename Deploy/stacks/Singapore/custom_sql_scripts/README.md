@@ -1,0 +1,1 @@
+Refer to main README on when to run these scripts
