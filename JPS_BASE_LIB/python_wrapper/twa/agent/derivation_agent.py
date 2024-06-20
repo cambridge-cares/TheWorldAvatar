@@ -42,9 +42,9 @@ class DerivationAgent(ABC):
         fs_url: str = None,
         fs_user: str = None,
         fs_password: str = None,
-        app: Flask = Flask(__name__),
+        app: Flask = None,
         flask_config: FlaskConfig = FlaskConfig(),
-        agent_endpoint: str = "http://localhost:5000/sync_derivation",
+        agent_endpoint: str = "http://localhost:5000/",
         register_agent: bool = True,
         max_thread_monitor_async_derivations: int = 1,
         email_recipient: str = '',
@@ -88,7 +88,7 @@ class DerivationAgent(ABC):
         jpsBaseLibGW.importPackages(self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.derivation.*")
 
         # initialise flask app with its configuration
-        self.app = app
+        self.app = app if bool(app) else Flask(self.__class__.__name__)
         self.app.config.from_object(flask_config)
 
         # initialise flask scheduler and assign time interval for monitor_async_derivations job
@@ -98,7 +98,7 @@ class DerivationAgent(ABC):
 
         # assign IRI and HTTP URL of the agent
         self.agentIRI = agent_iri
-        self.agentEndpoint = agent_endpoint
+        self.agentEndpoint = agent_endpoint + 'derivation' if agent_endpoint.endswith('/') else agent_endpoint + '/derivation'
 
         # assign KG related information
         self.kgUrl = kg_url
@@ -456,9 +456,8 @@ class DerivationAgent(ABC):
         self.logger.info("Monitor asynchronous derivations job is scheduled with a time interval of %d seconds." % (
             self.time_interval))
 
-        url_pattern = urlparse(self.agentEndpoint).path
-        url_pattern_name = url_pattern.strip('/').replace('/', '_') + '_handle_sync_derivations'
-        self.add_url_pattern(url_pattern, url_pattern_name, self.handle_sync_derivations, methods=['POST'])
+        url_pattern_name = f'{self.__class__.__name__}_handle_sync_derivations'
+        self.add_url_pattern('/derivation', url_pattern_name, self.handle_sync_derivations, methods=['POST'])
         self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
 
     def start_all_periodical_job(self):
