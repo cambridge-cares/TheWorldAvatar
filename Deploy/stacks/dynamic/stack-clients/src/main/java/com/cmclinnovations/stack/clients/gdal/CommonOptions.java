@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -39,85 +38,120 @@ class CommonOptions<T extends CommonOptions<T>> {
         this.command = command;
     }
 
-    public String getSridIn() {
+    public final String getSridIn() {
         return sridIn;
     }
 
-    public T setSridIn(String sridIn) {
+    public final T setSridIn(String sridIn) {
         this.sridIn = sridIn;
         return (T) this;
     }
 
-    public String getSridOut() {
+    public final String getSridOut() {
         return sridOut;
     }
 
-    public T setSridOut(String sridOut) {
+    public final T setSridOut(String sridOut) {
         this.sridOut = sridOut;
         return (T) this;
     }
 
-    public T addInputDatasetOpenOption(String name, String value) {
+    public final T addInputDatasetOpenOption(String name, String value) {
         inputDatasetOpenOptions.put(name, value);
         return (T) this;
     }
 
-    public T addOtherOption(String option, String... values) {
+    public final T addOtherOption(String option, String... values) {
         otherOptions.put(option, new Option(values));
         return (T) this;
     }
 
-    public T withEnv(String key, String value) {
+    public final T withEnv(String key, String value) {
         envVars.put(key, value);
         return (T) this;
     }
 
-    public Map<String, String> getEnv() {
+    public final Map<String, String> getEnv() {
         return envVars;
     }
 
-    protected List<String> appendCommonToArgs(String... args) {
+    protected final String[] generateCommand(String source, String destination, String... extraArgs) {
+
+        List<String> args = new ArrayList<>(2 * extraArgs.length);
+
+        return generateCommandInternal(args, source, destination, extraArgs);
+    }
+
+    protected final String[] generateCommandInternal(List<String> args, String source, String destination,
+            String... extraArgs) {
+        // Prepend the name of the executable
+        args.add(0, command);
+
+        processArgs(args);
+
+        Collections.addAll(args, extraArgs);
+
+        processSourceAndDestination(source, destination, args);
+
+        return args.toArray(extraArgs);
+    }
+
+    /**
+     * Most tools take the source before the destination, override if not.
+     */
+    protected void processSourceAndDestination(String source, String destination, List<String> args) {
+        args.add(source);
+        args.add(destination);
+    }
+
+    protected void processArgs(final List<String> args) {
 
         // Setting this option causes GDAL to try to detect the type of the columns in
         // CSV source files, as described here:
         // https://gdal.org/drivers/vector/csv.html#open-options
-        inputDatasetOpenOptions.put("AUTODETECT_TYPE", "YES");
-        inputDatasetOpenOptions.put("EMPTY_STRING_AS_NULL", "YES");
+        processInputDatasetOpenOption(args, "AUTODETECT_TYPE", "YES");
+        processInputDatasetOpenOption(args, "EMPTY_STRING_AS_NULL", "YES");
 
-        List<String> allArgs = new ArrayList<>(2 * args.length);
-        allArgs.add(command);
-        Collections.addAll(allArgs, args);
+        processSRIDs(args);
 
-        handleSRIDs(allArgs);
+        inputDatasetOpenOptions.forEach((name, value) -> processInputDatasetOpenOption(args, name, value));
 
-        inputDatasetOpenOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-oo", name, value));
-
-        otherOptions.forEach((option, values) -> {
-            allArgs.add(option);
-            values.getOptionList().stream()
-                    .map(value -> value.startsWith("@") ? handleFileArg(option, value) : value)
-                    .collect(Collectors.toCollection(() -> allArgs));
-        });
-        return allArgs;
+        otherOptions.forEach((option, values) -> processOtherOption(args, option, values));
     }
 
-    protected void handleSRIDs(List<String> allArgs) {
+    protected void processOtherOption(final List<String> args, String option, Option values) {
+        args.add(option);
+        values.getOptionList().stream()
+                .map(value -> value.startsWith("@") ? handleFileArg(option, value) : value)
+                .collect(Collectors.toCollection(() -> args));
+    }
+
+    protected void processOtherOption(final List<String> args, String option, String value) {
+        args.add(option);
+        args.add(value.startsWith("@") ? handleFileArg(option, value) : value);
+    }
+
+    protected void processInputDatasetOpenOption(final List<String> args, String name, String value) {
+        processKeyValuePair(args, "-oo", name, value);
+    }
+
+    protected void processSRIDs(List<String> args) {
         if (null != sridOut) {
-            allArgs.add("-t_srs");
-            allArgs.add(sridOut);
             if (null != sridIn) {
-                allArgs.add("-s_srs");
-                allArgs.add(sridIn);
+                args.add("-s_srs");
+                args.add(sridIn);
             }
+            args.add("-t_srs");
+            args.add(sridOut);
         } else {
             if (null != sridIn) {
-                allArgs.add("-a_srs");
-                allArgs.add(sridIn);
+                args.add("-a_srs");
+                args.add(sridIn);
             }
         }
     }
 
-    protected void addKeyValuePair(List<String> allArgs, String option, String name, String value) {
+    protected void processKeyValuePair(List<String> allArgs, String option, String name, String value) {
         allArgs.add(option);
         allArgs.add(name + "=" + value);
     }

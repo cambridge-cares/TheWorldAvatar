@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.clients.gdal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,17 +16,30 @@ public abstract class GDALOptions<T extends GDALOptions<T>> extends CommonOption
         super(command);
     }
 
-    public T addCreationOption(String name, String value) {
+    public final T addCreationOption(String name, String value) {
         creationOptions.put(name, value);
         return (T) this;
     }
 
-    String[] appendToArgs(String... args) {
-        List<String> allArgs = appendCommonToArgs(args);
+    public final String[] generateCommand(String sourceFormat, String source, String destination,
+            String... extraArgs) {
 
-        creationOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-co", name, value));
+        List<String> args = new ArrayList<>();
 
-        return allArgs.toArray(args);
+        args.add("-if");
+        args.add(sourceFormat);
+        // https://gdal.org/drivers/raster/cog.html#raster-cog
+        args.add("-of");
+        args.add("COG");
+
+        return generateCommandInternal(args, source, destination, extraArgs);
+    }
+
+    @Override
+    protected void processArgs(final List<String> args) {
+        super.processArgs(args);
+
+        creationOptions.forEach((name, value) -> processKeyValuePair(args, "-co", name, value));
     }
 
 }

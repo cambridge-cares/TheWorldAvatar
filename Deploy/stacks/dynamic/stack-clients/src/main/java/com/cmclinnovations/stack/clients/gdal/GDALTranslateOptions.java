@@ -9,7 +9,7 @@ public class GDALTranslateOptions extends GDALOptions<GDALTranslateOptions> {
     }
 
     @Override
-    protected void handleSRIDs(List<String> allArgs) {
+    protected void processSRIDs(List<String> allArgs) {
         String sridIn = getSridIn();
         if (null != sridIn) {
             allArgs.add("-a_srs");

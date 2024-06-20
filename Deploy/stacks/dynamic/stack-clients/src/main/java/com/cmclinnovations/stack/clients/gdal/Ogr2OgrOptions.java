@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.clients.gdal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,22 +35,44 @@ public class Ogr2OgrOptions extends CommonOptions<Ogr2OgrOptions> {
         return this;
     }
 
-    String[] appendToArgs(String layerName, String... args) {
+    public String[] generateCommand(String layerName, boolean append, String source, String destination,
+            String... extraArgs) {
+
+        List<String> args = new ArrayList<>(2 * extraArgs.length);
+
+        if (null != layerName) {
+            processOtherOption(args, "-nln", layerName);
+        }
+
+        processKeyValuePair(args, "--config", "OGR_TRUNCATE", append ? "NO" : "YES");
+
+        return generateCommandInternal(args, source, destination, extraArgs);
+    }
+
+    /**
+     * ogr2ogr needs the destination before the source.
+     */
+    @Override
+    protected void processSourceAndDestination(String source, String destination, List<String> args) {
+        args.add(destination);
+        args.add(source);
+    }
+
+    @Override
+    protected void processArgs(List<String> args) {
+        super.processArgs(args);
+
+        processOtherOption(args, "-f", "PostgreSQL");
+
+        processKeyValuePair(args, "--config", "PG_USE_COPY", "YES");
 
         // Setting this option prevents GDAL from "cleaning" the table and column
         // names for Postgres, as described here:
         // https://gdal.org/drivers/vector/pg.html#layer-creation-options
-        layerCreationOptions.put("LAUNDER", "NO");
+        processOtherOption(args, "LAUNDER", "NO");
 
-        List<String> allArgs = appendCommonToArgs(args);
-        if (null != layerName) {
-            allArgs.add("-nln");
-            allArgs.add(layerName);
-        }
-        datasetCreationOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-dsco", name, value));
-        layerCreationOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-lco", name, value));
-        outputDatasetOpenOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-doo", name, value));
-
-        return allArgs.toArray(args);
+        datasetCreationOptions.forEach((name, value) -> processKeyValuePair(args, "-dsco", name, value));
+        layerCreationOptions.forEach((name, value) -> processKeyValuePair(args, "-lco", name, value));
+        outputDatasetOpenOptions.forEach((name, value) -> processKeyValuePair(args, "-doo", name, value));
     }
 }
