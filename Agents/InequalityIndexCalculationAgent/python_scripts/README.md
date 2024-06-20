@@ -46,7 +46,7 @@ The code to calculate, and generate the figures are mainly stored at `./code`, T
 
 **Note** that for many reasons, much of the data has been saved (converted) as csv files. For example, the source data for temperature was raster files, which need days of calculation to get the vector data for temperature with respect to LSOA! Other source data will also need treatment to convert to the format that will be needed in this project. In these cases, using csv files will significantly save the cost.
 
-For the data source, how to calculate the temeperature data for each LSOA, and how  to calculate monthly profiles of electricity and gas consumptions, please refer to the [Preprint 323](https://como.ceb.cam.ac.uk/preprints/323/) and [LSOAInputagent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent). 
+For the data source, how to calculate the temeperature data for each LSOA, and how  to calculate monthly profiles of electricity and gas consumptions, please refer to the [Preprint 323](https://como.ceb.cam.ac.uk/preprints/323/) and [LSOAInputagent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/LSOAInputAgent). 
 
 Please follow the following steps to setup the environments and complete the reproduction. If in doubt, contact Jieyang Xu (jx309@cam.ac.uk & 1643529603@qq.com)
 

@@ -8,7 +8,7 @@ setup(
     license='MIT',
     python_requires='>=3.8',
     description="The `resultedconsumptioncalculation` agent is designed to calculate the resulted electricity and gas consumption based on current energy consumptions, COP, with several assumptions and indecies and populates the result to knowledge graph as part of The World Avatar project.",
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-3/Agents/ResultedConsumptionCalculationAgent",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ResultedConsumptionCalculationAgent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),

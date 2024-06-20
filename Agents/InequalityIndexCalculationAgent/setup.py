@@ -8,7 +8,7 @@ setup(
     license='MIT',
     python_requires='>=3.8',
     description="The `inequalityindex` agent calculates the electricity and gas cost for each Lower Super Output Area in the UK and populates the result to knowledge graph as part of The World Avatar project.",
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-3/Agents/PropertyValueEstimationAgent",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),

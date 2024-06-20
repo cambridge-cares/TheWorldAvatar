@@ -52,7 +52,7 @@ YEAR                          # The year of the index, will be used to instantia
 
 
 ### How to deploy this agent on stack
-Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
+Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
 
 ## Asynchronous derivation operation
 Once the Agent is deployed, it periodically (defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI`) and acts based on the status associated with that derivation. Although the [Derivation Agent] suggests the use of `.env` files to specify environment variables for agent configurations, this approach does not work properly with Docker stacks, i.e. `docker stack deploy`. Hence, the agent configuration is moved into the [docker compose file] instead.
@@ -81,8 +81,8 @@ py ./resultedconsumptioncalculationagent/markup.py
 Jieyang Xu (jx309@cam.ac.uk), May 2023
 <!-- Links -->
 [markup.py]:./resultedconsumptioncalculationagent/markup.py
-[home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/ResultedConsumptionCalculationAgent/index.html
-[CopCalculationAgent]:https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-3/Agents/CopCalculationAgent
+[home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/ResultedConsumptionCalculationAgent/index.html
+[CopCalculationAgent]:https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/CopCalculationAgent
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Container registry on Github]: https://ghcr.io

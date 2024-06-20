@@ -33,7 +33,7 @@ HOTSIDE_TEMPERATURE            # Assume the temperature of the hot side of the h
 ```
 
 ### How to deploy this agent on stack
-Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
+Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
 
 
 ## Upper level instances instatiation
@@ -57,8 +57,8 @@ py ./copcalculationagent/markup.py
 Jieyang Xu (jx309@cam.ac.uk), May 2023
 <!-- Links -->
 [markup.py]:./copcalculationagent/markup.py
-[home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/CopCalculationAgent_TimeSeries/index.html
-[LSOAInputAgent]:https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent
+[home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/CopCalculationAgent_TimeSeries/index.html
+[LSOAInputAgent]:https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/LSOAInputAgent
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Container registry on Github]: https://ghcr.io
