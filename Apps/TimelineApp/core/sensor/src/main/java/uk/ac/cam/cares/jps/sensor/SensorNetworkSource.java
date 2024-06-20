@@ -23,44 +23,14 @@ public class SensorNetworkSource {
     Context context;
     RequestQueue requestQueue;
     Logger LOGGER = Logger.getLogger(SensorNetworkSource.class);
-    private static final long SEND_INTERVAL = 10000;
-    private final SensorManager sensorManager;
-
-    private final Runnable sendDataRunnable;
-    private Handler handler;
-    private String deviceId;
 
     public SensorNetworkSource(Context applicationContext,
-                               RequestQueue requestQueue,
-                               SensorManager sensorManager) {
+                               RequestQueue requestQueue) {
         context = applicationContext;
         this.requestQueue = requestQueue;
-        this.sensorManager = sensorManager;
-        sendDataRunnable = new Runnable() {
-            @Override
-            public void run() {
-                JSONArray allSensorData = sensorManager.collectSensorData();
-                sendPostRequest(allSensorData);
-                handler.postDelayed(this, SEND_INTERVAL);
-            }
-        };
     }
 
-    public void startDataCollection() {
-        if (handler != null) {
-            sensorManager.startSensors();
-            handler.post(sendDataRunnable);
-        }
-    }
-
-    public void stopDataCollection() {
-        if (handler != null) {
-            sensorManager.stopSensors();
-            handler.removeCallbacks(sendDataRunnable);
-        }
-    }
-
-    private void sendPostRequest(JSONArray sensorData) {
+    void sendPostRequest(String deviceId, JSONArray sensorData) {
         String url = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.sensorloggeragent_update))
                 .build().toString();
@@ -103,10 +73,5 @@ public class SensorNetworkSource {
 
     private int generateMessageId() {
         return new Random().nextInt(1000);
-    }
-
-    public void initForService(Handler handler, String deviceId) {
-        this.handler = handler;
-        this.deviceId = deviceId;
     }
 }

@@ -21,6 +21,7 @@ import uk.ac.cam.cares.jps.sensor.SensorRepository;
 import uk.ac.cam.cares.jps.sensor.SensorService;
 import uk.ac.cam.cares.jps.sensor.UserPhoneNetworkSource;
 import uk.ac.cam.cares.jps.sensor.UserPhoneRepository;
+import uk.ac.cam.cares.jps.sensor.database.SensorLocalSource;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -29,9 +30,14 @@ public class SensorModule {
     @Provides
     @Singleton
     public SensorNetworkSource provideSensorNetworkSource(@ApplicationContext Context applicationContext,
-                                                          RequestQueue requestQueue,
-                                                          SensorManager sensorManager) {
-        return new SensorNetworkSource(applicationContext, requestQueue, sensorManager);
+                                                          RequestQueue requestQueue) {
+        return new SensorNetworkSource(applicationContext, requestQueue);
+    }
+
+    @Provides
+    @Singleton
+    public SensorLocalSource provideSensorLocalSource(@ApplicationContext Context applicationContext) {
+        return new SensorLocalSource(applicationContext);
     }
 
     @Provides

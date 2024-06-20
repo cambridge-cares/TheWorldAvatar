@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -21,20 +20,24 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import uk.ac.cam.cares.jps.login.AccountException;
+import uk.ac.cam.cares.jps.sensor.database.SensorLocalSource;
 
 @AndroidEntryPoint
 public class SensorService extends Service {
 
     @Inject SensorNetworkSource sensorNetworkSource;
+    @Inject SensorManager sensorManager;
+    @Inject SensorLocalSource sensorLocalSource;
 
     private final int FOREGROUND_ID = 100;
     private final String CHANNEL_ID = "Sensors";
     private final int SENSOR_FRAGMENT_REQUEST_CODE = 100;
+    private static final long SEND_INTERVAL = 20000;
     private final Logger LOGGER = Logger.getLogger(SensorService.class);
     private HandlerThread thread;
 
@@ -49,14 +52,25 @@ public class SensorService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String deviceId = "";
-        if (intent != null && intent.getExtras() != null) {
-            deviceId = intent.getExtras().getString("deviceId");
-        } else {
-            stopSelf();
+        if (intent == null || intent.getExtras() == null) {
             LOGGER.warn("Self stop because deviceId unknown");
+            stopSelf();
+            // todo: check whether this return is correct
+            return START_STICKY;
         }
-        sensorNetworkSource.initForService(new Handler(thread.getLooper()), deviceId);
+
+        String deviceId = intent.getExtras().getString("deviceId");
+        Handler handler = new Handler(thread.getLooper());
+        Runnable sendData = new Runnable() {
+            @Override
+            public void run() {
+                JSONArray allSensorData = sensorManager.collectSensorData();
+                sensorNetworkSource.sendPostRequest(deviceId, allSensorData);
+//                sensorLocalSource.writeToDatabase();
+                handler.postDelayed(this, SEND_INTERVAL);
+            }
+        };
+//        sensorNetworkSource.initForService(new Handler(thread.getLooper()), deviceId);
 
         Notification notification = getNotification();
         int type = 0;
@@ -73,7 +87,9 @@ public class SensorService extends Service {
                 type
         );
 
-        sensorNetworkSource.startDataCollection();
+//        sensorNetworkSource.startDataCollection();
+        sensorManager.startSensors();
+        handler.post(sendData);
 
         return START_STICKY;
     }
@@ -111,7 +127,8 @@ public class SensorService extends Service {
     public void onDestroy() {
         LOGGER.info("Stopping sensor service");
         try {
-            sensorNetworkSource.stopDataCollection();
+            sensorManager.stopSensors();
+//            sensorNetworkSource.stopDataCollection();
             ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
             thread.quit();
 
