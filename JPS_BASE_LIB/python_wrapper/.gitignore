@@ -13,3 +13,6 @@ resources/
 
 ## User defined
 *.egg-info
+
+# mkdocs documentation
+/site

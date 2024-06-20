@@ -9,11 +9,6 @@ public class EndpointConfig {
     private PostGISEndpointConfig postGISEndpointConfig;
     private String dbUser;
     private String dbPassword;
-    private String filePath = System.getenv("floors_csv");
-    private String dbName = System.getenv("DATABASE");
-    private String osmSchema =  System.getenv("osmSchema");
-    private String osmPoints =  System.getenv("osmPoints");
-    private String osmPolygons =  System.getenv("osmPolygons");
     private String ontopUrl;
 
     public EndpointConfig() {
@@ -23,11 +18,10 @@ public class EndpointConfig {
         this.dbPassword = postGISEndpointConfig.getPassword();
         OntopEndpointConfig ontopEndpointConfig = OntopClient.getInstance().getEndpoint();
         this.ontopUrl = ontopEndpointConfig.getUrl();
-   
     }
 
-    public String getDbUrl(String dbName) {
-        return this.postGISEndpointConfig.getJdbcURL(dbName);
+    public String getDbUrl() {
+        return this.postGISEndpointConfig.getJdbcURL(System.getenv("DATABASE"));
     }
 
     public String getDbUser() {
@@ -38,25 +32,7 @@ public class EndpointConfig {
         return this.dbPassword;
     }
 
-    public String getDbName() {
-        return this.dbName;
+    public String getOntopUrl() {
+        return this.ontopUrl;
     }
-
-    public String getFilepath() {
-        return this.filePath;
-    }
-
-    public String getOSMSchema() {
-        return this.osmSchema;
-    }
-
-    public String getOSMPoints() {
-        return this.osmPoints;
-    }
-
-    public String getOSMPolygons() {
-        return this.osmPolygons;
-    }
-
-    public String getOntopUrl() {return this.ontopUrl;}
 }

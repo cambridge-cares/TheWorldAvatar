@@ -1,6 +1,6 @@
 # First stage: download dependencies
 #==================================================================================================
-FROM maven:3.9.3-eclipse-temurin-11 as retriever
+FROM maven:3.9.7-eclipse-temurin-17 AS retriever
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 COPY ./pom.xml /root
@@ -22,7 +22,7 @@ RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked 
 # Build war file
 #==================================================================================================
 
-FROM maven:3.9.3-eclipse-temurin-11 as war_builder
+FROM maven:3.9.7-eclipse-temurin-17 AS war_builder
 
 COPY --from=retriever /root/.m2 /root/.m2
 
@@ -39,11 +39,9 @@ RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked 
 
 # Third stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM tomcat:9.0 as agent
+FROM tomcat:9.0 AS agent
 
-
-COPY --from=war_builder /root/code/output/gfaagent##1.2.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=war_builder /root/code/output/GFAAgent##1.2.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
-
 
 ENTRYPOINT ["./entrypoint.sh"]
