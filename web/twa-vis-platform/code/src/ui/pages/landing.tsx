@@ -2,14 +2,15 @@
  * Optional landing page.
  */
 
-import styles from './landing.module.css';
 import 'github-markdown-css/github-markdown.css';
+import styles from './landing.module.css';
 
-import React from 'react';
 import markdownit from 'markdown-it';
+import React from 'react';
 
-import { Routes } from 'io/config/routes';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
+import { Routes } from 'io/config/routes';
+import CredoImage from 'ui/graphic/image/CredoImage';
 import { DefaultPageThumbnail, MarkdownPageThumbnail } from './page-thumbnail';
 
 // Utilities to render markdown into HTML
@@ -57,6 +58,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
             </div>
 
             <div className={styles.thumbnailContainer}>
+                <CredoImage />
                 {thumbnails}
                 {props.hasMap && (
                     <DefaultPageThumbnail
