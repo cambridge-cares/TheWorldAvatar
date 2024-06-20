@@ -13,7 +13,7 @@ target		ontosl:SeaLevelChange/{uuid} a ontosl:SeaLevelChange ;
                 a geo:Geometry ;
                 ontosl:hasSSP ontosl:SharedSocioeconomicPathway{ssp}_{uuid};
                 ontosl:hasRCP ontosl:RepresentativeConcentrationPathway{rcp}_{uuid};
-                ontosl:hasChange ontosl:sealevelrise_{uuid} ;
+                ontosl:hasHeight ontosl:sealevelrise_{uuid} ;
                 ontosl:hasProjectionYear {projectionyear} ;
                 ontosl:hasBaselineYear {projectionreferenceyear} ;
                 geo:asWKT "{geom}"^^geo:wktLiteral ;
@@ -21,7 +21,8 @@ target		ontosl:SeaLevelChange/{uuid} a ontosl:SeaLevelChange ;
                 ontosl:hasConfidenceLevel ontosl:{confidence}Confidence_{uuid} .
             ontosl:sealevelrise_{uuid} a om:Height ; 
                 om:hasValue ontosl:sealevelrise_measure_{uuid}. 
-            ontosl:sealevelrise_measure_{uuid} om:hasUnit om:Metre;
+            ontosl:sealevelrise_measure_{uuid} a om:Measure;
+                om:hasUnit om:metre;
                 om:hasNumericalValue {sealevelriseinmeters}.
             ontosl:{confidence}Confidence_{uuid} a ontosl:{confidence}Confidence.
             ontosl:SharedSocioeconomicPathway{ssp}_{uuid} a ontosl:SharedSocioeconomicPathway{ssp}.
@@ -29,7 +30,8 @@ target		ontosl:SeaLevelChange/{uuid} a ontosl:SeaLevelChange ;
                 ontosl:hasRadioactiveForcingValues ontosl:RadioactiveForcing_{uuid}.
             ontosl:RadioactiveForcing_{uuid} a om:Irradiance;
                  om:hasValue ontosl:RadioactiveForcingMeasure_{uuid}.
-            ontosl:RadioactiveForcingMeasure_{uuid} om:hasUnit om:wattPerSquareMetre;
+            ontosl:RadioactiveForcingMeasure_{uuid} a om:Measure;
+                om:hasUnit om:wattPerSquareMetre;
                 om:hasNumericalValue {rcp_num}.
 source		SELECT confidence, ssp, rcp, rcp / 10 AS rcp_num, quantile, projectionreferenceyear, projectionyear, sealevelriseinmeters, uuid, ST_ASTEXT(geom) as geom  FROM sealevelprojections
 ]]
