@@ -37,6 +37,7 @@ The csv file path and database name should be specified as environment variables
     "floors_csv=/resources/HDBPropertyInformation.csv"
 ]
 ```
+Make sure the file is available via a bind mount.
 2. OpenStreetMap linked to the 3D CityGML Buildings
 
 Please upload the OpenStreetMap following the [OSM Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OSMAgent)'s instructions and link their building IRIs by running the OSM Agent. This agent requires both steps, as it will conduct fuzzy matching between the address in the specified csv file and the address in the OpenStreetMap data. When matched, the building floor agent can instantiate the number of storeys from the csv file into the right building data in the citydb schema with the matching building IRI.
@@ -58,6 +59,6 @@ Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. Th
 ### 2.5 Running the Agent
 To run the agent, run the following cURL command:
 ```
-curl -X POST localhost:3838/buildingflooragent/floors
+curl -X POST localhost:3838/buildingflooragent/
 ```
 
