@@ -35,6 +35,18 @@ public class Ogr2OgrOptions extends CommonOptions<Ogr2OgrOptions> {
         return this;
     }
 
+    private void processDatasetCreationOption(List<String> args, String name, String value) {
+        processKeyValuePair(args, "-dsco", name, value);
+    }
+
+    private void processLayerCreationOption(List<String> args, String name, String value) {
+        processKeyValuePair(args, "-lco", name, value);
+    }
+
+    private void processOutputDatasetOpenOption(List<String> args, String name, String value) {
+        processKeyValuePair(args, "-doo", name, value);
+    }
+
     public String[] generateCommand(String layerName, boolean append, String source, String destination,
             String... extraArgs) {
 
@@ -69,10 +81,11 @@ public class Ogr2OgrOptions extends CommonOptions<Ogr2OgrOptions> {
         // Setting this option prevents GDAL from "cleaning" the table and column
         // names for Postgres, as described here:
         // https://gdal.org/drivers/vector/pg.html#layer-creation-options
-        processOtherOption(args, "LAUNDER", "NO");
+        processLayerCreationOption(args, "LAUNDER", "NO");
 
-        datasetCreationOptions.forEach((name, value) -> processKeyValuePair(args, "-dsco", name, value));
-        layerCreationOptions.forEach((name, value) -> processKeyValuePair(args, "-lco", name, value));
-        outputDatasetOpenOptions.forEach((name, value) -> processKeyValuePair(args, "-doo", name, value));
+        datasetCreationOptions.forEach((name, value) -> processDatasetCreationOption(args, name, value));
+        layerCreationOptions.forEach((name, value) -> processLayerCreationOption(args, name, value));
+        outputDatasetOpenOptions.forEach((name, value) -> processOutputDatasetOpenOption(args, name, value));
     }
+
 }
