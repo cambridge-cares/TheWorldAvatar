@@ -7,7 +7,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "../../../../../../Agents/SeaLevelImpactAgent/inputs",
+                        "Source": "../../../sealevelinputs",
                         "Target": "/inputs"
                     }
                 ],
