@@ -1,0 +1,30 @@
+{
+  "ServiceSpec": {
+    "Name": "pips-timeseries-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "pips-timeseries-agent:1.0.0",
+        "Env": [
+          "CLIENT_ID=<client ID>",
+          "KEYCLOAK_REALM_PATH=<keycloak endpoint>"
+				],
+        "Configs": [
+          {
+              "ConfigName": "postgis"
+          }
+      ],
+      "Secrets": [
+          {
+              "SecretName": "postgis_password"
+          }
+      ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/pips-timeseries-agent/",
+      "externalPath": "/pips-timeseries-agent/"
+    }
+  }
+}
