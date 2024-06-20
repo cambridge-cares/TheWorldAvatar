@@ -418,7 +418,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway1.9">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway with lower emissions in radiative forcing at 1.9 W/m2.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway with lower emissions in radiative forcing at 1.9 W/m2 in 2100.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway 1.9</rdfs:label>
     </owl:Class>
@@ -442,7 +442,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway3.4">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway with emissions in radiative forcing at 3.4 W/m2.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway with emissions in radiative forcing at 3.4 W/m2 in 2100.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway 3.4</rdfs:label>
     </owl:Class>
@@ -478,7 +478,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway7.0">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/RepresentativeConcentrationPathway"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway with emissions in radiative forcing at 7.0 W/m2.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representative concentration pathway with emissions in radiative forcing at 7.0 W/m2 in 2100.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Representative Concentration Pathway 7.0</rdfs:label>
     </owl:Class>
