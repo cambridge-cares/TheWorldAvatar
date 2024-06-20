@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,11 +28,11 @@ class CommonOptions<T extends CommonOptions<T>> {
     private String sridOut = null;
 
     @JsonProperty
-    private final Map<String, String> inputDatasetOpenOptions = new HashMap<>();
+    private final Map<String, String> inputDatasetOpenOptions = new LinkedHashMap<>();
     @JsonProperty
-    private final Map<String, String> envVars = new HashMap<>();
+    private final Map<String, String> envVars = new LinkedHashMap<>();
     @JsonProperty
-    private final Map<String, Option> otherOptions = new HashMap<>();
+    private final Map<String, Option> otherOptions = new LinkedHashMap<>();
 
     protected CommonOptions(String command) {
         this.command = command;
