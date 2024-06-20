@@ -56,7 +56,7 @@ public class Ogr2OgrOptions extends CommonOptions<Ogr2OgrOptions> {
             processOtherOption(args, "-nln", layerName);
         }
 
-        processKeyValuePair(args, "--config", "OGR_TRUNCATE", append ? "NO" : "YES");
+        processConfigOption(args, "OGR_TRUNCATE", append ? "NO" : "YES");
 
         return generateCommandInternal(args, source, destination, extraArgs);
     }
@@ -76,7 +76,7 @@ public class Ogr2OgrOptions extends CommonOptions<Ogr2OgrOptions> {
 
         processOtherOption(args, "-f", "PostgreSQL");
 
-        processKeyValuePair(args, "--config", "PG_USE_COPY", "YES");
+        processConfigOption(args, "PG_USE_COPY", "YES");
 
         // Setting this option prevents GDAL from "cleaning" the table and column
         // names for Postgres, as described here:

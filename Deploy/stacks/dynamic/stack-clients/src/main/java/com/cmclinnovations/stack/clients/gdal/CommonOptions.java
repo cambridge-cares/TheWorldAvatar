@@ -32,6 +32,8 @@ class CommonOptions<T extends CommonOptions<T>> {
     private final Map<String, String> envVars = new LinkedHashMap<>();
     @JsonProperty
     private final Map<String, Option> otherOptions = new LinkedHashMap<>();
+    @JsonProperty
+    private final Map<String, String> configOptions = new LinkedHashMap<>();
 
     protected CommonOptions(String command) {
         this.command = command;
@@ -62,6 +64,11 @@ class CommonOptions<T extends CommonOptions<T>> {
 
     public final T addOtherOption(String option, String... values) {
         otherOptions.put(option, new Option(values));
+        return (T) this;
+    }
+
+    public final T addConfigOption(String option, String value) {
+        configOptions.put(option, value);
         return (T) this;
     }
 
@@ -109,6 +116,8 @@ class CommonOptions<T extends CommonOptions<T>> {
         inputDatasetOpenOptions.forEach((name, value) -> processInputDatasetOpenOption(args, name, value));
 
         otherOptions.forEach((option, values) -> processOtherOption(args, option, values));
+
+        configOptions.forEach((name, value) -> processConfigOption(args, name, value));
     }
 
     protected void processOtherOption(final List<String> args, String option, Option values) {
@@ -125,6 +134,12 @@ class CommonOptions<T extends CommonOptions<T>> {
 
     protected void processInputDatasetOpenOption(final List<String> args, String name, String value) {
         processKeyValuePair(args, "-oo", name, value);
+    }
+
+    protected void processConfigOption(final List<String> args, String name, String value) {
+        args.add("--config");
+        args.add(name);
+        args.add(value);
     }
 
     protected void processSRIDs(List<String> args) {

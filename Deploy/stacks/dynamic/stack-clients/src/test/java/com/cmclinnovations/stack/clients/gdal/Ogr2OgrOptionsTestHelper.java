@@ -38,7 +38,7 @@ public class Ogr2OgrOptionsTestHelper extends CommonOptionsTestHelper<Ogr2OgrOpt
                 "-oo", "AUTODETECT_TYPE=YES",
                 "-oo", "EMPTY_STRING_AS_NULL=YES",
                 "-f", "PostgreSQL",
-                "--config", "PG_USE_COPY=YES",
+                "--config", "PG_USE_COPY", "YES",
                 "-lco", "LAUNDER=NO"),
                 Stream.of(explicitArgs),
                 Stream.of(TEST_DESTINATION, TEST_SOURCE))
