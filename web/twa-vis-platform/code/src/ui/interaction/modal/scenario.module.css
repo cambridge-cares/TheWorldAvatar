@@ -10,8 +10,10 @@
 
 .option-container {
   display: grid;
-  grid-template-columns: auto 1fr; /* Two columns: auto for circle, 1fr for content */
-  gap: 20px; /* Gap between columns */
+  grid-template-columns: auto 1fr;
+  /* Two columns: auto for circle, 1fr for content */
+  gap: 20px;
+  /* Gap between columns */
   align-items: start;
 }
 
@@ -26,7 +28,7 @@
 .icon {
   height: 12vh;
   width: 12vh;
-  border-radius: 50%; /* Make it a circle */
+  border-radius: 50%;
   border: 2px solid var(--text-color-links);
 }
 
@@ -43,4 +45,9 @@
 
 .description {
   font-size: 0.9rem;
+}
+
+.refreshButton {
+  margin-left: 'auto';
+  color: var(--text-color-links) !important
 }

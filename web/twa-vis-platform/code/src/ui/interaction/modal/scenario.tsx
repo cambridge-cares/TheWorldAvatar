@@ -55,7 +55,7 @@ export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) 
     >
 
       <div className={styles.header}><h1>Select a scenario:</h1>
-        <Button style={{ marginLeft: 'auto' }} onClick={onClick}>Refresh</Button>
+        <Button style={{ marginLeft: 'auto', textTransform: 'none' }} className={styles.refreshButton} onClick={onClick}>Refresh</Button>
       </div>
       <ToggleButtonGroup
         value={view}
