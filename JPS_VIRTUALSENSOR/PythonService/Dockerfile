@@ -21,7 +21,6 @@ RUN python -m pip install -r requirements.txt
 
 COPY ./speedLoadMap /app/speedLoadMap
 COPY ./aermod /app/aermod
-COPY ./dome /app/dome
 COPY ./app_entry_point.sh /app/.
 COPY ./app.py /app/.
 
