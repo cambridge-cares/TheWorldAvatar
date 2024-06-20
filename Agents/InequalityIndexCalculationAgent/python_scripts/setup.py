@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 
-setup(name='myproject', version='1.0', 
+setup(name='python_scripts_for_heat_pump_project', version='1.0', 
+      description='The code is dedicated to provide a calculation scripts which bypass the use of knowledge graph, and reproduce the figures in the preprint 323',
       packages=find_packages(),
       install_requires= [
         'tqdm==4.64.1',
