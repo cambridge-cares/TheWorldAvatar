@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 
 import org.junit.jupiter.api.Assertions;
 
-public class CommonOptionsFactory<T extends CommonOptions<T>> extends BaseOptionsFactory<T> {
+public class CommonOptionsTestHelper<T extends CommonOptions<T>> extends BaseOptionsTestHelper<T> {
 
     protected static final String SRID_IN = "EPSG:3264";
     protected static final String SRID_OUT = "EPSG:4326";
@@ -21,7 +21,7 @@ public class CommonOptionsFactory<T extends CommonOptions<T>> extends BaseOption
     protected static final String TEST_SOURCE = "testSource";
     protected static final String TEST_DESTINATION = "testDestination";
 
-    protected <F extends CommonOptionsFactory<T>> CommonOptionsFactory(String command, Class<T> classBeingTested) {
+    protected <F extends CommonOptionsTestHelper<T>> CommonOptionsTestHelper(String command, Class<T> classBeingTested) {
         super(command, classBeingTested);
     }
 
@@ -29,12 +29,12 @@ public class CommonOptionsFactory<T extends CommonOptions<T>> extends BaseOption
     protected void configureOptions(ArgsEnum optionEnum, @Nonnull T options) {
         switch (optionEnum) {
             case sridIn:
-                options.setSridIn(CommonOptionsFactory.SRID_IN);
+                options.setSridIn(CommonOptionsTestHelper.SRID_IN);
                 break;
             case sridBoth:
-                options.setSridIn(CommonOptionsFactory.SRID_IN);
+                options.setSridIn(CommonOptionsTestHelper.SRID_IN);
             case sridOut:
-                options.setSridOut(CommonOptionsFactory.SRID_OUT);
+                options.setSridOut(CommonOptionsTestHelper.SRID_OUT);
                 break;
             case inputDatasetOpenOptions:
                 options.addInputDatasetOpenOption("X_POSSIBLE_NAMES", X_POSSIBLE_NAMES_VALUE);
@@ -64,8 +64,8 @@ public class CommonOptionsFactory<T extends CommonOptions<T>> extends BaseOption
 
     protected void checkCommand(@Nonnull T options, List<String> expected) {
         List<String> actual = List.of(options.generateCommandInternal(new ArrayList<>(),
-                CommonOptionsFactory.TEST_SOURCE,
-                CommonOptionsFactory.TEST_DESTINATION));
+                CommonOptionsTestHelper.TEST_SOURCE,
+                CommonOptionsTestHelper.TEST_DESTINATION));
         Assertions.assertEquals(expected, actual);
     }
 }

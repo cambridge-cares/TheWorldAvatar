@@ -17,7 +17,7 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 
 class CommonOptionsTest {
 
-    private static final @Nonnull CommonOptionsFactory<@Nonnull MockCommonOptions> TEST_HELPER = new CommonOptionsFactory<>(
+    private static final @Nonnull CommonOptionsTestHelper<@Nonnull MockCommonOptions> TEST_HELPER = new CommonOptionsTestHelper<>(
             MockCommonOptions.TEST_COMMAND, MockCommonOptions.class);
 
     @ParameterizedTest
@@ -35,8 +35,8 @@ class CommonOptionsTest {
         MockCommonOptions options = TEST_HELPER.createOptions(args);
 
         List<String> expected = TEST_HELPER.getExpectedCommand(
-                "-oo", "X_POSSIBLE_NAMES=" + CommonOptionsFactory.X_POSSIBLE_NAMES_VALUE,
-                "-oo", "Y_POSSIBLE_NAMES=" + CommonOptionsFactory.Y_POSSIBLE_NAMES_VALUE);
+                "-oo", "X_POSSIBLE_NAMES=" + CommonOptionsTestHelper.X_POSSIBLE_NAMES_VALUE,
+                "-oo", "Y_POSSIBLE_NAMES=" + CommonOptionsTestHelper.Y_POSSIBLE_NAMES_VALUE);
 
         TEST_HELPER.checkCommand(options, expected);
     }
@@ -116,8 +116,8 @@ class CommonOptionsTest {
         MockCommonOptions options = TEST_HELPER.createOptions(args);
 
         List<String> actual = List.of(options.generateCommand(
-                CommonOptionsFactory.TEST_SOURCE,
-                CommonOptionsFactory.TEST_DESTINATION,
+                CommonOptionsTestHelper.TEST_SOURCE,
+                CommonOptionsTestHelper.TEST_DESTINATION,
                 "extraArg1", "extraArg2"));
 
         List<String> expected = TEST_HELPER.getExpectedCommand(
@@ -149,9 +149,9 @@ class CommonOptionsTest {
     void testGetSridIn(ArgsEnum args) {
         MockCommonOptions options = TEST_HELPER.createOptions(args);
 
-        Assertions.assertEquals(CommonOptionsFactory.SRID_IN, options.getSridIn());
+        Assertions.assertEquals(CommonOptionsTestHelper.SRID_IN, options.getSridIn());
 
-        List<String> expected = TEST_HELPER.getExpectedCommand("-a_srs", CommonOptionsFactory.SRID_IN);
+        List<String> expected = TEST_HELPER.getExpectedCommand("-a_srs", CommonOptionsTestHelper.SRID_IN);
 
         TEST_HELPER.checkCommand(options, expected);
     }
@@ -161,9 +161,9 @@ class CommonOptionsTest {
     void testGetSridOut(ArgsEnum args) {
         MockCommonOptions options = TEST_HELPER.createOptions(args);
 
-        Assertions.assertEquals(CommonOptionsFactory.SRID_OUT, options.getSridOut());
+        Assertions.assertEquals(CommonOptionsTestHelper.SRID_OUT, options.getSridOut());
 
-        List<String> expected = TEST_HELPER.getExpectedCommand("-t_srs", CommonOptionsFactory.SRID_OUT);
+        List<String> expected = TEST_HELPER.getExpectedCommand("-t_srs", CommonOptionsTestHelper.SRID_OUT);
 
         TEST_HELPER.checkCommand(options, expected);
     }
@@ -193,11 +193,11 @@ class CommonOptionsTest {
 
         options.processSRIDs(actual);
 
-        List<String> expected = List.of("-a_srs", CommonOptionsFactory.SRID_IN);
+        List<String> expected = List.of("-a_srs", CommonOptionsTestHelper.SRID_IN);
         Assertions.assertEquals(expected, actual);
 
         List<String> expectedCommand = TEST_HELPER.getExpectedCommand(
-                "-a_srs", CommonOptionsFactory.SRID_IN);
+                "-a_srs", CommonOptionsTestHelper.SRID_IN);
 
         TEST_HELPER.checkCommand(options, expectedCommand);
     }
@@ -211,11 +211,11 @@ class CommonOptionsTest {
 
         options.processSRIDs(actual);
 
-        List<String> expected = List.of("-t_srs", CommonOptionsFactory.SRID_OUT);
+        List<String> expected = List.of("-t_srs", CommonOptionsTestHelper.SRID_OUT);
         Assertions.assertEquals(expected, actual);
 
         List<String> expectedCommand = TEST_HELPER.getExpectedCommand(
-                "-t_srs", CommonOptionsFactory.SRID_OUT);
+                "-t_srs", CommonOptionsTestHelper.SRID_OUT);
 
         TEST_HELPER.checkCommand(options, expectedCommand);
     }
@@ -229,13 +229,13 @@ class CommonOptionsTest {
 
         options.processSRIDs(actual);
 
-        List<String> expected = List.of("-s_srs", CommonOptionsFactory.SRID_IN, "-t_srs",
-                CommonOptionsFactory.SRID_OUT);
+        List<String> expected = List.of("-s_srs", CommonOptionsTestHelper.SRID_IN, "-t_srs",
+                CommonOptionsTestHelper.SRID_OUT);
         Assertions.assertEquals(expected, actual);
 
         List<String> expectedCommand = TEST_HELPER.getExpectedCommand(
-                "-s_srs", CommonOptionsFactory.SRID_IN,
-                "-t_srs", CommonOptionsFactory.SRID_OUT);
+                "-s_srs", CommonOptionsTestHelper.SRID_IN,
+                "-t_srs", CommonOptionsTestHelper.SRID_OUT);
 
         TEST_HELPER.checkCommand(options, expectedCommand);
     }

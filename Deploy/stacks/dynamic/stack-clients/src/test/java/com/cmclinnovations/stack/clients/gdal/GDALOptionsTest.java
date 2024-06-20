@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 class GDALOptionsTest {
 
-    private static final @Nonnull GDALOptionsFactory<@Nonnull MockGDALOptions> TEST_HELPER = new GDALOptionsFactory<>(
+    private static final @Nonnull GDALOptionsTestHelper<@Nonnull MockGDALOptions> TEST_HELPER = new GDALOptionsTestHelper<>(
             MockGDALOptions.TEST_COMMAND, MockGDALOptions.class);
 
     @ParameterizedTest

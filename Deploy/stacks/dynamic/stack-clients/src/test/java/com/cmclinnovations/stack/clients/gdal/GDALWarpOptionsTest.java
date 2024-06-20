@@ -8,7 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class GDALWarpOptionsTest {
-    private static final @Nonnull GDALWarpOptionsFactory TEST_HELPER = new GDALWarpOptionsFactory();
+    private static final @Nonnull GDALWarpOptionsTestHelper TEST_HELPER = new GDALWarpOptionsTestHelper();
 
     @ParameterizedTest
     @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })

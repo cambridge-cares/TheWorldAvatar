@@ -7,9 +7,9 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
-public class Ogr2OgrOptionsFactory extends CommonOptionsFactory<Ogr2OgrOptions> {
+public class Ogr2OgrOptionsTestHelper extends CommonOptionsTestHelper<Ogr2OgrOptions> {
 
-    Ogr2OgrOptionsFactory() {
+    Ogr2OgrOptionsTestHelper() {
         super("ogr2ogr", Ogr2OgrOptions.class);
     }
 

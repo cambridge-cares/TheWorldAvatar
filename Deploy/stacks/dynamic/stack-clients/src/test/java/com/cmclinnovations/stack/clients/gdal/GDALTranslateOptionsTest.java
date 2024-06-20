@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 class GDALTranslateOptionsTest {
 
-    private static final @Nonnull GDALTranslateOptionsFactory TEST_HELPER = new GDALTranslateOptionsFactory();
+    private static final @Nonnull GDALTranslateOptionsTestHelper TEST_HELPER = new GDALTranslateOptionsTestHelper();
 
     @ParameterizedTest
     @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })
@@ -44,10 +44,10 @@ class GDALTranslateOptionsTest {
 
         options.processSRIDs(actual);
 
-        Assertions.assertEquals(List.of("-a_srs", CommonOptionsFactory.SRID_IN), actual);
+        Assertions.assertEquals(List.of("-a_srs", CommonOptionsTestHelper.SRID_IN), actual);
 
         List<String> expected = TEST_HELPER.getExpectedCommand(
-                "-a_srs", CommonOptionsFactory.SRID_IN);
+                "-a_srs", CommonOptionsTestHelper.SRID_IN);
 
         TEST_HELPER.checkCommand(options, expected);
     }
@@ -64,7 +64,7 @@ class GDALTranslateOptionsTest {
 
         List<String> expected = TEST_HELPER.getExpectedCommand(
                 "-mask", "none",
-                "-co", "TARGET_SRS=" + CommonOptionsFactory.SRID_OUT,
+                "-co", "TARGET_SRS=" + CommonOptionsTestHelper.SRID_OUT,
                 "-co", "ADD_ALPHA=NO");
 
         TEST_HELPER.checkCommand(options, expected);
@@ -79,12 +79,12 @@ class GDALTranslateOptionsTest {
         options.processSRIDs(actual);
 
         Assertions.assertEquals(
-                List.of("-a_srs", CommonOptionsFactory.SRID_IN, "-mask", "none"), actual);
+                List.of("-a_srs", CommonOptionsTestHelper.SRID_IN, "-mask", "none"), actual);
 
         List<String> expected = TEST_HELPER.getExpectedCommand(
-                "-a_srs", CommonOptionsFactory.SRID_IN,
+                "-a_srs", CommonOptionsTestHelper.SRID_IN,
                 "-mask", "none",
-                "-co", "TARGET_SRS=" + CommonOptionsFactory.SRID_OUT,
+                "-co", "TARGET_SRS=" + CommonOptionsTestHelper.SRID_OUT,
                 "-co", "ADD_ALPHA=NO");
 
         TEST_HELPER.checkCommand(options, expected);

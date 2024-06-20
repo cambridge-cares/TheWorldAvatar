@@ -8,7 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class Ogr2OgrOptionsTest {
-    private static final @Nonnull Ogr2OgrOptionsFactory TEST_HELPER = new Ogr2OgrOptionsFactory();
+    private static final @Nonnull Ogr2OgrOptionsTestHelper TEST_HELPER = new Ogr2OgrOptionsTestHelper();
 
     @ParameterizedTest
     @EnumSource(value = ArgsEnum.class, names = { "datasetCreationOptions", "datasetCreationOptionsFile" })

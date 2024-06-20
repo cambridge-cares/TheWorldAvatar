@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Assertions;
 
 import com.cmclinnovations.stack.clients.utils.JsonHelper;
 
-public abstract class BaseOptionsFactory<T extends CommonOptions<T>> {
+public abstract class BaseOptionsTestHelper<T extends CommonOptions<T>> {
 
     private final String command;
     protected final Class<T> classBeingTested;
 
-    protected <F extends BaseOptionsFactory<T>> BaseOptionsFactory(String command, Class<T> classBeingTested) {
+    protected <F extends BaseOptionsTestHelper<T>> BaseOptionsTestHelper(String command, Class<T> classBeingTested) {
         this.command = command;
         this.classBeingTested = classBeingTested;
     }

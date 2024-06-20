@@ -10,9 +10,9 @@ import javax.annotation.Nonnull;
 
 import org.junit.jupiter.api.Assertions;
 
-public class GDALOptionsFactory<T extends GDALOptions<T>> extends CommonOptionsFactory<T> {
+public class GDALOptionsTestHelper<T extends GDALOptions<T>> extends CommonOptionsTestHelper<T> {
 
-    protected <F extends GDALOptionsFactory<T>> GDALOptionsFactory(String command, Class<T> classBeingTested) {
+    protected <F extends GDALOptionsTestHelper<T>> GDALOptionsTestHelper(String command, Class<T> classBeingTested) {
         super(command, classBeingTested);
     }
 
@@ -43,8 +43,8 @@ public class GDALOptionsFactory<T extends GDALOptions<T>> extends CommonOptionsF
     protected void checkCommand(@Nonnull T options, List<String> expected) {
         List<String> actual = List.of(options.generateCommand(
                 "DummyFormat",
-                CommonOptionsFactory.TEST_SOURCE,
-                CommonOptionsFactory.TEST_DESTINATION));
+                CommonOptionsTestHelper.TEST_SOURCE,
+                CommonOptionsTestHelper.TEST_DESTINATION));
         Assertions.assertEquals(expected, actual);
     }
 }
