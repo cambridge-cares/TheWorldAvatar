@@ -1,12 +1,20 @@
 import requests
+from datetime import datetime
 import time
 
 SLEEP_DURATION = 5
 LIST_Z = [0]
 
-def call_http(http_endpoint, custom_request, method):
+def call_http(http_endpoint, custom_request, method, quiet=True):
+    start = datetime.now().strftime('%d-%m-%y.%H:%M:%S')
+    t0 = time.time()
+    if not quiet:
+        print(f"Sent request {custom_request.split('?')[0]} at {start}")
     response = getattr(requests, method)(http_endpoint+custom_request)
+    print(f"Receive response at {datetime.now().strftime('%d-%m-%y.%H:%M:%S')}")
+    print(f"Duration: {time.time()-t0:.1f}s, status code: {response.status_code}")
     if response.status_code != 200:
+        print("Error messages:")
         print(response.content)
     return response
 
@@ -28,8 +36,8 @@ class JobSender:
         self.ny = '200'
         self.base_url = base_url
 
-    def call_di(self, custom_request, method):
-        return call_http(f'{self.base_url}dispersion-interactor/', custom_request, method)
+    def call_di(self, custom_request, method, quiet=True):
+        return call_http(f'{self.base_url}dispersion-interactor/', custom_request, method, quiet)
     
     def get_metadata(self):
         return self.call_di('GetDispersionSimulations', 'get').json()
@@ -37,18 +45,24 @@ class JobSender:
     def get_derivation_iri(self,label,scope):
         metadata = self.get_metadata()
         try:
+            print(f"Found existing simulation for {label}.")
             return metadata[label]['derivationIri']
         except Exception as e:
-            print(f'Cannot find existing derivation: {e}, try to create it')
             polygon = get_polygon(scope)
             url_init = f'InitialiseSimulation?ewkt=SRID={self.SRID};{polygon}&nx={self.nx}&ny={self.ny}&label={label}'
             for z in LIST_Z:
                 url_init = url_init+f'&z={z}'
             response = self.call_di(url_init, 'post')
+            print(f"Created new simulation for {label}.")
             return response.json()['derivation']
     
     def generate_data(self,derivation_iri,num_step):
         for i in range(num_step):
 
             pause()
-            self.call_di(f'GenerateDataWithShips?derivation={derivation_iri}&numsteps=1', 'post')
+            self.call_di(f'GenerateDataWithShips?derivation={derivation_iri}&numsteps=1', 'post', quiet = False)
+    
+    def run_simulation(self,label,scope,num_step):
+        derivation_iri = self.get_derivation_iri(label,scope)
+        self.generate_data(derivation_iri,num_step)
+        return "Complete."
