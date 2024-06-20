@@ -17,7 +17,7 @@ target          :{ogc_fid} a plot:Plot ;
                     opr:isAwaitingDetailedGPREvaluation "{awaiting_detailed_evaluation}"^^xsd:boolean;
                     plot:hasPlotArea :area/{ogc_fid};
                     geo:hasDefaultGeometry :geometry/{ogc_fid} .
-                :geometry/{ogc_fid} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral.
+                :geometry/{ogc_fid} geo:asWKT "{wkt}"^^geo:wktLiteral.
                 :area/{ogc_fid} a om:Area;
                     om:hasValue :areameasure/{ogc_fid} .
                 :areameasure/{ogc_fid} a om:Measure;
@@ -75,7 +75,7 @@ target          :planningregulation/{ogc_fid} a opr:PlanningRegulation;
                     om:hasValue :ratiomeasure/{ogc_fid} .
                 :ratiomeasure/{ogc_fid} a om:Measure;
                     om:hasUnit om:one;
-                    om:hasNumericalValue "{gpr}"^^xsd:double.
+                    om:hasNumericalValue {gpr}.
 source          SELECT ogc_fid,
                 CASE WHEN "GPR" <> 'EVA' AND "GPR" <> 'LND' AND "GPR" <> 'SDP' 
                     AND "GPR" <> 'NA' AND "GPR" <> 'NULL' THEN CAST("GPR" AS DOUBLE PRECISION)
@@ -89,7 +89,7 @@ target          :{ogc_fid} a plot:Plot ;
                     om:hasValue :gfameasure/{ogc_fid} .
                 :gfameasure/{ogc_fid} a om:Measure;
                     om:hasUnit om:squareMetre ;
-                    om:hasNumericalValue "{gfa}"^^xsd:double.
+                    om:hasNumericalValue {gfa}.
 source          SELECT ogc_fid,
                 # If GPR is numeric with or without decimal places, multiply it by the area 
                 CASE WHEN "GPR" ~ '^\d+(\.\d+)?$' THEN ("GPR"::double precision * ST_Area("lod1Geometry", true))
