@@ -1,7 +1,7 @@
 export const PathNames: {
   [key: string]: string;
 } = {
-  HOME: "/",
+  HOME: "./",
   MAP: "explore",
   DASHBOARD: "analytics",
   HELP: "help",
