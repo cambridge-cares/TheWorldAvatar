@@ -30,6 +30,9 @@ ONTOZEOLITE = Namespace("http://www.theworldavatar.com/kg/ontozeolite/")
 ONTOCAPE = Namespace(
     "http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#"
 )
+ONTOMOPS = Namespace(
+    "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#"
+)
 
 # TWA BIM & GIS namespaces
 ONTOBUILDINGSTRUCTURE = Namespace(
@@ -68,6 +71,7 @@ PREFIX2NAMESPACE: dict[str, Namespace | type[DefinedNamespace]] = {
     "occ": ONTOCOMPCHEM,
     "ocr": ONTOCRYSTAL,
     "zeo": ONTOZEOLITE,
+    "mops": ONTOMOPS,
     "bs": ONTOBUILDINGSTRUCTURE,
     "carpark": ONTOCARPARK,
     "landplot": LANDPLOT,
