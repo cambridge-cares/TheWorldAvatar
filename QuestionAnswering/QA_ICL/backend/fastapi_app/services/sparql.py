@@ -54,6 +54,7 @@ class SparqlClient:
         return self.res_adapter.validate_python(res)
 
     def flatten_select_response(self, res: SparqlSelectResponse):
+        # TODO: cast value into appropriate type e.g. str, float, URIRef
         vars = list(res.head.vars)
         bindings = [
             {k: v.value for k, v in binding.items()} for binding in res.results.bindings
@@ -65,54 +66,49 @@ class SparqlClient:
         return self.flatten_select_response(res)
 
 
-@cache
 def get_ontospecies_endpoint(
     settings: Annotated[AppSettings, Depends(get_app_settings)]
 ):
     return settings.chemistry_endpoints.ontospecies
 
 
-@cache
 def get_ontokin_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
     return settings.chemistry_endpoints.ontokin
 
 
-@cache
 def get_ontocompchem_endpoint(
     settings: Annotated[AppSettings, Depends(get_app_settings)]
 ):
     return settings.chemistry_endpoints.ontocompchem
 
 
-@cache
 def get_ontozeolite_endpoint(
     settings: Annotated[AppSettings, Depends(get_app_settings)]
 ):
     return settings.chemistry_endpoints.ontozeolite
 
 
-@cache
+def get_ontomops_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
+    return settings.chemistry_endpoints.ontomops
+
+
 def get_sgOntop_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
     return settings.singapore_endpoints.ontop
 
 
-@cache
 def get_sgPlot_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
     return settings.singapore_endpoints.plot
 
 
-@cache
 def get_sgCompany_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
     return settings.singapore_endpoints.company
 
 
-@cache
 def get_sgDispersion_endpoint(
     settings: Annotated[AppSettings, Depends(get_app_settings)]
 ):
     return settings.singapore_endpoints.dispersion
 
 
-@cache
 def get_sgCarpark_endpoint(settings: Annotated[AppSettings, Depends(get_app_settings)]):
     return settings.singapore_endpoints.carpark
