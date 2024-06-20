@@ -7,6 +7,7 @@ from services.rdf_stores.ontocompchem import (
     get_ontocompchem_rdfStore,
 )
 from services.rdf_stores.ontokin import OntokinRDFStore, get_ontokin_rdfStore
+from services.rdf_stores.ontomops import OntomopsRDFStore, get_ontomops_rdfStore
 from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
     get_ontospecies_rdfStore,
@@ -28,5 +29,12 @@ def get_rdfStores(
     ontozeolite_store: Annotated[
         OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
     ],
+    ontomops_store: Annotated[OntomopsRDFStore, Depends(get_ontomops_rdfStore)],
 ):
-    return (ontospecies_store, ontokin_store, ontocompchem_store, ontozeolite_store)
+    return (
+        ontospecies_store,
+        ontokin_store,
+        ontocompchem_store,
+        ontozeolite_store,
+        ontomops_store,
+    )

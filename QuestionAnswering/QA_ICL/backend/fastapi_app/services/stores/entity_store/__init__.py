@@ -1,7 +1,6 @@
 from functools import cache
-import itertools
 import logging
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import Depends
 import numpy as np
@@ -161,7 +160,7 @@ class EntityStore:
         self,
         cls: str | None,
         text: str | None,
-        identifier: dict[str, str] = dict(),
+        identifier: dict[str, Any] = dict(),
         k: int | None = None,
     ):
         logger.info(
@@ -185,7 +184,8 @@ class EntityStore:
         link_func = (
             self.link_fuzzy if config.strategy == "fuzzy" else self.link_semantic
         )
-        texts = [x for x in itertools.chain([text], identifier.values()) if x]
+        texts = [text] if text else []
+        texts.extend(x for x in identifier.values() if isinstance(x, str))
 
         iris: list[str] = []
         for text in texts:

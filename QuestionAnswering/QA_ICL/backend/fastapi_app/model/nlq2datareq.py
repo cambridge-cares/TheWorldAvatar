@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from pydantic import BaseModel, Field
 
 
@@ -25,7 +25,7 @@ DataRequestForm = Annotated[
 
 class DataRequest(BaseModel):
     var2cls: dict[str, str] = dict()
-    entity_bindings: dict[str, list[str | dict[str, str]]] = dict()
+    entity_bindings: dict[str, list[str | dict[str, Any]]] = dict()
     const_bindings: dict[str, object] = dict()
     req_form: DataRequestForm | None = None
     visualise: list[str] = list()
