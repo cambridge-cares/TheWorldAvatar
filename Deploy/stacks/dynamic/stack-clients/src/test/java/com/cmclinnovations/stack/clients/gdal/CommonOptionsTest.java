@@ -12,34 +12,44 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
-import com.cmclinnovations.stack.clients.gdal.MockCommonOptionsFactory.Args;
 
-class CommonOptionsTest extends AbstractOptionsTest<MockCommonOptions> {
+class CommonOptionsTest extends AbstractOptionsTest<MockCommonOptions, CommonOptionsFactory<MockCommonOptions>> {
+
+    protected CommonOptionsTest() {
+        super(MockCommonOptions.TEST_COMMAND, new CommonOptionsFactory<>(MockCommonOptions.class));
+    }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "inputDatasetOpenOptionsFile" })
-    void testReadInputDatasetOpenOption(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })
+    void testTrivial(ArgsEnum ArgsEnum) {
+        MockCommonOptions options = getOptions(ArgsEnum);
 
-        List<String> expected = getExpectedCommand(command,
-                "-oo", "X_POSSIBLE_NAMES=" + AbstractOptionsFactory.X_POSSIBLE_NAMES_VALUE,
-                "-oo", "Y_POSSIBLE_NAMES=" + AbstractOptionsFactory.Y_POSSIBLE_NAMES_VALUE);
+        List<String> expected = getExpectedCommand();
+        checkCommand(options, expected);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = ArgsEnum.class, names = { "inputDatasetOpenOptionsFile" })
+    void testReadInputDatasetOpenOption(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
+
+        List<String> expected = getExpectedCommand(
+                "-oo", "X_POSSIBLE_NAMES=" + CommonOptionsFactory.X_POSSIBLE_NAMES_VALUE,
+                "-oo", "Y_POSSIBLE_NAMES=" + CommonOptionsFactory.Y_POSSIBLE_NAMES_VALUE);
 
         checkCommand(options, expected);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile",
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile",
             "inputDatasetOpenOptions", "inputDatasetOpenOptionsFile" })
-    void testAddInputDatasetOpenOption(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    void testAddInputDatasetOpenOption(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         options.addInputDatasetOpenOption("X_POSSIBLE_NAMES", "easting");
         options.addInputDatasetOpenOption("Y_POSSIBLE_NAMES", "northing");
 
-        List<String> expected = getExpectedCommand(command,
+        List<String> expected = getExpectedCommand(
                 "-oo", "X_POSSIBLE_NAMES=easting",
                 "-oo", "Y_POSSIBLE_NAMES=northing");
 
@@ -47,10 +57,9 @@ class CommonOptionsTest extends AbstractOptionsTest<MockCommonOptions> {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile" })
-    void testProcessKeyValuePair(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })
+    void testProcessKeyValuePair(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         ArrayList<String> actual = new ArrayList<>();
 
@@ -60,58 +69,55 @@ class CommonOptionsTest extends AbstractOptionsTest<MockCommonOptions> {
 
         Assertions.assertEquals(expected, actual);
 
-        List<String> expectedCommand = getExpectedCommand(command);
+        List<String> expectedCommand = getExpectedCommand();
         checkCommand(options, expectedCommand);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile", "otherOptions", "otherOptionsFile" })
-    void testAddOtherOptionScalar(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile", "otherOptions", "otherOptionsFile" })
+    void testAddOtherOptionScalar(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         options.addOtherOption("-select", "prob,county,cromeid,lucode");
 
-        List<String> expected = getExpectedCommand(command,
+        List<String> expected = getExpectedCommand(
                 "-select", "prob,county,cromeid,lucode");
 
         checkCommand(options, expected);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile", "otherOptionsArray", "otherOptionsArrayFile" })
-    void testAddOtherOptionArray(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile", "otherOptionsArray",
+            "otherOptionsArrayFile" })
+    void testAddOtherOptionArray(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         options.addOtherOption("-spat", "<xmin>", "<ymin>", "<xmax>", "<ymax>");
 
-        List<String> expected = getExpectedCommand(command,
+        List<String> expected = getExpectedCommand(
                 "-spat", "<xmin>", "<ymin>", "<xmax>", "<ymax>");
 
         checkCommand(options, expected);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile" })
-    void testAppendToArgs(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })
+    void testAppendToArgs(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
-        List<String> expected = getExpectedCommand(command);
+        List<String> expected = getExpectedCommand();
         checkCommand(options, expected);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile" })
-    void testAppendToArgsWithExtra(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })
+    void testAppendToArgsWithExtra(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         List<String> actual = List.of(options.generateCommand(TEST_SOURCE, TEST_DESTINATION,
                 "extraArg1", "extraArg2"));
 
-        List<String> expected = getExpectedCommand(command,
+        List<String> expected = getExpectedCommand(
                 "extraArg1",
                 "extraArg2");
 
@@ -119,10 +125,9 @@ class CommonOptionsTest extends AbstractOptionsTest<MockCommonOptions> {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile" })
-    void testWithAndGetEnv(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })
+    void testWithAndGetEnv(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         options.withEnv("PG_USE_COPY", "YES");
 
@@ -132,43 +137,38 @@ class CommonOptionsTest extends AbstractOptionsTest<MockCommonOptions> {
 
         Assertions.assertEquals(expected, actual);
 
-        List<String> expectedCommand = getExpectedCommand(command);
+        List<String> expectedCommand = getExpectedCommand();
         checkCommand(options, expectedCommand);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "sridIn", "sridInFile" })
-    void testGetSridIn(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "sridIn", "sridInFile" })
+    void testGetSridIn(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
-        Assertions.assertEquals(AbstractOptionsFactory.SRID_IN, options.getSridIn());
+        Assertions.assertEquals(CommonOptionsFactory.SRID_IN, options.getSridIn());
 
-        List<String> expected = getExpectedCommand(command,
-                "-a_srs", AbstractOptionsFactory.SRID_IN);
+        List<String> expected = getExpectedCommand("-a_srs", CommonOptionsFactory.SRID_IN);
 
         checkCommand(options, expected);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "sridOut", "sridOutFile" })
-    void testGetSridOut(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "sridOut", "sridOutFile" })
+    void testGetSridOut(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
-        Assertions.assertEquals(AbstractOptionsFactory.SRID_OUT, options.getSridOut());
+        Assertions.assertEquals(CommonOptionsFactory.SRID_OUT, options.getSridOut());
 
-        List<String> expected = getExpectedCommand(command,
-                "-t_srs", AbstractOptionsFactory.SRID_OUT);
+        List<String> expected = getExpectedCommand("-t_srs", CommonOptionsFactory.SRID_OUT);
 
         checkCommand(options, expected);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile" })
-    void testProcessSRIDsNiether(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })
+    void testProcessSRIDsNiether(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         ArrayList<String> actual = new ArrayList<>();
 
@@ -177,95 +177,91 @@ class CommonOptionsTest extends AbstractOptionsTest<MockCommonOptions> {
         List<Object> expected = List.of();
         Assertions.assertEquals(expected, actual);
 
-        List<String> expectedCommand = getExpectedCommand(command);
+        List<String> expectedCommand = getExpectedCommand();
         checkCommand(options, expectedCommand);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "sridIn", "sridInFile" })
-    void testProcessSRIDsIn(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "sridIn", "sridInFile" })
+    void testProcessSRIDsIn(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         ArrayList<String> actual = new ArrayList<>();
 
         options.processSRIDs(actual);
 
-        List<String> expected = List.of("-a_srs", AbstractOptionsFactory.SRID_IN);
+        List<String> expected = List.of("-a_srs", CommonOptionsFactory.SRID_IN);
         Assertions.assertEquals(expected, actual);
 
-        List<String> expectedCommand = getExpectedCommand(command,
-                "-a_srs", AbstractOptionsFactory.SRID_IN);
+        List<String> expectedCommand = getExpectedCommand(
+                "-a_srs", CommonOptionsFactory.SRID_IN);
 
         checkCommand(options, expectedCommand);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "sridOut", "sridOutFile" })
-    void testProcessSRIDsOut(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "sridOut", "sridOutFile" })
+    void testProcessSRIDsOut(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         ArrayList<String> actual = new ArrayList<>();
 
         options.processSRIDs(actual);
 
-        List<String> expected = List.of("-t_srs", AbstractOptionsFactory.SRID_OUT);
+        List<String> expected = List.of("-t_srs", CommonOptionsFactory.SRID_OUT);
         Assertions.assertEquals(expected, actual);
 
-        List<String> expectedCommand = getExpectedCommand(command,
-                "-t_srs", AbstractOptionsFactory.SRID_OUT);
+        List<String> expectedCommand = getExpectedCommand(
+                "-t_srs", CommonOptionsFactory.SRID_OUT);
 
         checkCommand(options, expectedCommand);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "sridBoth", "sridBothFile" })
-    void testProcessSRIDsBoth(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "sridBoth", "sridBothFile" })
+    void testProcessSRIDsBoth(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         ArrayList<String> actual = new ArrayList<>();
 
         options.processSRIDs(actual);
 
-        List<String> expected = List.of("-s_srs", AbstractOptionsFactory.SRID_IN, "-t_srs", AbstractOptionsFactory.SRID_OUT);
+        List<String> expected = List.of("-s_srs", CommonOptionsFactory.SRID_IN, "-t_srs",
+                CommonOptionsFactory.SRID_OUT);
         Assertions.assertEquals(expected, actual);
 
-        List<String> expectedCommand = getExpectedCommand(command,
-                "-s_srs", AbstractOptionsFactory.SRID_IN,
-                "-t_srs", AbstractOptionsFactory.SRID_OUT);
+        List<String> expectedCommand = getExpectedCommand(
+                "-s_srs", CommonOptionsFactory.SRID_IN,
+                "-t_srs", CommonOptionsFactory.SRID_OUT);
 
         checkCommand(options, expectedCommand);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile", "sridIn", "sridInFile" })
-    void testSetSridIn(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile", "sridIn", "sridInFile" })
+    void testSetSridIn(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         options.setSridIn("1234");
 
         Assertions.assertEquals("1234", options.getSridIn());
 
-        List<String> expected = getExpectedCommand(command,
+        List<String> expected = getExpectedCommand(
                 "-a_srs", "1234");
 
         checkCommand(options, expected);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile", "sridOut", "sridOutFile" })
-    void testSetSridOut(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile", "sridOut", "sridOutFile" })
+    void testSetSridOut(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         options.setSridOut("1234");
 
         Assertions.assertEquals("1234", options.getSridOut());
 
-        List<String> expected = getExpectedCommand(command,
+        List<String> expected = getExpectedCommand(
                 "-t_srs", "1234");
 
         checkCommand(options, expected);
@@ -273,10 +269,9 @@ class CommonOptionsTest extends AbstractOptionsTest<MockCommonOptions> {
 
     // @Disabled("Need to work out a good way to handle files and the SCRATCH_DIR!")
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile" })
-    void testHandleFileArg(Args args) {
-        MockCommonOptions options = args.getOptions();
-        String command = args.getCommand();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })
+    void testHandleFileArg(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         String filePath = Path.of(".").toAbsolutePath()
                 .relativize(Path.of(Assertions.assertDoesNotThrow(
@@ -291,15 +286,15 @@ class CommonOptionsTest extends AbstractOptionsTest<MockCommonOptions> {
             String actual = Assertions.assertDoesNotThrow(() -> options.handleFileArg("goodOption", "@" + filePath));
             Assertions.assertEquals(expected, actual);
 
-            List<String> expectedCommand = getExpectedCommand(command);
+            List<String> expectedCommand = getExpectedCommand();
             checkCommand(options, expectedCommand);
         }
     }
 
     @ParameterizedTest
-    @EnumSource(value = Args.class, names = { "trivial", "trivialFile" })
-    void testHandleFileArgMissingFile(Args args) {
-        MockCommonOptions options = args.getOptions();
+    @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })
+    void testHandleFileArgMissingFile(ArgsEnum args) {
+        MockCommonOptions options = getOptions(args);
 
         Assertions.assertThrows(RuntimeException.class,
                 () -> options.handleFileArg("missingOption", "@testHandleFileArgMissingFile.txt"));

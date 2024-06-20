@@ -9,12 +9,28 @@ import javax.annotation.Nonnull;
 
 import org.junit.jupiter.api.Assertions;
 
-public abstract class AbstractOptionsTest<T extends CommonOptions<T>> {
+public abstract class AbstractOptionsTest<T extends CommonOptions<T>, F extends CommonOptionsFactory<T>> {
 
     protected static final String TEST_SOURCE = "testSource";
     protected static final String TEST_DESTINATION = "testDestination";
 
-    protected List<String> getExpectedCommand(String command, String... explicitArgs) {
+    private final String command;
+    private final @Nonnull F factory;
+
+    protected AbstractOptionsTest(String command, @Nonnull F factory) {
+        this.command = command;
+        this.factory = factory;
+    }
+
+    public @Nonnull T getOptions(ArgsEnum args) {
+        return factory.createOptions(args);
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    protected List<String> getExpectedCommand(String... explicitArgs) {
         return Stream.of(Stream.of(
                 command,
                 "-oo", "AUTODETECT_TYPE=YES",
