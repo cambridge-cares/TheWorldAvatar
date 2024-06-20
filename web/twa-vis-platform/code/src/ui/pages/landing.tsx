@@ -60,8 +60,8 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
                 {thumbnails}
                 {props.hasMap && (
                     <DefaultPageThumbnail
-                        title="Map"
-                        description="Discover geospatial relationships in our environment"
+                        title="CReDo"
+                        description="Use CReDo to understand the climate resilience of your infrastructure network"
                         icon="./images/defaults/icons/map.svg"
                         redirectUrl={Routes.MAP}
                     />
@@ -84,7 +84,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
                 )}
                 <DefaultPageThumbnail
                     title="Help Centre"
-                    description="Help for the CReDo app"
+                    description="Get help with the CReDo app"
                     icon="./images/defaults/icons/twa.svg"
                     redirectUrl={Routes.HELP}
                 />
