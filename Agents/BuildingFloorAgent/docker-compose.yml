@@ -2,12 +2,7 @@ version: "3.8"
 
 services:
   buildingflooragent:
-    image: ghcr.io/cambridge-cares/buildingflooragent:1.0.0-SNAPSHOT
-    container_name: buildingflooragent
+    image: ghcr.io/cambridge-cares/buildingflooragent:2.0.0
     build:
       context: .
       target: agent
-    ports:
-      - "10104:8080"
-    volumes:
-      - ./src/main/resources:/resources
