@@ -124,7 +124,7 @@ class CommonOptions<T extends CommonOptions<T>> {
 
     protected String handleFileArg(String option, String value) {
         Path sourcePath = Path.of(value.replaceFirst("^@", ""));
-        Path scratchPath = Path.of(StackClient.SCRATCH_DIR, sourcePath.toString());
+        Path scratchPath = Path.of(StackClient.getScratchDir(), sourcePath.toString());
         try {
             Files.createDirectories(scratchPath.getParent());
             Files.copy(sourcePath, scratchPath, StandardCopyOption.REPLACE_EXISTING);
