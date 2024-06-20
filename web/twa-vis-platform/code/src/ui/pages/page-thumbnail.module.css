@@ -1,6 +1,6 @@
 .container {
     width: 100%;
-    height: 100px;
+    height: fit-content;
     padding: 10px;
     margin: 10px;
 
