@@ -1,11 +1,16 @@
 package com.cmclinnovations.stack.clients.gdal;
 
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.annotation.Nonnull;
 
 public class Ogr2OgrOptionsFactory extends CommonOptionsFactory<Ogr2OgrOptions> {
 
     Ogr2OgrOptionsFactory() {
-        super(Ogr2OgrOptions.class);
+        super("ogr2ogr", Ogr2OgrOptions.class);
     }
 
     @Override
@@ -27,4 +32,17 @@ public class Ogr2OgrOptionsFactory extends CommonOptionsFactory<Ogr2OgrOptions> 
         }
     }
 
+    protected List<String> getExpectedCommand(String... explicitArgs) {
+        return Stream.of(Stream.of(
+                getCommand(),
+                "-oo", "AUTODETECT_TYPE=YES",
+                "-oo", "EMPTY_STRING_AS_NULL=YES",
+                "-f", "PostgreSQL",
+                "--config", "PG_USE_COPY=YES",
+                "-lco", "LAUNDER=NO"),
+                Stream.of(explicitArgs),
+                Stream.of(TEST_DESTINATION, TEST_SOURCE))
+                .flatMap(Function.identity())
+                .collect(Collectors.toList());
+    }
 }

@@ -1,8 +1,10 @@
 package com.cmclinnovations.stack.clients.gdal;
 
-final class GDALWarpOptionsFactory extends CommonOptionsFactory<GDALWarpOptions> {
+import javax.annotation.Nonnull;
+
+final class GDALWarpOptionsFactory extends CommonOptionsFactory<@Nonnull GDALWarpOptions> {
 
     GDALWarpOptionsFactory() {
-        super(GDALWarpOptions.class);
+        super("gdalwarp", GDALWarpOptions.class);
     }
 }

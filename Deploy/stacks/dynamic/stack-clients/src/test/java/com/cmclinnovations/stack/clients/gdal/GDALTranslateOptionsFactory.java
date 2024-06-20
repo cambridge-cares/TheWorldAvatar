@@ -1,8 +1,10 @@
 package com.cmclinnovations.stack.clients.gdal;
 
-final class GDALTranslateOptionsFactory extends CommonOptionsFactory<GDALTranslateOptions> {
+import javax.annotation.Nonnull;
+
+final class GDALTranslateOptionsFactory extends CommonOptionsFactory<@Nonnull GDALTranslateOptions> {
 
     GDALTranslateOptionsFactory() {
-        super(GDALTranslateOptions.class);
+        super("gdal_translate", GDALTranslateOptions.class);
     }
 }

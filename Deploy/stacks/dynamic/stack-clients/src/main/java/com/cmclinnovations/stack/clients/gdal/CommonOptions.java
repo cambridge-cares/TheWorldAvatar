@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -73,13 +72,6 @@ class CommonOptions<T extends CommonOptions<T>> {
 
     public final Map<String, String> getEnv() {
         return envVars;
-    }
-
-    protected final String[] generateCommand(String source, String destination, String... extraArgs) {
-
-        List<String> args = new ArrayList<>(2 * extraArgs.length);
-
-        return generateCommandInternal(args, source, destination, extraArgs);
     }
 
     protected final String[] generateCommandInternal(List<String> args, String source, String destination,

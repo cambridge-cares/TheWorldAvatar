@@ -2,50 +2,50 @@ package com.cmclinnovations.stack.clients.gdal;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-class GDALOptionsTest extends AbstractOptionsTest<MockGDALOptions, GDALOptionsFactory> {
+class GDALOptionsTest {
 
-    protected GDALOptionsTest() {
-        super(MockGDALOptions.TEST_COMMAND, new GDALOptionsFactory());
-    }
+    private static final @Nonnull GDALOptionsFactory<@Nonnull MockGDALOptions> TEST_HELPER = new GDALOptionsFactory<>(
+            MockGDALOptions.TEST_COMMAND, MockGDALOptions.class);
 
     @ParameterizedTest
     @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile" })
     void testTrivial(ArgsEnum ArgsEnum) {
-        MockGDALOptions options = getOptions(ArgsEnum);
+        MockGDALOptions options = TEST_HELPER.createOptions(ArgsEnum);
 
-        List<String> expected = getExpectedCommand();
-        checkCommand(options, expected);
+        List<String> expected = TEST_HELPER.getExpectedCommand();
+        TEST_HELPER.checkCommand(options, expected);
     }
 
     @ParameterizedTest
     @EnumSource(value = ArgsEnum.class, names = { "creationOptionsFile" })
     void testReadCreationOption(ArgsEnum args) {
-        MockGDALOptions options = getOptions(args);
+        MockGDALOptions options = TEST_HELPER.createOptions(args);
 
-        List<String> expected = getExpectedCommand(
+        List<String> expected = TEST_HELPER.getExpectedCommand(
                 "-co", "COMPRESS=NONE",
                 "-co", "OVERVIEWS=AUTO");
 
-        checkCommand(options, expected);
+        TEST_HELPER.checkCommand(options, expected);
     }
 
     @ParameterizedTest
     @EnumSource(value = ArgsEnum.class, names = { "trivial", "trivialFile",
             "creationOptions", "creationOptionsFile" })
     void testAddCreationOption(ArgsEnum args) {
-        MockGDALOptions options = getOptions(args);
+        MockGDALOptions options = TEST_HELPER.createOptions(args);
 
         options.addCreationOption("COMPRESS", "LZMA");
         options.addCreationOption("OVERVIEWS", "IGNORE_EXISTING");
 
-        List<String> expected = getExpectedCommand(
+        List<String> expected = TEST_HELPER.getExpectedCommand(
                 "-co", "COMPRESS=LZMA",
                 "-co", "OVERVIEWS=IGNORE_EXISTING");
 
-        checkCommand(options, expected);
+        TEST_HELPER.checkCommand(options, expected);
     }
-
 }

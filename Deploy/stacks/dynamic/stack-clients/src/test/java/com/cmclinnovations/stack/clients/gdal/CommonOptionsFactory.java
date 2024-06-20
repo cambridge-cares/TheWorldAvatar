@@ -1,16 +1,16 @@
 package com.cmclinnovations.stack.clients.gdal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
 import org.junit.jupiter.api.Assertions;
 
-import com.cmclinnovations.stack.clients.utils.JsonHelper;
-
-public class CommonOptionsFactory<T extends CommonOptions<T>> {
+public class CommonOptionsFactory<T extends CommonOptions<T>> extends BaseOptionsFactory<T> {
 
     protected static final String SRID_IN = "EPSG:3264";
     protected static final String SRID_OUT = "EPSG:4326";
@@ -18,12 +18,14 @@ public class CommonOptionsFactory<T extends CommonOptions<T>> {
     protected static final String Y_POSSIBLE_NAMES_VALUE = "y";
     protected static final String OTHER_OPTIONS_SELECT_VALUE = "a,b,c";
 
-    protected final Class<T> classBeingTested;
+    protected static final String TEST_SOURCE = "testSource";
+    protected static final String TEST_DESTINATION = "testDestination";
 
-    protected <F extends CommonOptionsFactory<T>> CommonOptionsFactory(Class<T> classBeingTested) {
-        this.classBeingTested = classBeingTested;
+    protected <F extends CommonOptionsFactory<T>> CommonOptionsFactory(String command, Class<T> classBeingTested) {
+        super(command, classBeingTested);
     }
 
+    @Override
     protected void configureOptions(ArgsEnum optionEnum, @Nonnull T options) {
         switch (optionEnum) {
             case sridIn:
@@ -49,46 +51,21 @@ public class CommonOptionsFactory<T extends CommonOptions<T>> {
         }
     }
 
-    protected final T createOptions(@Nonnull ArgsEnum argsEnum) {
-        T options;
-        String name = argsEnum.name();
-        int index = name.lastIndexOf("File");
-        if (index > 0) {
-            options = getOptionsFromFile(name.substring(0, index), classBeingTested);
-        } else {
-            try {
-                options = classBeingTested.getConstructor().newInstance();
-
-                configureOptions(argsEnum, options);
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-                Assertions.fail(ex);
-                return null;
-            }
-        }
-        return options;
+    protected List<String> getExpectedCommand(String... explicitArgs) {
+        return Stream.of(Stream.of(
+                getCommand(),
+                "-oo", "AUTODETECT_TYPE=YES",
+                "-oo", "EMPTY_STRING_AS_NULL=YES"),
+                Stream.of(explicitArgs),
+                Stream.of(TEST_SOURCE, TEST_DESTINATION))
+                .flatMap(Function.identity())
+                .collect(Collectors.toList());
     }
 
-    private static final <T> T getOptionsFromFile(String name, Class<T> classBeingTested) {
-        T options;
-        String filename = name + ".json";
-        try (InputStream is = CommonOptionsTest.class.getResourceAsStream(filename)) {
-
-            Assertions.assertNotNull(is, () -> "Ensure the file '"
-                    + CommonOptionsTest.class.getResource("./") + filename
-                    + "' exists and is a valid JSON file.");
-
-            options = JsonHelper.getMapper().readValue(is, classBeingTested);
-
-            Assertions.assertNotNull(options, () -> "Ensure the file '"
-                    + CommonOptionsTest.class.getResource("./") + filename
-                    + "' is a valid JSON file.");
-
-        } catch (IOException ex) {
-            Assertions.fail(ex);
-            options = (T) null; // appeasing the compiler: this line will never be executed.
-        }
-        return options;
+    protected void checkCommand(@Nonnull T options, List<String> expected) {
+        List<String> actual = List.of(options.generateCommandInternal(new ArrayList<>(),
+                CommonOptionsFactory.TEST_SOURCE,
+                CommonOptionsFactory.TEST_DESTINATION));
+        Assertions.assertEquals(expected, actual);
     }
-
 }
