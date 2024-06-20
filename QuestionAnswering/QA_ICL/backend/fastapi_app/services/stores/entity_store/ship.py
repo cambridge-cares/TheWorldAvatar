@@ -4,11 +4,11 @@ from typing import Annotated
 from fastapi import Depends
 
 from services.sparql import get_sgDispersion_endpoint
-from services.stores.entity_store.base import IEntityLinker
+from services.stores.entity_store.base import LinkerManager
 from services.sparql import SparqlClient
 
 
-class ShipLinker(IEntityLinker):
+class ShipLinker(LinkerManager):
     def __init__(self, bg_client: SparqlClient):
         self.bg_client = bg_client
 

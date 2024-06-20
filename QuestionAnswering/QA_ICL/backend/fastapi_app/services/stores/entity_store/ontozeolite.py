@@ -1,55 +1,73 @@
+import logging
 from typing import Annotated
 
 from fastapi import Depends
-from services.stores.entity_store.base import IEntityLinker
+from model.entity_linking.ontozeolite import (
+    ZeoliteFrameworkLinkingArgs,
+    ZeoliticMaterialLinkingArgs,
+)
+from services.stores.entity_store.base import LinkerManager
 from services.sparql import SparqlClient, get_ontozeolite_endpoint
 
 
-class ZeoliteFrameworkLinker(IEntityLinker):
+logger = logging.getLogger(__name__)
+
+
+class OntozeoliteLinkerManager(LinkerManager):
     def __init__(self, ontozeolite_endpoint: str):
         self.sparql_client = SparqlClient(ontozeolite_endpoint)
 
-    def link(self, text: str | None, **kwargs):
-        if "code" not in kwargs:
-            return []
+    @property
+    def cls2linker(self):
+        return {
+            "zeo:ZeoliteFramework": self.linkFramework,
+            "zeo:ZeoliticMaterial": self.linkMaterial,
+        }
+
+    def linkFramework(self, text: str | None, **kwargs):
+        try:
+            args = ZeoliteFrameworkLinkingArgs.model_validate(kwargs)
+        except:
+            lst: list[str] = []
+            return lst
+
+        logger.info(f"Linking zeolite framework with args: {args.model_dump_json()}")
 
         query = f"""PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 SELECT ?Framework
 WHERE {{
-    ?Framework zeo:hasFrameworkCode "{kwargs["code"]}" .
+    ?Framework zeo:hasFrameworkCode "{args.code}" .
 }}"""
-
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        return [row["Framework"] for row in bindings]
+        iris = [row["Framework"] for row in bindings]
 
+        logger.info(f"Linked IRIs: {iris}")
 
-def get_zeoliteFramework_linker(
-    endpoint: Annotated[str, Depends(get_ontozeolite_endpoint)]
-):
-    return ZeoliteFrameworkLinker(ontozeolite_endpoint=endpoint)
+        return iris
 
+    def linkMaterial(self, text: str | None, **kwargs):
+        try:
+            args = ZeoliticMaterialLinkingArgs.model_validate(kwargs)
+        except:
+            lst: list[str] = []
+            return lst
 
-class ZeoliticMaterialLinker(IEntityLinker):
-    def __init__(self, ontozeolite_endpoint: str):
-        self.sparql_client = SparqlClient(ontozeolite_endpoint)
+        logger.info(f"Linking zeolitic material with args: {args.model_dump_json()}")
 
-    def link(self, text: str | None, **kwargs):
-        if "formula" not in kwargs:
-            return []
-
-        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        query = f"""PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
 SELECT ?Material
 WHERE {{
-    ?Material zeo:hasChemicalFormula "{formula}" .
-}}""".format(
-            formula=kwargs["formula"]
-        )
-
+    ?Material zeo:hasChemicalFormula "{args.formula}" .
+}}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        return [row["Material"] for row in bindings]
+        iris = [row["Material"] for row in bindings]
+
+        logger.info(f"Linked IRIs: {iris}")
+
+        return iris
 
 
-def get_zeoliticMaterial_linker(
-    endpoint: Annotated[str, Depends(get_ontozeolite_endpoint)]
+def get_ontozeolite_linkerManager(
+    ontozeolite_endpoint: Annotated[str, Depends(get_ontozeolite_endpoint)]
 ):
-    return ZeoliticMaterialLinker(ontozeolite_endpoint=endpoint)
+    return OntozeoliteLinkerManager(ontozeolite_endpoint=ontozeolite_endpoint)

@@ -1,6 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import Any, Protocol
 
 
-class IEntityLinker(ABC):
+class LinkEntity(Protocol):
+    def __call__(self, text: str | None, **kwargs) -> list[str]: ...
+
+
+class LinkerManager(ABC):
+    @property
     @abstractmethod
-    def link(self, text: str | None, **kwargs) -> list[str]: ...
+    def cls2linker(self) -> dict[str, LinkEntity]: ...

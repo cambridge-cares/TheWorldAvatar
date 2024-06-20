@@ -1,41 +1,30 @@
 from functools import cache
-from importlib.resources import files
 import itertools
 import logging
 from typing import Annotated
 
 from fastapi import Depends
 import numpy as np
-from pydantic import TypeAdapter
 from redis import Redis
 from redis.commands.search.query import Query
 import regex
 
 from config import AppSettings, EntityLinkingConfig, get_app_settings
+from model.lexicon import ENTITIES_INDEX_NAME
 from services.stores.entity_store.ontokin import (
-    MechanismLinker,
-    ReactionLinker,
-    get_mechanism_linker,
-    get_reaction_linker,
+    OntokinLinkerManager,
+    get_ontokin_linkerManager,
 )
-from utils.collections import FrozenDict
-from model.lexicon import ENTITIES_INDEX_NAME, ELConfig, ELConfigEntry
+from services.stores.entity_store.ontomops import (
+    OntomopsLinkerManager,
+    get_ontomops_linkerManager,
+)
 from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
-from .base import IEntityLinker
+from .base import LinkerManager
 from .ship import ShipLinker, get_ship_linker
-from .ontospecies import (
-    ElementLinker,
-    SpeciesLinker,
-    get_element_linker,
-    get_species_linker,
-)
-from .ontozeolite import (
-    ZeoliteFrameworkLinker,
-    ZeoliticMaterialLinker,
-    get_zeoliteFramework_linker,
-    get_zeoliticMaterial_linker,
-)
+from .ontospecies import OntospeciesLinkerManager, get_ontospecies_linkerManager
+from .ontozeolite import OntozeoliteLinkerManager, get_ontozeolite_linkerManager
 
 logger = logging.getLogger(__name__)
 
@@ -46,12 +35,16 @@ class EntityStore:
         redis_client: Redis,
         embedder: IEmbedder,
         el_configs: list[EntityLinkingConfig],
-        cls2linker: dict[str, IEntityLinker],
+        linker_managers: tuple[LinkerManager, ...],
     ):
         self.redis_client = redis_client
         self.embedder = embedder
         self.cls2elconfig = {config.cls: config for config in el_configs}
-        self.cls2linker = cls2linker
+        self.cls2linker = {
+            cls: linker
+            for manager in linker_managers
+            for cls, linker in manager.cls2linker.items()
+        }
 
     def _match_cls_query(self, cls: str):
         return "@cls:{{{cls}}}".format(
@@ -175,8 +168,9 @@ class EntityStore:
             f"Performing entity linking for surface form `{text}` and identifier `{identifier}` of class `{cls}`."
         )
 
-        if cls in self.cls2linker:
-            iris = self.cls2linker[cls].link(text=text, **identifier)
+        linker = self.cls2linker.get(cls)
+        if linker:
+            iris = linker(text=text, **identifier)
             if iris:
                 return iris
 
@@ -227,29 +221,26 @@ def get_el_configs(app_settings: Annotated[AppSettings, Depends(get_app_settings
 
 
 @cache
-def get_cls2linker(
-    ship_linker: Annotated[ShipLinker, Depends(get_ship_linker)],
-    species_linker: Annotated[SpeciesLinker, Depends(get_species_linker)],
-    element_linker: Annotated[ElementLinker, Depends(get_element_linker)],
-    mechanism_linker: Annotated[MechanismLinker, Depends(get_mechanism_linker)],
-    reaction_linker: Annotated[ReactionLinker, Depends(get_reaction_linker)],
-    zeolite_framework_linker: Annotated[
-        ZeoliteFrameworkLinker, Depends(get_zeoliteFramework_linker)
+def get_linker_managers(
+    # ship_linker: Annotated[ShipLinker, Depends(get_ship_linker)],
+    ontospecies_linker_manager: Annotated[
+        OntospeciesLinkerManager, Depends(get_ontospecies_linkerManager)
     ],
-    zeolitic_material_linker: Annotated[
-        ZeoliticMaterialLinker, Depends(get_zeoliticMaterial_linker)
+    ontokin_linker_manager: Annotated[
+        OntokinLinkerManager, Depends(get_ontokin_linkerManager)
+    ],
+    ontozeolite_linker_manager: Annotated[
+        OntozeoliteLinkerManager, Depends(get_ontozeolite_linkerManager)
+    ],
+    ontomops_linker_manager: Annotated[
+        OntomopsLinkerManager, Depends(get_ontomops_linkerManager)
     ],
 ):
-    return FrozenDict.from_dict(
-        {
-            "Ship": ship_linker,
-            "os:Species": species_linker,
-            "pt:Element": element_linker,
-            "okin:ReactionMechanism": mechanism_linker,
-            "ocape:ChemicalReaction": reaction_linker,
-            "zeo:ZeoliteFramework": zeolite_framework_linker,
-            "zeo:ZeoliticMaterial": zeolitic_material_linker,
-        }
+    return (
+        ontospecies_linker_manager,
+        ontokin_linker_manager,
+        ontozeolite_linker_manager,
+        ontomops_linker_manager,
     )
 
 
@@ -258,11 +249,11 @@ def get_entity_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
     el_configs: Annotated[list[EntityLinkingConfig], Depends(get_el_configs)],
-    cls2linker: Annotated[dict[str, IEntityLinker], Depends(get_cls2linker)],
+    linker_managers: Annotated[tuple[LinkerManager, ...], Depends(get_linker_managers)],
 ):
     return EntityStore(
         redis_client=redis_client,
         embedder=embedder,
         el_configs=el_configs,
-        cls2linker=cls2linker,
+        linker_managers=linker_managers,
     )

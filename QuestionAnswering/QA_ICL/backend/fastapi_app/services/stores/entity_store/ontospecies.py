@@ -1,40 +1,63 @@
 from functools import cache
+import logging
 from typing import Annotated
 
 from fastapi import Depends
-from services.stores.entity_store.base import IEntityLinker
+from model.entity_linking.ontospecies import ElementLinkingArgs, SpeciesLinkingArgs
+from services.stores.entity_store.base import LinkerManager
 from services.sparql import SparqlClient, get_ontospecies_endpoint
 
 
-class SpeciesLinker(IEntityLinker):
-    IDKEY2PREDKEY = {"inchi": "InChI", "smiles": "SMILES", "iupac_name": "IUPACName"}
+logger = logging.getLogger(__name__)
+
+
+class OntospeciesLinkerManager(LinkerManager):
+    SPECIES_IDENTIFIER_KEY_TO_PREDICATE_KEY = {
+        "inchi": "InChI",
+        "smiles": "SMILES",
+        "iupac_name": "IUPACName",
+    }
 
     def __init__(self, ontospecies_endpoint: str):
         self.sparql_client = SparqlClient(ontospecies_endpoint)
 
-    def link(self, text: str | None, **kwargs) -> list[str]:
-        for id_key, pred_key in self.IDKEY2PREDKEY.items():
-            if id_key in kwargs:
-                query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    @property
+    def cls2linker(self):
+        return {"os:Species": self.linkSpecies, "pt:Element": self.linkElement}
+
+    def linkSpecies(self, text: str | None, **kwargs):
+        args = SpeciesLinkingArgs.model_validate(kwargs)
+        kvs = [
+            ("InChI", args.inchi),
+            ("SMILES", args.smiles),
+            ("IUPACName", args.iupac_name),
+        ]
+        try:
+            key, val = next((k, v) for k, v in kvs if v)
+            logger.info(f"Linking species with args: {key}={val}")
+            query = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT ?Species
 WHERE {{
     ?Species a os:Species .
-    ?Species os:has{pred_key}/os:value "{id_value}"
-}}""".format(
-                    pred_key=pred_key, id_value=kwargs[id_key]
-                )
+    ?Species os:has{key}/os:value "{val}"
+}}"""
+            _, bindings = self.sparql_client.querySelectThenFlatten(query)
+            iris = [row["Species"] for row in bindings]
 
-                _, bindings = self.sparql_client.querySelectThenFlatten(query)
-                iris = [row["Species"] for row in bindings]
-
-                if iris:
-                    return iris
+            if iris:
+                logger.info(f"Linked IRIs: {iris}")
+                return iris
+        except StopIteration:
+            pass
 
         texts = list(kwargs.values())
         texts.append(text)
         if not texts:
-            return []
+            lst: list[str] = []
+            return lst
+
+        logger.info(f"Linking species by matching with all identifiers: {texts}")
 
         query = """PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -46,39 +69,38 @@ SELECT ?Species WHERE {{
 }}""".format(
             texts=" ".join('"{val}"'.format(val=text) for text in texts)
         )
-
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        return [row["Species"] for row in bindings]
+        iris = [row["Species"] for row in bindings]
 
+        logger.info(f"Linked IRIs: {iris}")
 
-@cache
-def get_species_linker(endpoint: Annotated[str, Depends(get_ontospecies_endpoint)]):
-    return SpeciesLinker(ontospecies_endpoint=endpoint)
+        return iris
 
+    def linkElement(self, text: str | None, **kwargs):
+        try:
+            args = ElementLinkingArgs.model_validate(kwargs)
+        except:
+            lst: list[str] = []
+            return lst
 
-class ElementLinker(IEntityLinker):
-    def __init__(self, ontospecies_endpoint: str):
-        self.sparql_client = SparqlClient(ontospecies_endpoint)
+        logger.info(f"Linking elements with args: {args.model_dump_json()}")
 
-    def link(self, text: str | None, **kwargs):
-        if "symbol" not in kwargs:
-            return []
-
-        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        query = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
         
 SELECT DISTINCT *
 WHERE {{
-    ?Element os:hasElementSymbol/os:value "{symbol}"
-}}""".format(
-            symbol=kwargs["symbol"]
-        )
-
+    ?Element os:hasElementSymbol/os:value "{args.symbol}"
+}}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        return [binding["Element"] for binding in bindings]
+        iris = [binding["Element"] for binding in bindings]
+
+        logger.info(f"Linked IRIs: {iris}")
+
+        return iris
 
 
 @cache
-def get_element_linker(
+def get_ontospecies_linkerManager(
     ontospecies_endpoint: Annotated[str, Depends(get_ontospecies_endpoint)]
 ):
-    return ElementLinker(ontospecies_endpoint=ontospecies_endpoint)
+    return OntospeciesLinkerManager(ontospecies_endpoint=ontospecies_endpoint)
