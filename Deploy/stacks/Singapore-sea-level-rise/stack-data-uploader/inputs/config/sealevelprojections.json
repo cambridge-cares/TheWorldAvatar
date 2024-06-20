@@ -9,7 +9,7 @@
             "skip": false,
             "table": "sealevelprojections",
             "subdirectory": "eiv-igp-model",
-            "sql": "@/inputs/data/sealevelprojections/eiv-igp-model/slrpolygons.sql"
+            "sql": "@/inputs/data/sealevelprojections/eiv-igp-model/slrprojections.sql"
         }
     ],
     "mappings": [

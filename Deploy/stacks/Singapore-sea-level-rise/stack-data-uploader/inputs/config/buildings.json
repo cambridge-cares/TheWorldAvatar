@@ -15,11 +15,11 @@
       },
       "parallelTiling": false,
       "discoverThematicSurface": false,
-      "createTile": true,
+      "createTile": false,
       "geoServerSettings": {
         "virtualTable": {
           "name": "mapbox_layer",
-          "sql": "@/inputs/data/floodsg/buildings/sql/mapbox-footprint.sql",
+          "sql": "@/inputs/data/buildings/buildings/sql/mapbox-footprint.sql",
           "escapeSql": false,
           "geometry": {
             "name": "geometry",

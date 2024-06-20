@@ -10,6 +10,7 @@
       "type": "raster",
       "subdirectory": "srtm",
       "skip": false,
+      "sql": "@/inputs/data/dem/srtm/slrpolygons.sql",
       "gdalTranslateOptions": {
         "sridIn": "EPSG:4326"
       },

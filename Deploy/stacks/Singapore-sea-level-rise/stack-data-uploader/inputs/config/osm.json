@@ -1,23 +1,19 @@
 {
-    "database": "postgres",
     "name": "osm",
-    "skip": false,
-	"datasetDirectory": "osm",
+    "database": "postgres",
+    "datasetDirectory": "osm",
     "dataSubsets": [
         {
             "type": "tabular",
-			"subdirectory": "sub",
-			"schema": "osm",
-            "sql": "@/inputs/data/osm/sub/240606_osm_points.sql"
+            "subdirectory": "sql",
+            "sql": "@/inputs/data/osm/sql/240612_osm.sql"
         },
-		{
+        {
             "type": "tabular",
-			"subdirectory": "sub",
+            "subdirectory": "sql",
 			"schema": "osm",
-            "sql": "@/inputs/data/osm/sub/240606_osm_polygons.sql"
+            "sql": "@/inputs/data/osm/sub/240613_buildinginfo.sql"
         }
     ],
-    "mappings": [
-        "building_usage.obda"
-    ]
+    "mappings": ["buildinginfo.obda"]
 }
