@@ -24,6 +24,31 @@ export async function addAllLayers(map: Map, dataStore: DataStore, imagerySettin
     console.log("Added all registered layers to the map object.");
 }
 
+function pushLabelsToBottom(map: Map): void {
+    if (map) {
+        const layers = map.getStyle().layers;
+        let lastSymbolId;
+        for (let i = layers.length - 1; i >= 0; i--) {
+            if (layers[i].type === 'symbol') {
+                lastSymbolId = layers[i].id;
+                break;
+            }
+        }
+
+        if (lastSymbolId) {
+            const lastSymbolLayer = map.getLayer(lastSymbolId);
+            map.removeLayer(lastSymbolId);
+            map.addLayer(mapboxObj);
+            map.addLayer(lastSymbolLayer);
+        } else {
+            map.addLayer(mapboxObj);
+        }
+
+        console.info("Pushed data layer to map '" + layer.id + "'.");
+    }
+}
+
+
 /**
  * Adds the input DataLayer to the Mapbox map instance.
  * 
