@@ -20,6 +20,25 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#gYear -->
+
+
+    <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#gYear"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Object Properties
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -163,7 +182,7 @@
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasBaselineYear">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#gYear"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its  baseline year used as reference.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has baseline  year</rdfs:label>
@@ -176,7 +195,7 @@
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasPercentageQuantile">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and the percentage quantile of </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has percentage quantile</rdfs:label>
@@ -202,7 +221,7 @@
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasProjectionYear">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#gYear"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its  projection year.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has projection year</rdfs:label>
