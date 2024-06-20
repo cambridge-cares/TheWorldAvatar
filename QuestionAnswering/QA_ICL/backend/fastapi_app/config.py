@@ -61,6 +61,7 @@ class ChemistryEndpointsSettings(BaseModel):
     ontokin: str
     ontocompchem: str
     ontozeolite: str
+    ontomops: str
 
 
 class SingaporeEndpointsSettings(BaseModel):

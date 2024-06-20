@@ -23,6 +23,7 @@ chemistry_endpoints:
   ontokin: http://178.128.105.213:3838/blazegraph/namespace/ontokin/sparql
   ontocompchem: http://178.128.105.213:3838/blazegraph/namespace/ontocompchem/sparql
   ontozeolite: http://178.128.105.213:3838/blazegraph/namespace/ontozeolite/sparql
+  ontomops: http://68.183.227.15:3838/blazegraph/namespace/OntoMOPs/sparql
 singapore_endpoints:
   ontop: http://174.138.23.221:3838/ontop/ui/sparql
   ontop_internal: http://sg-ontop:8080/sparql
