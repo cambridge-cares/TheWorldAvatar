@@ -20,6 +20,21 @@ Usage:
 """
 
 def start():
+    """ The entry point of the helper function, which allows `jpsrm` to be called from the command line.
+
+    Usage:
+        jpsrm install <resource> <from> [--jar JARFILE]
+
+        jpsrm uninstall <resource>
+
+        jpsrm list
+
+        jpsrm clean
+
+    Options:
+        -j, --jar: Name of the main jar file. If not provided, the first
+            found jar file in the resource directory will be used.
+    """
     devinstall = False
     try:
         args = docopt(doc)
