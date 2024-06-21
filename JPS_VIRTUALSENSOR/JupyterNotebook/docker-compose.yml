@@ -1,9 +1,7 @@
 version: '3.8'
 services:
-  voila:
+  dome-interactor:
     build: .
-    volumes:
-      - ./notebook:/home/jovyan/work
     ports:
       - "8866:8866"
     command: voila /home/jovyan/work/sc1.ipynb --port=8866 --Voila.ip=0.0.0.0 --no-browser --VoilaConfiguration.file_allowlist=['.*']

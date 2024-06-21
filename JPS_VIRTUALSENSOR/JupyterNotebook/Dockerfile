@@ -6,6 +6,8 @@ RUN pip install voila
 
 RUN pip install ipywidgets
 
+COPY ./notebook /home/jovyan/work
+
 # Expose the Voilà port
 EXPOSE 8866
 
