@@ -3,21 +3,22 @@
 ## 1. Description
 
 The SeaLevelImpactAgent is an agent that
-1) Receives inputs - `SSP Scenario`, `Confidence Level`, `Percentage Quantile`
+1) Receives inputs - `SSP Scenario`, `Projection Year`, `Confidence Level`, `Percentage Quantile`, 
 2) Instatiate sea level change impacts on:
 ```
 - Buildings 
 - Landplots
+- OpenStreetMap road network
+- Population At Risk
 - Monuments
 - Heritage Trees
 - Historic Sites
-- Monuments
 - Museums
 - Tourist Attractions
 ```
 
 ## 2. Prerequisites
-This agent is part of the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise). 
+This agent is developed as part of the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise). 
 
 Data in the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise) needs to be uploaded by stack-data-uploader before running this agent.
 
@@ -25,7 +26,6 @@ Data in the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/
 The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack.
 
 ## 3. Agent Configuration
-
 ### 3.1 Config Properties
 The [Config.properties](inputs/config.properties) file contain the table name for the different datasets. A default value is set for each parameters following the stack-data-uploader table names specified in [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise).
 1) `dbName` - Specify the postgresql database
@@ -66,26 +66,34 @@ Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. Th
 
 The agent is reachable at the `/slrimpact` endpoint.
 
-#### Input specification
-
+## 6. Inputs
+### 6.1 Input specification
 1) `ssp` - Specify the Shared Socioeconomic Pathways (SSPs), which can take in value `ssp119`,`ssp126`,`ssp245`,`ssp370`,`ssp585`
 2) `projectionyear` - Specify the projection year of the sea-level rise, which be in the interval of 10 years from `2020` to `2150`
 3) `confidence` - Specify the confidence, which can take in value `medium`, `low`
 4) `quantile` - Specify the percentile quantile, which can take in the value `5`, `17`, `50`, `83`, `95`
 
+
+### 6.2 Single input
 To run the agent, simply run the following cURL command in the format below:
 ```bash
 # Sample request with Shared Socioeconomic Pathway - ssp585, projection year - 2150, confidence - low
 curl -X POST "localhost:3838/sealevelimpactagent/slrimpact?ssp=ssp585&projectionyear=2150&confidence=low&quantile=95"
 ```
 
-## 6. Debugging
+### 6.3 Bulk inputs 
+To run send multiple requests to the agents, you can specify the inputs at [`input_request.csv`](inputs/input_request.csv), and run the following commands to bulk execute the specified scenarios: 
+```bash
+./bulkstart.sh 
+```
 
-### 6.1 Building Docker Image
+## 7. Debugging
+
+### 7.1 Building Docker Image
 
 In the same directory as this README, run `docker compose build`. This will build the SeaLevelImpactAgent local Docker Image.
 
-### 6.2 Spinning up with stack-manager
+### 7.2 Spinning up with stack-manager
 
 To debug the agent, replace [`sealevelimpactagent-debug.json`](stack-manager-config/inputs/config/services/sealevelimpactagent-debug.json) instead of [`sealevelimpactagent.json`](stack-manager-config/inputs/config/services/sealevelimpactagent.json) in the [stack-manager config directory].
 
