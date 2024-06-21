@@ -35,7 +35,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
     private final String QUANTILE_KEY = "quantile";
     private static final Logger LOGGER = LogManager.getLogger(SeaLevelImpactAgent.class);
     private EndpointConfig endpointConfig = new EndpointConfig();
-    private String dbName;
+    public static String dbName;
     public static String buildingsMatViewName =null;
     public static String heritagetreesTable = null;
     public static String historicsitesTable = null;
@@ -178,6 +178,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
                 System.out.println("Could not retrieve slr.obda file.");
             }
 
+            SLRGeoserver.createSeaLevelGeoserver( sspScenario,  projectionyear,  confidence,  quantile);
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
