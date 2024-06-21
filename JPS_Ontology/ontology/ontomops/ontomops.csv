@@ -66,6 +66,5 @@ http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Core,String,,,http://
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Spacer,String,,,http://www.w3.org/2000/01/rdf-schema,
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Substituent,String,,,http://www.w3.org/2000/01/rdf-schema,
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,BindingSite,String,,,http://www.w3.org/2000/01/rdf-schema,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,,,AssemblyModel,String,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,BindingDirection,String,,,http://www.w3.org/2000/01/rdf-schema,
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,String,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,

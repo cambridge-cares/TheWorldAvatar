@@ -312,7 +312,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCCDCNumber">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#MetalOrganicPolyhedron"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A data property that informs on the exact deposition number of the MOP in the CCDC database.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOPs.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
@@ -420,17 +420,6 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that represents the geometry of the MOP.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomop/OntoMOPs.owl</rdfs:isDefinedBy>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value -->
-
-
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#AssemblyModel"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
