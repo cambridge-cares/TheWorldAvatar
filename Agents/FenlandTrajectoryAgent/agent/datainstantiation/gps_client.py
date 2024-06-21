@@ -6,7 +6,9 @@ import glob
 import datetime as dt
 import random
 import uuid
-from agent.datainstantiation.jpsSingletons import jpsBaseLibView
+# import agent.datainstantiation.jpsSingletons as jpsSingletons
+from agent.datainstantiation.jpsSingletons import stackClientsGw
+from agent.kgutils.stackclients import StackClient
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from datetime import datetime
@@ -19,18 +21,28 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def setup_clients():
-    """Sets up and returns the KGClient and TSClient."""
+    """Sets up and returns the KGClient, TSClient and point_class."""
     try:
-        Instant = jpsBaseLibView.java.time.Instant
+        # Instant = jpsBaseLibView.java.time.Instant
+        Instant = StackClient.stackClients_view.java.time.Instant
+        
         instant_class = Instant.now().getClass()
-        double_class = jpsBaseLibView.java.lang.Double.TYPE
+        double_class = StackClient.stackClients_view.java.lang.Double.TYPE
         kg_client = KGClient(utils.SPARQL_QUERY_ENDPOINT, utils.SPARQL_UPDATE_ENDPOINT)
         ts_client = TSClient(kg_client, timeclass=instant_class, rdb_url=DB_URL, rdb_user=DB_USER, rdb_password=DB_PASSWORD)
-        logger.info("KGClient and TSClient setup successfully.")
-        return kg_client, ts_client, double_class
+        point_class = StackClient.stackClients_view.Point
+        try:
+            testpoint=point_class(0.0, 0.0)
+            logger.info(f"Point class imported and instance creadted successfully")
+        except Exception as e:
+            logger.error(f"Failed to create Point instance: {e}")
+            raise e
+        logger.info("KGClient, TSClient and point class setup successfully.")
+        return kg_client, ts_client, double_class, point_class
     except Exception as e:
         logger.error(f"Failed to setup clients: {e}")
         raise e
+
 
 def transform_datetime(date_str, time_str):
     """Transforms separate date and time strings into a single datetime string in ISO 8601 format."""
@@ -51,6 +63,8 @@ def process_gps_csv_file(csv_file):
         if not all(column in df.columns for column in required_columns) or df[required_columns].isnull().any().any():
             logger.warning(f"Skipping {csv_file} due to missing or incomplete required columns.")
             return None
+        point_class = StackClient.stackClients_view.Point
+        points = [point_class(row['LONGITUDE'], row['LATITUDE']) for _, row in df.iterrows()]
         return {
             'object': os.path.basename(csv_file).replace('.csv', ''),
             'times': [transform_datetime(row['UTC DATE'], row['UTC TIME']) for _, row in df.iterrows()],
@@ -61,6 +75,7 @@ def process_gps_csv_file(csv_file):
                 'Heading': df.get('HEADING', []).tolist(),
                 'Latitude': df.get('LATITUDE', []).tolist(),
                 'Longitude': df.get('LONGITUDE', []).tolist(),
+                'Point': points
             },
             'units': {
                 'Speed': 'kilometer per hour',
@@ -68,14 +83,15 @@ def process_gps_csv_file(csv_file):
                 'Height': 'meter',
                 'Heading': 'degree',
                 'Latitude': 'degree',
-                'Longitude': 'degree'
+                'Longitude': 'degree',
+                'Point': 'geom'
             }
         }
     except Exception as e:
         logger.error(f"Failed to process file {csv_file}: {e}")
         return None
 
-def instantiate_gps_data(gps_object, kg_client, ts_client, double_class):
+def instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_class):
     """Takes a processed GPS data object and instantiates it into the RDF store and time series database."""
     try:
         objectIRI = utils.PREFIXES['ontodevice'] + 'GPSDevice/' + str(uuid.uuid4())
@@ -102,7 +118,8 @@ def instantiate_gps_data(gps_object, kg_client, ts_client, double_class):
         # Ensure times are properly formatted
         times = gps_object['times']
         values_list = [gps_object['timeseries'][ts] for ts in gps_object['timeseries']]
-        ts_type = jpsBaseLibView.java.lang.Double.TYPE
+        # ts_type = jpsBaseLibView.java.lang.Double.TYPE
+        ts_type = [double_class if ts != 'Point' else point_class for ts in gps_object['timeseries']]
         time_format = FORMAT
             
         # Detailed logging before calling init_timeseries
@@ -139,7 +156,8 @@ def instantiate_gps_data(gps_object, kg_client, ts_client, double_class):
         logger.info(f"Initializing time series for time_format(timeUnit): {time_format}")
 
         # Core function for instantiation
-        ts_client.init_timeseries(dataIRI=dataIRIs, times=times, values=values_list, ts_type=[ts_type]*len(dataIRIs), time_format=time_format)
+        # ts_client.init_timeseries(dataIRI=dataIRIs, times=times, values=values_list, ts_type=[ts_type]*len(dataIRIs), time_format=time_format)
+        ts_client.init_timeseries(dataIRI=dataIRIs, times=times, values=values_list, ts_type=ts_type, time_format=time_format)
 
         logger.info(f"Data for {gps_object['object']} successfully instantiated.")
     except Exception as e:
@@ -151,12 +169,12 @@ if __name__ == '__main__':
     try:
         utils.create_postgres_db()
         utils.create_blazegraph_namespace()
-        kg_client, ts_client, double_class = setup_clients()
+        kg_client, ts_client, double_class, point_class = setup_clients()
         csv_files = glob.glob(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'raw_data', 'gps_target_folder', '*.csv'))
         for csv_file in csv_files:
             gps_object = process_gps_csv_file(csv_file)
             if gps_object:
-                instantiate_gps_data(gps_object, kg_client, ts_client, double_class)
+                instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_class)
     except Exception as e:
         logger.error(f"Initialization failed: {e}")
         raise e

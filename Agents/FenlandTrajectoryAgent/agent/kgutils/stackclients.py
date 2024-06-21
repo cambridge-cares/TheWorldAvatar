@@ -16,8 +16,9 @@ import json
 
 from twa import agentlogging
 from agent.errorhandling.exceptions import StackException
-from agent.datainstantiation.jpsSingletons import jpsBaseLibGW, stackClientsGw
-from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
+# from agent.datainstantiation.jpsSingletons import jpsBaseLibGW, stackClientsGw
+from agent.datainstantiation.jpsSingletons import stackClientsGw
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
 
 # Initialise logger
@@ -28,9 +29,9 @@ class StackClient:
     # Define parent class for all Stack Clients to minimise number of required
     # JAVA resource views and import the required java classes
 
-    # Create ONE JPS_BASE_LIB view
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+    # # Create ONE JPS_BASE_LIB view
+    # jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    # jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
     # Create ONE Stack Clients view
     stackClients_view = stackClientsGw.createModuleView()
@@ -39,45 +40,50 @@ class StackClient:
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerClient")
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings")
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.ontop.OntopClient")
+ 
+
+    stackClientsGw.importPackages(stackClients_view, "uk.ac.cam.cares.jps.base.query.*")
+    stackClientsGw.importPackages(stackClients_view, "uk.ac.cam.cares.jps.base.timeseries.*")
+    stackClientsGw.importPackages(stackClients_view, "org.postgis.Point")
 
 
-class OntopClient(StackClient):
+# class OntopClient(StackClient):
 
-    def __init__(self, query_endpoint=ONTOP_URL):
-        # Initialise OntopClient as RemoteStoreClient
-        try:
-            self.ontop_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint)
-        except Exception as ex:
-            logger.error("Unable to initialise OntopClient.")
-            raise StackException("Unable to initialise OntopClient.") from ex
+#     def __init__(self, query_endpoint=ONTOP_URL):
+#         # Initialise OntopClient as RemoteStoreClient
+#         try:
+#             self.ontop_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint)
+#         except Exception as ex:
+#             logger.error("Unable to initialise OntopClient.")
+#             raise StackException("Unable to initialise OntopClient.") from ex
     
 
-    def performQuery(self, query):
-        """
-            This function performs query to Ontop endpoint.
-            Arguments:
-                query - SPARQL Query string
-        """
-        try:
-            response = self.ontop_client.execute(query)
-        except Exception as ex:
-            logger.error("SPARQL query not successful")
-            raise StackException("SPARQL query not successful.") from ex
-        return json.loads(response)
+#     def performQuery(self, query):
+#         """
+#             This function performs query to Ontop endpoint.
+#             Arguments:
+#                 query - SPARQL Query string
+#         """
+#         try:
+#             response = self.ontop_client.execute(query)
+#         except Exception as ex:
+#             logger.error("SPARQL query not successful")
+#             raise StackException("SPARQL query not successful.") from ex
+#         return json.loads(response)
 
     
-    @staticmethod
-    def upload_ontop_mapping():
-        # Upload mapping file using default properties from environment variables
-        try:
-            # Create JAVA path object to mapping file            
-            f = OntopClient.stackClients_view.java.io.File(ONTOP_FILE)
-            fp = f.toPath()
-            # Update ONTOP mapping (requires JAVA path object)
-            OntopClient.stackClients_view.OntopClient().updateOBDA(fp)
-        except Exception as ex:
-            logger.error("Unable to update OBDA mapping.")
-            raise StackException("Unable to update OBDA mapping.") from ex
+#     @staticmethod
+#     def upload_ontop_mapping():
+#         # Upload mapping file using default properties from environment variables
+#         try:
+#             # Create JAVA path object to mapping file            
+#             f = OntopClient.stackClients_view.java.io.File(ONTOP_FILE)
+#             fp = f.toPath()
+#             # Update ONTOP mapping (requires JAVA path object)
+#             OntopClient.stackClients_view.OntopClient().updateOBDA(fp)
+#         except Exception as ex:
+#             logger.error("Unable to update OBDA mapping.")
+#             raise StackException("Unable to update OBDA mapping.") from ex
 
 
 class PostGISClient:
@@ -233,38 +239,38 @@ class GeoserverClient(StackClient):
                                        geoserver_layer, self.vectorsettings)
 
 
-def create_geojson_for_postgis(station_iri: str, station_name: str, station_type: str,
-                               station_subtype: str, lat: float, long: float, kg_endpoint: str):
-    """
-    Create GeoJSON object for upload to PostGIS database
-    Needs to contain at least the following properties for FeatureInfoAgent to work:
-        "name" - human readable name of the feature 
-        "iri" - full IRI of the feature as represented in the knowledge graph
-        "endpoint" - URL of the Blazegraph namespace containing data on the feature,
-                     i.e. from where shall FeatureInfoAgent retrieve data about "iri"
-    Further properties can be added as needed, i.e. for styling purposes
-    """
-    # Initialise GeoJSON
-    geojson = {'type': 'Feature'}
+# def create_geojson_for_postgis(station_iri: str, station_name: str, station_type: str,
+#                                station_subtype: str, lat: float, long: float, kg_endpoint: str):
+#     """
+#     Create GeoJSON object for upload to PostGIS database
+#     Needs to contain at least the following properties for FeatureInfoAgent to work:
+#         "name" - human readable name of the feature 
+#         "iri" - full IRI of the feature as represented in the knowledge graph
+#         "endpoint" - URL of the Blazegraph namespace containing data on the feature,
+#                      i.e. from where shall FeatureInfoAgent retrieve data about "iri"
+#     Further properties can be added as needed, i.e. for styling purposes
+#     """
+#     # Initialise GeoJSON
+#     geojson = {'type': 'Feature'}
 
-    # Define properties
-    props = {
-        'iri': station_iri,
-        'name': station_name,
-        'endpoint': kg_endpoint,
-        'geom_iri': station_iri + '/geometry',
-        'type': station_type,
-        'subtype': station_subtype,
-    }
+#     # Define properties
+#     props = {
+#         'iri': station_iri,
+#         'name': station_name,
+#         'endpoint': kg_endpoint,
+#         'geom_iri': station_iri + '/geometry',
+#         'type': station_type,
+#         'subtype': station_subtype,
+#     }
 
-    # Define geometry
-    geom = {
-        'type': 'Point',
-        'coordinates': [float(long), float(lat)]
-    }
+#     # Define geometry
+#     geom = {
+#         'type': 'Point',
+#         'coordinates': [float(long), float(lat)]
+#     }
 
-    # Construct GeoJSON
-    geojson['properties'] = props
-    geojson['geometry'] = geom
+#     # Construct GeoJSON
+#     geojson['properties'] = props
+#     geojson['geometry'] = geom
     
-    return json.dumps(geojson)
+#     return json.dumps(geojson)

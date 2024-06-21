@@ -8,7 +8,8 @@ from contextlib import contextmanager
 
 from twa import agentlogging
 
-from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
+## from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
+from agent.datainstantiation.jpsSingletons import stackClientsGw
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 from agent.errorhandling.exceptions import TSException
 from agent.datamodel.time_series_classes import FORMAT, TIMECLASS, DATATYPE
@@ -24,13 +25,17 @@ class TSException(Exception):
 
 class TSClient:
     # Create ONE JVM module view on class level and import all required java classes
-    jpsBaseLibView = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
-    jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
+    ## jpsBaseLibView = jpsBaseLibGW.createModuleView()
+    ## jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
+    ## jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
+    stackClients_view = stackClientsGw.createModuleView()
+    stackClientsGw.importPackages(stackClients_view, "uk.ac.cam.cares.jps.base.query.*")
+    stackClientsGw.importPackages(stackClients_view, "uk.ac.cam.cares.jps.base.timeseries.*")
 
     # Date/Time data type: Instant
     # PostgreSQL supported data types: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html
-    Instant = jpsBaseLibView.java.time.Instant
+    ## Instant = jpsBaseLibView.java.time.Instant
+    Instant = stackClients_view.java.time.Instant
     INSTANT = Instant.now().getClass()
 
     def __init__(self, kg_client, timeclass=INSTANT, rdb_url=DB_URL, rdb_user=DB_USER, rdb_password=DB_PASSWORD):
@@ -47,7 +52,8 @@ class TSClient:
         """
         # 1) Create an instance of a RemoteStoreClient (to retrieve RDB connection)
         try:
-            self.connection = TSClient.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
+            ##
+            self.connection = TSClient.stackClients_view.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
             logger.info("Remote RDB Store client initialized successfully.")
         except Exception as ex:
             logger.error("Unable to initialise TS Remote Store client.")
@@ -56,8 +62,8 @@ class TSClient:
         # 2) Initiliase TimeSeriesClient
         try:
             # PROPERTY_FILE= os.path.abspath(os.path.join(Path(__file__).parent.parent,"datainstantiation", "resources","FenlandTrajectory.properties"))
-            
-            self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
+            ##
+            self.tsclient = TSClient.stackClients_view.TimeSeriesClient(kg_client.kg_client, timeclass)
             # self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(timeclass, PROPERTY_FILE)
             # self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass, rdb_url, rdb_user, rdb_password)
             
@@ -100,7 +106,8 @@ class TSClient:
             values (list): List of list of values per dataIRI
         """
         try:
-            timeseries = TSClient.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
+            ##
+            timeseries = TSClient.stackClients_view.TimeSeries(times, dataIRIs, values)
             logger.info("TimeSeries object created successfully.")
         except Exception as ex:
             logger.error("Unable to create TimeSeries object.")

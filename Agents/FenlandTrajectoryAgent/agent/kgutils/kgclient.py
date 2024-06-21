@@ -9,8 +9,8 @@
 import json
 from twa import agentlogging
 from agent.errorhandling.exceptions import InvalidInput, TSException, KGException
-from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
-
+##from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
+from agent.datainstantiation.jpsSingletons import stackClientsGw
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
@@ -20,8 +20,11 @@ class KGClient:
                  kg_password=None):
 
         # create a JVM module view and use it to import the required java classes
-        self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+        ## self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+        self.stackClients_view = stackClientsGw.createModuleView()
+        ## jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+
+        stackClientsGw.importPackages(self.stackClients_view,"uk.ac.cam.cares.jps.base.query.*")
 
         # replace RemoteStoreClient with AccessAgent/StoreClient once its tested
         # StoreRouter = jpsBaseLib_view.StoreRouter
@@ -31,9 +34,10 @@ class KGClient:
 
         try:
             if kg_user is not None:
-                self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
+                ##
+                self.kg_client = self.stackClients_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
             else:
-                self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
+                self.kg_client = self.stackClients_view.RemoteStoreClient(query_endpoint, update_endpoint)
         except Exception as ex:
             logger.error("Unable to initialise KG client")
             raise KGException("Unable to initialise KG client.") from ex

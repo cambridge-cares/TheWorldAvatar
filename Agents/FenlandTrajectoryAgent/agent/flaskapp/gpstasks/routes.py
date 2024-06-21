@@ -4,7 +4,8 @@ import sys
 import glob
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD,SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 import agent.datainstantiation.gps_client as gdi
-from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
+##from agent.datainstantiation.jpsSingletons import jpsBaseLibGW
+from agent.datainstantiation.jpsSingletons import stackClientsGw
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.utils import *
