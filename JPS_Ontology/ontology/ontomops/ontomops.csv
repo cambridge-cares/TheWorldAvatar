@@ -53,7 +53,7 @@ http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Proper
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,Volume,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
 hasCBUFormula,Data Property,,,ChemicalBuildingUnit,String,,Data string outlying the formula of the chemical building unit. ,http://www.theworldavatar.com/ontology/ontomop/OntoMOPs.owl,
 hasMOPFormula,Data Property,,,MetalOrganicPolyhedron,String,,,http://www.theworldavatar.com/ontology/ontomop/OntoMOPs.owl,
-hasCCDCNumber,Data Property,,,MetalOrganicPolyhedron,Integer,,A data property that informs on the exact deposition number of the MOP in the CCDC database.,http://www.theworldavatar.com/ontology/ontomop/OntoMOPs.owl,
+hasCCDCNumber,Data Property,,,MetalOrganicPolyhedron,String,,A data property that informs on the exact deposition number of the MOP in the CCDC database.,http://www.theworldavatar.com/ontology/ontomop/OntoMOPs.owl,
 hasXYZGeometry,Data Property,,,MetalOrganicPolyhedron,String,,The data property that represents the geometry of the MOP.,http://www.theworldavatar.com/ontology/ontomop/OntoMOPs.owl,
 hasModularity,Data Property,,,GenericBuildingUnit,Integer,,The number of generic building units that connect to a selected generic building.,http://www.theworldavatar.com/ontology/ontomop/OntoMOPs.owl,
 hasPlanarity,Data Property,,,GenericBuildingUnit,String,,"Description of how the other beneric building units are spatially oriented arround the building unit of interst. (e.g. linear, bent, off-set, pyramidal, planar).",http://www.theworldavatar.com/ontology/ontomop/OntoMOPs.owl,
