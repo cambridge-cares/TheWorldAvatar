@@ -126,59 +126,6 @@ class TSClient:
             self.tsclient.addTimeSeriesData(ts, conn)
         logger.info(f"Time series successfully initialised in KG and RDB for dataIRI: {dataIRI}")
 
-    # def init_timeseries(self, dataIRI, times, values, ts_type, time_format):
-    #     assert isinstance(dataIRI, list) and all(isinstance(x, str) for x in dataIRI), "dataIRI must be a list of strings"
-        
-    #     try:
-    #         with self.connect() as conn:
-    #             logger.info(f"Initializing time series for dataIRI: {dataIRI}")
-                
-    #             # Detailed logging for dataIRI, times, and values
-    #             logger.debug(f"dataIRI: {dataIRI}")
-    #             logger.debug(f"times: {times}")
-    #             logger.debug(f"values: {values}")
-    #             logger.debug(f"ts_type: {ts_type}")
-    #             logger.debug(f"time_format: {time_format}")
-
-    #             # Ensure dataIRI, times, and values are lists of the correct type
-    #             assert isinstance(dataIRI, list), "dataIRI should be a list"
-    #             assert all(isinstance(i, str) for i in dataIRI), "dataIRI elements should be strings"
-    #             assert isinstance(times, list), "times should be a list"
-    #             assert all(isinstance(i, str) for i in times), "times elements should be strings"
-    #             assert isinstance(values, list), "values should be a list of lists"
-    #             assert all(isinstance(v, list) for v in values), "values elements should be lists"
-    #             assert all(all(isinstance(i, (int, float)) for i in v) for v in values), "values elements should contain numbers"
-
-    #             # Operation 1: Initializing time series in the time series client
-    #             try:
-    #                 logger.info(f"Calling initTimeSeries with dataIRI: {dataIRI}")
-    #                 self.tsclient.initTimeSeries(dataIRI, [ts_type], time_format, conn)
-    #             except Exception as ex:
-    #                 logger.error(f"Failed to call initTimeSeries for dataIRI: {dataIRI}. Exception: {ex}")
-    #                 raise ex
-
-    #             # Operation 2: Creating a TimeSeries object
-    #             try:
-    #                 logger.info(f"Creating TimeSeries object with times: {times}")
-    #                 ts = TSClient.create_timeseries(times, dataIRI, values)
-    #             except Exception as ex:
-    #                 logger.error(f"Failed to create TimeSeries object for dataIRI: {dataIRI}. Exception: {ex}")
-    #                 raise ex
-
-    #             # Operation 3: Adding TimeSeries data to the client
-    #             try:
-    #                 # logger.info(f"Adding TimeSeries data to TSClient")
-    #                 self.tsclient.addTimeSeriesData(ts, conn)
-    #             except Exception as ex:
-    #                 # logger.error(f"Failed to add TimeSeries data for dataIRI: {dataIRI}. Exception: {ex}")
-    #                 raise ex
-
-    #             # logger.info(f"Time series successfully initialized in KG and RDB for dataIRI: {dataIRI}")
-
-    #     except Exception as ex:
-    #         logger.error(f"Failed to initialize time series for dataIRI: {dataIRI}. General exception: {ex}")
-    #         raise ex
-
 
     def add_ts_data(self, dataIRI, times, values):
         """
