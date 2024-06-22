@@ -102,9 +102,9 @@ public class PIPSTimeSeriesAgent extends JPSAgent {
 
 
     /**
-     * Handle GET /timeseries route and return the status of the agent.
+     * Handle GET /timeseries route
      *
-     * @return timeseries of the agent
+     * @return timeseries data
      * @throws IOException 
      */
     private JSONObject timeseriesRoute(String token) throws IOException {
@@ -117,7 +117,7 @@ public class PIPSTimeSeriesAgent extends JPSAgent {
         } catch (HttpResponseException e) {
             LOGGER.info("The status code is " + e.getStatusCode());
             LOGGER.info("The reason phrase is " + e.getReasonPhrase());
-            if (e.getStatusCode() == 403) {
+            if (e.getStatusCode() == 403 || e.getStatusCode() == 401) {
                 if (e.getReasonPhrase().contains("Invalid bearer token")) {
                     message = new JSONObject();
                     message.put("message", "invalid token");
@@ -132,7 +132,7 @@ public class PIPSTimeSeriesAgent extends JPSAgent {
         if (message.has("access_token") && message.getString("access_token").length() > 1) {
             // query for timeseries data from postgreSQL
             message = new JSONObject();
-            message.put("message", "Authorized");
+            message.put("message", "authorized");
         }
         return message;
     }
