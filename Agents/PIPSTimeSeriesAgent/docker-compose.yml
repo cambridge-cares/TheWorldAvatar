@@ -6,7 +6,8 @@ services:
     build: .
     container_name: pips-timeseries-agent
     pull_policy: if_not_present
-    volumes:
-      - './config:/root/config'
+    environment:
+      - CLIENT_ID=
+      - KEYCLOAK_REALM_PATH=
     ports:
       - "1080:8080"
