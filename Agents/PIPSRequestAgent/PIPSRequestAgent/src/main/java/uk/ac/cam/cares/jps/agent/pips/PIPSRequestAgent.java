@@ -117,31 +117,20 @@ public class PIPSRequestAgent extends JPSAgent {
         JSONObject message = new JSONObject();
         //request for Token if token is null
         if (requestingPartyToken == null & refreshToken == null) {
-            JSONObject response = keycloakConnector.getTokens("password");
-            requestingPartyToken = response.getString(TOKEN_KEY);
-            refreshToken = response.getString(REFRESH_TOKEN_KEY);
+            try {
+                JSONObject response = keycloakConnector.getTokens("password");
+                requestingPartyToken = response.getString(TOKEN_KEY);
+                refreshToken = response.getString(REFRESH_TOKEN_KEY);
+            } catch (Exception e) {
+                message.put("message", "invalid credentials");
+                return message;
+            }
         }
 
         // send access token to pips-agent
         PIPSTSAgentAPIConnector pipsTsAgentAPIConnector = new PIPSTSAgentAPIConnector();
         JSONObject response = pipsTsAgentAPIConnector.getTimeSeries(requestingPartyToken);
-        // if valid
-        if (!response.getString("message").contains("Token is invalid")) {
-            message = response;
-            //check whether response contain authorized or unauthorized
-        } else {
-            // if invalid
-            Boolean refreshTokenStatus = keycloakConnector.checkTokenStatus(refreshToken);
-
-            if (refreshTokenStatus) {
-                response = keycloakConnector.refreshToken(refreshToken);
-                requestingPartyToken = response.getString(TOKEN_KEY);
-                refreshToken = response.getString(REFRESH_TOKEN_KEY);
-                response = pipsTsAgentAPIConnector.getTimeSeries(requestingPartyToken);
-            }
-
-            message = response;
-        }
+        message = response;
         
         return message;
     }
