@@ -1,0 +1,23 @@
+{
+    "ServiceSpec": {
+        "Name": "dome-interactor",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/dome-interactor:0.1-dev-DOME-SNAPSHOT",
+                "Mounts": [
+					{
+                        "Type": "volume",
+                        "Source": "misc",
+                        "Target": "/misc"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8866/dome-interactor/",
+            "externalPath": "/dome-interactor/"
+        }
+    }
+}
