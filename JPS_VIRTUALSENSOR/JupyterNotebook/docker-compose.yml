@@ -1,7 +1,11 @@
 version: '3.8'
 services:
   dome-interactor:
-    build: .
+    image: ghcr.io/cambridge-cares/dome-interactor:0.1-dev-DOME-SNAPSHOT
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
     ports:
       - "8866:8866"
-    command: voila /home/jovyan/work/sc1.ipynb --port=8866 --Voila.ip=0.0.0.0 --no-browser --VoilaConfiguration.file_allowlist=['.*']

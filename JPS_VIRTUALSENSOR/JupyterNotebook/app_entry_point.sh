@@ -1,0 +1,2 @@
+#!/bin/bash
+voila /home/jovyan/work/sc1.ipynb --port=8866 --Voila.ip=0.0.0.0 --no-browser --VoilaConfiguration.file_allowlist=['.*'] --Voila.base_url=/dome-interactor/ --Voila.tornado_settings="{'allow_origin': '*'}"
