@@ -24,7 +24,7 @@ interface FloatingPanelContainerProps {
   icons: IconSettings;
   legend: LegendSettings;
   scenarioDimensions: ScenarioDimensionsData;
-  isDimensionsFetching: boolean; 
+  isDimensionsFetching: boolean;
   hideInfo?: boolean;
 }
 
@@ -152,6 +152,7 @@ export default function FloatingPanelContainer(
               <InfoTree
                 attributes={attributes}
                 timeSeries={timeSeries}
+                featureName={selectedProperties?.name}
                 isFetching={isFetching}
                 isUpdating={isUpdating}
                 activeTab={{
