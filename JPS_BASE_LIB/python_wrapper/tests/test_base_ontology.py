@@ -193,6 +193,7 @@ def test_rdf_type():
     a_exp = A()
     assert a_exp.rdf_type is not None
     assert A.get_rdf_type() == a_exp.rdf_type
+    assert BaseClass.get_rdf_type() == OWL_BASE_URL + 'Class'
 
 
 def test_collect_diff_to_graph_fresh():

@@ -780,6 +780,8 @@ class BaseClass(BaseModel, validate_assignment=True):
         Returns:
             str: The rdf_type of the class (rdf:type in owl)
         """
+        if cls == BaseClass:
+            return OWL_BASE_URL + 'Class'
         return construct_rdf_type(cls.is_defined_by_ontology.get_namespace_iri(), cls.__name__)
 
     @classmethod
