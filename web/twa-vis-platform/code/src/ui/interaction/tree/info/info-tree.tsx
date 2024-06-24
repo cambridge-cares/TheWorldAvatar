@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { TimeSeriesGroup } from 'types/timeseries';
 import { AttributeGroup } from 'types/attribute';
 import { MapFeaturePayload } from 'state/map-feature-slice';
+import LoadingSpinner from 'ui/graphic/loader/spinner';
 import FeatureSelector from 'ui/interaction/dropdown/feature-selector';
 import { setSelectedFeature } from 'utils/client-utils';
 import AttributeRoot from './attribute-root';
@@ -61,9 +62,7 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
 
     // Render only the loading spinner if it is initially fetching data
     if (props.isFetching && !props.attributes) {
-      return (<div className={styles.spinnerContainer}>
-        <div className={`${styles.spinner} ${styles.fetching}`}></div>
-      </div>)
+      return <LoadingSpinner />
     }
 
     // TODO show some kind of animation when subquerying 
