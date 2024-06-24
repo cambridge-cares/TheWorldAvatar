@@ -67,6 +67,7 @@
     --large-icon-size: 2rem;
     --icon-size: 1.5rem;
     --small-icon-size: 1rem;
+    --smallest-icon-size: 0.6rem;
 }
 
 * {

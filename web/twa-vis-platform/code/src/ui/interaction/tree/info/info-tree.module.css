@@ -61,11 +61,15 @@
 .treeEntrySubHeader {
   display: flex;
   flex-direction: row;
+  padding: 0 0.25rem;
   border-style: solid;
   color: var(--text-color-primary) !important;
   border-color: var(--border-primary);
-  border-width: 0.05rem;
+  border-width: 0px 0px 0.08rem 0px;
+
   transition: background-color 0.3s ease;
+
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -84,8 +88,9 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  overflow-wrap: break-word;
-  margin: 0.4rem 0;
+  overflow-wrap: anywhere;
+
+  padding: 0.2rem 0.25rem;
   border-style: solid;
   border-color: var(--border-primary);
   border-width: 0px 0px 0.05rem 0px;
@@ -99,4 +104,11 @@
 .treeAttributeValue {
   margin-left: auto;
   font-size: var(--font-size-secondary-text);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem
 }

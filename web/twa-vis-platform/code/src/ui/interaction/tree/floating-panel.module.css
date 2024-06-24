@@ -57,9 +57,10 @@
     border-left: 1px solid var(--border-tertiary);
 }
 
-.expandButton:hover
-{background-color: var(--background-secondary);
-box-shadow: 1px rgba(0, 0, 0, 0.35);}
+.expandButton:hover {
+    background-color: var(--background-secondary);
+    box-shadow: 1px rgba(0, 0, 0, 0.35);
+}
 
 .headButton span {
     font-size: var(--icon-size);
@@ -94,7 +95,9 @@ box-shadow: 1px rgba(0, 0, 0, 0.35);}
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
+    padding: 0 0.25rem;
     border-style: solid;
     border-color: var(--border-tertiary);
     border-width: 0px 0px 0.12rem 0px;

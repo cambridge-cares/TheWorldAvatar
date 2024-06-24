@@ -46,6 +46,7 @@ function LegendTreeNode(props: Readonly<LegendTreeNodeProps>) {
         icon={collapsedIcon}
         containerStyle={parentStyles.treeHeader}
         headerNameStyle={parentStyles.treeHeaderName}
+        isLoading = {false}
         spacing="0"
         toggleExpansion={toggleExpansion}
       />

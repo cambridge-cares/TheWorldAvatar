@@ -22,21 +22,24 @@
   }
 }
 
-.spinnerContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .spinner {
   position: relative;
   overflow: hidden;
-  border: 4px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
-  border-top: 4px solid #3498db;
-  width: 40px;
-  height: 40px;
   animation: spin 2s linear infinite;
   z-index: 1;
-  margin: 0.5rem;
+}
+
+.default {
+  border: 0.4rem solid rgba(0, 0, 0, 0.1);
+  border-top: 0.4rem solid #3498db;
+  width: var(--large-icon-size);
+  height: var(--large-icon-size);
+}
+
+.small {
+  border: 0.15rem solid rgba(0, 0, 0, 0.1);
+  border-top: 0.15rem solid #3498db;
+  width: var(--smallest-icon-size);
+  height: var(--smallest-icon-size);
 }

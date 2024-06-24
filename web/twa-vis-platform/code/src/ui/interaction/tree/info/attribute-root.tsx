@@ -1,7 +1,7 @@
 import styles from './info-tree.module.css';
 import parentStyles from '../floating-panel.module.css';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Attribute, AttributeGroup } from 'types/attribute';
 import HeaderField from 'ui/text/header';
@@ -13,20 +13,19 @@ import { setIri, setStack } from 'state/map-feature-slice';
 interface AttributeRootProps {
   attribute: AttributeGroup;
   scrollRef: React.MutableRefObject<HTMLDivElement>;
-  setScrollPosition: React.Dispatch<React.SetStateAction<number>>
+  setScrollPosition: React.Dispatch<React.SetStateAction<number>>;
 }
 
 interface AttributeNodeProps {
   group: AttributeGroup;
   depth: number;
   scrollRef: React.MutableRefObject<HTMLDivElement>;
-  setScrollPosition: React.Dispatch<React.SetStateAction<number>>
+  setScrollPosition: React.Dispatch<React.SetStateAction<number>>;
 }
 
 interface AttributeTextNodeProps {
   attributes: Attribute[];
   depth: number;
-  
 }
 
 /**
@@ -71,11 +70,13 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
   const spacing: string = depth * 0.5 + "rem";
   // State for managing collapse and expansion
   const [isCollapsed, setIsCollapsed] = useState<boolean>(group.isCollapsed);
+  const [isSubqueryLoading, setIsSubqueryLoading] = useState<boolean>(false);
   const collapsedIcon: string = isCollapsed ? "keyboard_arrow_right" : "keyboard_arrow_down";
   const displayIcon: string = group.subQueryIri ? "./images/defaults/icons/fia-logo.svg" : collapsedIcon;
 
   const toggleExpansion = () => {
     if (group.subQueryIri) {
+      setIsSubqueryLoading(true);
       props.setScrollPosition(props.scrollRef.current.scrollTop);
 
       dispatch(setHasExistingData(true));
@@ -83,13 +84,21 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
       // Only update the selected stack if it is required for the subquery
       if (group.subQueryStack) {
         dispatch(setStack(group.subQueryStack));
-        }
+      }
       setIsCollapsed(!isCollapsed)
     }
     else {
       setIsCollapsed(!isCollapsed);
     }
   };
+
+  useEffect(() => {
+    // This effect runs to end the loading indicator when the subquery have been completed
+    // The effects occurs when the group has been updated and it was previously loading the subquery
+    if (group.attributes && isSubqueryLoading) {
+      setIsSubqueryLoading(false);
+    }
+  }, [group]);
 
   // Header element differs for root element in styling
   const headerElement = depth === 0 ?
@@ -98,6 +107,7 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
       icon={displayIcon}
       containerStyle={parentStyles.treeHeader}
       headerNameStyle={parentStyles.treeHeaderName}
+      isLoading={isSubqueryLoading}
       spacing={spacing}
       toggleExpansion={toggleExpansion}
     /> : <HeaderField
@@ -105,6 +115,7 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
       icon={displayIcon}
       containerStyle={styles.treeEntrySubHeader}
       headerNameStyle={styles.treeEntrySubHeaderName}
+      isLoading={isSubqueryLoading}
       spacing={spacing}
       toggleExpansion={toggleExpansion}
     />;
@@ -115,10 +126,11 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
 
       {/* Elements */}
       {!isCollapsed && (<>
-        <AttributeTextNode
+        {/* Do not render IRI display for subqueries if present */}
+        {!group.subQueryIri && <AttributeTextNode
           attributes={group.attributes}
           depth={depth + 1}
-        />
+        />}
         {group.subGroups.map((subGroup) => {
           return (<AttributeNode
             group={subGroup}

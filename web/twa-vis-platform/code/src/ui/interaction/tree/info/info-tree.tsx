@@ -53,19 +53,21 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
 
 
     // content content shown in floating panel as long as some feature has been clicked at least once
-    const content = 
-    (<div>
-      <AttributeRoot attribute={props.attributes}
-        scrollRef={scrollRef}
-        setScrollPosition={setScrollPosition} />
-    </div>)
+    const content = (
+      <div>
+        <AttributeRoot attribute={props.attributes}
+          scrollRef={scrollRef}
+          setScrollPosition={setScrollPosition}
+        />
+      </div>
+    )
 
     // Render only the loading spinner if it is initially fetching data
     if (props.isFetching && !props.attributes) {
-      return <LoadingSpinner />
+      return <div className={styles.loading}>
+        <LoadingSpinner isSmall={false} />
+      </div>
     }
-
-    // TODO show some kind of animation when subquerying 
 
     // If there are multiple features clicked, activate feature selector to choose only one
     if (props.features.length > 1) {
