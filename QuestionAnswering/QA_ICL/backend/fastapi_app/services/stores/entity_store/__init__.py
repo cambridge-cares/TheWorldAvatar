@@ -54,8 +54,8 @@ class EntityStore:
         """Performs exact matching over canonical labels.
         Note: This does not work if either the surface form or stored label contains forward slash.
         """
-        match_label = '@label:"{label}"'.format(
-            label=regex.escape(surface_form, special_only=False)
+        match_label = '@label:\"{label}\"'.format(
+            label=regex.escape(surface_form, special_only=False, literal_spaces=True)
         )
         match_cls = self._match_cls_query(cls) if cls else None
 

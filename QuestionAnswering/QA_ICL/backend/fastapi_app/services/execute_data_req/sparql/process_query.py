@@ -52,31 +52,72 @@ class SparqlQueryProcessor:
 
         return sparql
 
+    def _backstep(self, sparql: str, idx: int):
+        if idx < 0:
+            return -1
+
+        idx = idx - 1
+        while idx >= 0 and sparql[idx].isspace():
+            idx -= 1
+        if idx < 0:
+            return -1
+
+        while idx >= 0 and not sparql[idx].isspace():
+            idx -= 1
+        if idx < 0:
+            return -1
+
+        return idx + 1
+
     def inject_bindings(
         self,
         sparql: str,
         entity_bindings: dict[str, list[str]],
         const_bindings: dict[str, Any],
     ):
-        values_clauses = [
-            "VALUES ?{var} {{ {iris} }}".format(
-                var=var, iris=" ".join("<{iri}>".format(iri=iri) for iri in iris)
+        # because of possible subqueries, VALUES clause need to be inserted
+        # at the subqueries where the variable is referenced
+        for var, iris in entity_bindings.items():
+            print(var, iris)
+            varnode = f"?{var}"
+            values_clause = "VALUES {varnode} {{ {iris} }}".format(
+                varnode=varnode,
+                iris=" ".join("<{iri}>".format(iri=iri) for iri in iris),
             )
-            for var, iris in entity_bindings.items()
-        ]
+            # find triple that includes `varnode`
+            idx = 0
+            while True:
+                idx_varnode = sparql.find(varnode, idx)
+                if idx_varnode < 0:
+                    break
+                idx = idx_varnode + 1
 
-        if values_clauses:
-            open_brace_idx = sparql.find(
-                "{"
-            )  # assumed to be the start of WHERE patterns
+                idx_tripleend = sparql.find(".", idx_varnode)
+                if idx_tripleend < 0:
+                    break
+                tokens = sparql[idx_varnode:idx_tripleend].strip().split(maxsplit=3)
 
-            return "{before}{{\n  {values_clauses}{after}".format(
-                before=sparql[:open_brace_idx],
-                values_clauses="\n  ".join(values_clauses),
-                after=sparql[open_brace_idx + 1 :],
-            )
-        else:
-            return sparql
+                if len(tokens) == 3:
+                    idx_headnode_start = idx_varnode
+                elif len(tokens) == 2:
+                    idx_headnode_start = self._backstep(sparql, idx=idx_varnode)
+                elif len(tokens) == 1:
+                    idx_rel_start = self._backstep(sparql, idx=idx_varnode)
+                    idx_headnode_start = self._backstep(sparql, idx=idx_rel_start)
+                else:
+                    continue
+
+                if idx_headnode_start < 0:
+                    continue
+                idx += len(values_clause) + 1
+                
+                sparql = "{before}{values} {after}".format(
+                    before=sparql[:idx_headnode_start],
+                    values=values_clause,
+                    after=sparql[idx_headnode_start:],
+                )
+
+        return sparql
 
     def process(
         self,
