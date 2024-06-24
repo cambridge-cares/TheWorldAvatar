@@ -19,6 +19,7 @@
 .content {
     margin-left: 10px;
     margin-right: 10px;
+    width: 100%;
     display: flex;
     flex-grow: 1;
     flex-direction: column;
