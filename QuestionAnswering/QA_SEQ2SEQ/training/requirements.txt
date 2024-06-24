@@ -1,0 +1,10 @@
+torch
+transformers[torch]
+evaluate
+sacrebleu
+optimum[onnxruntime]
+datasets
+wandb
+tqdm
+sentence-transformers
+levenshtein

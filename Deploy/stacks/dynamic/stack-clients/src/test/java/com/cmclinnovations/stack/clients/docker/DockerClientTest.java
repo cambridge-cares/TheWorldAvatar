@@ -44,7 +44,6 @@ public class DockerClientTest {
 
     @BeforeClass
     public static void setup() {
-        StackClient.setInStack(false);
         dockerAPI = DockerClient.getInstance();
 
         String image = "busybox:latest";

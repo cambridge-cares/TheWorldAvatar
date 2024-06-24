@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontoplot/"
+     xml:base="https://www.theworldavatar.com/kg/ontoplot/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:ontoplot="https://www.theworldavatar.com/kg/ontoplot/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplot/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">30 January 2024</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlot is an ontology developed to describe the attributes of land plots.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasMaximumPermittedGFA -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasMaximumPermittedGFA">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that establishes the upper limit for the gross floor area allowed on a plot. This limit is determined by multiplying the plot area with the gross plot ratio.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has maximum permitted gross floor area</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasNeighbour -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasNeighbour">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that indicates the neighbouring plot for the specified plot.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has neighbour </rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasOwner -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasOwner">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the owner of a land plot.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has owner</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasPlotArea -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasPlotArea">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the area of a plot</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has plot area</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasPrice -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasPrice">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the price of a specified plot.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has price</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/isCornerPlot -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/isCornerPlot">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that indicates if the plot is a corner plot or not.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is corner plot</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Area -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#Feature -->
+
+
+    <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Feature"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/Plot -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot">
+        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A plot is an area of land that is often delineated with a physical boundary to denote land ownership rights. It is frequently adopted as a basic spatial unit for a cadastre or land registration system. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plot</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+

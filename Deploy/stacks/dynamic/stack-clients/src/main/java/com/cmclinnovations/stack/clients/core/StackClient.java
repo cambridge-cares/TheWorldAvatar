@@ -21,13 +21,12 @@ public final class StackClient {
     public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
     public static final String SCRATCH_DIR = "/stack_scratch";
     public static final String GEOTIFFS_DIR = "/geotiffs";
+    public static final String MULTIDIM_GEOSPATIAL_DIR = "/multidim_geospatial";
     public static final Path STACK_CONFIG_DIR = Path.of("/inputs/config");
 
     private static final String stackName;
 
     private static final Map<String, String> stackNameLabelMap;
-
-    private static boolean inStack = true;
 
     static {
         String envVarStackName = System.getenv(StackClient.STACK_NAME_KEY);
@@ -59,12 +58,8 @@ public final class StackClient {
         return stackNameLabelMap;
     }
 
-    public static boolean isInStack() {
-        return inStack;
-    }
-
-    public static void setInStack(boolean inStack) {
-        StackClient.inStack = inStack;
+    public static boolean isInTest() {
+        return null == System.getenv(StackClient.STACK_NAME_KEY);
     }
 
     public static String getContainerEngineName() {

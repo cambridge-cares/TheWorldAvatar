@@ -23,13 +23,13 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 Then build image with:
 ```
-docker build . -t bms-update-agent:1.1.0
+docker build . -t bms-update-agent:1.2.0
 ```
 
 ## 1.2. Edit and Add Agent Config to Stack Manager
 Open `stack-manager-input-config-service/bms-update-agent.json` and under the Mounts section, modify the Source and insert the filepath of where the config folder is located at (For Windows users using WSL on Docker, the file path should start with /mnt/c/, which is equivalent to C://).
 
-Copy `stack-manager-input-config-service/bms-update-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
+Copy `stack-manager-input/config/services/bms-update-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
 
 Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it doesn't exist. If it exists already, append the agent to the file as follows:
 ```json
@@ -102,17 +102,30 @@ The [Update Present Value Route](#34-update-present-value-route) requires a clie
 
 More information can be found in the example property file `updateTriplesClient.properties` in the `config` folder. You can either reuse this file or create a new one and modify the `ENV` section in `stack-manager-input-config-service/bms-update-agent.json` accordingly.
 
-# 3. Usage
-## 3.1. Set Route
+# 3. Authorization Setup
+## 3.1 Setup Stack and Keycloak
+Please refer to [Deploy/stacks/dynamic/examples/services/keycloak](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/examples/services/keycloak) for setup guide.
+
+## 3.2 Configure Client
+After BMSUpdateAgent client has been registered in Keycloak,
+
+1. Download client adapter from keycloak admin console.
+2. Copy [stack-manager-input/secets/bms_updateagent_keycloak.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BMSUpdateAgent/stack-manager-input/secrets/bms-update-agent-keycloak.json) to the stack manager's input secrets folder.
+3. Replace `realm`, `resource` and `secret` in the copied secret file
+4. Replace `STACK_NAME` in the copied secret file
+5. (DEVELOPER) Update src/main/webapp/WEB-INF/web.xml to set up authorization on more endpoints.
+
+# 4. Usage
+## 4.1. Set Route
 The set route is currently limited to interactions with the [ESPHomeAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeAgent) and [ESPHomeUpdateAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeUpdateAgent). It is able to update the setpoint in the knowledge graph and turn on/off a cooling fan based on the latest measured temperature and the setpoint. These parameters are required:
 - `dataIRI` the data IRI of the setpoint
 - `temperature` the setpoint temperature to update to the knowledge graph
 - `clientProperties` the environment variable in the docker container that points to where the client.properties file is located at, refer to [Client Properties File](#2-client-properties-file) for more information.
 
-### 3.1.1. Before Execution
+### 4.1.1. Before Execution
 Prepare a client.properties file with the necessary keys and values. Refer to [Set Route Client Properties File](#21-set-route-client-properties-file) for more information.
 
-### 3.1.2. Execution
+### 4.1.2. Execution
 The agent accepts a POST request path `/set`. The following command will set the setpoint to `<TEMPERATURE>` and turn on/off a cooling fan based on the latest measured temperature and the setpoint.
 ```
 curl -X POST 'http://localhost:3838/bms-update-agent/set' \
@@ -133,7 +146,7 @@ If the component is in the OFF state.
 {"fanStatus":"The fan is in the OFF state.","message":"The temperature has been set to <TEMPERATURE>"}
 ```
 
-## 3.2. Write Route
+## 4.2. Write Route
 The write route allows writing of values to Bacnet points via the [Wacnet API](https://hvac.io/docs/wacnet#orgheadline7). These parameters are required:
 - `bacnetObjectId` the ID of the Bacnet Object to write to
 - `bacnetDeviceId` the ID of the Bacnet Device that the object is assigned under
@@ -153,17 +166,17 @@ In order for the agent to query for `bacnetObjectId` and `bacnetDeviceId`, the [
            ontobms:hasBacnetDeviceID "bacnetDeviceId" .
 ```
 
-### 3.2.1. API Properties File
+### 4.2.1. API Properties File
 This properties file provides the agent with the URL of where the Wacnet Endpoint is located at. It should contain the following key:
 - `api.url` the URL of where the Wacnet Endpoint is located at
 
 More information can be found in the example property file `api.properties` in the `config` folder.
 
-### 3.2.2. Before Execution
+### 4.2.2. Before Execution
 Prepare a client.properties file and a api.properties file with the necessary keys and values. Refer to [Write Route Client Properties File](#22-write-route-client-properties-file) and [API Properties File](#321-api-properties-file) for more information.
 
 
-### 3.2.3. Execution
+### 4.2.3. Execution
 The agent accepts a POST request path `/wacnet/write`. There are two commands that can be utilised:
 ```
 curl -X POST 'http://localhost:3838/bms-update-agent/wacnet/write' \
@@ -188,7 +201,7 @@ A successful run will return the following:
 {"message":"Successfully written <value> to the object with an ID: <object Id>"}
 ```
 
-## 3.3. Update Triples Route
+## 4.3. Update Triples Route
 The Update Triples Route allows updating of the knowledge graph based on whether the latest timeseries value of a data IRI is equivalent to a user provided value. These parameters are required:
 - `clientProperties` the environment variable in the docker container that points to where the client.properties file is located at, refer to [Client Properties File](#2-client-properties-file) for more information.
 - `dataIRI` the data IRI to retrieve the latest timeseries value
@@ -196,10 +209,10 @@ The Update Triples Route allows updating of the knowledge graph based on whether
 - `DELETE` the set of triples to delete from the knowledge graph, this is optional. Refer to [Execution](#332-execution) for more information.
 - `INSERT` the set of triples to insert into the knowledge graph, this is optional. Refer to [Execution](#332-execution) for more information.
 
-### 3.3.1. Before Execution
+### 4.3.1. Before Execution
 Prepare a client.properties file with the necessary keys and values. Refer to [Update Triples Route Client Properties File](#23-update-triples-route-client-properties-file) for more information.
 
-### 3.3.2. Execution
+### 4.3.2. Execution
 The agent accepts a POST request path `/updateTriples`. These are the commands that can be utilised:
 This request deletes the following set of triples from the knowledge graph if the latest timeseries value of the data IRI is equivalent to the `triggerValue`.
 ```
@@ -263,7 +276,7 @@ curl -X POST 'http://localhost:3838/bms-update-agent/updateTriples' \
 }'
 ```
 
-## 3.4. Update Present Value Route
+## 4.4. Update Present Value Route
 The Update Present Value Route requires the user to provide a data IRI where the agent will then query for the Bacnet IDs and use the IDs to retrieve the present-value of the corresponding Bacnet Object via the Wacnet API. The agent will then update the following triples to reflect the present-value of the data IRI. This is currently applicable only to data IRIs that are of rdf:type om:Measure, refer to [ontology-of-units-of-measure](https://github.com/cambridge-cares/OM/tree/master):
 ```
 <data IRI> rdf:type om:Measure.
@@ -273,10 +286,10 @@ These parameters are required:
 - `clientProperties` the environment variable in the docker container that points to where the client.properties file is located at, refer to [Client Properties File](#2-client-properties-file) for more information.
 - `dataIRI` the data IRI to retrieve the Bacnet IDs and to update it's present-value
 
-### 3.4.1. Before Execution
+### 4.4.1. Before Execution
 Prepare a client.properties file with the necessary keys and values. Refer to [Update Present Value Route Client Properties File](#24-update-present-value-route-client-properties-file) for more information.
 
-### 3.4.2. Execution
+### 4.4.2. Execution
 The agent accepts a POST request path `/updatePresentValue`. These are the commands that can be utilised:
 To execute the function for more than one data IRI:
 ```

@@ -1,0 +1,53 @@
+{
+    "entries": [
+        {
+            "id": "EmissionSources",
+            "class": "https://www.theworldavatar.com/kg/ontodispersion/StaticPointSource",
+            "meta" : {
+                "queryFile": "emission_source.sparql"
+            },
+            "time": {
+                "queryFile": "emission_source_time.sparql",
+                "database": "postgres",
+                "limit": 24,
+                "unit": "hours",
+                "reference": "latest"
+            }
+        },
+		{
+            "id": "Building",
+            "class": "http://www.opengis.net/citygml/building/2.0/Building",
+            "meta" : {
+                "queryFile": "building.sparql"
+            },
+            "time": {
+                "queryFile": "cea-timeseries.sparql",
+                "limit": 24,
+                "unit": "hours",
+                "reference": "latest",
+                "database": "CEAAgent"
+            }
+        },
+		{
+			"id": "Station",
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
+			"meta": {
+				"queryFile": "ReportingStations_Meta.sparql"
+			},
+			"time": {
+				"queryFile": "ReportingStations_Time.sparql",
+                "limit": 24,
+			    "unit": "hours",
+			    "reference": "latest",
+                "database": "postgres"
+			}
+        },
+		{
+			"id": "Dispersion polygons",
+            "class": "https://www.theworldavatar.com/kg/ontodispersion/DispersionPolygon",
+			"meta": {
+				"queryFile": "dispersion_polygon.sparql"
+			}
+        }
+    ]
+}

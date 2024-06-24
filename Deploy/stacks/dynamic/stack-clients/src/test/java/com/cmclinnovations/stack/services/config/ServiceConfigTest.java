@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ServiceConfigTest {
@@ -17,7 +18,7 @@ public class ServiceConfigTest {
 
     @BeforeClass
     public static void readFromFile() throws IOException, URISyntaxException {
-        objectMapper = new ObjectMapper();
+        objectMapper = JsonHelper.getMapper();
 
         try (InputStream resourceAsStream = ServiceConfigTest.class.getResourceAsStream("testService.json")) {
             serviceConfig = objectMapper.readValue(resourceAsStream, ServiceConfig.class);

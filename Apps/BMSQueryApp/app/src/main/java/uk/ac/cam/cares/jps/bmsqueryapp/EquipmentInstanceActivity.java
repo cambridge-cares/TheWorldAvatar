@@ -22,14 +22,14 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.cam.cares.jps.bmsqueryapp.authorization.AuthorizationHelper;
 import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
 import uk.ac.cam.cares.jps.bmsqueryapp.data.dict.IRIMapping;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityEquipmentInstanceBinding;
-import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.EditFragment;
-import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
+import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
 
-public class EquipmentInstanceActivity extends AppCompatActivity {
+public class EquipmentInstanceActivity extends AppCompatActivity{
     ActivityEquipmentInstanceBinding binding;
     private static final Logger LOGGER = LogManager.getLogger(EquipmentInstanceActivity.class);
 
@@ -65,7 +65,6 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 LOGGER.info("page finished loading");
-//                binding.progressBarWrapper.setVisibility(View.GONE);
             }
 
             @Override
@@ -75,7 +74,7 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
             }
         };
 
-        ValueCallback<String> reloadCallback = (ValueCallback<String>) o -> {
+        ValueCallback<String> reloadCallback = o -> {
             LOGGER.info("New data loaded");
             binding.refreshButton.setEnabled(true);
         };
@@ -109,14 +108,14 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
                 }
             } else if (tabPosition == 1) {
                 if (adapter.getEditTab() != null) {
-                    ((EditFragment) adapter.getEditTab()).clearInputs();
+                    adapter.getEditTab().clearInputs();
                 }
             }
         });
     }
 
     private List<EditableAttribute> getEditableAttributeList(String type, String equipmentIRI) {
-        IRIMapping iriMapping = new IRIMapping();
+        IRIMapping iriMapping = new IRIMapping(getBaseContext());
         // determine the list of editable attribute based on the equipment type
         if (type.equals("https://www.theworldavatar.com/kg/ontobms/WalkInFumeHood")) {
             return new ArrayList<>();

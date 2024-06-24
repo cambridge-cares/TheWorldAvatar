@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 public class CityDB extends GeoServerDataSubset {
 
@@ -146,7 +145,7 @@ public class CityDB extends GeoServerDataSubset {
         }
 
         GeoServerClient.getInstance()
-                .createPostGISLayer(workspaceName, database, getName(), geoServerSettings);
+                .createPostGISLayer(workspaceName, database, getTable(), geoServerSettings);
     }
 
     public void createLayer(String database) {

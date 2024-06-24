@@ -3,7 +3,7 @@
         {
             "name": "Buildings with usage",
             "expanded": false,
-            "stack": "http://localhost:3838",
+            "stack": "http://localhost:4242",
             "sources": [
                 {
                     "id": "building",
@@ -11,7 +11,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=building%3Abuilding_usage&outputFormat=application%2Fjson"
+                    "data": "http://localhost:4242/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=building%3Abuilding_usage&outputFormat=application%2Fjson"
                 }
             ],
             "layers": [
@@ -812,7 +812,7 @@
         {
             "name": "Buildings with CEA results",
             "expanded": false,
-            "stack": "http://localhost:3838",
+            "stack": "http://localhost:4242",
             "sources": [
                 {
                     "id": "building",
@@ -820,7 +820,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=building%3Abuilding_usage&outputFormat=application%2Fjson"
+                    "data": "http://localhost:4242/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=building%3Abuilding_usage&outputFormat=application%2Fjson"
                 }
             ],
             "layers": [
@@ -1331,7 +1331,7 @@
         },
         {
             "name": "Isochrone",
-            "stack": "http://localhost:3838",
+            "stack": "http://localhost:4242",
             "expanded": false,
             "sources": [
                 {
@@ -1340,7 +1340,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Walk%27"
+                    "data": "http://localhost:4242/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Walk%27"
                 },
                 {
                     "id": "bicycle",
@@ -1348,7 +1348,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Cycle%27"
+                    "data": "http://localhost:4242/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Cycle%27"
                 },
                 {
                     "id": "car",
@@ -1356,7 +1356,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Drive%27"
+                    "data": "http://localhost:4242/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Drive%27"
                 }
             ],
             "groups": [
@@ -2629,13 +2629,13 @@
         {
             "name": "Population Data",
             "expanded": false,
-            "stack": "http://localhost:3838",
+            "stack": "http://localhost:4242",
             "sources": [
                 {
                     "id": "population",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Apopulation&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG%3A3857&styles=&format=image%2Fpng&transparent=true"
+                        "http://localhost:4242/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Apopulation&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG%3A3857&styles=&format=image%2Fpng&transparent=true"
                     ]
                 }
             ],
@@ -2659,14 +2659,14 @@
             "groups": [
                 {
                     "name": "Toilets Location",
-                    "stack": "http://localhost:3838",
+                    "stack": "http://localhost:4242",
                     "sources": [
                         {
                             "id": "toilet",
                             "type": "geojson",
                             "cluster": false,
                             "clusterMaxZoom": 14,
-                            "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atoilet&outputFormat=application%2Fjson"
+                            "data": "http://localhost:4242/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atoilet&outputFormat=application%2Fjson"
                         }
                     ],
                     "layers": [
@@ -2697,7 +2697,7 @@
                 },
                 {
                     "name": "Isochrone - Infrastructure",
-                    "stack": "http://localhost:3838",
+                    "stack": "http://localhost:4242",
                     "sources": [
                         {
                             "id": "walk",
@@ -2705,7 +2705,7 @@
                             "cluster": false,
                             "clusterMaxZoom": 14,
                             "clusterRadius": 100,
-                            "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Walk%27"
+                            "data": "http://localhost:4242/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Walk%27"
                         }
                     ],
                     "layers": [
@@ -2774,7 +2774,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Adlmsie02f&outputFormat=application%2Fjson&srsName=epsg:4326"
+                    "data": "http://localhost:4242/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Adlmsie02f&outputFormat=application%2Fjson&srsName=epsg:4326"
                 }
             ],
             "layers": [
@@ -2903,13 +2903,13 @@
         {
             "name": "Plots",
             "expanded": false,
-            "stack": "http://localhost:3838",
+            "stack": "http://localhost:4242",
             "sources": [
                 {
                     "id": "plots",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:plots&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:4242/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:plots&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],

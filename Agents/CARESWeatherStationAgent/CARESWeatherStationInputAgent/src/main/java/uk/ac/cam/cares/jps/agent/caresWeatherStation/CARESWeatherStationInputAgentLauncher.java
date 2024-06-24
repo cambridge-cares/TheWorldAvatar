@@ -14,7 +14,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -26,9 +30,9 @@ import org.apache.logging.log4j.Logger;
  * data from the API and write it into the database.
  * @author GMMajal
  */
-@WebServlet(urlPatterns = {"/retrieve"})
+@WebServlet(urlPatterns = {"/retrieve", "/status"})
 public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
-
+    private boolean valid = false;
     public static final String KEY_AGENTPROPERTIES = "agentProperties";
     public static final String KEY_APIPROPERTIES = "apiProperties";
     public static final String KEY_CLIENTPROPERTIES = "clientProperties";
@@ -55,7 +59,29 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the CARES weather station API connector needed to interact with the API!";
     private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
     private static final String LOADTSCONFIG_ERROR_MSG = "Unable to load configs from timeseries client properties file";
+    private static final String JSON_ERROR_KEY = "Error";
+    private static final String JSON_RESULT_KEY = "Result";
+    private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
 
+    public static String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
+	public static String DATABASE = System.getenv("DATABASE");
+	public static String LAYERNAME = System.getenv("LAYERNAME");
+
+        /**
+     * Servlet init.
+     *
+     * @throws ServletException
+     */
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        LOGGER.debug("This is a debug message.");
+        LOGGER.info("This is an info message.");
+        LOGGER.warn("This is a warn message.");
+        LOGGER.error("This is an error message.");
+        LOGGER.fatal("This is a fatal message.");
+        valid = true;
+    }
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -65,66 +91,83 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         JSONObject jsonMessage = new JSONObject();
-        if (validateInput(requestParams)) {
-            LOGGER.info("Passing request to CARES Weather Station Input Agent..");
-            String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
-            String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
-            String apiProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
-            try {
-            loadTSClientConfigs(clientProperties);
-            } catch (IOException e) {
-                throw new JPSRuntimeException(LOADTSCONFIG_ERROR_MSG, e);
-            }
-            String[] args = new String[] {agentProperties,clientProperties,apiProperties};
-            jsonMessage = initializeAgent(args);
-            jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
-            requestParams = jsonMessage;
+        LOGGER.info("Passing request to CARES Weather Station Input Agent..");
+        String route = requestParams.get("requestUrl").toString();
+        route = route.substring(route.lastIndexOf("/") + 1);
+        switch (route) {
+            case "status":
+                jsonMessage = statusRoute();
+                break;
+            case "retrieve":
+                String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
+                String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
+                String apiProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
+                try {
+                    loadTSClientConfigs(clientProperties);
+                } catch (IOException e) {
+                    throw new JPSRuntimeException(LOADTSCONFIG_ERROR_MSG, e);
+                }
+                String[] args = new String[] {agentProperties,clientProperties,apiProperties};
+                int delay = requestParams.getInt("delay");
+                int interval = requestParams.getInt("interval");
+                String timeunit = requestParams.getString("timeunit");
+                LOGGER.info("Executing retrieve route ...");
+                setSchedulerForRetrieveRoute(args, delay, interval, timeunit);
+                jsonMessage.put("result", "Retrieve route will be executed at the following intervals:" + interval + " " + timeunit);
+                break;
+            default:
+                LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
+                jsonMessage.put(JSON_ERROR_KEY, UNDEFINED_ROUTE_ERROR_MSG + route);
         }
-        else {
-            jsonMessage.put("Result", "Request parameters are not defined correctly.");
-            requestParams = jsonMessage;
-        }
-        return requestParams;
+        return jsonMessage;
     }
 
-    @Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        boolean validate = true;
-        String agentProperties;
-        String apiProperties;
-        String clientProperties;
-
-        if (requestParams.isEmpty()) {
-            validate = false;
+    /**
+     * Handle GET /status route and return the status of the agent.
+     *
+     * @return Status of the agent
+     */
+    private JSONObject statusRoute() {
+        JSONObject response = new JSONObject();
+        LOGGER.info("Detected request to get agent status...");
+        if (valid) {
+            response.put(JSON_RESULT_KEY, "Agent is ready to receive requests.");
+        } else {
+            response.put(JSON_ERROR_KEY, "Agent could not be initialised! Please check logs for more information.");
         }
-        else {
-            validate = requestParams.has(KEY_AGENTPROPERTIES);
-            if (validate == true) {
-                validate = requestParams.has(KEY_CLIENTPROPERTIES);
+        return response;
+    }
+
+    /**
+     * Set up scheduler for the retrieve route
+     * @param args contains the environment variables that indicates the location of each config file
+     * @param delay time delay before first execution
+     * @param interval interval between successive executions
+     * @param timeunit the time unit for delay and interval
+     */
+    private void setSchedulerForRetrieveRoute(String[] args, int delay, int interval, String timeunit) {
+        // Create a ScheduledExecutorService with a single thread
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        
+        // Define the task to be scheduled
+        Runnable task = new Runnable() {
+            public void run() {
+                initializeAgent(args);
             }
-            if (validate == true) {
-                validate = requestParams.has(KEY_APIPROPERTIES);
-            }
-            if (validate == true) {
-                agentProperties = (requestParams.getString(KEY_AGENTPROPERTIES));
-                clientProperties =  (requestParams.getString(KEY_CLIENTPROPERTIES));
-                apiProperties = (requestParams.getString(KEY_APIPROPERTIES));
-
-                if (System.getenv(agentProperties) == null) {
-                    validate = false;
-
-                }
-                if (System.getenv(apiProperties) == null) {
-                    validate = false;
-
-                }
-                if (System.getenv(clientProperties) == null) {
-                    validate = false;
-
-                }
-            }
+        };
+        TimeUnit timeUnit = null;
+        switch (timeunit) {
+            case "seconds":
+                timeUnit = TimeUnit.SECONDS;
+                break;
+            case "minutes":
+                timeUnit = TimeUnit.MINUTES;
+                break;
+            case "hours":
+                timeUnit = TimeUnit.HOURS;
+                break;
         }
-        return validate;
+        scheduler.scheduleAtFixedRate(task, delay, interval, timeUnit);
     }
 
     /**
@@ -189,9 +232,8 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         LOGGER.info("API connector object initialized.");
         jsonMessage.accumulate("Result", "API connector object initialized.");
 
-
         // Retrieve readings
-        JSONObject weatherDataReadings;
+        JSONObject weatherDataReadings = new JSONObject();
 
         try {
             weatherDataReadings = connector.getWeatherReadings();
@@ -204,6 +246,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
                 weatherDataReadings.length()));
         jsonMessage.accumulate("Result", "Retrieved " + weatherDataReadings.getJSONArray("observations").length() +
                 " weather station readings.");
+
         // If readings are not empty there is new data
         if(!weatherDataReadings.isEmpty()) {
             // Update the data
@@ -218,8 +261,8 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         }
 
         try {
-            SparqlHandler sparqlHandler = new SparqlHandler(args[0], args[1], args[2]);
-            sparqlHandler.instantiateIfNotExist(weatherDataReadings);
+            WeatherQueryClient weatherQueryClient = new WeatherQueryClient(args[0], args[1], args[2]);
+            weatherQueryClient.instantiateIfNotExist(weatherDataReadings);
         } catch (Exception e) {
             throw new JPSRuntimeException("Unable to carry out queries or insert data into the sparql store!", e);
         }

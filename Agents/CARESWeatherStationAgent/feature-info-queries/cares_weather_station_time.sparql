@@ -1,0 +1,30 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd:	<http://www.w3.org/2001/XMLSchema#>
+PREFIX time:    <https://www.theworldavatar.com/kg/ontotimeseries/>
+SELECT DISTINCT ?Measurement ?TimeSeries ?Name ?Unit WHERE {
+  [IRI] rdf:type <https://www.theworldavatar.com/kg/ontoems/ReportingStation> .
+  [IRI] <https://www.theworldavatar.com/kg/ontoems/reports>	 ?quantity .
+  ?quantity <http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> ?Measurement .
+  ?Measurement rdfs:label ?measurement_label .
+  OPTIONAL {
+  ?quantity <http://www.ontology-of-units-of-measure.org/resource/om-2/hasAggregateFunction> ?function .
+  ?function rdfs:label ?label .
+  BIND(
+    IF(?label = "maximum", "Max",
+      IF(?label = "minimum", "Min",
+        IF(?label = "average", "Avg",
+          IF(?label = "sum", "Total",
+          ?label
+          )
+        )
+      )
+    ) AS ?function_label
+  )
+  }
+  BIND(IF(BOUND(?function_label), CONCAT(?function_label, " ", ?measurement_label), ?measurement_label) AS ?Name)
+  ?Measurement time:hasTimeSeries ?TimeSeries .
+  ?Measurement <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit> ?unit .
+  ?unit <http://www.ontology-of-units-of-measure.org/resource/om-2/symbol> ?symbol .
+  BIND (?symbol as ?Unit).
+     }

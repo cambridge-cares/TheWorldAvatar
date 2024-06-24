@@ -1,163 +1,148 @@
-# Introduction
+# Access Agent
+### Purpose 
+The purpose of this agent is to provide access and/or routing to two kinds of resources in the knowledge graph - triple stores and relational databases. The Access Agent hides the storage implementation layer, so that the user or calling agent does not need to know the location or software e.g. Blazegraph, RDF4J etc. On one hand, it handles HTTP requests to perform SPARQL query and update operations on RDF resources in the knowledge graph as well as to "get" and "insert" entire graphs. On another hand, it handles HTTP requests to access the relational database url using an identifier. As an extension of The World Avatar's agent framework, this agent's methods can be called **EITHER** using the `AccessAgentCaller`/`RDBAccessAgentCaller` class in the `jps_base_lib` package **OR** by extending the JPSAgent class.
 
-The purpose of the Access Agent is to provide a point of access to the knowledge graph for executing SPARQL query and update operations. The Access Agent hides the storage implementation layer, so that the user or calling agent does not need to know the store location or software e.g. Blazegraph, RDF4J etc.
+## 1. Build Instructions
 
-The Access Agent works by receiving a HTTP request from the calling agent to execute a SPARQL query or update on a target resource (triple store). A StoreRouter and the associated *ontokgrouter* triple store is used to retrieve the SPARQL endpoints for the requested resource. A StoreClient is then instantiated to connect to and query or update the target resource.
+The Access agent is available as a Docker image in this [package](https://github.com/cambridge-cares/TheWorldAvatar/pkgs/container/access-agent). Users need not build the image unless they are developing a newer version. The latest version can be pulled from this [repository](https://github.com/cambridge-cares/TheWorldAvatar/pkgs/container/access-agent).
 
-## Purpose
+Keep reading if you need to build the image for any reason or skip to the [deployment section](#2-deployment-instructions).
 
-The purpose of the TripleStoreAccessAgent and RDBAccessAgent is to provide access and/or routing to triple stores and relational databases respectively.
+#### Build Step 1
 
-<b>Triple Store Access Agent:</B> The purpose of this agent is to handle HTTP requests to perform SPARQL query and update operations on RDF resources in the knowledge graph. 
-The agent will also perform requests to "get" and "insert" entire graphs. This agent extends the JPSAgent framework and can be called using methods in the AccessAgentCaller class in jps_base_lib or by extending the JPSAgent class.
-
-<b> RDB Access Agent: </b>The  purpose of this agent is to handle HTTP requests to obtain the url required to create a connection to a PostgreSQL database. This agent extends the JPSAgent framework 
-and can be called using the getRDBUrl method in the RDBAccessAgentCaller class in jps_base_lib or by extending the JPSAgent class. 
-
-# Using the Access Agent 
-
-## Local development environment
-
-Details on deploying the Access Agent dev stack can be found in the [Access Agent README](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme)
-
-## Production environment
-
-### Routing information
-
-The Access Agent requires routing information for the target resource to be contained in the *ontokgrouter* triple store found at  "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter". 
-The routing information consists of 5 triples containing the SPARQL query and update endpoints and a label identifying the target resource.
- 
-E.g. routing information for the **ontokin** namespace:
+This agent is set up to use this [Maven repository](https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/) (in addition to Maven central). You'll need to provide your credentials (GitHub username/personal access token) in a single-word text files located like this:
 
 ```
-<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint>	"http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql".
-<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint> "http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql".
-<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource>.
-<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual>.
-<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/2000/01/rdf-schema#label> "ontokin".
+./credentials/
+    repo_username.txt
+    repo_password.txt
 ```
 
-### Calling the Access Agent
+repo_username.txt should contain your Github username. repo_password.txt should contain your Github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
+which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-If you are developing a Java agent within the JPSAgent framework (by extending the class uk.ac.cam.cares.jps.base.agent.JPSAgent), the Access Agent can be called using the queryStore and updateStore methods inherited from JPSAgent. In the case you are not extending JPSAgent, these methods can also be found in the class uk.ac.cam.cares.jps.base.query.AccessAgentCaller. 
+#### Build Step 2
 
-The target resource ID and SPARQL query/update string are provided as arguments:
+The docker related files for building the Access Agent can be found in the `./docker-build` directory. If changes have been made to the agent, update the version number or append a `-SNAPSHOT` qualifier by following these steps:
+
+1. The AccessAgent version number on line 25 of the `./docker-build/Dockerfile` must match that in the AccessAgent `./access-agent-code/pom.xml`
+2. Update the image version number in the `./docker-build/docker-compose.yml` file accordingly
+3. Update the image version in the dev stack to match this updated version you are about to build and publish -- `./access-agent-dev-stack/access-agent.json` and `./access-agent-dev-stack/docker-compose.yml`
+
+Once the versions have been updated, run the following at the `<root>/docker-build` directory to build the Docker image:
+
 ```
-targetResourceID
-sparqlQuery/sparqlUpdate
-```
-The `targetResourceID` must match the label in *ontokgrouter*.
-
-<!------------------------------------------------------------->
-<!-- ACCESS AGENT DEV STACK ----------------------------------->
-<!------------------------------------------------------------->
-## Deploying a local AccessAgent
-
-The access-agent-dev-stack contains the <b>Triple Store Access Agent</b> and <b>RDBAccessAgent</b> (on port 48888) and a <b>Blazegraph</b> (on port 48889). 
-
-The purpose of the Blazegraph is to store routing information used by the triple store access agent in your dev environment. 
-Routing information is stored in the default "kb" namespace and the triple store access agent is configured to use this is as the STOREROUTER_ENDPOINT.
-
-The uploading of routing information for the RDB Access Agent is described in the [Uploading Routing Information](#Uploading-routing-information) section below.
-
-### Spinning up the Access Agent dev stack
-
-From the command line, in the access-agent-dev-stack directory, run:
-```
-docker-compose up -d --no-build
-```
-Images for the two containers are pulled from the Cambridge CARES container registry on GitHub and CMCL Docker image registry. (Note: Credentials are required to pull from the CMCL registry. See https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry)
-
-### Spinning up the Access Agent as part of a stack
-
-Alternatively, if you want to spin up this agent as part of a stack, do not use `docker-compose`. Instead, do the following:
-- In the `access-agent.json` file within the `access-agent-dev-stack` folder, adjust the image version if applicable, and replace the placeholder for the stack name in the endpoint environment variables with the name of your stack.
-- Copy the `access-agent.json` file into the `inputs/config` folder of the stack manager.
-- Start the stack manager as usual. This should start an access agent container as part of your stack.
-
-### Uploading Routing Information
-
-<b> Triple Store Access Agent: </b> 
-
-In order to upload routing information into a store router blazegraph namespace, populate the `routing.json` file in access-agent-dev-stack directory with the routing information you want to upload.
-You need to provide a `label`, `queryEndpoint` and `updateEndpoint` for each store/namespace. The `routing.json` file contains local, external, and stack examples. Note: the host `localhost` in the endpoint URL needs to be replaced by `host.docker.internal` (on Windows/Mac) or the docker network gateway IP (Windows/Mac/Linux).
-Then, run the bash script `uploadRouting.sh`. NB If running the access agent within a stack, the port number in the access agent URL in the script will need to be adjusted.
-```
-bash ./uploadRouting.sh
-```
-Note: 
-1. Routing triples can also be added manually (e.g. through the Blazegraph user interface 'http://localhost:48889/blazegraph') to the "kb" namespace of the access-agent-dev-stack Blazegraph. 
-2. The uploader will not overwrite information if a "label" already exists. You will need to do this manually.
-
-<b> RDB Access Agent: </b> 
-
-1. In your local blazegraph, create a new namespace called 'ontordbrouter' to store the routing information. Alternatively, insert the routing information to the
-ontordbrouter namespace at ``http://www.theworldavatar.com/blazegraph/``
-2. In order to use your local ontordbrouter, locate the RDB_STOREROUTER_ENDPOINT in <i> access-agent-dev-stack/docker-compose.yml</i> and replace 
-``http://www.theworldavatar.com/blazegraph/namespace/ontordbrouter/sparql`` with ``http://host.docker.internal:9999/blazegraph/namespace/ontokgrouter/sparql``. If using a different port for Blazegraph, replace 9999 with your port number.
-3. For each PostgreSQL database to be accessed, 4 triples need to be added to the 'ontordbrouter' namespace. An example SPARQL update is shown, which inserts the triples required to access a 
-database 'test'. Replace all occurrences of test with the name of the database and the endpoint with the location of your ontordbrouter namespace, and execute the SPARQL update.
-
-    ```
-    INSERT DATA {  
-    <http://host.docker.internal:9999/blazegraph/ontordbrouter/test> <http://www.theworldavatar.com/kg/ontordbrouter/hasUrl> "jdbc:postgresql://localhost:5432/test".
-    <http://host.docker.internal:9999/blazegraph/ontordbrouter/test> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/kg/ontordbrouter/TargetRDBResource>.
-    <http://host.docker.internal:9999/blazegraph/ontordbrouter/test> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual>.
-    <http://host.docker.internal:9999/blazegraph/ontordbrouter/test> <http://www.w3.org/2000/01/rdf-schema#label> "test".
-    }
-    ```
-   
-
-### Calling the Agent in your dev environment 
-
-The triple store access agent and RDB access agent are accessible at `localhost:48888`, or `host.docker.internal:48888` from inside a Docker container (on Windows/Mac), or, if running the agent within a stack, `localhost:3838` (by default) from outside the stack, `<STACK NAME>-access-agent:8080` from within.
-
-The <b>Triple Store Access Agent</b> is usually called using the queryStore or updateStore found in the AccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. Both methods take two arguments: the targetResourceID and the SPARQL query/update.
-
-The <b>RDB Access Agent</b> is usually called using the getRDBUrl found in the RDBAccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. The method takes one argument: the targetResourceID.
-
-There are three ways to call your local TripleStoreAccess/RDBAccess agent:
-1. Set url.accessagent.host in the jps.properties file in jps_base_lib.
-2. Set the ACCESSAGENT_HOST environment variable. This is recommended if running your code from a docker container and can be done in the docker-compose file.
-3. Alternatively, a full URL containing the correct host:port can be supplied as the targetResourceID e.g.
-    ```
-    http://localhost:48888/label or http://host.docker.internal:48888/label
-    ```
-    or, if running within a stack,
-    ```
-    http://<STACK NAME>-access-agent:8080/label,
-    ```
-    where the label corresponds to the label uploaded to the router.
-
-<!------------------------------------------------------------->
-<!-- BUILDING THE ACCESS AGENT -------------------------------->
-<!------------------------------------------------------------->
-## Building the Access Agent
-
-The docker-compose and Dockerfile to build the Access Agent can be found in the docker-build directory.
-
-### Version numbers
-When building a new version of the access agent remember:
-1. The AccessAgent version number on line 25 of the Dockerfile must match that in the AccessAgent pom.xml
-2. The image version number in the docker-compose file should be updated
-3. Also, please update the access agent image version in the dev stack to match the new version you are about to build and publish (../access-agent-dev-stack/docker-compose.yml)
-
-### Building
-To build the Access Agent image, in the docker-build directory run:
-```
-docker-compose build
+docker compose build
 ```
 
-If building a new version of the image, the new image should be pushed to the GitHub container registry
+If building a new version of the image, the new image should be pushed to the GitHub container registry by running:
+
 ```
 docker push ghcr.io/cambridge-cares/access-agent:X.Y.Z
 ```
-where X.Y.Z is the new version number.
 
-### Integration tests
-Once built, the AccessAgentIntegrationTests and RDBAccessAgentIntegrationTests can be run on the new version of the AccessAgent 
-by updating the ACCESS_AGENT_VERSION variable in the AccessAgentIntegrationTest class and the RDBAccessAgentIntegrationTest class
+where X.Y.Z is the new version number. Please also ensure that you are logged in to the docker registry. Follow [step 1 of this](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) for clarity.
+
+#### Integration tests
+
+Once built, the `AccessAgentIntegrationTests` and `RDBAccessAgentIntegrationTests` can be run on the new version of the AccessAgent
+by updating the `ACCESS_AGENT_VERSION` variable in the `AccessAgentIntegrationTest` class and the `RDBAccessAgentIntegrationTest` class
 before running the tests.
 
-The DeployedAccessAgentIntegrationTest can be run once the Access Agent has been deployed on The World Avatar server. 
-This will test the agent in a production environment including connections to the ontokgrouter and ontordbrouter endpoints.
+The `DeployedAccessAgentIntegrationTest` can be run once the Access Agent has been deployed on The World Avatar server.
+This will test the agent in a production environment including connections to the `storerouter` and `storerouterrdb` SPARQL endpoints.
+
+## 2. Deployment Instructions
+
+The Access Agent can be deployed in a standalone Docker container or as part of The World Avatar [stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+
+### 2.1 Standalone Container
+
+Developers can deploy the access agent with a Blazegraph container when developing the access agent by running the following in the command line from the `./access-agent-dev-stack` directory:
+
+```
+docker-compose up -d --no-build
+```
+
+- Note that the images for the two containers are pulled from the Cambridge CARES container registry on GitHub and require credentials. See https://github.com/cambridge-cares/TheWorldAvatar/wiki/Using-Docker-images
+
+When successful, two containers will be running on `port 48888` (Access Agent) and `http://localhost:48889/blazegraph/` (Blazegraph). The purpose of the Blazegraph is to store routing information used by the access agent. This agent container has been configured to store SPARQL routing information in the default `kb` namespace using the `STOREROUTER_ENDPOINT` environment variable. RDB routing information is configured to be stored in the `ontordbrouter` namespace using the `RDB_STOREROUTER_ENDPOINT` environment variable. Further details for these configuration is described in the [Uploading Routing Information](#31-uploading-routing-information) section.
+
+### 2.2 Stack Deployment
+
+In order to deploy this agent as part of a stack, execute the following steps:
+
+- In the `./access-agent-dev-stack/access-agent.json` file , adjust the image version (if applicable). `REPLACE` the `<STACK NAME>` placeholder in the environment variables with the name of your stack. Doing so will ensure the routing information is uploaded to the `storerouter` and `storerouterrdb` namespaces for the SPARQL and RDB routing information respectively.
+- Copy the `access-agent.json` file into the `inputs/config` folder of the stack manager.
+- Start the stack manager as usual. This should start an access agent container as part of your stack.
+
+## 3. Usage Instructions
+
+### 3.1 Uploading Routing Information
+
+Before the agent can be called in any environment, the routing information must be uploaded to the `storerouter` and `storerouterrdb` namespaces for the SPARQL and RDB routing information respectively. This can be set using the corresponding `STOREROUTER_ENDPOINT` and `RDB_STOREROUTER_ENDPOINT` environment variables to change the namespace names. See the `./access-agent-dev-stack/docker-compose.yml` or `./access-agent-dev-stack/access-agent.json` for examples. Please note that a `label` must be included in order to ensure that the agent can target the right resource.
+
+> Triple Store Routing Information
+
+The Access Agent requires routing information for the target resource to be contained in the specified `storerouter` namespace. Routing information for the triple store namespaces can be uploaded manually or programmatically. Regardless of the method, the routing information consists of 5 triples containing the SPARQL query and update endpoints as well as a label identifying the target resource. An example for the **ontokin** namespace is as follows:
+
+```
+// Note that `<ontokin>` is replaceable with the label you require
+// SPARQL endpoints
+<http://www.theworldavatar.com/kb/storerouter/<ontokin>>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint>	"http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql".
+<http://www.theworldavatar.com/kb/storerouter/<ontokin>>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint> "http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql".
+
+// Classes
+<http://www.theworldavatar.com/kb/storerouter/<ontokin>>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource>.
+<http://www.theworldavatar.com/kb/storerouter/<ontokin>>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual>.
+
+// Label used as an identifier for accessing the right namespace
+<http://www.theworldavatar.com/kb/storerouter/<ontokin>>	<http://www.w3.org/2000/01/rdf-schema#label> "<ontokin>".
+```
+
+These routing triples can be added manually (e.g. through the Blazegraph user interface 'http://localhost:48889/blazegraph') following the SPARQL specifications. Alternatively, programmatically, the `./access-agent-dev-stack/routing.json` file must be populated with the following fields for each namespace. The file contains examples for local host, external host, and The World Avatar stack. Do note that the host `localhost` in the endpoint URL needs to be replaced by `host.docker.internal` (on Windows/Mac) or the docker network gateway IP (Windows/Mac/Linux).
+
+- `label`
+- `queryEndpoint`
+- `updateEndpoint`
+
+Once the file is populated, run the bash script `./access-agent-dev-stack/uploadRouting.sh` using the `bash ./uploadRouting.sh` command in the `./access-agent-dev-stack` directory. Adjust the `accessagentURL` field if running within a stack. Note that if a "label" already exists, the uploader will not overwrite any information. Instead, please manually modify the triples on the namespace.
+
+> RDB Routing Information
+
+1.  In the knowledge graph, create a new namespace based on the specified `RDB_STOREROUTER_ENDPOINT` environment variable (default is `ontordbrouter`) to store the routing information. If you wish to use another namespace, please adjust your Docker environment variables accordingly to function in the stack or standalone containers.
+2.  For each PostgreSQL database to be accessed, 4 triples need to be added to the namespace in (1). Example triples for accessing a database `test` is shown below. Note to replace all occurrences of `test` with your required database name to ensure the label for the target resource works.
+
+```
+// Database url
+<http://host.docker.internal:9999/blazegraph/ontordbrouter/test> <http://www.theworldavatar.com/kg/ontordbrouter/hasUrl> "jdbc:postgresql://localhost:5432/test".
+
+// Classes
+<http://host.docker.internal:9999/blazegraph/ontordbrouter/test> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/kg/ontordbrouter/TargetRDBResource>.
+<http://host.docker.internal:9999/blazegraph/ontordbrouter/test> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual>.
+
+// Label used as an identifier for accessing the database
+<http://host.docker.internal:9999/blazegraph/ontordbrouter/test> <http://www.w3.org/2000/01/rdf-schema#label> "test".
+```
+
+### 3.2 Calling the Access Agent
+
+Developers should call the access agent in two ways:
+
+1. If you are developing a Java agent within the TWA agent framework (by extending the class `uk.ac.cam.cares.jps.base.agent.JPSAgent`), users can directly call methods inherited from `JPSAgent` to access these resources
+2. In the case you are not extending `JPSAgent`, users can import the class `uk.ac.cam.cares.jps.base.query.AccessAgentCaller` or `uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller` to call the methods accessing the resources. The `AccessAgentCaller` contains the `queryStore` and `updateStore` methods, whereas the `RDBAccessAgentCaller` contains the `getRDBUrl` method.
+
+Explanation of the relevant methods are as follows:
+
+1. `queryStore(String targetResourceID, String query)`: Retrieves data from the knowledge graph using SPARQL queries
+2. `updateStore(String targetResourceID, String updateQuery)`: Modifies the data within the knowledge graph using SPARQL queries
+3. `getRDBUrl(String targetResourceID)`: Retrieves the specified relational database url from the knowledge graph
+
+As shown, all methods require a targetResourceID in the url format of `domain/label`, where label is the required resource identifier (matching the label in the routing information). The `domain` component of the url can follow one of the following forms:
+
+- `localhost:48888`: External access outside a Docker container
+- `host.docker.internal:48888`: Internal access within a Docker container (on Windows/Mac)
+- `localhost:PORT-NO`: External access from a running stack; `PORT-NO` is `3838` by default
+- `<STACK NAME>-access-agent:8080`: Internal access within the stack
+
+If running within the JPS agent framework, developers can set a global environment variable storing the core domain url for The World Avatar's knowledge graph. This has been set as the `url.accessagent.host` field in the `JPS_BASE_LIB/src/main/resources/jps.properties` file. Users can call this variable to retrieve the domain using `uk.ac.cam.cares.jps.base.config.KeyValueMap.getInstance().get(uk.ac.cam.cares.jps.base.config.IKeys.URL_ACCESSAGENT_HOST)`. However, we do not recommend doing so. Instead, it is recommended that developers should modify their agents to retrieve the domain from user inputs to allow the agents to be generalisable and reusable in other applications.
