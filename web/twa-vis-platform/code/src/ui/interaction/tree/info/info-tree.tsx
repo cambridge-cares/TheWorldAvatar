@@ -16,6 +16,7 @@ import TimeSeriesPanel from './time-series-panel';
 interface InfoTreeProps {
   attributes: AttributeGroup;
   timeSeries: TimeSeriesGroup;
+  featureName: string;
   isFetching: boolean;
   isUpdating: boolean;
   activeTab: {
@@ -32,6 +33,7 @@ interface InfoTreeProps {
  * 
  * @param {AttributeGroup} attributes The processed attributes for user interaction.
  * @param {TimeSeriesGroup} timeSeries The processed time series for user interaction.
+ * @param {string} featureName The name of the currently selected feature.
  * @param {boolean} isFetching An indicator if the query is still running.
  * @param {MapFeaturePayload[]} features A list of selected features.
  */
@@ -46,7 +48,6 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
       scrollRef.current.scrollTo(scrollPosition, 0);
     }
   }, [scrollPosition]);
-
 
   // A function that renders the required contents for this panel
   const renderPanelContents: () => React.ReactElement = () => {
@@ -97,6 +98,9 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
                 index: props.activeTab.index,
                 setActiveTab: props.activeTab.setActiveTab,
               }} />)}
+        {props.features.length === 0 && props.featureName &&
+          (<div className={styles["feature-name-header"]}>{props.featureName}</div>)
+        }
       </div>
     }
   }
