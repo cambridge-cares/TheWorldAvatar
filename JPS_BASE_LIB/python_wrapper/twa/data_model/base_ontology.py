@@ -480,6 +480,8 @@ class BaseProperty(BaseModel, validate_assignment=True):
         Returns:
             Graph: The rdflib.Graph object with the added triples
         """
+        # rebuild model to resovle any ForwardRef
+        cls.model_rebuild()
         property_iri = cls.get_predicate_iri()
         g.add((URIRef(property_iri), RDFS.isDefinedBy, URIRef(cls.is_defined_by_ontology.get_namespace_iri())))
         # add rdf:type and super properties
@@ -984,6 +986,8 @@ class BaseClass(BaseModel, validate_assignment=True):
         Returns:
             Graph: The rdflib.Graph object with the added triples
         """
+        # rebuild model to resovle any ForwardRef
+        cls.model_rebuild()
         cls_iri = cls.get_rdf_type()
         g.add((URIRef(cls_iri), RDF.type, OWL.Class))
         g.add((URIRef(cls_iri), RDFS.isDefinedBy, URIRef(cls.is_defined_by_ontology.get_namespace_iri())))
