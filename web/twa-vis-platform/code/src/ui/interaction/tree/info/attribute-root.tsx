@@ -121,7 +121,7 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
     />;
 
   return (
-    <div className={styles.treeEntry}>
+    <div id="Tree Group">
       {headerElement}
 
       {/* Elements */}
@@ -139,7 +139,8 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
             scrollRef={props.scrollRef}
             setScrollPosition={props.setScrollPosition}
           />)
-        })} </>
+        })}
+      </>
       )}
     </div>
   );

@@ -138,7 +138,7 @@ export default function FloatingPanelContainer(
 
       {/* Conditionally render the panel's body */}
       {isPanelVisible && (
-        <div>
+        <>
           <div className={styles.floatingPanelBody}>
             {mapLayerGroups.length > 0 && activeIndex === 0 && <LayerTree
               map={props.map}
@@ -168,8 +168,7 @@ export default function FloatingPanelContainer(
                 data={props.scenarioDimensions} />
             </div>)}
 
-        </div>
-
+        </>
       )}
     </div>
   );

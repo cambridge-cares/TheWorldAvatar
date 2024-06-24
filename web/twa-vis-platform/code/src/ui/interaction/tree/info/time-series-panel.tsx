@@ -1,3 +1,5 @@
+import styles from './info-tree.module.css';
+
 import React, { useState } from 'react';
 
 import Chart from 'ui/graphic/chart/chart';
@@ -28,10 +30,10 @@ export default function TimeSeriesPanel(props: Readonly<TimeSeriesPanelProps>) {
   };
 
   return (
-    <>
+    <div className={styles["time-series-panel"]}>
       <DropdownField options={parseTimeSeriesIntoOptions(tsData)} selectedIndex={selectedTimeSeriesOption} setSelectedIndex={setSelectedTimeSeriesOption} />
       <Chart data={tsData} selectedIndex={selectedTimeSeriesOption} />
       <Table group={tsData} selectedIndex={selectedTimeSeriesOption} />
-    </>
+    </div>
   );
 }

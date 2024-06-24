@@ -57,6 +57,10 @@
   overflow-y: auto;
 }
 
+.time-series-panel {
+  padding: 0 0.75rem 0.75rem;
+}
+
 /* Header for Tree Entry Styling */
 .treeEntrySubHeader {
   display: flex;

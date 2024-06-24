@@ -50,18 +50,6 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
 
   // A function that renders the required contents for this panel
   const renderPanelContents: () => React.ReactElement = () => {
-
-
-    // content content shown in floating panel as long as some feature has been clicked at least once
-    const content = (
-      <div>
-        <AttributeRoot attribute={props.attributes}
-          scrollRef={scrollRef}
-          setScrollPosition={setScrollPosition}
-        />
-      </div>
-    )
-
     // Render only the loading spinner if it is initially fetching data
     if (props.isFetching && !props.attributes) {
       return <div className={styles.loading}>
@@ -78,9 +66,11 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
     }
     // If active tab is 0, render the Metadata Tree
     if (props.attributes && props.activeTab.index === 0) {
-      return <div>
-        {content}
-      </div>
+      return (
+        <AttributeRoot attribute={props.attributes}
+          scrollRef={scrollRef}
+          setScrollPosition={setScrollPosition}
+        />);
     }
 
     if (props.timeSeries && props.activeTab.index > 0) {
