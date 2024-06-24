@@ -23,13 +23,16 @@ public class PIPSTSAgentAPIConnector {
     // error messages
     private static final String dataRetrievalError = "Could not retrieve timeseries data!";
 
+    /**
+     * Constructor for PIPSTSAgentAPIConnector
+     */
     public PIPSTSAgentAPIConnector() {
         pipsAgentTimeSeriesPath = System.getenv("PIPS_AGENT_TIMESERIES_PATH");
     }
 
     /**
-     * Get timeseries data from pips-agent
-     * @return timeseries data as a JSONObject if authorized
+     * Get timeseries data from pips-timeseries-agent
+     * @return result of request (e.g. unauthorized, authorized, invalid token)
      * @throws JSONException
      * @throws IOException
      */
@@ -37,8 +40,14 @@ public class PIPSTSAgentAPIConnector {
         return retrieveTimeSeriesData(accessToken);
     }
 
+    /**
+     * send get request to pips-timeseries-agent with bearer token
+     * @param accessToken token to attached as bearer token
+     * @return response from pips-timeseries-agent
+     * @throws IOException
+     */
     private JSONObject retrieveTimeSeriesData(String accessToken) throws IOException {
-        LOGGER.info("Sending request to pips-agent...");
+        LOGGER.info("Sending request to pips-timeseries-agent...");
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet readingRequest = new HttpGet(pipsAgentTimeSeriesPath);
             setTokenAuthorization(readingRequest, accessToken);
