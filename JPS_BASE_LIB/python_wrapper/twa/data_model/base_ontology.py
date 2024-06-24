@@ -840,6 +840,9 @@ class BaseClass(BaseModel, validate_assignment=True):
             inst = KnowledgeGraph.get_object_from_lookup(iri)
             # obtain the target class in case it is a subclass
             target_clz = cls.retrieve_subclass(target_clz_rdf_type)
+            # rebuild the model in case there're any ForwardRef that were not resolved previously
+            target_clz.model_rebuild()
+
             # instead of calling cls.get_object_properties() and cls.get_data_properties()
             # calling methods of target_clz ensures that all properties are correctly inherited
             ops = target_clz.get_object_properties()
