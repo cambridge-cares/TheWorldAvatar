@@ -23,9 +23,8 @@ public class KeycloakConnector {
     // variables
     private String tokenEndpoint = null;
     private String introspectionEndpoint = null;
-
-    private static final String tokenEndpointKey = "token_endpoint";
-    private static final String introspectionEndpointKey = "introspection_endpoint";
+    private static final String TOKEN_ENDPOINT_KEY = "token_endpoint";
+    private static final String INTROSPECTION_ENDPOINT_KEY = "introspection_endpoint";
     private static final String keycloakRealmPath = System.getenv("KEYCLOAK_REALM_PATH");
     private static final String client_id = System.getenv("CLIENT_ID");
 
@@ -40,8 +39,8 @@ public class KeycloakConnector {
     public KeycloakConnector() {
         try {
             JSONObject endpoints = getEndpoints();
-            this.tokenEndpoint = endpoints.getString(tokenEndpointKey);
-            this.introspectionEndpoint = endpoints.getString(introspectionEndpointKey);
+            this.tokenEndpoint = endpoints.getString(TOKEN_ENDPOINT_KEY);
+            this.introspectionEndpoint = endpoints.getString(INTROSPECTION_ENDPOINT_KEY);
         } catch (Exception e) {
             throw new JPSRuntimeException(GET_ENDPOINTS_ERROR);
         }
